@@ -1,0 +1,17 @@
+{
+    "version": "1.5.0-alpha",
+    "compilerOptions": {
+        "declaration": true,
+        "target": "ES5",
+        "outDir": "/dist/",
+        "out" : "out.js",
+        "module": "commonjs"
+    },
+    "compileOnSave": false,
+    "files": [
+        "./src/internal/app.ts",
+        "./src/internal/index.ts",
+        "./src/core/app.ts",
+        "./src/core/index.ts"
+    ]
+}
