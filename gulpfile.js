@@ -4,10 +4,7 @@
   'use strict';
 
   var gulp      = require('gulp'),
-    typescript  = require('typescript'),
-    ts          = require('gulp-typescript'),
     browserify  = require('browserify'),
-    tsify       = require('tsify'),
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync');
   
