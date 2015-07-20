@@ -6,25 +6,24 @@
   var gulp      = require('gulp'),
     browserify  = require('browserify'),
     source      = require('vinyl-source-stream'),
-    bs          = require('browser-sync');
+    bs          = require('browser-sync'),
+    Server      = require('karma').Server;
   
   gulp.task('browserify', function() {
     return browserify('./src/core/index.ts')
-      .plugin('tsify')
+      .plugin('tsify', {
+        target: 'ES5',
+        declaration: true })
       .require('./src/core/index.ts', {expose: 'xjs'})
       .bundle()
       .pipe(source('xjs.js'))
       .pipe(gulp.dest('dist'));
   });
 
-  gulp.task('test/unit', function() {
-    bs.create('unit test server').init({
-      server: {
-        baseDir: 'test/unit',
-        index: 'test.html'
-      },
-      browser: 'google chrome'
-    });
+  gulp.task('test/unit', function(done) {
+    new Server({
+      configFile: __dirname + '/karma.conf.js',
+    }, done).start();
   });
 
   gulp.task('test/functional', function() {
