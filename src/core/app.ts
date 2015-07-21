@@ -1,6 +1,6 @@
 /// <reference path="../../defs/_references.ts" />
 
-import {App as iApp} from '../internal/index';
+import {App as iApp} from '../internal/app';
 
 export class App {
   /** Gets application's frame time (duration per frame in 100ns unit) */

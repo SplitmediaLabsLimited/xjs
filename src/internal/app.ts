@@ -3,7 +3,7 @@
 export class App {
   /** Get the value of the given property */
   static get(name: string): Promise<string> {
-    return Promise.resolve(""); 
+    return Promise.resolve(''); 
   }
 
   /** Sets the value of a property */
