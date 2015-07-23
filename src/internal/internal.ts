@@ -1,11 +1,4 @@
-interface Window {
-    OnAsyncCallback: Function;
-    OnSceneLoad: Function;
-    SetConfiguration: Function;
-    SetBackGroundColor: Function;
-    SetVolume: Function;
-    OnDialogResult: Function;
-}
+/// <reference path="../../defs/window.d.ts" />
 
 export var DEBUG: boolean = false;
 

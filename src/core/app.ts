@@ -1,4 +1,4 @@
-/// <reference path="../../defs/_references.ts" />
+/// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
 

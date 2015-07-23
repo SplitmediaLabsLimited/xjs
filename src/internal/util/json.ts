@@ -1,3 +1,5 @@
+import {XML} from './xml';
+
 export class JSON {
   tag: string;
   children: JSON[];
