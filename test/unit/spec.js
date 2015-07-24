@@ -16,7 +16,7 @@ describe('A suite is just a function', function() {
   });
 });
 
-describe('A suite that fails', function() {
+xdescribe('A suite that fails', function() {
   it('is a spec that fails', function() {
     expect(false).toBe(true);
   });
