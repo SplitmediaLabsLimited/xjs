@@ -2,6 +2,9 @@
   "name": "xjs",
   "version": "0.1.0",
   "description": "XSplit JS Framework",
+  "scripts": {
+    "test": "karma start --single-run --browsers Chrome"
+  },
   "devDependencies": {
     "browser-sync": "^2.8.0",
     "browserify": "^10.2.6",
