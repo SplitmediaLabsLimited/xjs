@@ -4,6 +4,7 @@ export class JSON {
   tag: string;
   children: JSON[];
   value: string;
+  selfclosing: boolean;
 
   constructor(xml?: any) {
     if (xml === undefined || xml === '') {
@@ -16,54 +17,66 @@ export class JSON {
       sxml = xml.toString();
     }
 
-    // process short ended tags
-    sxml = sxml.replace(
-      /<([^\s>]+)([^>]+)\/>/g,
-      (match, tagname, attributes) => {
-        return ['<', tagname, attributes, '></', tagname, '>'].join('');
-      }
-    );
+    var openingRegex = /<([^\s>\/]+)/g;
+    var selfCloseRegex = /(\/>)/g;
 
-    let container: HTMLElement = document.createElement('div');
-    container.innerHTML = sxml;
+    var openResult = openingRegex.exec(sxml);
+    var selfCloseResult = selfCloseRegex.exec(sxml);
 
-    let obj: JSON = (function processNode(node: HTMLElement) {
-      let nodeJSON: JSON = new JSON();
+    var xmlDocument = (new DOMParser()).parseFromString(sxml,
+      'application/xml');
 
-      nodeJSON.tag = node.tagName.toLowerCase();
+    var processNode = function(node) {
+      var obj = new JSON();
+      obj.tag = node.tagName;
 
-        // process attributes
-        for (var a = 0; a < node.attributes.length; a++) {
-          let attribute = node.attributes[a];
-
-          nodeJSON[attribute.name] = attribute.value;
-        }
-
-        // process child nodes
-        nodeJSON.children = [];
-
-        for (var c = 0; c < node.childNodes.length; c++) {
-          let childNode = node.childNodes[c];
-
-          if (childNode instanceof HTMLElement) {
-            nodeJSON.children.push(processNode(childNode));
-          }
-        }
-
-        // process value
-        if (
-          nodeJSON.value === undefined &&
-          nodeJSON.children.length === 0
-          ) {
-          delete nodeJSON.children;
-        nodeJSON.value = node.textContent;
+      // FIXME: optimize complex condition
+      // every time we process a new node, we advance the opening tag regex
+      openResult = openingRegex.exec(sxml);
+      if (openResult === null && selfCloseRegex.lastIndex === 0) {
+        // this is the last tag, and there are no more self-closing tags
+      } else if (openResult === null && selfCloseRegex.lastIndex > 0) {
+        // no more opening tags, so by default the self-closing belongs to this
+          obj.selfclosing = true;
+          selfCloseResult = selfCloseRegex.exec(sxml);
+      } else if (openResult !== null &&
+          selfCloseRegex.lastIndex > openingRegex.lastIndex) {
+        // the self-closing pattern happens after the next opening tag, so
+        // obviously current tag is not self-closing
+      } else if (openResult !== null &&
+          selfCloseRegex.lastIndex < openingRegex.lastIndex && // self-closing pattern is here
+          selfCloseRegex.lastIndex === openingRegex.lastIndex -
+            openResult[0].length // make sure self-closing pattern belongs to
+            ) {                  // tag instead of some substring within
+          obj.selfclosing = true;
+          selfCloseResult = selfCloseRegex.exec(sxml);
       }
 
-      return nodeJSON;
-    })(container);
+      for (var i = 0; i < node.attributes.length; i++) {
+        var att = node.attributes[i];
+        obj[att.name] = att.value;
+      }
 
-    obj = obj.children[0];
-    return obj;
+      obj.children = [];
+
+      // FIXME: self-closing nodes do not have children, maybe optimize then?
+      for (var j = 0; j < node.childNodes.length; j++) {
+        var child = node.childNodes[j];
+        if (child instanceof Element) {
+          obj.children.push(processNode(child));
+        }
+      }
+
+      // process text value
+      if ( obj.value === undefined && obj.children.length === 0) {
+        delete obj.children;
+        obj.value = node.textContent;
+      }
+
+      return obj;
+    };
+
+    return processNode(xmlDocument.childNodes[0]);
   }
 
   static parse(xml: any): JSON {

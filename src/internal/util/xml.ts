@@ -3,10 +3,11 @@ import {JSON} from './json';
 export class XML {
   private xml: string;
 
-  private static RESERVED_ATTRIBUTES: RegExp = /^(children|tag|value)$/i;
+  private static RESERVED_ATTRIBUTES: RegExp = /^(children|tag|value|selfclosing)$/i;
 
   constructor(json?: JSON) {
     let attributes = '';
+    let value = '';
 
     if (json.value  === undefined) {
       json.value = '';
@@ -27,8 +28,16 @@ export class XML {
       json.value += new XML(child).toString();
     }
 
-    this.xml = ['<', json.tag, attributes, '>',
-    json.value, '</', json.tag, '>'].join('');
+    if (json.selfclosing === true) {
+      this.xml = ['<', json.tag, attributes, ' />'].join('');
+    } else if (value !== '') {
+      this.xml = ['<', json.tag, attributes, '>',
+      value, '</', json.tag, '>'].join('');
+    } else {
+      // json actually contains text content
+      this.xml = ['<', json.tag, attributes, '>',
+      json.value, '</', json.tag, '>'].join('');
+    }
   }
 
   toString() {
