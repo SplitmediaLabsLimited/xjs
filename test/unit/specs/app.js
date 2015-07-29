@@ -9,7 +9,7 @@ describe('App', function() {
   };
   var XJS = require('xjs');
   var App = new XJS.App();
-  
+
   describe('should get frametime', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
@@ -34,7 +34,7 @@ describe('App', function() {
     it('that always return as string parsable as an int', function(done) {
       var promise = App.getFrametime();
       promise.then(function(count) {
-        expect(parseInt(count)).not.toBeNaN();
+        expect(count).toBeTypeOf('number');
         done();
       });
     });
@@ -66,10 +66,8 @@ describe('App', function() {
       var promise = App.getResolution();
       promise.then(function(resolution) {
         expect(resolution).toBeInstanceOf(Object);
-        expect(resolution.width).toBeDefined();
-        expect(resolution.height).toBeDefined();
-        expect(parseInt(resolution.width)).not.toBeNaN();
-        expect(parseInt(resolution.height)).not.toBeNaN();
+        expect(resolution.width).toBeTypeOf('number');
+        expect(resolution.height).toBeTypeOf('number');
         done();
       });
     });
@@ -86,7 +84,7 @@ describe('App', function() {
             window.OnAsyncCallback(randomNumber, '900, 600');
           },10);
 
-          return randomNumber;          
+          return randomNumber;
         }
       });
     });
@@ -100,11 +98,9 @@ describe('App', function() {
       function(done) {
       var promise = App.getViewport();
       promise.then(function(viewPort) {
-        expect(typeof viewPort).toBe('object');
-        expect(viewPort.width).toBeDefined();
-        expect(viewPort.height).toBeDefined();
-        expect(parseInt(viewPort.width)).not.toBeNaN();
-        expect(parseInt(viewPort.height)).not.toBeNaN();
+        expect(viewPort).toBeTypeOf('object');
+        expect(viewPort.width).toBeTypeOf('number');
+        expect(viewPort.height).toBeTypeOf('number');
         done();
       });
     });
@@ -135,7 +131,7 @@ describe('App', function() {
       var promise = App.getVersion();
       promise.then(function(version) {
         expect(version).toBeDefined();
-        expect(typeof version).toBe('string');
+        expect(version).toBeTypeOf('string');
         done();
       });
     });
@@ -165,8 +161,7 @@ describe('App', function() {
     it('that always return as string parsable as an int', function(done) {
       var promise = App.getFramesRendered();
       promise.then(function(framesRendered) {
-        expect(framesRendered).toBeDefined();
-        expect(parseInt(framesRendered)).not.toBeNaN();
+        expect(framesRendered).toBeTypeOf('number');
         done();
       });
     });
@@ -311,7 +306,7 @@ describe('App', function() {
         }
       });
     });
-    
+
     it('through a promise', function() {
       var promise = App.getAudioGain();
       expect(promise).toBeInstanceOf(Promise);
@@ -343,7 +338,7 @@ describe('App', function() {
         }
       });
     });
-    
+
     it('through a promise', function() {
       var promise = App.getAudioGain();
       expect(promise).toBeInstanceOf(Promise);
@@ -463,7 +458,7 @@ describe('App', function() {
         dialogClose = true;
       });
       // simulate GetViewId call to pass the test as source config
-      spyOn(window.external, 'GetViewId').and.returnValue('1');      
+      spyOn(window.external, 'GetViewId').and.returnValue('1');
     });
 
     it('spawned via NewDialog', function(done) {
@@ -497,7 +492,7 @@ describe('App', function() {
     it('that always return as a string', function(done) {
       var promise = App.getTransition();
       promise.then(function(transition) {
-        expect(typeof transition == 'string').toBe(true);
+        expect(transition).toBeTypeOf('string');
         done();
       });
     });
@@ -544,7 +539,7 @@ describe('App', function() {
     it('that always return as a string parsable as an int', function(done) {
       var promise = App.getTransitionTime();
       promise.then(function(count) {
-        expect(parseInt(count)).not.toBeNaN();
+        expect(count).toBeTypeOf('number');
         done();
       });
     });
