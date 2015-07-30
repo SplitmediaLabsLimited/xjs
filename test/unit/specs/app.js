@@ -31,7 +31,7 @@ describe('App', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as string parsable as an int', function(done) {
+    it('that always return as a number', function(done) {
       var promise = App.getFrametime();
       promise.then(function(count) {
         expect(count).toBeTypeOf('number');
@@ -158,7 +158,7 @@ describe('App', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as string parsable as an int', function(done) {
+    it('that always return as a number', function(done) {
       var promise = App.getFramesRendered();
       promise.then(function(framesRendered) {
         expect(framesRendered).toBeTypeOf('number');
@@ -357,9 +357,9 @@ describe('App', function() {
   });
 
   // deactivate this temporarily due to bug in XML to string functionality
-  xdescribe ('should be able to set audio gain', function() {
+  describe ('should be able to set audio gain', function() {
     var audioGainMock =
-      encodeURIComponent('<configuration enable="0" gain="5" latency="1000" />');
+      encodeURIComponent("<configuration enable='0' gain='5' latency='1000' />");
     var audioGainSet = false;
     beforeEach(function() {
       spyOn(window.external, 'AppSetPropertyAsync')
@@ -382,6 +382,7 @@ describe('App', function() {
       audioConfigObject.enable = config.getAttribute('enable');
       audioConfigObject.gain = config.getAttribute('gain');
       audioConfigObject.latency = config.getAttribute('latency');
+      audioConfigObject.selfclosing = true;
       audioConfigObject.value = config.getAttribute('value');
       App.setAudioGain(audioConfigObject);
       expect(audioGainSet).toBe(true);

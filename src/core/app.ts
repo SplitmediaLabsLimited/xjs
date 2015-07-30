@@ -14,10 +14,10 @@ export class App{
    *
    * @return {Promise<string>}
    */
-  getFrametime(): Promise<string> {
+  getFrametime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
-        resolve(val);
+        resolve(+val);
       });
     });
   }
@@ -68,9 +68,9 @@ export class App{
    *
    * @return {Promise<string>}
    */
-  getFramesRendered() : Promise<string> {
+  getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
-      resolve(iApp.get('framesrendered'));
+      resolve(+(iApp.get('framesrendered')));
     });
   }
 

@@ -17,7 +17,7 @@ var App = (function () {
     App.prototype.getFrametime = function () {
         return new Promise(function (resolve) {
             app_1.App.get('frametime').then(function (val) {
-                resolve(val);
+                resolve(+val);
             });
         });
     };
@@ -64,7 +64,7 @@ var App = (function () {
      */
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
-            resolve(app_1.App.get('framesrendered'));
+            resolve(+(app_1.App.get('framesrendered')));
         });
     };
     // Audio Services
@@ -575,38 +575,55 @@ var JSON = (function () {
         if (xml instanceof xml_1.XML) {
             sxml = xml.toString();
         }
-        // process short ended tags
-        sxml = sxml.replace(/<([^\s>]+)([^>]+)\/>/g, function (match, tagname, attributes) {
-            return ['<', tagname, attributes, '></', tagname, '>'].join('');
-        });
-        var container = document.createElement('div');
-        container.innerHTML = sxml;
-        var obj = (function processNode(node) {
-            var nodeJSON = new JSON();
-            nodeJSON.tag = node.tagName.toLowerCase();
-            // process attributes
-            for (var a = 0; a < node.attributes.length; a++) {
-                var attribute = node.attributes[a];
-                nodeJSON[attribute.name] = attribute.value;
+        var openingRegex = /<([^\s>\/]+)/g;
+        var selfCloseRegex = /(\/>)/g;
+        var openResult = openingRegex.exec(sxml);
+        var selfCloseResult = selfCloseRegex.exec(sxml);
+        var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
+        var processNode = function (node) {
+            var obj = new JSON();
+            obj.tag = node.tagName;
+            // FIXME: optimize complex condition
+            // every time we process a new node, we advance the opening tag regex
+            openResult = openingRegex.exec(sxml);
+            if (openResult === null && selfCloseRegex.lastIndex === 0) {
             }
-            // process child nodes
-            nodeJSON.children = [];
-            for (var c = 0; c < node.childNodes.length; c++) {
-                var childNode = node.childNodes[c];
-                if (childNode instanceof HTMLElement) {
-                    nodeJSON.children.push(processNode(childNode));
+            else if (openResult === null && selfCloseRegex.lastIndex > 0) {
+                // no more opening tags, so by default the self-closing belongs to this
+                obj.selfclosing = true;
+                selfCloseResult = selfCloseRegex.exec(sxml);
+            }
+            else if (openResult !== null &&
+                selfCloseRegex.lastIndex > openingRegex.lastIndex) {
+            }
+            else if (openResult !== null &&
+                selfCloseRegex.lastIndex < openingRegex.lastIndex &&
+                selfCloseRegex.lastIndex === openingRegex.lastIndex -
+                    openResult[0].length // make sure self-closing pattern belongs to
+            ) {
+                obj.selfclosing = true;
+                selfCloseResult = selfCloseRegex.exec(sxml);
+            }
+            for (var i = 0; i < node.attributes.length; i++) {
+                var att = node.attributes[i];
+                obj[att.name] = att.value;
+            }
+            obj.children = [];
+            // FIXME: self-closing nodes do not have children, maybe optimize then?
+            for (var j = 0; j < node.childNodes.length; j++) {
+                var child = node.childNodes[j];
+                if (child instanceof Element) {
+                    obj.children.push(processNode(child));
                 }
             }
-            // process value
-            if (nodeJSON.value === undefined &&
-                nodeJSON.children.length === 0) {
-                delete nodeJSON.children;
-                nodeJSON.value = node.textContent;
+            // process text value
+            if (obj.value === undefined && obj.children.length === 0) {
+                delete obj.children;
+                obj.value = node.textContent;
             }
-            return nodeJSON;
-        })(container);
-        obj = obj.children[0];
-        return obj;
+            return obj;
+        };
+        return processNode(xmlDocument.childNodes[0]);
     }
     JSON.parse = function (xml) {
         return new JSON(xml);
@@ -758,6 +775,7 @@ exports.Rectangle = Rectangle;
 var XML = (function () {
     function XML(json) {
         var attributes = '';
+        var value = '';
         if (json.value === undefined) {
             json.value = '';
         }
@@ -774,8 +792,18 @@ var XML = (function () {
             var child = _a[_i];
             json.value += new XML(child).toString();
         }
-        this.xml = ['<', json.tag, attributes, '>',
-            json.value, '</', json.tag, '>'].join('');
+        if (json.selfclosing === true) {
+            this.xml = ['<', json.tag, attributes, ' />'].join('');
+        }
+        else if (value !== '') {
+            this.xml = ['<', json.tag, attributes, '>',
+                value, '</', json.tag, '>'].join('');
+        }
+        else {
+            // json actually contains text content
+            this.xml = ['<', json.tag, attributes, '>',
+                json.value, '</', json.tag, '>'].join('');
+        }
     }
     XML.prototype.toString = function () {
         return this.xml;
@@ -794,7 +822,7 @@ var XML = (function () {
             }[$0] + ';';
         });
     };
-    XML.RESERVED_ATTRIBUTES = /^(children|tag|value)$/i;
+    XML.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
     return XML;
 })();
 exports.XML = XML;
