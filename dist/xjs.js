@@ -64,7 +64,9 @@ var App = (function () {
      */
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
-            resolve(+(app_1.App.get('framesrendered')));
+            app_1.App.get('framesrendered').then(function (val) {
+                resolve(+val);
+            });
         });
     };
     // Audio Services
