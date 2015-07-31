@@ -70,7 +70,9 @@ export class App{
    */
   getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
-      resolve(+(iApp.get('framesrendered')));
+      iApp.get('framesrendered').then(val => {
+        resolve(+val);
+      });      
     });
   }
 

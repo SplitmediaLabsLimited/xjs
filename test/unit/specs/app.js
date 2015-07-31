@@ -35,6 +35,7 @@ describe('App', function() {
       var promise = App.getFrametime();
       promise.then(function(count) {
         expect(count).toBeTypeOf('number');
+        expect(count).not.toBeNaN();
         done();
       });
     });
@@ -67,7 +68,9 @@ describe('App', function() {
       promise.then(function(resolution) {
         expect(resolution).toBeInstanceOf(Object);
         expect(resolution.width).toBeTypeOf('number');
+        expect(resolution.width).not.toBeNaN();
         expect(resolution.height).toBeTypeOf('number');
+        expect(resolution.height).not.toBeNaN();
         done();
       });
     });
@@ -100,7 +103,9 @@ describe('App', function() {
       promise.then(function(viewPort) {
         expect(viewPort).toBeTypeOf('object');
         expect(viewPort.width).toBeTypeOf('number');
+        expect(viewPort.width).not.toBeNaN();
         expect(viewPort.height).toBeTypeOf('number');
+        expect(viewPort.height).not.toBeNaN();
         done();
       });
     });
@@ -162,6 +167,7 @@ describe('App', function() {
       var promise = App.getFramesRendered();
       promise.then(function(framesRendered) {
         expect(framesRendered).toBeTypeOf('number');
+        expect(framesRendered).not.toBeNaN();
         done();
       });
     });
@@ -537,10 +543,11 @@ describe('App', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as a string parsable as an int', function(done) {
+    it('that always return as a number', function(done) {
       var promise = App.getTransitionTime();
       promise.then(function(count) {
         expect(count).toBeTypeOf('number');
+        expect(count).not.toBeNaN();
         done();
       });
     });
