@@ -9,21 +9,21 @@ import {Environment} from '../internal/environment';
 
 export class App{
 
-  /** 
-   * Gets application's frame time (duration per frame in 100ns unit) 
+  /**
+   * Gets application's frame time (duration per frame in 100ns unit)
    *
-   * @return {Promise<string>}
+   * @return {Promise<number>}
    */
   getFrametime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
-        resolve(+val);
+        resolve(+Number(val));
       });
     });
   }
 
   /**
-   * Gets application default output resolution 
+   * Gets application default output resolution
    *
    * @return {Promise<Rectangle>}
    */
@@ -66,13 +66,13 @@ export class App{
   /**
    * Gets the total number of frames rendered
    *
-   * @return {Promise<string>}
+   * @return {Promise<number>}
    */
   getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
       iApp.get('framesrendered').then(val => {
-        resolve(+val);
-      });      
+        resolve(+Number(val));
+      });
     });
   }
 
@@ -129,7 +129,7 @@ export class App{
   newAutoDialog(url: string): void {
     if (Environment.isSourceHtml()) {
       throw new TypeError('function is not available for source');
-    } else if (url !== undefined && url !== '' &&!Environment.isSourceHtml()) {
+    } else if (url !== undefined && url !== '') {
       exec('NewAutoDialog', url);
     } else {
       throw new Error('URL parameter expected');
@@ -138,13 +138,12 @@ export class App{
 
   /**
    * Close a created dialog
-   * This method is only available for source config
    */
   closeDialog(): void {
-    if (Environment.isSourceConfig()) {
-      exec('CloseDialog');  
-    } else {
+    if (Environment.isSourceHtml()) {
       throw new TypeError('function is not available for source');
+    } else {
+      exec('CloseDialog');
     }
   }
 
@@ -160,7 +159,7 @@ export class App{
   static TRANSITION_MOVE_LEFT_RIGHT: string  = 'move_left_right';
   static TRANSITION_MOVE_RIGHT: string       = 'move_right';
   static TRANSITION_MOVE_TOP: string         = 'move_top';
-  static TRANSITION_MOVE_TOP_BOTTOM: string  = 'move_top_bottom';  
+  static TRANSITION_MOVE_TOP_BOTTOM: string  = 'move_top_bottom';
   static TRANSITION_WAVE: string             = 'wave';
 
   /**
@@ -204,4 +203,3 @@ export class App{
     iApp.set('transitiontime', time.toString());
   }
 }
-

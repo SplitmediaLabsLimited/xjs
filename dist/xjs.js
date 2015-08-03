@@ -12,12 +12,12 @@ var App = (function () {
     /**
      * Gets application's frame time (duration per frame in 100ns unit)
      *
-     * @return {Promise<string>}
+     * @return {Promise<number>}
      */
     App.prototype.getFrametime = function () {
         return new Promise(function (resolve) {
             app_1.App.get('frametime').then(function (val) {
-                resolve(+val);
+                resolve(+Number(val));
             });
         });
     };
@@ -60,12 +60,12 @@ var App = (function () {
     /**
      * Gets the total number of frames rendered
      *
-     * @return {Promise<string>}
+     * @return {Promise<number>}
      */
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
             app_1.App.get('framesrendered').then(function (val) {
-                resolve(+val);
+                resolve(+Number(val));
             });
         });
     };
@@ -119,7 +119,7 @@ var App = (function () {
         if (environment_1.Environment.isSourceHtml()) {
             throw new TypeError('function is not available for source');
         }
-        else if (url !== undefined && url !== '' && !environment_1.Environment.isSourceHtml()) {
+        else if (url !== undefined && url !== '') {
             internal_1.exec('NewAutoDialog', url);
         }
         else {
@@ -128,14 +128,13 @@ var App = (function () {
     };
     /**
      * Close a created dialog
-     * This method is only available for source config
      */
     App.prototype.closeDialog = function () {
-        if (environment_1.Environment.isSourceConfig()) {
-            internal_1.exec('CloseDialog');
+        if (environment_1.Environment.isSourceHtml()) {
+            throw new TypeError('function is not available for source');
         }
         else {
-            throw new TypeError('function is not available for source');
+            internal_1.exec('CloseDialog');
         }
     };
     /**
