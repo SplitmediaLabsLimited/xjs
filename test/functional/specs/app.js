@@ -104,7 +104,16 @@
         name: 'newDialog',
         onClick: function() {
           try {
-            App.newDialog('http://xsplit.com');
+            App.newDialog(
+              'http://xsplit.com',
+              500,
+              500,
+              XJS.App.BORDER_ENABLE
+              | XJS.App.BORDER_ENABLE_SIZING
+              | XJS.App.BORDER_ENABLE_CAPTION
+              | XJS.App.BORDER_ENABLE_MINIMIZE
+              | XJS.App.BORDER_ENABLE_MAXIMIZE
+            );
             Rose.output('');
           } catch(e) {
             Rose.output(e.message);
