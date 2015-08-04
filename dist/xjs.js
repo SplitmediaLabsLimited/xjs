@@ -92,19 +92,25 @@ var App = (function () {
         config.tag = 'configuration';
         app_1.App.set('microphonegain', xml_1.XML.parseJSON(config).toString());
     };
-    // Dialog Services
     /**
      * Creates a persistent modal dialog.
      * This method is not available for source
      *
      * @param {string} url
      */
-    App.prototype.newDialog = function (url) {
+    App.prototype.newDialog = function (url, width, height, flags, title) {
+        if (width === void 0) { width = 300; }
+        if (height === void 0) { height = 300; }
         if (environment_1.Environment.isSourceHtml()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
-            internal_1.exec('NewDialog', url);
+            var params = ['NewDialog', url, '', width + ',' + height];
+            for (var i = 3; i < arguments.length; i++) {
+                if (arguments[i] !== undefined)
+                    params.push(String(arguments[i]));
+            }
+            internal_1.exec.apply(this, params);
         }
         else {
             throw new Error('URL parameter expected');
@@ -115,12 +121,14 @@ var App = (function () {
      *
      * @param {string} url
      */
-    App.prototype.newAutoDialog = function (url) {
+    App.prototype.newAutoDialog = function (url, width, height) {
+        if (width === void 0) { width = 300; }
+        if (height === void 0) { height = 300; }
         if (environment_1.Environment.isSourceHtml()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
-            internal_1.exec('NewAutoDialog', url);
+            internal_1.exec('NewAutoDialog', url, width + ',' + height);
         }
         else {
             throw new Error('URL parameter expected');
@@ -174,6 +182,12 @@ var App = (function () {
     App.prototype.setTransitionTime = function (time) {
         app_1.App.set('transitiontime', time.toString());
     };
+    // Dialog Services
+    App.BORDER_ENABLE = 1;
+    App.BORDER_ENABLE_CAPTION = 2;
+    App.BORDER_ENABLE_SIZING = 4;
+    App.BORDER_ENABLE_MINIMIZE = 8;
+    App.BORDER_ENABLE_MAXIMIZE = 16;
     // Transition Services
     App.TRANSITION_CLOCK = 'clock';
     App.TRANSITION_COLLAPSE = 'collapse';

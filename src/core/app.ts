@@ -105,17 +105,33 @@ export class App{
 
   // Dialog Services
 
+  static BORDER_ENABLE: number          = 1;
+  static BORDER_ENABLE_CAPTION: number  = 2;
+  static BORDER_ENABLE_SIZING: number   = 4;
+  static BORDER_ENABLE_MINIMIZE: number = 8;
+  static BORDER_ENABLE_MAXIMIZE: number = 16;
+
   /**
    * Creates a persistent modal dialog.
    * This method is not available for source
    *
    * @param {string} url
    */
-  newDialog(url: string): void {
+  newDialog(
+    url: string,
+    width: number = 300,
+    height: number = 300,
+    flags?: number,
+    title?: string
+  ): void {
     if (Environment.isSourceHtml()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
-      exec('NewDialog', url);
+      var params: any[] = ['NewDialog', url, '', width + ',' + height];
+      for (let i = 3; i < arguments.length; i++) {
+        if (arguments[i] !== undefined) params.push(String(arguments[i]));
+      }
+      exec.apply(this, params);
     } else {
       throw new Error('URL parameter expected');
     }
@@ -126,11 +142,11 @@ export class App{
    *
    * @param {string} url
    */
-  newAutoDialog(url: string): void {
+  newAutoDialog(url: string, width: number = 300, height: number = 300): void {
     if (Environment.isSourceHtml()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
-      exec('NewAutoDialog', url);
+      exec('NewAutoDialog', url, width + ',' + height);
     } else {
       throw new Error('URL parameter expected');
     }
