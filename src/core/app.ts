@@ -17,7 +17,7 @@ export class App{
   getFrametime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
-        resolve(+Number(val));
+        resolve(Number(val));
       });
     });
   }
@@ -71,7 +71,7 @@ export class App{
   getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
       iApp.get('framesrendered').then(val => {
-        resolve(+Number(val));
+        resolve(Number(val));
       });
     });
   }

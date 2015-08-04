@@ -17,7 +17,7 @@ var App = (function () {
     App.prototype.getFrametime = function () {
         return new Promise(function (resolve) {
             app_1.App.get('frametime').then(function (val) {
-                resolve(+Number(val));
+                resolve(Number(val));
             });
         });
     };
@@ -65,7 +65,7 @@ var App = (function () {
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
             app_1.App.get('framesrendered').then(function (val) {
-                resolve(+Number(val));
+                resolve(Number(val));
             });
         });
     };
