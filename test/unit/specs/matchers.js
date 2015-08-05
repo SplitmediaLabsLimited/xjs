@@ -2,15 +2,15 @@
 
 beforeEach(function() {
     'use strict';
-    
+
     jasmine.addMatchers({
         toBeInstanceOf: function() {
-            return { 
+            return {
                 compare: function(actual, expected) {
                     var pass = true;
 
                     pass = (actual instanceof expected);
-        
+
                     return { pass: pass };
                 }
             };
@@ -20,15 +20,15 @@ beforeEach(function() {
             return {
                 compare: function(actual, expected) {
                     var pass = (actual.length > 0);
-        
+
                     for (var i = 0; i < actual.length; i++) {
                         pass = (actual[i] instanceof expected);
-        
+
                         if (!pass) {
                             break;
-                        }    
+                        }
                     }
-        
+
                     return { pass: pass };
                 }
             };
@@ -42,17 +42,17 @@ beforeEach(function() {
 
                     loop1:
                         for (var i = 0; i < actual.length; i++) {
-                    loop2:        
+                    loop2:
                             for (var j = 0; j < methods.length; j++) {
-                                var testObject = actual[i];
-                                var testMethod = methods[j].trim();
+                                var obj = actual[i];
+                                var method = methods[j].trim();
 
-                                pass = (typeof testObject[testMethod] == 'function' );
+                                pass = (typeof obj[method] === 'function' );
                                 if (!pass)
                                     break loop1;
                             }
                         }
-        
+
                     return { pass: pass };
                 }
             };
@@ -66,18 +66,18 @@ beforeEach(function() {
 
                     loop1:
                         for (var i = 0; i < actual.length; i++) {
-                            var testObject = actual[i];
-                    loop2:        
+                            var obj = actual[i];
+                    loop2:
                             for (var j = 0; j < properties.length; j++) {
-                                
-                                var testProperties = properties[j].trim();
 
-                                pass = (typeof testObject[testProperties] !== 'undefined' );
+                                var prop = properties[j].trim();
+
+                                pass = (typeof obj[prop] !== 'undefined' );
                                 if (!pass)
                                     break loop1;
                             }
                         }
-        
+
                     return { pass: pass };
                 }
             };
@@ -96,11 +96,11 @@ beforeEach(function() {
                         if (!pass)
                             break;
                     }
-        
+
                     return { pass: pass };
                 }
             };
-        },        
+        },
 
         hasMethods: function() {
             return {
@@ -122,7 +122,7 @@ beforeEach(function() {
         toBeTypeOf: function() {
             return {
                 compare: function(actual, expected) {
-                    var pass = 
+                    var pass =
                         (typeof actual === String(expected).toLowerCase());
 
                     return { pass: pass };
