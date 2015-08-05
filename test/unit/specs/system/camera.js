@@ -10,11 +10,11 @@ describe('Camera', function() {
     var promise;
 
     beforeEach(function() {
-      promise = System.getAudioDevices();
+      promise = System.getCameraDevices();
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            if(funcName === 'wasapienum') {
+            if(funcName === 'dshowenum:vsrc') {
               var randomNumber=Math.floor(Math.random()*1000);
 
               setTimeout(function() {
@@ -56,11 +56,11 @@ describe('Camera', function() {
     var promise;
 
     beforeEach(function() {
-      promise = System.getAudioDevices();
+      promise = System.getCameraDevices();
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            if(funcName === 'wasapienum') {
+            if(funcName === 'dshowenum:vsrc') {
               var randomNumber=Math.floor(Math.random()*1000);
 
               setTimeout(function() {
@@ -73,13 +73,13 @@ describe('Camera', function() {
 
     it('should have a string name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getId()).toBeTypeOf(String);
+        expect(devices[0].getName()).toBeTypeOf(String);
       });
     });
 
     it('should have a string friendly name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getId()).toBeTypeOf(String);
+        expect(devices[0].getFriendlyName()).toBeTypeOf(String);
       });
     });
   });
