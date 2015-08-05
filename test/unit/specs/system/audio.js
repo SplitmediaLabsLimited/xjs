@@ -37,15 +37,16 @@ describe('Audio', function() {
 
     it('with correct properties', function() {
       promise.then(function(devices) {
-        expect(devices)
-          .eachHasMethods(['getId', 'getName', 'getDataFlow'].join(','));
+        expect(devices).eachHasMethods('getId');
+        expect(devices).eachHasMethods('getName');
+        expect(devices).eachHasMethods('getDataFlow');
       });
     });
 
    it('excludes XSplit sound devices', function() {
       promise.then(function(devices) {
         for (var i = devices.length - 1; i >= 0; i--) {
-          expect(devices[i].name.toLowerCase().indexOf('xsplit')).toBe(-1);
+          expect(devices[i].getName().toLowerCase().indexOf('xsplit')).toBe(-1);
         }
       });
     });
@@ -72,19 +73,19 @@ describe('Audio', function() {
 
     it('should have a string ID', function() {
       promise.then(function(devices) {
-        expect(devices[0].getId()).toBeTypeOf('string');
+        expect(devices[0].getId()).toBeInstanceOf(String);
       });
     });
 
     it('should have a string name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getName()).toBeTypeOf('string');
+        expect(devices[0].getName()).toBeInstanceOf(String);
       });
     });
 
     it('should have a string dataflow', function() {
       promise.then(function(devices) {
-        expect(devices[0].getDataFlow()).toBeTypeOf('string');
+        expect(devices[0].getDataFlow()).toBeInstanceOf(String);
       });
     });
   });
