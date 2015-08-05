@@ -73,13 +73,13 @@ describe('Camera', function() {
 
     it('should have a string id', function() {
       promise.then(function(devices) {
-        expect(devices[0].getId)).toBeTypeOf(String);
+        expect(devices[0].getId()).toBeTypeOf('string');
       });
     });
 
     it('should have a string name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getName()).toBeTypeOf(String);
+        expect(devices[0].getName()).toBeTypeOf('string');
       });
     });
   });
