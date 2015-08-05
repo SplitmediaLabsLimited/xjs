@@ -3,8 +3,8 @@
 'use strict';
 
 var XJS    = require('xjs');
-var Game   = new XJS.Game();
-var System = new XJS.System();
+var Game   = XJS.Game;
+var System = XJS.System;
 
 describe('System', function() {
   var promise;
