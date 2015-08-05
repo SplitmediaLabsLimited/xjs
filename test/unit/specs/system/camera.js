@@ -39,14 +39,14 @@ describe('Camera', function() {
     it('with correct properties', function() {
       promise.then(function(devices) {
         expect(devices)
-          .eachHasMethods(['getName', 'getFriendlyName'].join(','));
+          .eachHasMethods(['getName', 'getId'].join(','));
       });
     });
 
    it('excludes XSplit camera devices', function() {
       promise.then(function(devices) {
         for (var i = devices.length - 1; i >= 0; i--) {
-          expect(devices[i].name.toLowerCase().indexOf('xsplit')).toBe(-1);
+          expect(devices[i].getName().toLowerCase().indexOf('xsplit')).toBe(-1);
         }
       });
     });
@@ -71,15 +71,15 @@ describe('Camera', function() {
       }
     });
 
-    it('should have a string name', function() {
+    it('should have a string id', function() {
       promise.then(function(devices) {
-        expect(devices[0].getName()).toBeTypeOf(String);
+        expect(devices[0].getId)).toBeTypeOf(String);
       });
     });
 
-    it('should have a string friendly name', function() {
+    it('should have a string name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getFriendlyName()).toBeTypeOf(String);
+        expect(devices[0].getName()).toBeTypeOf(String);
       });
     });
   });
