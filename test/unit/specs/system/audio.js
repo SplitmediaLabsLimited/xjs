@@ -37,9 +37,8 @@ describe('Audio', function() {
 
     it('with correct properties', function() {
       promise.then(function(devices) {
-        expect(devices).eachHasMethods('getId');
-        expect(devices).eachHasMethods('getName');
-        expect(devices).eachHasMethods('getDataFlow');
+        expect(devices)
+          .eachHasMethods(['getId', 'getName', 'getDataFlow'].join(','));
       });
     });
 
@@ -73,19 +72,19 @@ describe('Audio', function() {
 
     it('should have a string ID', function() {
       promise.then(function(devices) {
-        expect(devices[0].getId()).toBeInstanceOf(String);
+        expect(devices[0].getId()).toBeTypeOf('string');
       });
     });
 
     it('should have a string name', function() {
       promise.then(function(devices) {
-        expect(devices[0].getName()).toBeInstanceOf(String);
+        expect(devices[0].getName()).toBeTypeOf('string');
       });
     });
 
     it('should have a string dataflow', function() {
       promise.then(function(devices) {
-        expect(devices[0].getDataFlow()).toBeInstanceOf(String);
+        expect(devices[0].getDataFlow()).toBeTypeOf('string');
       });
     });
   });
