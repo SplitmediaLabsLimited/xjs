@@ -8,7 +8,7 @@
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync'),
     Server      = require('karma').Server;
-  
+
   gulp.task('browserify', function() {
     return browserify('./src/core/index.ts')
       .plugin('tsify', {
@@ -31,6 +31,9 @@
       open: false,
       server: {
         baseDir: 'test/functional',
+        routes: {
+          '/dist': './dist'
+        },
         index: 'test.html',
         middleware: function (req, res, next) {
           res.setHeader('Access-Control-Allow-Origin', '*');
