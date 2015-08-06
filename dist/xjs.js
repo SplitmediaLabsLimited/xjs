@@ -841,10 +841,162 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],"xjs":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var rectangle_1 = require('../internal/util/rectangle');
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var Game = (function () {
+    function Game() {
+    }
+    /**
+     * Gets the game's process ID.
+     *
+     * @return {number}
+     */
+    Game.prototype.getPid = function () {
+        return this.pid;
+    };
+    /**
+     * Gets the Graphics API handle.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getHandle = function () {
+        return this.handle;
+    };
+    /**
+     * Gets the window handle.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getWindowHandle = function () {
+        return this.hwnd;
+    };
+    /**
+     * Gets the Graphics API type.
+     *
+     * @returns {string}, possible values:
+     * OGL, DX8, DX8_SwapChain, DX9, DX9Ex, DX9_SwapChain,
+     * DX9_PresentEx, DX10, DX11, DX11.1, DX11.1_Present1
+     */
+    Game.prototype.getGapiType = function () {
+        return this.gapitype;
+    };
+    /**
+     * Gets the game resolution.
+     *
+     * @returns {Rectangle}
+     */
+    Game.prototype.getResolution = function () {
+        return rectangle_1.Rectangle.fromDimensions(this.width, this.height);
+    };
+    /**
+     * Gets game-specific flags
+     *
+     * @returns {number}
+     */
+    Game.prototype.getFlags = function () {
+        return this.flags;
+    };
+    /**
+     * Gets the window title
+     *
+     * @returns {string}
+     */
+    Game.prototype.getWindowName = function () {
+        return this.wndname;
+    };
+    /**
+     * Gets timestamp of last frame in milliseconds.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getLastFrameTimestamp = function () {
+        return this.lastframets;
+    };
+    /**
+     * Converts a JSON object into a Game object
+     *
+     * @param {JSON} jxon
+     * @returns {Game}
+     */
+    Game.parse = function (jxon) {
+        var g = new Game();
+        g.pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
+        g.handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
+            undefined;
+        g.hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
+        g.gapitype = jxon['GapiType'];
+        g.width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
+            undefined;
+        g.height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
+            undefined;
+        g.flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
+            undefined;
+        g.wndname = jxon['wndname'];
+        g.lastframets = jxon['lastframets'] !== undefined ?
+            parseInt(jxon['lastframets']) : undefined;
+        return g;
+    };
+    /**
+     * Converts Game object into an XML object
+     *
+     * @returns {XML}
+     */
+    Game.prototype.toXML = function () {
+        var gamesource = new json_1.JSON();
+        gamesource.tag = 'src';
+        gamesource['pid'] = this.pid;
+        gamesource['handle'] = this.handle;
+        gamesource['hwnd'] = this.hwnd;
+        gamesource['gapitype'] = this.gapitype;
+        gamesource['width'] = this.width;
+        gamesource['height'] = this.height;
+        gamesource['flags'] = this.flags;
+        gamesource['wndname'] = this.wndname;
+        gamesource['lastframets'] = this.lastframets;
+        gamesource['selfclosing'] = true;
+        return xml_1.XML.parseJSON(gamesource);
+    };
+    return Game;
+})();
+exports.Game = Game;
+},{"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10}],12:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var game_1 = require('./game');
+var System = (function () {
+    function System() {
+    }
+    /**
+     * Gets all currently running games
+     *
+     * @return {Promise<Game>}
+     */
+    System.getGames = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('gsenum').then(function (gamesJXON) {
+                var games = [];
+                if (gamesJXON !== undefined) {
+                    var gamesJXONLength = gamesJXON.length;
+                    for (var i = 0; i < gamesJXONLength; ++i) {
+                        games.push(game_1.Game.parse(gamesJXON[i]));
+                    }
+                }
+                resolve(games);
+            });
+        });
+    };
+    return System;
+})();
+exports.System = System;
+},{"../internal/app":2,"./game":11}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 require('../internal/init');
 __export(require('./app'));
-},{"../internal/init":5,"./app":1}]},{},["xjs"]);
+__export(require('../system/system'));
+__export(require('../system/game'));
+},{"../internal/init":5,"../system/game":11,"../system/system":12,"./app":1}]},{},["xjs"]);
