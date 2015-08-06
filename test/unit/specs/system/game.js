@@ -14,7 +14,7 @@ describe('System', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'gsenum') {
-          var rand = Math.floor(Math.rand() * 1000);
+          var rand = Math.floor(Math.random() * 1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(rand, encodeURIComponent(
@@ -47,22 +47,23 @@ describe('System', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('an array of System.Games object', function() {
+    it('an array of System.Games object', function(done) {
       promise.then(function(games) {
         expect(games).toBeInstanceOf(Array);
         expect(games).eachToBeInstanceOf(Game);
+        done();
       });
     });
   });
 
   describe('System.Game', function() {
     var game;
-    beforeAll(function(done) {
+    beforeEach(function(done) {
       promise.then(function(games) {
         if (games.length > 0) {
           game = games[0];
-          done();
         }
+        done();
       });
     });
 
