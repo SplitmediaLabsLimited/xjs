@@ -204,7 +204,63 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":2,"../internal/environment":3,"../internal/internal":6,"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10}],2:[function(require,module,exports){
+},{"../internal/app":3,"../internal/environment":4,"../internal/internal":7,"../internal/util/json":9,"../internal/util/rectangle":10,"../internal/util/xml":11}],2:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var environment_1 = require('../internal/environment');
+var Scene = (function () {
+    function Scene(sceneNum) {
+        this.id = sceneNum - 1;
+    }
+    ;
+    Scene.get = function (sceneNum) {
+        if (Scene.scenePool === []) {
+            for (var i = 0; i < Scene.maxScenes; i++) {
+                Scene.scenePool[i] = new Scene(i + 1);
+            }
+        }
+        return Scene.scenePool[sceneNum - 1];
+    };
+    Scene.getActiveScene = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('preset:0').then(function (id) {
+                resolve(Scene.get(Number(id) + 1));
+            });
+        });
+    };
+    Scene.prototype.getSceneNumber = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this.id + 1);
+        });
+    };
+    Scene.prototype.getName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('presetname:' + _this.id).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    Scene.prototype.setName = function (name) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourceHtml()) {
+                reject(new Error('Scene names are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('presetname:' + _this.id, name).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    Scene.maxScenes = 12;
+    Scene.scenePool = [];
+    return Scene;
+})();
+exports.Scene = Scene;
+},{"../internal/app":3,"../internal/environment":4}],3:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -279,7 +335,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":6,"./util/json":8}],3:[function(require,module,exports){
+},{"./internal":7,"./util/json":9}],4:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -312,7 +368,7 @@ var Environment = (function () {
 })();
 exports.Environment = Environment;
 Environment.initialize();
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -335,7 +391,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('./environment');
 var item_1 = require('./item');
@@ -431,7 +487,7 @@ function init() {
     });
 }
 init();
-},{"./environment":3,"./global":4,"./internal":6,"./item":7}],6:[function(require,module,exports){
+},{"./environment":4,"./global":5,"./internal":7,"./item":8}],7:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -491,7 +547,7 @@ window.SetVolume = function (volume) {
 window.OnDialogResult = function (result) {
     document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('./environment');
@@ -579,7 +635,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"./environment":3,"./internal":6}],8:[function(require,module,exports){
+},{"./environment":4,"./internal":7}],9:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -646,7 +702,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":10}],9:[function(require,module,exports){
+},{"./xml":11}],10:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -786,7 +842,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -847,4 +903,5 @@ function __export(m) {
 }
 require('../internal/init');
 __export(require('./app'));
-},{"../internal/init":5,"./app":1}]},{},["xjs"]);
+__export(require('./scene'));
+},{"../internal/init":6,"./app":1,"./scene":2}]},{},["xjs"]);

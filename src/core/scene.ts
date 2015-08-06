@@ -9,11 +9,11 @@ export class Scene {
   private static maxScenes = 12;
   private static scenePool: Scene[] = [];
 
-  constructor(sceneNum: Number) {
+  constructor(sceneNum: number) {
     this.id = sceneNum - 1;
   };
 
-  static get(sceneNum: Number): Scene {
+  static get(sceneNum: number): Scene {
     if (Scene.scenePool === []) {
       for (var i = 0; i < Scene.maxScenes; i++) {
         Scene.scenePool[i] = new Scene(i + 1);
@@ -26,7 +26,7 @@ export class Scene {
   static getActiveScene(): Promise<Scene> {
     return new Promise(resolve => {
       iApp.get('preset:0').then(id => {
-        resolve(Scene.get(id + 1));
+        resolve(Scene.get(Number(id) + 1));
       });
     });
   }
@@ -56,5 +56,4 @@ export class Scene {
       }
     });
   }
-
 }
