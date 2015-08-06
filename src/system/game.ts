@@ -64,12 +64,12 @@ export class Game{
   }
 
   /**
-   * Gets game-specific flags
+   * Checks if game has exclusive full screen.
    *
-   * @returns {number}
+   * @returns {boolean}
    */
-  getFlags() {
-    return this.flags;
+  isFullscreen() {
+    return this.flags === 1 ? true: false;
   }
 
   /**
@@ -95,7 +95,7 @@ export class Game{
    *
    * @param {JSON} jxon
    * @returns {Game}
-   */  
+   */
   static parse(jxon: JXON): Game {
     var g = new Game();
 

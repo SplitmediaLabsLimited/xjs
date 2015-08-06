@@ -95,8 +95,7 @@ describe('System', function() {
     });
 
     it('Flags should be a boolean', function() {
-      expect(game.getFlags()).toBeLessThan(2);
-      expect(game.getFlags()).toBeGreaterThan(-1);
+      expect(game.isFullscreen()).toBeBoolean();
     });
 
     it('Window name should be a string', function() {

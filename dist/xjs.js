@@ -892,12 +892,12 @@ var Game = (function () {
         return rectangle_1.Rectangle.fromDimensions(this.width, this.height);
     };
     /**
-     * Gets game-specific flags
+     * Checks if game has exclusive full screen.
      *
-     * @returns {number}
+     * @returns {boolean}
      */
-    Game.prototype.getFlags = function () {
-        return this.flags;
+    Game.prototype.isFullscreen = function () {
+        return this.flags === 1 ? true : false;
     };
     /**
      * Gets the window title
