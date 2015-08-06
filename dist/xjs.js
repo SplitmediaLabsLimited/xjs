@@ -841,10 +841,154 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],"xjs":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var CameraDevice = (function () {
+    function CameraDevice(props) {
+        this.id = props['id'];
+        this.name = props['name'];
+    }
+    /**
+     * Get the ID of the device. The ID of the device is based on the `disp`
+     * attribute of the devices XML
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var cameraID = device.getID();
+     * ```
+     */
+    CameraDevice.prototype.getId = function () {
+        return this.id;
+    };
+    /**
+     * Get the Name of the device.
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var cameraName = device.getName();
+     * ```
+     */
+    CameraDevice.prototype.getName = function () {
+        return this.id;
+    };
+    /**
+     * Convert the current CameraDevice object to XML
+     *
+     * #Return
+     *
+     * ```
+     * XML
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var xml = device.toXML();
+     * ```
+     */
+    CameraDevice.prototype.toXML = function () {
+        var json = new json_1.JSON();
+        json['disp'] = this.id;
+        json['name'] = this.name;
+        return xml_1.XML.parseJSON(json);
+    };
+    /**
+     * Create a CameraDevice object based on a JXON object
+     *
+     * #Parameter
+     *
+     * ```
+     * deviceJSON: JXON
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * CameraDevice
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var camera = CameraDevice.parse(JSONObj);
+     * ```
+     */
+    CameraDevice.parse = function (deviceJSON) {
+        var cam = new CameraDevice({
+            id: deviceJSON['disp'],
+            name: deviceJSON['name']
+        });
+        return cam;
+    };
+    return CameraDevice;
+})();
+exports.CameraDevice = CameraDevice;
+},{"../internal/util/json":8,"../internal/util/xml":10}],12:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var camera_1 = require('./camera');
+var System = (function () {
+    function System() {
+    }
+    /**
+     * Gets all camera devices
+     *
+     * #Return
+     *
+     * ```
+     * Promise<CameraDevice[]>
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var promise = System.getCameraDevices();
+     * promise.then(function(devices) {
+     * 	 // devices is an array of CameraDevice object
+     * });
+     * ```
+     */
+    System.getCameraDevices = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('dshowenum:vsrc').then(function (devicesJSON) {
+                var devices = [];
+                if (devicesJSON !== undefined) {
+                    for (var _i = 0; _i < devicesJSON.length; _i++) {
+                        var device = devicesJSON[_i];
+                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1) {
+                            devices.push(camera_1.CameraDevice.parse(device));
+                        }
+                    }
+                    resolve(devices);
+                }
+            });
+        });
+    };
+    return System;
+})();
+exports.System = System;
+},{"../internal/app":2,"./camera":11}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 require('../internal/init');
 __export(require('./app'));
-},{"../internal/init":5,"./app":1}]},{},["xjs"]);
+__export(require('../system/camera'));
+__export(require('../system/system'));
+},{"../internal/init":5,"../system/camera":11,"../system/system":12,"./app":1}]},{},["xjs"]);
