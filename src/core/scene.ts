@@ -1,7 +1,7 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
-import {Environment} from '../internal/environment';
+import {Environment} from './environment';
 import {Item} from './item/item';
 
 export class Scene {
@@ -15,7 +15,7 @@ export class Scene {
   };
 
   static get(sceneNum: number): Scene {
-    if (Scene.scenePool === []) {
+    if (Scene.scenePool.length === 0) {
       for (var i = 0; i < Scene.maxScenes; i++) {
         Scene.scenePool[i] = new Scene(i + 1);
       }
@@ -122,7 +122,7 @@ export class Scene {
   setName(name: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourceHtml()) {
-        reject(new Error('Scene names are readonly for source plugins.'));
+        reject(Error('Scene names are readonly for source plugins.'));
       } else {
         iApp.set('presetname:' + this.id, name).then(value => {
           resolve(value);

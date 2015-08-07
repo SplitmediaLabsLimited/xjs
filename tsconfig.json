@@ -15,12 +15,13 @@
     ],
     "files": [
         "./src/internal/app.ts",
-        "./src/internal/environment.ts",
         "./src/internal/global.ts",
         "./src/internal/init.ts",
         "./src/internal/internal.ts",
         "./src/internal/item.ts",
         "./src/core/app.ts",
-        "./src/core/index.ts"
+        "./src/core/environment.ts",
+        "./src/core/index.ts",
+        "./src/core/scene.ts"
     ]
 }

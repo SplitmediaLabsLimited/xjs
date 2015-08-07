@@ -2,7 +2,7 @@
 
 import {Rectangle} from '../../internal/util/rectangle';
 import {Item as iItem} from '../../internal/item';
-import {Environment} from '../../internal/environment';
+import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 
