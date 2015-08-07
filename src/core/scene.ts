@@ -2,6 +2,7 @@
 
 import {App as iApp} from '../internal/app';
 import {Environment} from '../internal/environment';
+import {Item} from './item/item';
 
 export class Scene {
   private id: number;
@@ -31,6 +32,79 @@ export class Scene {
     });
   }
 
+  /** Searches all scenes for */
+  static searchAllForItem(key: string): Promise<Item[]> {
+    // detect if UUID or keyword
+    let isID: boolean = /^{[A-F0-9-]*}$/i.test(key);
+    let matches: Item[] = [];
+
+    if (isID) {
+    // search by ID (only one match should be found)
+    let found = false;
+    return new Promise(resolve => {
+      if (Scene.scenePool.length === 0) {
+        Scene.get(1); // initialize scene items first
+      }
+      Scene.scenePool.forEach((scene, idx, arr) => {
+        if (!found) {
+          scene.getItems().then(items => {
+            found = items.some(item => { // unique ID
+              if (item['id'] === key) {
+                matches.push(item);
+                return true;
+              } else {
+                return false;
+              }
+            });
+            if (found || idx === arr.length - 1) {
+              resolve(matches);
+            }
+          });
+        }
+      });
+    });
+    } else {
+    // search by name substring
+      return new Promise(resolve => {
+        if (Scene.scenePool.length === 0) {
+          Scene.get(1); // initialize scene items first
+        }
+
+        return Promise.all(Scene.scenePool.map(scene => {
+          return new Promise(resolveScene => {
+            scene.getItems().then(items => {
+              if (items.length === 0) {
+                resolveScene();
+              } else {
+                return Promise.all(items.map(item => {
+                  return new Promise(resolveItem => {
+                    item.getName().then(name => {
+                      if (name.match(key)) {
+                        matches.push(item);
+                        return '';
+                      } else {
+                        return item.getValue();
+                      }
+                    }).then(value => {
+                      if (value.toString().match(key)) {
+                        matches.push(item);
+                      }
+                      resolveItem();
+                    });
+                  });
+                })).then(() => {
+                  resolveScene();
+                });
+              }
+            });
+          });
+        })).then(() => {
+          resolve(matches);
+        });
+      });
+    }
+  }
+
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
       resolve(this.id + 1);
@@ -54,6 +128,22 @@ export class Scene {
           resolve(value);
         });
       }
+    });
+  }
+
+  getItems(): Promise<Item[]> {
+    return new Promise(resolve => {
+      iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
+        var retArray = [];
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneID'] = this.id;
+            var item = new Item(jsonArr[i]);
+            retArray.push(item);
+          }
+        }
+        resolve(retArray);
+      });
     });
   }
 }
