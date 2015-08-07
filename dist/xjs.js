@@ -971,10 +971,10 @@ var System = (function () {
                 if (devicesJSON !== undefined) {
                     for (var _i = 0; _i < devicesJSON.length; _i++) {
                         var device = devicesJSON[_i];
-                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1
-                            && String(device['disp']).toLowerCase()
-                                !== ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\"
-                                    + "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
+                            String(device['disp']).toLowerCase() !==
+                                ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
+                                    "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
                             devices.push(camera_1.CameraDevice.parse(device));
                         }
                     }
