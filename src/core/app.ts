@@ -5,7 +5,7 @@ import {Rectangle as Rectangle} from '../internal/util/rectangle';
 import {JSON as JSON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
-import {Environment} from '../internal/environment';
+import {Environment} from './environment';
 
 export class App{
 

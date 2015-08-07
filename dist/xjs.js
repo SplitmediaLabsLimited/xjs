@@ -5,7 +5,7 @@ var rectangle_1 = require('../internal/util/rectangle');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
-var environment_1 = require('../internal/environment');
+var environment_1 = require('./environment');
 var App = (function () {
     function App() {
     }
@@ -204,17 +204,50 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":3,"../internal/environment":4,"../internal/internal":7,"../internal/util/json":9,"../internal/util/rectangle":10,"../internal/util/xml":11}],2:[function(require,module,exports){
+},{"../internal/app":4,"../internal/internal":7,"../internal/util/json":9,"../internal/util/rectangle":10,"../internal/util/xml":11,"./environment":2}],2:[function(require,module,exports){
+var Environment = (function () {
+    function Environment() {
+    }
+    Environment.initialize = function () {
+        if (Environment._initialized) {
+            return;
+        }
+        Environment._isHtml = (window.external &&
+            window.external['GetConfiguration'] !== undefined);
+        Environment._isConfig = (window.external &&
+            window.external['GetConfiguration'] === undefined &&
+            window.external['GetViewId'] !== undefined &&
+            window.external['GetViewId']() !== undefined);
+        Environment._isScript = (window.external &&
+            window.external['GetConfiguration'] === undefined &&
+            window.external['GetViewId'] !== undefined &&
+            window.external['GetViewId']() === undefined);
+        Environment._initialized = true;
+    };
+    Environment.isSourceHtml = function () {
+        return Environment._isHtml;
+    };
+    Environment.isSourceConfig = function () {
+        return Environment._isConfig;
+    };
+    Environment.isScriptPlugin = function () {
+        return Environment._isScript;
+    };
+    return Environment;
+})();
+exports.Environment = Environment;
+Environment.initialize();
+},{}],3:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
-var environment_1 = require('../internal/environment');
+var environment_1 = require('./environment');
 var Scene = (function () {
     function Scene(sceneNum) {
         this.id = sceneNum - 1;
     }
     ;
     Scene.get = function (sceneNum) {
-        if (Scene.scenePool === []) {
+        if (Scene.scenePool.length === 0) {
             for (var i = 0; i < Scene.maxScenes; i++) {
                 Scene.scenePool[i] = new Scene(i + 1);
             }
@@ -246,7 +279,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isSourceHtml()) {
-                reject(new Error('Scene names are readonly for source plugins.'));
+                reject(Error('Scene names are readonly for source plugins.'));
             }
             else {
                 app_1.App.set('presetname:' + _this.id, name).then(function (value) {
@@ -260,7 +293,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":3,"../internal/environment":4}],3:[function(require,module,exports){
+},{"../internal/app":4,"./environment":2}],4:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -335,40 +368,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":7,"./util/json":9}],4:[function(require,module,exports){
-var Environment = (function () {
-    function Environment() {
-    }
-    Environment.initialize = function () {
-        if (Environment._initialized) {
-            return;
-        }
-        Environment._isHtml = (window.external &&
-            window.external['GetConfiguration'] !== undefined);
-        Environment._isConfig = (window.external &&
-            window.external['GetConfiguration'] === undefined &&
-            window.external['GetViewId'] !== undefined &&
-            window.external['GetViewId']() !== undefined);
-        Environment._isScript = (window.external &&
-            window.external['GetConfiguration'] === undefined &&
-            window.external['GetViewId'] !== undefined &&
-            window.external['GetViewId']() === undefined);
-        Environment._initialized = true;
-    };
-    Environment.isSourceHtml = function () {
-        return Environment._isHtml;
-    };
-    Environment.isSourceConfig = function () {
-        return Environment._isConfig;
-    };
-    Environment.isScriptPlugin = function () {
-        return Environment._isScript;
-    };
-    return Environment;
-})();
-exports.Environment = Environment;
-Environment.initialize();
-},{}],5:[function(require,module,exports){
+},{"./internal":7,"./util/json":9}],5:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -393,7 +393,7 @@ var Global = (function () {
 exports.Global = Global;
 },{}],6:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var environment_1 = require('./environment');
+var environment_1 = require('../core/environment');
 var item_1 = require('./item');
 var internal_1 = require('./internal');
 var global_1 = require('./global');
@@ -487,7 +487,7 @@ function init() {
     });
 }
 init();
-},{"./environment":4,"./global":5,"./internal":7,"./item":8}],7:[function(require,module,exports){
+},{"../core/environment":2,"./global":5,"./internal":7,"./item":8}],7:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -550,7 +550,7 @@ window.OnDialogResult = function (result) {
 },{}],8:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
-var environment_1 = require('./environment');
+var environment_1 = require('../core/environment');
 var Item = (function () {
     function Item(props) {
         var props = props || {};
@@ -635,7 +635,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"./environment":4,"./internal":7}],9:[function(require,module,exports){
+},{"../core/environment":2,"./internal":7}],9:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -902,6 +902,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 require('../internal/init');
+__export(require('./environment'));
 __export(require('./app'));
 __export(require('./scene'));
-},{"../internal/init":6,"./app":1,"./scene":2}]},{},["xjs"]);
+},{"../internal/init":6,"./app":1,"./environment":2,"./scene":3}]},{},["xjs"]);

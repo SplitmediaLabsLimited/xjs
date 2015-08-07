@@ -1,7 +1,7 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {exec} from './internal';
-import {Environment} from './environment';
+import {Environment} from '../core/environment';
 
 export class Item {
   private name: string;
