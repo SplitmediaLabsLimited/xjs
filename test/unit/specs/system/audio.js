@@ -5,6 +5,9 @@ describe('Audio', function() {
 
   var XJS = require('xjs');
   var System = XJS.System;
+  var AudioDeviceDataflow = XJS.AudioDeviceDataflow;
+  var AudioDeviceState = XJS.AudioDeviceState;
+
   var mockWasapi = '<list>' +
     '<dev name="Speakers (XSplit  Stream  Audio  Renderer)"' +
     ' adapter="XSplit  Stream  Audio  Renderer"' +
@@ -84,11 +87,53 @@ describe('Audio', function() {
     });
   });
 
+  describe('should allow audio device filters', function() {
+    var promise;
+
+    beforeEach(function() {
+
+      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+        spyOn(window.external, 'AppGetPropertyAsync')
+          .and.callFake(function(funcName) {
+            if(funcName === 'wasapienum') {
+              var randomNumber = Math.floor(Math.random()*1000);
+
+              setTimeout(function() {
+                window.OnAsyncCallback(randomNumber, mockWasapi);
+              }, 10);
+              return randomNumber;
+            }
+          });
+      }
+    });
+
+    it('allow dataflow filter', function(done) {
+      promise = System.getAudioDevices(AudioDeviceDataflow.Capture);
+      promise.then(function(devices) {
+        for (var i = devices.length - 1; i >= 0; i--) {
+          expect(devices[i].getDataFlow()).toBe('Capture');
+        }
+        done();
+      });
+    });
+
+    it('allow state filter', function(done) {
+      promise = System.getAudioDevices(AudioDeviceDataflow.ALL,
+        AudioDeviceState.ACTIVE);
+      promise.then(function(devices) {
+        for (var i = devices.length - 1; i >= 0; i--) {
+          expect(devices[i].State).toBe('Active');
+        }
+        done();
+      });
+    });
+  });
+
   describe('system Audio', function() {
     var promise;
 
     beforeEach(function() {
-      
+
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
