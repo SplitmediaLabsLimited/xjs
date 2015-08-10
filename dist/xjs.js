@@ -243,6 +243,7 @@ var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
 var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
+var scene_1 = require('../scene');
 (function (ItemTypes) {
     ItemTypes[ItemTypes["UNDEFINED"] = 0] = "UNDEFINED";
     ItemTypes[ItemTypes["FILE"] = 1] = "FILE";
@@ -378,14 +379,16 @@ var Item = (function () {
                     'associated with them.'));
             }
             else if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
-                resolve(); // TODO
+                scene_1.Scene.searchAllForItem(item_1.Item.getBaseID()).then(function (items) {
+                    resolve(items[0]); // this should always exist
+                });
             }
         });
     };
     return Item;
 })();
 exports.Item = Item;
-},{"../../internal/item":9,"../../internal/util/json":10,"../../internal/util/xml":12,"../environment":2}],4:[function(require,module,exports){
+},{"../../internal/item":9,"../../internal/util/json":10,"../../internal/util/xml":12,"../environment":2,"../scene":4}],4:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var environment_1 = require('./environment');
@@ -524,6 +527,14 @@ var Scene = (function () {
                     }
                 }
                 resolve(retArray);
+            });
+        });
+    };
+    Scene.prototype.isEmpty = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('presetisempty:' + _this.id).then(function (val) {
+                resolve(val === '1');
             });
         });
     };

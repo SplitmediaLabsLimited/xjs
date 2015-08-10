@@ -146,4 +146,12 @@ export class Scene {
       });
     });
   }
+
+  isEmpty(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.get('presetisempty:' + this.id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
 }
