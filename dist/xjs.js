@@ -204,7 +204,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":5,"../internal/internal":8,"../internal/util/json":10,"../internal/util/rectangle":11,"../internal/util/xml":12,"./environment":2}],2:[function(require,module,exports){
+},{"../internal/app":7,"../internal/internal":10,"../internal/util/json":12,"../internal/util/rectangle":14,"../internal/util/xml":15,"./environment":2}],2:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -239,6 +239,62 @@ exports.Environment = Environment;
 Environment.initialize();
 },{}],3:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = require('../../internal/util/mixin');
+var iaudio_1 = require('./iaudio');
+var item_1 = require('./item');
+var AudioItem = (function (_super) {
+    __extends(AudioItem, _super);
+    function AudioItem() {
+        _super.apply(this, arguments);
+    }
+    return AudioItem;
+})(item_1.Item);
+exports.AudioItem = AudioItem;
+mixin_1.applyMixins(item_1.Item, [iaudio_1.ItemAudio]);
+},{"../../internal/util/mixin":13,"./iaudio":4,"./item":5}],4:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = require('../../internal/item');
+var ItemAudio = (function () {
+    function ItemAudio() {
+    }
+    ItemAudio.prototype.getVolume = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this.id);
+            item_1.Item.get('prop:volume', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemAudio.prototype.setVolume = function (value) {
+        var slot = item_1.Item.attach(this.id);
+        value = value < 0 ? 0 : value > 100 ? 100 : value;
+        item_1.Item.set('prop:volume', String(value), slot);
+    };
+    ItemAudio.prototype.isMuted = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this.id);
+            item_1.Item.get('prop:mute', slot).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemAudio.prototype.setMuted = function (value) {
+        var slot = item_1.Item.attach(this.id);
+        item_1.Item.set('prop:mute', (value ? '1' : '0'), slot);
+    };
+    return ItemAudio;
+})();
+exports.ItemAudio = ItemAudio;
+},{"../../internal/item":11}],5:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
 var json_1 = require('../../internal/util/json');
@@ -256,6 +312,10 @@ var scene_1 = require('../scene');
     ItemTypes[ItemTypes["HTML"] = 8] = "HTML";
 })(exports.ItemTypes || (exports.ItemTypes = {}));
 var ItemTypes = exports.ItemTypes;
+/**
+ * An Item represents an object that is used as a source on the stage.
+ * Some possible sources are games, microphones, or a webpage.
+ */
 var Item = (function () {
     function Item(props) {
         props = props ? props : {};
@@ -267,13 +327,13 @@ var Item = (function () {
         this.type = props['type'];
         this.xmlparams = props;
     }
-    /** Set name of the item */
+    /** Sets the name of the item */
     Item.prototype.setName = function (value) {
         var slot = item_1.Item.attach(this.id);
         this.name = value;
         item_1.Item.set('prop:name', this.name, slot);
     };
-    /** Get the current name of the item */
+    /** Gets the current name of the item */
     Item.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -318,7 +378,7 @@ var Item = (function () {
         }
         item_1.Item.set('prop:item', val, slot);
     };
-    /** Get Keep loaded option */
+    /** Check if item is kept loaded in memory */
     Item.prototype.getKeepLoaded = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -346,7 +406,7 @@ var Item = (function () {
             });
         });
     };
-    /** Get Item ID */
+    /** Get the ID of the item */
     Item.prototype.getID = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -360,7 +420,7 @@ var Item = (function () {
             resolve(Number(_this.sceneID) + 1);
         });
     };
-    /** Convert the Item object to XML */
+    /** Convert the Item object to an XML string */
     Item.prototype.toXML = function () {
         var item = new json_1.JSON();
         item['tag'] = 'item';
@@ -369,9 +429,9 @@ var Item = (function () {
         item['type'] = this.type;
         return xml_1.XML.parseJSON(item);
     };
-    /** Get the current source (when called for sources), or the source that
-     * was right-clicked to open the config window (when called from the
-       * config window). */
+    /** Get the current source (when function is called by sources), or the source
+     * that was right-clicked to open the config window (when function is called
+     * from the config window) */
     Item.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isScriptPlugin()) {
@@ -388,7 +448,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../../internal/item":9,"../../internal/util/json":10,"../../internal/util/xml":12,"../environment":2,"../scene":4}],4:[function(require,module,exports){
+},{"../../internal/item":11,"../../internal/util/json":12,"../../internal/util/xml":15,"../environment":2,"../scene":6}],6:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var environment_1 = require('./environment');
@@ -662,7 +722,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":5,"./environment":2,"./item/item":3}],5:[function(require,module,exports){
+},{"../internal/app":7,"./environment":2,"./item/item":5}],7:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -737,7 +797,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":8,"./util/json":10}],6:[function(require,module,exports){
+},{"./internal":10,"./util/json":12}],8:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -760,7 +820,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -856,7 +916,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":2,"./global":6,"./internal":8,"./item":9}],8:[function(require,module,exports){
+},{"../core/environment":2,"./global":8,"./internal":10,"./item":11}],10:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -916,7 +976,7 @@ window.SetVolume = function (volume) {
 window.OnDialogResult = function (result) {
     document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -990,7 +1050,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":2,"./internal":8}],10:[function(require,module,exports){
+},{"../core/environment":2,"./internal":10}],12:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -1057,7 +1117,19 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":12}],11:[function(require,module,exports){
+},{"./xml":15}],13:[function(require,module,exports){
+function applyMixins(derivedCtor, baseCtors) {
+    baseCtors.forEach(function (baseCtor) {
+        Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
+            if (name === 'constructor') {
+                return;
+            }
+            derivedCtor.prototype[name] = baseCtor.prototype[name];
+        });
+    });
+}
+exports.applyMixins = applyMixins;
+},{}],14:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -1197,7 +1269,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],12:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -1261,4 +1333,5 @@ __export(require('./environment'));
 __export(require('./app'));
 __export(require('./scene'));
 __export(require('./item/item'));
-},{"../internal/init":7,"./app":1,"./environment":2,"./item/item":3,"./scene":4}]},{},["xjs"]);
+__export(require('./item/audio'));
+},{"../internal/init":9,"./app":1,"./environment":2,"./item/audio":3,"./item/item":5,"./scene":6}]},{},["xjs"]);
