@@ -885,7 +885,7 @@ var CameraDevice = (function () {
      * ```
      */
     CameraDevice.prototype.getName = function () {
-        return this.id;
+        return this.name;
     };
     /**
      * Convert the current CameraDevice object to XML
