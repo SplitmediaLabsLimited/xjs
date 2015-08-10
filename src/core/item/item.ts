@@ -19,6 +19,10 @@ export enum ItemTypes {
   HTML
 }
 
+/**
+ * An Item represents an object that is used as a source on the stage.
+ * Some possible sources are games, microphones, or a webpage.
+ */
 export class Item {
   private name: string;
   private id: string;
@@ -42,7 +46,7 @@ export class Item {
     this.xmlparams = props;
   }
 
-  /** Set name of the item */
+  /** Sets the name of the item */
   setName(value: string) {
     let slot = iItem.attach(this.id);
 
@@ -51,7 +55,7 @@ export class Item {
     iItem.set('prop:name', this.name, slot);
   }
 
-  /** Get the current name of the item */
+  /** Gets the current name of the item */
   getName(): Promise<string> {
     return new Promise((resolve) => {
       let slot = iItem.attach(this.id);
@@ -105,7 +109,7 @@ export class Item {
     iItem.set('prop:item', val, slot);
   }
 
-  /** Get Keep loaded option */
+  /** Check if item is kept loaded in memory */
   getKeepLoaded(): Promise<boolean> {
     return new Promise((resolve) => {
       let slot = iItem.attach(this.id);
@@ -140,7 +144,7 @@ export class Item {
     });
   }
 
-  /** Get Item ID */
+  /** Get the ID of the item */
   getID(): Promise<string> {
     return new Promise((resolve) => {
       resolve(this.id);
@@ -154,7 +158,7 @@ export class Item {
     });
   }
 
-  /** Convert the Item object to XML */
+  /** Convert the Item object to an XML string */
   toXML(): XML {
     var item: JXON = new JXON();
 
@@ -166,9 +170,9 @@ export class Item {
     return XML.parseJSON(item);
   }
 
-  /** Get the current source (when called for sources), or the source that
-   * was right-clicked to open the config window (when called from the
-     * config window). */
+  /** Get the current source (when function is called by sources), or the source
+   * that was right-clicked to open the config window (when function is called
+   * from the config window) */
   static getCurrentSource(): Promise<Item> {
     return new Promise((resolve, reject) => {
       if (Environment.isScriptPlugin()) {
