@@ -48,7 +48,7 @@ export class CameraDevice {
    * ```
    */
   getName(): string {
-    return this.id;
+    return this.name;
   }
 
   /**
