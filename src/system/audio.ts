@@ -18,15 +18,15 @@ export class AudioDevice{
   private DefaultMultimedia: boolean = false;
   private DefaultCommunication: boolean = false;
 
-  /** 
-   * Gets the device ID 
+  /**
+   * Gets the device ID
    *
    * #Return
    *
    * ```
    * string
    * ```
-   * 
+   *
    * #Usage
    *
    * ````
@@ -37,15 +37,15 @@ export class AudioDevice{
     return this.id;
   }
 
-  /** 
-   * Gets the device name 
+  /**
+   * Gets the device name
    *
    * #Return
    *
    * ```
    * string
    * ```
-   * 
+   *
    * #Usage
    *
    * ````
@@ -56,7 +56,7 @@ export class AudioDevice{
     return this.name;
   }
 
-  /** 
+  /**
    * Gets whether device is capturing or rendering audio
    *
    * #Return
@@ -64,7 +64,7 @@ export class AudioDevice{
    * ```
    * string
    * ```
-   * 
+   *
    * #Usage
    *
    * ````
@@ -76,7 +76,7 @@ export class AudioDevice{
     return this.DataFlow;
   }
 
-  /** 
+  /**
    * Converts a JSON object into an AudioDevice object
    *
    * #Parameter
@@ -90,7 +90,7 @@ export class AudioDevice{
    * ```
    * AudioDevice
    * ```
-   * 
+   *
    * #Usage
    *
    * ````
@@ -105,7 +105,7 @@ export class AudioDevice{
     audio.adapter = deviceJXON['adapter'];
     audio.adapterdev = deviceJXON['adapterdev'];
     audio.DataFlow = deviceJXON['DataFlow'];
-    audio.State = deviceJXON['tate'];
+    audio.State = deviceJXON['State'];
     audio.DSoundGuid = deviceJXON['DSoundGuid'];
     audio.DefaultCommunication = (deviceJXON['DefaultCommunication'] === '1');
     audio.DefaultConsole = (deviceJXON['DefaultConsole'] === '1');

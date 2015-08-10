@@ -932,7 +932,7 @@ var AudioDevice = (function () {
         audio.adapter = deviceJXON['adapter'];
         audio.adapterdev = deviceJXON['adapterdev'];
         audio.DataFlow = deviceJXON['DataFlow'];
-        audio.State = deviceJXON['tate'];
+        audio.State = deviceJXON['State'];
         audio.DSoundGuid = deviceJXON['DSoundGuid'];
         audio.DefaultCommunication = (deviceJXON['DefaultCommunication'] === '1');
         audio.DefaultConsole = (deviceJXON['DefaultConsole'] === '1');
