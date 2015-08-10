@@ -5,6 +5,7 @@ import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
+import {Scene} from '../scene';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -169,16 +170,14 @@ export class Item {
    * was right-clicked to open the config window (when called from the
      * config window). */
   static getCurrentSource(): Promise<Item> {
-
     return new Promise((resolve, reject) => {
       if (Environment.isScriptPlugin()) {
         reject(Error('Script plugins do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
-        resolve(); // TODO
-        // View.MAIN.searchItems(iItem.getBaseID()).then(items => {
-        //  resolve(items[0]); // assuming this always exists
-        //});
+        Scene.searchAllForItem(iItem.getBaseID()).then(items => {
+          resolve(items[0]); // this should always exist
+        });
       }
     });
   }
