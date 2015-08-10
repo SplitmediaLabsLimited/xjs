@@ -63,7 +63,24 @@ export class Scene {
     });
   }
 
-  /** Searches all scenes for */
+  /**
+   * Searches all scenes for an item by ID or name substring. ID search
+   * will return only 1 result.
+   *
+   * #Return
+   * ```
+   * Item[]
+   * ```
+   *
+   * #Usage
+   *
+   * ```
+   * Scene.searchAllForItem('camera').then(function(items) {
+   *   // do something to each item in items array
+   * });
+   * ```
+   *
+   */
   static searchAllForItem(key: string): Promise<Item[]> {
     // detect if UUID or keyword
     let isID: boolean = /^{[A-F0-9-]*}$/i.test(key);
@@ -152,7 +169,7 @@ export class Scene {
    *  console.log('My scene is scene number ' + num);
    * });
    * ```
-   */  
+   */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
       resolve(this.id + 1);
@@ -205,6 +222,22 @@ export class Scene {
     });
   }
 
+  /**
+   * Gets all the items in a specific scene.
+   *
+   * #Return
+   *
+   * ```
+   * Item[]
+   * ```
+   * #Usage
+   *
+   * ```
+   * myScene.getItems().then(function(items) {
+   *  // do something to each item in items array
+   * });
+   * ```
+   */
   getItems(): Promise<Item[]> {
     return new Promise(resolve => {
       iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
@@ -221,6 +254,19 @@ export class Scene {
     });
   }
 
+  /**
+ * Checks if a scene is empty.
+ *
+ * #Usage
+ *
+ * ```
+ * myScene.isEmpty().then(function(empty) {
+ *   if (empty === true) {
+ *     console.log("My scene is empty.");
+ *   }
+ * });
+ * ```
+ */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
       iApp.get('presetisempty:' + this.id).then(val => {

@@ -398,6 +398,21 @@ var Scene = (function () {
         this.id = sceneNum - 1;
     }
     ;
+    /**
+     * Get a specific scene object given the scene number.
+     *
+     * #Return
+     *
+     * ```
+     * Scene
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var scene1 = Scene.get(1);
+     * ```
+     */
     Scene.get = function (sceneNum) {
         if (Scene.scenePool.length === 0) {
             for (var i = 0; i < Scene.maxScenes; i++) {
@@ -406,6 +421,21 @@ var Scene = (function () {
         }
         return Scene.scenePool[sceneNum - 1];
     };
+    /**
+     * Get the currently active scene.
+     *
+     * #Return
+     *
+     * ```
+     * Scene
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var myScene = Scene.getActiveScene();
+     * ```
+     */
     Scene.getActiveScene = function () {
         return new Promise(function (resolve) {
             app_1.App.get('preset:0').then(function (id) {
@@ -413,7 +443,24 @@ var Scene = (function () {
             });
         });
     };
-    /** Searches all scenes for */
+    /**
+     * Searches all scenes for an item by ID or name substring. ID search
+     * will return only 1 result.
+     *
+     * #Return
+     * ```
+     * Item[]
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * Scene.searchAllForItem('camera').then(function(items) {
+     *   // do something to each item in items array
+     * });
+     * ```
+     *
+     */
     Scene.searchAllForItem = function (key) {
         // detect if UUID or keyword
         var isID = /^{[A-F0-9-]*}$/i.test(key);
@@ -487,12 +534,46 @@ var Scene = (function () {
             });
         }
     };
+    /**
+     * Get the 1-indexed scene number of this scene object.
+     *
+     * #Return
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * myScene.getSceneNumber().then(function(num) {
+     *  console.log('My scene is scene number ' + num);
+     * });
+     * ```
+     */
     Scene.prototype.getSceneNumber = function () {
         var _this = this;
         return new Promise(function (resolve) {
             resolve(_this.id + 1);
         });
     };
+    /**
+     * Get the name of this scene object.
+     *
+     * #Return
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * myScene.getSceneName().then(function(name) {
+     *  console.log('My scene is named ' + name);
+     * });
+     * ```
+     */
     Scene.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -501,6 +582,15 @@ var Scene = (function () {
             });
         });
     };
+    /**
+     * Set the name of this scene object. Cannot be set by source plugins.
+     *
+     * #Usage
+     *
+     * ```
+     * myScene.setName('Gameplay');
+     * ```
+     */
     Scene.prototype.setName = function (name) {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -514,6 +604,22 @@ var Scene = (function () {
             }
         });
     };
+    /**
+     * Gets all the items in a specific scene.
+     *
+     * #Return
+     *
+     * ```
+     * Item[]
+     * ```
+     * #Usage
+     *
+     * ```
+     * myScene.getItems().then(function(items) {
+     *  // do something to each item in items array
+     * });
+     * ```
+     */
     Scene.prototype.getItems = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -530,6 +636,19 @@ var Scene = (function () {
             });
         });
     };
+    /**
+   * Checks if a scene is empty.
+   *
+   * #Usage
+   *
+   * ```
+   * myScene.isEmpty().then(function(empty) {
+   *   if (empty === true) {
+   *     console.log("My scene is empty.");
+   *   }
+   * });
+   * ```
+   */
     Scene.prototype.isEmpty = function () {
         var _this = this;
         return new Promise(function (resolve) {
