@@ -6,19 +6,23 @@ import {IItemAudio, ItemAudio} from './iaudio';
 import {Scene} from '../scene';
 import {Item} from './item';
 
+/**
+ * The AudioItem class represents an audio device that has been added
+ * to the stage.
+ */
 export class AudioItem extends Item implements IItemAudio {
   // ItemAudio
 
-  /** Get Item Volume level */
+  /** Get item's volume level expressed as an integer from 0 to 100 */
   getVolume: () => Promise<number>;
 
-  /** Check if item is muted */
+  /** Check if item's mute option is active */
   isMuted:   () => Promise<boolean>;
 
-  /** Set Volume level of item */
+  /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
   setVolume: (value: number) => void;
 
-  /** Set Item Mute to ON or OFF */
+  /** Set item's Mute property to ON or OFF */
   setMuted:  (value: boolean) => void;
 }
 
