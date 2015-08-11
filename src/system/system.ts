@@ -3,6 +3,8 @@
 import {App as iApp} from '../internal/app';
 import {AudioDevice as AudioDevice} from './audio';
 import {CameraDevice} from './camera';
+import {Game as Game} from './game';
+import {JSON as JXON} from '../internal/util/json';
 
 export enum AudioDeviceDataflow {
     RENDER = 1,
@@ -90,6 +92,26 @@ export class System{
 
           resolve(devices);
         }
+      });
+    });
+  }
+  
+  /**
+   * Gets all currently running games
+   *
+   * @return {Promise<Game>}
+   */
+  static getGames(): Promise<Game[]> {
+    return new Promise(resolve => {
+      iApp.getAsList('gsenum').then(gamesJXON => {
+        let games: Game[] = [];
+        if (gamesJXON !== undefined) {
+          var gamesJXONLength = gamesJXON.length;
+          for (var i = 0; i < gamesJXONLength; ++i) {
+            games.push(Game.parse(gamesJXON[i]));
+          }
+        }
+        resolve(games);
       });
     });
   }
