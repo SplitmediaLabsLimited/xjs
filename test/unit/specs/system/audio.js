@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, spyOn */
 
-describe('Audio', function() {
+describe('Audio ===', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -33,9 +33,9 @@ describe('Audio', function() {
     ' adapter="Realtek High Definition Audio"' +
     ' adapterdev="Stereo Mix" id="{0.0.1.00000000}.' +
     '{fd0f34df-d9e8-4de9-a212-dfdc9cb75178}"' +
-    ' DataFlow="Capture" State="Disabled"' +
+    ' DataFlow="Capture" State="Active"' +
     ' DSoundGuid="{FD0F34DF-D9E8-4DE9-A212-DFDC9CB75178}"' +
-    ' WaveId=""/></list>';
+    ' WaveId="" DefaultConsole="1" DefaultMultimedia="1" /></list>';
 
   describe('should list audio devices', function() {
     var promise;
@@ -122,7 +122,7 @@ describe('Audio', function() {
         AudioDeviceState.ACTIVE);
       promise.then(function(devices) {
         for (var i = devices.length - 1; i >= 0; i--) {
-          expect(devices[i].State).toBe('Active');
+          expect(devices[i].state).toBe('Active');
         }
         done();
       });
@@ -170,5 +170,128 @@ describe('Audio', function() {
         done();
       });
     });
+
+    it('can be determined if system default device or not', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].isDefaultDevice()).toBeTypeOf('boolean');
+        done();
+      });
+    });
+
+    it('should have a volume level returned as a number', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].getLevel()).toBeTypeOf('number');
+        done();
+      });
+    });
+
+    it('can be set with a volume level', function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        device.setLevel(1.5);
+        expect(device.getLevel()).toBe(1.5);
+        done();
+      });
+    });
+
+    it('can be determined if enabled in the application', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].isEnabled()).toBeTypeOf('boolean');
+        done();
+      });
+    });
+
+    it('can be configured to be enabled and disabled in the application',
+      function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        device.setEnabled(false);
+        expect(device.isEnabled()).toBe(false);
+        device.setEnabled(true);
+        expect(device.isEnabled()).toBe(true);
+        done();
+      });
+    });
+
+    it('should have a system volume level returned as a number', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].getSystemLevel()).toBeTypeOf('number');
+        done();
+      });
+    });
+
+    it('can be set with a system volume level', function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        device.setSystemLevel(1.5);
+        expect(device.getSystemLevel()).toBe(1.5);
+        done();
+      });
+    });
+
+    it('can be determined if enabled in the system', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].isSystemEnabled()).toBeTypeOf('boolean');
+        done();
+      });
+    });
+
+    it('can be configured to be enabled and disabled in the system',
+      function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        device.setSystemEnabled(false);
+        expect(device.isSystemEnabled()).toBe(false);
+        device.setSystemEnabled(true);
+        expect(device.isSystemEnabled()).toBe(true);
+        done();
+      });
+    });
+
+    it('should have a delay returned as a number', function(done) {
+      promise.then(function(devices) {
+        expect(devices[0].getDelay()).toBeTypeOf('number');
+        done();
+      });
+    });
+
+    it('can be configured to be set with a delay', function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        device.setDelay(1.5);
+        expect(device.getDelay()).toBe(1.5);
+        done();
+      });
+    });
+
+    it('can be converted to a self-closed xml string', function(done) {
+      promise.then(function(devices) {
+        var device = devices[0];
+        var deviceString = device.toString();
+        if (!/xsplit broadcaster/ig.test(navigator.appVersion))
+        {
+          expect(deviceString).toBe("<dev" +
+            " id='{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}'" +
+            " level='1' enable='1' hwlevel='1' hwenable='1' delay='1' />");
+        }
+        var parseXml = function(xmlStr)
+        {
+          return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
+        };
+        var audioDevice = parseXml(deviceString).getElementsByTagName('dev')[0];
+        expect(audioDevice.getAttribute("id") == device.getId() &&
+          audioDevice.getAttribute("level") == parseFloat(device.getLevel()) &&
+          (audioDevice.getAttribute("enable") == '1') == device.isEnabled() &&
+          audioDevice.getAttribute("hwlevel") ==
+            parseFloat(device.getSystemLevel()) &&
+          (audioDevice.getAttribute("hwenable") == '1') ==
+            device.isSystemEnabled() &&
+          audioDevice.getAttribute("delay") == parseFloat(device.getDelay())
+        ).toBe(true);
+        done();
+      });
+    });
+
+
   });
 });
