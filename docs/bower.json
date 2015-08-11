@@ -1,11 +1,9 @@
 {
-  "name": "angular-docs",
+  "name": "xjs",
   "main": "index.js",
   "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular",
+  "homepage": "https://github.com/xjsframework/xjs",
   "authors": [],
-  "license": "Apache-2.0",
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
@@ -14,7 +12,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular-material": "~0.6.0",
+    "polymer": "Polymer/polymer#1.0.0",
+    "angular-route": "~1.4.3",
+    "angular-material": "~0.10.0",
     "google-code-prettify": "~1.0.3"
   }
 }

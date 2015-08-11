@@ -3,17 +3,16 @@
 
 {% block body %}
 <h1 class="id">{$ doc.id $} <span class="type">module</span></h1>
-<p>defined in {$ githubViewLink(doc) $}</p>
 <p>{$ doc.description | marked $}</p>
 
 {% if doc.exports.length %}
-<h2>Exports</h2>
-<ul>
+<ul class="quicklink">
 {%- for exportDoc in doc.exports %}
   {% if not exportDoc.private -%}
-  <li><a href="{$ exportDoc.path $}"><strong>{$ exportDoc.name $}</strong> {$ exportDoc.docType $}</a></li>
+  <li><h3><a href="#/{$ exportDoc.path $}">{$ exportDoc.name $} {$ exportDoc.docType $}</a></h3></li>
   {%- endif %}
 {%- endfor %}
 </ul>
 {% endif %}
+<p class="defined-in">defined in {$ githubViewLink(doc) $}</p>
 {% endblock %}

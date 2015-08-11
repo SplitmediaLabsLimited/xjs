@@ -1,46 +1,114 @@
-angular.module('app', ['ngMaterial', 'navigation-modules', 'navigation-guides', 'code'])
+angular.module('app', [
+  'navigation-modules',
+  'navigation-guides',
+  'code'
+])
 
-.config(function($locationProvider) {
-  $locationProvider.html5Mode(true);
+.directive('ngEnter', function() {
+  return function(scope, element, attr) {
+    element.bind('keydown keypress', function(event) {
+      if (event.which === 13) {
+        scope.$apply(function() {
+          scope.$eval(attr.ngEnter);
+        });
+
+        event.preventDefault();
+      }
+    });
+  }
 })
 
 .controller('NavController', ['$scope', '$location', 'MODULES', 'GUIDES',
-                  function($scope, $location, MODULES, GUIDES) {
-  var that = this;
+  function($scope, $location, MODULES, GUIDES) {
+    var self = this;
 
-  this.areas = [
-    { name: 'Guides', sections: [ { pages: GUIDES.pages } ] },
-    { name: 'Modules', sections: MODULES.sections }
-  ];
+    this.sections = MODULES.sections;
 
-  this.updateCurrentPage = function(path) {
-    console.log('path', path);
-    this.currentPage = null;
+    this.updateCurrentPage = function(path) {
+      this.currentPage = null;
+      self.currentPath = path.substring(1);
 
-    this.areas.forEach(function(area) {
-      area.sections.forEach(function(section) {
-
+      self.sections.forEach(function(section) {
         // Short-circuit out if the page has been found
-        if ( that.currentPage ) {
+        if ( self.currentPage ) {
           return;
         }
-
-        if (section.path === path) {
-          console.log('found!');
-          that.currentPage = section;
+        if ('/' + section.path === path) {
+          self.currentPage = section;
         } else {
           section.pages.forEach(function(page) {
-            if (page.path === path) {
-              that.currentPage = page;
+            if ('/' + page.path === path) {
+              self.currentPage = page;
             }
           });
         }
       });
-    });
-  };
 
-  $scope.$watch(
-    function getLocationPath() { return $location.path(); },
-    function handleLocationPathChange(path) { that.updateCurrentPage(path); }
-  );
-}]);
+      if (self.currentPage) {
+        $scope.searchResults = [];
+      }
+    };
+
+    /* Search behavior */
+    var searchObj = [];
+    var searchKeys = [];
+
+    for (var sIdx in this.sections) {
+      searchObj.push({
+        path: this.sections[sIdx].path,
+        name: String(this.sections[sIdx].name + ' ' +
+                this.sections[sIdx].type).toLowerCase()
+      });
+      for (var pIdx in this.sections[sIdx].pages) {
+        searchObj.push({
+          path: this.sections[sIdx].pages[pIdx].path,
+          name: String(this.sections[sIdx].pages[pIdx].name + ' ' +
+                  this.sections[sIdx].pages[pIdx].type).toLowerCase()
+        });
+      }
+    }
+
+    searchKeys = searchObj.map(function(obj) {
+      return obj.name;
+    });
+
+    var $search = $('#search');
+
+    $search.autocomplete({
+      source: searchKeys
+    });
+
+    $scope.searchResults = [];
+
+    $scope.search = function(e) {
+      var keyword = String($search.val()).toLowerCase();
+      $search.val('');
+      $scope.searchResults = [];
+
+      var searchResults = [];
+      var keywordIndex = searchKeys.indexOf(keyword);
+
+      if (keywordIndex !== -1) {
+        $location.url(searchObj[keywordIndex].path);
+      } else {
+        var reg = new RegExp(keyword, 'ig');
+        for (var sIdx in searchKeys) {
+          if (reg.test(searchKeys[sIdx])) {
+            $scope.searchResults.push(searchObj[sIdx]);
+          }
+        }
+        $location.url('search');
+      }
+    }
+
+    $scope.$watch(
+      function getLocationPath() { return $location.path(); },
+      function handleLocationPathChange(path) { self.updateCurrentPage(path); }
+    );
+
+    $scope.isActive = function(url) {
+      var reg = new RegExp(url + '/');
+      return reg.test(self.currentPath);
+    }
+  }
+]);

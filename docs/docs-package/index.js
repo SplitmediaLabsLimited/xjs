@@ -35,7 +35,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   readFilesProcessor.fileReaders = [ngdocFileReader];
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readFilesProcessor.sourceFiles = [
-    { include: 'modules/*/docs/**/*.md', basePath: 'src' },
+    { include: 'modules/*/docs/**/*.md', basePath: 'src/core' },
     { include: 'docs/content/**/*.md', basePath: 'docs/content' }
   ];
 
@@ -43,7 +43,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     '*/*.@(js|es6|ts)',
     '*/src/**/*.@(js|es6|ts)'
   ];
-  readTypeScriptModules.basePath = path.resolve(readFilesProcessor.basePath, 'src');
+  readTypeScriptModules.basePath = path.resolve(readFilesProcessor.basePath, 'src/core');
 })
 
 

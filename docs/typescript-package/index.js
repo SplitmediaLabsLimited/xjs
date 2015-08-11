@@ -57,7 +57,7 @@ module.exports = new Package('typescript-parsing', [basePackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
-    pathTemplate: '/${id}',
+    pathTemplate: '${id}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
   });
 

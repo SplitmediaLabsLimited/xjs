@@ -78,7 +78,7 @@
 
   gulp.task('docs/assets', ['docs/bower'], function() {
     return gulp.src('docs/bower_components/**/*')
-      .pipe(gulp.dest(DIST + '/lib'));
+      .pipe(gulp.dest(DIST + '/bower_components'));
   });
 
   gulp.task('docs/app', function() {
@@ -89,7 +89,10 @@
     bs.init({
       server: {
         baseDir: './dist/api/',
-        middleware: [ history() ]
+        middleware: [ history() ],
+        routes: {
+            "/bower_components": "bower_components"
+        }
       }
     });
   });
