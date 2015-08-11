@@ -38,7 +38,7 @@
             <a href="api.html#{{ section.path }}">{{ section.name + ' ' + section.type}}</a>
             <ul>
               <li ng-repeat="page in section.pages" ng-class="{active: page.path == nav.currentPath}">
-                <a href="api.html#{{ page.path }}">{{ page.name }}</a>
+                <a href="api.html#{{ page.path }}">{{ page.name + ' ' + page.type }}</a>
               </li>
             </ul>
           </li>
@@ -50,7 +50,7 @@
           <h1>XJS Framework API Reference</h1>
           <ul class="quicklink">
             <li ng-repeat="section in nav.sections">
-              <h3><a href="api.html#{{ section.path }}">{{ section.name }}</a></h3>
+              <h3><a href="api.html#{{ section.path }}">{{ section.name + ' ' + section.type }}</a></h3>
             </li>
           </ul>
         </div>
@@ -58,7 +58,7 @@
           <h1>Search Results</h1>
           <ul class="quicklink">
             <li ng-repeat="result in searchResults">
-              <h3><a href="api.html#{{ result.path }}">{{ result.name }}</a></h3>
+              <h3><a href="api.html#{{ result.path }}">{{ result.name + ' ' + result.type }}</a></h3>
             </li>
           </ul>
         </div>
