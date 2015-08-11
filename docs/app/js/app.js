@@ -1,7 +1,6 @@
 angular.module('app', [
   'navigation-modules',
-  'navigation-guides',
-  'code'
+  'navigation-guides'
 ])
 
 .directive('ngEnter', function() {
@@ -18,7 +17,7 @@ angular.module('app', [
   }
 })
 
-.controller('NavController', ['$scope', '$location', 'MODULES', 'GUIDES',
+.controller('NavController', ['$scope',  '$location', 'MODULES', 'GUIDES',
   function($scope, $location, MODULES, GUIDES) {
     var self = this;
 
@@ -48,6 +47,10 @@ angular.module('app', [
         $scope.searchResults = [];
       }
     };
+
+    $scope.$on('$includeContentLoaded', function() {
+      Prism.highlightAll();
+    });
 
     /* Search behavior */
     var searchObj = [];

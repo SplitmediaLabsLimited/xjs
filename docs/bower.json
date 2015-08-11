@@ -14,7 +14,6 @@
   "dependencies": {
     "polymer": "Polymer/polymer#1.0.0",
     "angular-route": "~1.4.3",
-    "angular-material": "~0.10.0",
-    "google-code-prettify": "~1.0.3"
+    "angular-material": "~0.10.0"
   }
 }
