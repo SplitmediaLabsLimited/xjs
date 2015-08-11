@@ -841,10 +841,172 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],"xjs":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var AudioDevice = (function () {
+    function AudioDevice() {
+        this.DefaultConsole = false;
+        this.DefaultMultimedia = false;
+        this.DefaultCommunication = false;
+    }
+    /**
+     * Gets the device ID
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceID = device.getID();
+     * ```
+     */
+    AudioDevice.prototype.getId = function () {
+        return this.id;
+    };
+    /**
+     * Gets the device name
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceName = device.getName();
+     * ```
+     */
+    AudioDevice.prototype.getName = function () {
+        return this.name;
+    };
+    /**
+     * Gets whether device is capturing or rendering audio
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceName = device.getName();
+     * // possible values, "render"/"capture"
+     * ```
+     */
+    AudioDevice.prototype.getDataFlow = function () {
+        return this.DataFlow;
+    };
+    /**
+     * Converts a JSON object into an AudioDevice object
+     *
+     * #Parameter
+     *
+     * ```
+     * deviceJXON: JXON
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
+     * ```
+     */
+    AudioDevice.parse = function (deviceJXON) {
+        var audio = new AudioDevice();
+        audio.id = deviceJXON['id'];
+        audio.name = deviceJXON['name'];
+        audio.adapter = deviceJXON['adapter'];
+        audio.adapterdev = deviceJXON['adapterdev'];
+        audio.DataFlow = deviceJXON['DataFlow'];
+        audio.State = deviceJXON['State'];
+        audio.DSoundGuid = deviceJXON['DSoundGuid'];
+        audio.DefaultCommunication = (deviceJXON['DefaultCommunication'] === '1');
+        audio.DefaultConsole = (deviceJXON['DefaultConsole'] === '1');
+        audio.DefaultMultimedia = (deviceJXON['DefaultMultimedia'] === '1');
+        return audio;
+    };
+    return AudioDevice;
+})();
+exports.AudioDevice = AudioDevice;
+},{}],12:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var audio_1 = require('./audio');
+(function (AudioDeviceDataflow) {
+    AudioDeviceDataflow[AudioDeviceDataflow["RENDER"] = 1] = "RENDER";
+    AudioDeviceDataflow[AudioDeviceDataflow["CAPTURE"] = 2] = "CAPTURE";
+    AudioDeviceDataflow[AudioDeviceDataflow["ALL"] = 3] = "ALL";
+})(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
+var AudioDeviceDataflow = exports.AudioDeviceDataflow;
+(function (AudioDeviceState) {
+    AudioDeviceState[AudioDeviceState["ACTIVE"] = 1] = "ACTIVE";
+    AudioDeviceState[AudioDeviceState["DISABLED"] = 2] = "DISABLED";
+    AudioDeviceState[AudioDeviceState["UNPLUGGED"] = 4] = "UNPLUGGED";
+    AudioDeviceState[AudioDeviceState["NOTPRESENT"] = 8] = "NOTPRESENT";
+    AudioDeviceState[AudioDeviceState["ALL"] = 15] = "ALL";
+})(exports.AudioDeviceState || (exports.AudioDeviceState = {}));
+var AudioDeviceState = exports.AudioDeviceState;
+var System = (function () {
+    function System() {
+    }
+    /**
+     * Gets audio devices, both input and output
+     *
+     * @return {Promise<AudioDevice[]>}
+     */
+    System.getAudioDevices = function (dataflow, state) {
+        if (dataflow === void 0) { dataflow = AudioDeviceDataflow.ALL; }
+        if (state === void 0) { state = AudioDeviceState.ACTIVE; }
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('wasapienum').then(function (devicesJXON) {
+                var devices = [];
+                if (devicesJXON !== undefined) {
+                    var devicesJXONLength = devicesJXON.length;
+                    for (var i = 0; i < devicesJXONLength; ++i) {
+                        var device = devicesJXON[i];
+                        var bitsState = AudioDeviceState[String(device['State'])
+                            .toUpperCase().replace(/\s+/g, '')];
+                        if ((bitsState & state) !== bitsState) {
+                            continue;
+                        }
+                        var bitsFlow = AudioDeviceDataflow[String(device['DataFlow'])
+                            .toUpperCase()];
+                        if ((bitsFlow & dataflow) !== bitsFlow) {
+                            continue;
+                        }
+                        if (device['name'].toLowerCase().indexOf('xsplit') > -1) {
+                            continue;
+                        }
+                        devices.push(audio_1.AudioDevice.parse(device));
+                    }
+                }
+                resolve(devices);
+            });
+        });
+    };
+    return System;
+})();
+exports.System = System;
+},{"../internal/app":2,"./audio":11}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 require('../internal/init');
 __export(require('./app'));
-},{"../internal/init":5,"./app":1}]},{},["xjs"]);
+__export(require('../system/system'));
+__export(require('../system/audio'));
+},{"../internal/init":5,"../system/audio":11,"../system/system":12,"./app":1}]},{},["xjs"]);
