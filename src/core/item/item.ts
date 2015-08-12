@@ -85,7 +85,7 @@ export class Item {
           this.value = XML.parseJSON(JXON.parse(val));
           resolve(this.value);
         } catch (e) {
-          // value is not JXON
+          // value is not valid XML (it is a string instead)
           this.value = val;
           resolve(val);
         }
@@ -104,6 +104,8 @@ export class Item {
 
     if (typeof value !== 'string') { // XML
       this.value = JXON.parse(val);
+    } else {
+      this.value = val;
     }
 
     iItem.set('prop:item', val, slot);
