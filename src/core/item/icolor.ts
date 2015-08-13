@@ -32,9 +32,11 @@ export class ItemColor implements IItemColor {
   }
 
   setTransparency(value: number) {
-    let slot = iItem.attach(this.id);
+    if (value < 0 || value > 255) {
+      throw new RangeError('Transparency may only be in the range 0 to 255.');
+    };
 
-    value = value < 0 ? 0 : value > 255 ? 255 : value;
+    let slot = iItem.attach(this.id);
 
     iItem.set('prop:alpha', String(value), slot);
   }
@@ -50,11 +52,12 @@ export class ItemColor implements IItemColor {
   }
 
   setBrightness(value: number) {
-    let slot = iItem.attach(this.id);
-
-    value = value < -100 ? -100 : value > 100 ? 100 : value;
-
-    iItem.set('prop:cc_brightness', String(value), slot);
+    if (value < -100 || value > 100) {
+      throw new RangeError('Brightness may only be in the range -100 to 100.');
+    } else {
+      let slot = iItem.attach(this.id);
+      iItem.set('prop:cc_brightness', String(value), slot);
+    }
   }
 
   getContrast(): Promise<number> {
@@ -68,11 +71,12 @@ export class ItemColor implements IItemColor {
   }
 
   setContrast(value: number) {
-    let slot = iItem.attach(this.id);
-
-    value = value < -100 ? -100 : value > 100 ? 100 : value;
-
-    iItem.set('prop:cc_contrast', String(value), slot);
+    if (value < -100 || value > 100) {
+      throw new RangeError('Contrast may only be in the range -100 to 100.');
+    } else {
+      let slot = iItem.attach(this.id);
+      iItem.set('prop:cc_contrast', String(value), slot);
+    }
   }
 
   getHue(): Promise<number> {
@@ -86,11 +90,13 @@ export class ItemColor implements IItemColor {
   }
 
   setHue(value: number) {
-    let slot = iItem.attach(this.id);
+    if (value < -180 || value > 180) {
+      throw new RangeError('Contrast may only be in the range -180 to 180.');
+    } else {
+      let slot = iItem.attach(this.id);
+      iItem.set('prop:cc_hue', String(value), slot);
+    }
 
-    value = value < -180 ? -180 : value > 180 ? 180 : value;
-
-    iItem.set('prop:cc_hue', String(value), slot);
   }
 
   getSaturation(): Promise<number> {
@@ -104,11 +110,12 @@ export class ItemColor implements IItemColor {
   }
 
   setSaturation(value: number) {
-    let slot = iItem.attach(this.id);
-
-    value = value < -100 ? -100 : value > 100 ? 100 : value;
-
-    iItem.set('prop:cc_saturation', String(value), slot);
+    if (value < -100 || value > 100) {
+      throw new RangeError('Saturation may only be in the range -100 to 100');
+    } else {
+      let slot = iItem.attach(this.id);
+      iItem.set('prop:cc_saturation', String(value), slot);
+    }
   }
 
   getBorderColor(): Promise<Color> {
