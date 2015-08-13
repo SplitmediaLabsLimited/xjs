@@ -256,6 +256,10 @@ var scene_1 = require('../scene');
     ItemTypes[ItemTypes["HTML"] = 8] = "HTML";
 })(exports.ItemTypes || (exports.ItemTypes = {}));
 var ItemTypes = exports.ItemTypes;
+/**
+ * An Item represents an object that is used as a source on the stage.
+ * Some possible sources are games, microphones, or a webpage.
+ */
 var Item = (function () {
     function Item(props) {
         props = props ? props : {};
@@ -267,13 +271,13 @@ var Item = (function () {
         this.type = props['type'];
         this.xmlparams = props;
     }
-    /** Set name of the item */
+    /** Sets the name of the item */
     Item.prototype.setName = function (value) {
         var slot = item_1.Item.attach(this.id);
         this.name = value;
         item_1.Item.set('prop:name', this.name, slot);
     };
-    /** Get the current name of the item */
+    /** Gets the current name of the item */
     Item.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -300,7 +304,7 @@ var Item = (function () {
                     resolve(_this.value);
                 }
                 catch (e) {
-                    // value is not JXON
+                    // value is not valid XML (it is a string instead)
                     _this.value = val;
                     resolve(val);
                 }
@@ -316,9 +320,12 @@ var Item = (function () {
         if (typeof value !== 'string') {
             this.value = json_1.JSON.parse(val);
         }
+        else {
+            this.value = val;
+        }
         item_1.Item.set('prop:item', val, slot);
     };
-    /** Get Keep loaded option */
+    /** Check if item is kept loaded in memory */
     Item.prototype.getKeepLoaded = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -346,7 +353,7 @@ var Item = (function () {
             });
         });
     };
-    /** Get Item ID */
+    /** Get the ID of the item */
     Item.prototype.getID = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -360,7 +367,7 @@ var Item = (function () {
             resolve(Number(_this.sceneID) + 1);
         });
     };
-    /** Convert the Item object to XML */
+    /** Convert the Item object to an XML string */
     Item.prototype.toXML = function () {
         var item = new json_1.JSON();
         item['tag'] = 'item';
@@ -369,9 +376,9 @@ var Item = (function () {
         item['type'] = this.type;
         return xml_1.XML.parseJSON(item);
     };
-    /** Get the current source (when called for sources), or the source that
-     * was right-clicked to open the config window (when called from the
-       * config window). */
+    /** Get the current source (when function is called by sources), or the source
+     * that was right-clicked to open the config window (when function is called
+     * from the config window) */
     Item.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isScriptPlugin()) {
@@ -1006,6 +1013,9 @@ var JSON = (function () {
         var openResult = openingRegex.exec(sxml);
         var selfCloseResult = selfCloseRegex.exec(sxml);
         var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
+        if (xmlDocument.getElementsByTagName('parsererror').length > 0) {
+            throw new Error('XML parsing error. Invalid XML string');
+        }
         var processNode = function (node) {
             var obj = new JSON();
             obj.tag = node.tagName;
