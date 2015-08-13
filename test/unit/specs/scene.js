@@ -89,6 +89,27 @@ describe('Scene', function() {
 
           return rand;
         });
+
+        spyOn(window.external, 'GetLocalPropertyAsync')
+          .and.callFake(function(prop) {
+          var rand = Math.floor(Math.random()*1000);
+
+          switch (prop) {
+            case 'prop:name':
+              setTimeout(function() {
+                window.OnAsyncCallback(rand, 'Twitch IRC Chat Viewer');
+              }, 10);
+            break;
+
+            case 'prop:item':
+              setTimeout(function() {
+                window.OnAsyncCallback(rand, 'html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}');
+              }, 10);
+            break;
+          }
+
+          return rand;
+        });
       }
 
       Scene.getActiveScene().then(function(result) {
@@ -118,6 +139,25 @@ describe('Scene', function() {
         expect(items).eachToBeInstanceOf(Item);
         done();
       });
+    });
+
+    it('should be able to search for an item by ID', function(done) {
+      XJS.Scene.searchAllForItem('{75EF04AB-6915-4A88-8177-950B12186359}')
+        .then(function(items) {
+          expect(items).toBeInstanceOf(Array);
+          expect(items).eachToBeInstanceOf(Item);
+          expect(items.length).toEqual(1);
+          done();
+        });
+    });
+
+    it('should be able to search for an item by Name', function(done) {
+      XJS.Scene.searchAllForItem('Twitch')
+        .then(function(items) {
+          expect(items).toBeInstanceOf(Array);
+          expect(items).eachToBeInstanceOf(Item);
+          done();
+        });
     });
 
     it('should be able to check if scene is empty or not', function(done) {
