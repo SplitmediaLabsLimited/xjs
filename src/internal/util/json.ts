@@ -26,6 +26,10 @@ export class JSON {
     var xmlDocument = (new DOMParser()).parseFromString(sxml,
       'application/xml');
 
+    if (xmlDocument.getElementsByTagName('parsererror').length > 0) {
+      throw new Error('XML parsing error. Invalid XML string');
+    }
+
     var processNode = function(node) {
       var obj = new JSON();
       obj.tag = node.tagName;
