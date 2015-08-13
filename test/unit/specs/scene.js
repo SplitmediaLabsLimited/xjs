@@ -90,6 +90,7 @@ describe('Scene', function() {
           return rand;
         });
 
+        var lastItemName, lastItemProp;
         spyOn(window.external, 'GetLocalPropertyAsync')
           .and.callFake(function(prop) {
           var rand = Math.floor(Math.random()*1000);
@@ -104,6 +105,27 @@ describe('Scene', function() {
             case 'prop:item':
               setTimeout(function() {
                 window.OnAsyncCallback(rand, 'html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}');
+              }, 10);
+            break;
+          }
+
+          return rand;
+        });
+
+        spyOn(window.external, 'GetLocalPropertyAsync2')
+          .and.callFake(function(prop) {
+          var rand = Math.floor(Math.random()*1000);
+
+          switch (prop) {
+            case 'prop:name':
+              setTimeout(function() {
+                window.OnAsyncCallback(rand, 'HD Webcam C615');
+              }, 10);
+            break;
+
+            case 'prop:item':
+              setTimeout(function() {
+                window.OnAsyncCallback(rand, '@DEVICE:PNP:\\\\?\\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\\GLOBAL');
               }, 10);
             break;
           }
@@ -142,7 +164,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for an item by ID', function(done) {
-      XJS.Scene.searchAllForItem('{75EF04AB-6915-4A88-8177-950B12186359}')
+      Scene.searchAllForItem('{75EF04AB-6915-4A88-8177-950B12186359}')
         .then(function(items) {
           expect(items).toBeInstanceOf(Array);
           expect(items).eachToBeInstanceOf(Item);
@@ -152,7 +174,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for an item by Name', function(done) {
-      XJS.Scene.searchAllForItem('Twitch')
+      Scene.searchAllForItem('Twitch')
         .then(function(items) {
           expect(items).toBeInstanceOf(Array);
           expect(items).eachToBeInstanceOf(Item);
