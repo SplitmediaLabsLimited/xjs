@@ -20,7 +20,7 @@ export class ItemLayout implements IItemLayout {
   private position: Rectangle;
 
   isKeepAspectRatio(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
       iItem.get('prop:keep_ar', slot).then((val) => {
         resolve(val === '1');
@@ -34,7 +34,7 @@ export class ItemLayout implements IItemLayout {
   }
 
   isPositionLocked(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
       iItem.get('prop:lockmove', slot).then((val) => {
         resolve(val === '1');
@@ -48,7 +48,7 @@ export class ItemLayout implements IItemLayout {
   }
 
   isEnhanceResizeEnabled(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
       iItem.get('prop:mipmaps', slot).then((val) => {
         resolve(val === '1');
@@ -62,7 +62,7 @@ export class ItemLayout implements IItemLayout {
   }
 
   getPosition():Promise<Rectangle> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
       iItem.get('prop:pos', slot).then((val) => {
         this.position = Rectangle.parse(val);

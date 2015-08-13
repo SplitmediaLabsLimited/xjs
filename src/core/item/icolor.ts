@@ -22,7 +22,7 @@ export class ItemColor implements IItemColor {
   private id: string;
 
   getTransparency(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:alpha', slot).then((val) => {
@@ -40,7 +40,7 @@ export class ItemColor implements IItemColor {
   }
 
   getBrightness(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:cc_brightness', slot).then((val) => {
@@ -58,7 +58,7 @@ export class ItemColor implements IItemColor {
   }
 
   getContrast(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:cc_contrast', slot).then((val) => {
@@ -76,7 +76,7 @@ export class ItemColor implements IItemColor {
   }
 
   getHue(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:cc_hue', slot).then((val) => {
@@ -94,7 +94,7 @@ export class ItemColor implements IItemColor {
   }
 
   getSaturation(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:cc_saturation', slot).then((val) => {
@@ -112,7 +112,7 @@ export class ItemColor implements IItemColor {
   }
 
   getBorderColor(): Promise<Color> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:border', slot).then((val) => {
