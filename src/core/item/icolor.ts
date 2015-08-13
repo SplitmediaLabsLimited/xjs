@@ -25,7 +25,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:alpha', slot).then((val) => {
+      iItem.get('prop:alpha', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -45,7 +45,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:cc_brightness', slot).then((val) => {
+      iItem.get('prop:cc_brightness', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -64,7 +64,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:cc_contrast', slot).then((val) => {
+      iItem.get('prop:cc_contrast', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -83,7 +83,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:cc_hue', slot).then((val) => {
+      iItem.get('prop:cc_hue', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -103,7 +103,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:cc_saturation', slot).then((val) => {
+      iItem.get('prop:cc_saturation', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -122,7 +122,7 @@ export class ItemColor implements IItemColor {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:border', slot).then((val) => {
+      iItem.get('prop:border', slot).then(val => {
         var bgr: number = Number(val) - 0x80000000;
         var color: Color = Color.fromBGRInt(bgr);
 
