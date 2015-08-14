@@ -13,14 +13,17 @@ function randomWord(length) {
 }
 
 describe('Item', function() {
-  var XJS = require('xjs');
-  var Item = new XJS.Item({
-    id: '{D0FF055A-57BF-43BB-8F25-907DA028A2CC}',
-    sceneID : 1
-  });
+  var Item;
   var local = {};
+  var XJS = require('xjs');
+  if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+    Item = new XJS.Item({
+      id: '{D0FF055A-57BF-43BB-8F25-907DA028A2CC}',
+      sceneID : 1
+    });
+  }
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       spyOn(window.external, 'SetLocalPropertyAsync')
         .and.callFake(function(prop, val) {
@@ -65,43 +68,43 @@ describe('Item', function() {
 
         return rand;
       });
+
+      done();
+    } else {
+      XJS.Scene.get(1).getItems().then(function(items) {
+        if (items.length === 0) {
+          throw new Error('NO ITEMS ON CURRENT SCENE');
+        }
+
+        Item = items[0];
+        done();
+      });
     }
   });
 
-  it('should be able to set the name', function() {
+  it('should be able to set and get the name', function(done) {
     var word = randomWord(5);
     Item.setName(word);
-    expect(local.name).toEqual(word);
-  });
-
-  it('should be able to get the name', function(done) {
     Item.getName().then(function(val) {
-      expect(val).toEqual(local.name);
+      expect(val).toEqual(word);
       done();
     });
   });
 
-  it('should be able to set the value', function() {
+  xit('should be able to set and get the value', function() {
     var word = randomWord(5);
     Item.setValue(word);
-    expect(local.item).toEqual(word);
-  });
-
-  it('should be able to get the value', function(done) {
     Item.getValue().then(function(val) {
-      expect(val).toEqual(local.item);
+      expect(val).toEqual(word);
       done();
     });
   });
 
-  it('should be able to set keep loaded property', function() {
+  it('should be able to set and get keep loaded property', function(done) {
     Item.setKeepLoaded(!local.keeploaded);
-    expect(local.keeploaded).not.toBeNaN();
-  });
-
-  it('should be able to get keep loaded property', function(done) {
     Item.getKeepLoaded().then(function(val) {
       expect(val).toBeTypeOf('boolean');
+      local.keeploaded = val;
       done();
     });
   });
