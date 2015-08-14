@@ -1,14 +1,18 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
+import {AudioDevice as AudioDevice} from '../system/audio';
 import {Rectangle as Rectangle} from '../internal/util/rectangle';
-import {JSON as JSON} from '../internal/util/json';
+import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
 import {Environment} from '../internal/environment';
 
+var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
+var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
+
 /**
- * The App Class provides you methods to get and set application related
+ * The App Class provides you methods to get and set application-related
  * functionalities.
  *
  * ### Basic Usage
@@ -141,42 +145,301 @@ export class App{
   // Audio Services
 
   /**
-   * return: Promise<JSON>
+   * return: Promise<AudioDevice>
+   * 
+   * Gets the primary microphone device used in the application
    *
-   * Gets the configuration for silence detection
-   *
-   * #### Usage
+   * ### Usage
    *
    * ```javascript
-   * var audioGainP = App.getAudioGain();
-   * audioGainP.then(function(res) {
-   *   var audioGain = res;
+   * App.getPrimaryMic().then(function(audioDevice) {
+   *   var primaryMic = audioDevice;
    * });
    * ```
    */
-  getAudioGain(): Promise<JSON> {
+  getPrimaryMic(): Promise<AudioDevice[]> {
     return new Promise(resolve => {
-      iApp.get('microphonegain').then(val => {
-        resolve(JSON.parse(val));
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 0)
+        {
+          resolve(audioDevices[0]);
+        }
+        else
+        {
+          resolve(new AudioDevice({ id: "empty" }));
+        }
       });
     });
   }
 
   /**
-   * param: config<JSON>
+   * return: Promise<AudioDevice>
+   * 
+   * Gets the primary speaker/audio render device used in the application
    *
-   * Sets the configuration for silence detection
-   *
-   * #### Usage
+   * ### Usage
    *
    * ```javascript
-   * App.setAudioGain(configJSON);
+   * App.getPrimarySpeaker().then(function(audioDevice) {
+   *   var primarySpeaker = audioDevice;
+   * });
    * ```
    */
-  setAudioGain(config: JSON): void {
-    config.tag = 'configuration';
+  getPrimarySpeaker(): Promise<AudioDevice[]> {
+    return new Promise(resolve => {
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
 
-    iApp.set('microphonegain', XML.parseJSON(config).toString());
+        if (audioDevices.length && audioDevices.length > 1)
+        {
+          resolve(audioDevices[1]);
+        }
+        else
+        {
+          resolve(new AudioDevice({ id: "empty" }));
+        }
+      });
+    });
+  }
+
+  /**
+   * param: device<AudioDevice>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * 
+   * Sets the primary microphone device to be used in the application
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimaryMic(device).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimaryMic(device: AudioDevice): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+        audioDevices[0] = device;
+        var dev = '';
+        if (Array.isArray(audioDevices)) {
+            for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+            }
+        }
+        dev = '<devices>' + dev + '</devices>';
+        iApp.set('microphonedev2', dev).then(setVal => {
+          resolve(setVal);
+        });
+      });
+    });
+  }
+
+  /**
+   * param: device<AudioDevice>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * 
+   * Sets the primary speaker/audio render device to be used in the application
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeaker(device).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeaker(device: AudioDevice): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+        audioDevices[1] = device;
+        var dev = '';
+        if (Array.isArray(audioDevices)) {
+            for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+            }
+        }
+        dev = '<devices>' + dev + '</devices>';
+        iApp.set('microphonedev2', dev).then(setVal => {
+          resolve(setVal);
+        });
+      });
+    });
+  }
+
+  /**
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * 
+   * Gets whether silence detection is enabled
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.isSilenceDetectionEnabled().then(function(val) {
+   *   var isEnabled = val;
+   * });
+   * ```
+   */
+  isSilenceDetectionEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var micGainObj = JXON.parse(val);
+        resolve(micGainObj['enable'] == '1');
+      });
+    });
+  }
+
+  /**
+   * param: enabled<boolean>
+   * ```
+   * return: Promise<boolean>
+   * ```   
+   * 
+   * Enables or disables silence detection
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.enableSilenceDetection(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  enableSilenceDetection(enabled: boolean): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        silenceDetectionObj['enable'] = (enabled ? '1' : '0');
+        iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
+        .then(setVal => {
+          resolve(setVal);
+        });
+      });  
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   * 
+   * Gets silence detection period,
+   * the length of time after voice detection before silence is again detected
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.getSilenceDetectionPeriod().then(function(val) {
+   *   var silenceDetectionPeriod = val;
+   * });
+   * ```
+   */
+  getSilenceDetectionPeriod(): Promise<number> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var micGainObj = JXON.parse(val);
+        resolve(micGainObj['latency'] !== undefined ?
+          Number(micGainObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD);
+      });
+    });
+  }
+
+  /**
+   * param: sdPeriod<number>
+   * ```
+   * return: Promise<boolean>
+   * ```   
+   * 
+   * Sets silence detection period,
+   * the length of time after voice detection before silence is again detected
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setSilenceDetectionPeriod(sdPeriod).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setSilenceDetectionPeriod(sdPeriod: number): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        silenceDetectionObj['latency'] = (sdPeriod.toString());
+        iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
+        .then(setVal => {
+          resolve(setVal);
+        });
+      });  
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   * 
+   * Gets silence detection threshold/silence amplitude
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.getSilenceDetectionThreshold().then(function(val) {
+   *   var silenceDetectionTfhreshold = val;
+   * });
+   * ```
+   */
+  getSilenceDetectionThreshold(): Promise<number> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var micGainObj = JXON.parse(val);
+        resolve(micGainObj['gain'] !== undefined ?
+          Number(micGainObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
+      });
+    });
+  }
+
+
+  /**
+   * param: sdThreshold<number>
+   * ```
+   * return: Promise<boolean>
+   * ```   
+   * 
+   * Sets silence detection threshold/silence amplitude
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setSilenceDetectionThreshold(sdThreshold).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setSilenceDetectionThreshold(sdThreshold: number): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.get('microphonegain').then(val => {
+        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        silenceDetectionObj['gain'] = (sdThreshold.toString());
+        iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
+        .then(setVal => {
+          resolve(setVal);
+        });
+      });  
+    });
   }
 
   // Dialog Services
@@ -196,6 +459,12 @@ export class App{
    * #### Usage
    *
    * ```javascript
+   * // you may use the following:
+   * //     * App.BORDER_ENABLE (1)
+   * //     * App.BORDER_ENABLE_CAPTION (2)
+   * //     * App.BORDER_ENABLE_SIZING (4)
+   * //     * App.BORDER_ENABLE_MINIMIZE (8)
+   * //     * App.BORDER_ENABLE_MAXIMIZE (16)  
    * App.newDialog(url, width, height, flags, title);
    * ```
    */
@@ -290,17 +559,39 @@ export class App{
 
   /**
    * param: transition<string>
+   * ```
+   * return: Promise<string>
+   * ```
    *
    * Sets the transition for scene changes
    *
-   * #### Usage
+   * ### Usage
    *
    * ```javascript
-   * App.setTransition(transitionid);
+   * // you may use the following:
+   * //     * App.TRANSITION_CLOCK
+   * //     * App.TRANSITION_COLLAPSE
+   * //     * App.TRANSITION_FADE
+   * //     * App.TRANSITION_FAN
+   * //     * App.TRANSITION_HOLE
+   * //     * App.TRANSITION_MOVE_BOTTOM
+   * //     * App.TRANSITION_MOVE_LEFT
+   * //     * App.TRANSITION_MOVE_LEFT_RIGHT
+   * //     * App.TRANSITION_MOVE_RIGHT
+   * //     * App.TRANSITION_MOVE_TOP
+   * //     * App.TRANSITION_MOVE_TOP_BOTTOM
+   * //     * App.TRANSITION_WAVE   
+   * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+   *  var isSet = val;
+   * });
    * ```
    */
-  setTransition(transition: string): void {
-    iApp.set('transitionid', transition);
+  setTransition(transition: string): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.set('transitionid', transition).then(val => {
+        resolve(val);
+      });
+    });
   }
 
   /**
@@ -327,16 +618,25 @@ export class App{
 
   /**
    * param: transition<number>
+   * ```
+   * return: Promise<string>
+   * ```
    *
    * Sets the scene transition duration in milliseconds
    *
    * #### Usage
    *
    * ```javascript
-   * App.setTransitionTime(transitiontime);
+   * App.setTransitionTime(time).then(function(val) {
+   *  var isSet = val;
+   * });
    * ```
    */
-  setTransitionTime(time: Number): void {
-    iApp.set('transitiontime', time.toString());
+  setTransitionTime(time: number): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.set('transitiontime', time.toString()).then(val => {
+        resolve(val);
+      });
+    });    
   }
 }

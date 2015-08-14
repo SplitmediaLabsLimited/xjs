@@ -5,6 +5,15 @@ import {XML as XML} from '../internal/util/xml';
 
 export class AudioDevice{
 
+  static STATE_ACTIVE: string = 'Active';
+
+  static DATAFLOW_RENDER: string = 'Render';
+  static DATAFLOW_CAPTURE: string = 'Capture';
+
+  static SYSTEM_LEVEL_MUTE: number = 0;
+  static SYSTEM_LEVEL_ENABLE: number = 1;
+  static SYSTEM_MUTE_CHANGE_NOT_ALLOWED: number = 255;
+
   private id: string;
   private name: string;
   private adapter: string;
@@ -22,8 +31,9 @@ export class AudioDevice{
   private level: number;
   private enable: boolean;
   private hwlevel: number;
-  private hwenable: boolean;
+  private hwenable: number;
   private delay: number;
+  private mix: number;
 
   constructor(props?: {}) {
     props = props || {};
@@ -41,22 +51,19 @@ export class AudioDevice{
     this.level                = props['level'] !== undefined? props['level'] : 1.000000;
     this.enable               = props['enable'] !== undefined? props['enable'] : true;
     this.hwlevel              = props['hwlevel'] !== undefined? props['hwlevel'] : -1.000000;
-    this.hwenable             = props['hwenable'] !== undefined? props['hwenable'] : true;
+    this.hwenable             = props['hwenable'] !== undefined? props['hwenable'] : 255;
     this.delay                = props['delay'] !== undefined? props['delay'] : 0;
+    this.mix                  = props['mix'] !== undefined? props['mix'] : 0;
   }
 
   /**
+   * return: id<string>
+   *
    * Gets the device ID
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * string
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var audioDeviceID = device.getID();
    * ```
    */
@@ -65,17 +72,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: name<string>
+   *
    * Gets the device name
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * string
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var audioDeviceName = device.getName();
    * ```
    */
@@ -84,19 +87,15 @@ export class AudioDevice{
   }
 
   /**
+   * return: dataflow<string>
+   *
    * Gets whether device is capturing or rendering audio
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * string
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * var audioDeviceName = device.getName();
-   * // possible values, "render"/"capture"
+   * ```javascript
+   * var audioDataFlow = device.getDataFlow();
+   *   //where possible values are "render" or "capture"
    * ```
    */
   getDataFlow(): string {
@@ -104,17 +103,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: isDefaultDevice<boolean>
+   *
    * Gets whether audio device is the system default
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
    * ```
    */
@@ -123,17 +118,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: appDeviceVolume<number>
+   *
    * Gets the device audio level in the application
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * number
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var audioDeviceVolumeLevel = audioDevice.getLevel();
    * ```
    */
@@ -142,23 +133,16 @@ export class AudioDevice{
   }
 
   /**
+   * param: volume<number>
+   * ```
+   * return: audioDevice<AudioDevice>, for chaining
+   * ```
+   *
    * Sets the device audio level in the application
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * number
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -169,17 +153,13 @@ export class AudioDevice{
   }
 
   /**
-   * Gets whether audio device is enabled/muted in the application
+   * return: isEnabled<boolean>
    *
-   * #Return
+   * Gets whether audio device is the system default
    *
-   * ```
-   * boolean
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
    * ```
    */
@@ -188,24 +168,17 @@ export class AudioDevice{
   }
 
   /**
+   * param: enabled<boolean>
+   * ```
+   * return: audioDevice<AudioDevice>, for chaining
+   * ```
+   *
    * Enables audio device/sets software mute
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * audioDevice.setLevel(100);
+   * ```javascript
+   * audioDevice.setEnabled(true);
    * ```
    */
   setEnabled(enabled: boolean) {
@@ -215,18 +188,14 @@ export class AudioDevice{
   }
 
   /**
+   * return: systemDeviceVolume<number>
+   *
    * Gets the device system volume
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * number
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * var appVolumeLevel = audioDevice.getLevel();
+   * ```javascript
+   * var systemVolumeLevel = audioDevice.getSystemLevel();
    * ```
    */
   getSystemLevel(): number {
@@ -234,24 +203,17 @@ export class AudioDevice{
   }
 
   /**
+   * param: volume<number>
+   * ```
+   * return: audioDevice<AudioDevice>, for chaining
+   * ```
+   *
    * Sets the device system volume
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * number
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * audioDevice.setLevel(100);
+   * ```javascript
+   * audioDevice.setSystemLevel(100);
    * ```
    */
   setSystemLevel(hwlevel: number) {
@@ -261,63 +223,52 @@ export class AudioDevice{
   }
 
   /**
+   * return: isSystemEnabled<number>
+   *
    * Gets whether audio device is enabled/muted in the system
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * var isAudioDeviceEnabled = audioDevice.isEnabled();
+   * ```javascript
+   * var systemAudioDeviceEnabled = audioDevice.getSystemEnabled();
    * ```
    */
-  isSystemEnabled(): boolean {
+  getSystemEnabled(): number {
     return this.hwenable;
   }
 
   /**
+   * param: systemEnabled<number>
+   * ```
+   * return: audioDevice<AudioDevice>, for chaining
+   * ```
+   *
    * Enables audio device/sets software mute
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
-   *
-   * #Usage
-   *
-   * ````
-   * audioDevice.setLevel(100);
+   * ```javascript
+   * // you may use the following:
+   * //     * AudioDevice.SYSTEM_LEVEL_MUTE (0)
+   * //     * AudioDevice.SYSTEM_LEVEL_ENABLE (1)
+   * //     * AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED (255)
+   * audioDevice.setSystemEnabled(AudioDevice.SYSTEM_LEVEL_MUTE);
    * ```
    */
-  setSystemEnabled(hwenabled: boolean) {
+  setSystemEnabled(hwenabled: number) {
     this.hwenable = hwenabled;
 
     return this;
   }
 
   /**
+   * return: delay<number> (100 nanoseconds in units)
+   *
    * Get the loopback capture delay value 
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * number (100 nanoseconds units)
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var audioDelay = audioDevice.getDelay();
    * ```
    */
@@ -326,24 +277,17 @@ export class AudioDevice{
   }
 
   /**
-   * Sets the loopback capture delay value 
-   *
-   * #Parameter
-   *
+   * param: delay<number> (100 nanoseconds in units)
    * ```
-   * number (100 nanoseconds units)
+   * return: audioDevice<AudioDevice>, for chaining
    * ```
    *
-   * #Return
+   * Sets the loopback capture delay value
    *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ````
-   * audioDevice.setLevel(100);
+   * ```javascript
+   * audioDevice.setDelay(100);
    * ```
    */
   setDelay(delay: number) {
@@ -353,53 +297,42 @@ export class AudioDevice{
   }
 
   /**
-   * Converts the AudioDevice item to XML string
+   * return: xmlString<string>
    *
-   * #Return
+   * Converts the AudioDevice item to XML-formatted string
    *
-   * ```
-   * string (XML format)
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ````
-   * var audioDeviceXMLString = AudioDevice.toString;
+   * ```javascript
+   * var audioDeviceXMLString = AudioDevice.toString();
    * ```
    */
-  /** Converts the AudioDevice item to XML string */
   toString(): string {
     var device = new JXON();
     device.tag = 'dev';
     device.selfclosing = true;
     device['id']       = this.getId();
-    device['level']    = this.getLevel();
+    device['level']    = this.getLevel().toFixed(6);
     device['enable']   = this.isEnabled() ? 1 : 0;
-    device['hwlevel']  = this.getSystemLevel();
-    device['hwenable'] = this.isSystemEnabled() ? 1 : 0;
+    device['hwlevel']  = this.getSystemLevel().toFixed(6);
+    device['hwenable'] = this.getSystemEnabled();
     device['delay']    = this.getDelay();
+    device['mix']      = this.mix;
     
     return XML.parseJSON(device).toString();
   }
 
   /**
+   * param: deviceJXON<JSON>
+   * ```
+   * return: audioDevice<AudioDevice>
+   * ```
+   *
    * Converts a JSON object into an AudioDevice object
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * deviceJXON: JXON
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice
-   * ```
-   *
-   * #Usage
-   *
-   * ````
+   * ```javascript
    * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
    * ```
    */
@@ -420,11 +353,10 @@ export class AudioDevice{
 
     audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
       .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
-      .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : 1))
-      .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] === '1' : true)
-      .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 1)); 
+      .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : -1))
+      .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+      .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0)); 
 
     return audio;
   }
-
 }
