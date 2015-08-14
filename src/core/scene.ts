@@ -42,6 +42,32 @@ export class Scene {
   }
 
   /**
+   * Get a list of scene object matching the given scene name.
+   *
+   * #Return
+   *
+   * ```
+   * Scene[]
+   * ```
+   *
+   * #Usage
+   *
+   * ```
+   * var scenes = Scene.get('Game: ');
+   * ```
+   */
+  static getByName(sceneNum: number): Scene {
+    // initialize if necessary
+    if (Scene.scenePool.length === 0) {
+      for (var i = 0; i < Scene.maxScenes; i++) {
+        Scene.scenePool[i] = new Scene(i + 1);
+      }
+    }
+
+
+  }
+
+  /**
    * Get the currently active scene.
    *
    * #Return
@@ -58,9 +84,15 @@ export class Scene {
    */
   static getActiveScene(): Promise<Scene> {
     return new Promise(resolve => {
-      iApp.get('preset:0').then(id => {
-        resolve(Scene.get(Number(id) + 1));
-      });
+      if (Environment.isSourceHtml()) {
+        iApp.get('presetconfig:-1').then(sceneString => {
+      resolve(null); // TODO
+        });
+      } else {
+        iApp.get('preset:0').then(id => {
+          resolve(Scene.getById(Number(id) + 1));
+        });
+      }
     });
   }
 
