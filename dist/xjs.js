@@ -1,7 +1,7 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
-var rectangle_1 = require('../internal/util/rectangle');
+var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
@@ -204,7 +204,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":8,"../internal/internal":11,"../internal/util/json":14,"../internal/util/rectangle":16,"../internal/util/xml":17,"./environment":2}],2:[function(require,module,exports){
+},{"../internal/app":8,"../internal/internal":11,"../internal/util/json":13,"../internal/util/xml":15,"../util/rectangle":17,"./environment":2}],2:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -258,10 +258,10 @@ var CameraItem = (function (_super) {
 })(item_1.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor]);
-},{"../../internal/util/mixin":15,"./icolor":4,"./ilayout":5,"./item":6}],4:[function(require,module,exports){
+},{"../../internal/util/mixin":14,"./icolor":4,"./ilayout":5,"./item":6}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
-var color_1 = require('../../internal/util/color');
+var color_1 = require('../../util/color');
 var ItemColor = (function () {
     function ItemColor() {
     }
@@ -372,10 +372,10 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":12,"../../internal/util/color":13}],5:[function(require,module,exports){
+},{"../../internal/item":12,"../../util/color":16}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
-var rectangle_1 = require('../../internal/util/rectangle');
+var rectangle_1 = require('../../util/rectangle');
 var ItemLayout = (function () {
     function ItemLayout() {
     }
@@ -437,7 +437,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":12,"../../internal/util/rectangle":16}],6:[function(require,module,exports){
+},{"../../internal/item":12,"../../util/rectangle":17}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -592,7 +592,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../../internal/item":12,"../../internal/util/json":14,"../../internal/util/xml":17,"../environment":2,"../scene":7}],7:[function(require,module,exports){
+},{"../../internal/item":12,"../../internal/util/json":13,"../../internal/util/xml":15,"../environment":2,"../scene":7}],7:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var environment_1 = require('./environment');
@@ -941,7 +941,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":11,"./util/json":14}],9:[function(require,module,exports){
+},{"./internal":11,"./util/json":13}],9:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -1195,6 +1195,140 @@ var Item = (function () {
 })();
 exports.Item = Item;
 },{"../core/environment":2,"./internal":11}],13:[function(require,module,exports){
+var xml_1 = require('./xml');
+var JSON = (function () {
+    function JSON(xml) {
+        if (xml === undefined || xml === '') {
+            return;
+        }
+        var sxml = xml;
+        if (xml instanceof xml_1.XML) {
+            sxml = xml.toString();
+        }
+        var openingRegex = /<([^\s>\/]+)/g;
+        var selfCloseRegex = /(\/>)/g;
+        var openResult = openingRegex.exec(sxml);
+        var selfCloseResult = selfCloseRegex.exec(sxml);
+        var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
+        var processNode = function (node) {
+            var obj = new JSON();
+            obj.tag = node.tagName;
+            // FIXME: optimize complex condition
+            // every time we process a new node, we advance the opening tag regex
+            openResult = openingRegex.exec(sxml);
+            if (openResult === null && selfCloseRegex.lastIndex === 0) {
+            }
+            else if (openResult === null && selfCloseRegex.lastIndex > 0) {
+                // no more opening tags, so by default the self-closing belongs to this
+                obj.selfclosing = true;
+                selfCloseResult = selfCloseRegex.exec(sxml);
+            }
+            else if (openResult !== null &&
+                selfCloseRegex.lastIndex > openingRegex.lastIndex) {
+            }
+            else if (openResult !== null &&
+                selfCloseRegex.lastIndex < openingRegex.lastIndex &&
+                selfCloseRegex.lastIndex === openingRegex.lastIndex -
+                    openResult[0].length // make sure self-closing pattern belongs to
+            ) {
+                obj.selfclosing = true;
+                selfCloseResult = selfCloseRegex.exec(sxml);
+            }
+            for (var i = 0; i < node.attributes.length; i++) {
+                var att = node.attributes[i];
+                obj[att.name] = att.value;
+            }
+            obj.children = [];
+            // FIXME: self-closing nodes do not have children, maybe optimize then?
+            for (var j = 0; j < node.childNodes.length; j++) {
+                var child = node.childNodes[j];
+                if (child instanceof Element) {
+                    obj.children.push(processNode(child));
+                }
+            }
+            // process text value
+            if (obj.value === undefined && obj.children.length === 0) {
+                delete obj.children;
+                obj.value = node.textContent;
+            }
+            return obj;
+        };
+        return processNode(xmlDocument.childNodes[0]);
+    }
+    JSON.parse = function (xml) {
+        return new JSON(xml);
+    };
+    return JSON;
+})();
+exports.JSON = JSON;
+},{"./xml":15}],14:[function(require,module,exports){
+function applyMixins(derivedCtor, baseCtors) {
+    baseCtors.forEach(function (baseCtor) {
+        Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
+            if (name === 'constructor') {
+                return;
+            }
+            derivedCtor.prototype[name] = baseCtor.prototype[name];
+        });
+    });
+}
+exports.applyMixins = applyMixins;
+},{}],15:[function(require,module,exports){
+var XML = (function () {
+    function XML(json) {
+        var attributes = '';
+        var value = '';
+        if (json.value === undefined) {
+            json.value = '';
+        }
+        for (var key in json) {
+            if (!XML.RESERVED_ATTRIBUTES.test(key) &&
+                json[key] !== undefined) {
+                attributes += [' ', key, '=\'', json[key], '\''].join('');
+            }
+        }
+        if (json.children === undefined) {
+            json.children = [];
+        }
+        for (var _i = 0, _a = json.children; _i < _a.length; _i++) {
+            var child = _a[_i];
+            json.value += new XML(child).toString();
+        }
+        if (json.selfclosing === true) {
+            this.xml = ['<', json.tag, attributes, ' />'].join('');
+        }
+        else if (value !== '') {
+            this.xml = ['<', json.tag, attributes, '>',
+                value, '</', json.tag, '>'].join('');
+        }
+        else {
+            // json actually contains text content
+            this.xml = ['<', json.tag, attributes, '>',
+                json.value, '</', json.tag, '>'].join('');
+        }
+    }
+    XML.prototype.toString = function () {
+        return this.xml;
+    };
+    XML.parseJSON = function (json) {
+        return new XML(json);
+    };
+    XML.encode = function (str) {
+        return str.replace(/[&<>'']/g, function ($0) {
+            return '&' + {
+                '&': 'amp',
+                '<': 'lt',
+                '>': 'gt',
+                '\'': 'quot',
+                '"': '#39'
+            }[$0] + ';';
+        });
+    };
+    XML.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
+    return XML;
+})();
+exports.XML = XML;
+},{}],16:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -1266,86 +1400,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],14:[function(require,module,exports){
-var xml_1 = require('./xml');
-var JSON = (function () {
-    function JSON(xml) {
-        if (xml === undefined || xml === '') {
-            return;
-        }
-        var sxml = xml;
-        if (xml instanceof xml_1.XML) {
-            sxml = xml.toString();
-        }
-        var openingRegex = /<([^\s>\/]+)/g;
-        var selfCloseRegex = /(\/>)/g;
-        var openResult = openingRegex.exec(sxml);
-        var selfCloseResult = selfCloseRegex.exec(sxml);
-        var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
-        var processNode = function (node) {
-            var obj = new JSON();
-            obj.tag = node.tagName;
-            // FIXME: optimize complex condition
-            // every time we process a new node, we advance the opening tag regex
-            openResult = openingRegex.exec(sxml);
-            if (openResult === null && selfCloseRegex.lastIndex === 0) {
-            }
-            else if (openResult === null && selfCloseRegex.lastIndex > 0) {
-                // no more opening tags, so by default the self-closing belongs to this
-                obj.selfclosing = true;
-                selfCloseResult = selfCloseRegex.exec(sxml);
-            }
-            else if (openResult !== null &&
-                selfCloseRegex.lastIndex > openingRegex.lastIndex) {
-            }
-            else if (openResult !== null &&
-                selfCloseRegex.lastIndex < openingRegex.lastIndex &&
-                selfCloseRegex.lastIndex === openingRegex.lastIndex -
-                    openResult[0].length // make sure self-closing pattern belongs to
-            ) {
-                obj.selfclosing = true;
-                selfCloseResult = selfCloseRegex.exec(sxml);
-            }
-            for (var i = 0; i < node.attributes.length; i++) {
-                var att = node.attributes[i];
-                obj[att.name] = att.value;
-            }
-            obj.children = [];
-            // FIXME: self-closing nodes do not have children, maybe optimize then?
-            for (var j = 0; j < node.childNodes.length; j++) {
-                var child = node.childNodes[j];
-                if (child instanceof Element) {
-                    obj.children.push(processNode(child));
-                }
-            }
-            // process text value
-            if (obj.value === undefined && obj.children.length === 0) {
-                delete obj.children;
-                obj.value = node.textContent;
-            }
-            return obj;
-        };
-        return processNode(xmlDocument.childNodes[0]);
-    }
-    JSON.parse = function (xml) {
-        return new JSON(xml);
-    };
-    return JSON;
-})();
-exports.JSON = JSON;
-},{"./xml":17}],15:[function(require,module,exports){
-function applyMixins(derivedCtor, baseCtors) {
-    baseCtors.forEach(function (baseCtor) {
-        Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
-            if (name === 'constructor') {
-                return;
-            }
-            derivedCtor.prototype[name] = baseCtor.prototype[name];
-        });
-    });
-}
-exports.applyMixins = applyMixins;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -1485,69 +1540,16 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],17:[function(require,module,exports){
-var XML = (function () {
-    function XML(json) {
-        var attributes = '';
-        var value = '';
-        if (json.value === undefined) {
-            json.value = '';
-        }
-        for (var key in json) {
-            if (!XML.RESERVED_ATTRIBUTES.test(key) &&
-                json[key] !== undefined) {
-                attributes += [' ', key, '=\'', json[key], '\''].join('');
-            }
-        }
-        if (json.children === undefined) {
-            json.children = [];
-        }
-        for (var _i = 0, _a = json.children; _i < _a.length; _i++) {
-            var child = _a[_i];
-            json.value += new XML(child).toString();
-        }
-        if (json.selfclosing === true) {
-            this.xml = ['<', json.tag, attributes, ' />'].join('');
-        }
-        else if (value !== '') {
-            this.xml = ['<', json.tag, attributes, '>',
-                value, '</', json.tag, '>'].join('');
-        }
-        else {
-            // json actually contains text content
-            this.xml = ['<', json.tag, attributes, '>',
-                json.value, '</', json.tag, '>'].join('');
-        }
-    }
-    XML.prototype.toString = function () {
-        return this.xml;
-    };
-    XML.parseJSON = function (json) {
-        return new XML(json);
-    };
-    XML.encode = function (str) {
-        return str.replace(/[&<>'']/g, function ($0) {
-            return '&' + {
-                '&': 'amp',
-                '<': 'lt',
-                '>': 'gt',
-                '\'': 'quot',
-                '"': '#39'
-            }[$0] + ';';
-        });
-    };
-    XML.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
-    return XML;
-})();
-exports.XML = XML;
 },{}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-require('../internal/init');
-__export(require('./environment'));
-__export(require('./app'));
-__export(require('./scene'));
-__export(require('./item/item'));
-__export(require('./item/camera'));
-},{"../internal/init":10,"./app":1,"./environment":2,"./item/camera":3,"./item/item":6,"./scene":7}]},{},["xjs"]);
+require('./internal/init');
+__export(require('./util/color'));
+__export(require('./util/rectangle'));
+__export(require('./core/environment'));
+__export(require('./core/app'));
+__export(require('./core/scene'));
+__export(require('./core/item/item'));
+__export(require('./core/item/camera'));
+},{"./core/app":1,"./core/environment":2,"./core/item/camera":3,"./core/item/item":6,"./core/scene":7,"./internal/init":10,"./util/color":16,"./util/rectangle":17}]},{},["xjs"]);

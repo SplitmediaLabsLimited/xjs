@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
-import {Color} from '../../internal/util/color';
+import {Color} from '../../util/color';
 
 export interface IItemColor {
   getTransparency(): Promise<number>;

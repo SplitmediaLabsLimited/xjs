@@ -8,13 +8,13 @@
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync'),
     Server      = require('karma').Server;
-  
+
   gulp.task('browserify', function() {
-    return browserify('./src/core/index.ts')
+    return browserify('./src/index.ts')
       .plugin('tsify', {
         target: 'ES5',
         declaration: true })
-      .require('./src/core/index.ts', {expose: 'xjs'})
+      .require('./src/index.ts', {expose: 'xjs'})
       .bundle()
       .pipe(source('xjs.js'))
       .pipe(gulp.dest('dist'));

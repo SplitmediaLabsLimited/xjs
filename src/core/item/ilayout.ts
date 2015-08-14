@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../internal/util/rectangle';
+import {Rectangle} from '../../util/rectangle';
 
 
 export interface IItemLayout {

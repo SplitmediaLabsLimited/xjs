@@ -1,7 +1,7 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
-import {Rectangle as Rectangle} from '../internal/util/rectangle';
+import {Rectangle as Rectangle} from '../util/rectangle';
 import {JSON as JSON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';

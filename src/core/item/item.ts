@@ -1,6 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Rectangle} from '../../internal/util/rectangle';
+import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
