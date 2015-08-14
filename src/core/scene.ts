@@ -42,21 +42,23 @@ export class Scene {
   }
 
   /**
-   * Get a list of scene object matching the given scene name.
+   * Asynchronous functon to get a list of scene objects with a specific name.
    *
    * #Return
    *
    * ```
-   * Scene[]
+   * Promise<Scene[]>
    * ```
    *
    * #Usage
    *
    * ```
-   * var scenes = Scene.get('Game: ');
+   * var scenes = Scene.getByName('Game').then(function(scenes) {
+   *    // manipulate scenes
+   * });
    * ```
    */
-  static getByName(sceneNum: number): Scene {
+  static getByName(sceneName: string): Promise<Scene[]> {
     // initialize if necessary
     if (Scene.scenePool.length === 0) {
       for (var i = 0; i < Scene.maxScenes; i++) {
@@ -64,7 +66,27 @@ export class Scene {
       }
     }
 
+    let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
+      iApp.get('presetname:' + index).then(name => {
+        if (sceneName === name) {
+          return Promise.resolve(Scene.scenePool[index]);
+        } else {
+          return Promise.resolve(null);
+        }
+      });
+    }));
 
+    return new Promise(resolve => {
+      namePromise.then(results => {
+        let returnArray = [];
+        for (var j = 0; j < results.length; ++j) {
+          if (results[j] !== null) {
+            returnArray.push(results[j]);
+          }
+        };
+        resolve(returnArray);
+      });
+    });
   }
 
   /**

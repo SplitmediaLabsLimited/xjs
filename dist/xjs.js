@@ -417,16 +417,64 @@ var Scene = (function () {
      * #Usage
      *
      * ```
-     * var scene1 = Scene.get(1);
+     * var scene1 = Scene.getById(1);
      * ```
      */
-    Scene.get = function (sceneNum) {
+    Scene.getById = function (sceneNum) {
+        // initialize if necessary
         if (Scene.scenePool.length === 0) {
             for (var i = 0; i < Scene.maxScenes; i++) {
                 Scene.scenePool[i] = new Scene(i + 1);
             }
         }
         return Scene.scenePool[sceneNum - 1];
+    };
+    /**
+     * Asynchronous functon to get a list of scene objects with a specific name.
+     *
+     * #Return
+     *
+     * ```
+     * Promise<Scene[]>
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var scenes = Scene.getByName('Game').then(function(scenes) {
+     *    // manipulate scenes
+     * });
+     * ```
+     */
+    Scene.getByName = function (sceneName) {
+        // initialize if necessary
+        if (Scene.scenePool.length === 0) {
+            for (var i = 0; i < Scene.maxScenes; i++) {
+                Scene.scenePool[i] = new Scene(i + 1);
+            }
+        }
+        var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
+            app_1.App.get('presetname:' + index).then(function (name) {
+                if (sceneName === name) {
+                    return Promise.resolve(Scene.scenePool[index]);
+                }
+                else {
+                    return Promise.resolve(null);
+                }
+            });
+        }));
+        return new Promise(function (resolve) {
+            namePromise.then(function (results) {
+                var returnArray = [];
+                for (var j = 0; j < results.length; ++j) {
+                    if (results[j] !== null) {
+                        returnArray.push(results[j]);
+                    }
+                }
+                ;
+                resolve(returnArray);
+            });
+        });
     };
     /**
      * Get the currently active scene.
@@ -445,9 +493,16 @@ var Scene = (function () {
      */
     Scene.getActiveScene = function () {
         return new Promise(function (resolve) {
-            app_1.App.get('preset:0').then(function (id) {
-                resolve(Scene.get(Number(id) + 1));
-            });
+            if (environment_1.Environment.isSourceHtml()) {
+                app_1.App.get('presetconfig:-1').then(function (sceneString) {
+                    resolve(null); // TODO
+                });
+            }
+            else {
+                app_1.App.get('preset:0').then(function (id) {
+                    resolve(Scene.getById(Number(id) + 1));
+                });
+            }
         });
     };
     /**
@@ -477,7 +532,7 @@ var Scene = (function () {
             var found = false;
             return new Promise(function (resolve) {
                 if (Scene.scenePool.length === 0) {
-                    Scene.get(1); // initialize scene items first
+                    Scene.getById(1); // initialize scene items first
                 }
                 Scene.scenePool.forEach(function (scene, idx, arr) {
                     if (!found) {
@@ -503,7 +558,7 @@ var Scene = (function () {
             // search by name substring
             return new Promise(function (resolve) {
                 if (Scene.scenePool.length === 0) {
-                    Scene.get(1); // initialize scene items first
+                    Scene.getById(1); // initialize scene items first
                 }
                 return Promise.all(Scene.scenePool.map(function (scene) {
                     return new Promise(function (resolveScene) {
