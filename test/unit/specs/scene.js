@@ -13,7 +13,7 @@ describe('Scene', function() {
   describe('should be able to fetch a specific scene by index', function() {
     it('as a Scene object', function() {
       for (var i = 1; i <= MAX_SCENES; i++) {
-        expect(Scene.get(i)).toBeInstanceOf(Scene);
+        expect(Scene.getById(i)).toBeInstanceOf(Scene);
       }
     });
   });

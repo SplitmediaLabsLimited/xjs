@@ -27,10 +27,11 @@ export class Scene {
    * #Usage
    *
    * ```
-   * var scene1 = Scene.get(1);
+   * var scene1 = Scene.getById(1);
    * ```
    */
-  static get(sceneNum: number): Scene {
+  static getById(sceneNum: number): Scene {
+    // initialize if necessary
     if (Scene.scenePool.length === 0) {
       for (var i = 0; i < Scene.maxScenes; i++) {
         Scene.scenePool[i] = new Scene(i + 1);
@@ -91,7 +92,7 @@ export class Scene {
     let found = false;
     return new Promise(resolve => {
       if (Scene.scenePool.length === 0) {
-        Scene.get(1); // initialize scene items first
+        Scene.getById(1); // initialize scene items first
       }
       Scene.scenePool.forEach((scene, idx, arr) => {
         if (!found) {
@@ -115,7 +116,7 @@ export class Scene {
     // search by name substring
       return new Promise(resolve => {
         if (Scene.scenePool.length === 0) {
-          Scene.get(1); // initialize scene items first
+          Scene.getById(1); // initialize scene items first
         }
 
         return Promise.all(Scene.scenePool.map(scene => {
