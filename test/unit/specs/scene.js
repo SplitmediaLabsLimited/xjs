@@ -180,10 +180,18 @@ describe('Scene', function() {
     });
 
     it('should be able to search for an item by Name', function(done) {
-      Scene.searchAllForItem('Twitch')
+      Scene.searchAllForItemName('Twitch')
         .then(function(items) {
           expect(items).toBeInstanceOf(Array);
           expect(items).eachToBeInstanceOf(Item);
+          done();
+        });
+    });
+
+    it('should be able to get empty array when searching for nonexistent name', function(done) {
+      Scene.searchAllForItemName('{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        .then(function(items) {
+          expect(items).toBeEmptyArray();
           done();
         });
     });

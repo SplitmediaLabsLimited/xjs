@@ -79,18 +79,16 @@ export class Item {
         if (val === '') { // don't return XML for null values
           this.value = '';
           resolve(val);
+        } else {
+          try {
+            this.value = XML.parseJSON(JXON.parse(val));
+            resolve(this.value);
+          } catch (e) {
+            // value is not valid XML (it is a string instead)
+            this.value = val;
+            resolve(val);
+          }
         }
-
-        try {
-          this.value = XML.parseJSON(JXON.parse(val));
-          resolve(this.value);
-        } catch (e) {
-          // value is not valid XML (it is a string instead)
-          this.value = val;
-          resolve(val);
-        }
-
-        resolve(this.value);
       });
     });
   }

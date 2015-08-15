@@ -241,6 +241,45 @@ export class Scene {
     }
   }
 
+  static searchAllForItemName(param: string): Promise<Item[]> {
+    Scene.initializeScenePool();
+    let matches: Item[] = [];
+
+    return new Promise(resolve => {
+      return Promise.all(Scene.scenePool.map(scene => {
+        return new Promise(resolveScene => {
+          scene.getItems().then(items => {
+            if (items.length === 0) {
+              resolveScene();
+            } else {
+              return Promise.all(items.map(item => {
+                return new Promise(resolveItem => {
+                  item.getName().then(name => {
+                    if (name.match(param)) {
+                      matches.push(item);
+                      return '';
+                    } else {
+                      return item.getValue();
+                    }
+                  }).then(value => {
+                    if (value.toString().match(param)) {
+                      matches.push(item);
+                    }
+                    resolveItem();
+                  });
+                });
+              })).then(() => {
+                resolveScene();
+              });
+            }
+          });
+        });
+      })).then(() => {
+        resolve(matches);
+      });
+    });
+  };
+
   /**
    * Get the 1-indexed scene number of this scene object.
    *
