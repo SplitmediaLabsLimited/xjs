@@ -397,6 +397,7 @@ var Item = (function () {
 exports.Item = Item;
 },{"../../internal/item":9,"../../internal/util/json":10,"../../internal/util/xml":12,"../environment":2,"../scene":4}],4:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
 var app_1 = require('../internal/app');
 var environment_1 = require('./environment');
 var item_1 = require('./item/item');
@@ -454,12 +455,12 @@ var Scene = (function () {
             }
         }
         var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
-            app_1.App.get('presetname:' + index).then(function (name) {
+            return app_1.App.get('presetname:' + index).then(function (name) {
                 if (sceneName === name) {
-                    return Promise.resolve(Scene.scenePool[index]);
+                    return Scene.scenePool[index];
                 }
                 else {
-                    return Promise.resolve(null);
+                    return null;
                 }
             });
         }));
@@ -495,7 +496,10 @@ var Scene = (function () {
         return new Promise(function (resolve) {
             if (environment_1.Environment.isSourceHtml()) {
                 app_1.App.get('presetconfig:-1').then(function (sceneString) {
-                    resolve(null); // TODO
+                    var curScene = json_1.JSON.parse(sceneString);
+                    Scene.getByName(curScene['name']).then(function (scene) {
+                        resolve(scene);
+                    });
                 });
             }
             else {
@@ -724,7 +728,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":5,"./environment":2,"./item/item":3}],5:[function(require,module,exports){
+},{"../internal/app":5,"../internal/util/json":10,"./environment":2,"./item/item":3}],5:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');

@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {JSON as JXON} from '../internal/util/json';
 import {App as iApp} from '../internal/app';
 import {Environment} from './environment';
 import {Item} from './item/item';
@@ -67,11 +68,11 @@ export class Scene {
     }
 
     let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
-      iApp.get('presetname:' + index).then(name => {
+      return iApp.get('presetname:' + index).then(name => {
         if (sceneName === name) {
-          return Promise.resolve(Scene.scenePool[index]);
+          return Scene.scenePool[index];
         } else {
-          return Promise.resolve(null);
+          return null;
         }
       });
     }));
@@ -108,7 +109,10 @@ export class Scene {
     return new Promise(resolve => {
       if (Environment.isSourceHtml()) {
         iApp.get('presetconfig:-1').then(sceneString => {
-      resolve(null); // TODO
+          let curScene = JXON.parse(sceneString);
+          Scene.getByName(curScene['name']).then(scene => {
+            resolve(scene);
+          });
         });
       } else {
         iApp.get('preset:0').then(id => {
