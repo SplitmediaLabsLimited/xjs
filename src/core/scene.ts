@@ -15,6 +15,14 @@ export class Scene {
     this.id = sceneNum - 1;
   };
 
+  private static initializeScenePool() {
+    if (Scene.scenePool.length === 0) {
+      for (var i = 0; i < Scene.maxScenes; i++) {
+        Scene.scenePool[i] = new Scene(i + 1);
+      }
+    }
+  }
+
 
   /**
    * Get a specific scene object given the scene number.
@@ -33,11 +41,7 @@ export class Scene {
    */
   static getById(sceneNum: number): Scene {
     // initialize if necessary
-    if (Scene.scenePool.length === 0) {
-      for (var i = 0; i < Scene.maxScenes; i++) {
-        Scene.scenePool[i] = new Scene(i + 1);
-      }
-    }
+    Scene.initializeScenePool();
 
     return Scene.scenePool[sceneNum - 1];
   }
@@ -61,11 +65,7 @@ export class Scene {
    */
   static getByName(sceneName: string): Promise<Scene[]> {
     // initialize if necessary
-    if (Scene.scenePool.length === 0) {
-      for (var i = 0; i < Scene.maxScenes; i++) {
-        Scene.scenePool[i] = new Scene(i + 1);
-      }
-    }
+    Scene.initializeScenePool();
 
     let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
       return iApp.get('presetname:' + index).then(name => {
@@ -149,9 +149,7 @@ export class Scene {
     // search by ID (only one match should be found)
     let found = false;
     return new Promise(resolve => {
-      if (Scene.scenePool.length === 0) {
-        Scene.getById(1); // initialize scene items first
-      }
+      Scene.initializeScenePool();
       Scene.scenePool.forEach((scene, idx, arr) => {
         if (!found) {
           scene.getItems().then(items => {
@@ -173,9 +171,7 @@ export class Scene {
     } else {
     // search by name substring
       return new Promise(resolve => {
-        if (Scene.scenePool.length === 0) {
-          Scene.getById(1); // initialize scene items first
-        }
+        Scene.initializeScenePool();
 
         return Promise.all(Scene.scenePool.map(scene => {
           return new Promise(resolveScene => {
