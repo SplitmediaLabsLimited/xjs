@@ -2,13 +2,27 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
+import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {Item} from './item';
+import {Scene} from '../scene';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
 export class CameraItem extends Item implements IItemLayout, IItemColor {
+
+  /** Tells the item to add itself to a scene.
+   *  Currently limited to adding to the active scene.
+   *  Should be implemented by Item subclasses.
+   */
+  addToScene(scene: Scene): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.callFunc('additem', this.toXML().toString()).then(() => {
+        resolve();
+      });
+    });
+  }
 
   // ItemLayout
 
