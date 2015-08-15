@@ -179,7 +179,7 @@ export class Item {
         reject(Error('Script plugins do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
-        Scene.searchAllForItem(iItem.getBaseID()).then(items => {
+        Scene.searchAllForItemId(iItem.getBaseID()).then(items => {
           resolve(items[0]); // this should always exist
         });
       }

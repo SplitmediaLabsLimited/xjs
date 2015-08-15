@@ -184,80 +184,12 @@ export class Scene {
    * #Usage
    *
    * ```
-   * Scene.searchAllForItem('camera').then(function(items) {
+   * Scene.searchAllForItemName('camera').then(function(items) {
    *   // do something to each item in items array
    * });
    * ```
    *
    */
-  static searchAllForItem(key: string): Promise<Item[]> {
-    // detect if UUID or keyword
-    let isID: boolean = /^{[A-F0-9-]*}$/i.test(key);
-    let matches: Item[] = [];
-
-    if (isID) {
-    // search by ID (only one match should be found)
-    let found = false;
-    return new Promise(resolve => {
-      Scene.initializeScenePool();
-      Scene.scenePool.forEach((scene, idx, arr) => {
-        if (!found) {
-          scene.getItems().then(items => {
-            found = items.some(item => { // unique ID
-              if (item['id'] === key) {
-                matches.push(item);
-                return true;
-              } else {
-                return false;
-              }
-            });
-            if (found || idx === arr.length - 1) {
-              resolve(matches);
-            }
-          });
-        }
-      });
-    });
-    } else {
-    // search by name substring
-      return new Promise(resolve => {
-        Scene.initializeScenePool();
-
-        return Promise.all(Scene.scenePool.map(scene => {
-          return new Promise(resolveScene => {
-            scene.getItems().then(items => {
-              if (items.length === 0) {
-                resolveScene();
-              } else {
-                return Promise.all(items.map(item => {
-                  return new Promise(resolveItem => {
-                    item.getName().then(name => {
-                      if (name.match(key)) {
-                        matches.push(item);
-                        return '';
-                      } else {
-                        return item.getValue();
-                      }
-                    }).then(value => {
-                      if (value.toString().match(key)) {
-                        matches.push(item);
-                      }
-                      resolveItem();
-                    });
-                  });
-                })).then(() => {
-                  resolveScene();
-                });
-              }
-            });
-          });
-        })).then(() => {
-          resolve(matches);
-        });
-      });
-    }
-  }
-
   static searchAllForItemName(param: string): Promise<Item[]> {
     Scene.initializeScenePool();
     let matches: Item[] = [];
