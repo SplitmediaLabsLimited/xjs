@@ -122,6 +122,24 @@ export class Scene {
     });
   }
 
+  /**
+   * Searches all scenes for an item by ID. ID search
+   * will return only a maximum of 1 result (IDs are unique).
+   *
+   * #Return
+   * ```
+   * Item
+   * ```
+   *
+   * #Usage
+   *
+   * ```
+   * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+   *   // item is either an Item or null
+   * });
+   * ```
+   *
+   */
   static searchAllForItemId(id: string): Promise<Item> {
     let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
     if (!isID) {
@@ -156,8 +174,7 @@ export class Scene {
   };
 
   /**
-   * Searches all scenes for an item by ID or name substring. ID search
-   * will return only 1 result.
+   * Searches all scenes for an item by name substring.
    *
    * #Return
    * ```
