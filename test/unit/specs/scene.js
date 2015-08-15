@@ -164,11 +164,17 @@ describe('Scene', function() {
     });
 
     it('should be able to search for an item by ID', function(done) {
-      Scene.searchAllForItem('{75EF04AB-6915-4A88-8177-950B12186359}')
-        .then(function(items) {
-          expect(items).toBeInstanceOf(Array);
-          expect(items).eachToBeInstanceOf(Item);
-          expect(items.length).toEqual(1);
+      Scene.searchAllForItemId('{75EF04AB-6915-4A88-8177-950B12186359}')
+        .then(function(item) {
+          expect(item).toBeInstanceOf(Item);
+          done();
+        });
+    });
+
+    it('should be able to get null when searching for nonexistent ID', function(done) {
+      Scene.searchAllForItemId('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
+        .then(function(item) {
+          expect(item).toBe(null);
           done();
         });
     });
