@@ -328,7 +328,7 @@ describe('App ===', function() {
       var promise;
       beforeEach(function() {
         promise = App.getPrimaryMic();
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -336,7 +336,6 @@ describe('App ===', function() {
 
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
-          console.log(audioDevice);
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
             ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
             ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
@@ -348,12 +347,12 @@ describe('App ===', function() {
         });
       });
     });
-    
+
     describe ('primary speaker', function(done) {
       var promise;
       beforeEach(function() {
         promise = App.getPrimarySpeaker();
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -361,7 +360,6 @@ describe('App ===', function() {
 
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
-          console.log(audioDevice);
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
             ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
             ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
@@ -372,7 +370,7 @@ describe('App ===', function() {
           done();
         });
       });
-    });    
+    });
   });
 
   describe ('should be able to set audio devices', function() {
@@ -441,7 +439,7 @@ describe('App ===', function() {
           this.hwlevel = hwlevel;
           this.hwenable = hwenable;
           this.delay = delay;
-          
+
           this.toString = function()
           {
             return '<dev id="' + this.id + '" level="' + this.level +
@@ -458,7 +456,7 @@ describe('App ===', function() {
           "255",
           "0"
           ));
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -512,7 +510,7 @@ describe('App ===', function() {
           this.hwlevel = hwlevel;
           this.hwenable = hwenable;
           this.delay = delay;
-          
+
           this.toString = function()
           {
             return '<dev id="' + this.id + '" level="' + this.level +
@@ -529,7 +527,7 @@ describe('App ===', function() {
           "255",
           "0"
           ));
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -582,7 +580,7 @@ describe('App ===', function() {
     describe ('silence detection threshold', function() {
       beforeEach(function() {
         promise = App.getSilenceDetectionThreshold();
-      });      
+      });
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
@@ -598,7 +596,7 @@ describe('App ===', function() {
     describe ('silence detection period', function() {
       beforeEach(function() {
         promise = App.getSilenceDetectionPeriod();
-      });      
+      });
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
@@ -655,7 +653,7 @@ describe('App ===', function() {
           }
         });
         promise = App.enableSilenceDetection(true);
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -693,7 +691,7 @@ describe('App ===', function() {
           }
         });
         promise = App.setSilenceDetectionThreshold(10);
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -731,7 +729,7 @@ describe('App ===', function() {
           }
         });
         promise = App.setSilenceDetectionPeriod(5000);
-      });        
+      });
 
       it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
@@ -907,7 +905,7 @@ describe('App ===', function() {
           }, 10);
 
           return randomNumber;
-        }          
+        }
       });
       promise = App.setTransitionTime('1000');
     });
