@@ -33,7 +33,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor {
   isPositionLocked:         () => Promise<boolean>;
 
   /** Check if Enhance Resize is Enabled or Disabled */
-  isEnhanceResizeEnabled:   () => Promise<boolean>;
+  isEnhancedResizeEnabled:   () => Promise<boolean>;
 
   /** Get the position of the item */
   getPosition:              () => Promise<Rectangle>;
@@ -45,7 +45,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor {
   setPositionLocked:        (value: boolean) => void;
 
   /** Set Enhance Resize to ON or OFF */
-  setEnhanceResizeEnabled:  (value: boolean) => void;
+  setEnhancedResizeEnabled:  (value: boolean) => void;
 
   /** Set Item position */
   setPosition:              (value: Rectangle) => void;

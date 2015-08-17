@@ -48,7 +48,7 @@ describe('CameraItem', function() {
         'isPositionLocked',
         'setPositionLocked',
         'isEnhancedResizeEnabled',
-        'setEnhanceResizeEnabled',
+        'setEnhancedResizeEnabled',
         'getPosition',
         'setPosition'
         ].join(','));

@@ -9,8 +9,8 @@ export interface IItemLayout {
   setKeepAspectRatio(value: boolean);
   isPositionLocked(): Promise<boolean>;
   setPositionLocked(value: boolean);
-  isEnhanceResizeEnabled(): Promise<boolean>;
-  setEnhanceResizeEnabled(value: boolean);
+  isEnhancedResizeEnabled(): Promise<boolean>;
+  setEnhancedResizeEnabled(value: boolean);
   getPosition(): Promise<Rectangle>;
   setPosition(value: Rectangle);
 }
@@ -47,7 +47,7 @@ export class ItemLayout implements IItemLayout {
     iItem.set('prop:lockmove', value ? '1' : '0', slot);
   }
 
-  isEnhanceResizeEnabled(): Promise<boolean> {
+  isEnhancedResizeEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
       iItem.get('prop:mipmaps', slot).then(val => {
@@ -56,7 +56,7 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setEnhanceResizeEnabled(value: boolean) {
+  setEnhancedResizeEnabled(value: boolean) {
     let slot = iItem.attach(this.id);
     iItem.set('prop:mipmaps', value ? '1' : '0', slot);
   }
