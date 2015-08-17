@@ -542,7 +542,7 @@ var Scene = (function () {
                 var found = false;
                 Scene.scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
-                        scene.getItems().then(function (items) {
+                        scene.getItems().then((function (items) {
                             found = items.some(function (item) {
                                 if (item['id'] === id) {
                                     match = item;
@@ -553,10 +553,10 @@ var Scene = (function () {
                                 }
                             });
                             if (found ||
-                                idx === arr.length - 1) {
+                                Number(this) === arr.length - 1) {
                                 resolve(match);
                             }
-                        });
+                        }).bind(idx));
                     }
                 });
             });

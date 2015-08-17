@@ -155,7 +155,7 @@ export class Scene {
         let found = false;
         Scene.scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
-            scene.getItems().then(items => {
+            scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
                 if (item['id'] === id) {
                   match = item;
@@ -165,10 +165,10 @@ export class Scene {
                 }
               });
               if (found ||
-                idx === arr.length - 1) { // last scene, no match
+                Number(this) === arr.length - 1) { // last scene, no match
                 resolve(match);
               }
-            });
+            }).bind(idx));
           }
         });
       });
