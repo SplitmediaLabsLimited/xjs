@@ -11,6 +11,7 @@
     "filesGlob": [
         "./src/internal/*.ts",
         "./src/core/*.ts",
+        "./src/system/*.ts",
         "!./node_modules/**/*.ts"
     ],
     "files": [
@@ -21,7 +22,9 @@
         "./src/internal/item.ts",
         "./src/core/app.ts",
         "./src/core/environment.ts",
-        "./src/core/index.ts",
-        "./src/core/scene.ts"
+        "./src/core/scene.ts",
+        "./src/system/camera.ts",
+        "./src/system/system.ts",
+        "./src/index.ts"
     ]
 }

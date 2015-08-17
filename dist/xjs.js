@@ -6,13 +6,37 @@ var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
 var environment_1 = require('./environment');
+/**
+ * The App Class provides you methods to get and set application related
+ * functionalities.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('XJS');
+ * var App = new XJS.App();
+ *
+ * App.getFrameTime().then(function(frametime) {
+ *   window.frametime = frametime;
+ * });
+ * ```
+ */
 var App = (function () {
     function App() {
     }
     /**
+     * return: Promise<number>
+     *
      * Gets application's frame time (duration per frame in 100ns unit)
      *
-     * @return {Promise<number>}
+     * #### Usage
+     *
+     * ```javascript
+     * var frameTimeP = App.getFrameTime();
+     * frameTimeP.then(function(res) {
+     *   var frameTime = res;
+     * });
+     * ```
      */
     App.prototype.getFrametime = function () {
         return new Promise(function (resolve) {
@@ -22,9 +46,19 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<Rectangle>
+     *
      * Gets application default output resolution
      *
-     * @return {Promise<Rectangle>}
+     * #### Usage
+     *
+     * ```javascript
+     * var resolutionP = App.getResolution();
+     * resolutionP.then(function(res) {
+     *   var height = res.getHeight();
+     *   var width = res.getWidth();
+     * });
+     * ```
      */
     App.prototype.getResolution = function () {
         return new Promise(function (resolve) {
@@ -35,9 +69,19 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<Rectangle>
+     *
      * Gets application viewport display resolution
      *
-     * @return {Promise<Rectangle>}
+     * #### Usage
+     *
+     * ```javascript
+     * var viewPortP = App.getViewport();
+     * viewPortP.then(function(res) {
+     *   var height = res.getHeight();
+     *   var width = res.getWidth();
+     * });
+     * ```
      */
     App.prototype.getViewport = function () {
         return new Promise(function (resolve) {
@@ -48,9 +92,18 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<string>
+     *
      * Refers to XSplit Broadcaster DLL file version number
      *
-     * @return {Promise<string>}
+     * #### Usage
+     *
+     * ```javascript
+     * var versionP = App.getVersion();
+     * versionP.then(function(res) {
+     *   var version = res;
+     * });
+     * ```
      */
     App.prototype.getVersion = function () {
         return new Promise(function (resolve) {
@@ -58,9 +111,18 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<number>
+     *
      * Gets the total number of frames rendered
      *
-     * @return {Promise<number>}
+     * #### Usage
+     *
+     * ```javascript
+     * var framesrenderedP = App.getFramesRendered();
+     * framesrenderedP.then(function(res) {
+     *   var framesrendered = res;
+     * });
+     * ```
      */
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
@@ -71,9 +133,18 @@ var App = (function () {
     };
     // Audio Services
     /**
+     * return: Promise<JSON>
+     *
      * Gets the configuration for silence detection
      *
-     * @return {Promise<JSON>}
+     * #### Usage
+     *
+     * ```javascript
+     * var audioGainP = App.getAudioGain();
+     * audioGainP.then(function(res) {
+     *   var audioGain = res;
+     * });
+     * ```
      */
     App.prototype.getAudioGain = function () {
         return new Promise(function (resolve) {
@@ -83,20 +154,31 @@ var App = (function () {
         });
     };
     /**
+     * param: config<JSON>
+     *
      * Sets the configuration for silence detection
      *
-     * @param {JSON} config
-     * @return {Promise<JSON>}
+     * #### Usage
+     *
+     * ```javascript
+     * App.setAudioGain(configJSON);
+     * ```
      */
     App.prototype.setAudioGain = function (config) {
         config.tag = 'configuration';
         app_1.App.set('microphonegain', xml_1.XML.parseJSON(config).toString());
     };
     /**
-     * Creates a persistent modal dialog.
+     * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
+     *
+     * Creates a persistent modal dialog.<br/>
      * This method is not available for source
      *
-     * @param {string} url
+     * #### Usage
+     *
+     * ```javascript
+     * App.newDialog(url, width, height, flags, title);
+     * ```
      */
     App.prototype.newDialog = function (url, width, height, flags, title) {
         if (width === void 0) { width = 300; }
@@ -117,9 +199,15 @@ var App = (function () {
         }
     };
     /**
+     * param: url<string>[, width<number>[, height<number>]]
+     *
      * Creates a dialog that automatically closes on outside click
      *
-     * @param {string} url
+     * #### Usage
+     *
+     * ```javascript
+     * App.newAutoDialog(url, width, height);
+     * ```
      */
     App.prototype.newAutoDialog = function (url, width, height) {
         if (width === void 0) { width = 300; }
@@ -146,9 +234,18 @@ var App = (function () {
         }
     };
     /**
-     * Gets the transition for scene changes.
+     * return: Promise<string>
      *
-     * @return {Promise<string>}
+     * Gets the transition for scene changes
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var transitionP = App.getTransition();
+     * transitionP.then(function(res) {
+     *   var transitionid = res;
+     * });
+     * ```
      */
     App.prototype.getTransition = function () {
         return new Promise(function (resolve) {
@@ -157,16 +254,33 @@ var App = (function () {
             });
         });
     };
-    /** Sets the transition for scene changes.
+    /**
+     * param: transition<string>
      *
-     * @param {string} transition
+     * Sets the transition for scene changes
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.setTransition(transitionid);
+     * ```
      */
     App.prototype.setTransition = function (transition) {
         app_1.App.set('transitionid', transition);
     };
-    /** Gets the scene transition duration in milliseconds.
+    /**
+     * return: Promise<number>
      *
-     * @return {Promise<Number>}
+     * Gets the scene transition duration in milliseconds
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var transitionTimeP = App.getTransitionTime();
+     * transitionTimeP.then(function(res) {
+     *   var transitiontime = res;
+     * });
+     * ```
      */
     App.prototype.getTransitionTime = function () {
         return new Promise(function (resolve) {
@@ -175,9 +289,16 @@ var App = (function () {
             });
         });
     };
-    /** Sets the scene transition duration in milliseconds.
+    /**
+     * param: transition<number>
      *
-     * @param {Number} time
+     * Sets the scene transition duration in milliseconds
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.setTransitionTime(transitiontime);
+     * ```
      */
     App.prototype.setTransitionTime = function (time) {
         app_1.App.set('transitiontime', time.toString());
@@ -204,7 +325,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":8,"../internal/internal":11,"../internal/util/json":13,"../internal/util/xml":15,"../util/rectangle":17,"./environment":2}],2:[function(require,module,exports){
+},{"../internal/app":8,"../internal/internal":11,"../internal/util/json":13,"../internal/util/xml":15,"../util/rectangle":21,"./environment":2}],2:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -246,6 +367,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = new __();
 };
 var mixin_1 = require('../../internal/util/mixin');
+var app_1 = require('../../internal/app');
 var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var item_1 = require('./item');
@@ -254,11 +376,23 @@ var CameraItem = (function (_super) {
     function CameraItem() {
         _super.apply(this, arguments);
     }
+    /** Tells the item to add itself to a scene.
+     *  Currently limited to adding to the active scene.
+     *  Should be implemented by Item subclasses.
+     */
+    CameraItem.prototype.addToScene = function (scene) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
+                resolve();
+            });
+        });
+    };
     return CameraItem;
 })(item_1.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor]);
-},{"../../internal/util/mixin":14,"./icolor":4,"./ilayout":5,"./item":6}],4:[function(require,module,exports){
+},{"../../internal/app":8,"../../internal/util/mixin":14,"./icolor":4,"./ilayout":5,"./item":6}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -372,7 +506,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":12,"../../util/color":16}],5:[function(require,module,exports){
+},{"../../internal/item":12,"../../util/color":20}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -437,7 +571,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":12,"../../util/rectangle":17}],6:[function(require,module,exports){
+},{"../../internal/item":12,"../../util/rectangle":21}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -572,6 +706,13 @@ var Item = (function () {
         item['item'] = this.value;
         item['type'] = this.type;
         return xml_1.XML.parseJSON(item);
+    };
+    /** Tells the item to add itself to a scene.
+     *  Currently limited to adding to the active scene.
+     *  Should be implemented by Item subclasses.
+     */
+    Item.prototype.addToScene = function (scene) {
+        return Promise.reject(Error('Generic items are not addable to a scene'));
     };
     /** Get the current source (when function is called by sources), or the source
      * that was right-clicked to open the config window (when function is called
@@ -841,23 +982,48 @@ var Scene = (function () {
         });
     };
     /**
-   * Checks if a scene is empty.
-   *
-   * #Usage
-   *
-   * ```
-   * myScene.isEmpty().then(function(empty) {
-   *   if (empty === true) {
-   *     console.log("My scene is empty.");
-   *   }
-   * });
-   * ```
-   */
+    * Checks if a scene is empty.
+    *
+    * #Usage
+    *
+    * ```
+    * myScene.isEmpty().then(function(empty) {
+    *   if (empty === true) {
+    *     console.log("My scene is empty.");
+    *   }
+    * });
+    * ```
+    */
     Scene.prototype.isEmpty = function () {
         var _this = this;
         return new Promise(function (resolve) {
             app_1.App.get('presetisempty:' + _this.id).then(function (val) {
                 resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * Adds an item to a scene. Currently, this is only limited to adding items
+     * to the current scene.
+     *
+     * Promise should resolve if item was successfully added.
+     *
+     */
+    Scene.prototype.addItem = function (item) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            Scene.getActiveScene().then(function (active) {
+                if (_this === active) {
+                    item.addToScene(_this).then(function () {
+                        resolve();
+                    }).catch(function (error) {
+                        reject(error);
+                    });
+                }
+                else {
+                    reject(Error('At the moment, items may only be added to the current ' +
+                        'scene. This limitation will be addressed in the future.'));
+                }
             });
         });
     };
@@ -1329,6 +1495,728 @@ var XML = (function () {
 })();
 exports.XML = XML;
 },{}],16:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var AudioDevice = (function () {
+    function AudioDevice(props) {
+        this.defaultConsole = false;
+        this.defaultMultimedia = false;
+        this.defaultCommunication = false;
+        props = props || {};
+        this.id = props['id'];
+        this.name = props['name'];
+        this.adapter = props['adapter'];
+        this.adapterdev = props['adapterdev'];
+        this.dSoundGuid = props['dSoundGuid'];
+        this.dataFlow = props['dataFlow'];
+        this.state = props['state'];
+        this.defaultConsole = props['defaultConsole'];
+        this.defaultMultimedia = props['defaultMultimedia'];
+        this.defaultCommunication = props['defaultCommunication'];
+        this.level = props['level'] !== undefined ? props['level'] : 1.000000;
+        this.enable = props['enable'] !== undefined ? props['enable'] : true;
+        this.hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.000000;
+        this.hwenable = props['hwenable'] !== undefined ? props['hwenable'] : true;
+        this.delay = props['delay'] !== undefined ? props['delay'] : 0;
+    }
+    /**
+     * Gets the device ID
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceID = device.getID();
+     * ```
+     */
+    AudioDevice.prototype.getId = function () {
+        return this.id;
+    };
+    /**
+     * Gets the device name
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceName = device.getName();
+     * ```
+     */
+    AudioDevice.prototype.getName = function () {
+        return this.name;
+    };
+    /**
+     * Gets whether device is capturing or rendering audio
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceName = device.getName();
+     * // possible values, "render"/"capture"
+     * ```
+     */
+    AudioDevice.prototype.getDataFlow = function () {
+        return this.dataFlow;
+    };
+    /**
+     * Gets whether audio device is the system default
+     *
+     * #Return
+     *
+     * ```
+     * boolean
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
+     * ```
+     */
+    AudioDevice.prototype.isDefaultDevice = function () {
+        return (this.defaultConsole && this.defaultMultimedia);
+    };
+    /**
+     * Gets the device audio level in the application
+     *
+     * #Return
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceVolumeLevel = audioDevice.getLevel();
+     * ```
+     */
+    AudioDevice.prototype.getLevel = function () {
+        return this.level;
+    };
+    /**
+     * Sets the device audio level in the application
+     *
+     * #Parameter
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice (used for chaining)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setLevel = function (level) {
+        this.level = level;
+        return this;
+    };
+    /**
+     * Gets whether audio device is enabled/muted in the application
+     *
+     * #Return
+     *
+     * ```
+     * boolean
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var isAudioDeviceEnabled = audioDevice.isEnabled();
+     * ```
+     */
+    AudioDevice.prototype.isEnabled = function () {
+        return this.enable;
+    };
+    /**
+     * Enables audio device/sets software mute
+     *
+     * #Parameter
+     *
+     * ```
+     * boolean
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice (used for chaining)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setEnabled = function (enabled) {
+        this.enable = enabled;
+        return this;
+    };
+    /**
+     * Gets the device system volume
+     *
+     * #Return
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var appVolumeLevel = audioDevice.getLevel();
+     * ```
+     */
+    AudioDevice.prototype.getSystemLevel = function () {
+        return this.hwlevel;
+    };
+    /**
+     * Sets the device system volume
+     *
+     * #Parameter
+     *
+     * ```
+     * number
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice (used for chaining)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setSystemLevel = function (hwlevel) {
+        this.hwlevel = hwlevel;
+        return this;
+    };
+    /**
+     * Gets whether audio device is enabled/muted in the system
+     *
+     * #Return
+     *
+     * ```
+     * boolean
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var isAudioDeviceEnabled = audioDevice.isEnabled();
+     * ```
+     */
+    AudioDevice.prototype.isSystemEnabled = function () {
+        return this.hwenable;
+    };
+    /**
+     * Enables audio device/sets software mute
+     *
+     * #Parameter
+     *
+     * ```
+     * boolean
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice (used for chaining)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setSystemEnabled = function (hwenabled) {
+        this.hwenable = hwenabled;
+        return this;
+    };
+    /**
+     * Get the loopback capture delay value
+     *
+     * #Return
+     *
+     * ```
+     * number (100 nanoseconds units)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDelay = audioDevice.getDelay();
+     * ```
+     */
+    AudioDevice.prototype.getDelay = function () {
+        return this.delay;
+    };
+    /**
+     * Sets the loopback capture delay value
+     *
+     * #Parameter
+     *
+     * ```
+     * number (100 nanoseconds units)
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice (used for chaining)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setDelay = function (delay) {
+        this.delay = delay;
+        return this;
+    };
+    /**
+     * Converts the AudioDevice item to XML string
+     *
+     * #Return
+     *
+     * ```
+     * string (XML format)
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var audioDeviceXMLString = AudioDevice.toString;
+     * ```
+     */
+    /** Converts the AudioDevice item to XML string */
+    AudioDevice.prototype.toString = function () {
+        var device = new json_1.JSON();
+        device.tag = 'dev';
+        device.selfclosing = true;
+        device['id'] = this.getId();
+        device['level'] = this.getLevel();
+        device['enable'] = this.isEnabled() ? 1 : 0;
+        device['hwlevel'] = this.getSystemLevel();
+        device['hwenable'] = this.isSystemEnabled() ? 1 : 0;
+        device['delay'] = this.getDelay();
+        return xml_1.XML.parseJSON(device).toString();
+    };
+    /**
+     * Converts a JSON object into an AudioDevice object
+     *
+     * #Parameter
+     *
+     * ```
+     * deviceJXON: JXON
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * AudioDevice
+     * ```
+     *
+     * #Usage
+     *
+     * ````
+     * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
+     * ```
+     */
+    AudioDevice.parse = function (deviceJXON) {
+        var audio = new AudioDevice({
+            id: deviceJXON['id'],
+            name: deviceJXON['name'],
+            adapter: deviceJXON['adapter'],
+            adapterdev: deviceJXON['adapterdev'],
+            dataFlow: deviceJXON['DataFlow'],
+            state: deviceJXON['State'],
+            dSoundGuid: deviceJXON['DSoundGuid'],
+            defaultCommunication: (deviceJXON['DefaultCommunication'] === '1'),
+            defaultConsole: (deviceJXON['DefaultConsole'] === '1'),
+            defaultMultimedia: (deviceJXON['DefaultMultimedia'] === '1')
+        });
+        audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
+            .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
+            .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : 1))
+            .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] === '1' : true)
+            .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 1));
+        return audio;
+    };
+    return AudioDevice;
+})();
+exports.AudioDevice = AudioDevice;
+},{"../internal/util/json":13,"../internal/util/xml":15}],17:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var CameraDevice = (function () {
+    function CameraDevice(props) {
+        this.id = props['id'];
+        this.name = props['name'];
+    }
+    /**
+     * Get the ID of the device. The ID of the device is based on the `disp`
+     * attribute of the devices XML
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var cameraID = device.getID();
+     * ```
+     */
+    CameraDevice.prototype.getId = function () {
+        return this.id;
+    };
+    /**
+     * Get the Name of the device.
+     *
+     * #Return
+     *
+     * ```
+     * string
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var cameraName = device.getName();
+     * ```
+     */
+    CameraDevice.prototype.getName = function () {
+        return this.name;
+    };
+    /**
+     * Convert the current CameraDevice object to XML
+     *
+     * #Return
+     *
+     * ```
+     * XML
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var xml = device.toXML();
+     * ```
+     */
+    CameraDevice.prototype.toXML = function () {
+        var json = new json_1.JSON();
+        json['disp'] = this.id;
+        json['name'] = this.name;
+        return xml_1.XML.parseJSON(json);
+    };
+    /**
+     * Create a CameraDevice object based on a JXON object
+     *
+     * #Parameter
+     *
+     * ```
+     * deviceJSON: JXON
+     * ```
+     *
+     * #Return
+     *
+     * ```
+     * CameraDevice
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var camera = CameraDevice.parse(JSONObj);
+     * ```
+     */
+    CameraDevice.parse = function (deviceJSON) {
+        var cam = new CameraDevice({
+            id: deviceJSON['disp'],
+            name: deviceJSON['name']
+        });
+        return cam;
+    };
+    return CameraDevice;
+})();
+exports.CameraDevice = CameraDevice;
+},{"../internal/util/json":13,"../internal/util/xml":15}],18:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var rectangle_1 = require('../util/rectangle');
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var Game = (function () {
+    function Game() {
+    }
+    /**
+     * Gets the game's process ID.
+     *
+     * @return {number}
+     */
+    Game.prototype.getPid = function () {
+        return this.pid;
+    };
+    /**
+     * Gets the Graphics API handle.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getHandle = function () {
+        return this.handle;
+    };
+    /**
+     * Gets the window handle.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getWindowHandle = function () {
+        return this.hwnd;
+    };
+    /**
+     * Gets the Graphics API type.
+     *
+     * @returns {string}, possible values:
+     * OGL, DX8, DX8_SwapChain, DX9, DX9Ex, DX9_SwapChain,
+     * DX9_PresentEx, DX10, DX11, DX11.1, DX11.1_Present1
+     */
+    Game.prototype.getGapiType = function () {
+        return this.gapitype;
+    };
+    /**
+     * Gets the game resolution.
+     *
+     * @returns {Rectangle}
+     */
+    Game.prototype.getResolution = function () {
+        return rectangle_1.Rectangle.fromDimensions(this.width, this.height);
+    };
+    /**
+     * Checks if game has exclusive full screen.
+     *
+     * @returns {boolean}
+     */
+    Game.prototype.isFullscreen = function () {
+        return this.flags === 1 ? true : false;
+    };
+    /**
+     * Gets the window title
+     *
+     * @returns {string}
+     */
+    Game.prototype.getWindowName = function () {
+        return this.wndname;
+    };
+    /**
+     * Gets timestamp of last frame in milliseconds.
+     *
+     * @returns {number}
+     */
+    Game.prototype.getLastFrameTimestamp = function () {
+        return this.lastframets;
+    };
+    /**
+     * Converts a JSON object into a Game object
+     *
+     * @param {JSON} jxon
+     * @returns {Game}
+     */
+    Game.parse = function (jxon) {
+        var g = new Game();
+        g.pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
+        g.handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
+            undefined;
+        g.hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
+        g.gapitype = jxon['GapiType'];
+        g.width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
+            undefined;
+        g.height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
+            undefined;
+        g.flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
+            undefined;
+        g.wndname = jxon['wndname'];
+        g.lastframets = jxon['lastframets'] !== undefined ?
+            parseInt(jxon['lastframets']) : undefined;
+        return g;
+    };
+    /**
+     * Converts Game object into an XML object
+     *
+     * @returns {XML}
+     */
+    Game.prototype.toXML = function () {
+        var gamesource = new json_1.JSON();
+        gamesource.tag = 'src';
+        gamesource['pid'] = this.pid;
+        gamesource['handle'] = this.handle;
+        gamesource['hwnd'] = this.hwnd;
+        gamesource['gapitype'] = this.gapitype;
+        gamesource['width'] = this.width;
+        gamesource['height'] = this.height;
+        gamesource['flags'] = this.flags;
+        gamesource['wndname'] = this.wndname;
+        gamesource['lastframets'] = this.lastframets;
+        gamesource['selfclosing'] = true;
+        return xml_1.XML.parseJSON(gamesource);
+    };
+    return Game;
+})();
+exports.Game = Game;
+},{"../internal/util/json":13,"../internal/util/xml":15,"../util/rectangle":21}],19:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var audio_1 = require('./audio');
+var camera_1 = require('./camera');
+var game_1 = require('./game');
+(function (AudioDeviceDataflow) {
+    AudioDeviceDataflow[AudioDeviceDataflow["RENDER"] = 1] = "RENDER";
+    AudioDeviceDataflow[AudioDeviceDataflow["CAPTURE"] = 2] = "CAPTURE";
+    AudioDeviceDataflow[AudioDeviceDataflow["ALL"] = 3] = "ALL";
+})(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
+var AudioDeviceDataflow = exports.AudioDeviceDataflow;
+(function (AudioDeviceState) {
+    AudioDeviceState[AudioDeviceState["ACTIVE"] = 1] = "ACTIVE";
+    AudioDeviceState[AudioDeviceState["DISABLED"] = 2] = "DISABLED";
+    AudioDeviceState[AudioDeviceState["UNPLUGGED"] = 4] = "UNPLUGGED";
+    AudioDeviceState[AudioDeviceState["NOTPRESENT"] = 8] = "NOTPRESENT";
+    AudioDeviceState[AudioDeviceState["ALL"] = 15] = "ALL";
+})(exports.AudioDeviceState || (exports.AudioDeviceState = {}));
+var AudioDeviceState = exports.AudioDeviceState;
+var System = (function () {
+    function System() {
+    }
+    /**
+     * Gets audio devices, both input and output
+     *
+     * @return {Promise<AudioDevice[]>}
+     */
+    System.getAudioDevices = function (dataflow, state) {
+        if (dataflow === void 0) { dataflow = AudioDeviceDataflow.ALL; }
+        if (state === void 0) { state = AudioDeviceState.ACTIVE; }
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('wasapienum').then(function (devicesJXON) {
+                var devices = [];
+                if (devicesJXON !== undefined) {
+                    var devicesJXONLength = devicesJXON.length;
+                    for (var i = 0; i < devicesJXONLength; ++i) {
+                        var device = devicesJXON[i];
+                        var bitsState = AudioDeviceState[String(device['State'])
+                            .toUpperCase().replace(/\s+/g, '')];
+                        if ((bitsState & state) !== bitsState) {
+                            continue;
+                        }
+                        var bitsFlow = AudioDeviceDataflow[String(device['DataFlow'])
+                            .toUpperCase()];
+                        if ((bitsFlow & dataflow) !== bitsFlow) {
+                            continue;
+                        }
+                        if (device['name'].toLowerCase().indexOf('xsplit') > -1) {
+                            continue;
+                        }
+                        devices.push(audio_1.AudioDevice.parse(device));
+                    }
+                }
+                resolve(devices);
+            });
+        });
+    };
+    /**
+     * Gets all camera devices
+     *
+     * #Return
+     *
+     * ```
+     * Promise<CameraDevice[]>
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var promise = System.getCameraDevices();
+     * promise.then(function(devices) {
+     * 	 // devices is an array of CameraDevice object
+     * });
+     * ```
+     */
+    System.getCameraDevices = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('dshowenum:vsrc').then(function (devicesJSON) {
+                var devices = [];
+                if (devicesJSON !== undefined) {
+                    for (var _i = 0; _i < devicesJSON.length; _i++) {
+                        var device = devicesJSON[_i];
+                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
+                            String(device['disp']).toLowerCase() !==
+                                ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
+                                    "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+                            devices.push(camera_1.CameraDevice.parse(device));
+                        }
+                    }
+                    resolve(devices);
+                }
+            });
+        });
+    };
+    /**
+     * Gets all currently running games
+     *
+     * @return {Promise<Game>}
+     */
+    System.getGames = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('gsenum').then(function (gamesJXON) {
+                var games = [];
+                if (gamesJXON !== undefined) {
+                    var gamesJXONLength = gamesJXON.length;
+                    for (var i = 0; i < gamesJXONLength; ++i) {
+                        games.push(game_1.Game.parse(gamesJXON[i]));
+                    }
+                }
+                resolve(games);
+            });
+        });
+    };
+    return System;
+})();
+exports.System = System;
+},{"../internal/app":8,"./audio":16,"./camera":17,"./game":18}],20:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -1400,7 +2288,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],17:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -1552,4 +2440,8 @@ __export(require('./core/app'));
 __export(require('./core/scene'));
 __export(require('./core/item/item'));
 __export(require('./core/item/camera'));
-},{"./core/app":1,"./core/environment":2,"./core/item/camera":3,"./core/item/item":6,"./core/scene":7,"./internal/init":10,"./util/color":16,"./util/rectangle":17}]},{},["xjs"]);
+__export(require('./system/system'));
+__export(require('./system/audio'));
+__export(require('./system/game'));
+__export(require('./system/camera'));
+},{"./core/app":1,"./core/environment":2,"./core/item/camera":3,"./core/item/item":6,"./core/scene":7,"./internal/init":10,"./system/audio":16,"./system/camera":17,"./system/game":18,"./system/system":19,"./util/color":20,"./util/rectangle":21}]},{},["xjs"]);
