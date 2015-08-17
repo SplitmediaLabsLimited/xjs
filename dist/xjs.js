@@ -299,16 +299,17 @@ var Item = (function () {
                     _this.value = '';
                     resolve(val);
                 }
-                try {
-                    _this.value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
-                    resolve(_this.value);
+                else {
+                    try {
+                        _this.value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
+                        resolve(_this.value);
+                    }
+                    catch (e) {
+                        // value is not valid XML (it is a string instead)
+                        _this.value = val;
+                        resolve(val);
+                    }
                 }
-                catch (e) {
-                    // value is not valid XML (it is a string instead)
-                    _this.value = val;
-                    resolve(val);
-                }
-                resolve(_this.value);
             });
         });
     };
@@ -386,7 +387,7 @@ var Item = (function () {
                     'associated with them.'));
             }
             else if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
-                scene_1.Scene.searchAllForItem(item_1.Item.getBaseID()).then(function (items) {
+                scene_1.Scene.searchAllForItemId(item_1.Item.getBaseID()).then(function (items) {
                     resolve(items[0]); // this should always exist
                 });
             }
@@ -406,6 +407,13 @@ var Scene = (function () {
         this.id = sceneNum - 1;
     }
     ;
+    Scene.initializeScenePool = function () {
+        if (Scene.scenePool.length === 0) {
+            for (var i = 0; i < Scene.maxScenes; i++) {
+                Scene.scenePool[i] = new Scene(i + 1);
+            }
+        }
+    };
     /**
      * Get a specific scene object given the scene number.
      *
@@ -423,11 +431,7 @@ var Scene = (function () {
      */
     Scene.getById = function (sceneNum) {
         // initialize if necessary
-        if (Scene.scenePool.length === 0) {
-            for (var i = 0; i < Scene.maxScenes; i++) {
-                Scene.scenePool[i] = new Scene(i + 1);
-            }
-        }
+        Scene.initializeScenePool();
         return Scene.scenePool[sceneNum - 1];
     };
     /**
@@ -449,11 +453,7 @@ var Scene = (function () {
      */
     Scene.getByName = function (sceneName) {
         // initialize if necessary
-        if (Scene.scenePool.length === 0) {
-            for (var i = 0; i < Scene.maxScenes; i++) {
-                Scene.scenePool[i] = new Scene(i + 1);
-            }
-        }
+        Scene.initializeScenePool();
         var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
             return app_1.App.get('presetname:' + index).then(function (name) {
                 if (sceneName === name) {
@@ -497,9 +497,12 @@ var Scene = (function () {
             if (environment_1.Environment.isSourceHtml()) {
                 app_1.App.get('presetconfig:-1').then(function (sceneString) {
                     var curScene = json_1.JSON.parse(sceneString);
-                    Scene.getByName(curScene['name']).then(function (scene) {
-                        resolve(scene);
-                    });
+                    if (curScene.children.length > 0) {
+                        resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+                    }
+                    else {
+                        throw new Error('presetconfig cannot fetch current scene');
+                    }
                 });
             }
             else {
@@ -510,8 +513,91 @@ var Scene = (function () {
         });
     };
     /**
-     * Searches all scenes for an item by ID or name substring. ID search
-     * will return only 1 result.
+     * Searches all scenes for an item by ID. ID search
+     * will return only a maximum of 1 result (IDs are unique).
+     *
+     * #Return
+     * ```
+     * Item
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+     *   // item is either an Item or null
+     * });
+     * ```
+     *
+     */
+    Scene.searchAllForItemId = function (id) {
+        var isID = /^{[A-F0-9-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for items');
+        }
+        else {
+            Scene.initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene.scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getItems().then(function (items) {
+                            found = items.some(function (item) {
+                                if (item['id'] === id) {
+                                    match = item;
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                idx === arr.length - 1) {
+                                resolve(match);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    };
+    ;
+    Scene.searchSceneByItemId = function (id) {
+        var isID = /^{[A-F0-9-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for items');
+        }
+        else {
+            Scene.initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene.scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getItems().then(function (items) {
+                            found = items.some(function (item) {
+                                if (item['id'] === id) {
+                                    match = Scene.getById(idx + 1);
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                idx === arr.length - 1) {
+                                resolve(match);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    };
+    ;
+    /**
+     * Searches all scenes for an item by name substring.
      *
      * #Return
      * ```
@@ -521,85 +607,52 @@ var Scene = (function () {
      * #Usage
      *
      * ```
-     * Scene.searchAllForItem('camera').then(function(items) {
+     * Scene.searchAllForItemName('camera').then(function(items) {
      *   // do something to each item in items array
      * });
      * ```
      *
      */
-    Scene.searchAllForItem = function (key) {
-        // detect if UUID or keyword
-        var isID = /^{[A-F0-9-]*}$/i.test(key);
+    Scene.searchAllForItemName = function (param) {
+        Scene.initializeScenePool();
         var matches = [];
-        if (isID) {
-            // search by ID (only one match should be found)
-            var found = false;
-            return new Promise(function (resolve) {
-                if (Scene.scenePool.length === 0) {
-                    Scene.getById(1); // initialize scene items first
-                }
-                Scene.scenePool.forEach(function (scene, idx, arr) {
-                    if (!found) {
-                        scene.getItems().then(function (items) {
-                            found = items.some(function (item) {
-                                if (item['id'] === key) {
-                                    matches.push(item);
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            });
-                            if (found || idx === arr.length - 1) {
-                                resolve(matches);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-        else {
-            // search by name substring
-            return new Promise(function (resolve) {
-                if (Scene.scenePool.length === 0) {
-                    Scene.getById(1); // initialize scene items first
-                }
-                return Promise.all(Scene.scenePool.map(function (scene) {
-                    return new Promise(function (resolveScene) {
-                        scene.getItems().then(function (items) {
-                            if (items.length === 0) {
-                                resolveScene();
-                            }
-                            else {
-                                return Promise.all(items.map(function (item) {
-                                    return new Promise(function (resolveItem) {
-                                        item.getName().then(function (name) {
-                                            if (name.match(key)) {
-                                                matches.push(item);
-                                                return '';
-                                            }
-                                            else {
-                                                return item.getValue();
-                                            }
-                                        }).then(function (value) {
-                                            if (value.toString().match(key)) {
-                                                matches.push(item);
-                                            }
-                                            resolveItem();
-                                        });
+        return new Promise(function (resolve) {
+            return Promise.all(Scene.scenePool.map(function (scene) {
+                return new Promise(function (resolveScene) {
+                    scene.getItems().then(function (items) {
+                        if (items.length === 0) {
+                            resolveScene();
+                        }
+                        else {
+                            return Promise.all(items.map(function (item) {
+                                return new Promise(function (resolveItem) {
+                                    item.getName().then(function (name) {
+                                        if (name.match(param)) {
+                                            matches.push(item);
+                                            return '';
+                                        }
+                                        else {
+                                            return item.getValue();
+                                        }
+                                    }).then(function (value) {
+                                        if (value.toString().match(param)) {
+                                            matches.push(item);
+                                        }
+                                        resolveItem();
                                     });
-                                })).then(function () {
-                                    resolveScene();
                                 });
-                            }
-                        });
+                            })).then(function () {
+                                resolveScene();
+                            });
+                        }
                     });
-                })).then(function () {
-                    resolve(matches);
                 });
+            })).then(function () {
+                resolve(matches);
             });
-        }
+        });
     };
+    ;
     /**
      * Get the 1-indexed scene number of this scene object.
      *

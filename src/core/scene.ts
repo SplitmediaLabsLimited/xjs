@@ -110,9 +110,11 @@ export class Scene {
       if (Environment.isSourceHtml()) {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
-          Scene.getByName(curScene['name']).then(scene => {
-            resolve(scene);
-          });
+          if (curScene.children.length > 0) {
+            resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+          } else {
+            throw new Error('presetconfig cannot fetch current scene');
+          }
         });
       } else {
         iApp.get('preset:0').then(id => {
@@ -157,6 +159,39 @@ export class Scene {
               found = items.some(item => { // unique ID, so get first result
                 if (item['id'] === id) {
                   match = item;
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              if (found ||
+                idx === arr.length - 1) { // last scene, no match
+                resolve(match);
+              }
+            });
+          }
+        });
+      });
+    }
+  };
+
+  static searchSceneByItemId(id: string): Promise<Scene> {
+    let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+    if (!isID) {
+      throw new Error('Not a valid ID format for items');
+    } else {
+      Scene.initializeScenePool();
+
+      return new Promise(resolve => {
+
+        let match = null;
+        let found = false;
+        Scene.scenePool.forEach((scene, idx, arr) => {
+          if (match === null) {
+            scene.getItems().then(items => {
+              found = items.some(item => { // unique ID, so get first result
+                if (item['id'] === id) {
+                  match = Scene.getById(idx + 1);
                   return true;
                 } else {
                   return false;
