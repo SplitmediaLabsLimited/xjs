@@ -140,6 +140,15 @@ beforeEach(function() {
           };
         }
       };
+    },
+    
+    toBeEmptyArray: function() {
+      return  {
+        compare: function(actual) {
+          var pass = (actual instanceof Array) && (actual.length === 0);
+          return { pass : pass };
+        }
+      };
     }
   });
 });

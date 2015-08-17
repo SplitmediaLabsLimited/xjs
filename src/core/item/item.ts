@@ -79,18 +79,16 @@ export class Item {
         if (val === '') { // don't return XML for null values
           this.value = '';
           resolve(val);
+        } else {
+          try {
+            this.value = XML.parseJSON(JXON.parse(val));
+            resolve(this.value);
+          } catch (e) {
+            // value is not valid XML (it is a string instead)
+            this.value = val;
+            resolve(val);
+          }
         }
-
-        try {
-          this.value = XML.parseJSON(JXON.parse(val));
-          resolve(this.value);
-        } catch (e) {
-          // value is not JXON
-          this.value = val;
-          resolve(val);
-        }
-
-        resolve(this.value);
       });
     });
   }
@@ -104,6 +102,8 @@ export class Item {
 
     if (typeof value !== 'string') { // XML
       this.value = JXON.parse(val);
+    } else {
+      this.value = val;
     }
 
     iItem.set('prop:item', val, slot);
@@ -187,7 +187,7 @@ export class Item {
         reject(Error('Script plugins do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
-        Scene.searchAllForItem(iItem.getBaseID()).then(items => {
+        Scene.searchAllForItemId(iItem.getBaseID()).then(items => {
           resolve(items[0]); // this should always exist
         });
       }

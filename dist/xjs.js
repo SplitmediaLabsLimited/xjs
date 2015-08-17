@@ -633,16 +633,17 @@ var Item = (function () {
                     _this.value = '';
                     resolve(val);
                 }
-                try {
-                    _this.value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
-                    resolve(_this.value);
+                else {
+                    try {
+                        _this.value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
+                        resolve(_this.value);
+                    }
+                    catch (e) {
+                        // value is not valid XML (it is a string instead)
+                        _this.value = val;
+                        resolve(val);
+                    }
                 }
-                catch (e) {
-                    // value is not JXON
-                    _this.value = val;
-                    resolve(val);
-                }
-                resolve(_this.value);
             });
         });
     };
@@ -653,6 +654,9 @@ var Item = (function () {
             value : value.toString();
         if (typeof value !== 'string') {
             this.value = json_1.JSON.parse(val);
+        }
+        else {
+            this.value = val;
         }
         item_1.Item.set('prop:item', val, slot);
     };
@@ -724,7 +728,7 @@ var Item = (function () {
                     'associated with them.'));
             }
             else if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
-                scene_1.Scene.searchAllForItem(item_1.Item.getBaseID()).then(function (items) {
+                scene_1.Scene.searchAllForItemId(item_1.Item.getBaseID()).then(function (items) {
                     resolve(items[0]); // this should always exist
                 });
             }
@@ -735,6 +739,7 @@ var Item = (function () {
 exports.Item = Item;
 },{"../../internal/item":12,"../../internal/util/json":13,"../../internal/util/xml":15,"../environment":2,"../scene":7}],7:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
 var app_1 = require('../internal/app');
 var environment_1 = require('./environment');
 var item_1 = require('./item/item');
@@ -743,6 +748,13 @@ var Scene = (function () {
         this.id = sceneNum - 1;
     }
     ;
+    Scene.initializeScenePool = function () {
+        if (Scene.scenePool.length === 0) {
+            for (var i = 0; i < Scene.maxScenes; i++) {
+                Scene.scenePool[i] = new Scene(i + 1);
+            }
+        }
+    };
     /**
      * Get a specific scene object given the scene number.
      *
@@ -755,16 +767,56 @@ var Scene = (function () {
      * #Usage
      *
      * ```
-     * var scene1 = Scene.get(1);
+     * var scene1 = Scene.getById(1);
      * ```
      */
-    Scene.get = function (sceneNum) {
-        if (Scene.scenePool.length === 0) {
-            for (var i = 0; i < Scene.maxScenes; i++) {
-                Scene.scenePool[i] = new Scene(i + 1);
-            }
-        }
+    Scene.getById = function (sceneNum) {
+        // initialize if necessary
+        Scene.initializeScenePool();
         return Scene.scenePool[sceneNum - 1];
+    };
+    /**
+     * Asynchronous functon to get a list of scene objects with a specific name.
+     *
+     * #Return
+     *
+     * ```
+     * Promise<Scene[]>
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * var scenes = Scene.getByName('Game').then(function(scenes) {
+     *    // manipulate scenes
+     * });
+     * ```
+     */
+    Scene.getByName = function (sceneName) {
+        // initialize if necessary
+        Scene.initializeScenePool();
+        var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
+            return app_1.App.get('presetname:' + index).then(function (name) {
+                if (sceneName === name) {
+                    return Scene.scenePool[index];
+                }
+                else {
+                    return null;
+                }
+            });
+        }));
+        return new Promise(function (resolve) {
+            namePromise.then(function (results) {
+                var returnArray = [];
+                for (var j = 0; j < results.length; ++j) {
+                    if (results[j] !== null) {
+                        returnArray.push(results[j]);
+                    }
+                }
+                ;
+                resolve(returnArray);
+            });
+        });
     };
     /**
      * Get the currently active scene.
@@ -783,14 +835,110 @@ var Scene = (function () {
      */
     Scene.getActiveScene = function () {
         return new Promise(function (resolve) {
-            app_1.App.get('preset:0').then(function (id) {
-                resolve(Scene.get(Number(id) + 1));
-            });
+            if (environment_1.Environment.isSourceHtml()) {
+                app_1.App.get('presetconfig:-1').then(function (sceneString) {
+                    var curScene = json_1.JSON.parse(sceneString);
+                    if (curScene.children.length > 0) {
+                        resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+                    }
+                    else {
+                        throw new Error('presetconfig cannot fetch current scene');
+                    }
+                });
+            }
+            else {
+                app_1.App.get('preset:0').then(function (id) {
+                    resolve(Scene.getById(Number(id) + 1));
+                });
+            }
         });
     };
     /**
-     * Searches all scenes for an item by ID or name substring. ID search
-     * will return only 1 result.
+     * Searches all scenes for an item by ID. ID search
+     * will return only a maximum of 1 result (IDs are unique).
+     *
+     * #Return
+     * ```
+     * Item
+     * ```
+     *
+     * #Usage
+     *
+     * ```
+     * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+     *   // item is either an Item or null
+     * });
+     * ```
+     *
+     */
+    Scene.searchAllForItemId = function (id) {
+        var isID = /^{[A-F0-9-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for items');
+        }
+        else {
+            Scene.initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene.scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getItems().then((function (items) {
+                            found = items.some(function (item) {
+                                if (item['id'] === id) {
+                                    match = item;
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                Number(this) === arr.length - 1) {
+                                resolve(match);
+                            }
+                        }).bind(idx));
+                    }
+                });
+            });
+        }
+    };
+    ;
+    Scene.searchSceneByItemId = function (id) {
+        var isID = /^{[A-F0-9-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for items');
+        }
+        else {
+            Scene.initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene.scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getItems().then(function (items) {
+                            found = items.some(function (item) {
+                                if (item['id'] === id) {
+                                    match = Scene.getById(idx + 1);
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                idx === arr.length - 1) {
+                                resolve(match);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    };
+    ;
+    /**
+     * Searches all scenes for an item by name substring.
      *
      * #Return
      * ```
@@ -800,85 +948,52 @@ var Scene = (function () {
      * #Usage
      *
      * ```
-     * Scene.searchAllForItem('camera').then(function(items) {
+     * Scene.searchAllForItemName('camera').then(function(items) {
      *   // do something to each item in items array
      * });
      * ```
      *
      */
-    Scene.searchAllForItem = function (key) {
-        // detect if UUID or keyword
-        var isID = /^{[A-F0-9-]*}$/i.test(key);
+    Scene.searchAllForItemName = function (param) {
+        Scene.initializeScenePool();
         var matches = [];
-        if (isID) {
-            // search by ID (only one match should be found)
-            var found = false;
-            return new Promise(function (resolve) {
-                if (Scene.scenePool.length === 0) {
-                    Scene.get(1); // initialize scene items first
-                }
-                Scene.scenePool.forEach(function (scene, idx, arr) {
-                    if (!found) {
-                        scene.getItems().then(function (items) {
-                            found = items.some(function (item) {
-                                if (item['id'] === key) {
-                                    matches.push(item);
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            });
-                            if (found || idx === arr.length - 1) {
-                                resolve(matches);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-        else {
-            // search by name substring
-            return new Promise(function (resolve) {
-                if (Scene.scenePool.length === 0) {
-                    Scene.get(1); // initialize scene items first
-                }
-                return Promise.all(Scene.scenePool.map(function (scene) {
-                    return new Promise(function (resolveScene) {
-                        scene.getItems().then(function (items) {
-                            if (items.length === 0) {
-                                resolveScene();
-                            }
-                            else {
-                                return Promise.all(items.map(function (item) {
-                                    return new Promise(function (resolveItem) {
-                                        item.getName().then(function (name) {
-                                            if (name.match(key)) {
-                                                matches.push(item);
-                                                return '';
-                                            }
-                                            else {
-                                                return item.getValue();
-                                            }
-                                        }).then(function (value) {
-                                            if (value.toString().match(key)) {
-                                                matches.push(item);
-                                            }
-                                            resolveItem();
-                                        });
+        return new Promise(function (resolve) {
+            return Promise.all(Scene.scenePool.map(function (scene) {
+                return new Promise(function (resolveScene) {
+                    scene.getItems().then(function (items) {
+                        if (items.length === 0) {
+                            resolveScene();
+                        }
+                        else {
+                            return Promise.all(items.map(function (item) {
+                                return new Promise(function (resolveItem) {
+                                    item.getName().then(function (name) {
+                                        if (name.match(param)) {
+                                            matches.push(item);
+                                            return '';
+                                        }
+                                        else {
+                                            return item.getValue();
+                                        }
+                                    }).then(function (value) {
+                                        if (value.toString().match(param)) {
+                                            matches.push(item);
+                                        }
+                                        resolveItem();
                                     });
-                                })).then(function () {
-                                    resolveScene();
                                 });
-                            }
-                        });
+                            })).then(function () {
+                                resolveScene();
+                            });
+                        }
                     });
-                })).then(function () {
-                    resolve(matches);
                 });
+            })).then(function () {
+                resolve(matches);
             });
-        }
+        });
     };
+    ;
     /**
      * Get the 1-indexed scene number of this scene object.
      *
@@ -1032,7 +1147,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":8,"./environment":2,"./item/item":6}],8:[function(require,module,exports){
+},{"../internal/app":8,"../internal/util/json":13,"./environment":2,"./item/item":6}],8:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -1376,6 +1491,9 @@ var JSON = (function () {
         var openResult = openingRegex.exec(sxml);
         var selfCloseResult = selfCloseRegex.exec(sxml);
         var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
+        if (xmlDocument.getElementsByTagName('parsererror').length > 0) {
+            throw new Error('XML parsing error. Invalid XML string');
+        }
         var processNode = function (node) {
             var obj = new JSON();
             obj.tag = node.tagName;
