@@ -71,13 +71,15 @@ describe('Item', function() {
 
       done();
     } else {
-      XJS.Scene.get(1).getItems().then(function(items) {
-        if (items.length === 0) {
-          throw new Error('NO ITEMS ON CURRENT SCENE');
-        }
+      XJS.Scene.getActiveScene().then(function(scene) {
+        scene.getItems().then(function(items) {
+          if (items.length === 0) {
+            throw new Error('NO ITEMS ON CURRENT SCENE');
+          }
 
-        Item = items[0];
-        done();
+          Item = items[0];
+          done();
+        });
       });
     }
   });
