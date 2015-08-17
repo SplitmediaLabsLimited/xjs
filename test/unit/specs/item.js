@@ -71,6 +71,7 @@ describe('Item', function() {
 
       done();
     } else {
+      XJS.Environment.initialize();
       XJS.Scene.getActiveScene().then(function(scene) {
         scene.getItems().then(function(items) {
           if (items.length === 0) {

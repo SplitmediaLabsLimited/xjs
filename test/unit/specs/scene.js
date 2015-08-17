@@ -51,6 +51,7 @@ describe('Scene', function() {
 
   describe('object instance', function() {
     var scene;
+    var sceneItems;
 
     beforeAll(function(done) {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
@@ -159,12 +160,14 @@ describe('Scene', function() {
       scene.getItems().then(function(items) {
         expect(items).toBeInstanceOf(Array);
         expect(items).eachToBeInstanceOf(Item);
+        sceneItems = items[0];
         done();
       });
     });
 
     it('should be able to search for an item by ID', function(done) {
-      Scene.searchAllForItemId('{75EF04AB-6915-4A88-8177-950B12186359}')
+
+      Scene.searchAllForItemId(sceneItems.id)
         .then(function(item) {
           expect(item).toBeInstanceOf(Item);
           done();
@@ -180,7 +183,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for an item by Name', function(done) {
-      Scene.searchAllForItemName('Twitch')
+      Scene.searchAllForItemName(sceneItems.name)
         .then(function(items) {
           expect(items).toBeInstanceOf(Array);
           expect(items).eachToBeInstanceOf(Item);
