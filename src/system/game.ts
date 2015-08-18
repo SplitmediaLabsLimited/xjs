@@ -3,8 +3,10 @@
 import {Rectangle as Rectangle} from '../util/rectangle';
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
+import {Addable} from './iaddable';
+import {App as iApp} from '../internal/app';
 
-export class Game{
+export class Game implements Addable {
 
   private pid: number;
   private handle: number;
@@ -176,5 +178,13 @@ export class Game{
     gamesource['selfclosing'] = true;
 
     return XML.parseJSON(gamesource);
+  }
+
+  addToScene(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.callFunc('addgamesource', 'dev:' + this.toXML()).then(() => {
+        resolve(true);
+      });
+    });
   }
 }
