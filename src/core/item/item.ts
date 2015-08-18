@@ -170,14 +170,6 @@ export class Item {
     return XML.parseJSON(item);
   }
 
-  /** Tells the item to add itself to a scene.
-   *  Currently limited to adding to the active scene.
-   *  Should be implemented by Item subclasses.
-   */
-  addToScene(scene: Scene): Promise<boolean> {
-    return Promise.reject(Error('Generic items are not addable to a scene'));
-  }
-
   /** Get the current source (when function is called by sources), or the source
    * that was right-clicked to open the config window (when function is called
    * from the config window) */

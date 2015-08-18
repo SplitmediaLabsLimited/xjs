@@ -385,29 +385,4 @@ export class Scene {
       });
     });
   }
-
-  /**
-   * Adds an item to a scene. Currently, this is only limited to adding items
-   * to the current scene.
-   *
-   * Promise should resolve if item was successfully added.
-   *
-   */
-  addItem(item: Item): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      Scene.getActiveScene().then(active => {
-        if (this === active) {
-          item.addToScene(this).then(() => {
-            resolve();
-          }).catch(error => {
-            reject(error);
-          });
-        } else {
-          reject(Error('At the moment, items may only be added to the current ' +
-            'scene. This limitation will be addressed in the future.'));
-        }
-      });
-    });
-
-  }
 }
