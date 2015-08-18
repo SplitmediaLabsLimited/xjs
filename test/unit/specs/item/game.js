@@ -48,7 +48,7 @@ describe('GameItem', function() {
         'isPositionLocked',
         'setPositionLocked',
         'isEnhancedResizeEnabled',
-        'setEnhanceResizeEnabled',
+        'setEnhancedResizeEnabled',
         'getPosition',
         'setPosition'
         ].join(','));
