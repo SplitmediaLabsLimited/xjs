@@ -52,6 +52,17 @@ export class GameItem extends Item implements IItemLayout, IItemColor {
   }
 
   /**
+   * param: boolean
+   *
+   * Set Show Mouse in game to on or off
+   */
+  setShowMouse(value: boolean) {
+    let slot = iItem.attach(this.id);
+
+    iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot);
+  }
+
+  /**
    * param: string
    *
    * Set the offline image of a game source
@@ -104,17 +115,6 @@ export class GameItem extends Item implements IItemLayout, IItemColor {
         resolve(valueObj['replace']);
       }
     });
-  }
-
-  /**
-   * param: boolean
-   *
-   * Set Show Mouse in game to on or off
-   */
-  setShowMouse(value: boolean) {
-    let slot = iItem.attach(this.id);
-
-    iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot);
   }
 
   // ItemLayout
