@@ -1,18 +1,42 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
-import {Rectangle as Rectangle} from '../internal/util/rectangle';
+import {Rectangle as Rectangle} from '../util/rectangle';
 import {JSON as JSON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 
+/**
+ * The App Class provides you methods to get and set application related
+ * functionalities.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('XJS');
+ * var App = new XJS.App();
+ *
+ * App.getFrameTime().then(function(frametime) {
+ *   window.frametime = frametime;
+ * });
+ * ```
+ */
 export class App{
 
   /**
+   * return: Promise<number>
+   *
    * Gets application's frame time (duration per frame in 100ns unit)
    *
-   * @return {Promise<number>}
+   * #### Usage
+   *
+   * ```javascript
+   * var frameTimeP = App.getFrameTime();
+   * frameTimeP.then(function(res) {
+   *   var frameTime = res;
+   * });
+   * ```
    */
   getFrametime(): Promise<number> {
     return new Promise(resolve => {
@@ -23,9 +47,19 @@ export class App{
   }
 
   /**
+   * return: Promise<Rectangle>
+   *
    * Gets application default output resolution
    *
-   * @return {Promise<Rectangle>}
+   * #### Usage
+   *
+   * ```javascript
+   * var resolutionP = App.getResolution();
+   * resolutionP.then(function(res) {
+   *   var height = res.getHeight();
+   *   var width = res.getWidth();
+   * });
+   * ```
    */
   getResolution() : Promise<Rectangle> {
     return new Promise(resolve => {
@@ -38,9 +72,19 @@ export class App{
   }
 
   /**
+   * return: Promise<Rectangle>
+   *
    * Gets application viewport display resolution
    *
-   * @return {Promise<Rectangle>}
+   * #### Usage
+   *
+   * ```javascript
+   * var viewPortP = App.getViewport();
+   * viewPortP.then(function(res) {
+   *   var height = res.getHeight();
+   *   var width = res.getWidth();
+   * });
+   * ```
    */
   getViewport() : Promise<Rectangle> {
     return new Promise(resolve => {
@@ -53,9 +97,18 @@ export class App{
   }
 
   /**
+   * return: Promise<string>
+   *
    * Refers to XSplit Broadcaster DLL file version number
    *
-   * @return {Promise<string>}
+   * #### Usage
+   *
+   * ```javascript
+   * var versionP = App.getVersion();
+   * versionP.then(function(res) {
+   *   var version = res;
+   * });
+   * ```
    */
   getVersion() : Promise<string> {
     return new Promise(resolve => {
@@ -64,9 +117,18 @@ export class App{
   }
 
   /**
+   * return: Promise<number>
+   *
    * Gets the total number of frames rendered
    *
-   * @return {Promise<number>}
+   * #### Usage
+   *
+   * ```javascript
+   * var framesrenderedP = App.getFramesRendered();
+   * framesrenderedP.then(function(res) {
+   *   var framesrendered = res;
+   * });
+   * ```
    */
   getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
@@ -79,9 +141,18 @@ export class App{
   // Audio Services
 
   /**
+   * return: Promise<JSON>
+   *
    * Gets the configuration for silence detection
    *
-   * @return {Promise<JSON>}
+   * #### Usage
+   *
+   * ```javascript
+   * var audioGainP = App.getAudioGain();
+   * audioGainP.then(function(res) {
+   *   var audioGain = res;
+   * });
+   * ```
    */
   getAudioGain(): Promise<JSON> {
     return new Promise(resolve => {
@@ -92,10 +163,15 @@ export class App{
   }
 
   /**
+   * param: config<JSON>
+   *
    * Sets the configuration for silence detection
    *
-   * @param {JSON} config
-   * @return {Promise<JSON>}
+   * #### Usage
+   *
+   * ```javascript
+   * App.setAudioGain(configJSON);
+   * ```
    */
   setAudioGain(config: JSON): void {
     config.tag = 'configuration';
@@ -112,10 +188,16 @@ export class App{
   static BORDER_ENABLE_MAXIMIZE: number = 16;
 
   /**
-   * Creates a persistent modal dialog.
+   * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
+   *
+   * Creates a persistent modal dialog.<br/>
    * This method is not available for source
    *
-   * @param {string} url
+   * #### Usage
+   *
+   * ```javascript
+   * App.newDialog(url, width, height, flags, title);
+   * ```
    */
   newDialog(
     url: string,
@@ -138,9 +220,15 @@ export class App{
   }
 
   /**
+   * param: url<string>[, width<number>[, height<number>]]
+   *
    * Creates a dialog that automatically closes on outside click
    *
-   * @param {string} url
+   * #### Usage
+   *
+   * ```javascript
+   * App.newAutoDialog(url, width, height);
+   * ```
    */
   newAutoDialog(url: string, width: number = 300, height: number = 300): void {
     if (Environment.isSourceHtml()) {
@@ -179,9 +267,18 @@ export class App{
   static TRANSITION_WAVE: string             = 'wave';
 
   /**
-   * Gets the transition for scene changes.
+   * return: Promise<string>
    *
-   * @return {Promise<string>}
+   * Gets the transition for scene changes
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var transitionP = App.getTransition();
+   * transitionP.then(function(res) {
+   *   var transitionid = res;
+   * });
+   * ```
    */
   getTransition(): Promise<string> {
     return new Promise(resolve => {
@@ -191,17 +288,34 @@ export class App{
     });
   }
 
-  /** Sets the transition for scene changes.
+  /**
+   * param: transition<string>
    *
-   * @param {string} transition
+   * Sets the transition for scene changes
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.setTransition(transitionid);
+   * ```
    */
   setTransition(transition: string): void {
     iApp.set('transitionid', transition);
   }
 
-  /** Gets the scene transition duration in milliseconds.
+  /**
+   * return: Promise<number>
    *
-   * @return {Promise<Number>}
+   * Gets the scene transition duration in milliseconds
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var transitionTimeP = App.getTransitionTime();
+   * transitionTimeP.then(function(res) {
+   *   var transitiontime = res;
+   * });
+   * ```
    */
   getTransitionTime(): Promise<Number> {
     return new Promise(resolve => {
@@ -211,9 +325,16 @@ export class App{
     });
   }
 
-  /** Sets the scene transition duration in milliseconds.
+  /**
+   * param: transition<number>
    *
-   * @param {Number} time
+   * Sets the scene transition duration in milliseconds
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.setTransitionTime(transitiontime);
+   * ```
    */
   setTransitionTime(time: Number): void {
     iApp.set('transitiontime', time.toString());

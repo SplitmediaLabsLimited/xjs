@@ -1,6 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Rectangle} from '../../internal/util/rectangle';
+import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
@@ -24,11 +24,11 @@ export enum ItemTypes {
  * Some possible sources are games, microphones, or a webpage.
  */
 export class Item {
+  protected id: string;
+  protected type: ItemTypes;
+  protected value: any;
   private name: string;
-  private id: string;
   private sceneID: number;
-  private type: ItemTypes;
-  private value: any;
   private keepLoaded: boolean;
 
   private xmlparams: {};
@@ -41,7 +41,7 @@ export class Item {
     this.sceneID = props['sceneID'];
     this.value = props['value'];
     this.keepLoaded = props['keeploaded'];
-    this.type = props['type'];
+    this.type = Number(props['type']);
 
     this.xmlparams = props;
   }
@@ -79,18 +79,16 @@ export class Item {
         if (val === '') { // don't return XML for null values
           this.value = '';
           resolve(val);
+        } else {
+          try {
+            this.value = XML.parseJSON(JXON.parse(val));
+            resolve(this.value);
+          } catch (e) {
+            // value is not valid XML (it is a string instead)
+            this.value = val;
+            resolve(val);
+          }
         }
-
-        try {
-          this.value = XML.parseJSON(JXON.parse(val));
-          resolve(this.value);
-        } catch (e) {
-          // value is not JXON
-          this.value = val;
-          resolve(val);
-        }
-
-        resolve(this.value);
       });
     });
   }
@@ -104,6 +102,8 @@ export class Item {
 
     if (typeof value !== 'string') { // XML
       this.value = JXON.parse(val);
+    } else {
+      this.value = val;
     }
 
     iItem.set('prop:item', val, slot);
@@ -166,6 +166,7 @@ export class Item {
     item['name'] = this.name;
     item['item'] = this.value;
     item['type'] = this.type;
+    item['selfclosing'] = true;
 
     return XML.parseJSON(item);
   }
@@ -179,7 +180,7 @@ export class Item {
         reject(Error('Script plugins do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
-        Scene.searchAllForItem(iItem.getBaseID()).then(items => {
+        Scene.searchAllForItemId(iItem.getBaseID()).then(items => {
           resolve(items[0]); // this should always exist
         });
       }

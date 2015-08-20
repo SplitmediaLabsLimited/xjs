@@ -11,6 +11,8 @@
     "filesGlob": [
         "./src/internal/*.ts",
         "./src/core/*.ts",
+        "./src/core/**/*.ts",
+        "./src/system/*.ts",
         "!./node_modules/**/*.ts"
     ],
     "files": [
@@ -21,7 +23,16 @@
         "./src/internal/item.ts",
         "./src/core/app.ts",
         "./src/core/environment.ts",
-        "./src/core/index.ts",
-        "./src/core/scene.ts"
+        "./src/core/scene.ts",
+        "./src/core/item/camera.ts",
+        "./src/core/item/game.ts",
+        "./src/core/item/icolor.ts",
+        "./src/core/item/ilayout.ts",
+        "./src/core/item/item.ts",
+        "./src/system/audio.ts",
+        "./src/system/camera.ts",
+        "./src/system/game.ts",
+        "./src/system/iaddable.ts",
+        "./src/system/system.ts"
     ]
 }

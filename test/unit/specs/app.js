@@ -1,4 +1,4 @@
-/* globals describe, it, expect, xui, xdescribe */
+/* globals describe, it, expect, xdescribe */
 
 describe('App', function() {
   'use strict';

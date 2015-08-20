@@ -19,7 +19,9 @@ module.exports = function(config) {
       'test/unit/environment.js',
       'test/unit/specs/matchers.js',
       'dist/xjs.js',
-      'test/unit/specs/*.js'
+      'test/unit/specs/*.js',
+      'test/unit/specs/item/*.js',
+      'test/unit/specs/system/*.js'
     ],
 
 

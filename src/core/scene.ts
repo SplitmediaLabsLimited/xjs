@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {JSON as JXON} from '../internal/util/json';
 import {App as iApp} from '../internal/app';
 import {Environment} from './environment';
 import {Item} from './item/item';
@@ -14,6 +15,14 @@ export class Scene {
     this.id = sceneNum - 1;
   };
 
+  private static initializeScenePool() {
+    if (Scene.scenePool.length === 0) {
+      for (var i = 0; i < Scene.maxScenes; i++) {
+        Scene.scenePool[i] = new Scene(i + 1);
+      }
+    }
+  }
+
 
   /**
    * Get a specific scene object given the scene number.
@@ -27,17 +36,58 @@ export class Scene {
    * #Usage
    *
    * ```
-   * var scene1 = Scene.get(1);
+   * var scene1 = Scene.getById(1);
    * ```
    */
-  static get(sceneNum: number): Scene {
-    if (Scene.scenePool.length === 0) {
-      for (var i = 0; i < Scene.maxScenes; i++) {
-        Scene.scenePool[i] = new Scene(i + 1);
-      }
-    }
+  static getById(sceneNum: number): Scene {
+    // initialize if necessary
+    Scene.initializeScenePool();
 
     return Scene.scenePool[sceneNum - 1];
+  }
+
+  /**
+   * Asynchronous functon to get a list of scene objects with a specific name.
+   *
+   * #Return
+   *
+   * ```
+   * Promise<Scene[]>
+   * ```
+   *
+   * #Usage
+   *
+   * ```
+   * var scenes = Scene.getByName('Game').then(function(scenes) {
+   *    // manipulate scenes
+   * });
+   * ```
+   */
+  static getByName(sceneName: string): Promise<Scene[]> {
+    // initialize if necessary
+    Scene.initializeScenePool();
+
+    let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
+      return iApp.get('presetname:' + index).then(name => {
+        if (sceneName === name) {
+          return Scene.scenePool[index];
+        } else {
+          return null;
+        }
+      });
+    }));
+
+    return new Promise(resolve => {
+      namePromise.then(results => {
+        let returnArray = [];
+        for (var j = 0; j < results.length; ++j) {
+          if (results[j] !== null) {
+            returnArray.push(results[j]);
+          }
+        };
+        resolve(returnArray);
+      });
+    });
   }
 
   /**
@@ -57,15 +107,109 @@ export class Scene {
    */
   static getActiveScene(): Promise<Scene> {
     return new Promise(resolve => {
-      iApp.get('preset:0').then(id => {
-        resolve(Scene.get(Number(id) + 1));
-      });
+      if (Environment.isSourceHtml()) {
+        iApp.get('presetconfig:-1').then(sceneString => {
+          let curScene = JXON.parse(sceneString);
+          if (curScene.children.length > 0) {
+            resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+          } else {
+            throw new Error('presetconfig cannot fetch current scene');
+          }
+        });
+      } else {
+        iApp.get('preset:0').then(id => {
+          resolve(Scene.getById(Number(id) + 1));
+        });
+      }
     });
   }
 
   /**
-   * Searches all scenes for an item by ID or name substring. ID search
-   * will return only 1 result.
+   * Searches all scenes for an item by ID. ID search
+   * will return only a maximum of 1 result (IDs are unique).
+   *
+   * #Return
+   * ```
+   * Item
+   * ```
+   *
+   * #Usage
+   *
+   * ```
+   * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+   *   // item is either an Item or null
+   * });
+   * ```
+   *
+   */
+  static searchAllForItemId(id: string): Promise<Item> {
+    let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+    if (!isID) {
+      throw new Error('Not a valid ID format for items');
+    } else {
+      Scene.initializeScenePool();
+
+      return new Promise(resolve => {
+
+        let match = null;
+        let found = false;
+        Scene.scenePool.forEach((scene, idx, arr) => {
+          if (match === null) {
+            scene.getItems().then((function(items) {
+              found = items.some(item => { // unique ID, so get first result
+                if (item['id'] === id) {
+                  match = item;
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              if (found ||
+                Number(this) === arr.length - 1) { // last scene, no match
+                resolve(match);
+              }
+            }).bind(idx));
+          }
+        });
+      });
+    }
+  };
+
+  static searchSceneByItemId(id: string): Promise<Scene> {
+    let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+    if (!isID) {
+      throw new Error('Not a valid ID format for items');
+    } else {
+      Scene.initializeScenePool();
+
+      return new Promise(resolve => {
+
+        let match = null;
+        let found = false;
+        Scene.scenePool.forEach((scene, idx, arr) => {
+          if (match === null) {
+            scene.getItems().then(items => {
+              found = items.some(item => { // unique ID, so get first result
+                if (item['id'] === id) {
+                  match = Scene.getById(idx + 1);
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+              if (found ||
+                idx === arr.length - 1) { // last scene, no match
+                resolve(match);
+              }
+            });
+          }
+        });
+      });
+    }
+  };
+
+  /**
+   * Searches all scenes for an item by name substring.
    *
    * #Return
    * ```
@@ -75,83 +219,50 @@ export class Scene {
    * #Usage
    *
    * ```
-   * Scene.searchAllForItem('camera').then(function(items) {
+   * Scene.searchAllForItemName('camera').then(function(items) {
    *   // do something to each item in items array
    * });
    * ```
    *
    */
-  static searchAllForItem(key: string): Promise<Item[]> {
-    // detect if UUID or keyword
-    let isID: boolean = /^{[A-F0-9-]*}$/i.test(key);
+  static searchAllForItemName(param: string): Promise<Item[]> {
+    Scene.initializeScenePool();
     let matches: Item[] = [];
 
-    if (isID) {
-    // search by ID (only one match should be found)
-    let found = false;
     return new Promise(resolve => {
-      if (Scene.scenePool.length === 0) {
-        Scene.get(1); // initialize scene items first
-      }
-      Scene.scenePool.forEach((scene, idx, arr) => {
-        if (!found) {
+      return Promise.all(Scene.scenePool.map(scene => {
+        return new Promise(resolveScene => {
           scene.getItems().then(items => {
-            found = items.some(item => { // unique ID
-              if (item['id'] === key) {
-                matches.push(item);
-                return true;
-              } else {
-                return false;
-              }
-            });
-            if (found || idx === arr.length - 1) {
-              resolve(matches);
+            if (items.length === 0) {
+              resolveScene();
+            } else {
+              return Promise.all(items.map(item => {
+                return new Promise(resolveItem => {
+                  item.getName().then(name => {
+                    if (name.match(param)) {
+                      matches.push(item);
+                      return '';
+                    } else {
+                      return item.getValue();
+                    }
+                  }).then(value => {
+                    if (value.toString().match(param)) {
+                      matches.push(item);
+                    }
+                    resolveItem();
+                  });
+                });
+              })).then(() => {
+                resolveScene();
+              });
             }
           });
-        }
+        });
+      })).then(() => {
+        resolve(matches);
       });
     });
-    } else {
-    // search by name substring
-      return new Promise(resolve => {
-        if (Scene.scenePool.length === 0) {
-          Scene.get(1); // initialize scene items first
-        }
-
-        return Promise.all(Scene.scenePool.map(scene => {
-          return new Promise(resolveScene => {
-            scene.getItems().then(items => {
-              if (items.length === 0) {
-                resolveScene();
-              } else {
-                return Promise.all(items.map(item => {
-                  return new Promise(resolveItem => {
-                    item.getName().then(name => {
-                      if (name.match(key)) {
-                        matches.push(item);
-                        return '';
-                      } else {
-                        return item.getValue();
-                      }
-                    }).then(value => {
-                      if (value.toString().match(key)) {
-                        matches.push(item);
-                      }
-                      resolveItem();
-                    });
-                  });
-                })).then(() => {
-                  resolveScene();
-                });
-              }
-            });
-          });
-        })).then(() => {
-          resolve(matches);
-        });
-      });
-    }
-  }
+  };
 
   /**
    * Get the 1-indexed scene number of this scene object.
@@ -254,7 +365,7 @@ export class Scene {
     });
   }
 
-  /**
+ /**
  * Checks if a scene is empty.
  *
  * #Usage
