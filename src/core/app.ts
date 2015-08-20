@@ -283,9 +283,7 @@ export class App{
   }
 
   /**
-   * ```
    * return: Promise<boolean>
-   * ```
    *
    * Gets whether silence detection is enabled
    *

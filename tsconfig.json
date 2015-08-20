@@ -23,7 +23,9 @@
         "./src/internal/item.ts",
         "./src/core/app.ts",
         "./src/core/index.ts",
+        "./src/system/audio.ts",
         "./src/system/camera.ts",
+        "./src/system/game.ts",
         "./src/system/system.ts"
     ]
 }
