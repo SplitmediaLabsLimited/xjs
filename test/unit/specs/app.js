@@ -703,6 +703,22 @@ describe('App ===', function() {
           done();
         });
       });
+
+      xit('should not be set below 0', function() {
+        promise = App.setSilenceDetectionPeriod(-1);
+      });
+
+      xit('should not be set above 128', function() {
+        promise = App.setSilenceDetectionPeriod(129);
+      });
+
+      xit('should not allow decimals', function() {
+        promise = App.setSilenceDetectionThreshold(5.5);
+      });
+
+      xit('should only accept numbers', function() {
+        promise = App.setSilenceDetectionThreshold('abcd');
+      });
     });
 
     describe ('silence detection period', function(done) {
@@ -740,6 +756,22 @@ describe('App ===', function() {
           expect(silenceDetectionPeriodSet).toBe(true);
           done();
         });
+      });
+
+      xit('should not be set below 0', function() {
+        promise = App.setSilenceDetectionPeriod(-1);
+      });
+
+      xit('should not be set above 60000', function() {
+        promise = App.setSilenceDetectionPeriod(60001);
+      });
+
+      xit('should not accept decimals', function() {
+        promise = App.setSilenceDetectionPeriod(1000.5);
+      });
+
+      xit('should only accept numbers', function() {
+        promise = App.setSilenceDetectionPeriod('abcd');
       });
     });
   });
