@@ -28,8 +28,8 @@ export interface IItemChroma {
   setKeyingType(value: KeyingType);
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  getChromaAntiAlias(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
-  setChromaAntiAlias(value: ChromaAntiAliasLevel);
+  getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
+  setChromaAntiAliasLevel(value: ChromaAntiAliasLevel);
 
   // CHROMA LEGACY MODE
   getChromaLegacyBrightness(): Promise<number>; // prop:key_chromabr  // ONLY FOR LEGACY MODE. Brightness
@@ -83,7 +83,7 @@ export class ItemChroma implements IItemChroma {
     iItem.set('prop:key_chromakey', (value ? '1' : '0'), slot);
   }
 
-  getChromaKeyType(): Promise<ChromaKeyType> {
+  getKeyingType(): Promise<KeyingType> {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
@@ -93,11 +93,11 @@ export class ItemChroma implements IItemChroma {
     });
   }
 
-  setChromaKeyType(value: ChromaKeyType) {
+  setKeyingType(value: KeyingType) {
     if (typeof value !== 'number') {
-      throw new TypeError('Use a ChromaKeyType value as the parameter.');
+      throw new TypeError('Use a KeyingType value as the parameter.');
     } else if (value < 0 || value > 2) {
-      throw new RangeError('Use a ChromaKeyType value as the parameter.');
+      throw new RangeError('Use a KeyingType value as the parameter.');
     }
 
     let slot = iItem.attach(this.id);
@@ -356,7 +356,7 @@ export class ItemChroma implements IItemChroma {
     iItem.set('prop:key_colorranga', String(value), slot);
   }
 
-  getChromaColor(): Promise<Color> {
+  getChromaColorKeyColor(): Promise<Color> {
     return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
@@ -368,7 +368,7 @@ export class ItemChroma implements IItemChroma {
     });
   }
 
-  setChromaColor(value: Color) {
+  setChromaColorKeyColor(value: Color) {
     let slot = iItem.attach(this.id);
 
     iItem.set('prop:key_colorrgb', value.getBgr(), slot);

@@ -4,6 +4,8 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
+import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
+  ChromaAntiAliasLevel} from './ichroma';
 import {Item} from './item';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
@@ -12,7 +14,7 @@ import {XML} from '../../internal/util/xml';
 import {ItemTypes} from './item';
 import {Environment} from '../environment';
 
-export class GameItem extends Item implements IItemLayout, IItemColor {
+export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma {
 
   /**
    * return: boolean
@@ -181,6 +183,43 @@ export class GameItem extends Item implements IItemLayout, IItemColor {
   /** Set Border Color */
   setBorderColor:  (value: Color) => void;
 
+  // ItemChroma
+  isChromaEnabled: () => Promise<boolean>; // prop:key_chromakey
+  setChromaEnabled: (value: boolean) => void;
+  getKeyingType: () => Promise<KeyingType>; // prop:key_chromakeytype
+  setKeyingType: (value: KeyingType) => void;
+
+  // BOTH CHROMA LEGACY AND CHROMA RGB
+  getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => void;
+
+  // CHROMA LEGACY MODE
+  getChromaLegacyBrightness: () => Promise<number>; // prop:key_chromabr  // ONLY FOR LEGACY MODE. Brightness
+  setChromaLegacyBrightness: (value: number) => void;
+  getChromaLegacySaturation: () => Promise<number>; // prop:key_chromasat // ONLY FOR LEGACY MODE. Saturation
+  setChromaLegacySaturation: (value: number) => void;
+  getChromaLegacyHue: () => Promise<number>; // prop:key_chromahue // ONLY FOR LEGACY MODE. Hue
+  setChromaLegacyHue: (value: number) => void;
+  getChromaLegacyThreshold: () => Promise<number>; // prop:key_chromarang // ONLY FOR LEGACY MODE. (below hue). Threshold?
+  setChromaLegacyThreshold: (value: number) => void;
+  getChromaLegacyAlphaSmoothing: () => Promise<number>; // prop:key_chromaranga // ONLY FOR LEGACY MODE. Alpha Smoothing
+  setChromaLegacyAlphaSmoothing: (value: number) => void;
+
+  // CHROMA KEY RGB MODE
+  getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>; // prop:key_chromargbkeyprimary. Key Color
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => void;
+  getChromaRGBKeyThreshold: () => Promise<number>; // prop:key_chromargbkeythresh. Threshold
+  setChromaRGBKeyThreshold: (value: number) => void;
+  getChromaRGBKeyExposure: () => Promise<number>; // prop:key_chromargbkeybalance. Exposure
+  setChromaRGBKeyExposure: (value: number) => void;
+
+  // COLOR KEY MODE
+  getChromaColorKeyThreshold: () => Promise<number>; // prop:key_colorrang // ONLY FOR COLOR KEY MODE. Threshold
+  setChromaColorKeyThreshold: (value: number) => void;
+  getChromaColorKeyExposure: () => Promise<number>; // prop:key_colorranga // ONLY FOR COLOR KEY MODE. Exposure
+  setChromaColorKeyExposure: (value: number) => void;
+  getChromaColorKeyColor: () => Promise<Color>; // prop:key_colorrgb // ONLY FOR COLOR KEY MODE
+  setChromaColorKeyColor: (value: Color) => void;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor]);
+applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma]);
