@@ -3,7 +3,7 @@
 import {Item as iItem} from '../../internal/item';
 import {Color} from '../../util/color';
 
-export enum ChromaKeyingType {
+export enum KeyingType {
     LEGACY, // Chroma Key Legacy Mode
     COLORKEY, // Color Key Mode
     RGBKEY // Chroma Key RGB Mode
@@ -22,10 +22,10 @@ export enum ChromaAntiAliasLevel {
 }
 
 export interface IItemChroma {
-  isChromaEnabled(): Promise<boolean>; // prop:key_chromakey //
+  isChromaEnabled(): Promise<boolean>; // prop:key_chromakey
   setChromaEnabled(value: boolean);
-  getChromaKeyingType(): Promise<ChromaKeyingType>; // prop:key_chromakeytype
-  setChromaKeyingType(value: ChromaKeyingType);
+  getKeyingType(): Promise<KeyingType>; // prop:key_chromakeytype
+  setKeyingType(value: KeyingType);
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   getChromaAntiAlias(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
@@ -48,8 +48,8 @@ export interface IItemChroma {
   setChromaRGBKeyPrimaryColor(value: ChromaPrimaryColors);
   getChromaRGBKeyThreshold(): Promise<number>; // prop:key_chromargbkeythresh. Threshold
   setChromaRGBKeyThreshold(value: number);
-  getChromaRGBKeyBalance(): Promise<number>; // prop:key_chromargbkeybalance. Exposure
-  setChromaRGBKeyBalance(value: number);
+  getChromaRGBKeyExposure(): Promise<number>; // prop:key_chromargbkeybalance. Exposure
+  setChromaRGBKeyExposure(value: number);
 
   // COLOR KEY MODE
   getChromaColorKeyThreshold(): Promise<number>; // prop:key_colorrang // ONLY FOR COLOR KEY MODE. Threshold
@@ -62,4 +62,315 @@ export interface IItemChroma {
 
 export class ItemChroma implements IItemChroma {
   private id: string;
+
+  isChromaEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromakey', slot).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setChromaEnabled(value: boolean) {
+    if (typeof value !== 'boolean') {
+      throw new TypeError('Parameter should be boolean.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromakey', (value ? '1' : '0'), slot);
+  }
+
+  getChromaKeyType(): Promise<ChromaKeyType> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromakeytype', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaKeyType(value: ChromaKeyType) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use a ChromaKeyType value as the parameter.');
+    } else if (value < 0 || value > 2) {
+      throw new RangeError('Use a ChromaKeyType value as the parameter.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromakeytype', String(value), slot);
+  }
+
+  // COMMON TO CHROMA LEGACY AND CHROMA RGB KEY
+
+  getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_antialiasing', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaAntiAliasLevel(value: ChromaAntiAliasLevel) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use a ChromaAntiAliasLevel value as the parameter.');
+    } else if (value < 0 || value > 2) {
+      throw new RangeError('Use a ChromaAntiAliasLevel value as the parameter.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_antialiasing', String(value), slot);
+  }
+
+  // CHROMA LEGACY MODE FUNCTIONS
+
+  getChromaLegacyBrightness(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromabr', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaLegacyBrightness(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromabr', String(value), slot);
+  }
+
+
+  getChromaLegacySaturation(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromasat', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaLegacySaturation(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromasat', String(value), slot);
+  }
+
+  getChromaLegacyHue(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromahue', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaLegacyHue(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 180) {
+      throw new RangeError('Valid value is an integer from 0-180.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromahue', String(value), slot);
+  }
+
+  getChromaLegacyThreshold(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromarang', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaLegacyThreshold(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromarang', String(value), slot);
+  }
+
+  getChromaLegacyAlphaSmoothing(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromaranga', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaLegacyAlphaSmoothing(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromaranga', String(value), slot);
+  }
+
+  // CHROMA RGB KEY FUNCTIONS
+
+  getChromaRGBKeyPrimaryColor(): Promise<ChromaPrimaryColors> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromargbkeyprimary', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaRGBKeyPrimaryColor(value: ChromaPrimaryColors) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use a ChromaPrimaryColors value as the parameter.');
+    } else if (value < 0 || value > 2) {
+      throw new RangeError('Use a ChromaPrimaryColors value as the parameter.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromargbkeyprimary', String(value), slot);
+  }
+
+  getChromaRGBKeyThreshold(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromargbkeythresh', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaRGBKeyThreshold(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromargbkeythresh', String(value), slot);
+  }
+
+  getChromaRGBKeyExposure(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_chromargbkeybalance', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaRGBKeyExposure(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_chromargbkeybalance', String(value), slot);
+  }
+
+  // CHROMA COLOR KEY FUNCTIONS
+
+  getChromaColorKeyThreshold(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_colorrang', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaColorKeyThreshold(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_colorrang', String(value), slot);
+  }
+
+
+  getChromaColorKeyExposure(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_colorranga', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setChromaColorKeyExposure(value: number) {
+    if (typeof value !== 'number') {
+      throw new TypeError('Use an integer as the parameter.');
+    } else if (value < 0 || value > 255) {
+      throw new RangeError('Valid value is an integer from 0-255.');
+    }
+
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_colorranga', String(value), slot);
+  }
+
+  getChromaColor(): Promise<Color> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:key_colorrgb', slot).then(val => {
+        let color: Color = Color.fromBGRString(val);
+
+        resolve(color);
+      });
+    });
+  }
+
+  setChromaColor(value: Color) {
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:key_colorrgb', value.getBgr(), slot);
+  }
 }
