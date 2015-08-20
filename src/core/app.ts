@@ -146,7 +146,7 @@ export class App{
 
   /**
    * return: Promise<AudioDevice>
-   * 
+   *
    * Gets the primary microphone device used in the application
    *
    * ### Usage
@@ -178,7 +178,7 @@ export class App{
 
   /**
    * return: Promise<AudioDevice>
-   * 
+   *
    * Gets the primary speaker/audio render device used in the application
    *
    * ### Usage
@@ -213,7 +213,7 @@ export class App{
    * ```
    * return: Promise<boolean>
    * ```
-   * 
+   *
    * Sets the primary microphone device to be used in the application
    *
    * ### Usage
@@ -250,7 +250,7 @@ export class App{
    * ```
    * return: Promise<boolean>
    * ```
-   * 
+   *
    * Sets the primary speaker/audio render device to be used in the application
    *
    * ### Usage
@@ -286,7 +286,7 @@ export class App{
    * ```
    * return: Promise<boolean>
    * ```
-   * 
+   *
    * Gets whether silence detection is enabled
    *
    * ### Usage
@@ -310,8 +310,8 @@ export class App{
    * param: enabled<boolean>
    * ```
    * return: Promise<boolean>
-   * ```   
-   * 
+   * ```
+   *
    * Enables or disables silence detection
    *
    * ### Usage
@@ -331,13 +331,13 @@ export class App{
         .then(setVal => {
           resolve(setVal);
         });
-      });  
+      });
     });
   }
 
   /**
    * return: Promise<number>
-   * 
+   *
    * Gets silence detection period,
    * the length of time after voice detection before silence is again detected
    *
@@ -363,9 +363,9 @@ export class App{
    * param: sdPeriod<number>
    * ```
    * return: Promise<boolean>
-   * ```   
-   * 
-   * Sets silence detection period,
+   * ```
+   *
+   * Sets silence detection period (0-60000 ms),
    * the length of time after voice detection before silence is again detected
    *
    * ### Usage
@@ -377,7 +377,15 @@ export class App{
    * ```
    */
   setSilenceDetectionPeriod(sdPeriod: number): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      if (typeof sdPeriod !== 'number') {
+        reject(Error('Silence detection period must be a number'));
+      } else if (sdPeriod % 1 != 0) {
+        reject(Error('Silence detection period must be an integer'));
+      } else if (sdPeriod < 0 || sdPeriod > 60000) {
+        reject(Error('Silence detection must be in the range 0-60000.'));
+      }
+
       iApp.get('microphonegain').then(val => {
         var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
         silenceDetectionObj['latency'] = (sdPeriod.toString());
@@ -385,13 +393,13 @@ export class App{
         .then(setVal => {
           resolve(setVal);
         });
-      });  
+      });
     });
   }
 
   /**
    * return: Promise<number>
-   * 
+   *
    * Gets silence detection threshold/silence amplitude
    *
    * ### Usage
@@ -417,9 +425,9 @@ export class App{
    * param: sdThreshold<number>
    * ```
    * return: Promise<boolean>
-   * ```   
-   * 
-   * Sets silence detection threshold/silence amplitude
+   * ```
+   *
+   * Sets silence detection threshold/silence amplitude (values from 0-128)
    *
    * ### Usage
    *
@@ -430,7 +438,14 @@ export class App{
    * ```
    */
   setSilenceDetectionThreshold(sdThreshold: number): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      if (typeof sdThreshold !== 'number') {
+        reject(Error('Silence detection threshold must be a number'));
+      } else if (sdThreshold % 1 != 0) {
+        reject(Error('Silence detection threshold must be an integer'));
+      } else if (sdThreshold < 0 || sdThreshold > 128) {
+        reject(Error('Silence detection threshold must be in the range 0-128.'));
+      }
       iApp.get('microphonegain').then(val => {
         var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
         silenceDetectionObj['gain'] = (sdThreshold.toString());
@@ -438,7 +453,7 @@ export class App{
         .then(setVal => {
           resolve(setVal);
         });
-      });  
+      });
     });
   }
 
@@ -464,7 +479,7 @@ export class App{
    * //     * App.BORDER_ENABLE_CAPTION (2)
    * //     * App.BORDER_ENABLE_SIZING (4)
    * //     * App.BORDER_ENABLE_MINIMIZE (8)
-   * //     * App.BORDER_ENABLE_MAXIMIZE (16)  
+   * //     * App.BORDER_ENABLE_MAXIMIZE (16)
    * App.newDialog(url, width, height, flags, title);
    * ```
    */
@@ -580,7 +595,7 @@ export class App{
    * //     * App.TRANSITION_MOVE_RIGHT
    * //     * App.TRANSITION_MOVE_TOP
    * //     * App.TRANSITION_MOVE_TOP_BOTTOM
-   * //     * App.TRANSITION_WAVE   
+   * //     * App.TRANSITION_WAVE
    * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
    *  var isSet = val;
    * });
@@ -637,6 +652,6 @@ export class App{
       iApp.set('transitiontime', time.toString()).then(val => {
         resolve(val);
       });
-    });    
+    });
   }
 }
