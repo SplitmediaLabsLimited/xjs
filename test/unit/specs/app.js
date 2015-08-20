@@ -1,4 +1,4 @@
-/* globals describe, it, expect, xdescribe */
+/* globals describe, it, expect, xdescribe, require, beforeEach, spyOn, jasmine */
 
 describe('App ===', function() {
   'use strict';
@@ -9,7 +9,6 @@ describe('App ===', function() {
   };
   var XJS = require('xjs');
   var App = new XJS.App();
-  var AudioDevice = XJS.AudioDevice;
 
   describe('should get frametime', function() {
     beforeEach(function() {
@@ -324,7 +323,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('primary mic', function(done) {
+    describe ('primary mic', function() {
       var promise;
       beforeEach(function() {
         promise = App.getPrimaryMic();
@@ -348,7 +347,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('primary speaker', function(done) {
+    describe ('primary speaker', function() {
       var promise;
       beforeEach(function() {
         promise = App.getPrimarySpeaker();
@@ -400,7 +399,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('primary mic', function(done) {
+    describe ('primary mic', function() {
       var micDev2MicResult =
         encodeURIComponent('<devices>' +
           '<dev id="default:1:0" level="0.900000" enable="1"' +
@@ -432,7 +431,7 @@ describe('App ===', function() {
           }
         });
 
-        var audioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
+        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
           this.id = id;
           this.level = level;
           this.enable = enable;
@@ -446,15 +445,15 @@ describe('App ===', function() {
               '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
               '" hwenable="' + this.hwenable + '" delay="' + this.delay +
               '" mix="0"/>';
-          }
+          };
         };
-        promise = App.setPrimaryMic(new audioDevice(
-          "default:1:0",
-          "0.900000",
-          "1",
-          "-1.000000",
-          "255",
-          "0"
+        promise = App.setPrimaryMic(new MockAudioDevice(
+          'default:1:0',
+          '0.900000',
+          '1',
+          '-1.000000',
+          '255',
+          '0'
           ));
       });
 
@@ -470,7 +469,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('primary speaker', function(done) {
+    describe ('primary speaker', function() {
       var micDev2SpeakerResult =
         encodeURIComponent('<devices>' +
           '<dev id="default:1:0" level="1.000000" enable="1"' +
@@ -503,7 +502,7 @@ describe('App ===', function() {
           }
         });
 
-        var audioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
+        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
           this.id = id;
           this.level = level;
           this.enable = enable;
@@ -517,15 +516,15 @@ describe('App ===', function() {
               '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
               '" hwenable="' + this.hwenable + '" delay="' + this.delay +
               '" mix="0"/>';
-          }
+          };
         };
-        promise = App.setPrimarySpeaker(new audioDevice(
-          "{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}",
-          "0.555555",
-          "1",
-          "-1.000000",
-          "255",
-          "0"
+        promise = App.setPrimarySpeaker(new MockAudioDevice(
+          '{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}',
+          '0.555555',
+          '1',
+          '-1.000000',
+          '255',
+          '0'
           ));
       });
 
@@ -629,7 +628,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('enable/disable silence detection', function(done) {
+    describe ('enable/disable silence detection', function() {
       var audioGainResultEnable =
         encodeURIComponent('<configuration enable="1"' +
           ' gain="5" latency="1000"/>');
@@ -667,7 +666,7 @@ describe('App ===', function() {
       });
     });
 
-    describe ('silence detection threshold', function(done) {
+    describe ('silence detection threshold', function() {
       var audioGainResultThreshold =
         encodeURIComponent('<configuration enable="0"' +
           ' gain="10" latency="1000"/>');
@@ -704,24 +703,44 @@ describe('App ===', function() {
         });
       });
 
-      xit('should not be set below 0', function() {
-        promise = App.setSilenceDetectionPeriod(-1);
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionPeriod(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should not be set above 128', function() {
-        promise = App.setSilenceDetectionPeriod(129);
+      it('should not be set above 128', function(done) {
+        promise = App.setSilenceDetectionPeriod(129).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should not allow decimals', function() {
-        promise = App.setSilenceDetectionThreshold(5.5);
+      it('should not allow decimals', function(done) {
+        promise = App.setSilenceDetectionThreshold(5.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should only accept numbers', function() {
-        promise = App.setSilenceDetectionThreshold('abcd');
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionThreshold('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe ('silence detection period', function(done) {
+    describe ('silence detection period', function() {
       var audioGainResultPeriod =
         encodeURIComponent('<configuration enable="0"' +
           ' gain="5" latency="5000"/>');
@@ -758,20 +777,40 @@ describe('App ===', function() {
         });
       });
 
-      xit('should not be set below 0', function() {
-        promise = App.setSilenceDetectionPeriod(-1);
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionPeriod(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should not be set above 60000', function() {
-        promise = App.setSilenceDetectionPeriod(60001);
+      it('should not be set above 60000', function(done) {
+        promise = App.setSilenceDetectionPeriod(60001).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should not accept decimals', function() {
-        promise = App.setSilenceDetectionPeriod(1000.5);
+      it('should not accept decimals', function(done) {
+        promise = App.setSilenceDetectionPeriod(1000.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      xit('should only accept numbers', function() {
-        promise = App.setSilenceDetectionPeriod('abcd');
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionPeriod('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
   });
@@ -865,7 +904,7 @@ describe('App ===', function() {
     beforeEach(function() {
       transitionSet = false;
       spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName, value) {
+        .and.callFake(function(funcName) {
         if (funcName === 'transitionid') {
           transitionSet = true;
           var randomNumber=Math.floor(Math.random()*1000);
