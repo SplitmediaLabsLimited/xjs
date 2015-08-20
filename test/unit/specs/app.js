@@ -704,7 +704,7 @@ describe('App ===', function() {
       });
 
       it('should not be set below 0', function(done) {
-        promise = App.setSilenceDetectionPeriod(-1).then(function() {
+        promise = App.setSilenceDetectionThreshold(-1).then(function() {
           done.fail('Invalid value was accepted');
         }).catch(function(err) {
           expect(err).toEqual(jasmine.any(Error));
@@ -713,7 +713,7 @@ describe('App ===', function() {
       });
 
       it('should not be set above 128', function(done) {
-        promise = App.setSilenceDetectionPeriod(129).then(function() {
+        promise = App.setSilenceDetectionThreshold(129).then(function() {
           done.fail('Invalid value was accepted');
         }).catch(function(err) {
           expect(err).toEqual(jasmine.any(Error));
