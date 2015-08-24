@@ -18,7 +18,7 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('XJS');
+ * var XJS = require('xjs');
  * var App = new XJS.App();
  *
  * App.getFrameTime().then(function(frametime) {
@@ -578,7 +578,7 @@ export class App{
    *
    * Sets the transition for scene changes
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * // you may use the following:
