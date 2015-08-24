@@ -73,7 +73,7 @@ export class AudioDevice{
    *
    * Gets the device ID
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDeviceID = device.getID();
@@ -88,7 +88,7 @@ export class AudioDevice{
    *
    * Gets the device name
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDeviceName = device.getName();
@@ -103,7 +103,7 @@ export class AudioDevice{
    *
    * Gets whether device is capturing or rendering audio
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDeviceName = device.getName();
@@ -119,7 +119,7 @@ export class AudioDevice{
    *
    * Gets whether audio device is the system default
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
@@ -134,7 +134,7 @@ export class AudioDevice{
    *
    * Gets the device audio level in the application
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDeviceVolumeLevel = audioDevice.getLevel();
@@ -152,7 +152,7 @@ export class AudioDevice{
    *
    * Sets the device audio level in the application
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * audioDevice.setLevel(100);
@@ -169,7 +169,7 @@ export class AudioDevice{
    *
    * Gets whether audio device is enabled/muted in the application
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
@@ -187,7 +187,7 @@ export class AudioDevice{
    *
    * Enables audio device/sets software mute
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * audioDevice.setLevel(100);
@@ -204,7 +204,7 @@ export class AudioDevice{
    *
    * Gets the device system volume
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var appVolumeLevel = audioDevice.getLevel();
@@ -222,7 +222,7 @@ export class AudioDevice{
    *
    * Sets the device system volume
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * audioDevice.setLevel(100);
@@ -239,7 +239,7 @@ export class AudioDevice{
    *
    * Gets whether audio device is enabled/muted in the system
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
@@ -257,7 +257,7 @@ export class AudioDevice{
    *
    * Enables audio device/sets software mute
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * audioDevice.setLevel(100);
@@ -274,7 +274,7 @@ export class AudioDevice{
    *
    * Get the loopback capture delay value
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDelay = audioDevice.getDelay();
@@ -292,7 +292,7 @@ export class AudioDevice{
    *
    * Sets the loopback capture delay value
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * audioDevice.setLevel(100);
@@ -309,7 +309,7 @@ export class AudioDevice{
    *
    * Converts the AudioDevice item to XML string
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var audioDeviceXMLString = AudioDevice.toString;
@@ -338,7 +338,7 @@ export class AudioDevice{
    *
    * Converts a JSON object into an AudioDevice object
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
