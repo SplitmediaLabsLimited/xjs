@@ -6,12 +6,34 @@ import {CameraDevice} from './camera';
 import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
 
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's first parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(XML.AudioDeviceDataflow.CAPTURE, ...);
+ * ```
+ */
 export enum AudioDeviceDataflow {
     RENDER = 1,
     CAPTURE = 2,
     ALL = 3
 }
 
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's second parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(..., XML.AudioDeviceState.ACTIVE);
+ * ```
+ */
 export enum AudioDeviceState {
     ACTIVE = 1,
     DISABLED = 2,
@@ -20,12 +42,38 @@ export enum AudioDeviceState {
     ALL = 15
 }
 
+/**
+ * The System class provides you methods to fetch games, audio devices, and
+ * camera devices.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(funciton(cameras) {
+ *   window.cameras = cameras;
+ * });
+ * ```
+ */
 export class System{
-
   /**
+   * return: Promise<AudioDevice[]>
+   *
    * Gets audio devices, both input and output
    *
-   * @return {Promise<AudioDevice[]>}
+   * #### Usage
+   *
+   * ```javascript
+   * System.getAudioDevices(
+   *   XML.AudioDeviceDataflow.ALL,
+   *   XML.AudioDeviceState.ACTIVE
+   * ).then(funciton(devices) {
+   *   // devices is an array of AudioDevice object
+   *   window.audios = devices;
+   * });
+   * ```
    */
   static getAudioDevices(dataflow = AudioDeviceDataflow.ALL,
       state = AudioDeviceState.ACTIVE): Promise<AudioDevice[]> {
@@ -57,22 +105,18 @@ export class System{
       });
     });
   }
-  
+
   /**
+   * return: Promise<CameraDevice[]>
+   *
    * Gets all camera devices
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * Promise<CameraDevice[]>
-   * ```
-   *
-   * #Usage
-   *
-   * ```
-   * var promise = System.getCameraDevices();
-   * promise.then(function(devices) {
-   * 	 // devices is an array of CameraDevice object
+   * ```javascript
+   * System.getCameraDevices().then(funciton(devices) {
+   *   // devices is an array of CameraDevice object
+   *   window.cameras = devices;
    * });
    * ```
    */
@@ -95,11 +139,20 @@ export class System{
       });
     });
   }
-  
+
   /**
-   * Gets all currently running games
+   * return: Promise<Game[]>
    *
-   * @return {Promise<Game>}
+   * Gets all camera devices
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getGames().then(funciton(games) {
+   *   // games is an array of Game object
+   *   window.games = games;
+   * });
+   * ```
    */
   static getGames(): Promise<Game[]> {
     return new Promise(resolve => {
