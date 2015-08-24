@@ -35,7 +35,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Game Special Optimization to on or off
    */
   setSpecialOptimization(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot);
   }
@@ -59,7 +59,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Show Mouse in game to on or off
    */
   setShowMouse(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot);
   }

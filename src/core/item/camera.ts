@@ -14,11 +14,9 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
 export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
-  private id: string;
-
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:value', slot).then(val => {
         resolve(val);
@@ -96,7 +94,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *  camera device on the stage.
    */
   setColorOptionsPinned(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:cc_pin', value ? '1' : '0', slot);
   }
@@ -106,7 +104,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:cc_pin', slot).then(val => {
         resolve(val === '1' ? true : false);
@@ -158,7 +156,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *  this camera device on the stage.
    */
   setKeyingOptionsPinned(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:key_pin', value ? '1' : '0', slot);
   }
@@ -168,7 +166,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:key_pin', slot).then(val => {
         resolve(val === '1' ? true : false);

@@ -166,7 +166,7 @@ describe('Scene', function() {
 
     it('should be able to search for an item by ID', function(done) {
 
-      Scene.searchAllForItemId(sceneItems.id)
+      Scene.searchAllForItemId(sceneItems._id)
         .then(function(item) {
           expect(item).toBeInstanceOf(Item);
           done();

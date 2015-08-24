@@ -12,11 +12,11 @@ export interface IItemTransition {
 }
 
 export class ItemTransition implements IItemTransition {
-  private id: string;
+  private _id: string;
 
   isVisible(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:visible', slot).then(val => {
         resolve(val === '1' ? true : false);
@@ -25,7 +25,7 @@ export class ItemTransition implements IItemTransition {
   }
 
   setVisible(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:visible', value ? '1' : '0', slot);
   }
@@ -37,14 +37,14 @@ export class ItemTransition implements IItemTransition {
   }
 
   setTransition(value: string) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:transitionid', value, slot);
   }
 
   getTransitionTime(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:transitiontime', slot).then(val => {
         resolve(Number(val));
@@ -53,7 +53,7 @@ export class ItemTransition implements IItemTransition {
   }
 
   setTransitionTime(value: number) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:transitionid', String(value), slot);
   }

@@ -159,7 +159,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
-                if (item['id'] === id) {
+                if (item['_id'] === id) {
                   match = item;
                   return true;
                 } else {
@@ -192,7 +192,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then(items => {
               found = items.some(item => { // unique ID, so get first result
-                if (item['id'] === id) {
+                if (item['_id'] === id) {
                   match = Scene.getById(idx + 1);
                   return true;
                 } else {
