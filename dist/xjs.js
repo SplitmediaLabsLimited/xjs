@@ -1,13 +1,16 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
+var audio_1 = require('../system/audio');
 var rectangle_1 = require('../internal/util/rectangle');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
 var environment_1 = require('../internal/environment');
+var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
+var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
 /**
- * The App Class provides you methods to get and set application related
+ * The App Class provides you methods to get and set application-related
  * functionalities.
  *
  * ### Basic Usage
@@ -133,40 +136,285 @@ var App = (function () {
     };
     // Audio Services
     /**
-     * return: Promise<JSON>
+     * return: Promise<AudioDevice>
      *
-     * Gets the configuration for silence detection
+     * Gets the primary microphone device used in the application
      *
-     * #### Usage
+     * ### Usage
      *
      * ```javascript
-     * var audioGainP = App.getAudioGain();
-     * audioGainP.then(function(res) {
-     *   var audioGain = res;
+     * App.getPrimaryMic().then(function(audioDevice) {
+     *   var primaryMic = audioDevice;
      * });
      * ```
      */
-    App.prototype.getAudioGain = function () {
+    App.prototype.getPrimaryMic = function () {
         return new Promise(function (resolve) {
-            app_1.App.get('microphonegain').then(function (val) {
-                resolve(json_1.JSON.parse(val));
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                if (audioDevices.length && audioDevices.length > 0) {
+                    resolve(audioDevices[0]);
+                }
+                else {
+                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                }
             });
         });
     };
     /**
-     * param: config<JSON>
+     * return: Promise<AudioDevice>
      *
-     * Sets the configuration for silence detection
+     * Gets the primary speaker/audio render device used in the application
      *
-     * #### Usage
+     * ### Usage
      *
      * ```javascript
-     * App.setAudioGain(configJSON);
+     * App.getPrimarySpeaker().then(function(audioDevice) {
+     *   var primarySpeaker = audioDevice;
+     * });
      * ```
      */
-    App.prototype.setAudioGain = function (config) {
-        config.tag = 'configuration';
-        app_1.App.set('microphonegain', xml_1.XML.parseJSON(config).toString());
+    App.prototype.getPrimarySpeaker = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                if (audioDevices.length && audioDevices.length > 1) {
+                    resolve(audioDevices[1]);
+                }
+                else {
+                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                }
+            });
+        });
+    };
+    /**
+     * param: device<AudioDevice>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets the primary microphone device to be used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setPrimaryMic(device).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setPrimaryMic = function (device) {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                audioDevices[0] = device;
+                var dev = '';
+                if (Array.isArray(audioDevices)) {
+                    for (var i = 0; i < audioDevices.length; ++i) {
+                        dev += audioDevices[i].toString();
+                    }
+                }
+                dev = '<devices>' + dev + '</devices>';
+                app_1.App.set('microphonedev2', dev).then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * param: device<AudioDevice>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets the primary speaker/audio render device to be used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setPrimarySpeaker(device).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setPrimarySpeaker = function (device) {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                audioDevices[1] = device;
+                var dev = '';
+                if (Array.isArray(audioDevices)) {
+                    for (var i = 0; i < audioDevices.length; ++i) {
+                        dev += audioDevices[i].toString();
+                    }
+                }
+                dev = '<devices>' + dev + '</devices>';
+                app_1.App.set('microphonedev2', dev).then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Gets whether silence detection is enabled
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.isSilenceDetectionEnabled().then(function(val) {
+     *   var isEnabled = val;
+     * });
+     * ```
+     */
+    App.prototype.isSilenceDetectionEnabled = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['enable'] == '1');
+            });
+        });
+    };
+    /**
+     * param: enabled<boolean>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Enables or disables silence detection
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.enableSilenceDetection(enabled).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.enableSilenceDetection = function (enabled) {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['enable'] = (enabled ? '1' : '0');
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets silence detection period,
+     * the length of time after voice detection before silence is again detected
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getSilenceDetectionPeriod().then(function(val) {
+     *   var silenceDetectionPeriod = val;
+     * });
+     * ```
+     */
+    App.prototype.getSilenceDetectionPeriod = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['latency'] !== undefined ?
+                    Number(micGainObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD);
+            });
+        });
+    };
+    /**
+     * param: sdPeriod<number>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets silence detection period,
+     * the length of time after voice detection before silence is again detected
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setSilenceDetectionPeriod(sdPeriod).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setSilenceDetectionPeriod = function (sdPeriod) {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['latency'] = (sdPeriod.toString());
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets silence detection threshold/silence amplitude
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getSilenceDetectionThreshold().then(function(val) {
+     *   var silenceDetectionTfhreshold = val;
+     * });
+     * ```
+     */
+    App.prototype.getSilenceDetectionThreshold = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['gain'] !== undefined ?
+                    Number(micGainObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
+            });
+        });
+    };
+    /**
+     * param: sdThreshold<number>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets silence detection threshold/silence amplitude
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setSilenceDetectionThreshold(sdThreshold).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setSilenceDetectionThreshold = function (sdThreshold) {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['gain'] = (sdThreshold.toString());
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
     };
     /**
      * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
@@ -177,6 +425,12 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
+     * // you may use the following:
+     * //     * App.BORDER_ENABLE (1)
+     * //     * App.BORDER_ENABLE_CAPTION (2)
+     * //     * App.BORDER_ENABLE_SIZING (4)
+     * //     * App.BORDER_ENABLE_MINIMIZE (8)
+     * //     * App.BORDER_ENABLE_MAXIMIZE (16)
      * App.newDialog(url, width, height, flags, title);
      * ```
      */
@@ -256,17 +510,39 @@ var App = (function () {
     };
     /**
      * param: transition<string>
+     * ```
+     * return: Promise<string>
+     * ```
      *
      * Sets the transition for scene changes
      *
-     * #### Usage
+     * ### Usage
      *
      * ```javascript
-     * App.setTransition(transitionid);
+     * // you may use the following:
+     * //     * App.TRANSITION_CLOCK
+     * //     * App.TRANSITION_COLLAPSE
+     * //     * App.TRANSITION_FADE
+     * //     * App.TRANSITION_FAN
+     * //     * App.TRANSITION_HOLE
+     * //     * App.TRANSITION_MOVE_BOTTOM
+     * //     * App.TRANSITION_MOVE_LEFT
+     * //     * App.TRANSITION_MOVE_LEFT_RIGHT
+     * //     * App.TRANSITION_MOVE_RIGHT
+     * //     * App.TRANSITION_MOVE_TOP
+     * //     * App.TRANSITION_MOVE_TOP_BOTTOM
+     * //     * App.TRANSITION_WAVE
+     * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+     *  var isSet = val;
+     * });
      * ```
      */
     App.prototype.setTransition = function (transition) {
-        app_1.App.set('transitionid', transition);
+        return new Promise(function (resolve) {
+            app_1.App.set('transitionid', transition).then(function (val) {
+                resolve(val);
+            });
+        });
     };
     /**
      * return: Promise<number>
@@ -291,17 +567,26 @@ var App = (function () {
     };
     /**
      * param: transition<number>
+     * ```
+     * return: Promise<string>
+     * ```
      *
      * Sets the scene transition duration in milliseconds
      *
      * #### Usage
      *
      * ```javascript
-     * App.setTransitionTime(transitiontime);
+     * App.setTransitionTime(time).then(function(val) {
+     *  var isSet = val;
+     * });
      * ```
      */
     App.prototype.setTransitionTime = function (time) {
-        app_1.App.set('transitiontime', time.toString());
+        return new Promise(function (resolve) {
+            app_1.App.set('transitiontime', time.toString()).then(function (val) {
+                resolve(val);
+            });
+        });
     };
     // Dialog Services
     App.BORDER_ENABLE = 1;
@@ -325,7 +610,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":2,"../internal/environment":3,"../internal/internal":6,"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10}],2:[function(require,module,exports){
+},{"../internal/app":2,"../internal/environment":3,"../internal/internal":6,"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10,"../system/audio":11}],2:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -918,7 +1203,7 @@ var XML = (function () {
         for (var key in json) {
             if (!XML.RESERVED_ATTRIBUTES.test(key) &&
                 json[key] !== undefined) {
-                attributes += [' ', key, '=\'', json[key], '\''].join('');
+                attributes += [' ', key, '="', json[key], '"'].join('');
             }
         }
         if (json.children === undefined) {
@@ -929,7 +1214,7 @@ var XML = (function () {
             json.value += new XML(child).toString();
         }
         if (json.selfclosing === true) {
-            this.xml = ['<', json.tag, attributes, ' />'].join('');
+            this.xml = ['<', json.tag, attributes, '/>'].join('');
         }
         else if (value !== '') {
             this.xml = ['<', json.tag, attributes, '>',
@@ -985,21 +1270,18 @@ var AudioDevice = (function () {
         this.level = props['level'] !== undefined ? props['level'] : 1.000000;
         this.enable = props['enable'] !== undefined ? props['enable'] : true;
         this.hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.000000;
-        this.hwenable = props['hwenable'] !== undefined ? props['hwenable'] : true;
+        this.hwenable = props['hwenable'] !== undefined ? props['hwenable'] : 255;
         this.delay = props['delay'] !== undefined ? props['delay'] : 0;
+        this.mix = props['mix'] !== undefined ? props['mix'] : 0;
     }
     /**
+     * return: id<string>
+     *
      * Gets the device ID
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * string
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var audioDeviceID = device.getID();
      * ```
      */
@@ -1007,17 +1289,13 @@ var AudioDevice = (function () {
         return this.id;
     };
     /**
+     * return: name<string>
+     *
      * Gets the device name
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * string
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var audioDeviceName = device.getName();
      * ```
      */
@@ -1025,36 +1303,28 @@ var AudioDevice = (function () {
         return this.name;
     };
     /**
+     * return: dataflow<string>
+     *
      * Gets whether device is capturing or rendering audio
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * string
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * var audioDeviceName = device.getName();
-     * // possible values, "render"/"capture"
+     * ```javascript
+     * var audioDataFlow = device.getDataFlow();
+     *   //where possible values are "render" or "capture"
      * ```
      */
     AudioDevice.prototype.getDataFlow = function () {
         return this.dataFlow;
     };
     /**
+     * return: isDefaultDevice<boolean>
+     *
      * Gets whether audio device is the system default
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * boolean
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
      * ```
      */
@@ -1062,17 +1332,13 @@ var AudioDevice = (function () {
         return (this.defaultConsole && this.defaultMultimedia);
     };
     /**
+     * return: appDeviceVolume<number>
+     *
      * Gets the device audio level in the application
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * number
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var audioDeviceVolumeLevel = audioDevice.getLevel();
      * ```
      */
@@ -1080,23 +1346,16 @@ var AudioDevice = (function () {
         return this.level;
     };
     /**
+     * param: volume<number>
+     * ```
+     * return: audioDevice<AudioDevice>, for chaining
+     * ```
+     *
      * Sets the device audio level in the application
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * number
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice (used for chaining)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * audioDevice.setLevel(100);
      * ```
      */
@@ -1105,17 +1364,13 @@ var AudioDevice = (function () {
         return this;
     };
     /**
-     * Gets whether audio device is enabled/muted in the application
+     * return: isEnabled<boolean>
      *
-     * #Return
+     * Gets whether audio device is the system default
      *
-     * ```
-     * boolean
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var isAudioDeviceEnabled = audioDevice.isEnabled();
      * ```
      */
@@ -1123,24 +1378,17 @@ var AudioDevice = (function () {
         return this.enable;
     };
     /**
+     * param: enabled<boolean>
+     * ```
+     * return: audioDevice<AudioDevice>, for chaining
+     * ```
+     *
      * Enables audio device/sets software mute
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * boolean
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice (used for chaining)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * audioDevice.setLevel(100);
+     * ```javascript
+     * audioDevice.setEnabled(true);
      * ```
      */
     AudioDevice.prototype.setEnabled = function (enabled) {
@@ -1148,42 +1396,31 @@ var AudioDevice = (function () {
         return this;
     };
     /**
+     * return: systemDeviceVolume<number>
+     *
      * Gets the device system volume
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * number
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * var appVolumeLevel = audioDevice.getLevel();
+     * ```javascript
+     * var systemVolumeLevel = audioDevice.getSystemLevel();
      * ```
      */
     AudioDevice.prototype.getSystemLevel = function () {
         return this.hwlevel;
     };
     /**
+     * param: volume<number>
+     * ```
+     * return: audioDevice<AudioDevice>, for chaining
+     * ```
+     *
      * Sets the device system volume
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * number
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice (used for chaining)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * audioDevice.setLevel(100);
+     * ```javascript
+     * audioDevice.setSystemLevel(100);
      * ```
      */
     AudioDevice.prototype.setSystemLevel = function (hwlevel) {
@@ -1191,42 +1428,35 @@ var AudioDevice = (function () {
         return this;
     };
     /**
+     * return: isSystemEnabled<number>
+     *
      * Gets whether audio device is enabled/muted in the system
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * boolean
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * var isAudioDeviceEnabled = audioDevice.isEnabled();
+     * ```javascript
+     * var systemAudioDeviceEnabled = audioDevice.getSystemEnabled();
      * ```
      */
-    AudioDevice.prototype.isSystemEnabled = function () {
+    AudioDevice.prototype.getSystemEnabled = function () {
         return this.hwenable;
     };
     /**
+     * param: systemEnabled<number>
+     * ```
+     * return: audioDevice<AudioDevice>, for chaining
+     * ```
+     *
      * Enables audio device/sets software mute
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * boolean
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice (used for chaining)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * audioDevice.setLevel(100);
+     * ```javascript
+     * // you may use the following:
+     * //     * AudioDevice.SYSTEM_LEVEL_MUTE (0)
+     * //     * AudioDevice.SYSTEM_LEVEL_ENABLE (1)
+     * //     * AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED (255)
+     * audioDevice.setSystemEnabled(AudioDevice.SYSTEM_LEVEL_MUTE);
      * ```
      */
     AudioDevice.prototype.setSystemEnabled = function (hwenabled) {
@@ -1234,17 +1464,13 @@ var AudioDevice = (function () {
         return this;
     };
     /**
+     * return: delay<number> (100 nanoseconds in units)
+     *
      * Get the loopback capture delay value
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * number (100 nanoseconds units)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var audioDelay = audioDevice.getDelay();
      * ```
      */
@@ -1252,24 +1478,17 @@ var AudioDevice = (function () {
         return this.delay;
     };
     /**
+     * param: delay<number> (100 nanoseconds in units)
+     * ```
+     * return: audioDevice<AudioDevice>, for chaining
+     * ```
+     *
      * Sets the loopback capture delay value
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * number (100 nanoseconds units)
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice (used for chaining)
-     * ```
-     *
-     * #Usage
-     *
-     * ````
-     * audioDevice.setLevel(100);
+     * ```javascript
+     * audioDevice.setDelay(100);
      * ```
      */
     AudioDevice.prototype.setDelay = function (delay) {
@@ -1277,51 +1496,40 @@ var AudioDevice = (function () {
         return this;
     };
     /**
-     * Converts the AudioDevice item to XML string
+     * return: xmlString<string>
      *
-     * #Return
+     * Converts the AudioDevice item to XML-formatted string
      *
-     * ```
-     * string (XML format)
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ````
-     * var audioDeviceXMLString = AudioDevice.toString;
+     * ```javascript
+     * var audioDeviceXMLString = AudioDevice.toString();
      * ```
      */
-    /** Converts the AudioDevice item to XML string */
     AudioDevice.prototype.toString = function () {
         var device = new json_1.JSON();
         device.tag = 'dev';
         device.selfclosing = true;
         device['id'] = this.getId();
-        device['level'] = this.getLevel();
+        device['level'] = this.getLevel().toFixed(6);
         device['enable'] = this.isEnabled() ? 1 : 0;
-        device['hwlevel'] = this.getSystemLevel();
-        device['hwenable'] = this.isSystemEnabled() ? 1 : 0;
+        device['hwlevel'] = this.getSystemLevel().toFixed(6);
+        device['hwenable'] = this.getSystemEnabled();
         device['delay'] = this.getDelay();
+        device['mix'] = this.mix;
         return xml_1.XML.parseJSON(device).toString();
     };
     /**
+     * param: deviceJXON<JSON>
+     * ```
+     * return: audioDevice<AudioDevice>
+     * ```
+     *
      * Converts a JSON object into an AudioDevice object
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * deviceJXON: JXON
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * AudioDevice
-     * ```
-     *
-     * #Usage
-     *
-     * ````
+     * ```javascript
      * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
      * ```
      */
@@ -1340,11 +1548,17 @@ var AudioDevice = (function () {
         });
         audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
             .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
-            .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : 1))
-            .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] === '1' : true)
-            .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 1));
+            .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : -1))
+            .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+            .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
         return audio;
     };
+    AudioDevice.STATE_ACTIVE = 'Active';
+    AudioDevice.DATAFLOW_RENDER = 'Render';
+    AudioDevice.DATAFLOW_CAPTURE = 'Capture';
+    AudioDevice.SYSTEM_LEVEL_MUTE = 0;
+    AudioDevice.SYSTEM_LEVEL_ENABLE = 1;
+    AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED = 255;
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
