@@ -64,7 +64,7 @@ export class App {
     return new Promise((resolve) => {
       args.unshift(key);
       args.unshift('PostMessageToParent');
-      args.push((val) => {
+      args.push(val => {
         resolve(val);
       });
       exec.apply(this, args);

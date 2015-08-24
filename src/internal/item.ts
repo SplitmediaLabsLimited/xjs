@@ -54,7 +54,7 @@ export class Item {
       exec('GetLocalPropertyAsync' +
         (String(slot) === '0' ? '' : slot + 1),
         name,
-        (val) => {
+        val => {
           resolve(val);
         });
     });

@@ -282,7 +282,7 @@ export class App{
    */
   getTransition(): Promise<string> {
     return new Promise(resolve => {
-      iApp.get('transitionid').then((val) => {
+      iApp.get('transitionid').then(val => {
         resolve(val);
       });
     });

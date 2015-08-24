@@ -60,7 +60,7 @@ export class Item {
     return new Promise((resolve) => {
       let slot = iItem.attach(this._id);
 
-      iItem.get('prop:name', slot).then((val) => {
+      iItem.get('prop:name', slot).then(val => {
         this.name = val;
 
         resolve(val);
@@ -73,7 +73,7 @@ export class Item {
     return new Promise((resolve) => {
       let slot = iItem.attach(this._id);
 
-      iItem.get('prop:item', slot).then((val) => {
+      iItem.get('prop:item', slot).then(val => {
         val = (val === 'null') ? '' : val;
 
         if (val === '') { // don't return XML for null values
@@ -114,7 +114,7 @@ export class Item {
     return new Promise((resolve) => {
       let slot = iItem.attach(this._id);
 
-      iItem.get('prop:keeploaded', slot).then((val) => {
+      iItem.get('prop:keeploaded', slot).then(val => {
         this.keepLoaded = (val === '1');
 
         resolve(this.keepLoaded);
@@ -136,7 +136,7 @@ export class Item {
     return new Promise((resolve) => {
       let slot = iItem.attach(this._id);
 
-      iItem.get('prop:type', slot).then((val) => {
+      iItem.get('prop:type', slot).then(val => {
                 this.type = ItemTypes[ItemTypes[Number(val)]];
 
                 resolve(this.type);

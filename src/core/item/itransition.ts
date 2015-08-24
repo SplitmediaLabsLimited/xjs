@@ -36,11 +36,11 @@ export class ItemTransition implements IItemTransition {
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:transitionid', slot).then(val => {
-      if (val === '') { // NONE
-        resolve(Transition.NONE);
-      } else {
-        resolve(Transition[val.toUpperCase()]);
-      }
+        if (val === '') { // NONE
+          resolve(Transition.NONE);
+        } else {
+          resolve(Transition[val.toUpperCase()]);
+        }
       });
     });
   }
