@@ -14,7 +14,18 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
 export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
-  private _id: string;
+  private id: string;
+
+  getDeviceId(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:value', slot).then(val => {
+        resolve(val);
+      });
+    });
+  }
+
   // ItemLayout
 
   /** Check if Aspect Ratio is set to ON or OFF */
