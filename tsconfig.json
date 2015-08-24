@@ -1,0 +1,26 @@
+{
+    "version": "1.5.0-alpha",
+    "compilerOptions": {
+        "declaration": true,
+        "target": "es5",
+        "outDir": "/dist/",
+        "out": "out.js",
+        "module": "commonjs"
+    },
+    "compileOnSave": false,
+    "filesGlob": [
+        "./src/internal/*.ts",
+        "./src/core/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./src/internal/app.ts",
+        "./src/internal/environment.ts",
+        "./src/internal/global.ts",
+        "./src/internal/init.ts",
+        "./src/internal/internal.ts",
+        "./src/internal/item.ts",
+        "./src/core/app.ts",
+        "./src/core/index.ts"
+    ]
+}
