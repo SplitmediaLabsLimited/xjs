@@ -1,18 +1,45 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
+var audio_1 = require('../system/audio');
 var rectangle_1 = require('../internal/util/rectangle');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
 var environment_1 = require('../internal/environment');
+var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
+var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
+/**
+ * The App Class provides you methods to get and set application-related
+ * functionalities.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var App = new XJS.App();
+ *
+ * App.getFrameTime().then(function(frametime) {
+ *   window.frametime = frametime;
+ * });
+ * ```
+ */
 var App = (function () {
     function App() {
     }
     /**
+     * return: Promise<number>
+     *
      * Gets application's frame time (duration per frame in 100ns unit)
      *
-     * @return {Promise<number>}
+     * #### Usage
+     *
+     * ```javascript
+     * var frameTimeP = App.getFrameTime();
+     * frameTimeP.then(function(res) {
+     *   var frameTime = res;
+     * });
+     * ```
      */
     App.prototype.getFrametime = function () {
         return new Promise(function (resolve) {
@@ -22,9 +49,19 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<Rectangle>
+     *
      * Gets application default output resolution
      *
-     * @return {Promise<Rectangle>}
+     * #### Usage
+     *
+     * ```javascript
+     * var resolutionP = App.getResolution();
+     * resolutionP.then(function(res) {
+     *   var height = res.getHeight();
+     *   var width = res.getWidth();
+     * });
+     * ```
      */
     App.prototype.getResolution = function () {
         return new Promise(function (resolve) {
@@ -35,9 +72,19 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<Rectangle>
+     *
      * Gets application viewport display resolution
      *
-     * @return {Promise<Rectangle>}
+     * #### Usage
+     *
+     * ```javascript
+     * var viewPortP = App.getViewport();
+     * viewPortP.then(function(res) {
+     *   var height = res.getHeight();
+     *   var width = res.getWidth();
+     * });
+     * ```
      */
     App.prototype.getViewport = function () {
         return new Promise(function (resolve) {
@@ -48,9 +95,18 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<string>
+     *
      * Refers to XSplit Broadcaster DLL file version number
      *
-     * @return {Promise<string>}
+     * #### Usage
+     *
+     * ```javascript
+     * var versionP = App.getVersion();
+     * versionP.then(function(res) {
+     *   var version = res;
+     * });
+     * ```
      */
     App.prototype.getVersion = function () {
         return new Promise(function (resolve) {
@@ -58,9 +114,18 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<number>
+     *
      * Gets the total number of frames rendered
      *
-     * @return {Promise<number>}
+     * #### Usage
+     *
+     * ```javascript
+     * var framesrenderedP = App.getFramesRendered();
+     * framesrenderedP.then(function(res) {
+     *   var framesrendered = res;
+     * });
+     * ```
      */
     App.prototype.getFramesRendered = function () {
         return new Promise(function (resolve) {
@@ -71,32 +136,319 @@ var App = (function () {
     };
     // Audio Services
     /**
-     * Gets the configuration for silence detection
+     * return: Promise<AudioDevice>
      *
-     * @return {Promise<JSON>}
+     * Gets the primary microphone device used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getPrimaryMic().then(function(audioDevice) {
+     *   var primaryMic = audioDevice;
+     * });
+     * ```
      */
-    App.prototype.getAudioGain = function () {
+    App.prototype.getPrimaryMic = function () {
         return new Promise(function (resolve) {
-            app_1.App.get('microphonegain').then(function (val) {
-                resolve(json_1.JSON.parse(val));
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                if (audioDevices.length && audioDevices.length > 0) {
+                    resolve(audioDevices[0]);
+                }
+                else {
+                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                }
             });
         });
     };
     /**
-     * Sets the configuration for silence detection
+     * return: Promise<AudioDevice>
      *
-     * @param {JSON} config
-     * @return {Promise<JSON>}
+     * Gets the primary speaker/audio render device used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getPrimarySpeaker().then(function(audioDevice) {
+     *   var primarySpeaker = audioDevice;
+     * });
+     * ```
      */
-    App.prototype.setAudioGain = function (config) {
-        config.tag = 'configuration';
-        app_1.App.set('microphonegain', xml_1.XML.parseJSON(config).toString());
+    App.prototype.getPrimarySpeaker = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                if (audioDevices.length && audioDevices.length > 1) {
+                    resolve(audioDevices[1]);
+                }
+                else {
+                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                }
+            });
+        });
     };
     /**
-     * Creates a persistent modal dialog.
+     * param: device<AudioDevice>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets the primary microphone device to be used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setPrimaryMic(device).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setPrimaryMic = function (device) {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                audioDevices[0] = device;
+                var dev = '';
+                if (Array.isArray(audioDevices)) {
+                    for (var i = 0; i < audioDevices.length; ++i) {
+                        dev += audioDevices[i].toString();
+                    }
+                }
+                dev = '<devices>' + dev + '</devices>';
+                app_1.App.set('microphonedev2', dev).then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * param: device<AudioDevice>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets the primary speaker/audio render device to be used in the application
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setPrimarySpeaker(device).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setPrimarySpeaker = function (device) {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('microphonedev2').then(function (arr) {
+                var audioDevices = arr.map(function (val) {
+                    return audio_1.AudioDevice.parse(val);
+                });
+                audioDevices[1] = device;
+                var dev = '';
+                if (Array.isArray(audioDevices)) {
+                    for (var i = 0; i < audioDevices.length; ++i) {
+                        dev += audioDevices[i].toString();
+                    }
+                }
+                dev = '<devices>' + dev + '</devices>';
+                app_1.App.set('microphonedev2', dev).then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Gets whether silence detection is enabled
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.isSilenceDetectionEnabled().then(function(val) {
+     *   var isEnabled = val;
+     * });
+     * ```
+     */
+    App.prototype.isSilenceDetectionEnabled = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['enable'] == '1');
+            });
+        });
+    };
+    /**
+     * param: enabled<boolean>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Enables or disables silence detection
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.enableSilenceDetection(enabled).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.enableSilenceDetection = function (enabled) {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['enable'] = (enabled ? '1' : '0');
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets silence detection period,
+     * the length of time after voice detection before silence is again detected
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getSilenceDetectionPeriod().then(function(val) {
+     *   var silenceDetectionPeriod = val;
+     * });
+     * ```
+     */
+    App.prototype.getSilenceDetectionPeriod = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['latency'] !== undefined ?
+                    Number(micGainObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD);
+            });
+        });
+    };
+    /**
+     * param: sdPeriod<number>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets silence detection period (0-60000 ms),
+     * the length of time after voice detection before silence is again detected
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setSilenceDetectionPeriod(sdPeriod).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setSilenceDetectionPeriod = function (sdPeriod) {
+        return new Promise(function (resolve, reject) {
+            if (typeof sdPeriod !== 'number') {
+                reject(Error('Silence detection period must be a number'));
+            }
+            else if (sdPeriod % 1 != 0) {
+                reject(Error('Silence detection period must be an integer'));
+            }
+            else if (sdPeriod < 0 || sdPeriod > 60000) {
+                reject(Error('Silence detection must be in the range 0-60000.'));
+            }
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['latency'] = (sdPeriod.toString());
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets silence detection threshold/silence amplitude
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.getSilenceDetectionThreshold().then(function(val) {
+     *   var silenceDetectionTfhreshold = val;
+     * });
+     * ```
+     */
+    App.prototype.getSilenceDetectionThreshold = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('microphonegain').then(function (val) {
+                var micGainObj = json_1.JSON.parse(val);
+                resolve(micGainObj['gain'] !== undefined ?
+                    Number(micGainObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
+            });
+        });
+    };
+    /**
+     * param: sdThreshold<number>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets silence detection threshold/silence amplitude (values from 0-128)
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.setSilenceDetectionThreshold(sdThreshold).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setSilenceDetectionThreshold = function (sdThreshold) {
+        return new Promise(function (resolve, reject) {
+            if (typeof sdThreshold !== 'number') {
+                reject(Error('Silence detection threshold must be a number'));
+            }
+            else if (sdThreshold % 1 != 0) {
+                reject(Error('Silence detection threshold must be an integer'));
+            }
+            else if (sdThreshold < 0 || sdThreshold > 128) {
+                reject(Error('Silence detection threshold must be in the range 0-128.'));
+            }
+            app_1.App.get('microphonegain').then(function (val) {
+                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                silenceDetectionObj['gain'] = (sdThreshold.toString());
+                app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
+                    .then(function (setVal) {
+                    resolve(setVal);
+                });
+            });
+        });
+    };
+    /**
+     * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
+     *
+     * Creates a persistent modal dialog.<br/>
      * This method is not available for source
      *
-     * @param {string} url
+     * #### Usage
+     *
+     * ```javascript
+     * // you may use the following:
+     * //     * App.BORDER_ENABLE (1)
+     * //     * App.BORDER_ENABLE_CAPTION (2)
+     * //     * App.BORDER_ENABLE_SIZING (4)
+     * //     * App.BORDER_ENABLE_MINIMIZE (8)
+     * //     * App.BORDER_ENABLE_MAXIMIZE (16)
+     * App.newDialog(url, width, height, flags, title);
+     * ```
      */
     App.prototype.newDialog = function (url, width, height, flags, title) {
         if (width === void 0) { width = 300; }
@@ -117,9 +469,15 @@ var App = (function () {
         }
     };
     /**
+     * param: url<string>[, width<number>[, height<number>]]
+     *
      * Creates a dialog that automatically closes on outside click
      *
-     * @param {string} url
+     * #### Usage
+     *
+     * ```javascript
+     * App.newAutoDialog(url, width, height);
+     * ```
      */
     App.prototype.newAutoDialog = function (url, width, height) {
         if (width === void 0) { width = 300; }
@@ -146,9 +504,18 @@ var App = (function () {
         }
     };
     /**
-     * Gets the transition for scene changes.
+     * return: Promise<string>
      *
-     * @return {Promise<string>}
+     * Gets the transition for scene changes
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var transitionP = App.getTransition();
+     * transitionP.then(function(res) {
+     *   var transitionid = res;
+     * });
+     * ```
      */
     App.prototype.getTransition = function () {
         return new Promise(function (resolve) {
@@ -157,16 +524,55 @@ var App = (function () {
             });
         });
     };
-    /** Sets the transition for scene changes.
+    /**
+     * param: transition<string>
+     * ```
+     * return: Promise<string>
+     * ```
      *
-     * @param {string} transition
+     * Sets the transition for scene changes
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * // you may use the following:
+     * //     * App.TRANSITION_CLOCK
+     * //     * App.TRANSITION_COLLAPSE
+     * //     * App.TRANSITION_FADE
+     * //     * App.TRANSITION_FAN
+     * //     * App.TRANSITION_HOLE
+     * //     * App.TRANSITION_MOVE_BOTTOM
+     * //     * App.TRANSITION_MOVE_LEFT
+     * //     * App.TRANSITION_MOVE_LEFT_RIGHT
+     * //     * App.TRANSITION_MOVE_RIGHT
+     * //     * App.TRANSITION_MOVE_TOP
+     * //     * App.TRANSITION_MOVE_TOP_BOTTOM
+     * //     * App.TRANSITION_WAVE
+     * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+     *  var isSet = val;
+     * });
+     * ```
      */
     App.prototype.setTransition = function (transition) {
-        app_1.App.set('transitionid', transition);
+        return new Promise(function (resolve) {
+            app_1.App.set('transitionid', transition).then(function (val) {
+                resolve(val);
+            });
+        });
     };
-    /** Gets the scene transition duration in milliseconds.
+    /**
+     * return: Promise<number>
      *
-     * @return {Promise<Number>}
+     * Gets the scene transition duration in milliseconds
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var transitionTimeP = App.getTransitionTime();
+     * transitionTimeP.then(function(res) {
+     *   var transitiontime = res;
+     * });
+     * ```
      */
     App.prototype.getTransitionTime = function () {
         return new Promise(function (resolve) {
@@ -175,12 +581,28 @@ var App = (function () {
             });
         });
     };
-    /** Sets the scene transition duration in milliseconds.
+    /**
+     * param: transition<number>
+     * ```
+     * return: Promise<string>
+     * ```
      *
-     * @param {Number} time
+     * Sets the scene transition duration in milliseconds
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.setTransitionTime(time).then(function(val) {
+     *  var isSet = val;
+     * });
+     * ```
      */
     App.prototype.setTransitionTime = function (time) {
-        app_1.App.set('transitiontime', time.toString());
+        return new Promise(function (resolve) {
+            app_1.App.set('transitiontime', time.toString()).then(function (val) {
+                resolve(val);
+            });
+        });
     };
     // Dialog Services
     App.BORDER_ENABLE = 1;
@@ -204,7 +626,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":2,"../internal/environment":3,"../internal/internal":6,"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10}],2:[function(require,module,exports){
+},{"../internal/app":2,"../internal/environment":3,"../internal/internal":6,"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10,"../system/audio":11}],2:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -797,7 +1219,7 @@ var XML = (function () {
         for (var key in json) {
             if (!XML.RESERVED_ATTRIBUTES.test(key) &&
                 json[key] !== undefined) {
-                attributes += [' ', key, '=\'', json[key], '\''].join('');
+                attributes += [' ', key, '="', json[key], '"'].join('');
             }
         }
         if (json.children === undefined) {
@@ -808,7 +1230,7 @@ var XML = (function () {
             json.value += new XML(child).toString();
         }
         if (json.selfclosing === true) {
-            this.xml = ['<', json.tag, attributes, ' />'].join('');
+            this.xml = ['<', json.tag, attributes, '/>'].join('');
         }
         else if (value !== '') {
             this.xml = ['<', json.tag, attributes, '>',
@@ -841,10 +1263,837 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],"xjs":[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+/**
+ * The AudioDevice Class is the object returned by
+ * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * with methods to fetch the audio device object's attributes, and also provides
+ * methods to convert it back to an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getAudioDevices().then(function(audios) {
+ *   for (var i in audios) {
+ *     // Do not include the imaginary xsplit audio device if that ever exist
+ *     if (audios[i].getName().indexOf('xsplit') === -1) {
+ *       xml = audios[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
+var AudioDevice = (function () {
+    function AudioDevice(props) {
+        this._defaultConsole = false;
+        this._defaultMultimedia = false;
+        this._defaultCommunication = false;
+        props = props || {};
+        this._id = props['id'];
+        this._name = props['name'];
+        this._adapter = props['adapter'];
+        this._adapterdev = props['adapterdev'];
+        this._dSoundGuid = props['dSoundGuid'];
+        this._dataFlow = props['dataFlow'];
+        this._state = props['state'];
+        this._defaultConsole = props['defaultConsole'];
+        this._defaultMultimedia = props['defaultMultimedia'];
+        this._defaultCommunication = props['defaultCommunication'];
+        this._level = props['level'] !== undefined ? props['level'] : 1.000000;
+        this._enable = props['enable'] !== undefined ? props['enable'] : true;
+        this._hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.000000;
+        this._hwenable = props['hwenable'] !== undefined ? props['hwenable'] : 255;
+        this._delay = props['delay'] !== undefined ? props['delay'] : 0;
+        this._mix = props['mix'] !== undefined ? props['mix'] : 0;
+    }
+    /**
+     * return: string
+     *
+     * Gets the device ID
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDeviceID = device.getID();
+     * ```
+     */
+    AudioDevice.prototype.getId = function () {
+        return this._id;
+    };
+    /**
+     * return: string
+     *
+     * Gets the device name
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDeviceName = device.getName();
+     * ```
+     */
+    AudioDevice.prototype.getName = function () {
+        return this._name;
+    };
+    /**
+     * return: string
+     *
+     * Gets whether device is capturing or rendering audio
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDataFlow = device.getDataFlow();
+     *   //where possible values are "render" or "capture"
+     * ```
+     */
+    AudioDevice.prototype.getDataFlow = function () {
+        return this._dataFlow;
+    };
+    /**
+     * return: boolean
+     *
+     * Gets whether audio device is the system default
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
+     * ```
+     */
+    AudioDevice.prototype.isDefaultDevice = function () {
+        return (this._defaultConsole && this._defaultMultimedia);
+    };
+    /**
+     * return: number
+     *
+     * Gets the device audio level in the application
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDeviceVolumeLevel = audioDevice.getLevel();
+     * ```
+     */
+    AudioDevice.prototype.getLevel = function () {
+        return this._level;
+    };
+    /**
+     * param: level<number>
+     * ```
+     * return: AudioDevice (used for chaining)
+     * ```
+     *
+     * Sets the device audio level in the application
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * audioDevice.setLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setLevel = function (level) {
+        this._level = level;
+        return this;
+    };
+    /**
+     * return: boolean
+     *
+     * Gets whether audio device is the system default
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var isAudioDeviceEnabled = audioDevice.isEnabled();
+     * ```
+     */
+    AudioDevice.prototype.isEnabled = function () {
+        return this._enable;
+    };
+    /**
+     * param: enabled<boolean>
+     * ```
+     * return: AudioDevice (used for chaining)
+     * ```
+     *
+     * Enables audio device/sets software mute
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * audioDevice.setEnabled(true);
+     * ```
+     */
+    AudioDevice.prototype.setEnabled = function (enabled) {
+        this._enable = enabled;
+        return this;
+    };
+    /**
+     * return: number
+     *
+     * Gets the device system volume
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var systemVolumeLevel = audioDevice.getSystemLevel();
+     * ```
+     */
+    AudioDevice.prototype.getSystemLevel = function () {
+        return this._hwlevel;
+    };
+    /**
+     * param: volume<number>
+     * ```
+     * return: AudioDevice (used for chaining)
+     * ```
+     *
+     * Sets the device system volume
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * audioDevice.setSystemLevel(100);
+     * ```
+     */
+    AudioDevice.prototype.setSystemLevel = function (hwlevel) {
+        this._hwlevel = hwlevel;
+        return this;
+    };
+    /**
+     * return: number
+     *
+     * Gets whether audio device is enabled/muted in the system
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var systemAudioDeviceEnabled = audioDevice.getSystemEnabled();
+     * ```
+     */
+    AudioDevice.prototype.getSystemEnabled = function () {
+        return this._hwenable;
+    };
+    /**
+     * param: systemEnabled<number>
+     * ```
+     * return: AudioDevice (used for chaining)
+     * ```
+     *
+     * Enables audio device/sets software mute
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * // you may use the following:
+     * //     * AudioDevice.SYSTEM_LEVEL_MUTE (0)
+     * //     * AudioDevice.SYSTEM_LEVEL_ENABLE (1)
+     * //     * AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED (255)
+     * audioDevice.setSystemEnabled(AudioDevice.SYSTEM_LEVEL_MUTE);
+     * ```
+     */
+    AudioDevice.prototype.setSystemEnabled = function (hwenabled) {
+        this._hwenable = hwenabled;
+        return this;
+    };
+    /**
+     * return: number (100 nanoseconds in units)
+     *
+     * Get the loopback capture delay value
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDelay = audioDevice.getDelay();
+     * ```
+     */
+    AudioDevice.prototype.getDelay = function () {
+        return this._delay;
+    };
+    /**
+     * param: delay<number> (100 nanoseconds in units)
+     * ```
+     * return: AudioDevice (used for chaining)
+     * ```
+     *
+     * Sets the loopback capture delay value
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * audioDevice.setDelay(100);
+     * ```
+     */
+    AudioDevice.prototype.setDelay = function (delay) {
+        this._delay = delay;
+        return this;
+    };
+    /**
+     * return: string
+     *
+     * Converts the AudioDevice item to XML-formatted string
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var audioDeviceXMLString = AudioDevice.toString();
+     * ```
+     */
+    AudioDevice.prototype.toString = function () {
+        var device = new json_1.JSON();
+        device.tag = 'dev';
+        device.selfclosing = true;
+        device['id'] = this.getId();
+        device['level'] = this.getLevel().toFixed(6);
+        device['enable'] = this.isEnabled() ? 1 : 0;
+        device['hwlevel'] = this.getSystemLevel().toFixed(6);
+        device['hwenable'] = this.getSystemEnabled();
+        device['delay'] = this.getDelay();
+        device['mix'] = this._mix;
+        return xml_1.XML.parseJSON(device).toString();
+    };
+    /**
+     * param: deviceJXON<JSON>
+     * ```
+     * return: AudioDevice
+     * ```
+     *
+     * Converts a JSON object into an AudioDevice object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
+     * ```
+     */
+    AudioDevice.parse = function (deviceJXON) {
+        var audio = new AudioDevice({
+            id: deviceJXON['id'],
+            name: deviceJXON['name'],
+            adapter: deviceJXON['adapter'],
+            adapterdev: deviceJXON['adapterdev'],
+            dataFlow: deviceJXON['DataFlow'],
+            state: deviceJXON['State'],
+            dSoundGuid: deviceJXON['DSoundGuid'],
+            defaultCommunication: (deviceJXON['DefaultCommunication'] === '1'),
+            defaultConsole: (deviceJXON['DefaultConsole'] === '1'),
+            defaultMultimedia: (deviceJXON['DefaultMultimedia'] === '1')
+        });
+        audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
+            .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
+            .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : -1))
+            .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+            .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
+        return audio;
+    };
+    AudioDevice.STATE_ACTIVE = 'Active';
+    AudioDevice.DATAFLOW_RENDER = 'Render';
+    AudioDevice.DATAFLOW_CAPTURE = 'Capture';
+    AudioDevice.SYSTEM_LEVEL_MUTE = 0;
+    AudioDevice.SYSTEM_LEVEL_ENABLE = 1;
+    AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED = 255;
+    return AudioDevice;
+})();
+exports.AudioDevice = AudioDevice;
+},{"../internal/util/json":8,"../internal/util/xml":10}],12:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+/**
+ * The CameraDevice Class is the object returned by
+ * {@link #system/System System Class'} getCameraDevices method. It provides
+ * you with methods to fetch the Camera Device's id, name, and convert it to
+ * an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(function(cameras) {
+ *   for (var i in cameras) {
+ *     // Do not include the imaginary xsplit camera if that ever exist
+ *     if (cameras[i].getName().indexOf('xsplit') === -1) {
+ *       xml = cameras[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
+var CameraDevice = (function () {
+    function CameraDevice(props) {
+        this._id = props['id'];
+        this._name = props['name'];
+    }
+    /**
+     * return: string
+     *
+     * Get the ID of the device. The ID of the device is based on the `disp`
+     * attribute of the devices XML
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var cameraID = device.getID();
+     * ```
+     */
+    CameraDevice.prototype.getId = function () {
+        return this._id;
+    };
+    /**
+     * return: string
+     *
+     * Get the Name of the device.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var cameraName = device.getName();
+     * ```
+     */
+    CameraDevice.prototype.getName = function () {
+        return this._name;
+    };
+    /**
+     * return: XML
+     *
+     * Convert the current CameraDevice object to XML
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var xml = device.toXML();
+     * ```
+     */
+    CameraDevice.prototype.toXML = function () {
+        var json = new json_1.JSON();
+        json['disp'] = this._id;
+        json['name'] = this._name;
+        return xml_1.XML.parseJSON(json);
+    };
+    /**
+     * param: deviceJSON<JXON>
+     * ```
+     * return: CameraDevice
+     * ```
+     *
+     * Create a CameraDevice object based on a JXON object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var camera = CameraDevice.parse(JSONObj);
+     * ```
+     */
+    CameraDevice.parse = function (deviceJSON) {
+        var cam = new CameraDevice({
+            id: deviceJSON['disp'],
+            name: deviceJSON['name']
+        });
+        return cam;
+    };
+    return CameraDevice;
+})();
+exports.CameraDevice = CameraDevice;
+},{"../internal/util/json":8,"../internal/util/xml":10}],13:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var rectangle_1 = require('../internal/util/rectangle');
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+/**
+ * The Game Class is the object returned by {@link #system/System System Class'}
+ * getGames method. It provides you with methods to fetch the game object's
+ * attributes, and also provides methods to convert it back to an XML object
+ * that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ * var xml;
+ *
+ * System.getGames().then(function(games) {
+ * 	for (var i in games) {
+ * 		if(games[i].isFullscreen()) {
+ * 			xml = games[i].toXML();
+ * 			// Do something with the xml here. Probably add it to the current scene
+ * 		}
+ * 	}
+ * });
+ * ```
+ */
+var Game = (function () {
+    function Game() {
+    }
+    /**
+     * return: number
+     *
+     * Gets the game's process ID.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var processId = game.getPid();
+     * ```
+     */
+    Game.prototype.getPid = function () {
+        return this._pid;
+    };
+    /**
+     * return: number
+     *
+     * Gets the Graphics API handle.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var handle = game.getHandle();
+     * ```
+     */
+    Game.prototype.getHandle = function () {
+        return this._handle;
+    };
+    /**
+     * return: number
+     *
+     * Gets the window handle.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var windowHandle = game.getWindowHandle();
+     * ```
+     */
+    Game.prototype.getWindowHandle = function () {
+        return this._hwnd;
+    };
+    /**
+     * return: string
+     *
+     * Gets the Graphics API type.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var gApiType = game.getGapiType();
+     * ```
+     *
+     * #### Possible Values
+     *
+     * ```
+     * OGL, DX8, DX8_SwapChain, DX9, DX9Ex, DX9_SwapChain,
+     * DX9_PresentEx, DX10, DX11, DX11.1, DX11.1_Present1
+     * ```
+     */
+    Game.prototype.getGapiType = function () {
+        return this._gapitype;
+    };
+    /**
+     * return: Rectangle
+     *
+     * Gets the game resolution.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var resolution = game.getResolution();
+     * ```
+     */
+    Game.prototype.getResolution = function () {
+        return rectangle_1.Rectangle.fromDimensions(this._width, this._height);
+    };
+    /**
+     * return: boolean
+     *
+     * Checks if game has exclusive full screen.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var isFullscreen = game.isFullscreen();
+     * ```
+     */
+    Game.prototype.isFullscreen = function () {
+        return this._flags === 1 ? true : false;
+    };
+    /**
+     * return: string
+     *
+     * Gets the window title
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var windowName = game.getWindowName();
+     * ```
+     */
+    Game.prototype.getWindowName = function () {
+        return this._wndname;
+    };
+    /**
+     * return: number
+     *
+     * Gets timestamp of last frame in milliseconds.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var lastFrameTimestamp = game.getLastFrameTimestamp();
+     * ```
+     */
+    Game.prototype.getLastFrameTimestamp = function () {
+        return this._lastframets;
+    };
+    /**
+     * param: gameJSON<JXON>
+     * ```
+     * return: Game
+     * ```
+     *
+     * Converts a JSON object into a Game object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var XJS = require('xjs');
+     * var game = XJS.Game.parse(jsonObj);
+     * ```
+     */
+    Game.parse = function (jxon) {
+        var g = new Game();
+        g._pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
+        g._handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
+            undefined;
+        g._hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
+        g._gapitype = jxon['GapiType'];
+        g._width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
+            undefined;
+        g._height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
+            undefined;
+        g._flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
+            undefined;
+        g._wndname = jxon['wndname'];
+        g._lastframets = jxon['lastframets'] !== undefined ?
+            parseInt(jxon['lastframets']) : undefined;
+        return g;
+    };
+    /**
+     * return: XML
+     *
+     * Converts Game object into an XML object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var gameXML = game.toXML();
+     * ```
+     */
+    Game.prototype.toXML = function () {
+        var gamesource = new json_1.JSON();
+        gamesource.tag = 'src';
+        gamesource['pid'] = this._pid;
+        gamesource['handle'] = this._handle;
+        gamesource['hwnd'] = this._hwnd;
+        gamesource['gapitype'] = this._gapitype;
+        gamesource['width'] = this._width;
+        gamesource['height'] = this._height;
+        gamesource['flags'] = this._flags;
+        gamesource['wndname'] = this._wndname;
+        gamesource['lastframets'] = this._lastframets;
+        gamesource['selfclosing'] = true;
+        return xml_1.XML.parseJSON(gamesource);
+    };
+    return Game;
+})();
+exports.Game = Game;
+},{"../internal/util/json":8,"../internal/util/rectangle":9,"../internal/util/xml":10}],14:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+var audio_1 = require('./audio');
+var camera_1 = require('./camera');
+var game_1 = require('./game');
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's first parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(XML.AudioDeviceDataflow.CAPTURE, ...);
+ * ```
+ */
+(function (AudioDeviceDataflow) {
+    AudioDeviceDataflow[AudioDeviceDataflow["RENDER"] = 1] = "RENDER";
+    AudioDeviceDataflow[AudioDeviceDataflow["CAPTURE"] = 2] = "CAPTURE";
+    AudioDeviceDataflow[AudioDeviceDataflow["ALL"] = 3] = "ALL";
+})(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
+var AudioDeviceDataflow = exports.AudioDeviceDataflow;
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's second parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(..., XML.AudioDeviceState.ACTIVE);
+ * ```
+ */
+(function (AudioDeviceState) {
+    AudioDeviceState[AudioDeviceState["ACTIVE"] = 1] = "ACTIVE";
+    AudioDeviceState[AudioDeviceState["DISABLED"] = 2] = "DISABLED";
+    AudioDeviceState[AudioDeviceState["UNPLUGGED"] = 4] = "UNPLUGGED";
+    AudioDeviceState[AudioDeviceState["NOTPRESENT"] = 8] = "NOTPRESENT";
+    AudioDeviceState[AudioDeviceState["ALL"] = 15] = "ALL";
+})(exports.AudioDeviceState || (exports.AudioDeviceState = {}));
+var AudioDeviceState = exports.AudioDeviceState;
+/**
+ * The System class provides you methods to fetch games, audio devices, and
+ * camera devices.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(funciton(cameras) {
+ *   window.cameras = cameras;
+ * });
+ * ```
+ */
+var System = (function () {
+    function System() {
+    }
+    /**
+     * return: Promise<AudioDevice[]>
+     *
+     * Gets audio devices, both input and output
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getAudioDevices(
+     *   XML.AudioDeviceDataflow.ALL,
+     *   XML.AudioDeviceState.ACTIVE
+     * ).then(funciton(devices) {
+     *   // devices is an array of AudioDevice object
+     *   window.audios = devices;
+     * });
+     * ```
+     */
+    System.getAudioDevices = function (dataflow, state) {
+        if (dataflow === void 0) { dataflow = AudioDeviceDataflow.ALL; }
+        if (state === void 0) { state = AudioDeviceState.ACTIVE; }
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('wasapienum').then(function (devicesJXON) {
+                var devices = [];
+                if (devicesJXON !== undefined) {
+                    var devicesJXONLength = devicesJXON.length;
+                    for (var i = 0; i < devicesJXONLength; ++i) {
+                        var device = devicesJXON[i];
+                        var bitsState = AudioDeviceState[String(device['State'])
+                            .toUpperCase().replace(/\s+/g, '')];
+                        if ((bitsState & state) !== bitsState) {
+                            continue;
+                        }
+                        var bitsFlow = AudioDeviceDataflow[String(device['DataFlow'])
+                            .toUpperCase()];
+                        if ((bitsFlow & dataflow) !== bitsFlow) {
+                            continue;
+                        }
+                        if (device['name'].toLowerCase().indexOf('xsplit') > -1) {
+                            continue;
+                        }
+                        devices.push(audio_1.AudioDevice.parse(device));
+                    }
+                }
+                resolve(devices);
+            });
+        });
+    };
+    /**
+     * return: Promise<CameraDevice[]>
+     *
+     * Gets all camera devices
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getCameraDevices().then(funciton(devices) {
+     *   // devices is an array of CameraDevice object
+     *   window.cameras = devices;
+     * });
+     * ```
+     */
+    System.getCameraDevices = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('dshowenum:vsrc').then(function (devicesJSON) {
+                var devices = [];
+                if (devicesJSON !== undefined) {
+                    for (var _i = 0; _i < devicesJSON.length; _i++) {
+                        var device = devicesJSON[_i];
+                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
+                            String(device['disp']).toLowerCase() !==
+                                ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
+                                    "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+                            devices.push(camera_1.CameraDevice.parse(device));
+                        }
+                    }
+                    resolve(devices);
+                }
+            });
+        });
+    };
+    /**
+     * return: Promise<Game[]>
+     *
+     * Gets all camera devices
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getGames().then(funciton(games) {
+     *   // games is an array of Game object
+     *   window.games = games;
+     * });
+     * ```
+     */
+    System.getGames = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('gsenum').then(function (gamesJXON) {
+                var games = [];
+                if (gamesJXON !== undefined) {
+                    var gamesJXONLength = gamesJXON.length;
+                    for (var i = 0; i < gamesJXONLength; ++i) {
+                        games.push(game_1.Game.parse(gamesJXON[i]));
+                    }
+                }
+                resolve(games);
+            });
+        });
+    };
+    return System;
+})();
+exports.System = System;
+},{"../internal/app":2,"./audio":11,"./camera":12,"./game":13}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 require('../internal/init');
 __export(require('./app'));
-},{"../internal/init":5,"./app":1}]},{},["xjs"]);
+__export(require('../system/system'));
+__export(require('../system/audio'));
+__export(require('../system/game'));
+__export(require('../system/camera'));
+},{"../internal/init":5,"../system/audio":11,"../system/camera":12,"../system/game":13,"../system/system":14,"./app":1}]},{},["xjs"]);

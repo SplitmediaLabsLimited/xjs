@@ -35,6 +35,9 @@
       open: false,
       server: {
         baseDir: 'test/functional',
+        routes: {
+          '/dist': './dist'
+        },
         index: 'test.html',
         middleware: function (req, res, next) {
           res.setHeader('Access-Control-Allow-Origin', '*');

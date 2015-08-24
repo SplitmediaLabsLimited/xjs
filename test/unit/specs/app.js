@@ -1,6 +1,6 @@
-/* globals describe, it, expect, xui, xdescribe */
+/* globals describe, it, expect, xdescribe, require, beforeEach, spyOn, jasmine */
 
-describe('App', function() {
+describe('App ===', function() {
   'use strict';
 
   var startsWith = function(mainString, stringCompared) {
@@ -295,7 +295,254 @@ describe('App', function() {
     });
   });
 
-  describe ('should get audio gain', function() {
+  describe ('should be able to get audio devices', function() {
+    var micDev2Mock =
+    encodeURIComponent('<devices>' +
+      '<dev id="default:1:0" level="0.900000" enable="1"' +
+        ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+      '<dev id="default:0:0" level="1.500000" enable="1"' +
+        ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+      '<dev id="{0.0.0.00000000}.' +
+        '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
+        ' enable="1" hwlevel="-1.000000" hwenable="255"' +
+        ' delay="0" mix="0"/>' +
+      '</devices>');
+
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonedev2') {
+          var randomNumber = Math.floor(Math.random()*1000);
+
+          setTimeout(function() {
+            window.OnAsyncCallback(randomNumber, micDev2Mock);
+          },10);
+
+          return randomNumber;
+        }
+      });
+    });
+
+    describe ('primary mic', function() {
+      var promise;
+      beforeEach(function() {
+        promise = App.getPrimaryMic();
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as an audioDevice', function(done) {
+        promise.then(function(audioDevice) {
+          expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
+            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
+            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
+            ' setSystemEnabled, getDelay, setDelay, toString');
+          expect(audioDevice.toString()).toEqual('<dev id="default:1:0"' +
+            ' level="0.900000" enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>');
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker', function() {
+      var promise;
+      beforeEach(function() {
+        promise = App.getPrimarySpeaker();
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as an audioDevice', function(done) {
+        promise.then(function(audioDevice) {
+          expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
+            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
+            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
+            ' setSystemEnabled, getDelay, setDelay, toString');
+          expect(audioDevice.toString()).toEqual('<dev id="default:0:0"' +
+            ' level="1.500000" enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>');
+          done();
+        });
+      });
+    });
+  });
+
+  describe ('should be able to set audio devices', function() {
+    var micDev2Mock =
+      encodeURIComponent('<devices>' +
+        '<dev id="default:1:0" level="1.000000" enable="1"' +
+          ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+        '<dev id="default:0:0" level="1.000000" enable="1"' +
+          ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+        '<dev id="{0.0.0.00000000}.' +
+          '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
+          ' enable="1" hwlevel="-1.000000" hwenable="255"' +
+          ' delay="0" mix="0"/>' +
+        '</devices>');
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonedev2') {
+          var randomNumber=Math.floor(Math.random()*1000);
+
+          setTimeout(function() {
+            window.OnAsyncCallback(randomNumber, micDev2Mock);
+          },10);
+
+          return randomNumber;
+        }
+      });
+    });
+
+    describe ('primary mic', function() {
+      var micDev2MicResult =
+        encodeURIComponent('<devices>' +
+          '<dev id="default:1:0" level="0.900000" enable="1"' +
+            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+          '<dev id="default:0:0" level="1.000000" enable="1"' +
+            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+          '<dev id="{0.0.0.00000000}.' +
+            '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
+            ' enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>' +
+          '</devices>');
+      var micDev2MicSet;
+      var promise;
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
+          micDev2MicSet = false;
+          if (funcName === 'microphonedev2') {
+            if (encodeURIComponent(value) === micDev2MicResult)
+            {
+              micDev2MicSet = true;
+            }
+            var randomNumber=Math.floor(Math.random()*1000);
+            setTimeout(function() {
+              window.OnAsyncCallback(randomNumber, '1');
+            }, 10);
+
+            return randomNumber;
+          }
+        });
+
+        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
+          this.id = id;
+          this.level = level;
+          this.enable = enable;
+          this.hwlevel = hwlevel;
+          this.hwenable = hwenable;
+          this.delay = delay;
+
+          this.toString = function()
+          {
+            return '<dev id="' + this.id + '" level="' + this.level +
+              '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
+              '" hwenable="' + this.hwenable + '" delay="' + this.delay +
+              '" mix="0"/>';
+          };
+        };
+        promise = App.setPrimaryMic(new MockAudioDevice(
+          'default:1:0',
+          '0.900000',
+          '1',
+          '-1.000000',
+          '255',
+          '0'
+          ));
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as a boolean', function(done) {
+        promise.then(function() {
+          expect(micDev2MicSet).toBe(true);
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker', function() {
+      var micDev2SpeakerResult =
+        encodeURIComponent('<devices>' +
+          '<dev id="default:1:0" level="1.000000" enable="1"' +
+            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+          '<dev id="{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}"' +
+          ' level="0.555555" enable="1" hwlevel="-1.000000" hwenable="255"' +
+          ' delay="0" mix="0"/>' +
+          '<dev id="{0.0.0.00000000}.' +
+            '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
+            ' enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>' +
+          '</devices>');
+      var micDev2SpeakerSet;
+      var promise;
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
+          micDev2SpeakerSet = false;
+          if (funcName === 'microphonedev2') {
+            if (encodeURIComponent(value) === micDev2SpeakerResult)
+            {
+              micDev2SpeakerSet = true;
+            }
+            var randomNumber=Math.floor(Math.random()*1000);
+            setTimeout(function() {
+              window.OnAsyncCallback(randomNumber, '1');
+            }, 10);
+
+            return randomNumber;
+          }
+        });
+
+        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
+          this.id = id;
+          this.level = level;
+          this.enable = enable;
+          this.hwlevel = hwlevel;
+          this.hwenable = hwenable;
+          this.delay = delay;
+
+          this.toString = function()
+          {
+            return '<dev id="' + this.id + '" level="' + this.level +
+              '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
+              '" hwenable="' + this.hwenable + '" delay="' + this.delay +
+              '" mix="0"/>';
+          };
+        };
+        promise = App.setPrimarySpeaker(new MockAudioDevice(
+          '{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}',
+          '0.555555',
+          '1',
+          '-1.000000',
+          '255',
+          '0'
+          ));
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as a boolean', function(done) {
+        promise.then(function() {
+          expect(micDev2SpeakerSet).toBe(true);
+          done();
+        });
+      });
+    });
+  });
+
+  describe ('should be able to get silence detection values', function() {
+    var promise;
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -305,7 +552,7 @@ describe('App', function() {
           setTimeout(function() {
             window.OnAsyncCallback(randomNumber,
               encodeURIComponent('<configuration enable="0" gain="5"' +
-                ' latency="1000" />'));
+                ' latency="1000"/>'));
           },10);
 
           return randomNumber;
@@ -313,31 +560,67 @@ describe('App', function() {
       });
     });
 
-    it('through a promise', function() {
-      var promise = App.getAudioGain();
-      expect(promise).toBeInstanceOf(Promise);
+    describe ('if silence detection is enabled', function() {
+      beforeEach(function() {
+        promise = App.isSilenceDetectionEnabled();
+      });
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('that returns as a boolean', function(done) {
+        promise.then(function(isEnabled) {
+          expect(isEnabled).toBeTypeOf('boolean');
+          done();
+        });
+      });
     });
 
-    it('that returns as a JSON object', function(done) {
-      var promise = App.getAudioGain();
-      promise.then(function(audioGain) {
-        expect(audioGain).toBeInstanceOf(Object);
-        expect(audioGain).hasProperties('tag, enable, gain, latency, value');
-        done();
+    describe ('silence detection threshold', function() {
+      beforeEach(function() {
+        promise = App.getSilenceDetectionThreshold();
+      });
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('that returns as a number', function(done) {
+        promise.then(function(sdThreshold) {
+          expect(sdThreshold).toBeTypeOf('number');
+          done();
+        });
+      });
+    });
+
+    describe ('silence detection period', function() {
+      beforeEach(function() {
+        promise = App.getSilenceDetectionPeriod();
+      });
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('that returns as a number', function(done) {
+        promise.then(function(sdPeriod) {
+          expect(sdPeriod).toBeTypeOf('number');
+          done();
+        });
       });
     });
   });
 
-  describe ('should get audio gain', function() {
+  describe ('should be able to set silence detection values', function() {
+    var audioGainMock =
+      encodeURIComponent('<configuration enable="0"' +
+        ' gain="5" latency="1000"/>');
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        if (funcName = 'microphonegain') {
+        if (funcName == 'microphonegain') {
           var randomNumber=Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
-              encodeURIComponent('<configuration />'));
+            window.OnAsyncCallback(randomNumber, audioGainMock);
           },10);
 
           return randomNumber;
@@ -345,89 +628,197 @@ describe('App', function() {
       });
     });
 
-    it('through a promise', function() {
-      var promise = App.getAudioGain();
-      expect(promise).toBeInstanceOf(Promise);
-    });
+    describe ('enable/disable silence detection', function() {
+      var audioGainResultEnable =
+        encodeURIComponent('<configuration enable="1"' +
+          ' gain="5" latency="1000"/>');
+      var silenceDetectionEnabledSet;
+      var promise;
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
+          silenceDetectionEnabledSet = false;
+          if (funcName === 'microphonegain') {
+            if (encodeURIComponent(value) === audioGainResultEnable)
+            {
+              silenceDetectionEnabledSet = true;
+            }
+            var randomNumber=Math.floor(Math.random()*1000);
+            setTimeout(function() {
+              window.OnAsyncCallback(randomNumber, '1');
+            }, 10);
 
-    it('that returns as a JSON object even when no configuration is set',
-      function(done) {
-      var promise = App.getAudioGain();
-      promise.then(function(audioGain) {
-        expect(audioGain).toBeInstanceOf(Object);
-        expect(audioGain).not.hasProperties('enable, gain, latency');
-        expect(audioGain).hasProperties('tag, value');
-        done();
+            return randomNumber;
+          }
+        });
+        promise = App.enableSilenceDetection(true);
       });
-    });
-  });
 
-  // deactivate this temporarily due to bug in XML to string functionality
-  describe ('should be able to set audio gain', function() {
-    var audioGainMock =
-      encodeURIComponent("<configuration enable='0' gain='5' latency='1000' />");
-    var audioGainSet = false;
-    beforeEach(function() {
-      spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName, value) {
-        if (funcName === 'microphonegain' &&
-          encodeURIComponent(value) === audioGainMock)
-          audioGainSet = true;
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
       });
-    });
 
-    it('as a string', function(done) {
-      var parseXml = function(xmlStr)
-      {
-        return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
-      };
-      var config = parseXml(decodeURIComponent(audioGainMock))
-        .getElementsByTagName('configuration')[0];
-      var audioConfigObject = {};
-      audioConfigObject.tag = 'configuration';
-      audioConfigObject.enable = config.getAttribute('enable');
-      audioConfigObject.gain = config.getAttribute('gain');
-      audioConfigObject.latency = config.getAttribute('latency');
-      audioConfigObject.selfclosing = true;
-      audioConfigObject.value = config.getAttribute('value');
-      App.setAudioGain(audioConfigObject);
-      expect(audioGainSet).toBe(true);
-      done();
-    });
-  });
-
-  // deactivate this temporarily due to bug in XML to string functionality
-  xdescribe ('should be able to set audio gain', function() {
-    var audioGainMock = decodeURIComponent('<configuration />');
-    var audioGainSet = false;
-    beforeEach(function() {
-      spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName, value) {
-        if (funcName === 'microphonegain' &&
-          encodeURIComponent(value) === audioGainMock)
-          audioGainSet = true;
+      it('as a boolean', function(done) {
+        promise.then(function() {
+          expect(silenceDetectionEnabledSet).toBe(true);
+          done();
+        });
       });
     });
 
-    it('even when default configuration is used', function(done) {
-      var parseXml = function(xmlStr)
-      {
-        return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
-      };
-      var config = parseXml(decodeURIComponent(audioGainMock))
-        .getElementsByTagName('configuration')[0];
-      var audioConfigObject = {};
-      audioConfigObject.tag = 'configuration';
-      audioConfigObject.value = config.getAttribute('value');
-      App.setAudioGain(audioConfigObject);
-      expect(audioGainSet).toBe(true);
-      done();
+    describe ('silence detection threshold', function() {
+      var audioGainResultThreshold =
+        encodeURIComponent('<configuration enable="0"' +
+          ' gain="10" latency="1000"/>');
+      var silenceDetectionThresholdSet;
+      var promise;
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
+          silenceDetectionThresholdSet = false;
+          if (funcName === 'microphonegain') {
+            if (encodeURIComponent(value) === audioGainResultThreshold)
+            {
+              silenceDetectionThresholdSet = true;
+            }
+            var randomNumber=Math.floor(Math.random()*1000);
+            setTimeout(function() {
+              window.OnAsyncCallback(randomNumber, '1');
+            }, 10);
+
+            return randomNumber;
+          }
+        });
+        promise = App.setSilenceDetectionThreshold(10);
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as a number', function(done) {
+        promise.then(function() {
+          expect(silenceDetectionThresholdSet).toBe(true);
+          done();
+        });
+      });
+
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionThreshold(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should not be set above 128', function(done) {
+        promise = App.setSilenceDetectionThreshold(129).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should not allow decimals', function(done) {
+        promise = App.setSilenceDetectionThreshold(5.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionThreshold('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('silence detection period', function() {
+      var audioGainResultPeriod =
+        encodeURIComponent('<configuration enable="0"' +
+          ' gain="5" latency="5000"/>');
+      var silenceDetectionPeriodSet;
+      var promise;
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
+          silenceDetectionPeriodSet = false;
+          if (funcName === 'microphonegain') {
+            if (encodeURIComponent(value) === audioGainResultPeriod)
+            {
+              silenceDetectionPeriodSet = true;
+            }
+            var randomNumber=Math.floor(Math.random()*1000);
+            setTimeout(function() {
+              window.OnAsyncCallback(randomNumber, '1');
+            }, 10);
+
+            return randomNumber;
+          }
+        });
+        promise = App.setSilenceDetectionPeriod(5000);
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as a number', function(done) {
+        promise.then(function() {
+          expect(silenceDetectionPeriodSet).toBe(true);
+          done();
+        });
+      });
+
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionPeriod(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should not be set above 60000', function(done) {
+        promise = App.setSilenceDetectionPeriod(60001).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should not accept decimals', function(done) {
+        promise = App.setSilenceDetectionPeriod(1000.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionPeriod('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
     });
   });
 
   describe ('should be able to open a new modal dialog', function() {
-    var newDialogOpen = false;
+    var newDialogOpen;
     beforeEach(function() {
+      newDialogOpen = false;
       spyOn(window.external, 'NewDialog').and.callFake(function(url) {
         if (typeof url == 'string')
           newDialogOpen = true;
@@ -443,8 +834,9 @@ describe('App', function() {
 
   describe ('should be able to open a new dialog ' +
     'that automatically closes on mouse leave', function() {
-    var newAutoDialogOpen = false;
+    var newAutoDialogOpen;
     beforeEach(function() {
+      newAutoDialogOpen = false;
       spyOn(window.external, 'NewAutoDialog').and.callFake(function(url) {
         if (typeof url == 'string')
           newAutoDialogOpen = true;
@@ -459,8 +851,9 @@ describe('App', function() {
   });
 
   describe ('should be able to close the dialog', function() {
-    var dialogClose = false;
+    var dialogClose;
     beforeEach(function() {
+      dialogClose = false;
       spyOn(window.external, 'CloseDialog').and.callFake(function() {
         dialogClose = true;
       });
@@ -506,19 +899,34 @@ describe('App', function() {
   });
 
   describe ('should be able to set transtion', function() {
-    var transitionSet = false;
+    var transitionSet;
+    var promise;
     beforeEach(function() {
+      transitionSet = false;
       spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName, value) {
-        if (funcName === 'transitionid')
+        .and.callFake(function(funcName) {
+        if (funcName === 'transitionid') {
           transitionSet = true;
+          var randomNumber=Math.floor(Math.random()*1000);
+          setTimeout(function() {
+            window.OnAsyncCallback(randomNumber, '1');
+          }, 10);
+
+          return randomNumber;
+        }
       });
+      promise = App.setTransition('clock');
+    });
+
+    it('through a promise', function() {
+      expect(promise).toBeInstanceOf(Promise);
     });
 
     it('as a string', function(done) {
-      App.setTransition('clock');
-      expect(transitionSet).toBe(true);
-      done();
+      promise.then(function() {
+        expect(transitionSet).toBe(true);
+        done();
+      });
     });
   });
 
@@ -554,19 +962,34 @@ describe('App', function() {
   });
 
   describe ('should be able to set transtion time', function() {
-    var transitionTimeSet = false;
+    var transitionTimeSet;
+    var promise;
     beforeEach(function() {
+      transitionTimeSet = false;
       spyOn(window.external, 'AppSetPropertyAsync')
         .and.callFake(function(funcName, value) {
-        if (funcName === 'transitiontime' && typeof value == 'string')
+        if (funcName === 'transitiontime' && typeof value == 'string') {
           transitionTimeSet = true;
+          var randomNumber=Math.floor(Math.random()*1000);
+          setTimeout(function() {
+            window.OnAsyncCallback(randomNumber, '1');
+          }, 10);
+
+          return randomNumber;
+        }
       });
+      promise = App.setTransitionTime('1000');
+    });
+
+    it('through a promise', function() {
+      expect(promise).toBeInstanceOf(Promise);
     });
 
     it('as a string', function(done) {
-      App.setTransitionTime('1000');
-      expect(transitionTimeSet).toBe(true);
-      done();
+      promise.then(function() {
+        expect(transitionTimeSet).toBe(true);
+        done();
+      });
     });
   });
 
@@ -1317,7 +1740,7 @@ describe('App', function() {
           setTimeout(function() {
             window.OnAsyncCallback(randomNumber,
               encodeURIComponent('<placement name="Scene ' + sceneNumber +
-                '" defpos="0" />'));
+                '" defpos="0"/>'));
           },10);
           return randomNumber;
 
@@ -1380,8 +1803,8 @@ describe('App', function() {
             window.OnAsyncCallback(randomNumber,
               encodeURIComponent('<?xml version="1.0" encoding="utf-8"?>' +
                 '<configuration cur="0" Version="2.4.1506.2436">' +
-                '<placement name="Scene 1" defpos="0" />' +
-                '<global />' +
+                '<placement name="Scene 1" defpos="0"/>' +
+                '<global/>' +
                 '</configuration>'));
           },10);
           return randomNumber;
@@ -1395,7 +1818,7 @@ describe('App', function() {
           setTimeout(function() {
             window.OnAsyncCallback(randomNumber,
               encodeURIComponent('<placement name="Scene ' + sceneNumber +
-                '" defpos="0" />'));
+                '" defpos="0"/>'));
           },10);
           return randomNumber;
 
@@ -1426,11 +1849,10 @@ describe('App', function() {
     });
   });
 
-
   xdescribe ('should be able to load a presentation', function() {
-    var loadPresentation = false;
+    var loadPresentation;
     beforeEach(function() {
-
+      loadPresentation = false;
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(presentationString) {
         if (typeof presentationString == 'string')
@@ -1447,8 +1869,9 @@ describe('App', function() {
   });
 
   xdescribe ('should be able to load a presentation', function() {
-    var loadPresentation = false;
+    var loadPresentation;
     beforeEach(function() {
+      loadPresentation = false;
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(presentationString) {
         if (typeof presentationString == 'string')
@@ -1654,8 +2077,9 @@ describe('App', function() {
   });
 
   xdescribe ('should be able to save the current presentation', function() {
-    var saveSet = false;
+    var saveSet;
     beforeEach(function() {
+      saveSet = false;
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName, value) {
         if (funcName === 'savepresets' && typeof value == 'string')
@@ -1671,8 +2095,9 @@ describe('App', function() {
   });
 
   xdescribe ('should be able to clear', function() {
-    var clearSet = false;
+    var clearSet;
     beforeEach(function() {
+      clearSet = false;
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'newpresets')

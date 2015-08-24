@@ -1,0 +1,24 @@
+{% include "lib/paramList.html" -%}
+{% include "lib/githubLinks.html" -%}
+{% extends 'layout/base.template.html' -%}
+
+{% block body %}
+<h1 class="class export">{$ doc.name $} <span class="type">{$ doc.docType $}</span></h1>
+<p>{$ doc.description | marked $}</p>
+
+{%- if doc.members.length -%}
+
+{%- for member in doc.members %}{% if not member.private %}
+  <section class="member">
+    <h1 id="{$ member.name $}" class="name">
+      {$ member.name $} = {$ member.id $}
+    </h1>
+  </section>
+
+{% endif %}{% endfor %}
+{%- endif -%}
+<p class="module defined-in">exported from {@link #/{$ doc.moduleDoc.id $} {$doc.moduleDoc.id $} }<br/>
+defined in {$ githubViewLink(doc) $}
+</p>
+
+{% endblock %}
