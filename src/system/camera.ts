@@ -41,7 +41,7 @@ export class CameraDevice {
    * Get the ID of the device. The ID of the device is based on the `disp`
    * attribute of the devices XML
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var cameraID = device.getID();
@@ -56,7 +56,7 @@ export class CameraDevice {
    *
    * Get the Name of the device.
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var cameraName = device.getName();
@@ -71,7 +71,7 @@ export class CameraDevice {
    *
    * Convert the current CameraDevice object to XML
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var xml = device.toXML();
@@ -92,7 +92,7 @@ export class CameraDevice {
    *
    * Create a CameraDevice object based on a JXON object
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * var camera = CameraDevice.parse(JSONObj);
