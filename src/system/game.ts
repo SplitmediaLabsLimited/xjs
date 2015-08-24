@@ -14,10 +14,10 @@ import {XML as XML} from '../internal/util/xml';
  *
  * ```javascript
  * var XJS = require('xjs');
- * var App = new XJS.App();
+ * var System = XJS.System;
  * var xml;
  *
- * App.getGames().then(function(games) {
+ * System.getGames().then(function(games) {
  * 	for (var i in games) {
  * 		if(games[i].isFullscreen()) {
  * 			xml = games[i].toXML();
