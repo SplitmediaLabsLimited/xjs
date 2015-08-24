@@ -114,6 +114,15 @@ describe('CameraItem', function() {
         'setTransitionTime'
         ].join(','));
     });
+
+    it('should have color and chroma key options pinning', function() {
+      expect(this.cameraItem).hasMethods([
+        'setColorOptionsPinned',
+        'getColorOptionsPinned',
+        'setKeyingOptionsPinned',
+        'getKeyingOptionsPinned'
+        ].join(','));
+    });
   });
 
 
