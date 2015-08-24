@@ -103,6 +103,17 @@ describe('CameraItem', function() {
         'setChromaColorKeyColor'
         ].join(','));
     });
+
+    it('should implement the transition interface', function() {
+      expect(this.cameraItem).hasMethods([
+        'isVisible',
+        'setVisible',
+        'getTransition',
+        'setTransition',
+        'getTransitionTime',
+        'setTransitionTime'
+        ].join(','));
+    });
   });
 
 
