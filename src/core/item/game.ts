@@ -6,6 +6,8 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
+import {ItemTransition, IItemTransition} from './itransition';
+import {Transition} from '../transition';
 import {Item} from './item';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
@@ -14,7 +16,7 @@ import {XML} from '../../internal/util/xml';
 import {ItemTypes} from './item';
 import {Environment} from '../environment';
 
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma {
+export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   /**
    * return: boolean
@@ -220,6 +222,26 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setChromaColorKeyExposure: (value: number) => void;
   getChromaColorKeyColor: () => Promise<Color>; // prop:key_colorrgb // ONLY FOR COLOR KEY MODE
   setChromaColorKeyColor: (value: Color) => void;
+
+  // ItemTransition
+
+  /** Check if item is visible on stage */
+  isVisible:         () => Promise<boolean>;
+
+  /** Set item to visible or hidden */
+  setVisible:        (value: boolean) => void;
+
+  /** Get item's transition type for when visibility is toggled */
+  getTransition:     () => Promise<Transition>;
+
+  /** Set item's transition type for when visibility is toggled */
+  setTransition:     (value: Transition) => void;
+
+  /** Get item's transition time in milliseconds */
+  getTransitionTime: () => Promise<number>;
+
+  /** Set item's transition time in milliseconds */
+  setTransitionTime: (value: number) => void;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma]);
+applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
