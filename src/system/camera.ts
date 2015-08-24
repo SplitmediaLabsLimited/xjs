@@ -3,6 +3,29 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 
+/**
+ * The CameraDevice Class is the object returned by
+ * {@link #system/System System Class'} getCameraDevices method. It provides
+ * you with methods to fetch the Camera Device's id, name, and convert it to
+ * an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(function(cameras) {
+ *   for (var i in cameras) {
+ *     // Do not include the imaginary xsplit camera if that ever exist
+ *     if (cameras[i].getName().indexOf('xsplit') === -1) {
+ *       xml = cameras[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
 export class CameraDevice {
   private id: string;
   private name: string;
@@ -13,14 +36,10 @@ export class CameraDevice {
   }
 
   /**
+   * return: string
+   *
    * Get the ID of the device. The ID of the device is based on the `disp`
    * attribute of the devices XML
-   *
-   * #Return
-   *
-   * ```
-   * string
-   * ```
    *
    * #Usage
    *
@@ -33,13 +52,9 @@ export class CameraDevice {
   }
 
   /**
+   * return: string
+   *
    * Get the Name of the device.
-   *
-   * #Return
-   *
-   * ```
-   * string
-   * ```
    *
    * #Usage
    *
@@ -52,13 +67,9 @@ export class CameraDevice {
   }
 
   /**
+   * return: XML
+   *
    * Convert the current CameraDevice object to XML
-   *
-   * #Return
-   *
-   * ```
-   * XML
-   * ```
    *
    * #Usage
    *
@@ -74,19 +85,12 @@ export class CameraDevice {
   }
 
   /**
+   * param: JSON
+   * ```
+   * return: CameraDevice
+   * ```
+   *
    * Create a CameraDevice object based on a JXON object
-   *
-   * #Parameter
-   *
-   * ```
-   * deviceJSON: JXON
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * CameraDevice
-   * ```
    *
    * #Usage
    *
