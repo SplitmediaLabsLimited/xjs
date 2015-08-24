@@ -103,7 +103,16 @@ describe('GameItem', function() {
         'setChromaColorKeyColor'
         ].join(','));
     });
+
+    it('should implement the transition interface', function() {
+      expect(this.gameItem).hasMethods([
+        'isVisible',
+        'setVisible',
+        'getTransition',
+        'setTransition',
+        'getTransitionTime',
+        'setTransitionTime'
+        ].join(','));
+    });
   });
-
-
 });
