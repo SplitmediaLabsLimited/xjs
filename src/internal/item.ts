@@ -50,7 +50,7 @@ export class Item {
 
   /** Get an item's local property asynchronously */
   static get(name: string, slot: number = 0): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec('GetLocalPropertyAsync' +
         (String(slot) === '0' ? '' : slot + 1),
         name,

@@ -57,7 +57,7 @@ export class Item {
 
   /** Gets the current name of the item */
   getName(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:name', slot).then(val => {
@@ -70,7 +70,7 @@ export class Item {
 
   /** Get the video item's main definition */
   getValue(): Promise<string|XML> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:item', slot).then(val => {
@@ -111,7 +111,7 @@ export class Item {
 
   /** Check if item is kept loaded in memory */
   getKeepLoaded(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:keeploaded', slot).then(val => {
@@ -133,7 +133,7 @@ export class Item {
 
   /** Get the type of the item */
   getType(): Promise<ItemTypes> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:type', slot).then(val => {
@@ -146,14 +146,14 @@ export class Item {
 
   /** Get the ID of the item */
   getID(): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve(this._id);
     });
   }
 
   /** Get (1-indexed) Scene ID where the item is loaded */
   getSceneID(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve(Number(this.sceneID) + 1);
     });
   }

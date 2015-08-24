@@ -25,7 +25,7 @@ export class App {
 
   /** Gets the value of the given property as list */
   static getAsList(name: string): Promise<JXON[]> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       App.get(name).then((xml: string) => {
         let propsJSON: JXON = JXON.parse(xml),
           propsArr: JXON[] = [];
@@ -53,7 +53,7 @@ export class App {
 
   /** Calls an application method asynchronously */
   static callFunc(func: string, arg: string): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec('AppCallFuncAsync', func, arg, (ret) => {
           resolve(ret);
       });
@@ -61,7 +61,7 @@ export class App {
   }
 
   static postMessage(key: string, ...args: any[]): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       args.unshift(key);
       args.unshift('PostMessageToParent');
       args.push(val => {
