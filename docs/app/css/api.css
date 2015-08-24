@@ -173,10 +173,16 @@ h1.id {
   text-align: right;
 }
 
+#contents a,
 .defined-in a {
   color: #0095de;
 }
 
+#contents a:hover,
 .defined-in a:hover {
   text-decoration: none;
+}
+
+.static .name code {
+  color: #0095de;
 }

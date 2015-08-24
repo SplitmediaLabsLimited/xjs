@@ -62,11 +62,10 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
           var resolvedExport = exportSymbol.resolvedSymbol || exportSymbol;
           var exportDoc = createExportDoc(exportSymbol.name, resolvedExport, moduleDoc, basePath, parseInfo.typeChecker);
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
-
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
-
             exportDoc.members = [];
+            exportDoc.statics = [];
             for(var memberName in resolvedExport.members) {
               // FIXME(alexeagle): why do generic type params appear in members?
               if (memberName === 'T') {
@@ -92,6 +91,18 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
               }
             }
 
+            for(var exportName in resolvedExport.exports) {
+              if (exportName === 'prototype') continue;
+
+              var staticSymbol = resolvedExport.exports[exportName];
+              var memberDoc = createMemberDoc(staticSymbol, exportDoc, basePath, parseInfo.typeChecker);
+
+              if (staticSymbol.name !== 'prototype') {
+                docs.push(memberDoc);
+                exportDoc.statics.push(memberDoc);
+              }
+            }
+
             if (sortClassMembers) {
               exportDoc.members.sort(function(a, b) {
                 if (a.name > b.name) return 1;
@@ -104,7 +115,11 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
           if (exportDoc.docType == 'enum') {
             exportDoc.members = [];
             for (var etype in resolvedExport.exports) {
-              exportDoc.members.push(etype);
+              exportDoc.members.push({
+                id: resolvedExport.exports[etype]
+                  .declarations[0].initializer.text,
+                name: etype
+              });
             }
           }
 
