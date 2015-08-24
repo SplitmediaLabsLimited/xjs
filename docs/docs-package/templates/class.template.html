@@ -6,7 +6,7 @@
 <h1 class="class export">{$ doc.name $} <span class="type">{$ doc.docType $}</span></h1>
 <p>{$ doc.description | marked $}</p>
 
-{%- if doc.constructorDoc or doc.members.length -%}
+{%- if doc.constructorDoc or doc.members.length or doc.statics.length -%}
 <h2>Members</h2>
 
 {%- if doc.constructorDoc %}
@@ -25,6 +25,18 @@
     </h1>
     {% marked %}
       {$ member.description $}
+    {% endmarked %}
+  </section>
+
+{% endif %}{% endfor %}
+
+{%- for static in doc.statics %}{% if static.name != 'prototype' %}
+  <section class="member static">
+    <h1 id="{$ static.name $}" class="name">
+      <code>static</code> {$ static.name $}{% if static.optional %}?{% endif %}{$ paramList(static.params) $}
+    </h1>
+    {% marked %}
+      {$ static.description $}
     {% endmarked %}
   </section>
 

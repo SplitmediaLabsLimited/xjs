@@ -16,7 +16,7 @@ export class XML {
     for (let key in json) {
       if (!XML.RESERVED_ATTRIBUTES.test(key) &&
         json[key] !== undefined ) {
-        attributes += [' ', key, '=\'', json[key], '\''].join('');
+        attributes += [' ', key, '="', json[key], '"'].join('');
       }
     }
 
@@ -29,7 +29,7 @@ export class XML {
     }
 
     if (json.selfclosing === true) {
-      this.xml = ['<', json.tag, attributes, ' />'].join('');
+      this.xml = ['<', json.tag, attributes, '/>'].join('');
     } else if (value !== '') {
       this.xml = ['<', json.tag, attributes, '>',
       value, '</', json.tag, '>'].join('');
