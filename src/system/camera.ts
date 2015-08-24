@@ -3,94 +3,98 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 
+/**
+ * The CameraDevice Class is the object returned by
+ * {@link #system/System System Class'} getCameraDevices method. It provides
+ * you with methods to fetch the Camera Device's id, name, and convert it to
+ * an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(function(cameras) {
+ *   for (var i in cameras) {
+ *     // Do not include the imaginary xsplit camera if that ever exist
+ *     if (cameras[i].getName().indexOf('xsplit') === -1) {
+ *       xml = cameras[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
 export class CameraDevice {
-  private id: string;
-  private name: string;
+  private _id: string;
+  private _name: string;
 
   constructor(props?: {}) {
-    this.id   = props['id'];
-    this.name = props['name'];
+    this._id   = props['id'];
+    this._name = props['name'];
   }
 
   /**
+   * return: string
+   *
    * Get the ID of the device. The ID of the device is based on the `disp`
    * attribute of the devices XML
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * string
-   * ```
-   *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var cameraID = device.getID();
    * ```
    */
   getId(): string {
-    return this.id;
+    return this._id;
   }
 
   /**
+   * return: string
+   *
    * Get the Name of the device.
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * string
-   * ```
-   *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var cameraName = device.getName();
    * ```
    */
   getName(): string {
-    return this.name;
+    return this._name;
   }
 
   /**
+   * return: XML
+   *
    * Convert the current CameraDevice object to XML
    *
-   * #Return
+   * #### Usage
    *
-   * ```
-   * XML
-   * ```
-   *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var xml = device.toXML();
    * ```
    */
   toXML(): XML {
     var json = new JXON();
-    json['disp'] = this.id;
-    json['name'] = this.name;
+    json['disp'] = this._id;
+    json['name'] = this._name;
     return XML.parseJSON(json);
   }
 
   /**
+   * param: deviceJSON<JXON>
+   * ```
+   * return: CameraDevice
+   * ```
+   *
    * Create a CameraDevice object based on a JXON object
    *
-   * #Parameter
+   * #### Usage
    *
-   * ```
-   * deviceJSON: JXON
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * CameraDevice
-   * ```
-   *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var camera = CameraDevice.parse(JSONObj);
    * ```
    */

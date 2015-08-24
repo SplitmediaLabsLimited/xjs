@@ -3,7 +3,9 @@
 import {JSON as JXON} from '../internal/util/json';
 import {App as iApp} from '../internal/app';
 import {Environment} from './environment';
-import {Item} from './item/item';
+import {Item, ItemTypes} from './item/item';
+import {GameItem} from './item/game';
+import {CameraItem} from './item/camera';
 
 export class Scene {
   private id: number;
@@ -157,7 +159,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
-                if (item['id'] === id) {
+                if (item['_id'] === id) {
                   match = item;
                   return true;
                 } else {
@@ -190,7 +192,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then(items => {
               found = items.some(item => { // unique ID, so get first result
-                if (item['id'] === id) {
+                if (item['_id'] === id) {
                   match = Scene.getById(idx + 1);
                   return true;
                 } else {
@@ -351,16 +353,31 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise(resolve => {
-      iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
-        var retArray = [];
+    iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
+      var promiseArray: Promise<Item>[] = [];
+
+      // type checking to return correct Item subtype
+      let typePromise = index => new Promise(typeResolve => {
+      if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
+        typeResolve(new GameItem(jsonArr[index]));
+        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
+          jsonArr[index]['sounddev'] === '0') {
+            typeResolve(new CameraItem(jsonArr[index]));
+        } else {
+            typeResolve(new Item(jsonArr[index]));
+          }
+        });
+
         if (Array.isArray(jsonArr)) {
           for (var i = 0; i < jsonArr.length; i++) {
             jsonArr[i]['sceneID'] = this.id;
-            var item = new Item(jsonArr[i]);
-            retArray.push(item);
+            promiseArray.push(typePromise(i));
           }
         }
-        resolve(retArray);
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results);
+        });
       });
     });
   }

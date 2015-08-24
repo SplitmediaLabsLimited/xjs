@@ -4,10 +4,11 @@ var basePackage = require('../docs-package');
 module.exports = new Package('angular-v2-public-docs', [basePackage])
 
 .config(function(readTypeScriptModules) {
-  readTypeScriptModules.sourceFiles = [
-    'app.ts'
-  ];
   readTypeScriptModules.hidePrivateMembers = true;
+  readTypeScriptModules.sourceFiles = [
+    'core.ts',
+    'system.ts'
+  ];
 })
 
 .config(function(getLinkInfo) {

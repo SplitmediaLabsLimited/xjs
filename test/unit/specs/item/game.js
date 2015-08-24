@@ -75,29 +75,44 @@ describe('GameItem', function() {
       expect(this.gameItem).hasMethods([
         'isChromaEnabled',
         'setChromaEnabled',
-        'getChromaBrightness',
-        'setChromaBrightness',
-        'getChromaSaturation',
-        'setChromaSaturation',
-        'getChromaHue',
-        'setChromaHue',
-        'getChromaType',
-        'setChromaType',
-        'getChromaColor',
-        'setChromaColor',
-        'getChromaPrimaryColor',
-        'setChromaPrimaryColor',
-        'getChromaBalance',
-        'setChromaBalance',
-        'getChromaAntiAlias',
-        'setChromaAntiAlias',
-        'getChromaThreshold',
-        'setChromaThreshold',
-        'getChromaThresholdAA',
-        'setChromaThresholdAA'
+        'getKeyingType',
+        'setKeyingType',
+        'getChromaAntiAliasLevel',
+        'setChromaAntiAliasLevel',
+        'getChromaLegacyBrightness',
+        'setChromaLegacyBrightness',
+        'getChromaLegacySaturation',
+        'setChromaLegacySaturation',
+        'getChromaLegacyHue',
+        'setChromaLegacyHue',
+        'getChromaLegacyThreshold',
+        'setChromaLegacyThreshold',
+        'getChromaLegacyAlphaSmoothing',
+        'setChromaLegacyAlphaSmoothing',
+        'getChromaRGBKeyPrimaryColor',
+        'setChromaRGBKeyPrimaryColor',
+        'getChromaRGBKeyThreshold',
+        'setChromaRGBKeyThreshold',
+        'getChromaRGBKeyExposure',
+        'setChromaRGBKeyExposure',
+        'getChromaColorKeyThreshold',
+        'setChromaColorKeyThreshold',
+        'getChromaColorKeyExposure',
+        'setChromaColorKeyExposure',
+        'getChromaColorKeyColor',
+        'setChromaColorKeyColor'
+        ].join(','));
+    });
+
+    it('should implement the transition interface', function() {
+      expect(this.gameItem).hasMethods([
+        'isVisible',
+        'setVisible',
+        'getTransition',
+        'setTransition',
+        'getTransitionTime',
+        'setTransitionTime'
         ].join(','));
     });
   });
-
-
 });

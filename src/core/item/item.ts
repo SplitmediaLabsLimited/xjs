@@ -24,7 +24,7 @@ export enum ItemTypes {
  * Some possible sources are games, microphones, or a webpage.
  */
 export class Item {
-  protected id: string;
+  protected _id: string;
   protected type: ItemTypes;
   protected value: any;
   private name: string;
@@ -37,7 +37,7 @@ export class Item {
     props = props ? props : {};
 
     this.name = props['name'];
-    this.id = props['id'];
+    this._id = props['id'];
     this.sceneID = props['sceneID'];
     this.value = props['value'];
     this.keepLoaded = props['keeploaded'];
@@ -48,7 +48,7 @@ export class Item {
 
   /** Sets the name of the item */
   setName(value: string) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     this.name = value;
 
@@ -57,10 +57,10 @@ export class Item {
 
   /** Gets the current name of the item */
   getName(): Promise<string> {
-    return new Promise((resolve) => {
-      let slot = iItem.attach(this.id);
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
 
-      iItem.get('prop:name', slot).then((val) => {
+      iItem.get('prop:name', slot).then(val => {
         this.name = val;
 
         resolve(val);
@@ -70,10 +70,10 @@ export class Item {
 
   /** Get the video item's main definition */
   getValue(): Promise<string|XML> {
-    return new Promise((resolve) => {
-      let slot = iItem.attach(this.id);
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
 
-      iItem.get('prop:item', slot).then((val) => {
+      iItem.get('prop:item', slot).then(val => {
         val = (val === 'null') ? '' : val;
 
         if (val === '') { // don't return XML for null values
@@ -95,7 +95,7 @@ export class Item {
 
   /** Set the video item's main definition */
   setValue(value: string | XML) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     var val: string = (typeof value === 'string') ?
       <string> value : (<XML> value).toString();
@@ -111,10 +111,10 @@ export class Item {
 
   /** Check if item is kept loaded in memory */
   getKeepLoaded(): Promise<boolean> {
-    return new Promise((resolve) => {
-      let slot = iItem.attach(this.id);
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
 
-      iItem.get('prop:keeploaded', slot).then((val) => {
+      iItem.get('prop:keeploaded', slot).then(val => {
         this.keepLoaded = (val === '1');
 
         resolve(this.keepLoaded);
@@ -124,7 +124,7 @@ export class Item {
 
   /** Set Keep loaded option to ON or OFF */
   setKeepLoaded(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     this.keepLoaded = value;
 
@@ -133,10 +133,10 @@ export class Item {
 
   /** Get the type of the item */
   getType(): Promise<ItemTypes> {
-    return new Promise((resolve) => {
-      let slot = iItem.attach(this.id);
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
 
-      iItem.get('prop:type', slot).then((val) => {
+      iItem.get('prop:type', slot).then(val => {
                 this.type = ItemTypes[ItemTypes[Number(val)]];
 
                 resolve(this.type);
@@ -146,14 +146,14 @@ export class Item {
 
   /** Get the ID of the item */
   getID(): Promise<string> {
-    return new Promise((resolve) => {
-      resolve(this.id);
+    return new Promise(resolve => {
+      resolve(this._id);
     });
   }
 
   /** Get (1-indexed) Scene ID where the item is loaded */
   getSceneID(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       resolve(Number(this.sceneID) + 1);
     });
   }

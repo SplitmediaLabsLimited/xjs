@@ -7,6 +7,9 @@ describe('Audio ===', function() {
   var System = XJS.System;
   var AudioDeviceDataflow = XJS.AudioDeviceDataflow;
   var AudioDeviceState = XJS.AudioDeviceState;
+  var AudioDeviceSystemDisabled = XJS.AudioDevice.SYSTEM_LEVEL_MUTE;
+  var AudioDeviceSystemEnabled = XJS.AudioDevice.SYSTEM_LEVEL_ENABLE;
+  var AudioDeviceSystemMuteDisallowed = XJS.AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED;
 
   var mockWasapi = '<list>' +
     '<dev name="Speakers (XSplit  Stream  Audio  Renderer)"' +
@@ -49,7 +52,7 @@ describe('Audio ===', function() {
               var randomNumber = Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, mockWasapi);
+                window.OnAsyncCallback(randomNumber, decodeURIComponent(mockWasapi));
               }, 10);
               return randomNumber;
             }
@@ -99,7 +102,8 @@ describe('Audio ===', function() {
               var randomNumber = Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, mockWasapi);
+                window.OnAsyncCallback(randomNumber,
+                  decodeURIComponent(mockWasapi));
               }, 10);
               return randomNumber;
             }
@@ -141,7 +145,8 @@ describe('Audio ===', function() {
               var randomNumber = Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, mockWasapi);
+                window.OnAsyncCallback(randomNumber,
+                  decodeURIComponent(mockWasapi));
               }, 10);
               return randomNumber;
             }
@@ -231,7 +236,7 @@ describe('Audio ===', function() {
 
     it('can be determined if enabled in the system', function(done) {
       promise.then(function(devices) {
-        expect(devices[0].isSystemEnabled()).toBeTypeOf('boolean');
+        expect(devices[0].getSystemEnabled()).toBeTypeOf('number');
         done();
       });
     });
@@ -240,10 +245,13 @@ describe('Audio ===', function() {
       function(done) {
       promise.then(function(devices) {
         var device = devices[0];
-        device.setSystemEnabled(false);
-        expect(device.isSystemEnabled()).toBe(false);
-        device.setSystemEnabled(true);
-        expect(device.isSystemEnabled()).toBe(true);
+
+        device.setSystemEnabled(AudioDeviceSystemDisabled);
+        expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemDisabled);
+        device.setSystemEnabled(AudioDeviceSystemEnabled);
+        expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemEnabled);
+        device.setSystemEnabled(AudioDeviceSystemMuteDisallowed);
+        expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemMuteDisallowed);        
         done();
       });
     });
@@ -270,9 +278,9 @@ describe('Audio ===', function() {
         var deviceString = device.toString();
         if (!/xsplit broadcaster/ig.test(navigator.appVersion))
         {
-          expect(deviceString).toBe("<dev" +
-            " id='{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}'" +
-            " level='1' enable='1' hwlevel='1' hwenable='1' delay='1' />");
+          expect(deviceString).toBe('<dev' +
+            ' id="{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}"' +
+            ' level="1.000000" enable="1" hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>');
         }
         var parseXml = function(xmlStr)
         {
@@ -284,8 +292,7 @@ describe('Audio ===', function() {
           (audioDevice.getAttribute("enable") == '1') == device.isEnabled() &&
           audioDevice.getAttribute("hwlevel") ==
             parseFloat(device.getSystemLevel()) &&
-          (audioDevice.getAttribute("hwenable") == '1') ==
-            device.isSystemEnabled() &&
+          audioDevice.getAttribute("hwenable") == device.getSystemEnabled() &&
           audioDevice.getAttribute("delay") == parseFloat(device.getDelay())
         ).toBe(true);
         done();
