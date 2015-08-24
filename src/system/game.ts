@@ -4,6 +4,29 @@ import {Rectangle as Rectangle} from '../internal/util/rectangle';
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 
+/**
+ * The Game Class is the object returned by {@link #system/System System Class'}
+ * getGames method. It provides you with methods to fetch the game object's
+ * attributes, and also provides methods to convert it back to an XML object
+ * that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ * var xml;
+ *
+ * System.getGames().then(function(games) {
+ * 	for (var i in games) {
+ * 		if(games[i].isFullscreen()) {
+ * 			xml = games[i].toXML();
+ * 			// Do something with the xml here. Probably add it to the current scene
+ * 		}
+ * 	}
+ * });
+ * ```
+ */
 export class Game{
 
   private pid: number;
@@ -17,84 +40,146 @@ export class Game{
   private lastframets: number;
 
   /**
+   * return: number
+   *
    * Gets the game's process ID.
    *
-   * @return {number}
+   * #### Usage
+   *
+   * ```javascript
+   * var processId = game.getPid();
+   * ```
    */
   getPid() {
     return this.pid;
   }
 
   /**
+   * return: number
+   *
    * Gets the Graphics API handle.
    *
-   * @returns {number}
+   * #### Usage
+   *
+   * ```javascript
+   * var handle = game.getHandle();
+   * ```
    */
   getHandle() {
     return this.handle;
   }
 
   /**
+   * return: number
+   *
    * Gets the window handle.
    *
-   * @returns {number}
+   * #### Usage
+   *
+   * ```javascript
+   * var windowHandle = game.getWindowHandle();
+   * ```
    */
   getWindowHandle() {
     return this.hwnd;
   }
 
   /**
+   * return: string
+   *
    * Gets the Graphics API type.
    *
-   * @returns {string}, possible values:
+   * #### Usage
+   *
+   * ```javascript
+   * var gApiType = game.getGapiType();
+   * ```
+   *
+   * #### Possible Values
+   *
+   * ```
    * OGL, DX8, DX8_SwapChain, DX9, DX9Ex, DX9_SwapChain,
    * DX9_PresentEx, DX10, DX11, DX11.1, DX11.1_Present1
+   * ```
    */
   getGapiType() {
     return this.gapitype;
   }
 
   /**
+   * return: Rectangle
+   *
    * Gets the game resolution.
    *
-   * @returns {Rectangle}
+   * #### Usage
+   *
+   * ```javascript
+   * var resolution = game.getResolution();
+   * ```
    */
   getResolution() {
     return Rectangle.fromDimensions(this.width, this.height);
   }
 
   /**
+   * return: boolean
+   *
    * Checks if game has exclusive full screen.
    *
-   * @returns {boolean}
+   * #### Usage
+   *
+   * ```javascript
+   * var isFullscreen = game.isFullscreen();
+   * ```
    */
   isFullscreen() {
     return this.flags === 1 ? true: false;
   }
 
   /**
+   * return: string
+   *
    * Gets the window title
    *
-   * @returns {string}
+   * #### Usage
+   *
+   * ```javascript
+   * var windowName = game.getWindowName();
+   * ```
    */
   getWindowName() {
     return this.wndname;
   }
 
   /**
+   * return: number
+   *
    * Gets timestamp of last frame in milliseconds.
    *
-   * @returns {number}
+   * #### Usage
+   *
+   * ```javascript
+   * var lastFrameTimestamp = game.getLastFrameTimestamp();
+   * ```
    */
   getLastFrameTimestamp() {
     return this.lastframets;
   }
 
   /**
+   * param: JSON
+   * ```
+   * return: Game
+   * ```
+   *
    * Converts a JSON object into a Game object
    *
-   * @param {JSON} jxon
-   * @returns {Game}
+   * #### Usage
+   *
+   * ```javascript
+   * var XJS = require('xjs');
+   * var game = XJS.Game.parse(jsonObj);
+   * ```
    */
   static parse(jxon: JXON): Game {
     var g = new Game();
@@ -118,9 +203,15 @@ export class Game{
   }
 
   /**
+   * return: XML
+   *
    * Converts Game object into an XML object
    *
-   * @returns {XML}
+   * #### Usage
+   *
+   * ```javascript
+   * var gameXML = game.toXML();
+   * ```
    */
   toXML() : XML {
     var gamesource = new JXON();
