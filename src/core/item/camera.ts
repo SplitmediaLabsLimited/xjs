@@ -7,12 +7,13 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
+import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
-export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma {
+export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
   private _id: string;
   // ItemLayout
 
@@ -163,6 +164,26 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
       });
     });
   }
+
+  // ItemTransition
+
+  /** Check if item is visible on stage */
+  isVisible:         () => Promise<boolean>;
+
+  /** Set item to visible or hidden */
+  setVisible:        (value: boolean) => void;
+
+  /** Get item's transition type for when visibility is toggled */
+  getTransition:     () => Promise<string>;
+
+  /** Set item's transition type for when visibility is toggled */
+  setTransition:     (value: string) => void;
+
+  /** Get item's transition time in milliseconds */
+  getTransitionTime: () => Promise<number>;
+
+  /** Set item's transition time in milliseconds */
+  setTransitionTime: (value: number) => void;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma]);
+applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
