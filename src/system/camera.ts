@@ -43,7 +43,7 @@ export class CameraDevice {
    *
    * #Usage
    *
-   * ```
+   * ```javascript
    * var cameraID = device.getID();
    * ```
    */
@@ -58,7 +58,7 @@ export class CameraDevice {
    *
    * #Usage
    *
-   * ```
+   * ```javascript
    * var cameraName = device.getName();
    * ```
    */
@@ -73,7 +73,7 @@ export class CameraDevice {
    *
    * #Usage
    *
-   * ```
+   * ```javascript
    * var xml = device.toXML();
    * ```
    */
@@ -94,7 +94,7 @@ export class CameraDevice {
    *
    * #Usage
    *
-   * ```
+   * ```javascript
    * var camera = CameraDevice.parse(JSONObj);
    * ```
    */
