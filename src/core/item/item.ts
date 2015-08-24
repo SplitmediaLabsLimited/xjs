@@ -24,11 +24,11 @@ export enum ItemTypes {
  * Some possible sources are games, microphones, or a webpage.
  */
 export class Item {
+  protected id: string;
+  protected type: ItemTypes;
+  protected value: any;
   private name: string;
-  private id: string;
   private sceneID: number;
-  private type: ItemTypes;
-  private value: any;
   private keepLoaded: boolean;
 
   private xmlparams: {};
@@ -41,7 +41,7 @@ export class Item {
     this.sceneID = props['sceneID'];
     this.value = props['value'];
     this.keepLoaded = props['keeploaded'];
-    this.type = props['type'];
+    this.type = Number(props['type']);
 
     this.xmlparams = props;
   }
@@ -166,6 +166,7 @@ export class Item {
     item['name'] = this.name;
     item['item'] = this.value;
     item['type'] = this.type;
+    item['selfclosing'] = true;
 
     return XML.parseJSON(item);
   }
