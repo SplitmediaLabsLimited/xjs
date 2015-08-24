@@ -10,6 +10,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
 import {Scene} from '../scene';
+import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
@@ -183,10 +184,10 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setVisible:        (value: boolean) => void;
 
   /** Get item's transition type for when visibility is toggled */
-  getTransition:     () => Promise<string>;
+  getTransition:     () => Promise<Transition>;
 
   /** Set item's transition type for when visibility is toggled */
-  setTransition:     (value: string) => void;
+  setTransition:     (value: Transition) => void;
 
   /** Get item's transition time in milliseconds */
   getTransitionTime: () => Promise<number>;

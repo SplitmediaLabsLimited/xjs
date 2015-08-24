@@ -1,12 +1,13 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
+import {Transition} from '../transition';
 
 export interface IItemTransition {
   isVisible(): Promise<boolean>;
   setVisible(value: boolean);
-  getTransition(): Promise<string>;
-  setTransition(value: string);
+  getTransition(): Promise<Transition>;
+  setTransition(value: Transition);
   getTransitionTime(): Promise<number>;
   setTransitionTime(value: number);
 }
@@ -30,16 +31,24 @@ export class ItemTransition implements IItemTransition {
     iItem.set('prop:visible', value ? '1' : '0', slot);
   }
 
-  getTransition(): Promise<string> {
+  getTransition(): Promise<Transition> {
     return new Promise(resolve => {
-      resolve();
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:transitionid', slot).then(val => {
+      if (val === '') { // NONE
+        resolve(Transition.NONE);
+      } else {
+        resolve(Transition[val.toUpperCase()]);
+      }
+      });
     });
   }
 
-  setTransition(value: string) {
+  setTransition(value: Transition) {
     let slot = iItem.attach(this._id);
 
-    iItem.set('prop:transitionid', value, slot);
+    iItem.set('prop:transitionid', value.toString(), slot);
   }
 
   getTransitionTime(): Promise<number> {
