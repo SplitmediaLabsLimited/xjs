@@ -5,6 +5,7 @@ import {App as iApp} from '../internal/app';
 import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
+import {CameraItem} from './item/camera';
 
 export class Scene {
   private id: number;
@@ -357,8 +358,11 @@ export class Scene {
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
-        if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
-          typeResolve(new GameItem(jsonArr[index]));
+      if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
+        typeResolve(new GameItem(jsonArr[index]));
+        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
+          jsonArr[index]['sounddev'] === '0') {
+            typeResolve(new CameraItem(jsonArr[index]));
         } else {
             typeResolve(new Item(jsonArr[index]));
           }
