@@ -3,6 +3,29 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 
+/**
+ * The AudioDevice Class is the object returned by
+ * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * with methods to fetch the audio device object's attributes, and also provides
+ * methods to convert it back to an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getAudioDevices().then(function(audios) {
+ *   for (var i in audios) {
+ *     // Do not include the imaginary xsplit audio device if that ever exist
+ *     if (audios[i].getName().indexOf('xsplit') === -1) {
+ *       xml = audios[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
 export class AudioDevice{
 
   private id: string;
@@ -46,17 +69,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: string
+   *
    * Gets the device ID
-   *
-   * #Return
-   *
-   * ```
-   * string
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDeviceID = device.getID();
    * ```
    */
@@ -65,17 +84,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: string
+   *
    * Gets the device name
-   *
-   * #Return
-   *
-   * ```
-   * string
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDeviceName = device.getName();
    * ```
    */
@@ -84,17 +99,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: string
+   *
    * Gets whether device is capturing or rendering audio
-   *
-   * #Return
-   *
-   * ```
-   * string
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDeviceName = device.getName();
    * // possible values, "render"/"capture"
    * ```
@@ -104,17 +115,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: boolean
+   *
    * Gets whether audio device is the system default
-   *
-   * #Return
-   *
-   * ```
-   * boolean
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioIsDefaultDevice = audioDevice.isDefaultDevice();
    * ```
    */
@@ -123,17 +130,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: number
+   *
    * Gets the device audio level in the application
-   *
-   * #Return
-   *
-   * ```
-   * number
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDeviceVolumeLevel = audioDevice.getLevel();
    * ```
    */
@@ -142,23 +145,16 @@ export class AudioDevice{
   }
 
   /**
+   * param: number
+   * ```
+   * return: AudioDevice
+   * ```
+   *
    * Sets the device audio level in the application
-   *
-   * #Parameter
-   *
-   * ```
-   * number
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -169,17 +165,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: boolean
+   *
    * Gets whether audio device is enabled/muted in the application
-   *
-   * #Return
-   *
-   * ```
-   * boolean
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
    * ```
    */
@@ -188,23 +180,16 @@ export class AudioDevice{
   }
 
   /**
+   * param: boolean
+   * ```
+   * return: AudioDevice (used for chaining)
+   * ```
+   *
    * Enables audio device/sets software mute
-   *
-   * #Parameter
-   *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -215,17 +200,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: number
+   *
    * Gets the device system volume
-   *
-   * #Return
-   *
-   * ```
-   * number
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var appVolumeLevel = audioDevice.getLevel();
    * ```
    */
@@ -234,23 +215,16 @@ export class AudioDevice{
   }
 
   /**
+   * param: number
+   * ```
+   * return: AudioDevice (used for chaining)
+   * ```
+   *
    * Sets the device system volume
-   *
-   * #Parameter
-   *
-   * ```
-   * number
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -261,17 +235,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: boolean
+   *
    * Gets whether audio device is enabled/muted in the system
-   *
-   * #Return
-   *
-   * ```
-   * boolean
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
    * ```
    */
@@ -280,23 +250,16 @@ export class AudioDevice{
   }
 
   /**
+   * param: boolean
+   * ```
+   * return: AudioDevice (used for chaining)
+   * ```
+   *
    * Enables audio device/sets software mute
-   *
-   * #Parameter
-   *
-   * ```
-   * boolean
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -307,17 +270,13 @@ export class AudioDevice{
   }
 
   /**
-   * Get the loopback capture delay value 
+   * return: number (100 nanoseconds units)
    *
-   * #Return
-   *
-   * ```
-   * number (100 nanoseconds units)
-   * ```
+   * Get the loopback capture delay value
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDelay = audioDevice.getDelay();
    * ```
    */
@@ -326,23 +285,16 @@ export class AudioDevice{
   }
 
   /**
-   * Sets the loopback capture delay value 
-   *
-   * #Parameter
-   *
+   * param: number (100 nanoseconds units)
    * ```
-   * number (100 nanoseconds units)
+   * return: AudioDevice (used for chaining)
    * ```
    *
-   * #Return
-   *
-   * ```
-   * AudioDevice (used for chaining)
-   * ```
+   * Sets the loopback capture delay value
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * audioDevice.setLevel(100);
    * ```
    */
@@ -353,17 +305,13 @@ export class AudioDevice{
   }
 
   /**
+   * return: string (XML format)
+   *
    * Converts the AudioDevice item to XML string
-   *
-   * #Return
-   *
-   * ```
-   * string (XML format)
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var audioDeviceXMLString = AudioDevice.toString;
    * ```
    */
@@ -378,28 +326,21 @@ export class AudioDevice{
     device['hwlevel']  = this.getSystemLevel();
     device['hwenable'] = this.isSystemEnabled() ? 1 : 0;
     device['delay']    = this.getDelay();
-    
+
     return XML.parseJSON(device).toString();
   }
 
   /**
+   * param: JXON
+   * ```
+   * return: AudioDevice
+   * ```
+   *
    * Converts a JSON object into an AudioDevice object
-   *
-   * #Parameter
-   *
-   * ```
-   * deviceJXON: JXON
-   * ```
-   *
-   * #Return
-   *
-   * ```
-   * AudioDevice
-   * ```
    *
    * #Usage
    *
-   * ````
+   * ```javascript
    * var newAudioDevice = AudioDevice.parse(deviceJSONObj);
    * ```
    */
@@ -422,7 +363,7 @@ export class AudioDevice{
       .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
       .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : 1))
       .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] === '1' : true)
-      .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 1)); 
+      .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 1));
 
     return audio;
   }
