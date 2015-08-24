@@ -27,12 +27,12 @@ import {XML} from '../internal/util/xml';
  * ```
  */
 export class CameraDevice {
-  private id: string;
-  private name: string;
+  private _id: string;
+  private _name: string;
 
   constructor(props?: {}) {
-    this.id   = props['id'];
-    this.name = props['name'];
+    this._id   = props['id'];
+    this._name = props['name'];
   }
 
   /**
@@ -48,7 +48,7 @@ export class CameraDevice {
    * ```
    */
   getId(): string {
-    return this.id;
+    return this._id;
   }
 
   /**
@@ -63,7 +63,7 @@ export class CameraDevice {
    * ```
    */
   getName(): string {
-    return this.name;
+    return this._name;
   }
 
   /**
@@ -79,13 +79,13 @@ export class CameraDevice {
    */
   toXML(): XML {
     var json = new JXON();
-    json['disp'] = this.id;
-    json['name'] = this.name;
+    json['disp'] = this._id;
+    json['name'] = this._name;
     return XML.parseJSON(json);
   }
 
   /**
-   * param: JSON
+   * param: deviceJSON<JXON>
    * ```
    * return: CameraDevice
    * ```

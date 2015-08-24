@@ -37,50 +37,50 @@ export class AudioDevice{
   static SYSTEM_LEVEL_ENABLE: number = 1;
   static SYSTEM_MUTE_CHANGE_NOT_ALLOWED: number = 255;
 
-  private id: string;
-  private name: string;
-  private adapter: string;
-  private adapterdev: string;
-  private dSoundGuid: string;
+  private _id: string;
+  private _name: string;
+  private _adapter: string;
+  private _adapterdev: string;
+  private _dSoundGuid: string;
 
-  private dataFlow: string;
-  private state: string;
+  private _dataFlow: string;
+  private _state: string;
 
-  private defaultConsole: boolean = false;
-  private defaultMultimedia: boolean = false;
-  private defaultCommunication: boolean = false;
+  private _defaultConsole: boolean = false;
+  private _defaultMultimedia: boolean = false;
+  private _defaultCommunication: boolean = false;
 
   // for microphonedev2
-  private level: number;
-  private enable: boolean;
-  private hwlevel: number;
-  private hwenable: number;
-  private delay: number;
-  private mix: number;
+  private _level: number;
+  private _enable: boolean;
+  private _hwlevel: number;
+  private _hwenable: number;
+  private _delay: number;
+  private _mix: number;
 
   constructor(props?: {}) {
     props = props || {};
 
-    this.id                   = props['id'];
-    this.name                 = props['name'];
-    this.adapter              = props['adapter'];
-    this.adapterdev           = props['adapterdev'];
-    this.dSoundGuid           = props['dSoundGuid'];
-    this.dataFlow             = props['dataFlow'];
-    this.state                = props['state'];
-    this.defaultConsole       = props['defaultConsole'];
-    this.defaultMultimedia    = props['defaultMultimedia'];
-    this.defaultCommunication = props['defaultCommunication'];
-    this.level                = props['level'] !== undefined? props['level'] : 1.000000;
-    this.enable               = props['enable'] !== undefined? props['enable'] : true;
-    this.hwlevel              = props['hwlevel'] !== undefined? props['hwlevel'] : -1.000000;
-    this.hwenable             = props['hwenable'] !== undefined? props['hwenable'] : 255;
-    this.delay                = props['delay'] !== undefined? props['delay'] : 0;
-    this.mix                  = props['mix'] !== undefined? props['mix'] : 0;
+    this._id                   = props['id'];
+    this._name                 = props['name'];
+    this._adapter              = props['adapter'];
+    this._adapterdev           = props['adapterdev'];
+    this._dSoundGuid           = props['dSoundGuid'];
+    this._dataFlow             = props['dataFlow'];
+    this._state                = props['state'];
+    this._defaultConsole       = props['defaultConsole'];
+    this._defaultMultimedia    = props['defaultMultimedia'];
+    this._defaultCommunication = props['defaultCommunication'];
+    this._level                = props['level'] !== undefined? props['level'] : 1.000000;
+    this._enable               = props['enable'] !== undefined? props['enable'] : true;
+    this._hwlevel              = props['hwlevel'] !== undefined? props['hwlevel'] : -1.000000;
+    this._hwenable             = props['hwenable'] !== undefined? props['hwenable'] : 255;
+    this._delay                = props['delay'] !== undefined? props['delay'] : 0;
+    this._mix                  = props['mix'] !== undefined? props['mix'] : 0;
   }
 
   /**
-   * return: id<string>
+   * return: string
    *
    * Gets the device ID
    *
@@ -91,11 +91,11 @@ export class AudioDevice{
    * ```
    */
   getId(): string {
-    return this.id;
+    return this._id;
   }
 
   /**
-   * return: name<string>
+   * return: string
    *
    * Gets the device name
    *
@@ -106,11 +106,11 @@ export class AudioDevice{
    * ```
    */
   getName(): string {
-    return this.name;
+    return this._name;
   }
 
   /**
-   * return: dataflow<string>
+   * return: string
    *
    * Gets whether device is capturing or rendering audio
    *
@@ -122,11 +122,11 @@ export class AudioDevice{
    * ```
    */
   getDataFlow(): string {
-    return this.dataFlow;
+    return this._dataFlow;
   }
 
   /**
-   * return: isDefaultDevice<boolean>
+   * return: boolean
    *
    * Gets whether audio device is the system default
    *
@@ -137,11 +137,11 @@ export class AudioDevice{
    * ```
    */
   isDefaultDevice(): boolean {
-    return (this.defaultConsole && this.defaultMultimedia);
+    return (this._defaultConsole && this._defaultMultimedia);
   }
 
   /**
-   * return: appDeviceVolume<number>
+   * return: number
    *
    * Gets the device audio level in the application
    *
@@ -152,13 +152,13 @@ export class AudioDevice{
    * ```
    */
   getLevel(): number {
-    return this.level;
+    return this._level;
   }
 
   /**
-   * param: volume<number>
+   * param: level<number>
    * ```
-   * return: audioDevice<AudioDevice>, for chaining
+   * return: AudioDevice (used for chaining)
    * ```
    *
    * Sets the device audio level in the application
@@ -170,13 +170,13 @@ export class AudioDevice{
    * ```
    */
   setLevel(level: number) {
-    this.level = level;
+    this._level = level;
 
     return this;
   }
 
   /**
-   * return: isEnabled<boolean>
+   * return: boolean
    *
    * Gets whether audio device is the system default
    *
@@ -187,13 +187,13 @@ export class AudioDevice{
    * ```
    */
   isEnabled(): boolean {
-    return this.enable;
+    return this._enable;
   }
 
   /**
    * param: enabled<boolean>
    * ```
-   * return: audioDevice<AudioDevice>, for chaining
+   * return: AudioDevice (used for chaining)
    * ```
    *
    * Enables audio device/sets software mute
@@ -205,13 +205,13 @@ export class AudioDevice{
    * ```
    */
   setEnabled(enabled: boolean) {
-    this.enable = enabled;
+    this._enable = enabled;
 
     return this;
   }
 
   /**
-   * return: systemDeviceVolume<number>
+   * return: number
    *
    * Gets the device system volume
    *
@@ -222,13 +222,13 @@ export class AudioDevice{
    * ```
    */
   getSystemLevel(): number {
-    return this.hwlevel;
+    return this._hwlevel;
   }
 
   /**
    * param: volume<number>
    * ```
-   * return: audioDevice<AudioDevice>, for chaining
+   * return: AudioDevice (used for chaining)
    * ```
    *
    * Sets the device system volume
@@ -240,13 +240,13 @@ export class AudioDevice{
    * ```
    */
   setSystemLevel(hwlevel: number) {
-    this.hwlevel = hwlevel;
+    this._hwlevel = hwlevel;
 
     return this;
   }
 
   /**
-   * return: isSystemEnabled<number>
+   * return: number
    *
    * Gets whether audio device is enabled/muted in the system
    *
@@ -257,13 +257,13 @@ export class AudioDevice{
    * ```
    */
   getSystemEnabled(): number {
-    return this.hwenable;
+    return this._hwenable;
   }
 
   /**
    * param: systemEnabled<number>
    * ```
-   * return: audioDevice<AudioDevice>, for chaining
+   * return: AudioDevice (used for chaining)
    * ```
    *
    * Enables audio device/sets software mute
@@ -279,13 +279,13 @@ export class AudioDevice{
    * ```
    */
   setSystemEnabled(hwenabled: number) {
-    this.hwenable = hwenabled;
+    this._hwenable = hwenabled;
 
     return this;
   }
 
   /**
-   * return: delay<number> (100 nanoseconds in units)
+   * return: number (100 nanoseconds in units)
    *
    * Get the loopback capture delay value
    *
@@ -296,13 +296,13 @@ export class AudioDevice{
    * ```
    */
   getDelay(): number {
-    return this.delay;
+    return this._delay;
   }
 
   /**
    * param: delay<number> (100 nanoseconds in units)
    * ```
-   * return: audioDevice<AudioDevice>, for chaining
+   * return: AudioDevice (used for chaining)
    * ```
    *
    * Sets the loopback capture delay value
@@ -314,13 +314,13 @@ export class AudioDevice{
    * ```
    */
   setDelay(delay: number) {
-    this.delay = delay;
+    this._delay = delay;
 
     return this;
   }
 
   /**
-   * return: xmlString<string>
+   * return: string
    *
    * Converts the AudioDevice item to XML-formatted string
    *
@@ -340,7 +340,7 @@ export class AudioDevice{
     device['hwlevel']  = this.getSystemLevel().toFixed(6);
     device['hwenable'] = this.getSystemEnabled();
     device['delay']    = this.getDelay();
-    device['mix']      = this.mix;
+    device['mix']      = this._mix;
 
     return XML.parseJSON(device).toString();
   }
@@ -348,7 +348,7 @@ export class AudioDevice{
   /**
    * param: deviceJXON<JSON>
    * ```
-   * return: audioDevice<AudioDevice>
+   * return: AudioDevice
    * ```
    *
    * Converts a JSON object into an AudioDevice object

@@ -75,7 +75,7 @@ body {
   line-height: 48px;
   font-family: 'Source Sans Pro';
   color: #222;
-  text-transform: uppercase;
+  text-transform: capitalize;
   border-bottom: 1px solid #dfe3e4;
 }
 

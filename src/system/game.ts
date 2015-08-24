@@ -29,15 +29,15 @@ import {XML as XML} from '../internal/util/xml';
  */
 export class Game{
 
-  private pid: number;
-  private handle: number;
-  private hwnd: number;
-  private gapitype: string;
-  private width: number;
-  private height: number;
-  private flags: number;
-  private wndname: string;
-  private lastframets: number;
+  private _pid: number;
+  private _handle: number;
+  private _hwnd: number;
+  private _gapitype: string;
+  private _width: number;
+  private _height: number;
+  private _flags: number;
+  private _wndname: string;
+  private _lastframets: number;
 
   /**
    * return: number
@@ -51,7 +51,7 @@ export class Game{
    * ```
    */
   getPid() {
-    return this.pid;
+    return this._pid;
   }
 
   /**
@@ -66,7 +66,7 @@ export class Game{
    * ```
    */
   getHandle() {
-    return this.handle;
+    return this._handle;
   }
 
   /**
@@ -81,7 +81,7 @@ export class Game{
    * ```
    */
   getWindowHandle() {
-    return this.hwnd;
+    return this._hwnd;
   }
 
   /**
@@ -103,7 +103,7 @@ export class Game{
    * ```
    */
   getGapiType() {
-    return this.gapitype;
+    return this._gapitype;
   }
 
   /**
@@ -118,7 +118,7 @@ export class Game{
    * ```
    */
   getResolution() {
-    return Rectangle.fromDimensions(this.width, this.height);
+    return Rectangle.fromDimensions(this._width, this._height);
   }
 
   /**
@@ -133,7 +133,7 @@ export class Game{
    * ```
    */
   isFullscreen() {
-    return this.flags === 1 ? true: false;
+    return this._flags === 1 ? true: false;
   }
 
   /**
@@ -148,7 +148,7 @@ export class Game{
    * ```
    */
   getWindowName() {
-    return this.wndname;
+    return this._wndname;
   }
 
   /**
@@ -163,11 +163,11 @@ export class Game{
    * ```
    */
   getLastFrameTimestamp() {
-    return this.lastframets;
+    return this._lastframets;
   }
 
   /**
-   * param: JSON
+   * param: gameJSON<JXON>
    * ```
    * return: Game
    * ```
@@ -184,19 +184,19 @@ export class Game{
   static parse(jxon: JXON): Game {
     var g = new Game();
 
-    g.pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
-    g.handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
+    g._pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
+    g._handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
       undefined;
-    g.hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
-    g.gapitype = jxon['GapiType'];
-    g.width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
+    g._hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
+    g._gapitype = jxon['GapiType'];
+    g._width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
       undefined;
-    g.height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
+    g._height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
       undefined;
-    g.flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
+    g._flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
       undefined;
-    g.wndname = jxon['wndname'];
-    g.lastframets = jxon['lastframets'] !== undefined ?
+    g._wndname = jxon['wndname'];
+    g._lastframets = jxon['lastframets'] !== undefined ?
       parseInt(jxon['lastframets']) : undefined;
 
     return g;
@@ -217,15 +217,15 @@ export class Game{
     var gamesource = new JXON();
 
     gamesource.tag = 'src';
-    gamesource['pid'] = this.pid;
-    gamesource['handle'] = this.handle;
-    gamesource['hwnd'] = this.hwnd;
-    gamesource['gapitype'] = this.gapitype;
-    gamesource['width'] = this.width;
-    gamesource['height'] = this.height;
-    gamesource['flags'] = this.flags;
-    gamesource['wndname'] = this.wndname;
-    gamesource['lastframets'] = this.lastframets;
+    gamesource['pid'] = this._pid;
+    gamesource['handle'] = this._handle;
+    gamesource['hwnd'] = this._hwnd;
+    gamesource['gapitype'] = this._gapitype;
+    gamesource['width'] = this._width;
+    gamesource['height'] = this._height;
+    gamesource['flags'] = this._flags;
+    gamesource['wndname'] = this._wndname;
+    gamesource['lastframets'] = this._lastframets;
     gamesource['selfclosing'] = true;
 
     return XML.parseJSON(gamesource);

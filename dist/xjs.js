@@ -16,7 +16,7 @@ var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('XJS');
+ * var XJS = require('xjs');
  * var App = new XJS.App();
  *
  * App.getFrameTime().then(function(frametime) {
@@ -264,9 +264,7 @@ var App = (function () {
         });
     };
     /**
-     * ```
      * return: Promise<boolean>
-     * ```
      *
      * Gets whether silence detection is enabled
      *
@@ -343,7 +341,7 @@ var App = (function () {
      * return: Promise<boolean>
      * ```
      *
-     * Sets silence detection period,
+     * Sets silence detection period (0-60000 ms),
      * the length of time after voice detection before silence is again detected
      *
      * ### Usage
@@ -355,7 +353,16 @@ var App = (function () {
      * ```
      */
     App.prototype.setSilenceDetectionPeriod = function (sdPeriod) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
+            if (typeof sdPeriod !== 'number') {
+                reject(Error('Silence detection period must be a number'));
+            }
+            else if (sdPeriod % 1 != 0) {
+                reject(Error('Silence detection period must be an integer'));
+            }
+            else if (sdPeriod < 0 || sdPeriod > 60000) {
+                reject(Error('Silence detection must be in the range 0-60000.'));
+            }
             app_1.App.get('microphonegain').then(function (val) {
                 var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
                 silenceDetectionObj['latency'] = (sdPeriod.toString());
@@ -394,7 +401,7 @@ var App = (function () {
      * return: Promise<boolean>
      * ```
      *
-     * Sets silence detection threshold/silence amplitude
+     * Sets silence detection threshold/silence amplitude (values from 0-128)
      *
      * ### Usage
      *
@@ -405,7 +412,16 @@ var App = (function () {
      * ```
      */
     App.prototype.setSilenceDetectionThreshold = function (sdThreshold) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
+            if (typeof sdThreshold !== 'number') {
+                reject(Error('Silence detection threshold must be a number'));
+            }
+            else if (sdThreshold % 1 != 0) {
+                reject(Error('Silence detection threshold must be an integer'));
+            }
+            else if (sdThreshold < 0 || sdThreshold > 128) {
+                reject(Error('Silence detection threshold must be in the range 0-128.'));
+            }
             app_1.App.get('microphonegain').then(function (val) {
                 var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
                 silenceDetectionObj['gain'] = (sdThreshold.toString());
@@ -516,7 +532,7 @@ var App = (function () {
      *
      * Sets the transition for scene changes
      *
-     * ### Usage
+     * #### Usage
      *
      * ```javascript
      * // you may use the following:
@@ -1251,31 +1267,54 @@ exports.XML = XML;
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
+/**
+ * The AudioDevice Class is the object returned by
+ * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * with methods to fetch the audio device object's attributes, and also provides
+ * methods to convert it back to an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getAudioDevices().then(function(audios) {
+ *   for (var i in audios) {
+ *     // Do not include the imaginary xsplit audio device if that ever exist
+ *     if (audios[i].getName().indexOf('xsplit') === -1) {
+ *       xml = audios[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
 var AudioDevice = (function () {
     function AudioDevice(props) {
-        this.defaultConsole = false;
-        this.defaultMultimedia = false;
-        this.defaultCommunication = false;
+        this._defaultConsole = false;
+        this._defaultMultimedia = false;
+        this._defaultCommunication = false;
         props = props || {};
-        this.id = props['id'];
-        this.name = props['name'];
-        this.adapter = props['adapter'];
-        this.adapterdev = props['adapterdev'];
-        this.dSoundGuid = props['dSoundGuid'];
-        this.dataFlow = props['dataFlow'];
-        this.state = props['state'];
-        this.defaultConsole = props['defaultConsole'];
-        this.defaultMultimedia = props['defaultMultimedia'];
-        this.defaultCommunication = props['defaultCommunication'];
-        this.level = props['level'] !== undefined ? props['level'] : 1.000000;
-        this.enable = props['enable'] !== undefined ? props['enable'] : true;
-        this.hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.000000;
-        this.hwenable = props['hwenable'] !== undefined ? props['hwenable'] : 255;
-        this.delay = props['delay'] !== undefined ? props['delay'] : 0;
-        this.mix = props['mix'] !== undefined ? props['mix'] : 0;
+        this._id = props['id'];
+        this._name = props['name'];
+        this._adapter = props['adapter'];
+        this._adapterdev = props['adapterdev'];
+        this._dSoundGuid = props['dSoundGuid'];
+        this._dataFlow = props['dataFlow'];
+        this._state = props['state'];
+        this._defaultConsole = props['defaultConsole'];
+        this._defaultMultimedia = props['defaultMultimedia'];
+        this._defaultCommunication = props['defaultCommunication'];
+        this._level = props['level'] !== undefined ? props['level'] : 1.000000;
+        this._enable = props['enable'] !== undefined ? props['enable'] : true;
+        this._hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.000000;
+        this._hwenable = props['hwenable'] !== undefined ? props['hwenable'] : 255;
+        this._delay = props['delay'] !== undefined ? props['delay'] : 0;
+        this._mix = props['mix'] !== undefined ? props['mix'] : 0;
     }
     /**
-     * return: id<string>
+     * return: string
      *
      * Gets the device ID
      *
@@ -1286,10 +1325,10 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getId = function () {
-        return this.id;
+        return this._id;
     };
     /**
-     * return: name<string>
+     * return: string
      *
      * Gets the device name
      *
@@ -1300,10 +1339,10 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getName = function () {
-        return this.name;
+        return this._name;
     };
     /**
-     * return: dataflow<string>
+     * return: string
      *
      * Gets whether device is capturing or rendering audio
      *
@@ -1315,10 +1354,10 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getDataFlow = function () {
-        return this.dataFlow;
+        return this._dataFlow;
     };
     /**
-     * return: isDefaultDevice<boolean>
+     * return: boolean
      *
      * Gets whether audio device is the system default
      *
@@ -1329,10 +1368,10 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.isDefaultDevice = function () {
-        return (this.defaultConsole && this.defaultMultimedia);
+        return (this._defaultConsole && this._defaultMultimedia);
     };
     /**
-     * return: appDeviceVolume<number>
+     * return: number
      *
      * Gets the device audio level in the application
      *
@@ -1343,12 +1382,12 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getLevel = function () {
-        return this.level;
+        return this._level;
     };
     /**
-     * param: volume<number>
+     * param: level<number>
      * ```
-     * return: audioDevice<AudioDevice>, for chaining
+     * return: AudioDevice (used for chaining)
      * ```
      *
      * Sets the device audio level in the application
@@ -1360,11 +1399,11 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.setLevel = function (level) {
-        this.level = level;
+        this._level = level;
         return this;
     };
     /**
-     * return: isEnabled<boolean>
+     * return: boolean
      *
      * Gets whether audio device is the system default
      *
@@ -1375,12 +1414,12 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.isEnabled = function () {
-        return this.enable;
+        return this._enable;
     };
     /**
      * param: enabled<boolean>
      * ```
-     * return: audioDevice<AudioDevice>, for chaining
+     * return: AudioDevice (used for chaining)
      * ```
      *
      * Enables audio device/sets software mute
@@ -1392,11 +1431,11 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.setEnabled = function (enabled) {
-        this.enable = enabled;
+        this._enable = enabled;
         return this;
     };
     /**
-     * return: systemDeviceVolume<number>
+     * return: number
      *
      * Gets the device system volume
      *
@@ -1407,12 +1446,12 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getSystemLevel = function () {
-        return this.hwlevel;
+        return this._hwlevel;
     };
     /**
      * param: volume<number>
      * ```
-     * return: audioDevice<AudioDevice>, for chaining
+     * return: AudioDevice (used for chaining)
      * ```
      *
      * Sets the device system volume
@@ -1424,11 +1463,11 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.setSystemLevel = function (hwlevel) {
-        this.hwlevel = hwlevel;
+        this._hwlevel = hwlevel;
         return this;
     };
     /**
-     * return: isSystemEnabled<number>
+     * return: number
      *
      * Gets whether audio device is enabled/muted in the system
      *
@@ -1439,12 +1478,12 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getSystemEnabled = function () {
-        return this.hwenable;
+        return this._hwenable;
     };
     /**
      * param: systemEnabled<number>
      * ```
-     * return: audioDevice<AudioDevice>, for chaining
+     * return: AudioDevice (used for chaining)
      * ```
      *
      * Enables audio device/sets software mute
@@ -1460,11 +1499,11 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.setSystemEnabled = function (hwenabled) {
-        this.hwenable = hwenabled;
+        this._hwenable = hwenabled;
         return this;
     };
     /**
-     * return: delay<number> (100 nanoseconds in units)
+     * return: number (100 nanoseconds in units)
      *
      * Get the loopback capture delay value
      *
@@ -1475,12 +1514,12 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.getDelay = function () {
-        return this.delay;
+        return this._delay;
     };
     /**
      * param: delay<number> (100 nanoseconds in units)
      * ```
-     * return: audioDevice<AudioDevice>, for chaining
+     * return: AudioDevice (used for chaining)
      * ```
      *
      * Sets the loopback capture delay value
@@ -1492,11 +1531,11 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.prototype.setDelay = function (delay) {
-        this.delay = delay;
+        this._delay = delay;
         return this;
     };
     /**
-     * return: xmlString<string>
+     * return: string
      *
      * Converts the AudioDevice item to XML-formatted string
      *
@@ -1516,13 +1555,13 @@ var AudioDevice = (function () {
         device['hwlevel'] = this.getSystemLevel().toFixed(6);
         device['hwenable'] = this.getSystemEnabled();
         device['delay'] = this.getDelay();
-        device['mix'] = this.mix;
+        device['mix'] = this._mix;
         return xml_1.XML.parseJSON(device).toString();
     };
     /**
      * param: deviceJXON<JSON>
      * ```
-     * return: audioDevice<AudioDevice>
+     * return: AudioDevice
      * ```
      *
      * Converts a JSON object into an AudioDevice object
@@ -1566,87 +1605,91 @@ exports.AudioDevice = AudioDevice;
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
+/**
+ * The CameraDevice Class is the object returned by
+ * {@link #system/System System Class'} getCameraDevices method. It provides
+ * you with methods to fetch the Camera Device's id, name, and convert it to
+ * an XML object that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(function(cameras) {
+ *   for (var i in cameras) {
+ *     // Do not include the imaginary xsplit camera if that ever exist
+ *     if (cameras[i].getName().indexOf('xsplit') === -1) {
+ *       xml = cameras[i].toXML();
+ *       // do something with the XML here
+ *     }
+ *   }
+ * });
+ * ```
+ */
 var CameraDevice = (function () {
     function CameraDevice(props) {
-        this.id = props['id'];
-        this.name = props['name'];
+        this._id = props['id'];
+        this._name = props['name'];
     }
     /**
+     * return: string
+     *
      * Get the ID of the device. The ID of the device is based on the `disp`
      * attribute of the devices XML
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * string
-     * ```
-     *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var cameraID = device.getID();
      * ```
      */
     CameraDevice.prototype.getId = function () {
-        return this.id;
+        return this._id;
     };
     /**
+     * return: string
+     *
      * Get the Name of the device.
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * string
-     * ```
-     *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var cameraName = device.getName();
      * ```
      */
     CameraDevice.prototype.getName = function () {
-        return this.name;
+        return this._name;
     };
     /**
+     * return: XML
+     *
      * Convert the current CameraDevice object to XML
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * XML
-     * ```
-     *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var xml = device.toXML();
      * ```
      */
     CameraDevice.prototype.toXML = function () {
         var json = new json_1.JSON();
-        json['disp'] = this.id;
-        json['name'] = this.name;
+        json['disp'] = this._id;
+        json['name'] = this._name;
         return xml_1.XML.parseJSON(json);
     };
     /**
+     * param: deviceJSON<JXON>
+     * ```
+     * return: CameraDevice
+     * ```
+     *
      * Create a CameraDevice object based on a JXON object
      *
-     * #Parameter
+     * #### Usage
      *
-     * ```
-     * deviceJSON: JXON
-     * ```
-     *
-     * #Return
-     *
-     * ```
-     * CameraDevice
-     * ```
-     *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var camera = CameraDevice.parse(JSONObj);
      * ```
      */
@@ -1665,116 +1708,207 @@ exports.CameraDevice = CameraDevice;
 var rectangle_1 = require('../internal/util/rectangle');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
+/**
+ * The Game Class is the object returned by {@link #system/System System Class'}
+ * getGames method. It provides you with methods to fetch the game object's
+ * attributes, and also provides methods to convert it back to an XML object
+ * that is compatible with XBC
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ * var xml;
+ *
+ * System.getGames().then(function(games) {
+ * 	for (var i in games) {
+ * 		if(games[i].isFullscreen()) {
+ * 			xml = games[i].toXML();
+ * 			// Do something with the xml here. Probably add it to the current scene
+ * 		}
+ * 	}
+ * });
+ * ```
+ */
 var Game = (function () {
     function Game() {
     }
     /**
+     * return: number
+     *
      * Gets the game's process ID.
      *
-     * @return {number}
+     * #### Usage
+     *
+     * ```javascript
+     * var processId = game.getPid();
+     * ```
      */
     Game.prototype.getPid = function () {
-        return this.pid;
+        return this._pid;
     };
     /**
+     * return: number
+     *
      * Gets the Graphics API handle.
      *
-     * @returns {number}
+     * #### Usage
+     *
+     * ```javascript
+     * var handle = game.getHandle();
+     * ```
      */
     Game.prototype.getHandle = function () {
-        return this.handle;
+        return this._handle;
     };
     /**
+     * return: number
+     *
      * Gets the window handle.
      *
-     * @returns {number}
+     * #### Usage
+     *
+     * ```javascript
+     * var windowHandle = game.getWindowHandle();
+     * ```
      */
     Game.prototype.getWindowHandle = function () {
-        return this.hwnd;
+        return this._hwnd;
     };
     /**
+     * return: string
+     *
      * Gets the Graphics API type.
      *
-     * @returns {string}, possible values:
+     * #### Usage
+     *
+     * ```javascript
+     * var gApiType = game.getGapiType();
+     * ```
+     *
+     * #### Possible Values
+     *
+     * ```
      * OGL, DX8, DX8_SwapChain, DX9, DX9Ex, DX9_SwapChain,
      * DX9_PresentEx, DX10, DX11, DX11.1, DX11.1_Present1
+     * ```
      */
     Game.prototype.getGapiType = function () {
-        return this.gapitype;
+        return this._gapitype;
     };
     /**
+     * return: Rectangle
+     *
      * Gets the game resolution.
      *
-     * @returns {Rectangle}
+     * #### Usage
+     *
+     * ```javascript
+     * var resolution = game.getResolution();
+     * ```
      */
     Game.prototype.getResolution = function () {
-        return rectangle_1.Rectangle.fromDimensions(this.width, this.height);
+        return rectangle_1.Rectangle.fromDimensions(this._width, this._height);
     };
     /**
+     * return: boolean
+     *
      * Checks if game has exclusive full screen.
      *
-     * @returns {boolean}
+     * #### Usage
+     *
+     * ```javascript
+     * var isFullscreen = game.isFullscreen();
+     * ```
      */
     Game.prototype.isFullscreen = function () {
-        return this.flags === 1 ? true : false;
+        return this._flags === 1 ? true : false;
     };
     /**
+     * return: string
+     *
      * Gets the window title
      *
-     * @returns {string}
+     * #### Usage
+     *
+     * ```javascript
+     * var windowName = game.getWindowName();
+     * ```
      */
     Game.prototype.getWindowName = function () {
-        return this.wndname;
+        return this._wndname;
     };
     /**
+     * return: number
+     *
      * Gets timestamp of last frame in milliseconds.
      *
-     * @returns {number}
+     * #### Usage
+     *
+     * ```javascript
+     * var lastFrameTimestamp = game.getLastFrameTimestamp();
+     * ```
      */
     Game.prototype.getLastFrameTimestamp = function () {
-        return this.lastframets;
+        return this._lastframets;
     };
     /**
+     * param: gameJSON<JXON>
+     * ```
+     * return: Game
+     * ```
+     *
      * Converts a JSON object into a Game object
      *
-     * @param {JSON} jxon
-     * @returns {Game}
+     * #### Usage
+     *
+     * ```javascript
+     * var XJS = require('xjs');
+     * var game = XJS.Game.parse(jsonObj);
+     * ```
      */
     Game.parse = function (jxon) {
         var g = new Game();
-        g.pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
-        g.handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
+        g._pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
+        g._handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
             undefined;
-        g.hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
-        g.gapitype = jxon['GapiType'];
-        g.width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
+        g._hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
+        g._gapitype = jxon['GapiType'];
+        g._width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
             undefined;
-        g.height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
+        g._height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
             undefined;
-        g.flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
+        g._flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
             undefined;
-        g.wndname = jxon['wndname'];
-        g.lastframets = jxon['lastframets'] !== undefined ?
+        g._wndname = jxon['wndname'];
+        g._lastframets = jxon['lastframets'] !== undefined ?
             parseInt(jxon['lastframets']) : undefined;
         return g;
     };
     /**
+     * return: XML
+     *
      * Converts Game object into an XML object
      *
-     * @returns {XML}
+     * #### Usage
+     *
+     * ```javascript
+     * var gameXML = game.toXML();
+     * ```
      */
     Game.prototype.toXML = function () {
         var gamesource = new json_1.JSON();
         gamesource.tag = 'src';
-        gamesource['pid'] = this.pid;
-        gamesource['handle'] = this.handle;
-        gamesource['hwnd'] = this.hwnd;
-        gamesource['gapitype'] = this.gapitype;
-        gamesource['width'] = this.width;
-        gamesource['height'] = this.height;
-        gamesource['flags'] = this.flags;
-        gamesource['wndname'] = this.wndname;
-        gamesource['lastframets'] = this.lastframets;
+        gamesource['pid'] = this._pid;
+        gamesource['handle'] = this._handle;
+        gamesource['hwnd'] = this._hwnd;
+        gamesource['gapitype'] = this._gapitype;
+        gamesource['width'] = this._width;
+        gamesource['height'] = this._height;
+        gamesource['flags'] = this._flags;
+        gamesource['wndname'] = this._wndname;
+        gamesource['lastframets'] = this._lastframets;
         gamesource['selfclosing'] = true;
         return xml_1.XML.parseJSON(gamesource);
     };
@@ -1787,12 +1921,34 @@ var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
 var camera_1 = require('./camera');
 var game_1 = require('./game');
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's first parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(XML.AudioDeviceDataflow.CAPTURE, ...);
+ * ```
+ */
 (function (AudioDeviceDataflow) {
     AudioDeviceDataflow[AudioDeviceDataflow["RENDER"] = 1] = "RENDER";
     AudioDeviceDataflow[AudioDeviceDataflow["CAPTURE"] = 2] = "CAPTURE";
     AudioDeviceDataflow[AudioDeviceDataflow["ALL"] = 3] = "ALL";
 })(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
 var AudioDeviceDataflow = exports.AudioDeviceDataflow;
+/**
+ * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * method's second parameter.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XML = require('xml');
+ * XML.getAudioDevices(..., XML.AudioDeviceState.ACTIVE);
+ * ```
+ */
 (function (AudioDeviceState) {
     AudioDeviceState[AudioDeviceState["ACTIVE"] = 1] = "ACTIVE";
     AudioDeviceState[AudioDeviceState["DISABLED"] = 2] = "DISABLED";
@@ -1801,13 +1957,40 @@ var AudioDeviceDataflow = exports.AudioDeviceDataflow;
     AudioDeviceState[AudioDeviceState["ALL"] = 15] = "ALL";
 })(exports.AudioDeviceState || (exports.AudioDeviceState = {}));
 var AudioDeviceState = exports.AudioDeviceState;
+/**
+ * The System class provides you methods to fetch games, audio devices, and
+ * camera devices.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getCameraDevices().then(funciton(cameras) {
+ *   window.cameras = cameras;
+ * });
+ * ```
+ */
 var System = (function () {
     function System() {
     }
     /**
+     * return: Promise<AudioDevice[]>
+     *
      * Gets audio devices, both input and output
      *
-     * @return {Promise<AudioDevice[]>}
+     * #### Usage
+     *
+     * ```javascript
+     * System.getAudioDevices(
+     *   XML.AudioDeviceDataflow.ALL,
+     *   XML.AudioDeviceState.ACTIVE
+     * ).then(funciton(devices) {
+     *   // devices is an array of AudioDevice object
+     *   window.audios = devices;
+     * });
+     * ```
      */
     System.getAudioDevices = function (dataflow, state) {
         if (dataflow === void 0) { dataflow = AudioDeviceDataflow.ALL; }
@@ -1840,20 +2023,16 @@ var System = (function () {
         });
     };
     /**
+     * return: Promise<CameraDevice[]>
+     *
      * Gets all camera devices
      *
-     * #Return
+     * #### Usage
      *
-     * ```
-     * Promise<CameraDevice[]>
-     * ```
-     *
-     * #Usage
-     *
-     * ```
-     * var promise = System.getCameraDevices();
-     * promise.then(function(devices) {
-     * 	 // devices is an array of CameraDevice object
+     * ```javascript
+     * System.getCameraDevices().then(funciton(devices) {
+     *   // devices is an array of CameraDevice object
+     *   window.cameras = devices;
      * });
      * ```
      */
@@ -1877,9 +2056,18 @@ var System = (function () {
         });
     };
     /**
-     * Gets all currently running games
+     * return: Promise<Game[]>
      *
-     * @return {Promise<Game>}
+     * Gets all camera devices
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getGames().then(funciton(games) {
+     *   // games is an array of Game object
+     *   window.games = games;
+     * });
+     * ```
      */
     System.getGames = function () {
         return new Promise(function (resolve) {
