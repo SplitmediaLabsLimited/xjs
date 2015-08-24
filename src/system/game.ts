@@ -44,7 +44,7 @@ export class Game{
    *
    * Gets the game's process ID.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var processId = game.getPid();
@@ -59,7 +59,7 @@ export class Game{
    *
    * Gets the Graphics API handle.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var handle = game.getHandle();
@@ -74,7 +74,7 @@ export class Game{
    *
    * Gets the window handle.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var windowHandle = game.getWindowHandle();
@@ -89,7 +89,7 @@ export class Game{
    *
    * Gets the Graphics API type.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var gApiType = game.getGapiType();
@@ -111,7 +111,7 @@ export class Game{
    *
    * Gets the game resolution.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var resolution = game.getResolution();
@@ -126,7 +126,7 @@ export class Game{
    *
    * Checks if game has exclusive full screen.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var isFullscreen = game.isFullscreen();
@@ -141,7 +141,7 @@ export class Game{
    *
    * Gets the window title
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var windowName = game.getWindowName();
@@ -156,7 +156,7 @@ export class Game{
    *
    * Gets timestamp of last frame in milliseconds.
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var lastFrameTimestamp = game.getLastFrameTimestamp();
@@ -174,7 +174,7 @@ export class Game{
    *
    * Converts a JSON object into a Game object
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var XJS = require('xjs');
@@ -207,7 +207,7 @@ export class Game{
    *
    * Converts Game object into an XML object
    *
-   * ### Usage
+   * #### Usage
    *
    * ```javascript
    * var gameXML = game.toXML();
