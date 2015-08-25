@@ -17,7 +17,7 @@ export class ItemAudio implements IItemAudio {
   private id: string;
 
   getVolume(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:volume', slot).then(val => {
@@ -35,7 +35,7 @@ export class ItemAudio implements IItemAudio {
   }
 
   isMute(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:mute', slot).then(val => {
@@ -67,7 +67,7 @@ export class ItemAudio implements IItemAudio {
   }
 
   getAudioOutput(): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let slot = iItem.attach(this.id);
 
       iItem.get('prop:sounddev', slot).then(val => {
