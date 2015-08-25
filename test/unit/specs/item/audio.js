@@ -10,6 +10,7 @@ describe('AudioItem', function() {
     audioGain: 0,
     audioLatency: 0
   };
+  var env = new window.Environment(XJS);
 
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
