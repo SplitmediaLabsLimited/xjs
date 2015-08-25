@@ -27,13 +27,15 @@ import {Environment} from '../environment';
  * ```javascript
  * var XJS = require('xjs');
  *
- * XJS.Scene.getActiveItems().then(function(items) {
- *   for (var i in items) {
- *     if (items[i] instanceof XJS.GameItem) {
- *       // Manipulate your game item here
- *       items[i].setOfflineImage(path); // just an example here
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.GameItem) {
+ *         // Manipulate your game item here
+ *         items[i].setOfflineImage(path); // just an example here
+ *       }
  *     }
- *   }
+ *   });
  * });
  * ```
  */
