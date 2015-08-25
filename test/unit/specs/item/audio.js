@@ -185,8 +185,8 @@ describe('AudioItem', function() {
         'setMute',
         'getVolume',
         'setVolume',
-        'getAudioDelay',
-        'setAudioDelay',
+        'getAudioOffset',
+        'setAudioOffset',
         'getAudioOutput',
         'setAudioOutput'
       ].join(','));
