@@ -47,7 +47,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
 
-      iItem.get('prop:value', slot).then(val => {
+      iItem.get('prop:item', slot).then(val => {
         resolve(val);
       });
     });
