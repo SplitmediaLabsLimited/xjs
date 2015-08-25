@@ -94,30 +94,38 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set the offline image of a game source
    */
-  setOfflineImage(path: string) {
-    if (this.type !== ItemTypes.GAMESOURCE) {
-      throw new Error('Current item should be a game source');
-    }
+  setOfflineImage(path: string): Promise<GameItem> {
+    return new Promise((resolve, reject) => {
+      if (this.type !== ItemTypes.GAMESOURCE) {
+        reject(Error('Current item should be a game source'));
+      }
 
-    if (Environment.isSourceHtml()) {
-       new Error('Source plugins cannot update offline images of other sources');
-    }
+      if (Environment.isSourceHtml()) {
+        reject(
+          Error('Source plugins cannot update offline images of other sources')
+        );
+      }
 
-    if (!(this.value instanceof XML)) {
-      this.getValue().then(() => {
-        this.setOfflineImage(path);
-      });
-      return;
-    }
+      if (!(this.value instanceof XML)) {
+        this.getValue().then(() => {
+          this.setOfflineImage(path).then(itemObj => {
+            resolve(itemObj);
+          })
+        });
+        return;
+      }
 
-    var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-      '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+      var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+        '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
 
-    if (regExp.test(path)) {
-      var valueObj = JXON.parse(this.value.toString());
-      valueObj['replace'] = path;
-      this.setValue(XML.parseJSON(valueObj));
-    }
+      if (regExp.test(path)) {
+        var valueObj = JXON.parse(this.value.toString());
+        valueObj['replace'] = path;
+        this.setValue(XML.parseJSON(valueObj));
+      }
+
+      resolve(this);
+    });
   }
 
   /**
@@ -131,16 +139,10 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
         reject(Error('Current item should be a game source'));
       }
 
-      if (!(this.value instanceof XML)) {
-        this.getValue().then(() => {
-          this.getOfflineImage().then(val => {
-            resolve(val);
-          });
-        });
-      } else {
+      this.getValue().then(() => {
         var valueObj = JXON.parse(this.value.toString());
-        resolve(valueObj['replace']);
-      }
+        resolve(valueObj['replace'] ? valueObj['replace'] : '');
+      });
     });
   }
 
