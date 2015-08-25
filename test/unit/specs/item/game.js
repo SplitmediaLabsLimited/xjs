@@ -39,7 +39,7 @@ describe('GameItem', function() {
         var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
-        },10);      
+        },10);
       break;
 
       case 'GameCapSurfSharing':
@@ -62,7 +62,7 @@ describe('GameItem', function() {
             window.OnAsyncCallback(irand,
               itemSelected.getAttribute("GameCapSurfSharing"));
           },10);
-        }      
+        }
       break;
 
       case 'GameCapShowMouse':
@@ -125,7 +125,7 @@ describe('GameItem', function() {
         else {
           specialOptimizationSet = false;
         }
-        
+
       break;
 
       case 'GameCapShowMouse':
@@ -166,7 +166,7 @@ describe('GameItem', function() {
             var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand, encodeURIComponent('<configuration><src pid="23348" handle="386396224" hwnd="199840" GapiType="DX9" width="1280" height="800" flags="0" wndname="Terraria: Cthulhu is mad... and is missing an eye!" lastframets="9045125" fpsRender="44.885239" fpsCapture="0.000000"/><src pid="24448" handle="129832800" hwnd="265242" GapiType="DX9" width="1280" height="768" flags="0" wndname="AdVenture Capitalist!" lastframets="9045125" fpsRender="231.106949" fpsCapture="0.000000"/><src pid="25592" handle="172451040" hwnd="460446" GapiType="DX9Ex" width="1920" height="1080" flags="1" wndname="DOTA 2" lastframets="9043736" fpsRender="60.599564" fpsCapture="0.000000"/></configuration>'));
-            },10);          
+            },10);
           break;
 
           case 'presetconfig:0':
@@ -207,7 +207,7 @@ describe('GameItem', function() {
       .and.callFake(setLocal);
 
       spyOn(window.external, 'SetLocalPropertyAsync2')
-      .and.callFake(setLocal);      
+      .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
       newScene.getItems().then(function(items) {
@@ -234,9 +234,9 @@ describe('GameItem', function() {
         }
         else {
           done();
-        }        
+        }
       });
-    });    
+    });
   });
 
   it('should be enumerated in the items list', function(done) {
@@ -252,7 +252,7 @@ describe('GameItem', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
         currentGameItem = enumerated[0];
-        done();        
+        done();
       }
       else {
         System.getGames().then(function(games) {
@@ -341,7 +341,7 @@ describe('GameItem', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
         currentGameItem = enumerated[0];
-        done();        
+        done();
       }
       else {
         System.getGames().then(function(games) {
@@ -416,15 +416,16 @@ describe('GameItem', function() {
       var firstPath = 'C:\\someFolder\\someFile.jpg';
       var secondPath = 'C:\\anotherFolder\\anotherFile.jpg';
 
-      currentGameItem.setOfflineImage(firstPath);
-      currentGameItem.getOfflineImage().then(function(offlineImage) {
-        expect(offlineImage).toEqual(firstPath);
-        currentGameItem.setOfflineImage(secondPath);
-        return currentGameItem.getOfflineImage();
-      }).
-      then(function(offlineImage2) {
-        expect(offlineImage2).toEqual(secondPath);
-        done();
+      currentGameItem.setOfflineImage(firstPath).then(function(item) {
+        item.getOfflineImage().then(function(offlineImage) {
+          expect(offlineImage).toEqual(firstPath);
+          currentGameItem.setOfflineImage(secondPath);
+          return currentGameItem.getOfflineImage();
+        })
+        .then(function(offlineImage2) {
+          expect(offlineImage2).toEqual(secondPath);
+          done();
+        });
       });
     });
 
