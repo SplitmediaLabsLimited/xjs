@@ -44,7 +44,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Check if Game Special Optimization is currently enabled or not
    */
-  isSpecialOptimization(): Promise<boolean> {
+  isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('GameCapSurfSharing').then(res => {
         resolve(res === '1');
@@ -57,7 +57,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Game Special Optimization to on or off
    */
-  setSpecialOptimization(value: boolean) {
+  setSpecialOptimizationEnabled(value: boolean) {
     let slot = iItem.attach(this._id);
 
     iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot);
@@ -68,7 +68,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Check if Show Mouse is currently enabled or not
    */
-  isShowMouse(): Promise<boolean> {
+  isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('GameCapShowMouse').then(res => {
         resolve(res === '1');
@@ -81,7 +81,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Show Mouse in game to on or off
    */
-  setShowMouse(value: boolean) {
+  setShowMouseEnabled(value: boolean) {
     let slot = iItem.attach(this._id);
 
     iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot);
