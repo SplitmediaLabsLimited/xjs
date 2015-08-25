@@ -5,8 +5,12 @@ import {Item as iItem} from '../../internal/item';
 export interface IItemAudio {
   getVolume(): Promise<number>;
   setVolume(value: number);
-  isMuted(): Promise<boolean>;
-  setMuted(value: boolean);
+  isMute(): Promise<boolean>;
+  setMute(value: boolean);
+  getAudioOffset(): Promise<number>;
+  setAudioOffset(value: number);
+  getAudioOutput(): Promise<boolean>;
+  setAudioOutput(value: boolean);
 }
 
 export class ItemAudio implements IItemAudio {
@@ -16,7 +20,7 @@ export class ItemAudio implements IItemAudio {
     return new Promise((resolve) => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:volume', slot).then((val) => {
+      iItem.get('prop:volume', slot).then(val => {
         resolve(Number(val));
       });
     });
@@ -30,19 +34,51 @@ export class ItemAudio implements IItemAudio {
     iItem.set('prop:volume', String(value), slot);
   }
 
-  isMuted(): Promise<boolean> {
+  isMute(): Promise<boolean> {
     return new Promise((resolve) => {
       let slot = iItem.attach(this.id);
 
-      iItem.get('prop:mute', slot).then((val) => {
+      iItem.get('prop:mute', slot).then(val => {
         resolve(val === '1');
       });
     });
   }
 
-  setMuted(value: boolean) {
+  setMute(value: boolean) {
     let slot = iItem.attach(this.id);
 
     iItem.set('prop:mute', (value ? '1' : '0'), slot);
+  }
+
+  getAudioOffset(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:AudioDelay', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setAudioOffset(value: number) {
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:mute', String(value), slot);
+  }
+
+  getAudioOutput(): Promise<boolean> {
+    return new Promise((resolve) => {
+      let slot = iItem.attach(this.id);
+
+      iItem.get('prop:sounddev', slot).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setAudioOutput(value: boolean) {
+    let slot = iItem.attach(this.id);
+
+    iItem.set('prop:sounddev', (value ? '1' : '0'), slot);
   }
 }

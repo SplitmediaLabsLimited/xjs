@@ -17,13 +17,25 @@ export class AudioItem extends Item implements IItemAudio {
   getVolume: () => Promise<number>;
 
   /** Check if item's mute option is active */
-  isMuted:   () => Promise<boolean>;
+  isMute:   () => Promise<boolean>;
 
   /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
   setVolume: (value: number) => void;
 
   /** Set item's Mute property to ON or OFF */
-  setMuted:  (value: boolean) => void;
+  setMute:  (value: boolean) => void;
+
+  /** Gets delay in milliseconds */
+  getAudioOffset: () => Promise<number>;
+
+  /** Sets delay in milliseconds */
+  setAudioOffset: (value: number) => void;
+
+  /** Checks if audio is also output to system sound */
+  getAudioOutput: () => Promise<boolean>;
+
+  /** Sets whether audio should also be output to system sound */
+  setAudioOutput: (value: boolean) => void;
 }
 
 applyMixins(Item, [ItemAudio]);
