@@ -15,3 +15,4 @@ export * from './system/system';
 export * from './system/audio';
 export * from './system/game';
 export * from './system/camera';
+export * from './system/microphone';

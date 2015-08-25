@@ -2,6 +2,7 @@
 
 import {App as iApp} from '../internal/app';
 import {AudioDevice as AudioDevice} from './audio';
+import {MicrophoneDevice} from './microphone';
 import {CameraDevice} from './camera';
 import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
@@ -52,7 +53,7 @@ export enum AudioDeviceState {
  * var XJS = require('xjs');
  * var System = XJS.System;
  *
- * System.getCameraDevices().then(funciton(cameras) {
+ * System.getCameraDevices().then(function(cameras) {
  *   window.cameras = cameras;
  * });
  * ```
@@ -69,7 +70,7 @@ export class System{
    * System.getAudioDevices(
    *   XML.AudioDeviceDataflow.ALL,
    *   XML.AudioDeviceState.ACTIVE
-   * ).then(funciton(devices) {
+   * ).then(function(devices) {
    *   // devices is an array of AudioDevice object
    *   window.audios = devices;
    * });
@@ -114,7 +115,7 @@ export class System{
    * #### Usage
    *
    * ```javascript
-   * System.getCameraDevices().then(funciton(devices) {
+   * System.getCameraDevices().then(function(devices) {
    *   // devices is an array of CameraDevice object
    *   window.cameras = devices;
    * });
@@ -148,7 +149,7 @@ export class System{
    * #### Usage
    *
    * ```javascript
-   * System.getGames().then(funciton(games) {
+   * System.getGames().then(function(games) {
    *   // games is an array of Game object
    *   window.games = games;
    * });
@@ -165,6 +166,34 @@ export class System{
           }
         }
         resolve(games);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<MicrophoneDevice[]>
+   *
+   * Gets all audio capture devices that may be added to the stage
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getMicrophones().then(function(microphones) {
+   *   microphones[0].addToScene(); // add first microphone to stage
+   * });
+   * ```
+   */
+  static getMicrophones(): Promise<MicrophoneDevice[]> {
+    return new Promise(resolve => {
+      iApp.getAsList('dshowenum:asrc').then(micsJXON => {
+        let mics: MicrophoneDevice[] = [];
+        if (micsJXON !== undefined) {
+          let micsJXONLength = micsJXON.length;
+          for (var i = 0; i < micsJXONLength; ++i) {
+            mics.push(MicrophoneDevice.parse(micsJXON[i]));
+          }
+        }
+        resolve(mics);
       });
     });
   }
