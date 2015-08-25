@@ -14,7 +14,35 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
+/**
+ * The CameraItem Class provides methods specifically used for camera items and
+ * also methods that are shared between Item Classes. The
+ * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * CameraItem object if there's a camera item on the specified scene.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.CameraItem) {
+ *         // Manipulate your camera item here
+ *         items[i].getDeviceId().then(function(id) {
+ *           // Do something with the id
+ *         });
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ */
 export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+  /**
+   * return: Promise<string>
+   */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
@@ -27,72 +55,155 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
 
   // ItemLayout
 
-  /** Check if Aspect Ratio is set to ON or OFF */
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Aspect Ratio is set to ON or OFF
+   */
   isKeepAspectRatio:        () => Promise<boolean>;
 
-  /** Check if Position Locked is set to ON or OFF */
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Position Locked is set to ON or OFF
+   */
   isPositionLocked:         () => Promise<boolean>;
 
-  /** Check if Enhance Resize is Enabled or Disabled */
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Enhance Resize is Enabled or Disabled
+   */
   isEnhancedResizeEnabled:   () => Promise<boolean>;
 
-  /** Get the position of the item */
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Get the position of the item
+   */
   getPosition:              () => Promise<Rectangle>;
 
-  /** Set Aspect Ratio to ON or OFF */
+  /**
+   * param: value<boolean>
+   *
+   * Set Aspect Ratio to ON or OFF
+   */
   setKeepAspectRatio:       (value: boolean) => void;
 
-  /** Set Position Lock to ON or OFF */
+  /**
+   * param: value<boolean>
+   *
+   * Set Position Lock to ON or OFF
+   */
   setPositionLocked:        (value: boolean) => void;
 
-  /** Set Enhance Resize to ON or OFF */
+  /**
+   * param: value<boolean>
+   *
+   * Set Enhance Resize to ON or OFF
+   */
   setEnhancedResizeEnabled:  (value: boolean) => void;
 
-  /** Set Item position */
+  /**
+   * param: value<Rectangle>
+   *
+   * Set Item position
+   */
   setPosition:              (value: Rectangle) => void;
 
   // ItemColor
 
-  /** Get Item Transparency value */
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Transparency value
+   */
   getTransparency: () => Promise<number>;
 
-  /** Get Item Brightness value */
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Brightness value
+   */
   getBrightness:   () => Promise<number>;
 
-  /** Get Item Contrast value */
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Contrast value
+   */
   getContrast:     () => Promise<number>;
 
-  /** Get Item Hue value */
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Hue value
+   */
   getHue:          () => Promise<number>;
 
-  /** Get Item Saturation value */
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Saturation value
+   */
   getSaturation:   () => Promise<number>;
 
-  /** Get Border Color */
+  /**
+   * return: Promise<Color>
+   *
+   * Get Border Color
+   */
   getBorderColor:  () => Promise<Color>;
 
-  /** Set Item Transparency */
+  /**
+   * param: value<number>
+   *
+   * Set Item Transparency
+   */
   setTransparency: (value: number) => void;
 
-  /** Set Item Brightness */
+  /**
+   * param: value<number>
+   *
+   * Set Item Brightness
+   */
   setBrightness:   (value: number) => void;
 
-  /** Set Item Contrast */
+  /**
+   * param: value<number>
+   *
+   * Set Item Contrast
+   */
   setContrast:     (value: number) => void;
 
-  /** Set Item Hue */
+  /**
+   * param: value<number>
+   *
+   * Set Item Hue
+   */
   setHue:          (value: number) => void;
 
-  /** Set Item Saturation */
+  /**
+   * param: value<number>
+   *
+   * Set Item Saturation
+   */
   setSaturation:   (value: number) => void;
 
-  /** Set Border Color */
+  /**
+   * param: value<Color>
+   *
+   * Set Border Color
+   */
   setBorderColor:  (value: Color) => void;
 
   // special color options pinning
 
-  /** Set this to true to share color settings across all instances of this
-   *  camera device on the stage.
+  /**
+   * param: value<boolean>
+   *
+   * Set this to true to share color settings across all instances of this
+   * camera device on the stage.
    */
   setColorOptionsPinned(value: boolean) {
     let slot = iItem.attach(this._id);
@@ -100,8 +211,11 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
     iItem.set('prop:cc_pin', value ? '1' : '0', slot);
   }
 
-  /** Checks whether color settings are shared across all instances of
-   *  this camera device on the stage.
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether color settings are shared across all instances of
+   * this camera device on the stage.
    */
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
@@ -114,47 +228,134 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   }
 
   // ItemChroma
-  isChromaEnabled: () => Promise<boolean>; // prop:key_chromakey
+  /**
+   * return: Promise<boolean>
+   */
+  isChromaEnabled: () => Promise<boolean>;
+  /**
+   * param: value<boolean>
+   */
   setChromaEnabled: (value: boolean) => void;
-  getKeyingType: () => Promise<KeyingType>; // prop:key_chromakeytype
+  /**
+   * return: Promise<KeyingType>
+   */
+  getKeyingType: () => Promise<KeyingType>;
+  /**
+   * param: value<KeyingType>
+   */
   setKeyingType: (value: KeyingType) => void;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
+  /**
+   * return: Promise<ChromaAntiAliasLevel>
+   */
+  getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
+  /**
+   * param: value<ChromaAntiAliasLevel>
+   */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => void;
 
   // CHROMA LEGACY MODE
-  getChromaLegacyBrightness: () => Promise<number>; // prop:key_chromabr  // ONLY FOR LEGACY MODE. Brightness
+  /**
+   * return: Promise<number>
+   */
+  getChromaLegacyBrightness: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaLegacyBrightness: (value: number) => void;
-  getChromaLegacySaturation: () => Promise<number>; // prop:key_chromasat // ONLY FOR LEGACY MODE. Saturation
+  /**
+   * return: Promise<number>
+   */
+  getChromaLegacySaturation: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaLegacySaturation: (value: number) => void;
-  getChromaLegacyHue: () => Promise<number>; // prop:key_chromahue // ONLY FOR LEGACY MODE. Hue
+  /**
+   * return: Promise<number>
+   */
+  getChromaLegacyHue: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaLegacyHue: (value: number) => void;
-  getChromaLegacyThreshold: () => Promise<number>; // prop:key_chromarang // ONLY FOR LEGACY MODE. (below hue). Threshold?
+  /**
+   * return: Promise<number>
+   */
+  getChromaLegacyThreshold: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaLegacyThreshold: (value: number) => void;
-  getChromaLegacyAlphaSmoothing: () => Promise<number>; // prop:key_chromaranga // ONLY FOR LEGACY MODE. Alpha Smoothing
+  /**
+   * return: Promise<number>
+   */
+  getChromaLegacyAlphaSmoothing: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaLegacyAlphaSmoothing: (value: number) => void;
 
   // CHROMA KEY RGB MODE
-  getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>; // prop:key_chromargbkeyprimary. Key Color
+  /**
+   * return: Promise<ChromaPrimaryColors>
+   */
+  getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
+  /**
+   * param: value<ChromaPrimaryColors>
+   */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => void;
-  getChromaRGBKeyThreshold: () => Promise<number>; // prop:key_chromargbkeythresh. Threshold
+  /**
+   * return: Promise<number>
+   */
+  getChromaRGBKeyThreshold: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaRGBKeyThreshold: (value: number) => void;
-  getChromaRGBKeyExposure: () => Promise<number>; // prop:key_chromargbkeybalance. Exposure
+  /**
+   * return: Promise<number>
+   */
+  getChromaRGBKeyExposure: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaRGBKeyExposure: (value: number) => void;
 
   // COLOR KEY MODE
-  getChromaColorKeyThreshold: () => Promise<number>; // prop:key_colorrang // ONLY FOR COLOR KEY MODE. Threshold
+  /**
+   * return: Promise<number>
+   */
+  getChromaColorKeyThreshold: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaColorKeyThreshold: (value: number) => void;
-  getChromaColorKeyExposure: () => Promise<number>; // prop:key_colorranga // ONLY FOR COLOR KEY MODE. Exposure
+  /**
+   * return: Promise<number>
+   */
+  getChromaColorKeyExposure: () => Promise<number>;
+  /**
+   * param: value<number>
+   */
   setChromaColorKeyExposure: (value: number) => void;
-  getChromaColorKeyColor: () => Promise<Color>; // prop:key_colorrgb // ONLY FOR COLOR KEY MODE
+  /**
+   * return: Promise<Color>
+   */
+  getChromaColorKeyColor: () => Promise<Color>;
+  /**
+   * param: value<Color>
+   */
   setChromaColorKeyColor: (value: Color) => void;
 
   // special chroma options pinning
 
-  /** Set this to true to share chroma keying settings across all instances of
-   *  this camera device on the stage.
+  /**
+   * param: value<boolean>
+   *
+   * Set this to true to share chroma keying settings across all instances of
+   * this camera device on the stage.
    */
   setKeyingOptionsPinned(value: boolean) {
     let slot = iItem.attach(this._id);
@@ -162,8 +363,11 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
     iItem.set('prop:key_pin', value ? '1' : '0', slot);
   }
 
-  /** Checks whether chroma keying settings are shared across all instances of
-   *  this camera device on the stage.
+  /**
+   * return: value<boolean>
+   *
+   * Checks whether chroma keying settings are shared across all instances of
+   * this camera device on the stage.
    */
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
@@ -177,22 +381,46 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
 
   // ItemTransition
 
-  /** Check if item is visible on stage */
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item is visible on stage
+   */
   isVisible:         () => Promise<boolean>;
 
-  /** Set item to visible or hidden */
+  /**
+   * param: value<boolean>
+   *
+   * Set item to visible or hidden
+   */
   setVisible:        (value: boolean) => void;
 
-  /** Get item's transition type for when visibility is toggled */
+  /**
+   * return: Promise<boolean>
+   *
+   * Get item's transition type for when visibility is toggled
+   */
   getTransition:     () => Promise<Transition>;
 
-  /** Set item's transition type for when visibility is toggled */
+  /**
+   * param: value<Transition>
+   *
+   * Set item's transition type for when visibility is toggled
+   */
   setTransition:     (value: Transition) => void;
 
-  /** Get item's transition time in milliseconds */
+  /**
+   * return: Promise<number>
+   *
+   * Get item's transition time in milliseconds
+   */
   getTransitionTime: () => Promise<number>;
 
-  /** Set item's transition time in milliseconds */
+  /**
+   * param: value<number>
+   *
+   * Set item's transition time in milliseconds
+   */
   setTransitionTime: (value: number) => void;
 }
 
