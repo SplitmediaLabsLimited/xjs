@@ -25,7 +25,7 @@
   ];
 
   Rose.createTab({
-    name: 'PLG-99',
+    name: 'App',
     buttons: [
       {
         name: 'getFrametime',

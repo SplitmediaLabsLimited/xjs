@@ -32,7 +32,7 @@
     var currentItem = items[itemIndex];
 
     Rose.createTab({
-      name: 'PLG-118',
+      name: 'Item',
       buttons: [
         {
           name: 'toggle attached item',
