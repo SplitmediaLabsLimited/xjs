@@ -22,10 +22,19 @@ export class AudioItem extends Item implements IItemAudio {
     });
   }
 
-  setSilenceDetectionEnabled(value: boolean) {
-    let slot = iItem.attach(this._id);
+  setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
 
-    iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot);
+      iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+      .then(res => {
+        if (!res) {
+          reject(Error('Item set property failed'));
+        }
+
+         resolve(this);
+      });
+    });
   }
 
   getSilenceThreshold(): Promise<number> {
@@ -38,16 +47,26 @@ export class AudioItem extends Item implements IItemAudio {
     });
   }
 
-  setSilenceThreshold(value: number) {
-    if (typeof value !== 'number') {
-      throw new Error('Only numbers are acceptable values for threshold');
-    } else if (value % 1 !== 0 || value < 0 || value > 128) {
-      throw new Error('Only integers in the range 0-128 are acceptable for threshold');
-    }
+  setSilenceThreshold(value: number): Promise<AudioItem> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(Error('Only numbers are acceptable values for threshold'));
+      } else if (value % 1 !== 0 || value < 0 || value > 128) {
+        reject(
+          Error('Only integers in the range 0-128 are acceptable for threshold')
+        );
+      }
 
-    let slot = iItem.attach(this._id);
+      let slot = iItem.attach(this._id);
 
-    iItem.set('prop:AudioGain', String(value), slot);
+      iItem.set('prop:AudioGain', String(value), slot).then(res => {
+        if (!res) {
+          reject(Error('Item set property failed'));
+        }
+
+        resolve(this);
+      });
+    })
   }
 
   getSilencePeriod(): Promise<number> {
@@ -60,16 +79,26 @@ export class AudioItem extends Item implements IItemAudio {
     });
   }
 
-  setSilencePeriod(value: number) {
-    if (typeof value !== 'number') {
-      throw new Error('Only numbers are acceptable values for period');
-    } else if (value % 1 !== 0 || value < 0 || value > 10000) {
-      throw new Error('Only integers in the range 0-10000 are acceptable for period');
-    }
+  setSilencePeriod(value: number): Promise<AudioItem> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(Error('Only numbers are acceptable values for period'));
+      } else if (value % 1 !== 0 || value < 0 || value > 10000) {
+        reject(
+          Error('Only integers in the range 0-10000 are acceptable for period')
+        );
+      }
 
-    let slot = iItem.attach(this._id);
+      let slot = iItem.attach(this._id);
 
-    iItem.set('prop:AudioGainLatency', String(value), slot);
+      iItem.set('prop:AudioGainLatency', String(value), slot).then(res => {
+        if (!res) {
+          reject(Error('Item set property failed'));
+        }
+
+        resolve(this);
+      });
+    });
   }
 
   // ItemAudio

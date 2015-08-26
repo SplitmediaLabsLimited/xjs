@@ -61,11 +61,16 @@ export class Item {
   }
 
   /** Sets an item's local property */
-  static set(name: string, value: string, slot: number = 0): void {
-    exec('SetLocalPropertyAsync' +
-      (String(slot) === '0' ? '' : slot + 1),
-      name,
-      value);
+  static set(name: string, value: string, slot: number = 0): Promise<boolean> {
+    return new Promise(resolve => {
+      exec('SetLocalPropertyAsync' +
+        (String(slot) === '0' ? '' : slot + 1),
+        name,
+        value,
+        val => {
+          resolve(val === '1');
+        });
+    });
   }
 
   /** Calls a function defined in an item/source */
