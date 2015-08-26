@@ -20,7 +20,8 @@
 
       listeners: {
         'home.tap': 'homeTap',
-        'api.tap': 'apiTap'
+        'api.tap': 'apiTap',
+        'support.tap': 'supportTap'
       },
 
       homeTap: function(e) {
@@ -29,6 +30,10 @@
 
       apiTap: function(e) {
         location.href = 'api.html';
+      },
+
+      supportTap: function(e) {
+        location.href = 'support.html';
       }
     });
   </script>
