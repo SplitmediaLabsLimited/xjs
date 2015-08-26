@@ -1,4 +1,4 @@
-/* globals describe, it, expect, require, beforeEach, spyOn */
+/* globals describe, it, expect, require, beforeAll, spyOn, console */
 
 describe('AudioItem', function() {
   'use strict';
@@ -10,6 +10,20 @@ describe('AudioItem', function() {
     audioGain: 0,
     audioLatency: 0
   };
+  var local2 = {
+    silenceDetection : false,
+    audioGain: 0,
+    audioLatency: 0
+  };
+
+  Object.observe(local, function(changes) {
+    console.log('local property ' + changes[0].name + ' changed from ' + changes[0].oldValue + ' to ' + changes[0].object[changes[0].name]);
+  });
+
+  Object.observe(local2, function(changes) {
+    console.log('local2 property ' + changes[0].name + ' changed from ' + changes[0].oldValue + ' to ' + changes[0].object[changes[0].name]);
+  });
+
   var env = new window.Environment(XJS);
 
   beforeAll(function(done) {
@@ -42,18 +56,21 @@ describe('AudioItem', function() {
         switch (propName) {
           case 'prop:AudioGainEnable':
             setTimeout(function() {
+              console.log('<< getting local silenceDetection: ' + local.silenceDetection);
               window.OnAsyncCallback(ctr, local.silenceDetection);
             }, 10);
           break;
 
           case 'prop:AudioGain':
             setTimeout(function() {
+              console.log('<< getting local audioGain: ' + local.audioGain);
               window.OnAsyncCallback(ctr, local.audioGain);
             }, 10);
           break;
 
           case 'prop:AudioGainLatency':
             setTimeout(function() {
+              console.log('<< getting local audioLatency: ' + local.audioLatency);
               window.OnAsyncCallback(ctr, local.audioLatency);
             }, 10);
           break;
@@ -69,6 +86,7 @@ describe('AudioItem', function() {
           case 'prop:AudioGainEnable':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
+              console.log('>> setting local silenceDetection to ' + val);
               local.silenceDetection = val;
             }, 10);
           break;
@@ -76,6 +94,7 @@ describe('AudioItem', function() {
           case 'prop:AudioGain':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
+              console.log('>> setting local audioGain to ' + val);
               local.audioGain = val;
             }, 10);
           break;
@@ -83,6 +102,7 @@ describe('AudioItem', function() {
           case 'prop:AudioGainLatency':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
+              console.log('>> setting local audioLatency to ' + val);
               local.audioLatency = val;
             }, 10);
           break;
@@ -97,19 +117,22 @@ describe('AudioItem', function() {
         switch (propName) {
           case 'prop:AudioGainEnable':
             setTimeout(function() {
-              window.OnAsyncCallback(ctr, local.silenceDetection);
+              console.log('<< getting local2 silenceDetection: ' + local2.silenceDetection);
+              window.OnAsyncCallback(ctr, local2.silenceDetection);
             }, 10);
           break;
 
           case 'prop:AudioGain':
             setTimeout(function() {
-              window.OnAsyncCallback(ctr, local.audioGain);
+              console.log('<< getting local2 audioGain: ' + local2.audioGain);
+              window.OnAsyncCallback(ctr, local2.audioGain);
             }, 10);
           break;
 
           case 'prop:AudioGainLatency':
             setTimeout(function() {
-              window.OnAsyncCallback(ctr, local.audioLatency);
+              console.log('<< getting local2 audioLatency: ' + local2.audioLatency);
+              window.OnAsyncCallback(ctr, local2.audioLatency);
             }, 10);
           break;
         }
@@ -124,21 +147,24 @@ describe('AudioItem', function() {
           case 'prop:AudioGainEnable':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
-              local.silenceDetection = val;
+              console.log('>> setting local2 silenceDetection to ' + val);
+              local2.silenceDetection = val;
             }, 10);
           break;
 
           case 'prop:AudioGain':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
-              local.audioGain = val;
+              console.log('>> setting local2 audioGain to ' + val);
+              local2.audioGain = val;
             }, 10);
           break;
 
           case 'prop:AudioGainLatency':
             setTimeout(function() {
               window.OnAsyncCallback(ctr, val);
-              local.audioLatency = val;
+              console.log('>> setting local2 audioLatency to ' + val);
+              local2.audioLatency = val;
             }, 10);
           break;
         }
