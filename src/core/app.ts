@@ -1,12 +1,12 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {App as iApp} from '../internal/app';
+import {Rectangle as Rectangle} from '../util/rectangle';
 import {AudioDevice as AudioDevice} from '../system/audio';
-import {Rectangle as Rectangle} from '../internal/util/rectangle';
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
-import {Environment} from '../internal/environment';
+import {Environment} from './environment';
 
 var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
@@ -564,7 +564,7 @@ export class App{
    */
   getTransition(): Promise<string> {
     return new Promise(resolve => {
-      iApp.get('transitionid').then((val) => {
+      iApp.get('transitionid').then(val => {
         resolve(val);
       });
     });

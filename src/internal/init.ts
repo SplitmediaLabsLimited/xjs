@@ -1,6 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Environment} from './environment';
+import {Environment} from '../core/environment';
 import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';

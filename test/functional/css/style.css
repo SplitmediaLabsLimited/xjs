@@ -42,6 +42,7 @@ body {
 
 #container .tab-contents > div .out {
   background: #FFF;
+  overflow: auto;
 }
 
 #container .tab-contents > div .out.show {
