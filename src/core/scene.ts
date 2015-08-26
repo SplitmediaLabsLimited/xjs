@@ -6,6 +6,7 @@ import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
 import {CameraItem} from './item/camera';
+import {HTMLItem} from './item/html';
 
 export class Scene {
   private id: number;
@@ -358,27 +359,31 @@ export class Scene {
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
-      if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
-        typeResolve(new GameItem(jsonArr[index]));
-        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
-          jsonArr[index]['sounddev'] === '0') {
-            typeResolve(new CameraItem(jsonArr[index]));
-        } else {
-            typeResolve(new Item(jsonArr[index]));
-          }
-        });
+        let item = jsonArr[index];
+        let type = Number(item['type']);
+        if (type === ItemTypes.GAMESOURCE) {
+          typeResolve(new GameItem(item));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HTMLItem(item));
+          } else if (type === ItemTypes.LIVE &&
+            item['sounddev'] === '0') {
+              typeResolve(new CameraItem(item));
+          } else {
+              typeResolve(new Item(item));
+            }
+          });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneID'] = this.id;
-            promiseArray.push(typePromise(i));
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneID'] = this.id;
+              promiseArray.push(typePromise(i));
+            }
           }
-        }
 
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
         });
-      });
     });
   }
 
