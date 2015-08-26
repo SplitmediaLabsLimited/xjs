@@ -48,6 +48,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
       iItem.get('GameCapSurfSharing').then(res => {
         resolve(res === '1');
       });
@@ -72,6 +74,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
       iItem.get('GameCapShowMouse').then(res => {
         resolve(res === '1');
       });
@@ -118,7 +122,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
       var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
         '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
 
-      if (regExp.test(path)) {
+      if (regExp.test(path) || path === '') {
         var valueObj = JXON.parse(this.value.toString());
         valueObj['replace'] = path;
         this.setValue(XML.parseJSON(valueObj));
