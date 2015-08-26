@@ -126,7 +126,7 @@ describe('Audio ===', function() {
         AudioDeviceState.ACTIVE);
       promise.then(function(devices) {
         for (var i = devices.length - 1; i >= 0; i--) {
-          expect(devices[i].state).toBe('Active');
+          expect(devices[i]._state).toBe('Active');
         }
         done();
       });
@@ -251,7 +251,7 @@ describe('Audio ===', function() {
         device.setSystemEnabled(AudioDeviceSystemEnabled);
         expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemEnabled);
         device.setSystemEnabled(AudioDeviceSystemMuteDisallowed);
-        expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemMuteDisallowed);        
+        expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemMuteDisallowed);
         done();
       });
     });
