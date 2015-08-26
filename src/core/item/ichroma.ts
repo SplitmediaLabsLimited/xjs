@@ -370,7 +370,6 @@ export class ItemChroma implements IItemChroma {
 
   setChromaColorKeyColor(value: Color) {
     let slot = iItem.attach(this._id);
-
-    iItem.set('prop:key_colorrgb', value.getBgr(), slot);
+    iItem.set('prop:key_colorrgb', String(value.getIbgr()), slot);
   }
 }

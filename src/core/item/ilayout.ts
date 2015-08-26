@@ -65,7 +65,7 @@ export class ItemLayout implements IItemLayout {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
       iItem.get('prop:pos', slot).then(val => {
-        var [top, left, right, bottom] = decodeURIComponent(val).split(',');
+        var [left, top, right, bottom] = decodeURIComponent(val).split(',');
         this.position = Rectangle.fromCoordinates(Number(top), Number(left),
           Number(right), Number(bottom));
         resolve(this.position);
@@ -76,6 +76,6 @@ export class ItemLayout implements IItemLayout {
   setPosition(value: Rectangle) {
     let slot = iItem.attach(this._id);
     this.position = value;
-    iItem.set('prop:pos', value.toString(), slot);
+    iItem.set('prop:pos', value.toCoordinateString(), slot);
   }
 }

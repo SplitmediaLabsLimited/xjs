@@ -64,6 +64,10 @@ export class ItemTransition implements IItemTransition {
   setTransitionTime(value: number) {
     let slot = iItem.attach(this._id);
 
-    iItem.set('prop:transitionid', String(value), slot);
+    if (value < 0 || value > 60000) {
+      throw new RangeError('Transparency may only be in the range 0 to 60000.');
+    };
+
+    iItem.set('prop:transitiontime', String(value), slot);
   }
 }
