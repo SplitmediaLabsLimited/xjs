@@ -7,7 +7,8 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
   readTypeScriptModules.hidePrivateMembers = true;
   readTypeScriptModules.sourceFiles = [
     'core.ts',
-    'system.ts'
+    'system.ts',
+    'util.ts'
   ];
 })
 
