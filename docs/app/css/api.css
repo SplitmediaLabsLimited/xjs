@@ -66,7 +66,7 @@ body {
   text-decoration: none;
   display: block;
   padding-left: 30px;
-  transition: all ease 0.5s;
+  transition: all ease 0.2s;
 }
 
 .navigation li {
@@ -141,7 +141,7 @@ body {
   display: block;
   padding: 24px 38px;
   text-decoration: none;
-  transition: all ease 0.5s;
+  transition: all ease 0.2s;
 }
 
 .quicklink a:hover {
