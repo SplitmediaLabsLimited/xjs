@@ -7,11 +7,18 @@
     gulp        = require('gulp'),
     bower       = require('bower'),
     browserify  = require('browserify'),
+    through     = require('through2'),
+    fs          = require('fs'),
+    merge       = require('merge2'),
+    concat      = require('gulp-concat'),
     Dgeni       = require('dgeni'),
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync'),
     history     = require('connect-history-api-fallback'),
     Server      = require('karma').Server;
+
+  var BUNDLE_PATH = 'dist/xjs.js',
+      JS_DEPENDENCY = 'src/util/EventEmitter.min.js';
 
   gulp.task('browserify', function() {
     return browserify('./src/index.ts')
@@ -22,6 +29,17 @@
       .bundle()
       .pipe(source('xjs.js'))
       .pipe(gulp.dest('dist'));
+  });
+
+  gulp.task('merge', ['browserify'], function() {
+    var xjsFile = gulp.src(BUNDLE_PATH);
+
+    var emitterJS = gulp.src(JS_DEPENDENCY);
+
+    return merge(emitterJS, xjsFile)
+      .pipe(concat('xjs.js'))
+      .pipe(gulp.dest('dist'));
+
   });
 
   gulp.task('test/unit', function(done) {
@@ -102,5 +120,5 @@
 
   gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 
-  gulp.task('default', ['browserify']);
+  gulp.task('default', ['browserify', 'merge']);
 }());
