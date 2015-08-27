@@ -48,7 +48,7 @@ function readMetaConfigUrl(): Promise<any> {
           }
           var metas = document.getElementsByTagName("meta");
           for (var i = metas.length - 1; i >= 0; i--) {
-            if (metas[i].name === 'config-url') {
+            if (metas[i].name === 'xsplit:config-url') {
               let url = resolveRelativePath(
                 metas[i].content, window.location.href);
               configObj.configUrl = url;
@@ -96,7 +96,7 @@ function init(): void {
   Global.addInitializationPromise(getCurrentSourceID());
 
   Promise.all(Global.getInitializationPromises()).then(() => {
-    document.dispatchEvent(new CustomEvent('xjs-ready', {
+    document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
       bubbles: true
     }));
   });

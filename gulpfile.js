@@ -39,7 +39,6 @@
     return merge(emitterJS, xjsFile)
       .pipe(concat('xjs.js'))
       .pipe(gulp.dest('dist'));
-
   });
 
   gulp.task('test/unit', function(done) {
