@@ -15,6 +15,9 @@ import {exec} from '../internal/internal';
 export class SourceConfigWindow extends MyEventEmitter {
   private static _instance: SourceConfigWindow;
 
+  private static _MODE_FULL: string = 'full';
+  private static _MODE_TABBED: string = 'embedded';
+
   static getInstance() {
     if (SourceConfigWindow._instance === undefined) {
       SourceConfigWindow._instance = new SourceConfigWindow();
@@ -62,21 +65,31 @@ export class SourceConfigWindow extends MyEventEmitter {
     window.parent.postMessage(JSON.stringify(obj), '*');
   }
 
-  setRenderMode(renderMode: string) {
+  useFullWindow() {
+    this._setRenderMode(SourceConfigWindow._MODE_FULL);
+  }
+
+  useTabbedWindow(config: { customTabs: string[], tabOrder: string[] }) {
+    this._setRenderMode(SourceConfigWindow._MODE_TABBED);
+    this._declareCustomTabs(config.customTabs);
+    this._setTabOrder(config.tabOrder);
+  }
+
+  private _setRenderMode(renderMode: string) {
     this._notify({
       event: 'set-mode',
       value: renderMode
     });
   };
 
-  setTabOrder(tabArray: string[]) {
+  private _setTabOrder(tabArray: string[]) {
     this._notify({
       event: 'set-tab-order',
       value: JSON.stringify(tabArray)
     });
   };
 
-  declareCustomTabs(tabArray: string[]) {
+  private _declareCustomTabs(tabArray: string[]) {
     this._notify({
       event: 'set-custom-tabs',
       value: JSON.stringify(tabArray)
