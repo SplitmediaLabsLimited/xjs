@@ -3,15 +3,15 @@
 import {MyEventEmitter} from './eventemitter';
 import {exec} from '../internal/internal';
 
-  /** This utility class exposes functionality for source plugin developers to
-   *  handle the configuration window for their source plugins.
-   *
-   *  Developers can use this class to specify how their configuration HTML
-   *  should be rendered within the built-in window in XSplit Broadcaster.
-   *  This class also serves as an event emitter for specific important events.
-   *
-   *  The framework also uses this class for its own internal purposes.
-   */
+/** This utility class exposes functionality for source plugin developers to
+ *  handle the configuration window for their source plugins.
+ *
+ *  Developers can use this class to specify how their configuration HTML
+ *  should be rendered within the built-in window in XSplit Broadcaster.
+ *  This class also serves as an event emitter for specific important events.
+ *
+ *  The framework also uses this class for its own internal purposes.
+ */
 export class SourceConfigWindow extends MyEventEmitter {
   private static _instance: SourceConfigWindow;
 

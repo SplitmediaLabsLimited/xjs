@@ -18,3 +18,4 @@ export * from './system/game';
 export * from './system/camera';
 
 export * from './context/config';
+export * from './context/source';

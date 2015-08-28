@@ -1,17 +1,17 @@
 // simple event emitter
 export class MyEventEmitter {
-  private handlers: { [listener: string]: Function[] } = {};
+  private _handlers: { [listener: string]: Function[] } = {};
 
   // allows duplicates
   on(event: string, handler: Function) {
-    if (this.handlers[event] === undefined) {
-      this.handlers[event] = [];
+    if (this._handlers[event] === undefined) {
+      this._handlers[event] = [];
     }
-    this.handlers[event].push(handler);
+    this._handlers[event].push(handler);
   }
 
   emit(event: string, ...params: any[]) {
-    for (let handler of this.handlers[event]) {
+    for (let handler of this._handlers[event]) {
       handler.apply(this, params);
     }
   }
