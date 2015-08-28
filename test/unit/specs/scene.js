@@ -7,6 +7,7 @@ describe('Scene', function() {
   var Scene = XJS.Scene;
   var Item = XJS.Item;
   var env = new window.Environment(XJS);
+  var environments = ['config', 'script', 'html'];
 
   var MAX_SCENES = 12;
 
@@ -75,6 +76,10 @@ describe('Scene', function() {
             setTimeout(function() {
               window.OnAsyncCallback(this, '0');
             }.bind(ctr),10);
+          } else if ('presetcount') {
+            setTimeout(function() {
+              window.OnAsyncCallback(this, '1');
+            }.bind(ctr),10);
           }
 
           return ctr;
@@ -86,6 +91,10 @@ describe('Scene', function() {
           if (/^presetname:/.test(funcName)) {
             setTimeout(function() {
               window.OnAsyncCallback(this, '2');
+            }.bind(ctr),10);
+          } else if (/^presetconfig:/.test(funcName)) {
+            setTimeout(function() {
+              window.OnAsyncCallback(this, '0');
             }.bind(ctr),10);
           }
 
@@ -198,9 +207,50 @@ describe('Scene', function() {
         });
     });
 
+    it('should be able to initialize all scenes', function(done) {
+      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+        env.set(environments[0]);
+        Scene.initializeScenes().then(function(success) {
+          expect(success).toBeBoolean();
+          env.set(environments[1]);
+          return Scene.initializeScenes();
+        }).then(function(success) {
+          expect(success).toBeBoolean();
+          env.set(environments[2]);
+          return Scene.initializeScenes();
+        }).then(function(success) {
+          done.fail('initializeScenes should throw an error on source plugin');
+        })
+        .catch(function(err) {
+          if (XJS.Environment.isSourceHtml()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      } else {
+        Scene.initializeScenes().then(function(success) {
+          if (XJS.Environment.isSourceHtml()) {
+            done.fail('initializeScenes should throw an error on source plugin');
+          } else {
+            expect(success).toBeBoolean();
+            done();
+          }
+        }).catch(function(err) {
+          if (XJS.Environment.isSourceHtml()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      }
+    });
+
     it('should be able to check if scene is empty or not', function(done) {
       scene.isEmpty().then(function(flag) {
-        expect(flag).toBeTypeOf('boolean');
+        expect(flag).toBeBoolean();
         done();
       });
     });
@@ -208,26 +258,43 @@ describe('Scene', function() {
     it('should be able to set the scene name', function(done) {
       var rand;
       var string = "";
-      var environments = ['config', 'script', 'html'];
 
       for (var i = 0; i < 5; i++) {
         rand = Math.floor(Math.random() * 25) + 65;
         string += String.fromCharCode(rand);
       }
 
-      env.set(environments[0]);
-      scene.setName(string).then(function(res) {
-        expect(res).toBeTypeOf('boolean');
-        env.set(environments[1]);
-        return scene.setName(string);
-      }).then(function(res) {
-        expect(res).toBeTypeOf('boolean');
-        env.set(environments[2]);
-        return scene.setName(string);
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+        scene.setName(string).then(function(res) {
+          if (XJS.Environment.isSourceHtml()) {
+            done.fail('setName should throw an error on source plugin');
+          } else {
+            expect(success).toBeBoolean();
+            done();
+          }
+        }).catch(function(err) {
+          if (XJS.Environment.isSourceHtml()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      } else {
+        env.set(environments[0]);
+        scene.setName(string).then(function(res) {
+          expect(res).toBeBoolean();
+          env.set(environments[1]);
+          return scene.setName(string);
+        }).then(function(res) {
+          expect(res).toBeBoolean();
+          env.set(environments[2]);
+          return scene.setName(string);
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      }
     });
   });
 });
