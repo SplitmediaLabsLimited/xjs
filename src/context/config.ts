@@ -27,20 +27,15 @@ export class SourceConfigWindow extends MyEventEmitter {
 
   constructor() {
     super();
-    window.addEventListener('message', function(event)
-    {
-      try
-      {
+    window.addEventListener('message', function(event) {
+      try {
         var data = JSON.parse(event.data);
-      }
-      catch (e)
-      {
+      } catch (e) {
         // syntax error probably happened, exit gracefully
         return;
       }
 
-      switch(data.event)
-      {
+      switch(data.event) {
         // currently, restrict messages to selected set
         case 'set-selected-tab':
           this.emit(data.event, data.value);
