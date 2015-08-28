@@ -267,6 +267,42 @@ export class Scene {
   };
 
   /**
+   * return: Promise<boolean>
+   *
+   * Load scenes that isn't yet initialized in XSplit Broadcaster
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.initializeScenes().then(function(val) {
+   *   if (val === true) {
+   *     // Now you know that all scenes are loaded :)
+   *   }
+   * })
+   * ```
+   */
+  static initializeScenes(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourceHtml()) {
+        reject(Error('function is not available for source'));
+      }
+
+      iApp.get('presetcount').then(cnt => {
+        if (Number(cnt) !== 12) {
+          // Insert an empty scene for scene #12
+          iApp
+            .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+            .then(res => {
+              resolve(res);
+            });
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
+
+  /**
    * Get the 1-indexed scene number of this scene object.
    *
    * #Return

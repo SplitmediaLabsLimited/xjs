@@ -18,7 +18,7 @@ export class App {
   static set(name: string, value: string): Promise<Boolean> {
     return new Promise(resolve => {
       exec('AppSetPropertyAsync', name, value, ret => {
-        resolve(ret === '0' ? false : true);
+        resolve(Number(ret) < 0 ? false : true);
       });
     });
   }
