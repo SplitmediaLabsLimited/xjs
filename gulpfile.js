@@ -7,10 +7,6 @@
     gulp        = require('gulp'),
     bower       = require('bower'),
     browserify  = require('browserify'),
-    through     = require('through2'),
-    fs          = require('fs'),
-    merge       = require('merge2'),
-    concat      = require('gulp-concat'),
     Dgeni       = require('dgeni'),
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync'),
@@ -28,16 +24,6 @@
       .require('./src/index.ts', {expose: 'xjs'})
       .bundle()
       .pipe(source('xjs.js'))
-      .pipe(gulp.dest('dist'));
-  });
-
-  gulp.task('merge', ['browserify'], function() {
-    var xjsFile = gulp.src(BUNDLE_PATH);
-
-    var emitterJS = gulp.src(JS_DEPENDENCY);
-
-    return merge(emitterJS, xjsFile)
-      .pipe(concat('xjs.js'))
       .pipe(gulp.dest('dist'));
   });
 
@@ -119,5 +105,5 @@
 
   gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 
-  gulp.task('default', ['browserify', 'merge']);
+  gulp.task('default', ['browserify']);
 }());

@@ -1,6 +1,6 @@
-/// <reference path='../../defs/es6-promise.d.ts' />
+/// <reference path="../../defs/es6-promise.d.ts" />
 
-import EventEmitter = require('wolfy87-eventemitter');
+import {MyEventEmitter} from './eventemitter';
 import {exec} from '../internal/internal';
 
   /** This utility class exposes functionality for source plugin developers to
@@ -12,7 +12,7 @@ import {exec} from '../internal/internal';
    *
    *  The framework also uses this class for its own internal purposes.
    */
-export class SourceConfigWindow extends EventEmitter {
+export class SourceConfigWindow extends MyEventEmitter {
   private static _instance: SourceConfigWindow;
 
   static getInstance() {
