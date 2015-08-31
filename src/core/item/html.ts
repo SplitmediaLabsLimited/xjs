@@ -8,13 +8,14 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
-export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
   getURL(): Promise<string> {
     return new Promise(resolve => {
@@ -349,6 +350,17 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set item's transition time in milliseconds
    */
   setTransitionTime: (value: number) => void;
+
+  // ItemConfigurable
+
+  /**
+   * return: Promise<any>
+   *
+   * Gets the configuration JSON
+   */
+  loadConfig: () => Promise<any>;
+  saveConfig: (configObj: any) => Promise<HTMLItem>;
+  requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
 }
 
-applyMixins(HTMLItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(HTMLItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemConfigurable]);
