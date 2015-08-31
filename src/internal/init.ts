@@ -5,6 +5,8 @@ import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
 
+import '../util/ready';
+
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
   if (path.substring(0, 7) === 'http://' ||

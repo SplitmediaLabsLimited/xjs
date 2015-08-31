@@ -19,3 +19,5 @@ export * from './system/camera';
 
 export * from './context/config';
 export * from './context/source';
+
+export {ready} from './util/ready';
