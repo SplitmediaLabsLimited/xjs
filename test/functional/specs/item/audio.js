@@ -24,7 +24,7 @@
   });
 
   Rose.createTab({
-    name: 'PLG-120',
+    name: 'AudioItem',
     buttons: [
       {
         name: 'toggleAudioItem',
@@ -40,7 +40,7 @@
           }
           audioItem.getName().then(function(audioName) {
             console.trace(audioName);
-            Rose.output(audioName);            
+            Rose.output(audioName);
           });
         }
       },
