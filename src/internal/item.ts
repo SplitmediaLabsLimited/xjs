@@ -68,7 +68,7 @@ export class Item {
         name,
         value,
         val => {
-          resolve(val === '1');
+          resolve(!(Number(val) < 0));
         });
     });
   }
