@@ -28,6 +28,7 @@ export class Item {
   protected type: ItemTypes;
   protected value: any;
   private name: string;
+  private cname: string;
   private sceneID: number;
   private keepLoaded: boolean;
 
@@ -37,6 +38,7 @@ export class Item {
     props = props ? props : {};
 
     this.name = props['name'];
+    this.cname = props['cname'];
     this._id = props['id'];
     this.sceneID = props['sceneID'];
     this.value = props['value'];
@@ -62,6 +64,28 @@ export class Item {
 
       iItem.get('prop:name', slot).then(val => {
         this.name = val;
+
+        resolve(val);
+      });
+    });
+  }
+
+  /** Sets the custom name of the item */
+  setCustomName(value: string) {
+    let slot = iItem.attach(this._id);
+
+    this.cname = value;
+
+    iItem.set('prop:cname', this.cname, slot);
+  }
+
+  /** Gets the custom name of the item */
+  getCustomName(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:cname', slot).then(val => {
+        this.cname = val;
 
         resolve(val);
       });
@@ -167,6 +191,10 @@ export class Item {
     item['item'] = this.value;
     item['type'] = this.type;
     item['selfclosing'] = true;
+
+    if (this.cname) {
+      item['cname'] = this.cname;
+    }
 
     return XML.parseJSON(item);
   }
