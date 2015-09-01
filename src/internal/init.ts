@@ -41,33 +41,34 @@ function resolveRelativePath(path: string, base: string) {
 function readMetaConfigUrl(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourceHtml()) {
+      var configObj = {};      
       // initialize config URL if necessary
-      exec('GetLocalPropertyAsync',
-        'prop:BrowserConfiguration',
-        result => {
-          var configObj = JSON.parse(decodeURIComponent(result));
-          if (configObj === null) {
-            configObj = {};
-          }
-          var metas = document.getElementsByTagName("meta");
-          for (var i = metas.length - 1; i >= 0; i--) {
-            if (metas[i].name === 'xsplit:config-url') {
-              let url = resolveRelativePath(
-                metas[i].content, window.location.href);
-              configObj.configUrl = url;
-              exec('SetBrowserProperty',
-                'Configuration',
-                JSON.stringify(configObj));
 
-              var persist = {
-                configUrl: url
-              };
-              Global.setPersistentConfig(persist);
-              break;
-            }
+      try {
+        var config = exec('GetConfiguration');
+        configObj = JSON.parse(config);
+      }
+      catch(e) {
+
+      }
+      finally {
+        var metas = document.getElementsByTagName("meta");
+        for (var i = metas.length - 1; i >= 0; i--) {
+          if (metas[i].name === 'xsplit:config-url') {
+            let url = resolveRelativePath(
+              metas[i].content, window.location.href);
+            configObj['configUrl'] = url;
+
+            var persist = {
+              configUrl: url
+            };
+            Global.setPersistentConfig(persist);
+            break;
           }
-          resolve();
-      });
+        }
+        exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
+        resolve();
+      }
     } else {
       resolve();
     }
