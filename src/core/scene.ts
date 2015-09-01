@@ -109,7 +109,7 @@ export class Scene {
    */
   static getActiveScene(): Promise<Scene> {
     return new Promise(resolve => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
           if (curScene.children.length > 0) {
@@ -283,7 +283,7 @@ export class Scene {
    */
   static initializeScenes(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       }
 
@@ -361,7 +361,7 @@ export class Scene {
    */
   setName(name: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
         iApp.set('presetname:' + this.id, name).then(value => {

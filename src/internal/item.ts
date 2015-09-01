@@ -22,7 +22,7 @@ export class Item {
       }
       Item.lastSlot = slot;
       Item.itemSlotMap[slot] = itemID;
-      if (Environment.isScriptPlugin()) {
+      if (Environment.isExtension()) {
         exec('SearchVideoItem' +
           (String(slot) === '0' ? '' : (slot + 1)),
           itemID

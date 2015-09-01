@@ -488,7 +488,7 @@ export class App{
     flags?: number,
     title?: string
   ): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
       var params: any[] = ['NewDialog', url, '', width + ',' + height];
@@ -513,7 +513,7 @@ export class App{
    * ```
    */
   newAutoDialog(url: string, width: number = 300, height: number = 300): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
       exec('NewAutoDialog', url, width + ',' + height);
@@ -526,7 +526,7 @@ export class App{
    * Close a created dialog
    */
   closeDialog(): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else {
       exec('CloseDialog');

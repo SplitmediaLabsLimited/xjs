@@ -204,10 +204,10 @@ export class Item {
    * from the config window) */
   static getCurrentSource(): Promise<Item> {
     return new Promise((resolve, reject) => {
-      if (Environment.isScriptPlugin()) {
-        reject(Error('Script plugins do not have sources ' +
+      if (Environment.isExtension()) {
+        reject(Error('Extensions do not have sources ' +
           'associated with them.'));
-      } else if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
+      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
         Scene.searchAllForItemId(iItem.getBaseID()).then(items => {
           resolve(items[0]); // this should always exist
         });

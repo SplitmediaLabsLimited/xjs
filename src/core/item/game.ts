@@ -104,7 +104,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
         reject(Error('Current item should be a game source'));
       }
 
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
         );
