@@ -5,6 +5,7 @@ import {Item as iItem} from '../../internal/item';
 import {IItemAudio, ItemAudio} from './iaudio';
 import {Scene} from '../scene';
 import {Item} from './item';
+import {Environment} from '../environment';
 
 /**
  * The AudioItem class represents an audio device that has been added
@@ -24,16 +25,20 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
+      if (Environment.isSourceHtml()) {
+        reject(Error('Source plugins cannot update audio sources properties'));
+      } else {
+        let slot = iItem.attach(this._id);
 
-      iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
-      .then(res => {
-        if (!res) {
-          reject(Error('Item set property failed'));
-        }
-
-         resolve(this);
-      });
+        iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+        .then(res => {
+          if (!res) {
+            reject(Error('Item set property failed'));
+          } else {
+            resolve(this);
+          }
+        });
+      }
     });
   }
 
@@ -49,24 +54,26 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilenceThreshold(value: number): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      if (typeof value !== 'number') {
+      if (Environment.isSourceHtml()) {
+        reject(Error('Source plugins cannot update audio sources properties'));
+      } else if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
       } else if (value % 1 !== 0 || value < 0 || value > 128) {
         reject(
           Error('Only integers in the range 0-128 are acceptable for threshold')
         );
+      } else {
+        let slot = iItem.attach(this._id);
+
+        iItem.set('prop:AudioGain', String(value), slot).then(res => {
+          if (!res) {
+            reject(Error('Item set property failed'));
+          } else {
+            resolve(this);
+          }
+        });
       }
-
-      let slot = iItem.attach(this._id);
-
-      iItem.set('prop:AudioGain', String(value), slot).then(res => {
-        if (!res) {
-          reject(Error('Item set property failed'));
-        }
-
-        resolve(this);
-      });
-    })
+    });
   }
 
   getSilencePeriod(): Promise<number> {
@@ -81,23 +88,25 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilencePeriod(value: number): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      if (typeof value !== 'number') {
+      if (Environment.isSourceHtml()) {
+        reject(Error('Source plugins cannot update audio sources properties'));
+      } else if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
       } else if (value % 1 !== 0 || value < 0 || value > 10000) {
         reject(
           Error('Only integers in the range 0-10000 are acceptable for period')
         );
+      } else {
+        let slot = iItem.attach(this._id);
+
+        iItem.set('prop:AudioGainLatency', String(value), slot).then(res => {
+          if (!res) {
+            reject(Error('Item set property failed'));
+          }
+
+          resolve(this);
+        });
       }
-
-      let slot = iItem.attach(this._id);
-
-      iItem.set('prop:AudioGainLatency', String(value), slot).then(res => {
-        if (!res) {
-          reject(Error('Item set property failed'));
-        }
-
-        resolve(this);
-      });
     });
   }
 
