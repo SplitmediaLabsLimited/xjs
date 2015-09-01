@@ -14,11 +14,11 @@ export interface IItemAudio {
 }
 
 export class ItemAudio implements IItemAudio {
-  private id: string;
+  private _id: string;
 
   getVolume(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:volume', slot).then(val => {
         resolve(Number(val));
@@ -27,7 +27,7 @@ export class ItemAudio implements IItemAudio {
   }
 
   setVolume(value: number) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     value = value < 0 ? 0 : value > 100 ? 100 : value;
 
@@ -36,7 +36,7 @@ export class ItemAudio implements IItemAudio {
 
   isMute(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:mute', slot).then(val => {
         resolve(val === '1');
@@ -45,14 +45,14 @@ export class ItemAudio implements IItemAudio {
   }
 
   setMute(value: boolean) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:mute', (value ? '1' : '0'), slot);
   }
 
   getAudioOffset(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:AudioDelay', slot).then(val => {
         resolve(Number(val));
@@ -61,14 +61,14 @@ export class ItemAudio implements IItemAudio {
   }
 
   setAudioOffset(value: number) {
-    let slot = iItem.attach(this.id);
+    let slot = iItem.attach(this._id);
 
-    iItem.set('prop:mute', String(value), slot);
+    iItem.set('prop:AudioDelay', String(value), slot);
   }
 
-  getAudioOutput(): Promise<boolean> {
+  isStreamOnlyEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this.id);
+      let slot = iItem.attach(this._id);
 
       iItem.get('prop:sounddev', slot).then(val => {
         resolve(val === '1');
@@ -76,8 +76,8 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setAudioOutput(value: boolean) {
-    let slot = iItem.attach(this.id);
+  setStreamOnlyEnabled(value: boolean) {
+    let slot = iItem.attach(this._id);
 
     iItem.set('prop:sounddev', (value ? '1' : '0'), slot);
   }
