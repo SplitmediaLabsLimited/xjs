@@ -6,6 +6,7 @@ import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
 import {CameraItem} from './item/camera';
+import {AudioItem} from './item/audio';
 
 export class Scene {
   private id: number;
@@ -361,9 +362,15 @@ export class Scene {
       if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
         typeResolve(new GameItem(jsonArr[index]));
         } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
-          jsonArr[index]['sounddev'] === '0') {
+          jsonArr[index]['item'].substring(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
             typeResolve(new CameraItem(jsonArr[index]));
-        } else {
+        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
+          jsonArr[index]['item'].substring(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+      typeResolve(new AudioItem(jsonArr[index]));
+        }
+        else {
             typeResolve(new Item(jsonArr[index]));
           }
         });

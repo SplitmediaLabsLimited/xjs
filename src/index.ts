@@ -10,8 +10,10 @@ export * from './core/transition';
 export * from './core/item/item';
 export * from './core/item/camera';
 export * from './core/item/game';
+export * from './core/item/audio';
 
 export * from './system/system';
 export * from './system/audio';
 export * from './system/game';
 export * from './system/camera';
+export * from './system/microphone';
