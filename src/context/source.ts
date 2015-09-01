@@ -26,8 +26,6 @@ export class SourcePluginWindow extends MyEventEmitter {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
           this.emit('save-config', message.data);
-        } else if (message.request === 'revertConfig') {
-          this.emit('revert-config', this.lastSavedConfig);
         }
       }
     });
