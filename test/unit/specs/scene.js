@@ -288,8 +288,11 @@ describe('Scene', function() {
           return scene.setName(string);
         }).then(function(res) {
           expect(res).toBeBoolean();
-          env.set(environments[2]);
+          //env.set(environments[2]);
           return scene.setName(string);
+        }).then(function(res) {
+          expect(res).toBeBoolean();
+          done();                    
         }).catch(function(err) {
           expect(err).toEqual(jasmine.any(Error));
           done();
