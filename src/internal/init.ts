@@ -4,6 +4,7 @@ import {Environment} from '../core/environment';
 import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
+import {SourceConfigWindow} from '../context/config';
 
 import '../util/ready';
 
@@ -93,9 +94,23 @@ function getCurrentSourceID(): Promise<any> {
   });
 }
 
+function informWhenConfigLoaded(): Promise<any> {
+  return new Promise(resolve => {
+    if (Environment.isSourceConfig()) {
+      window.addEventListener('load', () => {
+        SourceConfigWindow.getInstance().emit('config-load');
+        resolve();
+      });
+    } else {
+      resolve(); // other environments don't care if config iframe has loaded
+    }
+  });
+}
+
 function init(): void {
   Global.addInitializationPromise(readMetaConfigUrl());
   Global.addInitializationPromise(getCurrentSourceID());
+  Global.addInitializationPromise(informWhenConfigLoaded());
 
   Promise.all(Global.getInitializationPromises()).then(() => {
     document.dispatchEvent(new CustomEvent('xsplit-js-ready', {

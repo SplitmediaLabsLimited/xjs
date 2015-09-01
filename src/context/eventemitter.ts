@@ -11,6 +11,10 @@ export class MyEventEmitter {
   }
 
   emit(event: string, ...params: any[]) {
+    if (this._handlers[event] === undefined) {
+      return;
+    }
+
     for (let handler of this._handlers[event]) {
       handler.apply(this, params);
     }

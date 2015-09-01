@@ -46,11 +46,12 @@ export class SourceConfigWindow extends MyEventEmitter {
               result  : data.value.result
             });
           break;
-        case 'config-load':
-          this.emit(data.event);
-          break;
       }
     }.bind(this));
+
+    this.on('config-load', () => {
+      this._informConfigLoaded();
+    });
 
     SourceConfigWindow._instance = this;
   }
@@ -90,6 +91,10 @@ export class SourceConfigWindow extends MyEventEmitter {
       value: JSON.stringify(tabArray)
     });
   };
+
+  private _informConfigLoaded() {
+    this._notify({ event: 'load' });
+  }
 
   resizeConfig(width: number, height: number) {
     exec('SetDialogSize', width, height);
