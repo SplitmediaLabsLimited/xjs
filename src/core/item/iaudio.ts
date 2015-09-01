@@ -9,8 +9,8 @@ export interface IItemAudio {
   setMute(value: boolean);
   getAudioOffset(): Promise<number>;
   setAudioOffset(value: number);
-  getAudioOutput(): Promise<boolean>;
-  setAudioOutput(value: boolean);
+  isStreamOnlyEnabled(): Promise<boolean>;
+  setStreamOnlyEnabled(value: boolean);
 }
 
 export class ItemAudio implements IItemAudio {

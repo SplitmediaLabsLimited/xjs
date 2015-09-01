@@ -122,10 +122,10 @@ export class AudioItem extends Item implements IItemAudio {
   setAudioOffset: (value: number) => void;
 
   /** Checks if audio is also output to system sound */
-  getAudioOutput: () => Promise<boolean>;
+  isStreamOnlyEnabled: () => Promise<boolean>;
 
   /** Sets whether audio should also be output to system sound */
-  setAudioOutput: (value: boolean) => void;
+  setStreamOnlyEnabled: (value: boolean) => void;
 }
 
 applyMixins(Item, [ItemAudio]);
