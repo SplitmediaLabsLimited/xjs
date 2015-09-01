@@ -32,6 +32,10 @@ describe('Item', function() {
             local.name = val;
           break;
 
+          case 'prop:cname':
+            local.cname = val;
+          break;
+
           case 'prop:item':
             local.item = val;
           break;
@@ -50,6 +54,12 @@ describe('Item', function() {
           case 'prop:name':
             setTimeout(function() {
               window.OnAsyncCallback(rand, local.name);
+            }, 10);
+          break;
+
+          case 'prop:cname':
+            setTimeout(function() {
+              window.OnAsyncCallback(rand, local.cname);
             }, 10);
           break;
 
@@ -89,6 +99,15 @@ describe('Item', function() {
     var word = randomWord(5);
     Item.setName(word);
     Item.getName().then(function(val) {
+      expect(val).toEqual(word);
+      done();
+    });
+  });
+
+  it('should be able to set and get the custom name', function(done) {
+    var word = randomWord(5);
+    Item.setCustomName(word);
+    Item.getCustomName().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
