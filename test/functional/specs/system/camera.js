@@ -14,7 +14,7 @@
   });
 
   Rose.createTab({
-    name: 'PLG-112',
+    name: 'CameraDevice',
     buttons: [
       {
         name: 'getID',

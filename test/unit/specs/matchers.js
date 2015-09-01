@@ -107,15 +107,18 @@ beforeEach(function() {
         compare: function(actual, expected) {
           var pass = (actual.length > 0);
           var methods = expected.split(',');
+          var missingMethod = '';
 
           for (var i = 0; i < methods.length; i++) {
             var testMethod = methods[i].trim();
 
             pass = (typeof actual[testMethod] === 'function');
-            if (!pass)
+            if (!pass) {
+              missingMethod = testMethod;
               break;
+            }
           }
-          return { pass: pass };
+          return { pass: pass, message: 'Missing method ' + missingMethod };
         }
       };
     },
@@ -133,11 +136,20 @@ beforeEach(function() {
 
     toBeBoolean : function () {
       return {
-        compare : function (actual, expected) {
+        compare : function (actual) {
           return {
             pass : (typeof actual === 'boolean'),
             message : 'Expected ' + actual + ' is not boolean'
           };
+        }
+      };
+    },
+
+    toBeEmptyArray: function() {
+      return  {
+        compare: function(actual) {
+          var pass = (actual instanceof Array) && (actual.length === 0);
+          return { pass : pass };
         }
       };
     }

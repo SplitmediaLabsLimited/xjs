@@ -114,10 +114,18 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
 
           if (exportDoc.docType == 'enum') {
             exportDoc.members = [];
+            var ctr = -1;
             for (var etype in resolvedExport.exports) {
+              if (resolvedExport.exports[etype].declarations[0]
+                .initializer !== undefined) {
+                ctr = resolvedExport.exports[etype].declarations[0]
+                  .initializer.text;
+              } else {
+                ctr++;
+              }
+
               exportDoc.members.push({
-                id: resolvedExport.exports[etype]
-                  .declarations[0].initializer.text,
+                id: ctr,
                 name: etype
               });
             }

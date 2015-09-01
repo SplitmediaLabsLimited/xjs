@@ -1,14 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {exec} from './internal';
-import {Environment} from './environment';
+import {Environment} from '../core/environment';
 
 export class Item {
-  private name: string;
-  private value: string;
-  private id: string;
-  private sceneID: Number;
-  private viewID: Number;
 
   private static baseID: string;
 
@@ -17,27 +12,8 @@ export class Item {
   private static itemSlotMap: string[] = [];
   private static islockedSourceSlot: boolean = false;
 
-  constructor(props: any) {
-    var props = props || {};
-    this.name       = props.name;
-    this.value      = props.item ;
-    this.id         = props.id;
-    this.sceneID    = props.sceneID;
-    this.viewID     = props.viewID;
-  }
-
-
   /** Prepare an item for manipulation */
-  static attach(itemID: string, view: number): number {
-    if (Environment.isScriptPlugin()) {
-      return Item.cacheItemID(itemID);
-    } else {
-      return Item.cacheItemID(itemID, view);
-    }
-  }
-
-  // returns 0-indexed slot where item ID is cached/attached
-  private static cacheItemID(itemID: string, viewID?: number): number {
+  static attach(itemID: string): number {
     let slot = Item.itemSlotMap.indexOf(itemID);
     if (slot === -1) {
       slot = ++Item.lastSlot % Item.MAX_SLOTS;
@@ -46,21 +22,22 @@ export class Item {
       }
       Item.lastSlot = slot;
       Item.itemSlotMap[slot] = itemID;
-      if (viewID === undefined) {
+      if (Environment.isScriptPlugin()) {
         exec('SearchVideoItem' +
           (String(slot) === '0' ? '' : (slot + 1)),
           itemID
-          );
+        );
       } else {
         exec('AttachVideoItem' +
           (String(slot) === '0' ? '' : (slot + 1)),
           itemID
-          );
+        );
       }
     }
     return slot;
   }
 
+  /** used for source plugins. lock an id to slot 0 */
   static lockSourceSlot(itemID: string) {
     if (itemID !== undefined) {
       Item.islockedSourceSlot = true;
@@ -73,11 +50,11 @@ export class Item {
 
   /** Get an item's local property asynchronously */
   static get(name: string, slot: number = 0): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       exec('GetLocalPropertyAsync' +
         (String(slot) === '0' ? '' : slot + 1),
         name,
-        (val) => {
+        val => {
           resolve(val);
         });
     });
