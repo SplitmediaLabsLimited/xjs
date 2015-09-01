@@ -304,8 +304,8 @@ describe('AudioItem', function() {
         'setVolume',
         'getAudioOffset',
         'setAudioOffset',
-        'getAudioOutput',
-        'setAudioOutput'
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled'
       ].join(','));
     });
   });
