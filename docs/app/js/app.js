@@ -1,6 +1,5 @@
 angular.module('app', [
-  'navigation-modules',
-  'navigation-guides'
+  'navigation-modules'
 ])
 
 .directive('ngEnter', function() {
@@ -81,7 +80,7 @@ angular.module('app', [
 }])
 
 .controller('NavController', ['$rootScope', '$scope',  '$location', 'MODULES',
-  'GUIDES', function($rootScope, $scope, $location, MODULES, GUIDES) {
+  function($rootScope, $scope, $location, MODULES) {
     var self = this;
 
     this.sections = MODULES.sections;
