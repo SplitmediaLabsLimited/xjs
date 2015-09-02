@@ -6,13 +6,13 @@ import {Rectangle} from '../../util/rectangle';
 
 export interface IItemLayout {
   isKeepAspectRatio(): Promise<boolean>;
-  setKeepAspectRatio(value: boolean);
+  setKeepAspectRatio(value: boolean): Promise<IItemLayout>;
   isPositionLocked(): Promise<boolean>;
-  setPositionLocked(value: boolean);
+  setPositionLocked(value: boolean): Promise<IItemLayout>;
   isEnhancedResizeEnabled(): Promise<boolean>;
-  setEnhancedResizeEnabled(value: boolean);
+  setEnhancedResizeEnabled(value: boolean): Promise<IItemLayout>;
   getPosition(): Promise<Rectangle>;
-  setPosition(value: Rectangle);
+  setPosition(value: Rectangle): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {
@@ -28,9 +28,13 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setKeepAspectRatio(value: boolean) {
-    let slot = iItem.attach(this._id);
-    iItem.set('prop:keep_ar', value ? '1' : '0', slot);
+  setKeepAspectRatio(value: boolean): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:keep_ar', value ? '1' : '0', slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   isPositionLocked(): Promise<boolean> {
@@ -42,9 +46,13 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setPositionLocked(value: boolean) {
-    let slot = iItem.attach(this._id);
-    iItem.set('prop:lockmove', value ? '1' : '0', slot);
+  setPositionLocked(value: boolean): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:lockmove', value ? '1' : '0', slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   isEnhancedResizeEnabled(): Promise<boolean> {
@@ -56,9 +64,13 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setEnhancedResizeEnabled(value: boolean) {
-    let slot = iItem.attach(this._id);
-    iItem.set('prop:mipmaps', value ? '1' : '0', slot);
+  setEnhancedResizeEnabled(value: boolean): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:mipmaps', value ? '1' : '0', slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   getPosition():Promise<Rectangle> {
@@ -73,9 +85,13 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setPosition(value: Rectangle) {
-    let slot = iItem.attach(this._id);
-    this.position = value;
-    iItem.set('prop:pos', value.toCoordinateString(), slot);
+  setPosition(value: Rectangle): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      this.position = value;
+      iItem.set('prop:pos', value.toCoordinateString(), slot).then(() => {
+        resolve(this);
+      });
+  });
   }
 }
