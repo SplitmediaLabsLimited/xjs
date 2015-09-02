@@ -16,8 +16,8 @@ window.Environment = function(xjs) {
  *
  * ###Valid Parameter Values
  *
- * - html
- * - script
+ * - plugin
+ * - extension
  * - config
  */
 Environment.prototype.set = function(env) {

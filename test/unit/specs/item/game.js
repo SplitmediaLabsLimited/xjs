@@ -19,6 +19,7 @@ describe('GameItem', function() {
   var showMouseSet = false;
   var offlineImageSet = false;
   var currentGameItem;
+  var environments = ['config', 'extension', 'plugin'];
   var parseXml = function(xmlStr)
   {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
@@ -154,7 +155,7 @@ describe('GameItem', function() {
 
   beforeEach(function(done) {
     enumerated = [];
-    env.set('script');
+    env.set(environments[1]);
     propTypeCount = 0;
     if (!isXSplit) {
       spyOn(window.external, 'AppGetPropertyAsync')
@@ -366,7 +367,7 @@ describe('GameItem', function() {
         var randomBoolean = !!Math.floor(Math.random() * 2);
         currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
         if (!isXSplit) {
-          expect(specialOptimizationSet).toBe(true);  
+          expect(specialOptimizationSet).toBe(true);
         }
         currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);

@@ -7,7 +7,7 @@ describe('Scene', function() {
   var Scene = XJS.Scene;
   var Item = XJS.Item;
   var env = new window.Environment(XJS);
-  var environments = ['config', 'script', 'html'];
+  var environments = ['config', 'extension', 'plugin'];
 
   var MAX_SCENES = 12;
 
