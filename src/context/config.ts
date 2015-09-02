@@ -14,7 +14,7 @@ import {exec} from '../internal/internal';
  */
 export class SourceConfigWindow extends MyEventEmitter {
   private static _instance: SourceConfigWindow;
-
+  private _mode;
   private static _MODE_FULL: string = 'full';
   private static _MODE_TABBED: string = 'embedded';
 
@@ -72,6 +72,7 @@ export class SourceConfigWindow extends MyEventEmitter {
   }
 
   private _setRenderMode(renderMode: string) {
+    this._mode = renderMode;
     this._notify({
       event: 'set-mode',
       value: renderMode
@@ -97,14 +98,19 @@ export class SourceConfigWindow extends MyEventEmitter {
   }
 
   resizeConfig(width: number, height: number) {
-    exec('SetDialogSize', width, height);
-    this._notify({
-      event: 'resize',
-      value: JSON.stringify({
-        width: width,
-        height: height
-      })
-    });
+    
+    if (this._mode === 'full') {
+      this._notify({
+        event: 'resize',
+        value: JSON.stringify({
+          width: width,
+          height: height
+        })
+      });
+    }
+    else if (this._mode !== 'embedded'){
+      exec('SetDialogSize', String(width), String(height));
+    }
   };
 
   closeConfig() {
