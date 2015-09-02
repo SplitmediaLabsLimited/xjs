@@ -33,4 +33,11 @@ export class IO {
       });
     });
   }
+
+  /** Opens a URL in the user's default browser. URLs need to
+   *
+   */
+  static openUrl(url: string) {
+    exec('OpenUrl', url);
+  }
 }
