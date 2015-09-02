@@ -116,6 +116,7 @@ describe('GameItem', function() {
 
   var setLocal = function(funcName, val) {
     rand += 1;
+    var irand = rand;
 
     switch (funcName) {
       case 'GameCapSurfSharing':
@@ -149,6 +150,10 @@ describe('GameItem', function() {
         }
       break;
     }
+
+    setTimeout(function() {
+      window.OnAsyncCallback(irand, '0');
+    },10);
 
     return rand;
   };

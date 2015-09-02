@@ -106,33 +106,27 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
     return new Promise((resolve, reject) => {
       if (this.type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
-      }
-
-      if (Environment.isSourcePlugin()) {
+      } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
         );
-      }
-
-      if (!(this.value instanceof XML)) {
+      } else if (!(this.value instanceof XML)) {
         this.getValue().then(() => {
           this.setOfflineImage(path).then(itemObj => {
             resolve(itemObj);
-          })
+          });
         });
-        return;
+      } else {
+        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+        if (regExp.test(path) || path === '') {
+          var valueObj = JXON.parse(this.value.toString());
+          valueObj['replace'] = path;
+          this.setValue(XML.parseJSON(valueObj)).then(() => {
+            resolve(this);
+          });
+        }
       }
-
-      var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-        '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-
-      if (regExp.test(path) || path === '') {
-        var valueObj = JXON.parse(this.value.toString());
-        valueObj['replace'] = path;
-        this.setValue(XML.parseJSON(valueObj));
-      }
-
-      resolve(this);
     });
   }
 
