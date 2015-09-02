@@ -16,7 +16,6 @@ export class AudioItem extends Item implements IItemAudio {
   isSilenceDetectionEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:AudioGainEnable', slot).then(val => {
         resolve(val === '1');
       });
@@ -29,7 +28,6 @@ export class AudioItem extends Item implements IItemAudio {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
         .then(res => {
           if (!res) {
@@ -45,7 +43,6 @@ export class AudioItem extends Item implements IItemAudio {
   getSilenceThreshold(): Promise<number> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:AudioGain', slot).then(val => {
         resolve(Number(val));
       });
@@ -64,7 +61,6 @@ export class AudioItem extends Item implements IItemAudio {
         );
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:AudioGain', String(value), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
@@ -79,7 +75,6 @@ export class AudioItem extends Item implements IItemAudio {
   getSilencePeriod(): Promise<number> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:AudioGainLatency', slot).then(val => {
         resolve(Number(val));
       });
@@ -98,13 +93,12 @@ export class AudioItem extends Item implements IItemAudio {
         );
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:AudioGainLatency', String(value), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
+          } else {
+            resolve(this);
           }
-
-          resolve(this);
         });
       }
     });
@@ -119,22 +113,22 @@ export class AudioItem extends Item implements IItemAudio {
   isMute:   () => Promise<boolean>;
 
   /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
-  setVolume: (value: number) => void;
+  setVolume: (value: number) => Promise<AudioItem>;
 
   /** Set item's Mute property to ON or OFF */
-  setMute:  (value: boolean) => void;
+  setMute:  (value: boolean) => Promise<AudioItem>;
 
   /** Gets delay in milliseconds */
   getAudioOffset: () => Promise<number>;
 
   /** Sets delay in milliseconds */
-  setAudioOffset: (value: number) => void;
+  setAudioOffset: (value: number) => Promise<AudioItem>;
 
   /** Checks if audio is also output to system sound */
   isStreamOnlyEnabled: () => Promise<boolean>;
 
   /** Sets whether audio should also be output to system sound */
-  setStreamOnlyEnabled: (value: boolean) => void;
+  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
 }
 
 applyMixins(Item, [ItemAudio]);

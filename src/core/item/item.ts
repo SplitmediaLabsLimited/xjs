@@ -49,44 +49,44 @@ export class Item {
   }
 
   /** Sets the name of the item */
-  setName(value: string) {
-    let slot = iItem.attach(this._id);
-
-    this.name = value;
-
-    iItem.set('prop:name', this.name, slot);
+  setName(value: string): Promise<Item> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      this.name = value;
+      iItem.set('prop:name', this.name, slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /** Gets the current name of the item */
   getName(): Promise<string> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:name', slot).then(val => {
         this.name = val;
-
         resolve(val);
       });
     });
   }
 
   /** Sets the custom name of the item */
-  setCustomName(value: string) {
-    let slot = iItem.attach(this._id);
-
-    this.cname = value;
-
-    iItem.set('prop:cname', this.cname, slot);
+  setCustomName(value: string): Promise<Item> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      this.cname = value;
+      iItem.set('prop:cname', this.cname, slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /** Gets the custom name of the item */
   getCustomName(): Promise<string> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:cname', slot).then(val => {
         this.cname = val;
-
         resolve(val);
       });
     });
@@ -96,10 +96,8 @@ export class Item {
   getValue(): Promise<string|XML> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:item', slot).then(val => {
         val = (val === 'null') ? '' : val;
-
         if (val === '') { // don't return XML for null values
           this.value = '';
           resolve(val);
@@ -118,52 +116,52 @@ export class Item {
   }
 
   /** Set the video item's main definition */
-  setValue(value: string | XML) {
-    let slot = iItem.attach(this._id);
-
-    var val: string = (typeof value === 'string') ?
-      <string> value : (<XML> value).toString();
-
-    if (typeof value !== 'string') { // XML
-      this.value = JXON.parse(val);
-    } else {
-      this.value = val;
-    }
-
-    iItem.set('prop:item', val, slot);
+  setValue(value: string | XML): Promise<Item> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      var val: string = (typeof value === 'string') ?
+        <string> value : (<XML> value).toString();
+      if (typeof value !== 'string') { // XML
+        this.value = JXON.parse(val);
+      } else {
+        this.value = val;
+      }
+      iItem.set('prop:item', val, slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /** Check if item is kept loaded in memory */
   getKeepLoaded(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:keeploaded', slot).then(val => {
         this.keepLoaded = (val === '1');
-
         resolve(this.keepLoaded);
       });
     });
   }
 
   /** Set Keep loaded option to ON or OFF */
-  setKeepLoaded(value: boolean) {
-    let slot = iItem.attach(this._id);
-
-    this.keepLoaded = value;
-
-    iItem.set('prop:keeploaded', (this.keepLoaded ? '1' : '0'), slot);
+  setKeepLoaded(value: boolean): Promise<Item> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      this.keepLoaded = value;
+      iItem.set('prop:keeploaded', (this.keepLoaded ? '1' : '0'), slot)
+        .then(() => {
+          resolve(this);
+      });
+    });
   }
 
   /** Get the type of the item */
   getType(): Promise<ItemTypes> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:type', slot).then(val => {
-                this.type = ItemTypes[ItemTypes[Number(val)]];
-
-                resolve(this.type);
+        this.type = ItemTypes[ItemTypes[Number(val)]];
+        resolve(this.type);
       });
     });
   }

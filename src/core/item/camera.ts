@@ -46,7 +46,6 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:item', slot).then(val => {
         resolve(val);
       });
@@ -88,28 +87,28 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *
    * Set Aspect Ratio to ON or OFF
    */
-  setKeepAspectRatio:       (value: boolean) => void;
+  setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
 
   /**
    * param: value<boolean>
    *
    * Set Position Lock to ON or OFF
    */
-  setPositionLocked:        (value: boolean) => void;
+  setPositionLocked:        (value: boolean) => Promise<CameraItem>;
 
   /**
    * param: value<boolean>
    *
    * Set Enhance Resize to ON or OFF
    */
-  setEnhancedResizeEnabled:  (value: boolean) => void;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
 
   /**
    * param: value<Rectangle>
    *
    * Set Item position
    */
-  setPosition:              (value: Rectangle) => void;
+  setPosition:              (value: Rectangle) => Promise<CameraItem>;
 
   // ItemColor
 
@@ -160,42 +159,42 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *
    * Set Item Transparency
    */
-  setTransparency: (value: number) => void;
+  setTransparency: (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Brightness
    */
-  setBrightness:   (value: number) => void;
+  setBrightness:   (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Contrast
    */
-  setContrast:     (value: number) => void;
+  setContrast:     (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Hue
    */
-  setHue:          (value: number) => void;
+  setHue:          (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Saturation
    */
-  setSaturation:   (value: number) => void;
+  setSaturation:   (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<Color>
    *
    * Set Border Color
    */
-  setBorderColor:  (value: Color) => void;
+  setBorderColor:  (value: Color) => Promise<CameraItem>;
 
   // special color options pinning
 
@@ -205,10 +204,13 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    * Set this to true to share color settings across all instances of this
    * camera device on the stage.
    */
-  setColorOptionsPinned(value: boolean) {
-    let slot = iItem.attach(this._id);
-
-    iItem.set('prop:cc_pin', value ? '1' : '0', slot);
+  setColorOptionsPinned(value: boolean): Promise<CameraItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:cc_pin', value ? '1' : '0', slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /**
@@ -220,7 +222,6 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:cc_pin', slot).then(val => {
         resolve(val === '1' ? true : false);
       });
@@ -235,7 +236,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<boolean>
    */
-  setChromaEnabled: (value: boolean) => void;
+  setChromaEnabled: (value: boolean) => Promise<CameraItem>;
   /**
    * return: Promise<KeyingType>
    */
@@ -243,7 +244,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<KeyingType>
    */
-  setKeyingType: (value: KeyingType) => void;
+  setKeyingType: (value: KeyingType) => Promise<CameraItem>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -253,7 +254,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<ChromaAntiAliasLevel>
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => void;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<CameraItem>;
 
   // CHROMA LEGACY MODE
   /**
@@ -263,7 +264,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaLegacyBrightness: (value: number) => void;
+  setChromaLegacyBrightness: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -271,7 +272,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaLegacySaturation: (value: number) => void;
+  setChromaLegacySaturation: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -279,7 +280,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaLegacyHue: (value: number) => void;
+  setChromaLegacyHue: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -287,7 +288,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaLegacyThreshold: (value: number) => void;
+  setChromaLegacyThreshold: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -295,7 +296,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => void;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<CameraItem>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -305,7 +306,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<ChromaPrimaryColors>
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => void;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -313,7 +314,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaRGBKeyThreshold: (value: number) => void;
+  setChromaRGBKeyThreshold: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -321,7 +322,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaRGBKeyExposure: (value: number) => void;
+  setChromaRGBKeyExposure: (value: number) => Promise<CameraItem>;
 
   // COLOR KEY MODE
   /**
@@ -331,7 +332,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaColorKeyThreshold: (value: number) => void;
+  setChromaColorKeyThreshold: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<number>
    */
@@ -339,7 +340,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<number>
    */
-  setChromaColorKeyExposure: (value: number) => void;
+  setChromaColorKeyExposure: (value: number) => Promise<CameraItem>;
   /**
    * return: Promise<Color>
    */
@@ -347,7 +348,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<Color>
    */
-  setChromaColorKeyColor: (value: Color) => void;
+  setChromaColorKeyColor: (value: Color) => Promise<CameraItem>;
 
   // special chroma options pinning
 
@@ -357,10 +358,14 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    * Set this to true to share chroma keying settings across all instances of
    * this camera device on the stage.
    */
-  setKeyingOptionsPinned(value: boolean) {
-    let slot = iItem.attach(this._id);
+  setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:key_pin', value ? '1' : '0', slot).then(() => {
+        resolve(this);
+      });
+    });
 
-    iItem.set('prop:key_pin', value ? '1' : '0', slot);
   }
 
   /**
@@ -372,7 +377,6 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:key_pin', slot).then(val => {
         resolve(val === '1' ? true : false);
       });
@@ -393,7 +397,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *
    * Set item to visible or hidden
    */
-  setVisible:        (value: boolean) => void;
+  setVisible:        (value: boolean) => Promise<CameraItem>;
 
   /**
    * return: Promise<boolean>
@@ -407,7 +411,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *
    * Set item's transition type for when visibility is toggled
    */
-  setTransition:     (value: Transition) => void;
+  setTransition:     (value: Transition) => Promise<CameraItem>;
 
   /**
    * return: Promise<number>
@@ -421,7 +425,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    *
    * Set item's transition time in milliseconds
    */
-  setTransitionTime: (value: number) => void;
+  setTransitionTime: (value: number) => Promise<CameraItem>;
 }
 
 applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
