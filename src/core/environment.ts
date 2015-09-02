@@ -1,5 +1,5 @@
 export class Environment {
-  private static _isSource: Boolean;
+  private static _isSourcePlugin: Boolean;
   private static _isSourceConfig: Boolean;
   private static _isExtension: Boolean;
   private static _initialized: Boolean;
@@ -9,7 +9,7 @@ export class Environment {
       return;
     }
 
-    Environment._isSource = (window.external &&
+    Environment._isSourcePlugin = (window.external &&
       window.external['GetConfiguration'] !== undefined);
     Environment._isSourceConfig = (window.external &&
       window.external['GetConfiguration'] === undefined &&
@@ -23,7 +23,7 @@ export class Environment {
   }
 
   static isSourcePlugin(): Boolean {
-    return Environment._isSource;
+    return Environment._isSourcePlugin;
   }
 
   static isSourceConfig(): Boolean {
