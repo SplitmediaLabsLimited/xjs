@@ -222,7 +222,7 @@ describe('Scene', function() {
           done.fail('initializeScenes should throw an error on source plugin');
         })
         .catch(function(err) {
-          if (XJS.Environment.isSourceHtml()) {
+          if (XJS.Environment.isSourcePlugin()) {
             expect(err).toEqual(jasmine.any(Error));
             done();
           } else {
@@ -231,14 +231,14 @@ describe('Scene', function() {
         });
       } else {
         Scene.initializeScenes().then(function(success) {
-          if (XJS.Environment.isSourceHtml()) {
+          if (XJS.Environment.isSourcePlugin()) {
             done.fail('initializeScenes should throw an error on source plugin');
           } else {
             expect(success).toBeBoolean();
             done();
           }
         }).catch(function(err) {
-          if (XJS.Environment.isSourceHtml()) {
+          if (XJS.Environment.isSourcePlugin()) {
             expect(err).toEqual(jasmine.any(Error));
             done();
           } else {
@@ -266,14 +266,14 @@ describe('Scene', function() {
 
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         scene.setName(string).then(function(res) {
-          if (XJS.Environment.isSourceHtml()) {
+          if (XJS.Environment.isSourcePlugin()) {
             done.fail('setName should throw an error on source plugin');
           } else {
             expect(success).toBeBoolean();
             done();
           }
         }).catch(function(err) {
-          if (XJS.Environment.isSourceHtml()) {
+          if (XJS.Environment.isSourcePlugin()) {
             expect(err).toEqual(jasmine.any(Error));
             done();
           } else {
@@ -292,7 +292,7 @@ describe('Scene', function() {
           return scene.setName(string);
         }).then(function(res) {
           expect(res).toBeBoolean();
-          done();                    
+          done();
         }).catch(function(err) {
           expect(err).toEqual(jasmine.any(Error));
           done();
