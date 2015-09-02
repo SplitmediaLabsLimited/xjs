@@ -78,4 +78,19 @@ export class ItemConfigurable {
       resolve(this);
     });
   }
+
+  applyConfig(configObj: any): Promise<any> {
+    return new Promise(resolve=> {
+      let slot = iItem.attach(this._id);
+
+      exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
+          'MessageSource', JSON.stringify({
+              'request': 'applyConfig',
+              'data': configObj
+          }));
+
+      resolve(this);
+    });
+  }
+
 }

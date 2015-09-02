@@ -27,6 +27,9 @@ export class SourcePluginWindow extends MyEventEmitter {
         if (message.request === 'saveConfig') {
           this.emit('save-config', message.data);
         }
+        else if (message.request === 'applyConfig') {
+          this.emit('apply-config', message.data);
+        }
       }
     });
 
@@ -42,7 +45,9 @@ window['MessageSource'] = function(message: string) {
 window['SetConfiguration'] = function(configObj: string) {
     try {
         var data = JSON.parse(configObj);
-        SourcePluginWindow.getInstance().emit("apply-config", data);
+        var source = SourcePluginWindow.getInstance();
+        source.emit("apply-config", data);
+        source.emit("save-config", data);
     } catch (e) {
         // syntax error probably happened, exit gracefully
         return;
