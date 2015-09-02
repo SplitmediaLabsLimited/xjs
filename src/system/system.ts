@@ -6,6 +6,8 @@ import {MicrophoneDevice} from './microphone';
 import {CameraDevice} from './camera';
 import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
+import {Environment} from '../core/environment';
+import {exec} from '../internal/internal';
 
 /**
  * This enum is used for {@link #system/System System Class'} getAudioDevices
@@ -195,6 +197,63 @@ export class System{
         }
         resolve(mics);
       });
+    });
+  }
+
+  /**
+   * return: Promise<JXON>
+   *
+   * Gets the position of the cursor. Does not work on Source Plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getCursorPosition().then(function(pos) {
+   *   var x = pos.x; // X Axis
+   *   var y = pos.y; // Y Axis
+   * });
+   * ```
+   */
+  static getCursorPosition(): Promise<JXON> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        var res = exec('GetCursorPos');
+        if (typeof res === 'string') {
+          var posArr = res.split(',');
+          var pos = new JXON();
+          pos['x'] = Number(posArr[0]);
+          pos['y'] = Number(posArr[1]);
+          resolve(pos)
+        } else {
+          reject(Error('cannot fetch current cursor position'));
+        }
+      }
+    });
+  }
+
+  /**
+   * param: JXON
+   *
+   * Sets the position of the cursor. Does not work on Source Plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.setCursorPosition({x:0, y:0});
+   * ```
+   */
+  static setCursorPosition(pos: JXON) {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+        reject(Error('invalid parameters'));
+      } else {
+        exec('SetCursorPos', String(pos['x']), String(pos['y']));
+        resolve(true);
+      }
     });
   }
 }
