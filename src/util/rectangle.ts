@@ -1,122 +1,122 @@
 export class Rectangle {
-  private top: number;
-  private left: number;
-  private width: number;
-  private height: number;
-  private right: number;
-  private bottom: number;
+  private _top: number;
+  private _left: number;
+  private _width: number;
+  private _height: number;
+  private _right: number;
+  private _bottom: number;
 
   /** Gets the top value */
   getTop(): number {
-    return this.top;
+    return this._top;
   }
 
   /** Sets the top value */
   setTop(top: number) {
-    this.top = top;
+    this._top = top;
 
-    if (this.bottom !== undefined &&
-      this.height !== (this.top - this.bottom)) {
-      this.setHeight(Math.abs(this.top - this.bottom));
+    if (this._bottom !== undefined &&
+      this._height !== (this._top - this._bottom)) {
+      this.setHeight(Math.abs(this._top - this._bottom));
     }
-    else if (this.height !== undefined &&
-      this.bottom !== (this.top + this.height)) {
-      this.setBottom(this.top + this.height);
+    else if (this._height !== undefined &&
+      this._bottom !== (this._top + this._height)) {
+      this.setBottom(this._top + this._height);
     }
   }
 
   /** Gets the left value */
   getLeft(): number {
-    return this.left;
+    return this._left;
   }
 
   /** Sets the left value */
   setLeft(left: number) {
-    this.left = left;
+    this._left = left;
 
-    if (this.right !== undefined &&
-      this.width !== Math.abs(this.right - this.left)) {
-      this.setWidth(Math.abs(this.right - this.left));
+    if (this._right !== undefined &&
+      this._width !== Math.abs(this._right - this._left)) {
+      this.setWidth(Math.abs(this._right - this._left));
     }
-    else if (this.width !== undefined &&
-      this.height !== (this.left + this.width)) {
-      this.setRight(this.left + this.width);
+    else if (this._width !== undefined &&
+      this._height !== (this._left + this._width)) {
+      this.setRight(this._left + this._width);
     }
   }
 
   /** Gets the right value */
   getRight(): number {
-    return this.right;
+    return this._right;
   }
 
   /** Sets the right value */
   setRight(right: number) {
-    this.right = right;
+    this._right = right;
 
-    if (this.left !== undefined &&
-      this.width !== Math.abs(this.right - this.left)) {
-      this.setWidth(Math.abs(this.right - this.left));
+    if (this._left !== undefined &&
+      this._width !== Math.abs(this._right - this._left)) {
+      this.setWidth(Math.abs(this._right - this._left));
     }
-    else if (this.width !== undefined &&
-      this.left !== (this.right - this.width)) {
-      this.setLeft(this.right - this.width);
+    else if (this._width !== undefined &&
+      this._left !== (this._right - this._width)) {
+      this.setLeft(this._right - this._width);
     }
   }
 
   /** Gets the bottom value */
   getBottom(): number {
-    return this.bottom;
+    return this._bottom;
   }
 
   /** Sets the bottom value */
   setBottom(bottom: number) {
-    this.bottom = bottom;
+    this._bottom = bottom;
 
-    if (this.top !== undefined &&
-      this.height !== Math.abs(this.top - this.bottom)) {
-      this.setHeight(Math.abs(this.top - this.bottom));
+    if (this._top !== undefined &&
+      this._height !== Math.abs(this._top - this._bottom)) {
+      this.setHeight(Math.abs(this._top - this._bottom));
     }
-    else if (this.height !== undefined &&
-      this.top !== (this.bottom - this.height)) {
-      this.setTop(this.bottom - this.height);
+    else if (this._height !== undefined &&
+      this._top !== (this._bottom - this._height)) {
+      this.setTop(this._bottom - this._height);
     }
   }
 
   /** Gets the width value */
   getWidth(): number {
-    return this.width;
+    return this._width;
   }
 
   /** Sets the width value */
   setWidth(width: number) {
-    this.width = width;
+    this._width = width;
 
-    if (this.right !== undefined &&
-      this.left !== (this.right - this.width)) {
-      this.setLeft(this.right - this.width);
+    if (this._right !== undefined &&
+      this._left !== (this._right - this._width)) {
+      this.setLeft(this._right - this._width);
     }
-    else if (this.left !== undefined &&
-      this.right !== (this.left + this.width)) {
-      this.setRight(this.left + this.width);
+    else if (this._left !== undefined &&
+      this._right !== (this._left + this._width)) {
+      this.setRight(this._left + this._width);
     }
   }
 
   /** Gets the height value */
   getHeight(): number {
-    return this.height;
+    return this._height;
   }
 
   /** Sets the height value */
   setHeight(height: number) {
-    this.height = height;
+    this._height = height;
 
-    if (this.top !== undefined &&
-      this.bottom !== (this.top + this.height)) {
-      this.setBottom(this.top + this.height);
+    if (this._top !== undefined &&
+      this._bottom !== (this._top + this._height)) {
+      this.setBottom(this._top + this._height);
     }
-    else if (this.bottom !== undefined &&
-      this.top !== (this.bottom - this.height)) {
-      this.setTop(this.bottom - this.height);
+    else if (this._bottom !== undefined &&
+      this._top !== (this._bottom - this._height)) {
+      this.setTop(this._bottom - this._height);
     }
   }
 
@@ -126,8 +126,8 @@ export class Rectangle {
     }
 
     let rect = new Rectangle();
-    rect.width = width;
-    rect.height = height;
+    rect._width = width;
+    rect._height = height;
     return rect;
   }
 
@@ -140,22 +140,22 @@ export class Rectangle {
     }
 
     let rect = new Rectangle();
-    rect.top = top;
-    rect.left = left;
+    rect._top = top;
+    rect._left = left;
     rect.setRight(right); // calculates width
     rect.setBottom(bottom); // calculates height
     return rect;
   }
 
   toDimensionString(): string {
-    return this.width + ',' + this.height;
+    return this._width + ',' + this._height;
   }
 
   toCoordinateString(): string {
-    if (this.left === undefined) {
+    if (this._left === undefined) {
       throw new Error('This Rectangle instance does not have coordinates.');
     } else {
-      return this.left + ',' + this.top + ',' + this.right + ',' + this.bottom;
+      return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;
     }
   }
 
@@ -165,12 +165,12 @@ export class Rectangle {
     } else {
       let format: string = value;
 
-      format = format.replace(':left', String(this.left));
-      format = format.replace(':top', String(this.top));
-      format = format.replace(':right', String(this.right));
-      format = format.replace(':bottom', String(this.bottom));
-      format = format.replace(':width', String(this.width));
-      format = format.replace(':height', String(this.height));
+      format = format.replace(':left', String(this._left));
+      format = format.replace(':top', String(this._top));
+      format = format.replace(':right', String(this._right));
+      format = format.replace(':bottom', String(this._bottom));
+      format = format.replace(':width', String(this._width));
+      format = format.replace(':height', String(this._height));
 
       return format;
     }

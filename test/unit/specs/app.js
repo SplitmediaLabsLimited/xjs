@@ -68,10 +68,10 @@ describe('App ===', function() {
       var promise = App.getResolution();
       promise.then(function(resolution) {
         expect(resolution).toBeInstanceOf(Object);
-        expect(resolution.width).toBeTypeOf('number');
-        expect(resolution.width).not.toBeNaN();
-        expect(resolution.height).toBeTypeOf('number');
-        expect(resolution.height).not.toBeNaN();
+        expect(resolution._width).toBeTypeOf('number');
+        expect(resolution._width).not.toBeNaN();
+        expect(resolution._height).toBeTypeOf('number');
+        expect(resolution._height).not.toBeNaN();
         done();
       });
     });
@@ -103,10 +103,10 @@ describe('App ===', function() {
       var promise = App.getViewport();
       promise.then(function(viewPort) {
         expect(viewPort).toBeTypeOf('object');
-        expect(viewPort.width).toBeTypeOf('number');
-        expect(viewPort.width).not.toBeNaN();
-        expect(viewPort.height).toBeTypeOf('number');
-        expect(viewPort.height).not.toBeNaN();
+        expect(viewPort._width).toBeTypeOf('number');
+        expect(viewPort._width).not.toBeNaN();
+        expect(viewPort._height).toBeTypeOf('number');
+        expect(viewPort._height).not.toBeNaN();
         done();
       });
     });

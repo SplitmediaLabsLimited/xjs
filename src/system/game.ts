@@ -40,10 +40,10 @@ export class Game implements Addable {
   private _flags: number;
   private _wndname: string;
   private _lastframets: number;
-  private fpsRender: number;
-  private fpsCapture: number;
-  private imagename: string;
-  private replace: string;
+  private _fpsRender: number;
+  private _fpsCapture: number;
+  private _imagename: string;
+  private _replace: string;
 
   /**
    * return: number
@@ -176,28 +176,28 @@ export class Game implements Addable {
    * Get the FPS Render of the game
    */
   getFpsRender() {
-    return this.fpsRender;
+    return this._fpsRender;
   }
 
   /**
    * Get the Captured FPS of the game
    */
   getFpsCapture() {
-    return this.fpsCapture;
+    return this._fpsCapture;
   }
 
   /**
    * Get the image name of the game
    */
   getImageName() {
-    return this.imagename;
+    return this._imagename;
   }
 
   /**
    * Get the replace image value of the game
    */
   getReplace() {
-    return this.replace;
+    return this._replace;
   }
 
   /**
@@ -232,12 +232,12 @@ export class Game implements Addable {
     g._wndname = jxon['wndname'];
     g._lastframets = jxon['lastframets'] !== undefined ?
       parseInt(jxon['lastframets']) : undefined;
-    g.fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
+    g._fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
       undefined;
-    g.fpsCapture = jxon['fpsCapture'] !== undefined ?
+    g._fpsCapture = jxon['fpsCapture'] !== undefined ?
       Number(jxon['fpsCapture']) : undefined;
-    g.imagename = jxon['imagename'];
-    g.replace = jxon['replace'];
+    g._imagename = jxon['imagename'];
+    g._replace = jxon['replace'];
 
     return g;
   }

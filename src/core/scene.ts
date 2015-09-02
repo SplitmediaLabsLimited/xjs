@@ -11,17 +11,17 @@ import {AudioItem} from './item/audio';
 export class Scene {
   private id: number;
 
-  private static maxScenes = 12;
-  private static scenePool: Scene[] = [];
+  private static _maxScenes = 12;
+  private static _scenePool: Scene[] = [];
 
   constructor(sceneNum: number) {
     this.id = sceneNum - 1;
   };
 
   private static initializeScenePool() {
-    if (Scene.scenePool.length === 0) {
-      for (var i = 0; i < Scene.maxScenes; i++) {
-        Scene.scenePool[i] = new Scene(i + 1);
+    if (Scene._scenePool.length === 0) {
+      for (var i = 0; i < Scene._maxScenes; i++) {
+        Scene._scenePool[i] = new Scene(i + 1);
       }
     }
   }
@@ -46,7 +46,7 @@ export class Scene {
     // initialize if necessary
     Scene.initializeScenePool();
 
-    return Scene.scenePool[sceneNum - 1];
+    return Scene._scenePool[sceneNum - 1];
   }
 
   /**
@@ -70,10 +70,10 @@ export class Scene {
     // initialize if necessary
     Scene.initializeScenePool();
 
-    let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
+    let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
       return iApp.get('presetname:' + index).then(name => {
         if (sceneName === name) {
-          return Scene.scenePool[index];
+          return Scene._scenePool[index];
         } else {
           return null;
         }
@@ -156,7 +156,7 @@ export class Scene {
 
         let match = null;
         let found = false;
-        Scene.scenePool.forEach((scene, idx, arr) => {
+        Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
             scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
@@ -189,7 +189,7 @@ export class Scene {
 
         let match = null;
         let found = false;
-        Scene.scenePool.forEach((scene, idx, arr) => {
+        Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
             scene.getItems().then(items => {
               found = items.some(item => { // unique ID, so get first result
@@ -233,7 +233,7 @@ export class Scene {
     let matches: Item[] = [];
 
     return new Promise(resolve => {
-      return Promise.all(Scene.scenePool.map(scene => {
+      return Promise.all(Scene._scenePool.map(scene => {
         return new Promise(resolveScene => {
           scene.getItems().then(items => {
             if (items.length === 0) {
