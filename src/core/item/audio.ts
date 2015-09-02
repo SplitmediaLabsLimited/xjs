@@ -25,7 +25,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
@@ -54,7 +54,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilenceThreshold(value: number): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
@@ -88,7 +88,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   setSilencePeriod(value: number): Promise<AudioItem> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));

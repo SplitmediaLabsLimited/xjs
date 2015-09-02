@@ -29,7 +29,7 @@ export class ItemAudio implements IItemAudio {
 
   setVolume(value: number): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
@@ -59,7 +59,7 @@ export class ItemAudio implements IItemAudio {
 
   setMute(value: boolean): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
@@ -87,7 +87,7 @@ export class ItemAudio implements IItemAudio {
 
   setAudioOffset(value: number): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
@@ -115,7 +115,7 @@ export class ItemAudio implements IItemAudio {
 
   setStreamOnlyEnabled(value: boolean): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
