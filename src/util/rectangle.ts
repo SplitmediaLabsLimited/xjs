@@ -12,7 +12,7 @@ export class Rectangle {
   }
 
   /** Sets the top value */
-  setTop(top: number) {
+  setTop(top: number): Rectangle {
     this._top = top;
 
     if (this._bottom !== undefined &&
@@ -23,6 +23,8 @@ export class Rectangle {
       this._bottom !== (this._top + this._height)) {
       this.setBottom(this._top + this._height);
     }
+
+    return this;
   }
 
   /** Gets the left value */
@@ -31,7 +33,7 @@ export class Rectangle {
   }
 
   /** Sets the left value */
-  setLeft(left: number) {
+  setLeft(left: number): Rectangle {
     this._left = left;
 
     if (this._right !== undefined &&
@@ -42,6 +44,8 @@ export class Rectangle {
       this._height !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
+
+    return this;
   }
 
   /** Gets the right value */
@@ -50,7 +54,7 @@ export class Rectangle {
   }
 
   /** Sets the right value */
-  setRight(right: number) {
+  setRight(right: number): Rectangle {
     this._right = right;
 
     if (this._left !== undefined &&
@@ -61,6 +65,8 @@ export class Rectangle {
       this._left !== (this._right - this._width)) {
       this.setLeft(this._right - this._width);
     }
+
+    return this;
   }
 
   /** Gets the bottom value */
@@ -69,7 +75,7 @@ export class Rectangle {
   }
 
   /** Sets the bottom value */
-  setBottom(bottom: number) {
+  setBottom(bottom: number): Rectangle {
     this._bottom = bottom;
 
     if (this._top !== undefined &&
@@ -80,6 +86,8 @@ export class Rectangle {
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }
+
+    return this;
   }
 
   /** Gets the width value */
@@ -88,7 +96,7 @@ export class Rectangle {
   }
 
   /** Sets the width value */
-  setWidth(width: number) {
+  setWidth(width: number): Rectangle {
     this._width = width;
 
     if (this._right !== undefined &&
@@ -99,6 +107,8 @@ export class Rectangle {
       this._right !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
+
+    return this;
   }
 
   /** Gets the height value */
@@ -107,7 +117,7 @@ export class Rectangle {
   }
 
   /** Sets the height value */
-  setHeight(height: number) {
+  setHeight(height: number): Rectangle {
     this._height = height;
 
     if (this._top !== undefined &&
@@ -118,6 +128,8 @@ export class Rectangle {
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }
+
+    return this;
   }
 
   static fromDimensions(width: number, height: number): Rectangle {
