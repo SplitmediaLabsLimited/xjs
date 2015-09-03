@@ -41,28 +41,6 @@ module.exports = function generateNavigationDoc() {
       });
 
       docs.push(modulesDoc);
-
-
-      var guidesDoc = {
-        value: { pages: [] },
-        moduleName: 'navigation-guides',
-        serviceName: 'GUIDES',
-        template: 'data-module.template.js',
-        outputPath: 'js/navigation-guides.js'
-      };
-
-      _.forEach(docs, function(doc) {
-        if ( doc.docType === 'guide' ) {
-          var guideDoc = {
-            path: doc.path,
-            partial: doc.outputPath,
-            name: doc.name,
-            type: 'guide'
-          };
-          guidesDoc.value.pages.push(guideDoc);
-        }
-      });
-      docs.push(guidesDoc);
     }
   };
 };

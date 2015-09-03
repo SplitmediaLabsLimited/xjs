@@ -97,7 +97,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
               var staticSymbol = resolvedExport.exports[exportName];
               var memberDoc = createMemberDoc(staticSymbol, exportDoc, basePath, parseInfo.typeChecker);
 
-              if (staticSymbol.name !== 'prototype') {
+              if (staticSymbol.name !== 'prototype' && staticSymbol.name.charAt(0) !== '_') {
                 docs.push(memberDoc);
                 exportDoc.statics.push(memberDoc);
               }
