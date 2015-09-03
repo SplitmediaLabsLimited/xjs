@@ -54,7 +54,8 @@ export class App{
   /**
    * return: Promise<Rectangle>
    *
-   * Gets application default output resolution
+   * Gets application default output resolution.
+   * See also: Util/Rectangle
    *
    * #### Usage
    *
@@ -80,6 +81,7 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application viewport display resolution
+   * See also: Util/Rectangle
    *
    * #### Usage
    *
@@ -149,6 +151,7 @@ export class App{
    * return: Promise<AudioDevice>
    *
    * Gets the primary microphone device used in the application
+   * See also: System/AudioDevice
    *
    * ### Usage
    *
@@ -181,6 +184,7 @@ export class App{
    * return: Promise<AudioDevice>
    *
    * Gets the primary speaker/audio render device used in the application
+   * See also: System/AudioDevice
    *
    * ### Usage
    *
@@ -216,6 +220,7 @@ export class App{
    * ```
    *
    * Sets the primary microphone device to be used in the application
+   * See also: System/AudioDevice
    *
    * ### Usage
    *
@@ -253,6 +258,7 @@ export class App{
    * ```
    *
    * Sets the primary speaker/audio render device to be used in the application
+   * See also: System/AudioDevice
    *
    * ### Usage
    *
@@ -540,6 +546,7 @@ export class App{
    * return: Promise<Transition>
    *
    * Gets the transition for scene changes
+   * See also: Core/Transition
    *
    * #### Usage
    *
@@ -569,6 +576,7 @@ export class App{
    * ```
    *
    * Sets the transition for scene changes
+   * See also: Core/Transition
    *
    * #### Usage
    *
