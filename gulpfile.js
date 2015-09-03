@@ -13,6 +13,9 @@
     history     = require('connect-history-api-fallback'),
     Server      = require('karma').Server;
 
+  var BUNDLE_PATH = 'dist/xjs.js',
+      JS_DEPENDENCY = 'src/util/EventEmitter.min.js';
+
   gulp.task('browserify', function() {
     return browserify('./src/index.ts')
       .plugin('tsify', {

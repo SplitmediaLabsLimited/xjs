@@ -71,6 +71,7 @@ export class Item {
           resolve(!(Number(val) < 0));
         });
     });
+
   }
 
   /** Calls a function defined in an item/source */

@@ -7,6 +7,7 @@ import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
 import {CameraItem} from './item/camera';
 import {AudioItem} from './item/audio';
+import {HTMLItem} from './item/html';
 
 export class Scene {
   private id: number;
@@ -359,8 +360,12 @@ export class Scene {
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
-      if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
-        typeResolve(new GameItem(jsonArr[index]));
+        let item = jsonArr[index];
+        let type = Number(item['type']);
+        if (type === ItemTypes.GAMESOURCE) {
+          typeResolve(new GameItem(item));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HTMLItem(item));
         } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
           jsonArr[index]['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
@@ -369,23 +374,23 @@ export class Scene {
           jsonArr[index]['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
             typeResolve(new AudioItem(jsonArr[index]));
-        }
-        else {
+        } else {
             typeResolve(new Item(jsonArr[index]));
           }
         });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneID'] = this.id;
-            promiseArray.push(typePromise(i));
-          }
-        }
 
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneID'] = this.id;
+              promiseArray.push(typePromise(i));
+            }
+          }
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
         });
-      });
     });
   }
 

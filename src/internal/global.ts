@@ -13,7 +13,6 @@ export class Global {
   }
 
   static setPersistentConfig(config: {}): void {
-    console.log('setting persistent config: ' + JSON.stringify(config));
     Global.persistedConfig = config;
   }
 
