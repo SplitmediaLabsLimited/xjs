@@ -302,7 +302,6 @@ describe('HTMLItem', function() {
     it('should be able to set its own URL',
       function(done) {
         var promise = currentHTMLItem.setURL('https://www.xsplit.com/');
-        console.log("TAKTE");
         promise.then(function() {
         	if (!isXSplit) {
         		expect(urlSet).toBe(true);
