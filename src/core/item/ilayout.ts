@@ -92,6 +92,72 @@ export class ItemLayout implements IItemLayout {
       iItem.set('prop:pos', value.toCoordinateString(), slot).then(() => {
         resolve(this);
       });
-  });
+    });
+  }
+
+  getRotateY(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:rotate_y', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setRotateY(value: number): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if (value < -360 || value > 360) {
+        reject(Error('Invalid value. Min: -360, Max: 360'));
+      } else {
+        let slot = iItem.attach(this._id);
+        iItem.set('prop:rotate_y', String(value), slot).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
+  getRotateX(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:rotate_x', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setRotateX(value: number): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if (value < -360 || value > 360) {
+        reject(Error('Invalid value. Min: -360, Max: 360'));
+      } else {
+        let slot = iItem.attach(this._id);
+        iItem.set('prop:rotate_x', String(value), slot).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
+  getRotateZ(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:rotate_z', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setRotateZ(value: number): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if (value < -360 || value > 360) {
+        reject(Error('Invalid value. Min: -360, Max: 360'));
+      } else {
+        let slot = iItem.attach(this._id);
+        iItem.set('prop:rotate_z', String(value), slot).then(() => {
+          resolve(this);
+        });
+      }
+    });
   }
 }

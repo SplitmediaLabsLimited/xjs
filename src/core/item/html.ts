@@ -72,6 +72,27 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getPosition:              () => Promise<Rectangle>;
 
   /**
+   * return: Promise<number>
+   *
+   * Get Rotate Y value of the item
+   */
+  getRotateY:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate X value of the item
+   */
+  getRotateX:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Z value of the item
+   */
+  getRotateZ:              () => Promise<number>;
+
+  /**
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
@@ -98,6 +119,27 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Item position
    */
   setPosition:              (value: Rectangle) => Promise<HTMLItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Y value of the item
+   */
+  setRotateY:              (value: number) => Promise<HTMLItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate X value of the item
+   */
+  setRotateX:              (value: number) => Promise<HTMLItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Z value of the item
+   */
+  setRotateZ:              (value: number) => Promise<HTMLItem>;
 
   // ItemColor
 
