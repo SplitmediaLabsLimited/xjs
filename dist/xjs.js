@@ -208,6 +208,7 @@ var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
 var environment_1 = require('./environment');
+var transition_1 = require('./transition');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
 /**
@@ -654,7 +655,7 @@ var App = (function () {
     App.prototype.newDialog = function (url, width, height, flags, title) {
         if (width === void 0) { width = 300; }
         if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
@@ -683,7 +684,7 @@ var App = (function () {
     App.prototype.newAutoDialog = function (url, width, height) {
         if (width === void 0) { width = 300; }
         if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
@@ -697,15 +698,16 @@ var App = (function () {
      * Close a created dialog
      */
     App.prototype.closeDialog = function () {
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else {
             internal_1.exec('CloseDialog');
         }
     };
+    // Transition Services
     /**
-     * return: Promise<string>
+     * return: Promise<Transition>
      *
      * Gets the transition for scene changes
      *
@@ -721,14 +723,19 @@ var App = (function () {
     App.prototype.getTransition = function () {
         return new Promise(function (resolve) {
             app_1.App.get('transitionid').then(function (val) {
-                resolve(val);
+                if (val === '') {
+                    resolve(transition_1.Transition.NONE);
+                }
+                else {
+                    resolve(transition_1.Transition[val.toUpperCase()]);
+                }
             });
         });
     };
     /**
-     * param: transition<string>
+     * param: transition<Transition>
      * ```
-     * return: Promise<string>
+     * return: Promise<Transition>
      * ```
      *
      * Sets the transition for scene changes
@@ -736,27 +743,18 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * // you may use the following:
-     * //     * App.TRANSITION_CLOCK
-     * //     * App.TRANSITION_COLLAPSE
-     * //     * App.TRANSITION_FADE
-     * //     * App.TRANSITION_FAN
-     * //     * App.TRANSITION_HOLE
-     * //     * App.TRANSITION_MOVE_BOTTOM
-     * //     * App.TRANSITION_MOVE_LEFT
-     * //     * App.TRANSITION_MOVE_LEFT_RIGHT
-     * //     * App.TRANSITION_MOVE_RIGHT
-     * //     * App.TRANSITION_MOVE_TOP
-     * //     * App.TRANSITION_MOVE_TOP_BOTTOM
-     * //     * App.TRANSITION_WAVE
-     * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+     * var xjs = require('xjs'),
+     *     Transition = xjs.Transition,
+     *     App = new xjs.App();
+  
+     * App.setTransition(Transition.CLOCK).then(function(val) {
      *  var isSet = val;
      * });
      * ```
      */
     App.prototype.setTransition = function (transition) {
         return new Promise(function (resolve) {
-            app_1.App.set('transitionid', transition).then(function (val) {
+            app_1.App.set('transitionid', transition.toString()).then(function (val) {
                 resolve(val);
             });
         });
@@ -811,23 +809,10 @@ var App = (function () {
     App.BORDER_ENABLE_SIZING = 4;
     App.BORDER_ENABLE_MINIMIZE = 8;
     App.BORDER_ENABLE_MAXIMIZE = 16;
-    // Transition Services
-    App.TRANSITION_CLOCK = 'clock';
-    App.TRANSITION_COLLAPSE = 'collapse';
-    App.TRANSITION_FADE = 'fade';
-    App.TRANSITION_FAN = 'fan';
-    App.TRANSITION_HOLE = 'hole';
-    App.TRANSITION_MOVE_BOTTOM = 'move_bottom';
-    App.TRANSITION_MOVE_LEFT = 'move_left';
-    App.TRANSITION_MOVE_LEFT_RIGHT = 'move_left_right';
-    App.TRANSITION_MOVE_RIGHT = 'move_right';
-    App.TRANSITION_MOVE_TOP = 'move_top';
-    App.TRANSITION_MOVE_TOP_BOTTOM = 'move_top_bottom';
-    App.TRANSITION_WAVE = 'wave';
     return App;
 })();
 exports.App = App;
-},{"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"../internal/util/xml":26,"../system/audio":27,"../util/rectangle":34,"./environment":5}],5:[function(require,module,exports){
+},{"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"../internal/util/xml":26,"../system/audio":27,"../util/rectangle":35,"./environment":5,"./transition":18}],5:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -835,26 +820,26 @@ var Environment = (function () {
         if (Environment._initialized) {
             return;
         }
-        Environment._isHtml = (window.external &&
+        Environment._isSourcePlugin = (window.external &&
             window.external['GetConfiguration'] !== undefined);
-        Environment._isConfig = (window.external &&
+        Environment._isSourceConfig = (window.external &&
             window.external['GetConfiguration'] === undefined &&
             window.external['GetViewId'] !== undefined &&
             window.external['GetViewId']() !== undefined);
-        Environment._isScript = (window.external &&
+        Environment._isExtension = (window.external &&
             window.external['GetConfiguration'] === undefined &&
             window.external['GetViewId'] !== undefined &&
             window.external['GetViewId']() === undefined);
         Environment._initialized = true;
     };
-    Environment.isSourceHtml = function () {
-        return Environment._isHtml;
+    Environment.isSourcePlugin = function () {
+        return Environment._isSourcePlugin;
     };
     Environment.isSourceConfig = function () {
-        return Environment._isConfig;
+        return Environment._isSourceConfig;
     };
-    Environment.isScriptPlugin = function () {
-        return Environment._isScript;
+    Environment.isExtension = function () {
+        return Environment._isExtension;
     };
     return Environment;
 })();
@@ -894,7 +879,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.setSilenceDetectionEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
@@ -923,7 +908,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.setSilenceThreshold = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else if (typeof value !== 'number') {
@@ -957,7 +942,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.setSilencePeriod = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else if (typeof value !== 'number') {
@@ -972,7 +957,9 @@ var AudioItem = (function (_super) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
-                    resolve(_this);
+                    else {
+                        resolve(_this);
+                    }
                 });
             }
         });
@@ -1046,8 +1033,13 @@ var CameraItem = (function (_super) {
      * camera device on the stage.
      */
     CameraItem.prototype.setColorOptionsPinned = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
      * return: Promise<boolean>
@@ -1072,8 +1064,13 @@ var CameraItem = (function (_super) {
      * this camera device on the stage.
      */
     CameraItem.prototype.setKeyingOptionsPinned = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_pin', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:key_pin', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
      * return: value<boolean>
@@ -1161,8 +1158,13 @@ var GameItem = (function (_super) {
      * Set Game Special Optimization to on or off
      */
     GameItem.prototype.setSpecialOptimizationEnabled = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
      * return: Promise<boolean>
@@ -1184,8 +1186,13 @@ var GameItem = (function (_super) {
      * Set Show Mouse in game to on or off
      */
     GameItem.prototype.setShowMouseEnabled = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
      * param: path<string>
@@ -1198,25 +1205,27 @@ var GameItem = (function (_super) {
             if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
                 reject(Error('Current item should be a game source'));
             }
-            if (environment_1.Environment.isSourceHtml()) {
+            else if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update offline images of other sources'));
             }
-            if (!(_this.value instanceof xml_1.XML)) {
+            else if (!(_this.value instanceof xml_1.XML)) {
                 _this.getValue().then(function () {
                     _this.setOfflineImage(path).then(function (itemObj) {
                         resolve(itemObj);
                     });
                 });
-                return;
             }
-            var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-                '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-            if (regExp.test(path) || path === '') {
-                var valueObj = json_1.JSON.parse(_this.value.toString());
-                valueObj['replace'] = path;
-                _this.setValue(xml_1.XML.parseJSON(valueObj));
+            else {
+                var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+                    '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+                if (regExp.test(path) || path === '') {
+                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    valueObj['replace'] = path;
+                    _this.setValue(xml_1.XML.parseJSON(valueObj)).then(function () {
+                        resolve(_this);
+                    });
+                }
             }
-            resolve(_this);
         });
     };
     /**
@@ -1230,10 +1239,12 @@ var GameItem = (function (_super) {
             if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
                 reject(Error('Current item should be a game source'));
             }
-            _this.getValue().then(function () {
-                var valueObj = json_1.JSON.parse(_this.value.toString());
-                resolve(valueObj['replace'] ? valueObj['replace'] : '');
-            });
+            else {
+                _this.getValue().then(function () {
+                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    resolve(valueObj['replace'] ? valueObj['replace'] : '');
+                });
+            }
         });
     };
     return GameItem;
@@ -1307,8 +1318,8 @@ var ItemAudio = (function () {
     ItemAudio.prototype.setVolume = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
-                reject(Error('Source plugins cannot update audio sources properties'));
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio source properties.'));
             }
             else {
                 var slot = item_1.Item.attach(_this._id);
@@ -1336,7 +1347,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.setMute = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
@@ -1364,7 +1375,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.setAudioOffset = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
@@ -1392,7 +1403,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.setStreamOnlyEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
@@ -1446,11 +1457,18 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaEnabled = function (value) {
-        if (typeof value !== 'boolean') {
-            throw new TypeError('Parameter should be boolean.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'boolean') {
+                reject(TypeError('Parameter should be boolean.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getKeyingType = function () {
         var _this = this;
@@ -1462,14 +1480,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setKeyingType = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a KeyingType value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a KeyingType value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromakeytype', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a KeyingType value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a KeyingType value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromakeytype', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // COMMON TO CHROMA LEGACY AND CHROMA RGB KEY
     ItemChroma.prototype.getChromaAntiAliasLevel = function () {
@@ -1482,14 +1507,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaAntiAliasLevel = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a ChromaAntiAliasLevel value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a ChromaAntiAliasLevel value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_antialiasing', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a ChromaAntiAliasLevel value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a ChromaAntiAliasLevel value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_antialiasing', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA LEGACY MODE FUNCTIONS
     ItemChroma.prototype.getChromaLegacyBrightness = function () {
@@ -1502,14 +1534,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyBrightness = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromabr', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromabr', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacySaturation = function () {
         var _this = this;
@@ -1521,14 +1560,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacySaturation = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromasat', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromasat', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyHue = function () {
         var _this = this;
@@ -1540,14 +1586,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyHue = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 180) {
-            throw new RangeError('Valid value is an integer from 0-180.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromahue', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 180) {
+                reject(RangeError('Valid value is an integer from 0-180.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromahue', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyThreshold = function () {
         var _this = this;
@@ -1559,14 +1612,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromarang', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromarang', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyAlphaSmoothing = function () {
         var _this = this;
@@ -1578,14 +1638,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyAlphaSmoothing = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromaranga', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromaranga', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA RGB KEY FUNCTIONS
     ItemChroma.prototype.getChromaRGBKeyPrimaryColor = function () {
@@ -1598,14 +1665,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyPrimaryColor = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a ChromaPrimaryColors value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a ChromaPrimaryColors value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a ChromaPrimaryColors value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a ChromaPrimaryColors value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaRGBKeyThreshold = function () {
         var _this = this;
@@ -1617,14 +1692,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaRGBKeyExposure = function () {
         var _this = this;
@@ -1636,14 +1719,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyExposure = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA COLOR KEY FUNCTIONS
     ItemChroma.prototype.getChromaColorKeyThreshold = function () {
@@ -1656,14 +1747,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorrang', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_colorrang', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaColorKeyExposure = function () {
         var _this = this;
@@ -1675,14 +1773,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyExposure = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorranga', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_colorranga', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaColorKeyColor = function () {
         var _this = this;
@@ -1695,8 +1800,13 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyColor = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemChroma;
 })();
@@ -1718,12 +1828,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setTransparency = function (value) {
-        if (value < 0 || value > 255) {
-            throw new RangeError('Transparency may only be in the range 0 to 255.');
-        }
-        ;
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:alpha', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < 0 || value > 255) {
+                reject(RangeError('Transparency may only be in the range 0 to 255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:alpha', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getBrightness = function () {
         var _this = this;
@@ -1735,13 +1851,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setBrightness = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Brightness may only be in the range -100 to 100.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_brightness', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Brightness may only be in the range -100 to 100.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_brightness', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getContrast = function () {
         var _this = this;
@@ -1753,13 +1874,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setContrast = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Contrast may only be in the range -100 to 100.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_contrast', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Contrast may only be in the range -100 to 100.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_contrast', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getHue = function () {
         var _this = this;
@@ -1771,13 +1897,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setHue = function (value) {
-        if (value < -180 || value > 180) {
-            throw new RangeError('Contrast may only be in the range -180 to 180.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_hue', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -180 || value > 180) {
+                reject(RangeError('Contrast may only be in the range -180 to 180.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_hue', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getSaturation = function () {
         var _this = this;
@@ -1789,13 +1920,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setSaturation = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Saturation may only be in the range -100 to 100');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_saturation', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Saturation may only be in the range -100 to 100'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_saturation', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getBorderColor = function () {
         var _this = this;
@@ -1809,8 +1945,13 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setBorderColor = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemColor;
 })();
@@ -1841,7 +1982,7 @@ var ItemConfigurable = (function () {
     ItemConfigurable.prototype.saveConfig = function (configObj) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin) {
                 var slot = item_1.Item.attach(_this._id);
                 // only allow direct saving for self
                 if (slot === 0) {
@@ -1869,7 +2010,7 @@ var ItemConfigurable = (function () {
                 }
             }
             else {
-                reject(Error('Script plugins and source configuration windows are ' +
+                reject(Error('Extensions and source configuration windows are ' +
                     'not allowed to directly save configuration objects. ' +
                     'Call requestSaveConfig() instead.'));
             }
@@ -1917,8 +2058,13 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setKeepAspectRatio = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.isPositionLocked = function () {
         var _this = this;
@@ -1930,8 +2076,13 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setPositionLocked = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:lockmove', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:lockmove', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.isEnhancedResizeEnabled = function () {
         var _this = this;
@@ -1943,8 +2094,13 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setEnhancedResizeEnabled = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.getPosition = function () {
         var _this = this;
@@ -1958,14 +2114,19 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setPosition = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.position = value;
-        item_1.Item.set('prop:pos', value.toCoordinateString(), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.position = value;
+            item_1.Item.set('prop:pos', value.toCoordinateString(), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":23,"../../util/rectangle":34}],15:[function(require,module,exports){
+},{"../../internal/item":23,"../../util/rectangle":35}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -1992,6 +2153,7 @@ var Item = (function () {
     function Item(props) {
         props = props ? props : {};
         this.name = props['name'];
+        this.cname = props['cname'];
         this._id = props['id'];
         this.sceneID = props['sceneID'];
         this.value = props['value'];
@@ -2001,9 +2163,14 @@ var Item = (function () {
     }
     /** Sets the name of the item */
     Item.prototype.setName = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.name = value;
-        item_1.Item.set('prop:name', this.name, slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.name = value;
+            item_1.Item.set('prop:name', _this.name, slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Gets the current name of the item */
     Item.prototype.getName = function () {
@@ -2012,6 +2179,28 @@ var Item = (function () {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:name', slot).then(function (val) {
                 _this.name = val;
+                resolve(val);
+            });
+        });
+    };
+    /** Sets the custom name of the item */
+    Item.prototype.setCustomName = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.cname = value;
+            item_1.Item.set('prop:cname', _this.cname, slot).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    /** Gets the custom name of the item */
+    Item.prototype.getCustomName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:cname', slot).then(function (val) {
+                _this.cname = val;
                 resolve(val);
             });
         });
@@ -2043,16 +2232,21 @@ var Item = (function () {
     };
     /** Set the video item's main definition */
     Item.prototype.setValue = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        var val = (typeof value === 'string') ?
-            value : value.toString();
-        if (typeof value !== 'string') {
-            this.value = json_1.JSON.parse(val);
-        }
-        else {
-            this.value = val;
-        }
-        item_1.Item.set('prop:item', val, slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            var val = (typeof value === 'string') ?
+                value : value.toString();
+            if (typeof value !== 'string') {
+                _this.value = json_1.JSON.parse(val);
+            }
+            else {
+                _this.value = val;
+            }
+            item_1.Item.set('prop:item', val, slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Check if item is kept loaded in memory */
     Item.prototype.getKeepLoaded = function () {
@@ -2067,9 +2261,15 @@ var Item = (function () {
     };
     /** Set Keep loaded option to ON or OFF */
     Item.prototype.setKeepLoaded = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.keepLoaded = value;
-        item_1.Item.set('prop:keeploaded', (this.keepLoaded ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.keepLoaded = value;
+            item_1.Item.set('prop:keeploaded', (_this.keepLoaded ? '1' : '0'), slot)
+                .then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Get the type of the item */
     Item.prototype.getType = function () {
@@ -2104,6 +2304,9 @@ var Item = (function () {
         item['item'] = this.value;
         item['type'] = this.type;
         item['selfclosing'] = true;
+        if (this.cname) {
+            item['cname'] = this.cname;
+        }
         return xml_1.XML.parseJSON(item);
     };
     /** Get the current source (when function is called by sources), or the source
@@ -2111,11 +2314,11 @@ var Item = (function () {
      * from the config window) */
     Item.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isScriptPlugin()) {
-                reject(Error('Script plugins do not have sources ' +
+            if (environment_1.Environment.isExtension()) {
+                reject(Error('Extensions do not have sources ' +
                     'associated with them.'));
             }
-            else if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
+            else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
                 scene_1.Scene.searchAllForItemId(item_1.Item.getBaseID()).then(function (item) {
                     resolve(item); // this should always exist
                 });
@@ -2142,8 +2345,13 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setVisible = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:visible', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:visible', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemTransition.prototype.getTransition = function () {
         var _this = this;
@@ -2160,8 +2368,13 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setTransition = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:transitionid', value.toString(), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:transitionid', value.toString(), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemTransition.prototype.getTransitionTime = function () {
         var _this = this;
@@ -2173,12 +2386,18 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setTransitionTime = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        if (value < 0 || value > 60000) {
-            throw new RangeError('Transparency may only be in the range 0 to 60000.');
-        }
-        ;
-        item_1.Item.set('prop:transitiontime', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < 0 || value > 60000) {
+                reject(RangeError('Transparency may only be in the range 0 to 60000.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:transitiontime', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     return ItemTransition;
 })();
@@ -2199,9 +2418,9 @@ var Scene = (function () {
     }
     ;
     Scene.initializeScenePool = function () {
-        if (Scene.scenePool.length === 0) {
-            for (var i = 0; i < Scene.maxScenes; i++) {
-                Scene.scenePool[i] = new Scene(i + 1);
+        if (Scene._scenePool.length === 0) {
+            for (var i = 0; i < Scene._maxScenes; i++) {
+                Scene._scenePool[i] = new Scene(i + 1);
             }
         }
     };
@@ -2223,7 +2442,7 @@ var Scene = (function () {
     Scene.getById = function (sceneNum) {
         // initialize if necessary
         Scene.initializeScenePool();
-        return Scene.scenePool[sceneNum - 1];
+        return Scene._scenePool[sceneNum - 1];
     };
     /**
      * Asynchronous functon to get a list of scene objects with a specific name.
@@ -2245,10 +2464,10 @@ var Scene = (function () {
     Scene.getByName = function (sceneName) {
         // initialize if necessary
         Scene.initializeScenePool();
-        var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
+        var namePromise = Promise.all(Scene._scenePool.map(function (scene, index) {
             return app_1.App.get('presetname:' + index).then(function (name) {
                 if (sceneName === name) {
-                    return Scene.scenePool[index];
+                    return Scene._scenePool[index];
                 }
                 else {
                     return null;
@@ -2285,7 +2504,7 @@ var Scene = (function () {
      */
     Scene.getActiveScene = function () {
         return new Promise(function (resolve) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 app_1.App.get('presetconfig:-1').then(function (sceneString) {
                     var curScene = json_1.JSON.parse(sceneString);
                     if (curScene.children.length > 0) {
@@ -2331,7 +2550,7 @@ var Scene = (function () {
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
-                Scene.scenePool.forEach(function (scene, idx, arr) {
+                Scene._scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
                         scene.getItems().then((function (items) {
                             found = items.some(function (item) {
@@ -2364,7 +2583,7 @@ var Scene = (function () {
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
-                Scene.scenePool.forEach(function (scene, idx, arr) {
+                Scene._scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
                         scene.getItems().then(function (items) {
                             found = items.some(function (item) {
@@ -2408,7 +2627,7 @@ var Scene = (function () {
         Scene.initializeScenePool();
         var matches = [];
         return new Promise(function (resolve) {
-            return Promise.all(Scene.scenePool.map(function (scene) {
+            return Promise.all(Scene._scenePool.map(function (scene) {
                 return new Promise(function (resolveScene) {
                     scene.getItems().then(function (items) {
                         if (items.length === 0) {
@@ -2444,6 +2663,41 @@ var Scene = (function () {
         });
     };
     ;
+    /**
+     * return: Promise<boolean>
+     *
+     * Load scenes that isn't yet initialized in XSplit Broadcaster
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.initializeScenes().then(function(val) {
+     *   if (val === true) {
+     *     // Now you know that all scenes are loaded :)
+     *   }
+     * })
+     * ```
+     */
+    Scene.initializeScenes = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            app_1.App.get('presetcount').then(function (cnt) {
+                if (Number(cnt) !== 12) {
+                    // Insert an empty scene for scene #12
+                    app_1.App
+                        .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                        .then(function (res) {
+                        resolve(res);
+                    });
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        });
+    };
     /**
      * Get the 1-indexed scene number of this scene object.
      *
@@ -2504,7 +2758,7 @@ var Scene = (function () {
     Scene.prototype.setName = function (name) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Scene names are readonly for source plugins.'));
             }
             else {
@@ -2590,8 +2844,8 @@ var Scene = (function () {
             });
         });
     };
-    Scene.maxScenes = 12;
-    Scene.scenePool = [];
+    Scene._maxScenes = 12;
+    Scene._scenePool = [];
     return Scene;
 })();
 exports.Scene = Scene;
@@ -2661,7 +2915,7 @@ var App = (function () {
     App.set = function (name, value) {
         return new Promise(function (resolve) {
             internal_1.exec('AppSetPropertyAsync', name, value, function (ret) {
-                resolve(ret === '0' ? false : true);
+                resolve(Number(ret) < 0 ? false : true);
             });
         });
     };
@@ -2781,7 +3035,7 @@ function resolveRelativePath(path, base) {
 }
 function readMetaConfigUrl() {
     return new Promise(function (resolve) {
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             var configObj = {};
             // initialize config URL if necessary
             try {
@@ -2814,12 +3068,12 @@ function readMetaConfigUrl() {
 }
 function getCurrentSourceID() {
     return new Promise(function (resolve) {
-        if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
+        if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
             // initialize Item.getSource() functions
             internal_1.exec('GetLocalPropertyAsync', 'prop:id', function (result) {
                 var id = decodeURIComponent(result);
                 item_1.Item.setBaseID(id);
-                if (environment_1.Environment.isSourceHtml()) {
+                if (environment_1.Environment.isSourcePlugin()) {
                     item_1.Item.lockSourceSlot(id);
                 }
                 resolve();
@@ -2854,7 +3108,7 @@ function init() {
     });
 }
 init();
-},{"../context/config":1,"../core/environment":5,"../util/ready":33,"./global":20,"./internal":22,"./item":23}],22:[function(require,module,exports){
+},{"../context/config":1,"../core/environment":5,"../util/ready":34,"./global":20,"./internal":22,"./item":23}],22:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -2931,7 +3185,7 @@ var Item = (function () {
             }
             Item.lastSlot = slot;
             Item.itemSlotMap[slot] = itemID;
-            if (environment_1.Environment.isScriptPlugin()) {
+            if (environment_1.Environment.isExtension()) {
                 internal_1.exec('SearchVideoItem' +
                     (String(slot) === '0' ? '' : (slot + 1)), itemID);
             }
@@ -3724,25 +3978,25 @@ var Game = (function () {
      * Get the FPS Render of the game
      */
     Game.prototype.getFpsRender = function () {
-        return this.fpsRender;
+        return this._fpsRender;
     };
     /**
      * Get the Captured FPS of the game
      */
     Game.prototype.getFpsCapture = function () {
-        return this.fpsCapture;
+        return this._fpsCapture;
     };
     /**
      * Get the image name of the game
      */
     Game.prototype.getImageName = function () {
-        return this.imagename;
+        return this._imagename;
     };
     /**
      * Get the replace image value of the game
      */
     Game.prototype.getReplace = function () {
-        return this.replace;
+        return this._replace;
     };
     /**
      * param: gameJSON<JXON>
@@ -3775,12 +4029,12 @@ var Game = (function () {
         g._wndname = jxon['wndname'];
         g._lastframets = jxon['lastframets'] !== undefined ?
             parseInt(jxon['lastframets']) : undefined;
-        g.fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
+        g._fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
             undefined;
-        g.fpsCapture = jxon['fpsCapture'] !== undefined ?
+        g._fpsCapture = jxon['fpsCapture'] !== undefined ?
             Number(jxon['fpsCapture']) : undefined;
-        g.imagename = jxon['imagename'];
-        g.replace = jxon['replace'];
+        g._imagename = jxon['imagename'];
+        g._replace = jxon['replace'];
         return g;
     };
     /**
@@ -3820,7 +4074,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26,"../util/rectangle":34}],30:[function(require,module,exports){
+},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26,"../util/rectangle":35}],30:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -3872,6 +4126,9 @@ var audio_1 = require('./audio');
 var microphone_1 = require('./microphone');
 var camera_1 = require('./camera');
 var game_1 = require('./game');
+var json_1 = require('../internal/util/json');
+var environment_1 = require('../core/environment');
+var internal_1 = require('../internal/internal');
 /**
  * This enum is used for {@link #system/System System Class'} getAudioDevices
  * method's first parameter.
@@ -4061,10 +4318,69 @@ var System = (function () {
             });
         });
     };
+    /**
+     * return: Promise<JXON>
+     *
+     * Gets the position of the cursor. Does not work on Source Plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getCursorPosition().then(function(pos) {
+     *   var x = pos.x; // X Axis
+     *   var y = pos.y; // Y Axis
+     * });
+     * ```
+     */
+    System.getCursorPosition = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            else {
+                var res = internal_1.exec('GetCursorPos');
+                if (typeof res === 'string') {
+                    var posArr = res.split(',');
+                    var pos = new json_1.JSON();
+                    pos['x'] = Number(posArr[0]);
+                    pos['y'] = Number(posArr[1]);
+                    resolve(pos);
+                }
+                else {
+                    reject(Error('cannot fetch current cursor position'));
+                }
+            }
+        });
+    };
+    /**
+     * param: JXON
+     *
+     * Sets the position of the cursor. Does not work on Source Plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.setCursorPosition({x:0, y:0});
+     * ```
+     */
+    System.setCursorPosition = function (pos) {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+                reject(Error('invalid parameters'));
+            }
+            else {
+                internal_1.exec('SetCursorPos', String(pos['x']), String(pos['y']));
+                resolve(true);
+            }
+        });
+    };
     return System;
 })();
 exports.System = System;
-},{"../internal/app":19,"./audio":27,"./camera":28,"./game":29,"./microphone":30}],32:[function(require,module,exports){
+},{"../core/environment":5,"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"./audio":27,"./camera":28,"./game":29,"./microphone":30}],32:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -4096,25 +4412,27 @@ var Color = (function () {
         return new Color({ ibgr: ibgr });
     };
     Color.prototype.getRgb = function () {
-        return this.rgb;
+        return this._rgb;
     };
     Color.prototype.setRgb = function (rgb) {
-        this.rgb = rgb.replace(/^#/, '');
-        this.irgb = parseInt(this.rgb, 16);
-        this.bgr = [this.rgb.substring(4, 6), this.rgb.substring(2, 4),
-            this.rgb.substring(0, 2)].join('');
-        this.ibgr = parseInt(this.bgr, 16);
+        this._rgb = rgb.replace(/^#/, '');
+        this._irgb = parseInt(this._rgb, 16);
+        this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
+            this._rgb.substring(0, 2)].join('');
+        this._ibgr = parseInt(this._bgr, 16);
+        return this;
     };
     Color.prototype.getBgr = function () {
-        return this.bgr;
+        return this._bgr;
     };
     Color.prototype.setBgr = function (bgr) {
         this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4),
             bgr.substring(0, 2)
         ].join(''));
+        return this;
     };
     Color.prototype.getIrgb = function () {
-        return this.irgb;
+        return this._irgb;
     };
     Color.prototype.setIrgb = function (irgb) {
         var rgb = irgb.toString(16);
@@ -4122,9 +4440,10 @@ var Color = (function () {
             rgb = '0' + rgb;
         }
         this.setRgb(rgb);
+        return this;
     };
     Color.prototype.getIbgr = function () {
-        return this.ibgr;
+        return this._ibgr;
     };
     Color.prototype.setIbgr = function (ibgr) {
         var bgr = ibgr.toString(16);
@@ -4132,11 +4451,108 @@ var Color = (function () {
             bgr = '0' + bgr;
         }
         this.setBgr(bgr);
+        return this;
     };
     return Color;
 })();
 exports.Color = Color;
 },{}],33:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var internal_1 = require('../internal/internal');
+var IO = (function () {
+    function IO() {
+    }
+    /**
+     * Returns a base-64 encoded string of the target file's contents.
+     * UTF-8 encoded files may be decoded through:
+     * ```javascript
+     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * ```
+     */
+    IO.getFileContent = function (path) {
+        return new Promise(function (resolve) {
+            resolve(internal_1.exec('GetFileContent', path));
+        });
+    };
+    /**
+     * Returns a base-64 encoded string of the target endpoint's contents.
+     * Redirects are resolved, and this bypasses access-control-allow-origin.
+     *
+     * UTF-8 encoded content may be decoded through:
+     * ```javascript
+     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * ```
+     */
+    IO.getWebContent = function (url) {
+        return new Promise(function (resolve) {
+            internal_1.exec('GetWebContent', url, function (encoded) {
+                resolve(encoded);
+            });
+        });
+    };
+    /** Opens a URL in the user's default browser. URLs need to
+     *
+     */
+    IO.openUrl = function (url) {
+        internal_1.exec('OpenUrl', url);
+    };
+    /**
+     * Opens a file dialog for the user to select a file (or multiple files).
+     * Returns an array of strings, each of which contains the full path
+     * and filename of a selected file. Rejects when the dialog is canceled.
+     *
+     * The first (optional) argument is a JSON object that can be used to indicate
+     * that certain flags should be true. These are documented as follows:
+     * - `allowMultiSelect`: allows users to select multiple files.
+     * - `fileMustExist`: prevents users from typing a name of a nonexistent file
+     * - `forceShowHidden`: lets the dialog show files marked as System or Hidden
+     *  (but not both)
+     *
+     * The second argument (also optional) is a JSON object used to specify the
+     * filter for items to be displayed. It takes two members:
+     * - `name`: the description of the filter (for example: Image Files)
+     * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
+     */
+    IO.openFileDialog = function (optionBag, filter) {
+        return new Promise(function (resolve, reject) {
+            var flags = 0;
+            if (optionBag !== undefined && optionBag !== null) {
+                if (optionBag.allowMultiSelect === true) {
+                    flags = flags | IO._ALLOW_MULTI_SELECT;
+                }
+                if (optionBag.fileMustExist === true) {
+                    flags = flags | IO._FILE_MUST_EXIST;
+                }
+                if (optionBag.forceShowHidden === true) {
+                    flags = flags | IO._FORCE_SHOW_HIDDEN;
+                }
+            }
+            var filterString = '';
+            if (filter !== undefined && filter !== null &&
+                filter.name !== undefined && filter.extensions !== undefined) {
+                filterString = filter.name + '|';
+                filterString += (filter.extensions.map(function (val) {
+                    return '*.' + val;
+                })).join(';');
+                filterString += '||';
+            }
+            internal_1.exec('OpenFileDialogAsync', null, null, String(flags), filterString, function (path) {
+                if (path !== "null") {
+                    resolve(path.split('|'));
+                }
+                else {
+                    reject(Error('File selection cancelled.'));
+                }
+            });
+        });
+    };
+    IO._ALLOW_MULTI_SELECT = 0x200;
+    IO._FILE_MUST_EXIST = 0x1000;
+    IO._FORCE_SHOW_HIDDEN = 0x10000000;
+    return IO;
+})();
+exports.IO = IO;
+},{"../internal/internal":22}],34:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -4155,113 +4571,119 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
     /** Gets the top value */
     Rectangle.prototype.getTop = function () {
-        return this.top;
+        return this._top;
     };
     /** Sets the top value */
     Rectangle.prototype.setTop = function (top) {
-        this.top = top;
-        if (this.bottom !== undefined &&
-            this.height !== (this.top - this.bottom)) {
-            this.setHeight(Math.abs(this.top - this.bottom));
+        this._top = top;
+        if (this._bottom !== undefined &&
+            this._height !== (this._top - this._bottom)) {
+            this.setHeight(Math.abs(this._top - this._bottom));
         }
-        else if (this.height !== undefined &&
-            this.bottom !== (this.top + this.height)) {
-            this.setBottom(this.top + this.height);
+        else if (this._height !== undefined &&
+            this._bottom !== (this._top + this._height)) {
+            this.setBottom(this._top + this._height);
         }
+        return this;
     };
     /** Gets the left value */
     Rectangle.prototype.getLeft = function () {
-        return this.left;
+        return this._left;
     };
     /** Sets the left value */
     Rectangle.prototype.setLeft = function (left) {
-        this.left = left;
-        if (this.right !== undefined &&
-            this.width !== Math.abs(this.right - this.left)) {
-            this.setWidth(Math.abs(this.right - this.left));
+        this._left = left;
+        if (this._right !== undefined &&
+            this._width !== Math.abs(this._right - this._left)) {
+            this.setWidth(Math.abs(this._right - this._left));
         }
-        else if (this.width !== undefined &&
-            this.height !== (this.left + this.width)) {
-            this.setRight(this.left + this.width);
+        else if (this._width !== undefined &&
+            this._height !== (this._left + this._width)) {
+            this.setRight(this._left + this._width);
         }
+        return this;
     };
     /** Gets the right value */
     Rectangle.prototype.getRight = function () {
-        return this.right;
+        return this._right;
     };
     /** Sets the right value */
     Rectangle.prototype.setRight = function (right) {
-        this.right = right;
-        if (this.left !== undefined &&
-            this.width !== Math.abs(this.right - this.left)) {
-            this.setWidth(Math.abs(this.right - this.left));
+        this._right = right;
+        if (this._left !== undefined &&
+            this._width !== Math.abs(this._right - this._left)) {
+            this.setWidth(Math.abs(this._right - this._left));
         }
-        else if (this.width !== undefined &&
-            this.left !== (this.right - this.width)) {
-            this.setLeft(this.right - this.width);
+        else if (this._width !== undefined &&
+            this._left !== (this._right - this._width)) {
+            this.setLeft(this._right - this._width);
         }
+        return this;
     };
     /** Gets the bottom value */
     Rectangle.prototype.getBottom = function () {
-        return this.bottom;
+        return this._bottom;
     };
     /** Sets the bottom value */
     Rectangle.prototype.setBottom = function (bottom) {
-        this.bottom = bottom;
-        if (this.top !== undefined &&
-            this.height !== Math.abs(this.top - this.bottom)) {
-            this.setHeight(Math.abs(this.top - this.bottom));
+        this._bottom = bottom;
+        if (this._top !== undefined &&
+            this._height !== Math.abs(this._top - this._bottom)) {
+            this.setHeight(Math.abs(this._top - this._bottom));
         }
-        else if (this.height !== undefined &&
-            this.top !== (this.bottom - this.height)) {
-            this.setTop(this.bottom - this.height);
+        else if (this._height !== undefined &&
+            this._top !== (this._bottom - this._height)) {
+            this.setTop(this._bottom - this._height);
         }
+        return this;
     };
     /** Gets the width value */
     Rectangle.prototype.getWidth = function () {
-        return this.width;
+        return this._width;
     };
     /** Sets the width value */
     Rectangle.prototype.setWidth = function (width) {
-        this.width = width;
-        if (this.right !== undefined &&
-            this.left !== (this.right - this.width)) {
-            this.setLeft(this.right - this.width);
+        this._width = width;
+        if (this._right !== undefined &&
+            this._left !== (this._right - this._width)) {
+            this.setLeft(this._right - this._width);
         }
-        else if (this.left !== undefined &&
-            this.right !== (this.left + this.width)) {
-            this.setRight(this.left + this.width);
+        else if (this._left !== undefined &&
+            this._right !== (this._left + this._width)) {
+            this.setRight(this._left + this._width);
         }
+        return this;
     };
     /** Gets the height value */
     Rectangle.prototype.getHeight = function () {
-        return this.height;
+        return this._height;
     };
     /** Sets the height value */
     Rectangle.prototype.setHeight = function (height) {
-        this.height = height;
-        if (this.top !== undefined &&
-            this.bottom !== (this.top + this.height)) {
-            this.setBottom(this.top + this.height);
+        this._height = height;
+        if (this._top !== undefined &&
+            this._bottom !== (this._top + this._height)) {
+            this.setBottom(this._top + this._height);
         }
-        else if (this.bottom !== undefined &&
-            this.top !== (this.bottom - this.height)) {
-            this.setTop(this.bottom - this.height);
+        else if (this._bottom !== undefined &&
+            this._top !== (this._bottom - this._height)) {
+            this.setTop(this._bottom - this._height);
         }
+        return this;
     };
     Rectangle.fromDimensions = function (width, height) {
         if (width < 0 || height < 0) {
             throw new Error('Rectangle dimensions cannot be negative.');
         }
         var rect = new Rectangle();
-        rect.width = width;
-        rect.height = height;
+        rect._width = width;
+        rect._height = height;
         return rect;
     };
     Rectangle.fromCoordinates = function (top, left, right, bottom) {
@@ -4272,21 +4694,21 @@ var Rectangle = (function () {
             throw new Error('Right coordinate must be smaller than left.');
         }
         var rect = new Rectangle();
-        rect.top = top;
-        rect.left = left;
+        rect._top = top;
+        rect._left = left;
         rect.setRight(right); // calculates width
         rect.setBottom(bottom); // calculates height
         return rect;
     };
     Rectangle.prototype.toDimensionString = function () {
-        return this.width + ',' + this.height;
+        return this._width + ',' + this._height;
     };
     Rectangle.prototype.toCoordinateString = function () {
-        if (this.left === undefined) {
+        if (this._left === undefined) {
             throw new Error('This Rectangle instance does not have coordinates.');
         }
         else {
-            return this.left + ',' + this.top + ',' + this.right + ',' + this.bottom;
+            return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;
         }
     };
     Rectangle.prototype.toString = function (value) {
@@ -4295,12 +4717,12 @@ var Rectangle = (function () {
         }
         else {
             var format = value;
-            format = format.replace(':left', String(this.left));
-            format = format.replace(':top', String(this.top));
-            format = format.replace(':right', String(this.right));
-            format = format.replace(':bottom', String(this.bottom));
-            format = format.replace(':width', String(this.width));
-            format = format.replace(':height', String(this.height));
+            format = format.replace(':left', String(this._left));
+            format = format.replace(':top', String(this._top));
+            format = format.replace(':right', String(this._right));
+            format = format.replace(':bottom', String(this._bottom));
+            format = format.replace(':width', String(this._width));
+            format = format.replace(':height', String(this._height));
             return format;
         }
     };
@@ -4314,6 +4736,7 @@ function __export(m) {
 require('./internal/init');
 __export(require('./util/color'));
 __export(require('./util/rectangle'));
+__export(require('./util/io'));
 __export(require('./core/environment'));
 __export(require('./core/app'));
 __export(require('./core/scene'));
@@ -4332,4 +4755,4 @@ __export(require('./context/config'));
 __export(require('./context/source'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./context/config":1,"./context/source":3,"./core/app":4,"./core/environment":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/game":8,"./core/item/html":9,"./core/item/item":15,"./core/scene":17,"./core/transition":18,"./internal/init":21,"./system/audio":27,"./system/camera":28,"./system/game":29,"./system/microphone":30,"./system/system":31,"./util/color":32,"./util/ready":33,"./util/rectangle":34}]},{},["xjs"]);
+},{"./context/config":1,"./context/source":3,"./core/app":4,"./core/environment":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/game":8,"./core/item/html":9,"./core/item/item":15,"./core/scene":17,"./core/transition":18,"./internal/init":21,"./system/audio":27,"./system/camera":28,"./system/game":29,"./system/microphone":30,"./system/system":31,"./util/color":32,"./util/io":33,"./util/ready":34,"./util/rectangle":35}]},{},["xjs"]);

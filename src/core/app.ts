@@ -7,6 +7,7 @@ import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
+import {Transition} from './transition';
 
 var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
@@ -488,7 +489,7 @@ export class App{
     flags?: number,
     title?: string
   ): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
       var params: any[] = ['NewDialog', url, '', width + ',' + height];
@@ -513,7 +514,7 @@ export class App{
    * ```
    */
   newAutoDialog(url: string, width: number = 300, height: number = 300): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else if (url !== undefined && url !== '') {
       exec('NewAutoDialog', url, width + ',' + height);
@@ -526,7 +527,7 @@ export class App{
    * Close a created dialog
    */
   closeDialog(): void {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       throw new TypeError('function is not available for source');
     } else {
       exec('CloseDialog');
@@ -535,21 +536,8 @@ export class App{
 
   // Transition Services
 
-  static TRANSITION_CLOCK: string            = 'clock';
-  static TRANSITION_COLLAPSE: string         = 'collapse';
-  static TRANSITION_FADE: string             = 'fade';
-  static TRANSITION_FAN: string              = 'fan';
-  static TRANSITION_HOLE: string             = 'hole';
-  static TRANSITION_MOVE_BOTTOM: string      = 'move_bottom';
-  static TRANSITION_MOVE_LEFT: string        = 'move_left';
-  static TRANSITION_MOVE_LEFT_RIGHT: string  = 'move_left_right';
-  static TRANSITION_MOVE_RIGHT: string       = 'move_right';
-  static TRANSITION_MOVE_TOP: string         = 'move_top';
-  static TRANSITION_MOVE_TOP_BOTTOM: string  = 'move_top_bottom';
-  static TRANSITION_WAVE: string             = 'wave';
-
   /**
-   * return: Promise<string>
+   * return: Promise<Transition>
    *
    * Gets the transition for scene changes
    *
@@ -562,18 +550,22 @@ export class App{
    * });
    * ```
    */
-  getTransition(): Promise<string> {
+  getTransition(): Promise<Transition> {
     return new Promise(resolve => {
       iApp.get('transitionid').then(val => {
-        resolve(val);
+        if (val === '') { // NONE
+          resolve(Transition.NONE);
+        } else {
+          resolve(Transition[val.toUpperCase()]);
+        }
       });
     });
   }
 
   /**
-   * param: transition<string>
+   * param: transition<Transition>
    * ```
-   * return: Promise<string>
+   * return: Promise<Transition>
    * ```
    *
    * Sets the transition for scene changes
@@ -581,27 +573,18 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * // you may use the following:
-   * //     * App.TRANSITION_CLOCK
-   * //     * App.TRANSITION_COLLAPSE
-   * //     * App.TRANSITION_FADE
-   * //     * App.TRANSITION_FAN
-   * //     * App.TRANSITION_HOLE
-   * //     * App.TRANSITION_MOVE_BOTTOM
-   * //     * App.TRANSITION_MOVE_LEFT
-   * //     * App.TRANSITION_MOVE_LEFT_RIGHT
-   * //     * App.TRANSITION_MOVE_RIGHT
-   * //     * App.TRANSITION_MOVE_TOP
-   * //     * App.TRANSITION_MOVE_TOP_BOTTOM
-   * //     * App.TRANSITION_WAVE
-   * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+   * var xjs = require('xjs'),
+   *     Transition = xjs.Transition,
+   *     App = new xjs.App();
+
+   * App.setTransition(Transition.CLOCK).then(function(val) {
    *  var isSet = val;
    * });
    * ```
    */
-  setTransition(transition: string): Promise<boolean> {
+  setTransition(transition: Transition): Promise<boolean> {
     return new Promise(resolve => {
-      iApp.set('transitionid', transition).then(val => {
+      iApp.set('transitionid', transition.toString()).then(val => {
         resolve(val);
       });
     });

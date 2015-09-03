@@ -1,8 +1,8 @@
 export class Color {
-  private rgb: string;
-  private irgb: number;
-  private bgr: string;
-  private ibgr: number;
+  private _rgb: string;
+  private _irgb: number;
+  private _bgr: string;
+  private _ibgr: number;
 
   constructor( props: { rgb: string } |
               { irgb: number } |
@@ -38,33 +38,37 @@ export class Color {
   }
 
   getRgb() {
-    return this.rgb;
+    return this._rgb;
   }
 
-  private setRgb(rgb: string) {
-    this.rgb = rgb.replace(/^#/, '');
-    this.irgb = parseInt(this.rgb, 16);
+  private setRgb(rgb: string): Color {
+    this._rgb = rgb.replace(/^#/, '');
+    this._irgb = parseInt(this._rgb, 16);
 
-    this.bgr = [this.rgb.substring(4, 6), this.rgb.substring(2, 4), 
-    this.rgb.substring(0, 2)].join('');
-    this.ibgr = parseInt(this.bgr, 16);
+    this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
+    this._rgb.substring(0, 2)].join('');
+    this._ibgr = parseInt(this._bgr, 16);
+
+    return this;
   }
 
   getBgr() {
-    return this.bgr;
+    return this._bgr;
   }
 
-  private setBgr(bgr: string) {
-    this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4), 
+  private setBgr(bgr: string): Color {
+    this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4),
       bgr.substring(0, 2)
       ].join(''));
+
+    return this;
   }
 
   getIrgb() {
-    return this.irgb;
+    return this._irgb;
   }
 
-  private setIrgb(irgb: number) {
+  private setIrgb(irgb: number): Color {
     let rgb = irgb.toString(16);
 
     while (rgb.length < 6) {
@@ -72,13 +76,15 @@ export class Color {
     }
 
     this.setRgb(rgb);
+
+    return this;
   }
 
   getIbgr() {
-    return this.ibgr;
+    return this._ibgr;
   }
 
-  private setIbgr(ibgr:number) {
+  private setIbgr(ibgr:number): Color {
     var bgr = ibgr.toString(16);
 
     while (bgr.length < 6) {
@@ -86,6 +92,8 @@ export class Color {
     }
 
     this.setBgr(bgr);
+
+    return this;
   }
 }
 

@@ -40,7 +40,7 @@ function resolveRelativePath(path: string, base: string) {
 
 function readMetaConfigUrl(): Promise<any> {
   return new Promise(resolve => {
-    if (Environment.isSourceHtml()) {
+    if (Environment.isSourcePlugin()) {
       var configObj = {};      
       // initialize config URL if necessary
 
@@ -77,14 +77,14 @@ function readMetaConfigUrl(): Promise<any> {
 
 function getCurrentSourceID(): Promise<any> {
   return new Promise(resolve => {
-    if (Environment.isSourceHtml() || Environment.isSourceConfig()) {
+    if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
       // initialize Item.getSource() functions
       exec('GetLocalPropertyAsync', 'prop:id',
         result => {
           let id = decodeURIComponent(result);
           Item.setBaseID(id);
 
-          if (Environment.isSourceHtml()) {
+          if (Environment.isSourcePlugin()) {
             Item.lockSourceSlot(id);
           }
           resolve();

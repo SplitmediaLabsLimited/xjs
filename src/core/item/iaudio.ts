@@ -5,13 +5,13 @@ import {Environment} from '../environment';
 
 export interface IItemAudio {
   getVolume(): Promise<number>;
-  setVolume(value: number);
+  setVolume(value: number): Promise<IItemAudio>;
   isMute(): Promise<boolean>;
-  setMute(value: boolean);
+  setMute(value: boolean): Promise<IItemAudio>;
   getAudioOffset(): Promise<number>;
-  setAudioOffset(value: number);
+  setAudioOffset(value: number): Promise<IItemAudio>;
   isStreamOnlyEnabled(): Promise<boolean>;
-  setStreamOnlyEnabled(value: boolean);
+  setStreamOnlyEnabled(value: boolean): Promise<IItemAudio>;
 }
 
 export class ItemAudio implements IItemAudio {
@@ -20,7 +20,6 @@ export class ItemAudio implements IItemAudio {
   getVolume(): Promise<number> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:volume', slot).then(val => {
         resolve(Number(val));
       });
@@ -29,13 +28,11 @@ export class ItemAudio implements IItemAudio {
 
   setVolume(value: number): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
-        reject(Error('Source plugins cannot update audio sources properties'));
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Source plugins cannot update audio source properties.'));
       } else {
         let slot = iItem.attach(this._id);
-
         value = value < 0 ? 0 : value > 100 ? 100 : value;
-
         iItem.set('prop:volume', String(value), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
@@ -50,7 +47,6 @@ export class ItemAudio implements IItemAudio {
   isMute(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:mute', slot).then(val => {
         resolve(val === '1');
       });
@@ -59,11 +55,10 @@ export class ItemAudio implements IItemAudio {
 
   setMute(value: boolean): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:mute', (value ? '1' : '0'), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
@@ -78,7 +73,6 @@ export class ItemAudio implements IItemAudio {
   getAudioOffset(): Promise<number> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:AudioDelay', slot).then(val => {
         resolve(Number(val));
       });
@@ -87,11 +81,10 @@ export class ItemAudio implements IItemAudio {
 
   setAudioOffset(value: number): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:AudioDelay', String(value), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
@@ -106,7 +99,6 @@ export class ItemAudio implements IItemAudio {
   isStreamOnlyEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('prop:sounddev', slot).then(val => {
         resolve(val === '1');
       });
@@ -115,11 +107,10 @@ export class ItemAudio implements IItemAudio {
 
   setStreamOnlyEnabled(value: boolean): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
         let slot = iItem.attach(this._id);
-
         iItem.set('prop:sounddev', (value ? '1' : '0'), slot).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));

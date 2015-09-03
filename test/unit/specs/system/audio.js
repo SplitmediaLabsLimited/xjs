@@ -112,7 +112,7 @@ describe('Audio ===', function() {
     });
 
     it('allow dataflow filter', function(done) {
-      promise = System.getAudioDevices(AudioDeviceDataflow.Capture);
+      promise = System.getAudioDevices(AudioDeviceDataflow.CAPTURE);
       promise.then(function(devices) {
         for (var i = devices.length - 1; i >= 0; i--) {
           expect(devices[i].getDataFlow()).toBe('Capture');

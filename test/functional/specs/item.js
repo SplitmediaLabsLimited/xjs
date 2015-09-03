@@ -62,6 +62,24 @@
         },
 
         {
+          name: 'setCustomName',
+          onClick: function() {
+            currentItem.setCustomName(randomWord(10));
+            Rose.output('Done!');
+          }
+        },
+
+        {
+          name: 'getCustomName',
+          onClick: function() {
+            currentItem.getCustomName().then(function(val) {
+              console.trace(val);
+              Rose.output(val);
+            });
+          }
+        },
+
+        {
           name: 'setValue',
           onClick: function() {
             currentItem.setValue(randomWord(10));

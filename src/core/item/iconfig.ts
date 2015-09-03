@@ -31,7 +31,7 @@ export class ItemConfigurable {
 
   saveConfig(configObj: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);
         // only allow direct saving for self
         if (slot === 0) {
@@ -58,7 +58,7 @@ export class ItemConfigurable {
           }
         } else {
           reject(Error(
-            'Script plugins and source configuration windows are ' +
+            'Extensions and source configuration windows are ' +
             'not allowed to directly save configuration objects. ' +
             'Call requestSaveConfig() instead.'));
         }

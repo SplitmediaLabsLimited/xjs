@@ -93,7 +93,7 @@ describe('HTMLItem', function() {
 
   beforeEach(function(done) {
     enumerated = [];
-    env.set('script');
+    env.set('extension');
     if (!isXSplit) {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
