@@ -49,7 +49,6 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('GameCapSurfSharing').then(res => {
         resolve(res === '1');
       });
@@ -61,10 +60,13 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Game Special Optimization to on or off
    */
-  setSpecialOptimizationEnabled(value: boolean) {
-    let slot = iItem.attach(this._id);
-
-    iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot);
+  setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /**
@@ -75,7 +77,6 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-
       iItem.get('GameCapShowMouse').then(res => {
         resolve(res === '1');
       });
@@ -87,10 +88,13 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Show Mouse in game to on or off
    */
-  setShowMouseEnabled(value: boolean) {
-    let slot = iItem.attach(this._id);
-
-    iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot);
+  setShowMouseEnabled(value: boolean): Promise<GameItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /**
@@ -102,33 +106,27 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
     return new Promise((resolve, reject) => {
       if (this.type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
-      }
-
-      if (Environment.isSourceHtml()) {
+      } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
         );
-      }
-
-      if (!(this.value instanceof XML)) {
+      } else if (!(this.value instanceof XML)) {
         this.getValue().then(() => {
           this.setOfflineImage(path).then(itemObj => {
             resolve(itemObj);
-          })
+          });
         });
-        return;
+      } else {
+        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+        if (regExp.test(path) || path === '') {
+          var valueObj = JXON.parse(this.value.toString());
+          valueObj['replace'] = path;
+          this.setValue(XML.parseJSON(valueObj)).then(() => {
+            resolve(this);
+          });
+        }
       }
-
-      var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-        '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-
-      if (regExp.test(path) || path === '') {
-        var valueObj = JXON.parse(this.value.toString());
-        valueObj['replace'] = path;
-        this.setValue(XML.parseJSON(valueObj));
-      }
-
-      resolve(this);
     });
   }
 
@@ -141,12 +139,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
     return new Promise((resolve, reject) => {
       if (this.type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
+      } else {
+        this.getValue().then(() => {
+          var valueObj = JXON.parse(this.value.toString());
+          resolve(valueObj['replace'] ? valueObj['replace'] : '');
+        });
       }
-
-      this.getValue().then(() => {
-        var valueObj = JXON.parse(this.value.toString());
-        resolve(valueObj['replace'] ? valueObj['replace'] : '');
-      });
     });
   }
 
@@ -185,28 +183,28 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Aspect Ratio to ON or OFF
    */
-  setKeepAspectRatio:       (value: boolean) => void;
+  setKeepAspectRatio:       (value: boolean) => Promise<GameItem>;
 
   /**
    * param: value<boolean>
    *
    * Set Position Lock to ON or OFF
    */
-  setPositionLocked:        (value: boolean) => void;
+  setPositionLocked:        (value: boolean) => Promise<GameItem>;
 
   /**
    * param: value<boolean>
    *
    * Set Enhance Resize to ON or OFF
    */
-  setEnhancedResizeEnabled:  (value: boolean) => void;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<GameItem>;
 
   /**
    * param: value<Rectangle>
    *
    * Set Item position
    */
-  setPosition:              (value: Rectangle) => void;
+  setPosition:              (value: Rectangle) => Promise<GameItem>;
 
   // ItemColor
 
@@ -257,42 +255,42 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set Item Transparency
    */
-  setTransparency: (value: number) => void;
+  setTransparency: (value: number) => Promise<GameItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Brightness
    */
-  setBrightness:   (value: number) => void;
+  setBrightness:   (value: number) => Promise<GameItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Contrast
    */
-  setContrast:     (value: number) => void;
+  setContrast:     (value: number) => Promise<GameItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Hue
    */
-  setHue:          (value: number) => void;
+  setHue:          (value: number) => Promise<GameItem>;
 
   /**
    * param: value<number>
    *
    * Set Item Saturation
    */
-  setSaturation:   (value: number) => void;
+  setSaturation:   (value: number) => Promise<GameItem>;
 
   /**
    * param: value<Color>
    *
    * Set Border Color
    */
-  setBorderColor:  (value: Color) => void;
+  setBorderColor:  (value: Color) => Promise<GameItem>;
 
   // ItemChroma
   /**
@@ -302,7 +300,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<boolean>
    */
-  setChromaEnabled: (value: boolean) => void;
+  setChromaEnabled: (value: boolean) => Promise<GameItem>;
   /**
    * return: Promise<KeyingType>
    */
@@ -310,7 +308,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<KeyingType>
    */
-  setKeyingType: (value: KeyingType) => void;
+  setKeyingType: (value: KeyingType) => Promise<GameItem>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -320,7 +318,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<ChromaAntiAliasLevel>
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => void;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameItem>;
 
   // CHROMA LEGACY MODE
   /**
@@ -330,7 +328,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaLegacyBrightness: (value: number) => void;
+  setChromaLegacyBrightness: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -338,7 +336,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaLegacySaturation: (value: number) => void;
+  setChromaLegacySaturation: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -346,7 +344,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaLegacyHue: (value: number) => void;
+  setChromaLegacyHue: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -354,7 +352,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaLegacyThreshold: (value: number) => void;
+  setChromaLegacyThreshold: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -362,7 +360,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => void;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameItem>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -372,7 +370,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<ChromaPrimaryColors>
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => void;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -380,7 +378,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaRGBKeyThreshold: (value: number) => void;
+  setChromaRGBKeyThreshold: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -388,7 +386,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaRGBKeyExposure: (value: number) => void;
+  setChromaRGBKeyExposure: (value: number) => Promise<GameItem>;
 
   // COLOR KEY MODE
   /**
@@ -398,7 +396,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaColorKeyThreshold: (value: number) => void;
+  setChromaColorKeyThreshold: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<number>
    */
@@ -406,7 +404,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<number>
    */
-  setChromaColorKeyExposure: (value: number) => void;
+  setChromaColorKeyExposure: (value: number) => Promise<GameItem>;
   /**
    * return: Promise<Color>
    */
@@ -414,7 +412,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<Color>
    */
-  setChromaColorKeyColor: (value: Color) => void;
+  setChromaColorKeyColor: (value: Color) => Promise<GameItem>;
 
   // ItemTransition
 
@@ -430,7 +428,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set item to visible or hidden
    */
-  setVisible:        (value: boolean) => void;
+  setVisible:        (value: boolean) => Promise<GameItem>;
 
   /**
    * return: Promise<boolean>
@@ -444,7 +442,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set item's transition type for when visibility is toggled
    */
-  setTransition:     (value: Transition) => void;
+  setTransition:     (value: Transition) => Promise<GameItem>;
 
   /**
    * return: Promise<number>
@@ -458,7 +456,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Set item's transition time in milliseconds
    */
-  setTransitionTime: (value: number) => void;
+  setTransitionTime: (value: number) => Promise<GameItem>;
 }
 
 applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

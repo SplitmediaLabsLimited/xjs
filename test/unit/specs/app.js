@@ -9,6 +9,7 @@ describe('App ===', function() {
   };
   var XJS = require('xjs');
   var App = new XJS.App();
+  var Transition = XJS.Transition;
 
   describe('should get frametime', function() {
     beforeEach(function() {
@@ -67,10 +68,10 @@ describe('App ===', function() {
       var promise = App.getResolution();
       promise.then(function(resolution) {
         expect(resolution).toBeInstanceOf(Object);
-        expect(resolution.width).toBeTypeOf('number');
-        expect(resolution.width).not.toBeNaN();
-        expect(resolution.height).toBeTypeOf('number');
-        expect(resolution.height).not.toBeNaN();
+        expect(resolution._width).toBeTypeOf('number');
+        expect(resolution._width).not.toBeNaN();
+        expect(resolution._height).toBeTypeOf('number');
+        expect(resolution._height).not.toBeNaN();
         done();
       });
     });
@@ -102,10 +103,10 @@ describe('App ===', function() {
       var promise = App.getViewport();
       promise.then(function(viewPort) {
         expect(viewPort).toBeTypeOf('object');
-        expect(viewPort.width).toBeTypeOf('number');
-        expect(viewPort.width).not.toBeNaN();
-        expect(viewPort.height).toBeTypeOf('number');
-        expect(viewPort.height).not.toBeNaN();
+        expect(viewPort._width).toBeTypeOf('number');
+        expect(viewPort._width).not.toBeNaN();
+        expect(viewPort._height).toBeTypeOf('number');
+        expect(viewPort._height).not.toBeNaN();
         done();
       });
     });
@@ -888,17 +889,9 @@ describe('App ===', function() {
       var promise = App.getTransition();
       expect(promise).toBeInstanceOf(Promise);
     });
-
-    it('that always return as a string', function(done) {
-      var promise = App.getTransition();
-      promise.then(function(transition) {
-        expect(transition).toBeTypeOf('string');
-        done();
-      });
-    });
   });
 
-  describe ('should be able to set transtion', function() {
+  describe ('should be able to set transition', function() {
     var transitionSet;
     var promise;
     beforeEach(function() {
@@ -915,14 +908,14 @@ describe('App ===', function() {
           return randomNumber;
         }
       });
-      promise = App.setTransition('clock');
+      promise = App.setTransition(Transition.CLOCK);
     });
 
     it('through a promise', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('as a string', function(done) {
+    it('as a Transition object', function(done) {
       promise.then(function() {
         expect(transitionSet).toBe(true);
         done();

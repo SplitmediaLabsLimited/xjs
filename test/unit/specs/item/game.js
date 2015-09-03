@@ -19,6 +19,7 @@ describe('GameItem', function() {
   var showMouseSet = false;
   var offlineImageSet = false;
   var currentGameItem;
+  var environments = ['config', 'extension', 'plugin'];
   var parseXml = function(xmlStr)
   {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
@@ -115,6 +116,7 @@ describe('GameItem', function() {
 
   var setLocal = function(funcName, val) {
     rand += 1;
+    var irand = rand;
 
     switch (funcName) {
       case 'GameCapSurfSharing':
@@ -149,12 +151,16 @@ describe('GameItem', function() {
       break;
     }
 
+    setTimeout(function() {
+      window.OnAsyncCallback(irand, '0');
+    },10);
+
     return rand;
   };
 
   beforeEach(function(done) {
     enumerated = [];
-    env.set('script');
+    env.set(environments[1]);
     propTypeCount = 0;
     if (!isXSplit) {
       spyOn(window.external, 'AppGetPropertyAsync')
@@ -365,7 +371,9 @@ describe('GameItem', function() {
       function(done) {
         var randomBoolean = !!Math.floor(Math.random() * 2);
         currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
-        expect(specialOptimizationSet).toBe(true);
+        if (!isXSplit) {
+          expect(specialOptimizationSet).toBe(true);
+        }
         currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);
           currentGameItem.setSpecialOptimizationEnabled(!randomBoolean);
@@ -390,7 +398,9 @@ describe('GameItem', function() {
     it('should be able to show or hide mouse in game capture', function(done) {
       var randomBoolean = !!Math.floor(Math.random() * 2);
       currentGameItem.setShowMouseEnabled(randomBoolean);
-      expect(showMouseSet).toBe(true);
+      if (!isXSplit) {
+        expect(showMouseSet).toBe(true);
+      }
       currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
         expect(firstEnabled).toBe(randomBoolean);
         currentGameItem.setShowMouseEnabled(!randomBoolean);

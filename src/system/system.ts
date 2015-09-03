@@ -2,9 +2,12 @@
 
 import {App as iApp} from '../internal/app';
 import {AudioDevice as AudioDevice} from './audio';
+import {MicrophoneDevice} from './microphone';
 import {CameraDevice} from './camera';
 import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
+import {Environment} from '../core/environment';
+import {exec} from '../internal/internal';
 
 /**
  * This enum is used for {@link #system/System System Class'} getAudioDevices
@@ -52,7 +55,7 @@ export enum AudioDeviceState {
  * var XJS = require('xjs');
  * var System = XJS.System;
  *
- * System.getCameraDevices().then(funciton(cameras) {
+ * System.getCameraDevices().then(function(cameras) {
  *   window.cameras = cameras;
  * });
  * ```
@@ -69,7 +72,7 @@ export class System{
    * System.getAudioDevices(
    *   XML.AudioDeviceDataflow.ALL,
    *   XML.AudioDeviceState.ACTIVE
-   * ).then(funciton(devices) {
+   * ).then(function(devices) {
    *   // devices is an array of AudioDevice object
    *   window.audios = devices;
    * });
@@ -114,7 +117,7 @@ export class System{
    * #### Usage
    *
    * ```javascript
-   * System.getCameraDevices().then(funciton(devices) {
+   * System.getCameraDevices().then(function(devices) {
    *   // devices is an array of CameraDevice object
    *   window.cameras = devices;
    * });
@@ -148,7 +151,7 @@ export class System{
    * #### Usage
    *
    * ```javascript
-   * System.getGames().then(funciton(games) {
+   * System.getGames().then(function(games) {
    *   // games is an array of Game object
    *   window.games = games;
    * });
@@ -166,6 +169,91 @@ export class System{
         }
         resolve(games);
       });
+    });
+  }
+
+  /**
+   * return: Promise<MicrophoneDevice[]>
+   *
+   * Gets all audio capture devices that may be added to the stage
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getMicrophones().then(function(microphones) {
+   *   microphones[0].addToScene(); // add first microphone to stage
+   * });
+   * ```
+   */
+  static getMicrophones(): Promise<MicrophoneDevice[]> {
+    return new Promise(resolve => {
+      iApp.getAsList('dshowenum:asrc').then(micsJXON => {
+        let mics: MicrophoneDevice[] = [];
+        if (micsJXON !== undefined) {
+          let micsJXONLength = micsJXON.length;
+          for (var i = 0; i < micsJXONLength; ++i) {
+            mics.push(MicrophoneDevice.parse(micsJXON[i]));
+          }
+        }
+        resolve(mics);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<JXON>
+   *
+   * Gets the position of the cursor. Does not work on Source Plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getCursorPosition().then(function(pos) {
+   *   var x = pos.x; // X Axis
+   *   var y = pos.y; // Y Axis
+   * });
+   * ```
+   */
+  static getCursorPosition(): Promise<JXON> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        var res = exec('GetCursorPos');
+        if (typeof res === 'string') {
+          var posArr = res.split(',');
+          var pos = new JXON();
+          pos['x'] = Number(posArr[0]);
+          pos['y'] = Number(posArr[1]);
+          resolve(pos)
+        } else {
+          reject(Error('cannot fetch current cursor position'));
+        }
+      }
+    });
+  }
+
+  /**
+   * param: JXON
+   *
+   * Sets the position of the cursor. Does not work on Source Plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.setCursorPosition({x:0, y:0});
+   * ```
+   */
+  static setCursorPosition(pos: JXON) {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+        reject(Error('invalid parameters'));
+      } else {
+        exec('SetCursorPos', String(pos['x']), String(pos['y']));
+        resolve(true);
+      }
     });
   }
 }

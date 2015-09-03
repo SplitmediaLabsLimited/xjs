@@ -1,7 +1,7 @@
 export class Environment {
-  private static _isHtml: Boolean;
-  private static _isConfig: Boolean;
-  private static _isScript: Boolean;
+  private static _isSourcePlugin: Boolean;
+  private static _isSourceConfig: Boolean;
+  private static _isExtension: Boolean;
   private static _initialized: Boolean;
 
   static initialize(): void {
@@ -9,29 +9,29 @@ export class Environment {
       return;
     }
 
-    Environment._isHtml = (window.external &&
+    Environment._isSourcePlugin = (window.external &&
       window.external['GetConfiguration'] !== undefined);
-    Environment._isConfig = (window.external &&
+    Environment._isSourceConfig = (window.external &&
       window.external['GetConfiguration'] === undefined &&
       window.external['GetViewId'] !== undefined &&
       window.external['GetViewId']() !== undefined);
-    Environment._isScript = (window.external &&
+    Environment._isExtension = (window.external &&
       window.external['GetConfiguration'] === undefined &&
       window.external['GetViewId'] !== undefined &&
       window.external['GetViewId']() === undefined);
     Environment._initialized = true;
   }
 
-  static isSourceHtml(): Boolean {
-    return Environment._isHtml;
+  static isSourcePlugin(): Boolean {
+    return Environment._isSourcePlugin;
   }
 
   static isSourceConfig(): Boolean {
-    return Environment._isConfig;
+    return Environment._isSourceConfig;
   }
 
-  static isScriptPlugin(): Boolean {
-    return Environment._isScript;
+  static isExtension(): Boolean {
+    return Environment._isExtension;
   }
 }
 

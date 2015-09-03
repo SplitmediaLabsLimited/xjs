@@ -6,21 +6,23 @@ import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
 import {CameraItem} from './item/camera';
+import {AudioItem} from './item/audio';
+import {HTMLItem} from './item/html';
 
 export class Scene {
   private id: number;
 
-  private static maxScenes = 12;
-  private static scenePool: Scene[] = [];
+  private static _maxScenes = 12;
+  private static _scenePool: Scene[] = [];
 
   constructor(sceneNum: number) {
     this.id = sceneNum - 1;
   };
 
   private static initializeScenePool() {
-    if (Scene.scenePool.length === 0) {
-      for (var i = 0; i < Scene.maxScenes; i++) {
-        Scene.scenePool[i] = new Scene(i + 1);
+    if (Scene._scenePool.length === 0) {
+      for (var i = 0; i < Scene._maxScenes; i++) {
+        Scene._scenePool[i] = new Scene(i + 1);
       }
     }
   }
@@ -45,7 +47,7 @@ export class Scene {
     // initialize if necessary
     Scene.initializeScenePool();
 
-    return Scene.scenePool[sceneNum - 1];
+    return Scene._scenePool[sceneNum - 1];
   }
 
   /**
@@ -69,10 +71,10 @@ export class Scene {
     // initialize if necessary
     Scene.initializeScenePool();
 
-    let namePromise = Promise.all(Scene.scenePool.map((scene, index) => {
+    let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
       return iApp.get('presetname:' + index).then(name => {
         if (sceneName === name) {
-          return Scene.scenePool[index];
+          return Scene._scenePool[index];
         } else {
           return null;
         }
@@ -109,7 +111,7 @@ export class Scene {
    */
   static getActiveScene(): Promise<Scene> {
     return new Promise(resolve => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
           if (curScene.children.length > 0) {
@@ -155,7 +157,7 @@ export class Scene {
 
         let match = null;
         let found = false;
-        Scene.scenePool.forEach((scene, idx, arr) => {
+        Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
             scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
@@ -188,7 +190,7 @@ export class Scene {
 
         let match = null;
         let found = false;
-        Scene.scenePool.forEach((scene, idx, arr) => {
+        Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
             scene.getItems().then(items => {
               found = items.some(item => { // unique ID, so get first result
@@ -232,7 +234,7 @@ export class Scene {
     let matches: Item[] = [];
 
     return new Promise(resolve => {
-      return Promise.all(Scene.scenePool.map(scene => {
+      return Promise.all(Scene._scenePool.map(scene => {
         return new Promise(resolveScene => {
           scene.getItems().then(items => {
             if (items.length === 0) {
@@ -265,6 +267,42 @@ export class Scene {
       });
     });
   };
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Load scenes that isn't yet initialized in XSplit Broadcaster
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.initializeScenes().then(function(val) {
+   *   if (val === true) {
+   *     // Now you know that all scenes are loaded :)
+   *   }
+   * })
+   * ```
+   */
+  static initializeScenes(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      }
+
+      iApp.get('presetcount').then(cnt => {
+        if (Number(cnt) !== 12) {
+          // Insert an empty scene for scene #12
+          iApp
+            .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+            .then(res => {
+              resolve(res);
+            });
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
 
   /**
    * Get the 1-indexed scene number of this scene object.
@@ -325,7 +363,7 @@ export class Scene {
    */
   setName(name: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourceHtml()) {
+      if (Environment.isSourcePlugin()) {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
         iApp.set('presetname:' + this.id, name).then(value => {
@@ -358,27 +396,37 @@ export class Scene {
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
-      if (Number(jsonArr[index]['type']) === ItemTypes.GAMESOURCE) {
-        typeResolve(new GameItem(jsonArr[index]));
+        let item = jsonArr[index];
+        let type = Number(item['type']);
+        if (type === ItemTypes.GAMESOURCE) {
+          typeResolve(new GameItem(item));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HTMLItem(item));
         } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
-          jsonArr[index]['sounddev'] === '0') {
+          jsonArr[index]['item'].indexOf(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
             typeResolve(new CameraItem(jsonArr[index]));
+        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
+          jsonArr[index]['item'].indexOf(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioItem(jsonArr[index]));
         } else {
             typeResolve(new Item(jsonArr[index]));
           }
         });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneID'] = this.id;
-            promiseArray.push(typePromise(i));
-          }
-        }
 
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneID'] = this.id;
+              promiseArray.push(typePromise(i));
+            }
+          }
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
         });
-      });
     });
   }
 

@@ -22,7 +22,7 @@ export class Item {
       }
       Item.lastSlot = slot;
       Item.itemSlotMap[slot] = itemID;
-      if (Environment.isScriptPlugin()) {
+      if (Environment.isExtension()) {
         exec('SearchVideoItem' +
           (String(slot) === '0' ? '' : (slot + 1)),
           itemID
@@ -61,11 +61,17 @@ export class Item {
   }
 
   /** Sets an item's local property */
-  static set(name: string, value: string, slot: number = 0): void {
-    exec('SetLocalPropertyAsync' +
-      (String(slot) === '0' ? '' : slot + 1),
-      name,
-      value);
+  static set(name: string, value: string, slot: number = 0): Promise<boolean> {
+    return new Promise(resolve => {
+      exec('SetLocalPropertyAsync' +
+        (String(slot) === '0' ? '' : slot + 1),
+        name,
+        value,
+        val => {
+          resolve(!(Number(val) < 0));
+        });
+    });
+
   }
 
   /** Calls a function defined in an item/source */

@@ -1,5 +1,206 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var eventemitter_1 = require('./eventemitter');
+var internal_1 = require('../internal/internal');
+/** This utility class exposes functionality for source plugin developers to
+ *  handle the configuration window for their source plugins.
+ *
+ *  Developers can use this class to specify how their configuration HTML
+ *  should be rendered within the built-in window in XSplit Broadcaster.
+ *  This class also serves as an event emitter for specific important events.
+ *
+ *  The framework also uses this class for its own internal purposes.
+ */
+var SourceConfigWindow = (function (_super) {
+    __extends(SourceConfigWindow, _super);
+    function SourceConfigWindow() {
+        var _this = this;
+        _super.call(this);
+        window.addEventListener('message', function (event) {
+            try {
+                var data = JSON.parse(event.data);
+            }
+            catch (e) {
+                // syntax error probably happened, exit gracefully
+                return;
+            }
+            switch (data.event) {
+                // currently, restrict messages to selected set
+                case 'set-selected-tab':
+                    this.emit(data.event, data.value);
+                    break;
+                case 'async-callback':
+                    this.emit(data.event, {
+                        asyncId: data.value.asyncId,
+                        result: data.value.result
+                    });
+                    break;
+            }
+        }.bind(this));
+        this.on('config-load', function () {
+            _this._informConfigLoaded();
+        });
+        SourceConfigWindow._instance = this;
+    }
+    SourceConfigWindow.getInstance = function () {
+        if (SourceConfigWindow._instance === undefined) {
+            SourceConfigWindow._instance = new SourceConfigWindow();
+        }
+        return SourceConfigWindow._instance;
+    };
+    // helper function to communicate with built-in container
+    SourceConfigWindow.prototype._notify = function (obj) {
+        window.parent.postMessage(JSON.stringify(obj), '*');
+    };
+    SourceConfigWindow.prototype.useFullWindow = function () {
+        this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    };
+    SourceConfigWindow.prototype.useTabbedWindow = function (config) {
+        this._setRenderMode(SourceConfigWindow._MODE_TABBED);
+        this._declareCustomTabs(config.customTabs);
+        this._setTabOrder(config.tabOrder);
+    };
+    SourceConfigWindow.prototype._setRenderMode = function (renderMode) {
+        this._mode = renderMode;
+        this._notify({
+            event: 'set-mode',
+            value: renderMode
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._setTabOrder = function (tabArray) {
+        this._notify({
+            event: 'set-tab-order',
+            value: JSON.stringify(tabArray)
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._declareCustomTabs = function (tabArray) {
+        this._notify({
+            event: 'set-custom-tabs',
+            value: JSON.stringify(tabArray)
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._informConfigLoaded = function () {
+        this._notify({ event: 'load' });
+    };
+    SourceConfigWindow.prototype.resizeConfig = function (width, height) {
+        if (this._mode === 'full') {
+            this._notify({
+                event: 'resize',
+                value: JSON.stringify({
+                    width: width,
+                    height: height
+                })
+            });
+        }
+        else if (this._mode !== 'embedded') {
+            internal_1.exec('SetDialogSize', String(width), String(height));
+        }
+    };
+    ;
+    SourceConfigWindow.prototype.closeConfig = function () {
+        internal_1.exec('Close');
+    };
+    ;
+    SourceConfigWindow._MODE_FULL = 'full';
+    SourceConfigWindow._MODE_TABBED = 'embedded';
+    return SourceConfigWindow;
+})(eventemitter_1.MyEventEmitter);
+exports.SourceConfigWindow = SourceConfigWindow;
+},{"../internal/internal":22,"./eventemitter":2}],2:[function(require,module,exports){
+// simple event emitter
+var MyEventEmitter = (function () {
+    function MyEventEmitter() {
+        this._handlers = {};
+    }
+    // allows duplicates
+    MyEventEmitter.prototype.on = function (event, handler) {
+        if (this._handlers[event] === undefined) {
+            this._handlers[event] = [];
+        }
+        this._handlers[event].push(handler);
+    };
+    MyEventEmitter.prototype.emit = function (event) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        if (this._handlers[event] === undefined) {
+            return;
+        }
+        for (var _a = 0, _b = this._handlers[event]; _a < _b.length; _a++) {
+            var handler = _b[_a];
+            handler.apply(this, params);
+        }
+    };
+    return MyEventEmitter;
+})();
+exports.MyEventEmitter = MyEventEmitter;
+},{}],3:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var eventemitter_1 = require('./eventemitter');
+/** This utility class is used internally by the framework for certain important
+ *  processes. This class also exposes certain important events for
+ *
+ *
+ */
+var SourcePluginWindow = (function (_super) {
+    __extends(SourcePluginWindow, _super);
+    function SourcePluginWindow() {
+        _super.call(this);
+        // TODO: need to document events emitted
+        this.on('message-source', function (message) {
+            if (message.request !== undefined) {
+                if (message.request === 'saveConfig') {
+                    this.emit('save-config', message.data);
+                }
+                else if (message.request === 'applyConfig') {
+                    this.emit('apply-config', message.data);
+                }
+            }
+        });
+        SourcePluginWindow._instance = this;
+    }
+    SourcePluginWindow.getInstance = function () {
+        if (SourcePluginWindow._instance === undefined) {
+            SourcePluginWindow._instance = new SourcePluginWindow();
+        }
+        return SourcePluginWindow._instance;
+    };
+    return SourcePluginWindow;
+})(eventemitter_1.MyEventEmitter);
+exports.SourcePluginWindow = SourcePluginWindow;
+window['MessageSource'] = function (message) {
+    SourcePluginWindow.getInstance().emit("message-source", JSON.parse(message));
+};
+window['SetConfiguration'] = function (configObj) {
+    try {
+        var data = JSON.parse(configObj);
+        var source = SourcePluginWindow.getInstance();
+        source.emit("apply-config", data);
+        source.emit("save-config", data);
+    }
+    catch (e) {
+        // syntax error probably happened, exit gracefully
+        return;
+    }
+};
+},{"./eventemitter":2}],4:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var rectangle_1 = require('../util/rectangle');
 var audio_1 = require('../system/audio');
@@ -7,6 +208,7 @@ var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var internal_1 = require('../internal/internal');
 var environment_1 = require('./environment');
+var transition_1 = require('./transition');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
 /**
@@ -453,7 +655,7 @@ var App = (function () {
     App.prototype.newDialog = function (url, width, height, flags, title) {
         if (width === void 0) { width = 300; }
         if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
@@ -482,7 +684,7 @@ var App = (function () {
     App.prototype.newAutoDialog = function (url, width, height) {
         if (width === void 0) { width = 300; }
         if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else if (url !== undefined && url !== '') {
@@ -496,15 +698,16 @@ var App = (function () {
      * Close a created dialog
      */
     App.prototype.closeDialog = function () {
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
             throw new TypeError('function is not available for source');
         }
         else {
             internal_1.exec('CloseDialog');
         }
     };
+    // Transition Services
     /**
-     * return: Promise<string>
+     * return: Promise<Transition>
      *
      * Gets the transition for scene changes
      *
@@ -520,14 +723,19 @@ var App = (function () {
     App.prototype.getTransition = function () {
         return new Promise(function (resolve) {
             app_1.App.get('transitionid').then(function (val) {
-                resolve(val);
+                if (val === '') {
+                    resolve(transition_1.Transition.NONE);
+                }
+                else {
+                    resolve(transition_1.Transition[val.toUpperCase()]);
+                }
             });
         });
     };
     /**
-     * param: transition<string>
+     * param: transition<Transition>
      * ```
-     * return: Promise<string>
+     * return: Promise<Transition>
      * ```
      *
      * Sets the transition for scene changes
@@ -535,27 +743,18 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * // you may use the following:
-     * //     * App.TRANSITION_CLOCK
-     * //     * App.TRANSITION_COLLAPSE
-     * //     * App.TRANSITION_FADE
-     * //     * App.TRANSITION_FAN
-     * //     * App.TRANSITION_HOLE
-     * //     * App.TRANSITION_MOVE_BOTTOM
-     * //     * App.TRANSITION_MOVE_LEFT
-     * //     * App.TRANSITION_MOVE_LEFT_RIGHT
-     * //     * App.TRANSITION_MOVE_RIGHT
-     * //     * App.TRANSITION_MOVE_TOP
-     * //     * App.TRANSITION_MOVE_TOP_BOTTOM
-     * //     * App.TRANSITION_WAVE
-     * App.setTransition(App.TRANSITION_CLOCK).then(function(val) {
+     * var xjs = require('xjs'),
+     *     Transition = xjs.Transition,
+     *     App = new xjs.App();
+  
+     * App.setTransition(Transition.CLOCK).then(function(val) {
      *  var isSet = val;
      * });
      * ```
      */
     App.prototype.setTransition = function (transition) {
         return new Promise(function (resolve) {
-            app_1.App.set('transitionid', transition).then(function (val) {
+            app_1.App.set('transitionid', transition.toString()).then(function (val) {
                 resolve(val);
             });
         });
@@ -610,23 +809,10 @@ var App = (function () {
     App.BORDER_ENABLE_SIZING = 4;
     App.BORDER_ENABLE_MINIMIZE = 8;
     App.BORDER_ENABLE_MAXIMIZE = 16;
-    // Transition Services
-    App.TRANSITION_CLOCK = 'clock';
-    App.TRANSITION_COLLAPSE = 'collapse';
-    App.TRANSITION_FADE = 'fade';
-    App.TRANSITION_FAN = 'fan';
-    App.TRANSITION_HOLE = 'hole';
-    App.TRANSITION_MOVE_BOTTOM = 'move_bottom';
-    App.TRANSITION_MOVE_LEFT = 'move_left';
-    App.TRANSITION_MOVE_LEFT_RIGHT = 'move_left_right';
-    App.TRANSITION_MOVE_RIGHT = 'move_right';
-    App.TRANSITION_MOVE_TOP = 'move_top';
-    App.TRANSITION_MOVE_TOP_BOTTOM = 'move_top_bottom';
-    App.TRANSITION_WAVE = 'wave';
     return App;
 })();
 exports.App = App;
-},{"../internal/app":12,"../internal/internal":15,"../internal/util/json":17,"../internal/util/xml":19,"../system/audio":20,"../util/rectangle":25,"./environment":2}],2:[function(require,module,exports){
+},{"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"../internal/util/xml":26,"../system/audio":27,"../util/rectangle":35,"./environment":5,"./transition":18}],5:[function(require,module,exports){
 var Environment = (function () {
     function Environment() {
     }
@@ -634,32 +820,155 @@ var Environment = (function () {
         if (Environment._initialized) {
             return;
         }
-        Environment._isHtml = (window.external &&
+        Environment._isSourcePlugin = (window.external &&
             window.external['GetConfiguration'] !== undefined);
-        Environment._isConfig = (window.external &&
+        Environment._isSourceConfig = (window.external &&
             window.external['GetConfiguration'] === undefined &&
             window.external['GetViewId'] !== undefined &&
             window.external['GetViewId']() !== undefined);
-        Environment._isScript = (window.external &&
+        Environment._isExtension = (window.external &&
             window.external['GetConfiguration'] === undefined &&
             window.external['GetViewId'] !== undefined &&
             window.external['GetViewId']() === undefined);
         Environment._initialized = true;
     };
-    Environment.isSourceHtml = function () {
-        return Environment._isHtml;
+    Environment.isSourcePlugin = function () {
+        return Environment._isSourcePlugin;
     };
     Environment.isSourceConfig = function () {
-        return Environment._isConfig;
+        return Environment._isSourceConfig;
     };
-    Environment.isScriptPlugin = function () {
-        return Environment._isScript;
+    Environment.isExtension = function () {
+        return Environment._isExtension;
     };
     return Environment;
 })();
 exports.Environment = Environment;
 Environment.initialize();
-},{}],3:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = require('../../internal/util/mixin');
+var item_1 = require('../../internal/item');
+var iaudio_1 = require('./iaudio');
+var item_2 = require('./item');
+var environment_1 = require('../environment');
+/**
+ * The AudioItem class represents an audio device that has been added
+ * to the stage.
+ */
+var AudioItem = (function (_super) {
+    __extends(AudioItem, _super);
+    function AudioItem() {
+        _super.apply(this, arguments);
+    }
+    AudioItem.prototype.isSilenceDetectionEnabled = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:AudioGainEnable', slot).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    AudioItem.prototype.setSilenceDetectionEnabled = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+                    .then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    AudioItem.prototype.getSilenceThreshold = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:AudioGain', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    AudioItem.prototype.setSilenceThreshold = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else if (typeof value !== 'number') {
+                reject(Error('Only numbers are acceptable values for threshold'));
+            }
+            else if (value % 1 !== 0 || value < 0 || value > 128) {
+                reject(Error('Only integers in the range 0-128 are acceptable for threshold'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:AudioGain', String(value), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    AudioItem.prototype.getSilencePeriod = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:AudioGainLatency', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    AudioItem.prototype.setSilencePeriod = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else if (typeof value !== 'number') {
+                reject(Error('Only numbers are acceptable values for period'));
+            }
+            else if (value % 1 !== 0 || value < 0 || value > 10000) {
+                reject(Error('Only integers in the range 0-10000 are acceptable for period'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:AudioGainLatency', String(value), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    return AudioItem;
+})(item_2.Item);
+exports.AudioItem = AudioItem;
+mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
+},{"../../internal/item":23,"../../internal/util/mixin":25,"../environment":5,"./iaudio":10,"./item":15}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -674,30 +983,69 @@ var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
 var item_2 = require('./item');
+/**
+ * The CameraItem Class provides methods specifically used for camera items and
+ * also methods that are shared between Item Classes. The
+ * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * CameraItem object if there's a camera item on the specified scene.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.CameraItem) {
+ *         // Manipulate your camera item here
+ *         items[i].getDeviceId().then(function(id) {
+ *           // Do something with the id
+ *         });
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ */
 var CameraItem = (function (_super) {
     __extends(CameraItem, _super);
     function CameraItem() {
         _super.apply(this, arguments);
     }
+    /**
+     * return: Promise<string>
+     */
     CameraItem.prototype.getDeviceId = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:value', slot).then(function (val) {
+            item_1.Item.get('prop:item', slot).then(function (val) {
                 resolve(val);
             });
         });
     };
     // special color options pinning
-    /** Set this to true to share color settings across all instances of this
-     *  camera device on the stage.
+    /**
+     * param: value<boolean>
+     *
+     * Set this to true to share color settings across all instances of this
+     * camera device on the stage.
      */
     CameraItem.prototype.setColorOptionsPinned = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
-    /** Checks whether color settings are shared across all instances of
-     *  this camera device on the stage.
+    /**
+     * return: Promise<boolean>
+     *
+     * Checks whether color settings are shared across all instances of
+     * this camera device on the stage.
      */
     CameraItem.prototype.getColorOptionsPinned = function () {
         var _this = this;
@@ -709,15 +1057,26 @@ var CameraItem = (function (_super) {
         });
     };
     // special chroma options pinning
-    /** Set this to true to share chroma keying settings across all instances of
-     *  this camera device on the stage.
+    /**
+     * param: value<boolean>
+     *
+     * Set this to true to share chroma keying settings across all instances of
+     * this camera device on the stage.
      */
     CameraItem.prototype.setKeyingOptionsPinned = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_pin', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:key_pin', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
-    /** Checks whether chroma keying settings are shared across all instances of
-     *  this camera device on the stage.
+    /**
+     * return: value<boolean>
+     *
+     * Checks whether chroma keying settings are shared across all instances of
+     * this camera device on the stage.
      */
     CameraItem.prototype.getKeyingOptionsPinned = function () {
         var _this = this;
@@ -732,7 +1091,7 @@ var CameraItem = (function (_super) {
 })(item_2.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":16,"../../internal/util/mixin":18,"./ichroma":5,"./icolor":6,"./ilayout":7,"./item":8,"./itransition":9}],4:[function(require,module,exports){
+},{"../../internal/item":23,"../../internal/util/mixin":25,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":15,"./itransition":16}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -745,87 +1104,132 @@ var item_1 = require('../../internal/item');
 var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
+var itransition_1 = require('./itransition');
 var item_2 = require('./item');
 var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
 var item_3 = require('./item');
 var environment_1 = require('../environment');
+/**
+ * The GameItem Class provides methods specifically used for game items and
+ * also methods that is shared between Item Classes. The
+ * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * GameItem object if there's a game item on the specified scene.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.GameItem) {
+ *         // Manipulate your game item here
+ *         items[i].setOfflineImage(path); // just an example here
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ */
 var GameItem = (function (_super) {
     __extends(GameItem, _super);
     function GameItem() {
         _super.apply(this, arguments);
     }
     /**
-     * return: boolean
+     * return: Promise<boolean>
      *
      * Check if Game Special Optimization is currently enabled or not
      */
-    GameItem.prototype.isSpecialOptimization = function () {
+    GameItem.prototype.isSpecialOptimizationEnabled = function () {
+        var _this = this;
         return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('GameCapSurfSharing').then(function (res) {
                 resolve(res === '1');
             });
         });
     };
     /**
-     * param: boolean
+     * param: Promise<boolean>
      *
      * Set Game Special Optimization to on or off
      */
-    GameItem.prototype.setSpecialOptimization = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot);
+    GameItem.prototype.setSpecialOptimizationEnabled = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
-     * return: boolean
+     * return: Promise<boolean>
      *
      * Check if Show Mouse is currently enabled or not
      */
-    GameItem.prototype.isShowMouse = function () {
+    GameItem.prototype.isShowMouseEnabled = function () {
+        var _this = this;
         return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('GameCapShowMouse').then(function (res) {
                 resolve(res === '1');
             });
         });
     };
     /**
-     * param: boolean
+     * param: value<boolean>
      *
      * Set Show Mouse in game to on or off
      */
-    GameItem.prototype.setShowMouse = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot);
+    GameItem.prototype.setShowMouseEnabled = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /**
-     * param: string
+     * param: path<string>
      *
      * Set the offline image of a game source
      */
     GameItem.prototype.setOfflineImage = function (path) {
         var _this = this;
-        if (this.type !== item_3.ItemTypes.GAMESOURCE) {
-            throw new Error('Current item should be a game source');
-        }
-        if (environment_1.Environment.isSourceHtml()) {
-            new Error('Source plugins cannot update offline images of other sources');
-        }
-        if (!(this.value instanceof xml_1.XML)) {
-            this.getValue().then(function () {
-                _this.setOfflineImage(path);
-            });
-            return;
-        }
-        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-            '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-        if (regExp.test(path)) {
-            var valueObj = json_1.JSON.parse(this.value.toString());
-            valueObj['replace'] = path;
-            this.setValue(xml_1.XML.parseJSON(valueObj));
-        }
+        return new Promise(function (resolve, reject) {
+            if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
+                reject(Error('Current item should be a game source'));
+            }
+            else if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update offline images of other sources'));
+            }
+            else if (!(_this.value instanceof xml_1.XML)) {
+                _this.getValue().then(function () {
+                    _this.setOfflineImage(path).then(function (itemObj) {
+                        resolve(itemObj);
+                    });
+                });
+            }
+            else {
+                var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+                    '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+                if (regExp.test(path) || path === '') {
+                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    valueObj['replace'] = path;
+                    _this.setValue(xml_1.XML.parseJSON(valueObj)).then(function () {
+                        resolve(_this);
+                    });
+                }
+            }
+        });
     };
     /**
-     * return: string
+     * return: Promise<string>
      *
      * Get the offline image of a game source
      */
@@ -835,24 +1239,190 @@ var GameItem = (function (_super) {
             if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
                 reject(Error('Current item should be a game source'));
             }
-            if (!(_this.value instanceof xml_1.XML)) {
-                _this.getValue().then(function () {
-                    _this.getOfflineImage().then(function (val) {
-                        resolve(val);
-                    });
-                });
-            }
             else {
-                var valueObj = json_1.JSON.parse(_this.value.toString());
-                resolve(valueObj['replace']);
+                _this.getValue().then(function () {
+                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    resolve(valueObj['replace'] ? valueObj['replace'] : '');
+                });
             }
         });
     };
     return GameItem;
 })(item_2.Item);
 exports.GameItem = GameItem;
-mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma]);
-},{"../../internal/item":16,"../../internal/util/json":17,"../../internal/util/mixin":18,"../../internal/util/xml":19,"../environment":2,"./ichroma":5,"./icolor":6,"./ilayout":7,"./item":8}],5:[function(require,module,exports){
+mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
+},{"../../internal/item":23,"../../internal/util/json":24,"../../internal/util/mixin":25,"../../internal/util/xml":26,"../environment":5,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":15,"./itransition":16}],9:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = require('../../internal/util/mixin');
+var item_1 = require('../../internal/item');
+var ilayout_1 = require('./ilayout');
+var icolor_1 = require('./icolor');
+var ichroma_1 = require('./ichroma');
+var itransition_1 = require('./itransition');
+var iconfig_1 = require('./iconfig');
+var item_2 = require('./item');
+var HTMLItem = (function (_super) {
+    __extends(HTMLItem, _super);
+    function HTMLItem() {
+        _super.apply(this, arguments);
+    }
+    HTMLItem.prototype.getURL = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:item', slot).then(function (url) {
+                resolve(url);
+            });
+        });
+    };
+    HTMLItem.prototype.setURL = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:item', value, slot).then(function (code) {
+                if (code) {
+                    resolve(_this);
+                }
+                else {
+                    reject('Invalid value');
+                }
+            });
+        });
+    };
+    return HTMLItem;
+})(item_2.Item);
+exports.HTMLItem = HTMLItem;
+mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, iconfig_1.ItemConfigurable]);
+},{"../../internal/item":23,"../../internal/util/mixin":25,"./ichroma":11,"./icolor":12,"./iconfig":13,"./ilayout":14,"./item":15,"./itransition":16}],10:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = require('../../internal/item');
+var environment_1 = require('../environment');
+var ItemAudio = (function () {
+    function ItemAudio() {
+    }
+    ItemAudio.prototype.getVolume = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:volume', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemAudio.prototype.setVolume = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio source properties.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                value = value < 0 ? 0 : value > 100 ? 100 : value;
+                item_1.Item.set('prop:volume', String(value), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    ItemAudio.prototype.isMute = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:mute', slot).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemAudio.prototype.setMute = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:mute', (value ? '1' : '0'), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    ItemAudio.prototype.getAudioOffset = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:AudioDelay', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemAudio.prototype.setAudioOffset = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:AudioDelay', String(value), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    ItemAudio.prototype.isStreamOnlyEnabled = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:sounddev', slot).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemAudio.prototype.setStreamOnlyEnabled = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Source plugins cannot update audio sources properties'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:sounddev', (value ? '1' : '0'), slot).then(function (res) {
+                    if (!res) {
+                        reject(Error('Item set property failed'));
+                    }
+                    else {
+                        resolve(_this);
+                    }
+                });
+            }
+        });
+    };
+    return ItemAudio;
+})();
+exports.ItemAudio = ItemAudio;
+},{"../../internal/item":23,"../environment":5}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -887,11 +1457,18 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaEnabled = function (value) {
-        if (typeof value !== 'boolean') {
-            throw new TypeError('Parameter should be boolean.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'boolean') {
+                reject(TypeError('Parameter should be boolean.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getKeyingType = function () {
         var _this = this;
@@ -903,14 +1480,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setKeyingType = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a KeyingType value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a KeyingType value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromakeytype', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a KeyingType value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a KeyingType value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromakeytype', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // COMMON TO CHROMA LEGACY AND CHROMA RGB KEY
     ItemChroma.prototype.getChromaAntiAliasLevel = function () {
@@ -923,14 +1507,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaAntiAliasLevel = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a ChromaAntiAliasLevel value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a ChromaAntiAliasLevel value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_antialiasing', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a ChromaAntiAliasLevel value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a ChromaAntiAliasLevel value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_antialiasing', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA LEGACY MODE FUNCTIONS
     ItemChroma.prototype.getChromaLegacyBrightness = function () {
@@ -943,14 +1534,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyBrightness = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromabr', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromabr', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacySaturation = function () {
         var _this = this;
@@ -962,14 +1560,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacySaturation = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromasat', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromasat', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyHue = function () {
         var _this = this;
@@ -981,14 +1586,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyHue = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 180) {
-            throw new RangeError('Valid value is an integer from 0-180.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromahue', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 180) {
+                reject(RangeError('Valid value is an integer from 0-180.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromahue', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyThreshold = function () {
         var _this = this;
@@ -1000,14 +1612,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromarang', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromarang', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaLegacyAlphaSmoothing = function () {
         var _this = this;
@@ -1019,14 +1638,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaLegacyAlphaSmoothing = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromaranga', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromaranga', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA RGB KEY FUNCTIONS
     ItemChroma.prototype.getChromaRGBKeyPrimaryColor = function () {
@@ -1039,14 +1665,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyPrimaryColor = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use a ChromaPrimaryColors value as the parameter.');
-        }
-        else if (value < 0 || value > 2) {
-            throw new RangeError('Use a ChromaPrimaryColors value as the parameter.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a ChromaPrimaryColors value as the parameter.'));
+            }
+            else if (value < 0 || value > 2) {
+                reject(RangeError('Use a ChromaPrimaryColors value as the parameter.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaRGBKeyThreshold = function () {
         var _this = this;
@@ -1058,14 +1692,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaRGBKeyExposure = function () {
         var _this = this;
@@ -1077,14 +1719,22 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaRGBKeyExposure = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     // CHROMA COLOR KEY FUNCTIONS
     ItemChroma.prototype.getChromaColorKeyThreshold = function () {
@@ -1097,14 +1747,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyThreshold = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorrang', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_colorrang', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaColorKeyExposure = function () {
         var _this = this;
@@ -1116,14 +1773,21 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyExposure = function (value) {
-        if (typeof value !== 'number') {
-            throw new TypeError('Use an integer as the parameter.');
-        }
-        else if (value < 0 || value > 255) {
-            throw new RangeError('Valid value is an integer from 0-255.');
-        }
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorranga', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
+                reject(RangeError('Valid value is an integer from 0-255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:key_colorranga', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemChroma.prototype.getChromaColorKeyColor = function () {
         var _this = this;
@@ -1136,13 +1800,18 @@ var ItemChroma = (function () {
         });
     };
     ItemChroma.prototype.setChromaColorKeyColor = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:key_colorrgb', value.getBgr(), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":16,"../../util/color":24}],6:[function(require,module,exports){
+},{"../../internal/item":23,"../../util/color":32}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1159,12 +1828,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setTransparency = function (value) {
-        if (value < 0 || value > 255) {
-            throw new RangeError('Transparency may only be in the range 0 to 255.');
-        }
-        ;
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:alpha', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < 0 || value > 255) {
+                reject(RangeError('Transparency may only be in the range 0 to 255.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:alpha', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getBrightness = function () {
         var _this = this;
@@ -1176,13 +1851,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setBrightness = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Brightness may only be in the range -100 to 100.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_brightness', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Brightness may only be in the range -100 to 100.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_brightness', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getContrast = function () {
         var _this = this;
@@ -1194,13 +1874,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setContrast = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Contrast may only be in the range -100 to 100.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_contrast', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Contrast may only be in the range -100 to 100.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_contrast', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getHue = function () {
         var _this = this;
@@ -1212,13 +1897,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setHue = function (value) {
-        if (value < -180 || value > 180) {
-            throw new RangeError('Contrast may only be in the range -180 to 180.');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_hue', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -180 || value > 180) {
+                reject(RangeError('Contrast may only be in the range -180 to 180.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_hue', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getSaturation = function () {
         var _this = this;
@@ -1230,13 +1920,18 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setSaturation = function (value) {
-        if (value < -100 || value > 100) {
-            throw new RangeError('Saturation may only be in the range -100 to 100');
-        }
-        else {
-            var slot = item_1.Item.attach(this._id);
-            item_1.Item.set('prop:cc_saturation', String(value), slot);
-        }
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -100 || value > 100) {
+                reject(RangeError('Saturation may only be in the range -100 to 100'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:cc_saturation', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     ItemColor.prototype.getBorderColor = function () {
         var _this = this;
@@ -1250,13 +1945,103 @@ var ItemColor = (function () {
         });
     };
     ItemColor.prototype.setBorderColor = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":16,"../../util/color":24}],7:[function(require,module,exports){
+},{"../../internal/item":23,"../../util/color":32}],13:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = require('../../internal/item');
+var global_1 = require('../../internal/global');
+var internal_1 = require('../../internal/internal');
+var environment_1 = require('../environment');
+var ItemConfigurable = (function () {
+    function ItemConfigurable() {
+    }
+    ItemConfigurable.prototype.loadConfig = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:BrowserConfiguration', slot).then(function (config) {
+                var configObj = config === 'null' ? {} : JSON.parse(config);
+                var persist = global_1.Global.getPersistentConfig();
+                for (var key in persist) {
+                    delete configObj[key];
+                }
+                resolve(configObj);
+            });
+        });
+    };
+    ItemConfigurable.prototype.saveConfig = function (configObj) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin) {
+                var slot = item_1.Item.attach(_this._id);
+                // only allow direct saving for self
+                if (slot === 0) {
+                    // check for valid object
+                    if ({}.toString.call(configObj) === '[object Object]') {
+                        // add persisted configuration if available
+                        // currently only top level merging is available
+                        var persist = global_1.Global.getPersistentConfig();
+                        for (var key in persist) {
+                            configObj[key] = persist[key];
+                        }
+                        internal_1.exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
+                        resolve(_this);
+                    }
+                    else {
+                        reject(Error('Configuration object should be ' +
+                            'in JSON format.'));
+                    }
+                }
+                else {
+                    reject(Error('Sources may only request other ' +
+                        'sources to save a configuration. Consider ' +
+                        'calling requestSaveConfig() on this Item ' +
+                        'instance instead.'));
+                }
+            }
+            else {
+                reject(Error('Extensions and source configuration windows are ' +
+                    'not allowed to directly save configuration objects. ' +
+                    'Call requestSaveConfig() instead.'));
+            }
+        });
+    };
+    ItemConfigurable.prototype.requestSaveConfig = function (configObj) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            internal_1.exec('CallInner' + (slot === 0 ? '' : (slot + 1)), 'MessageSource', JSON.stringify({
+                'request': 'saveConfig',
+                'data': configObj
+            }));
+            resolve(_this);
+        });
+    };
+    ItemConfigurable.prototype.applyConfig = function (configObj) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            internal_1.exec('CallInner' + (slot === 0 ? '' : (slot + 1)), 'MessageSource', JSON.stringify({
+                'request': 'applyConfig',
+                'data': configObj
+            }));
+            resolve(_this);
+        });
+    };
+    return ItemConfigurable;
+})();
+exports.ItemConfigurable = ItemConfigurable;
+},{"../../internal/global":20,"../../internal/internal":22,"../../internal/item":23,"../environment":5}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -1273,8 +2058,13 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setKeepAspectRatio = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.isPositionLocked = function () {
         var _this = this;
@@ -1286,8 +2076,13 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setPositionLocked = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:lockmove', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:lockmove', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.isEnhancedResizeEnabled = function () {
         var _this = this;
@@ -1299,29 +2094,39 @@ var ItemLayout = (function () {
         });
     };
     ItemLayout.prototype.setEnhancedResizeEnabled = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemLayout.prototype.getPosition = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:pos', slot).then(function (val) {
-                var _a = decodeURIComponent(val).split(','), top = _a[0], left = _a[1], right = _a[2], bottom = _a[3];
+                var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 _this.position = rectangle_1.Rectangle.fromCoordinates(Number(top), Number(left), Number(right), Number(bottom));
                 resolve(_this.position);
             });
         });
     };
     ItemLayout.prototype.setPosition = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.position = value;
-        item_1.Item.set('prop:pos', value.toString(), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.position = value;
+            item_1.Item.set('prop:pos', value.toCoordinateString(), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":16,"../../util/rectangle":25}],8:[function(require,module,exports){
+},{"../../internal/item":23,"../../util/rectangle":35}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -1348,6 +2153,7 @@ var Item = (function () {
     function Item(props) {
         props = props ? props : {};
         this.name = props['name'];
+        this.cname = props['cname'];
         this._id = props['id'];
         this.sceneID = props['sceneID'];
         this.value = props['value'];
@@ -1357,9 +2163,14 @@ var Item = (function () {
     }
     /** Sets the name of the item */
     Item.prototype.setName = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.name = value;
-        item_1.Item.set('prop:name', this.name, slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.name = value;
+            item_1.Item.set('prop:name', _this.name, slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Gets the current name of the item */
     Item.prototype.getName = function () {
@@ -1368,6 +2179,28 @@ var Item = (function () {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:name', slot).then(function (val) {
                 _this.name = val;
+                resolve(val);
+            });
+        });
+    };
+    /** Sets the custom name of the item */
+    Item.prototype.setCustomName = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.cname = value;
+            item_1.Item.set('prop:cname', _this.cname, slot).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    /** Gets the custom name of the item */
+    Item.prototype.getCustomName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:cname', slot).then(function (val) {
+                _this.cname = val;
                 resolve(val);
             });
         });
@@ -1399,16 +2232,21 @@ var Item = (function () {
     };
     /** Set the video item's main definition */
     Item.prototype.setValue = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        var val = (typeof value === 'string') ?
-            value : value.toString();
-        if (typeof value !== 'string') {
-            this.value = json_1.JSON.parse(val);
-        }
-        else {
-            this.value = val;
-        }
-        item_1.Item.set('prop:item', val, slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            var val = (typeof value === 'string') ?
+                value : value.toString();
+            if (typeof value !== 'string') {
+                _this.value = json_1.JSON.parse(val);
+            }
+            else {
+                _this.value = val;
+            }
+            item_1.Item.set('prop:item', val, slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Check if item is kept loaded in memory */
     Item.prototype.getKeepLoaded = function () {
@@ -1423,9 +2261,15 @@ var Item = (function () {
     };
     /** Set Keep loaded option to ON or OFF */
     Item.prototype.setKeepLoaded = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        this.keepLoaded = value;
-        item_1.Item.set('prop:keeploaded', (this.keepLoaded ? '1' : '0'), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            _this.keepLoaded = value;
+            item_1.Item.set('prop:keeploaded', (_this.keepLoaded ? '1' : '0'), slot)
+                .then(function () {
+                resolve(_this);
+            });
+        });
     };
     /** Get the type of the item */
     Item.prototype.getType = function () {
@@ -1460,6 +2304,9 @@ var Item = (function () {
         item['item'] = this.value;
         item['type'] = this.type;
         item['selfclosing'] = true;
+        if (this.cname) {
+            item['cname'] = this.cname;
+        }
         return xml_1.XML.parseJSON(item);
     };
     /** Get the current source (when function is called by sources), or the source
@@ -1467,13 +2314,13 @@ var Item = (function () {
      * from the config window) */
     Item.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isScriptPlugin()) {
-                reject(Error('Script plugins do not have sources ' +
+            if (environment_1.Environment.isExtension()) {
+                reject(Error('Extensions do not have sources ' +
                     'associated with them.'));
             }
-            else if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
-                scene_1.Scene.searchAllForItemId(item_1.Item.getBaseID()).then(function (items) {
-                    resolve(items[0]); // this should always exist
+            else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
+                scene_1.Scene.searchAllForItemId(item_1.Item.getBaseID()).then(function (item) {
+                    resolve(item); // this should always exist
                 });
             }
         });
@@ -1481,7 +2328,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../../internal/item":16,"../../internal/util/json":17,"../../internal/util/xml":19,"../environment":2,"../scene":10}],9:[function(require,module,exports){
+},{"../../internal/item":23,"../../internal/util/json":24,"../../internal/util/xml":26,"../environment":5,"../scene":17}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -1498,8 +2345,13 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setVisible = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:visible', value ? '1' : '0', slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:visible', value ? '1' : '0', slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemTransition.prototype.getTransition = function () {
         var _this = this;
@@ -1516,8 +2368,13 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setTransition = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:transitionid', value.toString(), slot);
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.set('prop:transitionid', value.toString(), slot).then(function () {
+                resolve(_this);
+            });
+        });
     };
     ItemTransition.prototype.getTransitionTime = function () {
         var _this = this;
@@ -1529,13 +2386,23 @@ var ItemTransition = (function () {
         });
     };
     ItemTransition.prototype.setTransitionTime = function (value) {
-        var slot = item_1.Item.attach(this._id);
-        item_1.Item.set('prop:transitionid', String(value), slot);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < 0 || value > 60000) {
+                reject(RangeError('Transparency may only be in the range 0 to 60000.'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:transitiontime', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
     };
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":16,"../transition":11}],10:[function(require,module,exports){
+},{"../../internal/item":23,"../transition":18}],17:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var app_1 = require('../internal/app');
@@ -1543,15 +2410,17 @@ var environment_1 = require('./environment');
 var item_1 = require('./item/item');
 var game_1 = require('./item/game');
 var camera_1 = require('./item/camera');
+var audio_1 = require('./item/audio');
+var html_1 = require('./item/html');
 var Scene = (function () {
     function Scene(sceneNum) {
         this.id = sceneNum - 1;
     }
     ;
     Scene.initializeScenePool = function () {
-        if (Scene.scenePool.length === 0) {
-            for (var i = 0; i < Scene.maxScenes; i++) {
-                Scene.scenePool[i] = new Scene(i + 1);
+        if (Scene._scenePool.length === 0) {
+            for (var i = 0; i < Scene._maxScenes; i++) {
+                Scene._scenePool[i] = new Scene(i + 1);
             }
         }
     };
@@ -1573,7 +2442,7 @@ var Scene = (function () {
     Scene.getById = function (sceneNum) {
         // initialize if necessary
         Scene.initializeScenePool();
-        return Scene.scenePool[sceneNum - 1];
+        return Scene._scenePool[sceneNum - 1];
     };
     /**
      * Asynchronous functon to get a list of scene objects with a specific name.
@@ -1595,10 +2464,10 @@ var Scene = (function () {
     Scene.getByName = function (sceneName) {
         // initialize if necessary
         Scene.initializeScenePool();
-        var namePromise = Promise.all(Scene.scenePool.map(function (scene, index) {
+        var namePromise = Promise.all(Scene._scenePool.map(function (scene, index) {
             return app_1.App.get('presetname:' + index).then(function (name) {
                 if (sceneName === name) {
-                    return Scene.scenePool[index];
+                    return Scene._scenePool[index];
                 }
                 else {
                     return null;
@@ -1635,7 +2504,7 @@ var Scene = (function () {
      */
     Scene.getActiveScene = function () {
         return new Promise(function (resolve) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 app_1.App.get('presetconfig:-1').then(function (sceneString) {
                     var curScene = json_1.JSON.parse(sceneString);
                     if (curScene.children.length > 0) {
@@ -1681,7 +2550,7 @@ var Scene = (function () {
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
-                Scene.scenePool.forEach(function (scene, idx, arr) {
+                Scene._scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
                         scene.getItems().then((function (items) {
                             found = items.some(function (item) {
@@ -1714,7 +2583,7 @@ var Scene = (function () {
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
-                Scene.scenePool.forEach(function (scene, idx, arr) {
+                Scene._scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
                         scene.getItems().then(function (items) {
                             found = items.some(function (item) {
@@ -1758,7 +2627,7 @@ var Scene = (function () {
         Scene.initializeScenePool();
         var matches = [];
         return new Promise(function (resolve) {
-            return Promise.all(Scene.scenePool.map(function (scene) {
+            return Promise.all(Scene._scenePool.map(function (scene) {
                 return new Promise(function (resolveScene) {
                     scene.getItems().then(function (items) {
                         if (items.length === 0) {
@@ -1794,6 +2663,41 @@ var Scene = (function () {
         });
     };
     ;
+    /**
+     * return: Promise<boolean>
+     *
+     * Load scenes that isn't yet initialized in XSplit Broadcaster
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.initializeScenes().then(function(val) {
+     *   if (val === true) {
+     *     // Now you know that all scenes are loaded :)
+     *   }
+     * })
+     * ```
+     */
+    Scene.initializeScenes = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            app_1.App.get('presetcount').then(function (cnt) {
+                if (Number(cnt) !== 12) {
+                    // Insert an empty scene for scene #12
+                    app_1.App
+                        .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                        .then(function (res) {
+                        resolve(res);
+                    });
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        });
+    };
     /**
      * Get the 1-indexed scene number of this scene object.
      *
@@ -1854,7 +2758,7 @@ var Scene = (function () {
     Scene.prototype.setName = function (name) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourceHtml()) {
+            if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Scene names are readonly for source plugins.'));
             }
             else {
@@ -1887,12 +2791,21 @@ var Scene = (function () {
                 var promiseArray = [];
                 // type checking to return correct Item subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
-                    if (Number(jsonArr[index]['type']) === item_1.ItemTypes.GAMESOURCE) {
-                        typeResolve(new game_1.GameItem(jsonArr[index]));
+                    var item = jsonArr[index];
+                    var type = Number(item['type']);
+                    if (type === item_1.ItemTypes.GAMESOURCE) {
+                        typeResolve(new game_1.GameItem(item));
+                    }
+                    else if (type === item_1.ItemTypes.HTML) {
+                        typeResolve(new html_1.HTMLItem(item));
                     }
                     else if (Number(jsonArr[index]['type']) === item_1.ItemTypes.LIVE &&
-                        jsonArr[index]['sounddev'] === '0') {
+                        jsonArr[index]['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
                         typeResolve(new camera_1.CameraItem(jsonArr[index]));
+                    }
+                    else if (Number(jsonArr[index]['type']) === item_1.ItemTypes.LIVE &&
+                        jsonArr[index]['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+                        typeResolve(new audio_1.AudioItem(jsonArr[index]));
                     }
                     else {
                         typeResolve(new item_1.Item(jsonArr[index]));
@@ -1931,12 +2844,12 @@ var Scene = (function () {
             });
         });
     };
-    Scene.maxScenes = 12;
-    Scene.scenePool = [];
+    Scene._maxScenes = 12;
+    Scene._scenePool = [];
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":12,"../internal/util/json":17,"./environment":2,"./item/camera":3,"./item/game":4,"./item/item":8}],11:[function(require,module,exports){
+},{"../internal/app":19,"../internal/util/json":24,"./environment":5,"./item/audio":6,"./item/camera":7,"./item/game":8,"./item/html":9,"./item/item":15}],18:[function(require,module,exports){
 var Transition = (function () {
     function Transition(key) {
         this.key = key; // retain key so that NONE is readable
@@ -1983,7 +2896,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],12:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -2002,7 +2915,7 @@ var App = (function () {
     App.set = function (name, value) {
         return new Promise(function (resolve) {
             internal_1.exec('AppSetPropertyAsync', name, value, function (ret) {
-                resolve(ret === '0' ? false : true);
+                resolve(Number(ret) < 0 ? false : true);
             });
         });
     };
@@ -2058,7 +2971,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":15,"./util/json":17}],13:[function(require,module,exports){
+},{"./internal":22,"./util/json":24}],20:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -2070,7 +2983,6 @@ var Global = (function () {
         return Global.initialPromises;
     };
     Global.setPersistentConfig = function (config) {
-        console.log('setting persistent config: ' + JSON.stringify(config));
         Global.persistedConfig = config;
     };
     Global.getPersistentConfig = function () {
@@ -2081,12 +2993,14 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],14:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
 var internal_1 = require('./internal');
 var global_1 = require('./global');
+var config_1 = require('../context/config');
+require('../util/ready');
 function resolveRelativePath(path, base) {
     // ABSOLUTE PATHS
     if (path.substring(0, 7) === 'http://' ||
@@ -2121,19 +3035,21 @@ function resolveRelativePath(path, base) {
 }
 function readMetaConfigUrl() {
     return new Promise(function (resolve) {
-        if (environment_1.Environment.isSourceHtml()) {
+        if (environment_1.Environment.isSourcePlugin()) {
+            var configObj = {};
             // initialize config URL if necessary
-            internal_1.exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', function (result) {
-                var configObj = JSON.parse(decodeURIComponent(result));
-                if (configObj === null) {
-                    configObj = {};
-                }
+            try {
+                var config = internal_1.exec('GetConfiguration');
+                configObj = JSON.parse(config);
+            }
+            catch (e) {
+            }
+            finally {
                 var metas = document.getElementsByTagName("meta");
                 for (var i = metas.length - 1; i >= 0; i--) {
-                    if (metas[i].name === 'config-url') {
+                    if (metas[i].name === 'xsplit:config-url') {
                         var url = resolveRelativePath(metas[i].content, window.location.href);
-                        configObj.configUrl = url;
-                        internal_1.exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
+                        configObj['configUrl'] = url;
                         var persist = {
                             configUrl: url
                         };
@@ -2141,8 +3057,9 @@ function readMetaConfigUrl() {
                         break;
                     }
                 }
+                internal_1.exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
                 resolve();
-            });
+            }
         }
         else {
             resolve();
@@ -2151,12 +3068,12 @@ function readMetaConfigUrl() {
 }
 function getCurrentSourceID() {
     return new Promise(function (resolve) {
-        if (environment_1.Environment.isSourceHtml() || environment_1.Environment.isSourceConfig()) {
+        if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
             // initialize Item.getSource() functions
             internal_1.exec('GetLocalPropertyAsync', 'prop:id', function (result) {
                 var id = decodeURIComponent(result);
                 item_1.Item.setBaseID(id);
-                if (environment_1.Environment.isSourceHtml()) {
+                if (environment_1.Environment.isSourcePlugin()) {
                     item_1.Item.lockSourceSlot(id);
                 }
                 resolve();
@@ -2167,17 +3084,31 @@ function getCurrentSourceID() {
         }
     });
 }
+function informWhenConfigLoaded() {
+    return new Promise(function (resolve) {
+        if (environment_1.Environment.isSourceConfig()) {
+            window.addEventListener('load', function () {
+                config_1.SourceConfigWindow.getInstance().emit('config-load');
+                resolve();
+            });
+        }
+        else {
+            resolve(); // other environments don't care if config iframe has loaded
+        }
+    });
+}
 function init() {
     global_1.Global.addInitializationPromise(readMetaConfigUrl());
     global_1.Global.addInitializationPromise(getCurrentSourceID());
+    global_1.Global.addInitializationPromise(informWhenConfigLoaded());
     Promise.all(global_1.Global.getInitializationPromises()).then(function () {
-        document.dispatchEvent(new CustomEvent('xjs-ready', {
+        document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
             bubbles: true
         }));
     });
 }
 init();
-},{"../core/environment":2,"./global":13,"./internal":15,"./item":16}],15:[function(require,module,exports){
+},{"../context/config":1,"../core/environment":5,"../util/ready":34,"./global":20,"./internal":22,"./item":23}],22:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -2237,7 +3168,7 @@ window.SetVolume = function (volume) {
 window.OnDialogResult = function (result) {
     document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
-},{}],16:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -2254,7 +3185,7 @@ var Item = (function () {
             }
             Item.lastSlot = slot;
             Item.itemSlotMap[slot] = itemID;
-            if (environment_1.Environment.isScriptPlugin()) {
+            if (environment_1.Environment.isExtension()) {
                 internal_1.exec('SearchVideoItem' +
                     (String(slot) === '0' ? '' : (slot + 1)), itemID);
             }
@@ -2289,8 +3220,12 @@ var Item = (function () {
     /** Sets an item's local property */
     Item.set = function (name, value, slot) {
         if (slot === void 0) { slot = 0; }
-        internal_1.exec('SetLocalPropertyAsync' +
-            (String(slot) === '0' ? '' : slot + 1), name, value);
+        return new Promise(function (resolve) {
+            internal_1.exec('SetLocalPropertyAsync' +
+                (String(slot) === '0' ? '' : slot + 1), name, value, function (val) {
+                resolve(!(Number(val) < 0));
+            });
+        });
     };
     /** Calls a function defined in an item/source */
     Item.callFunc = function (func, arg) {
@@ -2311,7 +3246,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":2,"./internal":15}],17:[function(require,module,exports){
+},{"../core/environment":5,"./internal":22}],24:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -2381,7 +3316,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":19}],18:[function(require,module,exports){
+},{"./xml":26}],25:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -2393,7 +3328,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],19:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -2448,7 +3383,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],20:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -2786,7 +3721,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":17,"../internal/util/xml":19}],21:[function(require,module,exports){
+},{"../internal/util/json":24,"../internal/util/xml":26}],28:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -2888,7 +3823,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/util/json":17,"../internal/util/xml":19}],22:[function(require,module,exports){
+},{"../internal/util/json":24,"../internal/util/xml":26}],29:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -3043,25 +3978,25 @@ var Game = (function () {
      * Get the FPS Render of the game
      */
     Game.prototype.getFpsRender = function () {
-        return this.fpsRender;
+        return this._fpsRender;
     };
     /**
      * Get the Captured FPS of the game
      */
     Game.prototype.getFpsCapture = function () {
-        return this.fpsCapture;
+        return this._fpsCapture;
     };
     /**
      * Get the image name of the game
      */
     Game.prototype.getImageName = function () {
-        return this.imagename;
+        return this._imagename;
     };
     /**
      * Get the replace image value of the game
      */
     Game.prototype.getReplace = function () {
-        return this.replace;
+        return this._replace;
     };
     /**
      * param: gameJSON<JXON>
@@ -3094,12 +4029,12 @@ var Game = (function () {
         g._wndname = jxon['wndname'];
         g._lastframets = jxon['lastframets'] !== undefined ?
             parseInt(jxon['lastframets']) : undefined;
-        g.fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
+        g._fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
             undefined;
-        g.fpsCapture = jxon['fpsCapture'] !== undefined ?
+        g._fpsCapture = jxon['fpsCapture'] !== undefined ?
             Number(jxon['fpsCapture']) : undefined;
-        g.imagename = jxon['imagename'];
-        g.replace = jxon['replace'];
+        g._imagename = jxon['imagename'];
+        g._replace = jxon['replace'];
         return g;
     };
     /**
@@ -3139,12 +4074,61 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":12,"../internal/util/json":17,"../internal/util/xml":19,"../util/rectangle":25}],23:[function(require,module,exports){
+},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26,"../util/rectangle":35}],30:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var app_1 = require('../internal/app');
+var MicrophoneDevice = (function () {
+    function MicrophoneDevice() {
+    }
+    MicrophoneDevice.parse = function (jxon) {
+        var m = new MicrophoneDevice();
+        m._disp = jxon['disp'];
+        m._name = jxon['name'];
+        return m;
+    };
+    /**
+     * return: XML
+     *
+     * Converts Microphone object into an XML object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var microphoneXML = microphone.toXML();
+     * ```
+     */
+    MicrophoneDevice.prototype.toXML = function () {
+        var microphone = new json_1.JSON();
+        microphone.tag = 'item';
+        microphone['item'] = this._disp;
+        microphone['name'] = this._name;
+        microphone['type'] = '2'; // type LIVE
+        microphone['selfclosing'] = true;
+        return xml_1.XML.parseJSON(microphone);
+    };
+    MicrophoneDevice.prototype.addToScene = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
+                resolve(true);
+            });
+        });
+    };
+    return MicrophoneDevice;
+})();
+exports.MicrophoneDevice = MicrophoneDevice;
+},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26}],31:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
+var microphone_1 = require('./microphone');
 var camera_1 = require('./camera');
 var game_1 = require('./game');
+var json_1 = require('../internal/util/json');
+var environment_1 = require('../core/environment');
+var internal_1 = require('../internal/internal');
 /**
  * This enum is used for {@link #system/System System Class'} getAudioDevices
  * method's first parameter.
@@ -3191,7 +4175,7 @@ var AudioDeviceState = exports.AudioDeviceState;
  * var XJS = require('xjs');
  * var System = XJS.System;
  *
- * System.getCameraDevices().then(funciton(cameras) {
+ * System.getCameraDevices().then(function(cameras) {
  *   window.cameras = cameras;
  * });
  * ```
@@ -3210,7 +4194,7 @@ var System = (function () {
      * System.getAudioDevices(
      *   XML.AudioDeviceDataflow.ALL,
      *   XML.AudioDeviceState.ACTIVE
-     * ).then(funciton(devices) {
+     * ).then(function(devices) {
      *   // devices is an array of AudioDevice object
      *   window.audios = devices;
      * });
@@ -3254,7 +4238,7 @@ var System = (function () {
      * #### Usage
      *
      * ```javascript
-     * System.getCameraDevices().then(funciton(devices) {
+     * System.getCameraDevices().then(function(devices) {
      *   // devices is an array of CameraDevice object
      *   window.cameras = devices;
      * });
@@ -3287,7 +4271,7 @@ var System = (function () {
      * #### Usage
      *
      * ```javascript
-     * System.getGames().then(funciton(games) {
+     * System.getGames().then(function(games) {
      *   // games is an array of Game object
      *   window.games = games;
      * });
@@ -3307,10 +4291,96 @@ var System = (function () {
             });
         });
     };
+    /**
+     * return: Promise<MicrophoneDevice[]>
+     *
+     * Gets all audio capture devices that may be added to the stage
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getMicrophones().then(function(microphones) {
+     *   microphones[0].addToScene(); // add first microphone to stage
+     * });
+     * ```
+     */
+    System.getMicrophones = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('dshowenum:asrc').then(function (micsJXON) {
+                var mics = [];
+                if (micsJXON !== undefined) {
+                    var micsJXONLength = micsJXON.length;
+                    for (var i = 0; i < micsJXONLength; ++i) {
+                        mics.push(microphone_1.MicrophoneDevice.parse(micsJXON[i]));
+                    }
+                }
+                resolve(mics);
+            });
+        });
+    };
+    /**
+     * return: Promise<JXON>
+     *
+     * Gets the position of the cursor. Does not work on Source Plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.getCursorPosition().then(function(pos) {
+     *   var x = pos.x; // X Axis
+     *   var y = pos.y; // Y Axis
+     * });
+     * ```
+     */
+    System.getCursorPosition = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            else {
+                var res = internal_1.exec('GetCursorPos');
+                if (typeof res === 'string') {
+                    var posArr = res.split(',');
+                    var pos = new json_1.JSON();
+                    pos['x'] = Number(posArr[0]);
+                    pos['y'] = Number(posArr[1]);
+                    resolve(pos);
+                }
+                else {
+                    reject(Error('cannot fetch current cursor position'));
+                }
+            }
+        });
+    };
+    /**
+     * param: JXON
+     *
+     * Sets the position of the cursor. Does not work on Source Plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * System.setCursorPosition({x:0, y:0});
+     * ```
+     */
+    System.setCursorPosition = function (pos) {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+                reject(Error('invalid parameters'));
+            }
+            else {
+                internal_1.exec('SetCursorPos', String(pos['x']), String(pos['y']));
+                resolve(true);
+            }
+        });
+    };
     return System;
 })();
 exports.System = System;
-},{"../internal/app":12,"./audio":20,"./camera":21,"./game":22}],24:[function(require,module,exports){
+},{"../core/environment":5,"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"./audio":27,"./camera":28,"./game":29,"./microphone":30}],32:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -3342,25 +4412,27 @@ var Color = (function () {
         return new Color({ ibgr: ibgr });
     };
     Color.prototype.getRgb = function () {
-        return this.rgb;
+        return this._rgb;
     };
     Color.prototype.setRgb = function (rgb) {
-        this.rgb = rgb.replace(/^#/, '');
-        this.irgb = parseInt(this.rgb, 16);
-        this.bgr = [this.rgb.substring(4, 6), this.rgb.substring(2, 4),
-            this.rgb.substring(0, 2)].join('');
-        this.ibgr = parseInt(this.bgr, 16);
+        this._rgb = rgb.replace(/^#/, '');
+        this._irgb = parseInt(this._rgb, 16);
+        this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
+            this._rgb.substring(0, 2)].join('');
+        this._ibgr = parseInt(this._bgr, 16);
+        return this;
     };
     Color.prototype.getBgr = function () {
-        return this.bgr;
+        return this._bgr;
     };
     Color.prototype.setBgr = function (bgr) {
         this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4),
             bgr.substring(0, 2)
         ].join(''));
+        return this;
     };
     Color.prototype.getIrgb = function () {
-        return this.irgb;
+        return this._irgb;
     };
     Color.prototype.setIrgb = function (irgb) {
         var rgb = irgb.toString(16);
@@ -3368,9 +4440,10 @@ var Color = (function () {
             rgb = '0' + rgb;
         }
         this.setRgb(rgb);
+        return this;
     };
     Color.prototype.getIbgr = function () {
-        return this.ibgr;
+        return this._ibgr;
     };
     Color.prototype.setIbgr = function (ibgr) {
         var bgr = ibgr.toString(16);
@@ -3378,105 +4451,239 @@ var Color = (function () {
             bgr = '0' + bgr;
         }
         this.setBgr(bgr);
+        return this;
     };
     return Color;
 })();
 exports.Color = Color;
-},{}],25:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var internal_1 = require('../internal/internal');
+var IO = (function () {
+    function IO() {
+    }
+    /**
+     * Returns a base-64 encoded string of the target file's contents.
+     * UTF-8 encoded files may be decoded through:
+     * ```javascript
+     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * ```
+     */
+    IO.getFileContent = function (path) {
+        return new Promise(function (resolve) {
+            resolve(internal_1.exec('GetFileContent', path));
+        });
+    };
+    /**
+     * Returns a base-64 encoded string of the target endpoint's contents.
+     * Redirects are resolved, and this bypasses access-control-allow-origin.
+     *
+     * UTF-8 encoded content may be decoded through:
+     * ```javascript
+     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * ```
+     */
+    IO.getWebContent = function (url) {
+        return new Promise(function (resolve) {
+            internal_1.exec('GetWebContent', url, function (encoded) {
+                resolve(encoded);
+            });
+        });
+    };
+    /** Opens a URL in the user's default browser. URLs need to
+     *
+     */
+    IO.openUrl = function (url) {
+        internal_1.exec('OpenUrl', url);
+    };
+    /**
+     * Opens a file dialog for the user to select a file (or multiple files).
+     * Returns an array of strings, each of which contains the full path
+     * and filename of a selected file. Rejects when the dialog is canceled.
+     *
+     * The first (optional) argument is a JSON object that can be used to indicate
+     * that certain flags should be true. These are documented as follows:
+     * - `allowMultiSelect`: allows users to select multiple files.
+     * - `fileMustExist`: prevents users from typing a name of a nonexistent file
+     * - `forceShowHidden`: lets the dialog show files marked as System or Hidden
+     *  (but not both)
+     *
+     * The second argument (also optional) is a JSON object used to specify the
+     * filter for items to be displayed. It takes two members:
+     * - `name`: the description of the filter (for example: Image Files)
+     * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
+     */
+    IO.openFileDialog = function (optionBag, filter) {
+        return new Promise(function (resolve, reject) {
+            var flags = 0;
+            if (optionBag !== undefined && optionBag !== null) {
+                if (optionBag.allowMultiSelect === true) {
+                    flags = flags | IO._ALLOW_MULTI_SELECT;
+                }
+                if (optionBag.fileMustExist === true) {
+                    flags = flags | IO._FILE_MUST_EXIST;
+                }
+                if (optionBag.forceShowHidden === true) {
+                    flags = flags | IO._FORCE_SHOW_HIDDEN;
+                }
+            }
+            var filterString = '';
+            if (filter !== undefined && filter !== null &&
+                filter.name !== undefined && filter.extensions !== undefined) {
+                filterString = filter.name + '|';
+                filterString += (filter.extensions.map(function (val) {
+                    return '*.' + val;
+                })).join(';');
+                filterString += '||';
+            }
+            internal_1.exec('OpenFileDialogAsync', null, null, String(flags), filterString, function (path) {
+                if (path !== "null") {
+                    resolve(path.split('|'));
+                }
+                else {
+                    reject(Error('File selection cancelled.'));
+                }
+            });
+        });
+    };
+    IO._ALLOW_MULTI_SELECT = 0x200;
+    IO._FILE_MUST_EXIST = 0x1000;
+    IO._FORCE_SHOW_HIDDEN = 0x10000000;
+    return IO;
+})();
+exports.IO = IO;
+},{"../internal/internal":22}],34:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var isReady = false;
+var readyPromise = new Promise(function (resolve) {
+    document.addEventListener('xsplit-js-ready', function () {
+        resolve();
+    });
+    if (isReady) {
+        resolve();
+    }
+});
+function ready() {
+    return readyPromise;
+}
+exports.ready = ready;
+function setReady() {
+    isReady = true;
+}
+exports.setReady = setReady;
+},{}],35:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
     /** Gets the top value */
     Rectangle.prototype.getTop = function () {
-        return this.top;
+        return this._top;
     };
     /** Sets the top value */
     Rectangle.prototype.setTop = function (top) {
-        this.top = top;
-        if (this.bottom !== undefined) {
-            this.setHeight(Math.abs(this.top - this.bottom));
+        this._top = top;
+        if (this._bottom !== undefined &&
+            this._height !== (this._top - this._bottom)) {
+            this.setHeight(Math.abs(this._top - this._bottom));
         }
-        else if (this.height !== undefined) {
-            this.setBottom(this.top + this.height);
+        else if (this._height !== undefined &&
+            this._bottom !== (this._top + this._height)) {
+            this.setBottom(this._top + this._height);
         }
+        return this;
     };
     /** Gets the left value */
     Rectangle.prototype.getLeft = function () {
-        return this.left;
+        return this._left;
     };
     /** Sets the left value */
     Rectangle.prototype.setLeft = function (left) {
-        this.left = left;
-        if (this.right !== undefined) {
-            this.setWidth(Math.abs(this.right - this.left));
+        this._left = left;
+        if (this._right !== undefined &&
+            this._width !== Math.abs(this._right - this._left)) {
+            this.setWidth(Math.abs(this._right - this._left));
         }
-        else if (this.width !== undefined) {
-            this.setRight(this.left + this.width);
+        else if (this._width !== undefined &&
+            this._height !== (this._left + this._width)) {
+            this.setRight(this._left + this._width);
         }
+        return this;
     };
     /** Gets the right value */
     Rectangle.prototype.getRight = function () {
-        return this.right;
+        return this._right;
     };
     /** Sets the right value */
     Rectangle.prototype.setRight = function (right) {
-        this.right = right;
-        if (this.left !== undefined) {
-            this.setWidth(Math.abs(this.right - this.left));
+        this._right = right;
+        if (this._left !== undefined &&
+            this._width !== Math.abs(this._right - this._left)) {
+            this.setWidth(Math.abs(this._right - this._left));
         }
-        else if (this.width !== undefined) {
-            this.setLeft(this.right - this.width);
+        else if (this._width !== undefined &&
+            this._left !== (this._right - this._width)) {
+            this.setLeft(this._right - this._width);
         }
+        return this;
     };
     /** Gets the bottom value */
     Rectangle.prototype.getBottom = function () {
-        return this.bottom;
+        return this._bottom;
     };
     /** Sets the bottom value */
     Rectangle.prototype.setBottom = function (bottom) {
-        this.bottom = bottom;
-        if (this.top !== undefined) {
-            this.setHeight(Math.abs(this.top - this.bottom));
+        this._bottom = bottom;
+        if (this._top !== undefined &&
+            this._height !== Math.abs(this._top - this._bottom)) {
+            this.setHeight(Math.abs(this._top - this._bottom));
         }
-        else if (this.height !== undefined) {
-            this.setTop(this.bottom - this.height);
+        else if (this._height !== undefined &&
+            this._top !== (this._bottom - this._height)) {
+            this.setTop(this._bottom - this._height);
         }
+        return this;
     };
     /** Gets the width value */
     Rectangle.prototype.getWidth = function () {
-        return this.width;
+        return this._width;
     };
     /** Sets the width value */
     Rectangle.prototype.setWidth = function (width) {
-        this.width = width;
-        if (this.right !== undefined) {
-            this.setLeft(this.right - this.width);
+        this._width = width;
+        if (this._right !== undefined &&
+            this._left !== (this._right - this._width)) {
+            this.setLeft(this._right - this._width);
         }
-        else if (this.left !== undefined) {
-            this.setRight(this.left + this.width);
+        else if (this._left !== undefined &&
+            this._right !== (this._left + this._width)) {
+            this.setRight(this._left + this._width);
         }
+        return this;
     };
     /** Gets the height value */
     Rectangle.prototype.getHeight = function () {
-        return this.height;
+        return this._height;
     };
     /** Sets the height value */
     Rectangle.prototype.setHeight = function (height) {
-        this.height = height;
-        if (this.top !== undefined) {
-            this.setBottom(this.top + this.height);
+        this._height = height;
+        if (this._top !== undefined &&
+            this._bottom !== (this._top + this._height)) {
+            this.setBottom(this._top + this._height);
         }
-        else if (this.bottom !== undefined) {
-            this.setTop(this.bottom - this.height);
+        else if (this._bottom !== undefined &&
+            this._top !== (this._bottom - this._height)) {
+            this.setTop(this._bottom - this._height);
         }
+        return this;
     };
     Rectangle.fromDimensions = function (width, height) {
         if (width < 0 || height < 0) {
             throw new Error('Rectangle dimensions cannot be negative.');
         }
         var rect = new Rectangle();
-        rect.width = width;
-        rect.height = height;
+        rect._width = width;
+        rect._height = height;
         return rect;
     };
     Rectangle.fromCoordinates = function (top, left, right, bottom) {
@@ -3487,21 +4694,21 @@ var Rectangle = (function () {
             throw new Error('Right coordinate must be smaller than left.');
         }
         var rect = new Rectangle();
-        rect.top = top;
-        rect.left = left;
+        rect._top = top;
+        rect._left = left;
         rect.setRight(right); // calculates width
         rect.setBottom(bottom); // calculates height
         return rect;
     };
     Rectangle.prototype.toDimensionString = function () {
-        return this.width + ',' + this.height;
+        return this._width + ',' + this._height;
     };
     Rectangle.prototype.toCoordinateString = function () {
-        if (this.left === undefined) {
+        if (this._left === undefined) {
             throw new Error('This Rectangle instance does not have coordinates.');
         }
         else {
-            return this.left + ',' + this.top + ',' + this.right + ',' + this.bottom;
+            return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;
         }
     };
     Rectangle.prototype.toString = function (value) {
@@ -3510,12 +4717,12 @@ var Rectangle = (function () {
         }
         else {
             var format = value;
-            format = format.replace(':left', String(this.left));
-            format = format.replace(':top', String(this.top));
-            format = format.replace(':right', String(this.right));
-            format = format.replace(':bottom', String(this.bottom));
-            format = format.replace(':width', String(this.width));
-            format = format.replace(':height', String(this.height));
+            format = format.replace(':left', String(this._left));
+            format = format.replace(':top', String(this._top));
+            format = format.replace(':right', String(this._right));
+            format = format.replace(':bottom', String(this._bottom));
+            format = format.replace(':width', String(this._width));
+            format = format.replace(':height', String(this._height));
             return format;
         }
     };
@@ -3529,6 +4736,7 @@ function __export(m) {
 require('./internal/init');
 __export(require('./util/color'));
 __export(require('./util/rectangle'));
+__export(require('./util/io'));
 __export(require('./core/environment'));
 __export(require('./core/app'));
 __export(require('./core/scene'));
@@ -3536,8 +4744,15 @@ __export(require('./core/transition'));
 __export(require('./core/item/item'));
 __export(require('./core/item/camera'));
 __export(require('./core/item/game'));
+__export(require('./core/item/audio'));
+__export(require('./core/item/html'));
 __export(require('./system/system'));
 __export(require('./system/audio'));
 __export(require('./system/game'));
 __export(require('./system/camera'));
-},{"./core/app":1,"./core/environment":2,"./core/item/camera":3,"./core/item/game":4,"./core/item/item":8,"./core/scene":10,"./core/transition":11,"./internal/init":14,"./system/audio":20,"./system/camera":21,"./system/game":22,"./system/system":23,"./util/color":24,"./util/rectangle":25}]},{},["xjs"]);
+__export(require('./system/microphone'));
+__export(require('./context/config'));
+__export(require('./context/source'));
+var ready_1 = require('./util/ready');
+exports.ready = ready_1.ready;
+},{"./context/config":1,"./context/source":3,"./core/app":4,"./core/environment":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/game":8,"./core/item/html":9,"./core/item/item":15,"./core/scene":17,"./core/transition":18,"./internal/init":21,"./system/audio":27,"./system/camera":28,"./system/game":29,"./system/microphone":30,"./system/system":31,"./util/color":32,"./util/io":33,"./util/ready":34,"./util/rectangle":35}]},{},["xjs"]);

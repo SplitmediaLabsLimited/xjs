@@ -1,6 +1,5 @@
 angular.module('app', [
-  'navigation-modules',
-  'navigation-guides'
+  'navigation-modules'
 ])
 
 .directive('ngEnter', function() {
@@ -17,8 +16,71 @@ angular.module('app', [
   }
 })
 
-.controller('NavController', ['$scope',  '$location', 'MODULES', 'GUIDES',
-  function($scope, $location, MODULES, GUIDES) {
+.directive('autoComplete', ['$rootScope', '$window', 'MODULES',
+  function($rootScope, $window, MODULES) {
+  var searchObj = [];
+  var searchKeys = [];
+
+  for (var sIdx in MODULES.sections) {
+    searchObj.push({
+      path: MODULES.sections[sIdx].path,
+      name: String(MODULES.sections[sIdx].name + ' ' +
+              MODULES.sections[sIdx].type).toLowerCase()
+    });
+    for (var pIdx in MODULES.sections[sIdx].pages) {
+      searchObj.push({
+        path: MODULES.sections[sIdx].pages[pIdx].path,
+        name: String(MODULES.sections[sIdx].pages[pIdx].name + ' ' +
+                MODULES.sections[sIdx].pages[pIdx].type).toLowerCase()
+      });
+    }
+  }
+
+  searchKeys = searchObj.map(function(obj) {
+    return obj.name;
+  });
+
+  $search = $('#search');
+  $rootScope.searchResults = [];
+
+  $rootScope.search = function(e, ui) {
+    var keyword = ui === undefined ?
+      String($search.val()).toLowerCase() : ui.item.value;
+
+    if (ui !== undefined) e.preventDefault();
+    $search.val('');
+    $rootScope.searchResults = [];
+
+    var searchResults = [];
+    var keywordIndex = searchKeys.indexOf(keyword);
+
+    if (keywordIndex !== -1) {
+      $window.location.href = $window.location.pathname + '#' +
+        searchObj[keywordIndex].path;
+    } else {
+      var reg = new RegExp(keyword, 'ig');
+      for (var sIdx in searchKeys) {
+        if (reg.test(searchKeys[sIdx])) {
+          $rootScope.searchResults.push(searchObj[sIdx]);
+        }
+      }
+      $window.location.href = $window.location.pathname + '#search';
+    }
+  }
+
+  return {
+    restrict: 'A',
+    link: function(scope, elem, attr, ctrl) {
+      $(elem).autocomplete({
+        source: searchKeys,
+        select: $rootScope.search
+      });
+    }
+  };
+}])
+
+.controller('NavController', ['$rootScope', '$scope',  '$location', 'MODULES',
+  function($rootScope, $scope, $location, MODULES) {
     var self = this;
 
     this.sections = MODULES.sections;
@@ -44,7 +106,7 @@ angular.module('app', [
       });
 
       if (self.currentPage) {
-        $scope.searchResults = [];
+        $rootScope.searchResults = [];
       }
     };
 
@@ -53,56 +115,6 @@ angular.module('app', [
     });
 
     /* Search behavior */
-    var searchObj = [];
-    var searchKeys = [];
-
-    for (var sIdx in this.sections) {
-      searchObj.push({
-        path: this.sections[sIdx].path,
-        name: String(this.sections[sIdx].name + ' ' +
-                this.sections[sIdx].type).toLowerCase()
-      });
-      for (var pIdx in this.sections[sIdx].pages) {
-        searchObj.push({
-          path: this.sections[sIdx].pages[pIdx].path,
-          name: String(this.sections[sIdx].pages[pIdx].name + ' ' +
-                  this.sections[sIdx].pages[pIdx].type).toLowerCase()
-        });
-      }
-    }
-
-    searchKeys = searchObj.map(function(obj) {
-      return obj.name;
-    });
-
-    var $search = $('#search');
-
-    $search.autocomplete({
-      source: searchKeys
-    });
-
-    $scope.searchResults = [];
-
-    $scope.search = function(e) {
-      var keyword = String($search.val()).toLowerCase();
-      $search.val('');
-      $scope.searchResults = [];
-
-      var searchResults = [];
-      var keywordIndex = searchKeys.indexOf(keyword);
-
-      if (keywordIndex !== -1) {
-        $location.url(searchObj[keywordIndex].path);
-      } else {
-        var reg = new RegExp(keyword, 'ig');
-        for (var sIdx in searchKeys) {
-          if (reg.test(searchKeys[sIdx])) {
-            $scope.searchResults.push(searchObj[sIdx]);
-          }
-        }
-        $location.url('search');
-      }
-    }
 
     $scope.$watch(
       function getLocationPath() { return $location.path(); },
