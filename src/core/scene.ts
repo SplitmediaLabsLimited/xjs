@@ -1,7 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {JSON as JXON} from '../internal/util/json';
+import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
+import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
@@ -448,6 +450,58 @@ export class Scene {
       iApp.get('presetisempty:' + this.id).then(val => {
         resolve(val === '1');
       });
+    });
+  }
+
+  /**
+   * param: Array<Item> | Array<string>
+   * ```
+   * return: Promise<Scene>
+   * ```
+   *
+   * Sets the item order of the current scene. It is ordered as bottom to top.
+   */
+  setItemOrder(items: Array<any>): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('not available for source plugins'));
+      } else {
+        let ids = [];
+        Scene.getActiveScene().then(scene => {
+          if (items.every(el => { return el instanceof Item })) {
+            for (let i in items) {
+              (_i => {
+                items[_i].getID().then(id => {
+                  ids[_i] = id;
+                });
+              })(i);
+            }
+          } else {
+            ids = items;
+          }
+
+          return scene.getSceneNumber();
+        }).then(id => {
+          if (id === this.id) {
+            exec('SourcesListOrderSave', ids.join(','));
+            resolve(this);
+          } else {
+            iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
+              var newOrder = new JXON();
+              if (Array.isArray(jsonArr)) {
+                for (var i = 0; i < jsonArr.length; i++) {
+                  newOrder[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                }
+
+                iApp.set(
+                  'presetconfig:' + this.id,
+                  XML.parseJSON(newOrder).toString()
+                );
+              }
+            });
+          }
+        });
+      }
     });
   }
 }
