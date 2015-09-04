@@ -19,7 +19,7 @@ import {Environment} from '../environment';
 /**
  * The GameItem Class provides methods specifically used for game items and
  * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
  * GameItem object if there's a game item on the specified scene.
  *
  * ### Basic Usage
@@ -293,8 +293,10 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setBorderColor:  (value: Color) => Promise<GameItem>;
 
   // ItemChroma
+
   /**
    * return: Promise<boolean>
+   *
    */
   isChromaEnabled: () => Promise<boolean>;
   /**

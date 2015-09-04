@@ -17,7 +17,7 @@ import {Color} from '../../util/color';
 /**
  * The CameraItem Class provides methods specifically used for camera items and
  * also methods that are shared between Item Classes. The
- * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
  * CameraItem object if there's a camera item on the specified scene.
  *
  * ### Basic Usage
@@ -42,6 +42,8 @@ import {Color} from '../../util/color';
 export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
   /**
    * return: Promise<string>
+   *
+   * Gets the device ID of the underlying camera deviec.
    */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
