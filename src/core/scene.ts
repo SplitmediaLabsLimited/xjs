@@ -29,11 +29,10 @@ export class Scene {
 
 
   /**
+   * return: Scene
+   *
    * Get a specific scene object given the scene number.
    *
-   * ```
-   * return: Scene
-   * ```
    *
    * #### Usage
    *
@@ -49,11 +48,10 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Scene[]>
+   *
    * Asynchronous functon to get a list of scene objects with a specific name.
    *
-   * ```
-   * return: Promise<Scene[]>
-   * ```
    *
    * #### Usage
    *
@@ -91,11 +89,10 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Scene>
+   *
    * Get the currently active scene.
    *
-   * ```
-   * return: Promise<Scene>
-   * ```
    *
    * #### Usage
    *
@@ -123,13 +120,10 @@ export class Scene {
   }
 
   /**
-   * Searches all scenes for an item by ID. ID search
-   * will return exactly 1 result (IDs are unique) or null.
-   * See also: Core/Item
-   *
-   * ```
    * return: Promise<Item>
-   * ```
+   *
+   * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * See also: Core/Item
    *
    * #### Usage
    *
@@ -174,11 +168,10 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Scene>
+   *
    * Searches all scenes for one that contains the given item ID.
    *
-   * ```
-   * return: Promise<Scene>
-   * ```
    *
    * #### Usage
    *
@@ -223,13 +216,12 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Item[]>
+   *
    * Searches all scenes for an item by name substring.
    *
-   * ```
-   * return: Promise<Item[]>
-   * ```
    *
-   * #Usage
+   * #### Usage
    *
    * ```javascript
    * Scene.searchAllForItemName('camera').then(function(items) {
@@ -279,11 +271,11 @@ export class Scene {
 
   /**
    * return: Promise<boolean>
+
+   * Load scenes that are not yet initialized in XSplit Broadcaster.
    *
-   * Load scenes that are not yet initialized in XSplit Broadcaster. For memory
-   * saving purposes, this is not called automatically. If your extension wants
-   * to manipulate multiple scenes, it is imperative that you call this function.
-   *
+   * Note: For memory saving purposes, this is not called automatically.
+   * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
    * This function is only available to extensions.
    *
    * #### Usage
@@ -318,11 +310,10 @@ export class Scene {
   }
 
   /**
+   * return: number
+   *
    * Get the 1-indexed scene number of this scene object.
    *
-   * ```
-   * return: number
-   * ```
    *
    * #### Usage
    *
@@ -339,11 +330,10 @@ export class Scene {
   }
 
   /**
+   * return: number
+   *
    * Get the name of this scene object.
    *
-   * ```
-   * return: number
-   * ```
    *
    * #### Usage
    *
@@ -362,6 +352,7 @@ export class Scene {
   }
 
   /**
+   *
    * Set the name of this scene object. Cannot be set by source plugins.
    *
    * #### Usage
@@ -383,12 +374,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Item[]>
+   *
    * Gets all the items (sources) in a specific scene.
    * See also: Core/Item
    *
-   * ```
-   * return: Promise<Item[]>
-   * ```
    * #### Usage
    *
    * ```javascript
@@ -439,18 +429,18 @@ export class Scene {
   }
 
  /**
- * Checks if a scene is empty.
- *
- * #### Usage
- *
- * ```javascript
- * myScene.isEmpty().then(function(empty) {
- *   if (empty === true) {
- *     console.log("My scene is empty.");
- *   }
- * });
- * ```
- */
+  * Checks if a scene is empty.
+  *
+  * #### Usage
+  *
+  * ```javascript
+  * myScene.isEmpty().then(function(empty) {
+  *   if (empty === true) {
+  *     console.log("My scene is empty.");
+  *   }
+  * });
+  * ```
+  */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
       iApp.get('presetisempty:' + this._id).then(val => {
