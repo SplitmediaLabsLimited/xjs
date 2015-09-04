@@ -104,13 +104,13 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setOfflineImage(path: string): Promise<GameItem> {
     return new Promise((resolve, reject) => {
-      if (this.type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
         );
-      } else if (!(this.value instanceof XML)) {
+      } else if (!(this._value instanceof XML)) {
         this.getValue().then(() => {
           this.setOfflineImage(path).then(itemObj => {
             resolve(itemObj);
@@ -120,7 +120,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
         var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
           '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
         if (regExp.test(path) || path === '') {
-          var valueObj = JXON.parse(this.value.toString());
+          var valueObj = JXON.parse(this._value.toString());
           valueObj['replace'] = path;
           this.setValue(XML.parseJSON(valueObj)).then(() => {
             resolve(this);
@@ -137,11 +137,11 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getOfflineImage(): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this.type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else {
         this.getValue().then(() => {
-          var valueObj = JXON.parse(this.value.toString());
+          var valueObj = JXON.parse(this._value.toString());
           resolve(valueObj['replace'] ? valueObj['replace'] : '');
         });
       }

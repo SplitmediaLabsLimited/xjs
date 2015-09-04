@@ -46,8 +46,10 @@ export enum AudioDeviceState {
 }
 
 /**
- * The System class provides you methods to fetch games, audio devices, and
- * camera devices.
+ * The System class provides you methods to fetch audio devices to manipulate
+ * the application's audio settings. It also allows you to fetch games,
+ * microphone devices and camera devices to add to scenes. Finally, some
+ * system-level functionality such as cursor position is exposed.
  *
  * ### Basic Usage
  *
@@ -65,6 +67,7 @@ export class System{
    * return: Promise<AudioDevice[]>
    *
    * Gets audio devices, both input and output
+   * See also: System/AudioDevice
    *
    * #### Usage
    *
@@ -113,6 +116,7 @@ export class System{
    * return: Promise<CameraDevice[]>
    *
    * Gets all camera devices
+   * See also: System/CameraDevice
    *
    * #### Usage
    *
@@ -146,7 +150,8 @@ export class System{
   /**
    * return: Promise<Game[]>
    *
-   * Gets all camera devices
+   * Gets all currently running games
+   * See also: System/Game
    *
    * #### Usage
    *
@@ -176,6 +181,7 @@ export class System{
    * return: Promise<MicrophoneDevice[]>
    *
    * Gets all audio capture devices that may be added to the stage
+   * See also: System/MicrophoneDevice
    *
    * #### Usage
    *
