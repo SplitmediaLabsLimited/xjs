@@ -131,6 +131,38 @@ export class Scene {
   }
 
   /**
+   * param: scene<number|Scene>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Change active scene. Does not work on source plugins.
+   */
+  static setActiveScene(scene: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else {
+        if (scene instanceof Scene) {
+          scene.getID().then(id => {
+            iApp.set('preset', String(id));
+          });
+        } else if (typeof scene === 'number') {
+          if (scene < 1 || scene > 12) {
+            reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+          } else {
+            iApp.set('preset', String(scene - 1)).then(res => {
+              resolve(res);
+            });
+          }
+        } else {
+          reject(Error('Invalid parameters'));
+        }
+      }
+    });
+  }
+
+  /**
    * Searches all scenes for an item by ID. ID search
    * will return only a maximum of 1 result (IDs are unique).
    *
