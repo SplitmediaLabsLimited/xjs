@@ -1,6 +1,15 @@
+/**
+ * The Transition class represents a preset transition within XSplit Broadcaster.
+ * This may be used to set the application's transition scheme when switching scenes,
+ * or to set an individual source's transition when its visibility changes.
+ *
+ * Simply use one of the available Transition objects such as Transition.FAN or
+ * Transition.COLLAPSE as the parameter to the setTransition method of an App
+ * or Item instance.
+ */
 export class Transition {
-  private value: string;
-  private key: string;
+  private _value: string;
+  private _key: string;
 
   private static _transitionMap = {
     NONE: '',
@@ -33,19 +42,21 @@ export class Transition {
   static WAVE: Transition =  new Transition('WAVE');
 
   constructor(key: string) {
-    this.key = key; // retain key so that NONE is readable
-    this.value = Transition._transitionMap[key];
+    this._key = key; // retain key so that NONE is readable
+    this._value = Transition._transitionMap[key];
   }
 
-  // should only be used internally when setting a property
+  /**
+   * Converts this transition object to the underlying string representation to be read by XSplit Broadcaster.
+   */
   toString(): string {
-    return this.value;
+    return this._value;
   }
 
-  /** Converts this transition object to a easily identifiable string such as
-   *  'NONE'.
+  /**
+   * Converts this transition object to a easily identifiable string such as 'NONE'.
    */
   toTransitionKey(): string {
-    return this.key;
+    return this._key;
   }
 }

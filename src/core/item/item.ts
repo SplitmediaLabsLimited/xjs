@@ -25,35 +25,35 @@ export enum ItemTypes {
  */
 export class Item {
   protected _id: string;
-  protected type: ItemTypes;
-  protected value: any;
-  private name: string;
-  private cname: string;
-  private sceneID: number;
-  private keepLoaded: boolean;
+  protected _type: ItemTypes;
+  protected _value: any;
+  private _name: string;
+  private _cname: string;
+  private _sceneID: number;
+  private _keepLoaded: boolean;
 
-  private xmlparams: {};
+  private _xmlparams: {};
 
   constructor(props?: {}) {
     props = props ? props : {};
 
-    this.name = props['name'];
-    this.cname = props['cname'];
+    this._name = props['name'];
+    this._cname = props['cname'];
     this._id = props['id'];
-    this.sceneID = props['sceneID'];
-    this.value = props['value'];
-    this.keepLoaded = props['keeploaded'];
-    this.type = Number(props['type']);
+    this._sceneID = props['sceneID'];
+    this._value = props['value'];
+    this._keepLoaded = props['keeploaded'];
+    this._type = Number(props['type']);
 
-    this.xmlparams = props;
+    this._xmlparams = props;
   }
 
   /** Sets the name of the item */
   setName(value: string): Promise<Item> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-      this.name = value;
-      iItem.set('prop:name', this.name, slot).then(() => {
+      this._name = value;
+      iItem.set('prop:name', this._name, slot).then(() => {
         resolve(this);
       });
     });
@@ -64,7 +64,7 @@ export class Item {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
       iItem.get('prop:name', slot).then(val => {
-        this.name = val;
+        this._name = val;
         resolve(val);
       });
     });
@@ -74,8 +74,8 @@ export class Item {
   setCustomName(value: string): Promise<Item> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-      this.cname = value;
-      iItem.set('prop:cname', this.cname, slot).then(() => {
+      this._cname = value;
+      iItem.set('prop:cname', this._cname, slot).then(() => {
         resolve(this);
       });
     });
@@ -86,7 +86,7 @@ export class Item {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
       iItem.get('prop:cname', slot).then(val => {
-        this.cname = val;
+        this._cname = val;
         resolve(val);
       });
     });
@@ -99,15 +99,15 @@ export class Item {
       iItem.get('prop:item', slot).then(val => {
         val = (val === 'null') ? '' : val;
         if (val === '') { // don't return XML for null values
-          this.value = '';
+          this._value = '';
           resolve(val);
         } else {
           try {
-            this.value = XML.parseJSON(JXON.parse(val));
-            resolve(this.value);
+            this._value = XML.parseJSON(JXON.parse(val));
+            resolve(this._value);
           } catch (e) {
             // value is not valid XML (it is a string instead)
-            this.value = val;
+            this._value = val;
             resolve(val);
           }
         }
@@ -122,9 +122,9 @@ export class Item {
       var val: string = (typeof value === 'string') ?
         <string> value : (<XML> value).toString();
       if (typeof value !== 'string') { // XML
-        this.value = JXON.parse(val);
+        this._value = JXON.parse(val);
       } else {
-        this.value = val;
+        this._value = val;
       }
       iItem.set('prop:item', val, slot).then(() => {
         resolve(this);
@@ -137,8 +137,8 @@ export class Item {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
       iItem.get('prop:keeploaded', slot).then(val => {
-        this.keepLoaded = (val === '1');
-        resolve(this.keepLoaded);
+        this._keepLoaded = (val === '1');
+        resolve(this._keepLoaded);
       });
     });
   }
@@ -147,8 +147,8 @@ export class Item {
   setKeepLoaded(value: boolean): Promise<Item> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
-      this.keepLoaded = value;
-      iItem.set('prop:keeploaded', (this.keepLoaded ? '1' : '0'), slot)
+      this._keepLoaded = value;
+      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), slot)
         .then(() => {
           resolve(this);
       });
@@ -160,8 +160,8 @@ export class Item {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
       iItem.get('prop:type', slot).then(val => {
-        this.type = ItemTypes[ItemTypes[Number(val)]];
-        resolve(this.type);
+        this._type = ItemTypes[ItemTypes[Number(val)]];
+        resolve(this._type);
       });
     });
   }
@@ -176,7 +176,7 @@ export class Item {
   /** Get (1-indexed) Scene ID where the item is loaded */
   getSceneID(): Promise<number> {
     return new Promise(resolve => {
-      resolve(Number(this.sceneID) + 1);
+      resolve(Number(this._sceneID) + 1);
     });
   }
 
@@ -185,13 +185,13 @@ export class Item {
     var item: JXON = new JXON();
 
     item['tag'] = 'item';
-    item['name'] = this.name;
-    item['item'] = this.value;
-    item['type'] = this.type;
+    item['name'] = this._name;
+    item['item'] = this._value;
+    item['type'] = this._type;
     item['selfclosing'] = true;
 
-    if (this.cname) {
-      item['cname'] = this.cname;
+    if (this._cname) {
+      item['cname'] = this._cname;
     }
 
     return XML.parseJSON(item);
