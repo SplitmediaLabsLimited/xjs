@@ -469,28 +469,45 @@ export class Scene {
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return el instanceof Item })) {
-            for (let i in items) {
-              (_i => {
-                items[_i].getID().then(id => {
-                  ids[_i] = id;
-                });
-              })(i);
-            }
+            return new Promise(resolve => {
+              for (let i in items) {
+                (_i => {
+                  items[_i].getID().then(id => {
+                    ids[_i] = id;
+                    if (ids.length === items.length) {
+                      scene.getSceneNumber().then(id => {
+                          resolve(id);
+                      });
+                    }
+                  });
+                })(i);
+              }
+            });
           } else {
             ids = items;
+            return scene.getSceneNumber();
           }
-
-          return scene.getSceneNumber();
         }).then(id => {
-          if (id === this.id) {
+          if ((Number(id) - 1) === this.id && Environment.isSourceConfig()) {
             exec('SourcesListOrderSave', ids.join(','));
             resolve(this);
           } else {
-            iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
+            var sceneName: string;
+            this.getName().then(name => {
+              sceneName = name;
+              return iApp.getAsList('presetconfig:' + this.id);
+            }).then(jsonArr => {
               var newOrder = new JXON();
+              newOrder.children = [];
+              newOrder['tag'] = 'placement';
+              newOrder['name'] = sceneName;
               if (Array.isArray(jsonArr)) {
                 for (var i = 0; i < jsonArr.length; i++) {
-                  newOrder[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                  jsonArr[i]['name'] = jsonArr[i]['name']
+                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                  jsonArr[i]['item'] = jsonArr[i]['item']
+                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
