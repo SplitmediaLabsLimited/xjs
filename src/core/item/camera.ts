@@ -85,6 +85,27 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getPosition:              () => Promise<Rectangle>;
 
   /**
+   * return: Promise<number>
+   *
+   * Get Rotate Y value of the item
+   */
+  getRotateY:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate X value of the item
+   */
+  getRotateX:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Z value of the item
+   */
+  getRotateZ:              () => Promise<number>;
+
+  /**
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
@@ -111,6 +132,27 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    * Set Item position
    */
   setPosition:              (value: Rectangle) => Promise<CameraItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Y value of the item
+   */
+  setRotateY:              (value: number) => Promise<CameraItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate X value of the item
+   */
+  setRotateX:              (value: number) => Promise<CameraItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Z value of the item
+   */
+  setRotateZ:              (value: number) => Promise<CameraItem>;
 
   // ItemColor
 

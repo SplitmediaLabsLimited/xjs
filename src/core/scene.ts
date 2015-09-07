@@ -1,7 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {JSON as JXON} from '../internal/util/json';
+import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
+import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
@@ -120,10 +122,45 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Item>
+   * param: scene<number|Scene>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Change active scene. Does not work on source plugins.
+   */
+  static setActiveScene(scene: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else {
+        if (scene instanceof Scene) {
+          scene.getID().then(id => {
+            iApp.set('preset', String(id));
+          });
+        } else if (typeof scene === 'number') {
+          if (scene < 1 || scene > 12) {
+            reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+          } else {
+            iApp.set('preset', String(scene - 1)).then(res => {
+              resolve(res);
+            });
+          }
+        } else {
+          reject(Error('Invalid parameters'));
+        }
+      }
+    });
+  }
+
+  /**
    *
    * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    * See also: Core/Item
+   * #Return
+   * ```
+   * Item
+   * ```
    *
    * #### Usage
    *
@@ -446,6 +483,75 @@ export class Scene {
       iApp.get('presetisempty:' + this._id).then(val => {
         resolve(val === '1');
       });
+    });
+  }
+
+  /**
+   * param: Array<Item> | Array<string>
+   * ```
+   * return: Promise<Scene>
+   * ```
+   *
+   * Sets the item order of the current scene. It is ordered as bottom to top.
+   */
+  setItemOrder(items: Array<any>): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('not available for source plugins'));
+      } else {
+        let ids = [];
+        Scene.getActiveScene().then(scene => {
+          if (items.every(el => { return el instanceof Item })) {
+            return new Promise(resolve => {
+              for (let i in items) {
+                (_i => {
+                  items[_i].getID().then(id => {
+                    ids[_i] = id;
+                    if (ids.length === items.length) {
+                      scene.getSceneNumber().then(id => {
+                          resolve(id);
+                      });
+                    }
+                  });
+                })(i);
+              }
+            });
+          } else {
+            ids = items;
+            return scene.getSceneNumber();
+          }
+        }).then(id => {
+          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
+            exec('SourcesListOrderSave', ids.join(','));
+            resolve(this);
+          } else {
+            var sceneName: string;
+            this.getName().then(name => {
+              sceneName = name;
+              return iApp.getAsList('presetconfig:' + this._id);
+            }).then(jsonArr => {
+              var newOrder = new JXON();
+              newOrder.children = [];
+              newOrder['tag'] = 'placement';
+              newOrder['name'] = sceneName;
+              if (Array.isArray(jsonArr)) {
+                for (var i = 0; i < jsonArr.length; i++) {
+                  jsonArr[i]['name'] = jsonArr[i]['name']
+                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                  jsonArr[i]['item'] = jsonArr[i]['item']
+                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                }
+
+                iApp.set(
+                  'presetconfig:' + this._id,
+                  XML.parseJSON(newOrder).toString()
+                );
+              }
+            });
+          }
+        });
+      }
     });
   }
 }
