@@ -17,6 +17,11 @@ import {Color} from '../../util/color';
 
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
+  /**
+   * return: Promise<string>
+   *
+   * Gets the URL of this webpage source.
+   */
   getURL(): Promise<string> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
@@ -27,6 +32,11 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
     });
   }
 
+  /**
+   * param: value<string>
+   *
+   * Sets the URL of this webpage source.
+   */
   setURL(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
       let slot = iItem.attach(this._id);
@@ -359,8 +369,27 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Gets the configuration JSON
    */
   loadConfig: () => Promise<any>;
+
+  /**
+   * param: config<JSON>
+   *
+   * Persists a JSON object for configuration. Available to sources only.
+   */
   saveConfig: (configObj: any) => Promise<HTMLItem>;
+
+  /**
+   * param: config<JSON>
+   *
+   * Requests the source to save a configuration. This makes the source emit the save-config event.
+   */
   requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
+
+  /**
+   * param: config<JSON>
+   *
+   * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   */
+  applyConfig: (configObj: any) => Promise<HTMLItem>;
 }
 
 applyMixins(HTMLItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemConfigurable]);

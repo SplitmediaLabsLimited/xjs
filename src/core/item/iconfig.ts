@@ -9,6 +9,7 @@ export interface IItemConfigurable {
   loadConfig(): Promise<any>;
   saveConfig(configObj: any);
   requestSaveConfig(configObj: any);
+  applyConfig(configObj: any);
 }
 
 export class ItemConfigurable {
