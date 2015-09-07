@@ -503,20 +503,24 @@ export class Scene {
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return el instanceof Item })) {
-            let promises = [];
-            for (let i in items) {
-              promises.push((_i => {
-                return new Promise(resolve => {
-                  items[_i].getID().then(id => {
-                    ids[_i] = id;
-                    resolve(this);
+            return new Promise(resolve => {
+              let promises = [];
+              for (let i in items) {
+                promises.push((_i => {
+                  return new Promise(resolve => {
+                    items[_i].getID().then(id => {
+                      ids[_i] = id;
+                      resolve(this);
+                    });
                   });
-                });
-              })(i));
-            }
+                })(i));
+              }
 
-            Promise.all(promises).then(() => {
-              return scene.getSceneNumber();
+              Promise.all(promises).then(() => {
+                  return scene.getSceneNumber();
+                }).then(id => {
+                  resolve(id);
+                });
             });
           } else {
             ids = items;
@@ -537,9 +541,14 @@ export class Scene {
               newOrder['tag'] = 'placement';
               newOrder['name'] = sceneName;
               if (Array.isArray(jsonArr)) {
+                let attrs = ['name', 'cname', 'item'];
                 for (let i = 0; i < jsonArr.length; i++) {
-                  jsonArr[i]['item'] = jsonArr[i]['item']
-                    .replace(/"/g, '&quot;');
+                  for (let a = 0; a < attrs.length; a++) {
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/"/g, '&quot;');
+                  }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
