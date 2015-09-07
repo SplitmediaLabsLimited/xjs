@@ -145,7 +145,9 @@ export class Scene {
       } else {
         if (scene instanceof Scene) {
           scene.getID().then(id => {
-            iApp.set('preset', String(id));
+            iApp.set('preset', String(id)).then(res => {
+              resolve(res);
+            });
           });
         } else if (typeof scene === 'number') {
           if (scene < 1 || scene > 12) {
