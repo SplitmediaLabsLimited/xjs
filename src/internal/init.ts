@@ -4,9 +4,7 @@ import {Environment} from '../core/environment';
 import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
-import {SourceConfigWindow} from '../context/config';
-
-import '../util/ready';
+import {SourceConfigWindow} from '../window/config';
 
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
@@ -41,7 +39,7 @@ function resolveRelativePath(path: string, base: string) {
 function readMetaConfigUrl(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourcePlugin()) {
-      var configObj = {};      
+      var configObj = {};
       // initialize config URL if necessary
 
       try {

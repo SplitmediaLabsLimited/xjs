@@ -8,7 +8,8 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
   readTypeScriptModules.sourceFiles = [
     'core.ts',
     'system.ts',
-    'util.ts'
+    'util.ts',
+    'window.ts'
   ];
 })
 

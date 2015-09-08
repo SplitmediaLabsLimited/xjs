@@ -1,18 +1,22 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {MyEventEmitter} from './eventemitter';
+import {EventEmitter} from './eventemitter';
 import {exec} from '../internal/internal';
 
 /** This utility class exposes functionality for source plugin developers to
- *  handle the configuration window for their source plugins.
+ *  handle the configuration window for their source plugins. The framework also
+ *  uses this class for its own internal purposes.
  *
  *  Developers can use this class to specify how their configuration HTML
  *  should be rendered within the built-in window in XSplit Broadcaster.
  *  This class also serves as an event emitter for specific important events.
  *
- *  The framework also uses this class for its own internal purposes.
+ *  At the moment, the only relevant event for developers is:
+ *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
  */
-export class SourceConfigWindow extends MyEventEmitter {
+export class SourceConfigWindow extends EventEmitter {
   private static _instance: SourceConfigWindow;
   private _mode;
   private static _MODE_FULL: string = 'full';
@@ -97,8 +101,12 @@ export class SourceConfigWindow extends MyEventEmitter {
     this._notify({ event: 'load' });
   }
 
+  /**
+   *  param: width<number>, height<number>
+   *
+   *  Resizes the configuration window.
+   */
   resizeConfig(width: number, height: number) {
-    
     if (this._mode === 'full') {
       this._notify({
         event: 'resize',
@@ -113,6 +121,7 @@ export class SourceConfigWindow extends MyEventEmitter {
     }
   };
 
+  /** Closes the configuration window. */
   closeConfig() {
     exec('Close');
   };

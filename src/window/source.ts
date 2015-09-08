@@ -1,14 +1,19 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {MyEventEmitter} from './eventemitter';
+import {EventEmitter} from './eventemitter';
 import {exec} from '../internal/internal';
 
 /** This utility class is used internally by the framework for certain important
- *  processes. This class also exposes certain important events for
+ *  processes. This class also exposes certain important events that the source
+ *  plugin may emit.
  *
+ *  Currently there are only two events:
+ *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
+ *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
  *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
  */
-export class SourcePluginWindow extends MyEventEmitter {
+export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
 
   static getInstance() {
@@ -18,10 +23,12 @@ export class SourcePluginWindow extends MyEventEmitter {
     return SourcePluginWindow._instance;
   }
 
+  /**
+   *  Use getInstance() instead.
+   */
   constructor() {
     super();
 
-    // TODO: need to document events emitted
     this.on('message-source', function(message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
