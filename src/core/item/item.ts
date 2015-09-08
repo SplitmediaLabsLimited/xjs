@@ -1,11 +1,13 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
+import {ItemLayout, IItemLayout} from './ilayout';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -23,7 +25,7 @@ export enum ItemTypes {
  * An Item represents an object that is used as a source on the stage.
  * Some possible sources are games, microphones, or a webpage.
  */
-export class Item {
+export class Item implements IItemLayout {
   protected _id: string;
   protected _type: ItemTypes;
   protected _value: any;
@@ -212,4 +214,106 @@ export class Item {
       }
     });
   }
+
+    // ItemLayout
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Aspect Ratio is set to ON or OFF
+   */
+  isKeepAspectRatio:        () => Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Position Locked is set to ON or OFF
+   */
+  isPositionLocked:         () => Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Enhance Resize is Enabled or Disabled
+   */
+  isEnhancedResizeEnabled:   () => Promise<boolean>;
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Get the position of the item
+   */
+  getPosition:              () => Promise<Rectangle>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Y value of the item
+   */
+  getRotateY:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate X value of the item
+   */
+  getRotateX:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Z value of the item
+   */
+  getRotateZ:              () => Promise<number>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set Aspect Ratio to ON or OFF
+   */
+  setKeepAspectRatio:       (value: boolean) => Promise<Item>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set Position Lock to ON or OFF
+   */
+  setPositionLocked:        (value: boolean) => Promise<Item>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set Enhance Resize to ON or OFF
+   */
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<Item>;
+
+  /**
+   * param: value<Rectangle>
+   *
+   * Set Item position
+   */
+  setPosition:              (value: Rectangle) => Promise<Item>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Y value of the item
+   */
+  setRotateY:              (value: number) => Promise<Item>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate X value of the item
+   */
+  setRotateX:              (value: number) => Promise<Item>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Z value of the item
+   */
+  setRotateZ:              (value: number) => Promise<Item>;
 }
+
+applyMixins(Item, [ItemLayout]);

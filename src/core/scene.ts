@@ -136,7 +136,9 @@ export class Scene {
       } else {
         if (scene instanceof Scene) {
           scene.getID().then(id => {
-            iApp.set('preset', String(id));
+            iApp.set('preset', String(id)).then(res => {
+              resolve(res);
+            });
           });
         } else if (typeof scene === 'number') {
           if (scene < 1 || scene > 12) {
@@ -503,18 +505,23 @@ export class Scene {
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return el instanceof Item })) {
             return new Promise(resolve => {
+              let promises = [];
               for (let i in items) {
-                (_i => {
-                  items[_i].getID().then(id => {
-                    ids[_i] = id;
-                    if (ids.length === items.length) {
-                      scene.getSceneNumber().then(id => {
-                          resolve(id);
-                      });
-                    }
+                promises.push((_i => {
+                  return new Promise(resolve => {
+                    items[_i].getID().then(id => {
+                      ids[_i] = id;
+                      resolve(this);
+                    });
                   });
-                })(i);
+                })(i));
               }
+
+              Promise.all(promises).then(() => {
+                  return scene.getSceneNumber();
+                }).then(id => {
+                  resolve(id);
+                });
             });
           } else {
             ids = items;
@@ -525,28 +532,35 @@ export class Scene {
             exec('SourcesListOrderSave', ids.join(','));
             resolve(this);
           } else {
-            var sceneName: string;
+            let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
               return iApp.getAsList('presetconfig:' + this._id);
             }).then(jsonArr => {
-              var newOrder = new JXON();
+              let newOrder = new JXON();
               newOrder.children = [];
               newOrder['tag'] = 'placement';
               newOrder['name'] = sceneName;
               if (Array.isArray(jsonArr)) {
-                for (var i = 0; i < jsonArr.length; i++) {
-                  jsonArr[i]['name'] = jsonArr[i]['name']
-                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
-                  jsonArr[i]['item'] = jsonArr[i]['item']
-                    .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                let attrs = ['name', 'cname', 'item'];
+                for (let i = 0; i < jsonArr.length; i++) {
+                  for (let a = 0; a < attrs.length; a++) {
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/"/g, '&quot;');
+                  }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
                   'presetconfig:' + this._id,
                   XML.parseJSON(newOrder).toString()
-                );
+                ).then(() => {
+                    resolve(this);
+                });
+              } else {
+                reject(Error('Scene does not have any items'));
               }
             });
           }
