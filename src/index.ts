@@ -20,7 +20,7 @@ export * from './system/game';
 export * from './system/camera';
 export * from './system/microphone';
 
-export * from './context/config';
-export * from './context/source';
+export * from './window/config';
+export * from './window/source';
 
 export {ready} from './util/ready';

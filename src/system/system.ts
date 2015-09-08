@@ -16,8 +16,8 @@ import {exec} from '../internal/internal';
  * ### Basic Usage
  *
  * ```javascript
- * var XML = require('xml');
- * XML.getAudioDevices(XML.AudioDeviceDataflow.CAPTURE, ...);
+ * var XJS = require('xjs');
+ * XJS.System.getAudioDevices(XJS.AudioDeviceDataflow.CAPTURE, ...);
  * ```
  */
 export enum AudioDeviceDataflow {
@@ -33,8 +33,8 @@ export enum AudioDeviceDataflow {
  * ### Basic Usage
  *
  * ```javascript
- * var XML = require('xml');
- * XML.getAudioDevices(..., XML.AudioDeviceState.ACTIVE);
+ * var XJS = require('xjs');
+ * XJS.System.getAudioDevices(..., XJS.AudioDeviceState.ACTIVE);
  * ```
  */
 export enum AudioDeviceState {
@@ -46,8 +46,10 @@ export enum AudioDeviceState {
 }
 
 /**
- * The System class provides you methods to fetch games, audio devices, and
- * camera devices.
+ * The System class provides you methods to fetch audio devices to manipulate
+ * the application's audio settings. It also allows you to fetch games,
+ * microphone devices and camera devices to add to scenes. Finally, some
+ * system-level functionality such as cursor position is exposed.
  *
  * ### Basic Usage
  *
@@ -65,6 +67,7 @@ export class System{
    * return: Promise<AudioDevice[]>
    *
    * Gets audio devices, both input and output
+   * See also: System/AudioDevice
    *
    * #### Usage
    *
@@ -113,6 +116,7 @@ export class System{
    * return: Promise<CameraDevice[]>
    *
    * Gets all camera devices
+   * See also: System/CameraDevice
    *
    * #### Usage
    *
@@ -146,7 +150,8 @@ export class System{
   /**
    * return: Promise<Game[]>
    *
-   * Gets all camera devices
+   * Gets all currently running games
+   * See also: System/Game
    *
    * #### Usage
    *
@@ -176,6 +181,7 @@ export class System{
    * return: Promise<MicrophoneDevice[]>
    *
    * Gets all audio capture devices that may be added to the stage
+   * See also: System/MicrophoneDevice
    *
    * #### Usage
    *
@@ -201,7 +207,7 @@ export class System{
   }
 
   /**
-   * return: Promise<JXON>
+   * return: Promise<JSON>
    *
    * Gets the position of the cursor. Does not work on Source Plugins.
    *
@@ -214,7 +220,7 @@ export class System{
    * });
    * ```
    */
-  static getCursorPosition(): Promise<JXON> {
+  static getCursorPosition(): Promise<any> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
@@ -222,7 +228,7 @@ export class System{
         var res = exec('GetCursorPos');
         if (typeof res === 'string') {
           var posArr = res.split(',');
-          var pos = new JXON();
+          var pos = {};
           pos['x'] = Number(posArr[0]);
           pos['y'] = Number(posArr[1]);
           resolve(pos)
@@ -234,7 +240,7 @@ export class System{
   }
 
   /**
-   * param: JXON
+   * param: JSON: {x: number, y: number}
    *
    * Sets the position of the cursor. Does not work on Source Plugins.
    *
@@ -244,14 +250,14 @@ export class System{
    * System.setCursorPosition({x:0, y:0});
    * ```
    */
-  static setCursorPosition(pos: JXON) {
+  static setCursorPosition(pos: {x: number, y: number}) {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
-      } else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+      } else if (typeof pos.x !== 'number' || typeof pos.y !== 'number') {
         reject(Error('invalid parameters'));
       } else {
-        exec('SetCursorPos', String(pos['x']), String(pos['y']));
+        exec('SetCursorPos', String(pos.x), String(pos.y));
         resolve(true);
       }
     });

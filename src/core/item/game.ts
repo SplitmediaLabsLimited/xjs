@@ -19,7 +19,7 @@ import {Environment} from '../environment';
 /**
  * The GameItem Class provides methods specifically used for game items and
  * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
  * GameItem object if there's a game item on the specified scene.
  *
  * ### Basic Usage
@@ -104,13 +104,13 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setOfflineImage(path: string): Promise<GameItem> {
     return new Promise((resolve, reject) => {
-      if (this.type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
         );
-      } else if (!(this.value instanceof XML)) {
+      } else if (!(this._value instanceof XML)) {
         this.getValue().then(() => {
           this.setOfflineImage(path).then(itemObj => {
             resolve(itemObj);
@@ -120,7 +120,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
         var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
           '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
         if (regExp.test(path) || path === '') {
-          var valueObj = JXON.parse(this.value.toString());
+          var valueObj = JXON.parse(this._value.toString());
           valueObj['replace'] = path;
           this.setValue(XML.parseJSON(valueObj)).then(() => {
             resolve(this);
@@ -137,11 +137,11 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getOfflineImage(): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this.type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else {
         this.getValue().then(() => {
-          var valueObj = JXON.parse(this.value.toString());
+          var valueObj = JXON.parse(this._value.toString());
           resolve(valueObj['replace'] ? valueObj['replace'] : '');
         });
       }
@@ -179,6 +179,27 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   getPosition:              () => Promise<Rectangle>;
 
   /**
+   * return: Promise<number>
+   *
+   * Get Rotate Y value of the item
+   */
+  getRotateY:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate X value of the item
+   */
+  getRotateX:              () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Z value of the item
+   */
+  getRotateZ:              () => Promise<number>;
+
+  /**
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
@@ -205,6 +226,27 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Item position
    */
   setPosition:              (value: Rectangle) => Promise<GameItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Y value of the item
+   */
+  setRotateY:              (value: number) => Promise<GameItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate X value of the item
+   */
+  setRotateX:              (value: number) => Promise<GameItem>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Rotate Z value of the item
+   */
+  setRotateZ:              (value: number) => Promise<GameItem>;
 
   // ItemColor
 
@@ -293,8 +335,10 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setBorderColor:  (value: Color) => Promise<GameItem>;
 
   // ItemChroma
+
   /**
    * return: Promise<boolean>
+   *
    */
   isChromaEnabled: () => Promise<boolean>;
   /**

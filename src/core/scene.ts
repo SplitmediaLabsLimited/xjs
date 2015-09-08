@@ -1,7 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {JSON as JXON} from '../internal/util/json';
+import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
+import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Item, ItemTypes} from './item/item';
 import {GameItem} from './item/game';
@@ -10,16 +12,16 @@ import {AudioItem} from './item/audio';
 import {HTMLItem} from './item/html';
 
 export class Scene {
-  private id: number;
+  private _id: number;
 
   private static _maxScenes = 12;
   private static _scenePool: Scene[] = [];
 
   constructor(sceneNum: number) {
-    this.id = sceneNum - 1;
+    this._id = sceneNum - 1;
   };
 
-  private static initializeScenePool() {
+  private static _initializeScenePool() {
     if (Scene._scenePool.length === 0) {
       for (var i = 0; i < Scene._maxScenes; i++) {
         Scene._scenePool[i] = new Scene(i + 1);
@@ -29,39 +31,33 @@ export class Scene {
 
 
   /**
+   * return: Scene
+   *
    * Get a specific scene object given the scene number.
    *
-   * #Return
    *
-   * ```
-   * Scene
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var scene1 = Scene.getById(1);
    * ```
    */
   static getById(sceneNum: number): Scene {
     // initialize if necessary
-    Scene.initializeScenePool();
+    Scene._initializeScenePool();
 
     return Scene._scenePool[sceneNum - 1];
   }
 
   /**
+   * return: Promise<Scene[]>
+   *
    * Asynchronous functon to get a list of scene objects with a specific name.
    *
-   * #Return
    *
-   * ```
-   * Promise<Scene[]>
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var scenes = Scene.getByName('Game').then(function(scenes) {
    *    // manipulate scenes
    * });
@@ -69,7 +65,7 @@ export class Scene {
    */
   static getByName(sceneName: string): Promise<Scene[]> {
     // initialize if necessary
-    Scene.initializeScenePool();
+    Scene._initializeScenePool();
 
     let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
       return iApp.get('presetname:' + index).then(name => {
@@ -95,17 +91,14 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Scene>
+   *
    * Get the currently active scene.
    *
-   * #Return
    *
-   * ```
-   * Scene
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * var myScene = Scene.getActiveScene();
    * ```
    */
@@ -115,7 +108,7 @@ export class Scene {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
           if (curScene.children.length > 0) {
-            resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+            resolve(Scene.searchSceneWithItemId(curScene.children[0]['id']));
           } else {
             throw new Error('presetconfig cannot fetch current scene');
           }
@@ -129,17 +122,51 @@ export class Scene {
   }
 
   /**
-   * Searches all scenes for an item by ID. ID search
-   * will return only a maximum of 1 result (IDs are unique).
+   * param: scene<number|Scene>
+   * ```
+   * return: Promise<boolean>
+   * ```
    *
+   * Change active scene. Does not work on source plugins.
+   */
+  static setActiveScene(scene: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else {
+        if (scene instanceof Scene) {
+          scene.getID().then(id => {
+            iApp.set('preset', String(id)).then(res => {
+              resolve(res);
+            });
+          });
+        } else if (typeof scene === 'number') {
+          if (scene < 1 || scene > 12) {
+            reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+          } else {
+            iApp.set('preset', String(scene - 1)).then(res => {
+              resolve(res);
+            });
+          }
+        } else {
+          reject(Error('Invalid parameters'));
+        }
+      }
+    });
+  }
+
+  /**
+   *
+   * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * See also: Core/Item
    * #Return
    * ```
    * Item
    * ```
    *
-   * #Usage
+   * #### Usage
    *
-   * ```
+   * ```javascript
    * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
    *   // item is either an Item or null
    * });
@@ -151,7 +178,7 @@ export class Scene {
     if (!isID) {
       throw new Error('Not a valid ID format for items');
     } else {
-      Scene.initializeScenePool();
+      Scene._initializeScenePool();
 
       return new Promise(resolve => {
 
@@ -179,12 +206,27 @@ export class Scene {
     }
   };
 
-  static searchSceneByItemId(id: string): Promise<Scene> {
+  /**
+   * return: Promise<Scene>
+   *
+   * Searches all scenes for one that contains the given item ID.
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.searchSceneWithItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   *   // scene contains the item
+   * });
+   * ```
+   *
+   */
+  static searchSceneWithItemId(id: string): Promise<Scene> {
     let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
     if (!isID) {
       throw new Error('Not a valid ID format for items');
     } else {
-      Scene.initializeScenePool();
+      Scene._initializeScenePool();
 
       return new Promise(resolve => {
 
@@ -213,16 +255,14 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Item[]>
+   *
    * Searches all scenes for an item by name substring.
    *
-   * #Return
-   * ```
-   * Item[]
-   * ```
    *
-   * #Usage
+   * #### Usage
    *
-   * ```
+   * ```javascript
    * Scene.searchAllForItemName('camera').then(function(items) {
    *   // do something to each item in items array
    * });
@@ -230,7 +270,7 @@ export class Scene {
    *
    */
   static searchAllForItemName(param: string): Promise<Item[]> {
-    Scene.initializeScenePool();
+    Scene._initializeScenePool();
     let matches: Item[] = [];
 
     return new Promise(resolve => {
@@ -270,8 +310,12 @@ export class Scene {
 
   /**
    * return: Promise<boolean>
+
+   * Load scenes that are not yet initialized in XSplit Broadcaster.
    *
-   * Load scenes that isn't yet initialized in XSplit Broadcaster
+   * Note: For memory saving purposes, this is not called automatically.
+   * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
+   * This function is only available to extensions.
    *
    * #### Usage
    *
@@ -305,17 +349,14 @@ export class Scene {
   }
 
   /**
+   * return: number
+   *
    * Get the 1-indexed scene number of this scene object.
    *
-   * #Return
    *
-   * ```
-   * number
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * myScene.getSceneNumber().then(function(num) {
    *  console.log('My scene is scene number ' + num);
    * });
@@ -323,22 +364,19 @@ export class Scene {
    */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
-      resolve(this.id + 1);
+      resolve(this._id + 1);
     });
   }
 
   /**
+   * return: number
+   *
    * Get the name of this scene object.
    *
-   * #Return
    *
-   * ```
-   * number
-   * ```
+   * #### Usage
    *
-   * #Usage
-   *
-   * ```
+   * ```javascript
    * myScene.getSceneName().then(function(name) {
    *  console.log('My scene is named ' + name);
    * });
@@ -346,18 +384,19 @@ export class Scene {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      iApp.get('presetname:' + this.id).then(val => {
+      iApp.get('presetname:' + this._id).then(val => {
         resolve(val);
       });
     });
   }
 
   /**
+   *
    * Set the name of this scene object. Cannot be set by source plugins.
    *
-   * #Usage
+   * #### Usage
    *
-   * ```
+   * ```javascript
    * myScene.setName('Gameplay');
    * ```
    */
@@ -366,7 +405,7 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
-        iApp.set('presetname:' + this.id, name).then(value => {
+        iApp.set('presetname:' + this._id, name).then(value => {
           resolve(value);
         });
       }
@@ -374,16 +413,14 @@ export class Scene {
   }
 
   /**
-   * Gets all the items in a specific scene.
+   * return: Promise<Item[]>
    *
-   * #Return
+   * Gets all the items (sources) in a specific scene.
+   * See also: Core/Item
    *
-   * ```
-   * Item[]
-   * ```
-   * #Usage
+   * #### Usage
    *
-   * ```
+   * ```javascript
    * myScene.getItems().then(function(items) {
    *  // do something to each item in items array
    * });
@@ -391,7 +428,7 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise(resolve => {
-    iApp.getAsList('presetconfig:' + this.id).then(jsonArr => {
+    iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
       var promiseArray: Promise<Item>[] = [];
 
       // type checking to return correct Item subtype
@@ -418,7 +455,7 @@ export class Scene {
 
           if (Array.isArray(jsonArr)) {
             for (var i = 0; i < jsonArr.length; i++) {
-              jsonArr[i]['sceneID'] = this.id;
+              jsonArr[i]['sceneID'] = this._id;
               promiseArray.push(typePromise(i));
             }
           }
@@ -431,23 +468,104 @@ export class Scene {
   }
 
  /**
- * Checks if a scene is empty.
- *
- * #Usage
- *
- * ```
- * myScene.isEmpty().then(function(empty) {
- *   if (empty === true) {
- *     console.log("My scene is empty.");
- *   }
- * });
- * ```
- */
+  * Checks if a scene is empty.
+  *
+  * #### Usage
+  *
+  * ```javascript
+  * myScene.isEmpty().then(function(empty) {
+  *   if (empty === true) {
+  *     console.log("My scene is empty.");
+  *   }
+  * });
+  * ```
+  */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
-      iApp.get('presetisempty:' + this.id).then(val => {
+      iApp.get('presetisempty:' + this._id).then(val => {
         resolve(val === '1');
       });
+    });
+  }
+
+  /**
+   * param: Array<Item> | Array<string>
+   * ```
+   * return: Promise<Scene>
+   * ```
+   *
+   * Sets the item order of the current scene. It is ordered as bottom to top.
+   */
+  setItemOrder(items: Array<any>): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('not available for source plugins'));
+      } else {
+        let ids = [];
+        Scene.getActiveScene().then(scene => {
+          if (items.every(el => { return el instanceof Item })) {
+            return new Promise(resolve => {
+              let promises = [];
+              for (let i in items) {
+                promises.push((_i => {
+                  return new Promise(resolve => {
+                    items[_i].getID().then(id => {
+                      ids[_i] = id;
+                      resolve(this);
+                    });
+                  });
+                })(i));
+              }
+
+              Promise.all(promises).then(() => {
+                  return scene.getSceneNumber();
+                }).then(id => {
+                  resolve(id);
+                });
+            });
+          } else {
+            ids = items;
+            return scene.getSceneNumber();
+          }
+        }).then(id => {
+          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
+            exec('SourcesListOrderSave', ids.join(','));
+            resolve(this);
+          } else {
+            let sceneName: string;
+            this.getName().then(name => {
+              sceneName = name;
+              return iApp.getAsList('presetconfig:' + this._id);
+            }).then(jsonArr => {
+              let newOrder = new JXON();
+              newOrder.children = [];
+              newOrder['tag'] = 'placement';
+              newOrder['name'] = sceneName;
+              if (Array.isArray(jsonArr)) {
+                let attrs = ['name', 'cname', 'item'];
+                for (let i = 0; i < jsonArr.length; i++) {
+                  for (let a = 0; a < attrs.length; a++) {
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/"/g, '&quot;');
+                  }
+                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                }
+
+                iApp.set(
+                  'presetconfig:' + this._id,
+                  XML.parseJSON(newOrder).toString()
+                ).then(() => {
+                    resolve(this);
+                });
+              } else {
+                reject(Error('Scene does not have any items'));
+              }
+            });
+          }
+        });
+      }
     });
   }
 }
