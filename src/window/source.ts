@@ -1,6 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {EventEmitter} from './eventemitter';
+import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 
 /** This utility class is used internally by the framework for certain important

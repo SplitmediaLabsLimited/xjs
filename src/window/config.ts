@@ -1,6 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {EventEmitter} from './eventemitter';
+import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 
 /** This utility class exposes functionality for source plugin developers to
