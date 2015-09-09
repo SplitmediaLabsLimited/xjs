@@ -1,206 +1,5 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var eventemitter_1 = require('./eventemitter');
-var internal_1 = require('../internal/internal');
-/** This utility class exposes functionality for source plugin developers to
- *  handle the configuration window for their source plugins.
- *
- *  Developers can use this class to specify how their configuration HTML
- *  should be rendered within the built-in window in XSplit Broadcaster.
- *  This class also serves as an event emitter for specific important events.
- *
- *  The framework also uses this class for its own internal purposes.
- */
-var SourceConfigWindow = (function (_super) {
-    __extends(SourceConfigWindow, _super);
-    function SourceConfigWindow() {
-        var _this = this;
-        _super.call(this);
-        window.addEventListener('message', function (event) {
-            try {
-                var data = JSON.parse(event.data);
-            }
-            catch (e) {
-                // syntax error probably happened, exit gracefully
-                return;
-            }
-            switch (data.event) {
-                // currently, restrict messages to selected set
-                case 'set-selected-tab':
-                    this.emit(data.event, data.value);
-                    break;
-                case 'async-callback':
-                    this.emit(data.event, {
-                        asyncId: data.value.asyncId,
-                        result: data.value.result
-                    });
-                    break;
-            }
-        }.bind(this));
-        this.on('config-load', function () {
-            _this._informConfigLoaded();
-        });
-        SourceConfigWindow._instance = this;
-    }
-    SourceConfigWindow.getInstance = function () {
-        if (SourceConfigWindow._instance === undefined) {
-            SourceConfigWindow._instance = new SourceConfigWindow();
-        }
-        return SourceConfigWindow._instance;
-    };
-    // helper function to communicate with built-in container
-    SourceConfigWindow.prototype._notify = function (obj) {
-        window.parent.postMessage(JSON.stringify(obj), '*');
-    };
-    SourceConfigWindow.prototype.useFullWindow = function () {
-        this._setRenderMode(SourceConfigWindow._MODE_FULL);
-    };
-    SourceConfigWindow.prototype.useTabbedWindow = function (config) {
-        this._setRenderMode(SourceConfigWindow._MODE_TABBED);
-        this._declareCustomTabs(config.customTabs);
-        this._setTabOrder(config.tabOrder);
-    };
-    SourceConfigWindow.prototype._setRenderMode = function (renderMode) {
-        this._mode = renderMode;
-        this._notify({
-            event: 'set-mode',
-            value: renderMode
-        });
-    };
-    ;
-    SourceConfigWindow.prototype._setTabOrder = function (tabArray) {
-        this._notify({
-            event: 'set-tab-order',
-            value: JSON.stringify(tabArray)
-        });
-    };
-    ;
-    SourceConfigWindow.prototype._declareCustomTabs = function (tabArray) {
-        this._notify({
-            event: 'set-custom-tabs',
-            value: JSON.stringify(tabArray)
-        });
-    };
-    ;
-    SourceConfigWindow.prototype._informConfigLoaded = function () {
-        this._notify({ event: 'load' });
-    };
-    SourceConfigWindow.prototype.resizeConfig = function (width, height) {
-        if (this._mode === 'full') {
-            this._notify({
-                event: 'resize',
-                value: JSON.stringify({
-                    width: width,
-                    height: height
-                })
-            });
-        }
-        else if (this._mode !== 'embedded') {
-            internal_1.exec('SetDialogSize', String(width), String(height));
-        }
-    };
-    ;
-    SourceConfigWindow.prototype.closeConfig = function () {
-        internal_1.exec('Close');
-    };
-    ;
-    SourceConfigWindow._MODE_FULL = 'full';
-    SourceConfigWindow._MODE_TABBED = 'embedded';
-    return SourceConfigWindow;
-})(eventemitter_1.MyEventEmitter);
-exports.SourceConfigWindow = SourceConfigWindow;
-},{"../internal/internal":22,"./eventemitter":2}],2:[function(require,module,exports){
-// simple event emitter
-var MyEventEmitter = (function () {
-    function MyEventEmitter() {
-        this._handlers = {};
-    }
-    // allows duplicates
-    MyEventEmitter.prototype.on = function (event, handler) {
-        if (this._handlers[event] === undefined) {
-            this._handlers[event] = [];
-        }
-        this._handlers[event].push(handler);
-    };
-    MyEventEmitter.prototype.emit = function (event) {
-        var params = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            params[_i - 1] = arguments[_i];
-        }
-        if (this._handlers[event] === undefined) {
-            return;
-        }
-        for (var _a = 0, _b = this._handlers[event]; _a < _b.length; _a++) {
-            var handler = _b[_a];
-            handler.apply(this, params);
-        }
-    };
-    return MyEventEmitter;
-})();
-exports.MyEventEmitter = MyEventEmitter;
-},{}],3:[function(require,module,exports){
-/// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var eventemitter_1 = require('./eventemitter');
-/** This utility class is used internally by the framework for certain important
- *  processes. This class also exposes certain important events for
- *
- *
- */
-var SourcePluginWindow = (function (_super) {
-    __extends(SourcePluginWindow, _super);
-    function SourcePluginWindow() {
-        _super.call(this);
-        // TODO: need to document events emitted
-        this.on('message-source', function (message) {
-            if (message.request !== undefined) {
-                if (message.request === 'saveConfig') {
-                    this.emit('save-config', message.data);
-                }
-                else if (message.request === 'applyConfig') {
-                    this.emit('apply-config', message.data);
-                }
-            }
-        });
-        SourcePluginWindow._instance = this;
-    }
-    SourcePluginWindow.getInstance = function () {
-        if (SourcePluginWindow._instance === undefined) {
-            SourcePluginWindow._instance = new SourcePluginWindow();
-        }
-        return SourcePluginWindow._instance;
-    };
-    return SourcePluginWindow;
-})(eventemitter_1.MyEventEmitter);
-exports.SourcePluginWindow = SourcePluginWindow;
-window['MessageSource'] = function (message) {
-    SourcePluginWindow.getInstance().emit("message-source", JSON.parse(message));
-};
-window['SetConfiguration'] = function (configObj) {
-    try {
-        var data = JSON.parse(configObj);
-        var source = SourcePluginWindow.getInstance();
-        source.emit("apply-config", data);
-        source.emit("save-config", data);
-    }
-    catch (e) {
-        // syntax error probably happened, exit gracefully
-        return;
-    }
-};
-},{"./eventemitter":2}],4:[function(require,module,exports){
-/// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var rectangle_1 = require('../util/rectangle');
 var audio_1 = require('../system/audio');
@@ -253,7 +52,8 @@ var App = (function () {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets application default output resolution
+     * Gets application default output resolution.
+     * See also: Util/Rectangle
      *
      * #### Usage
      *
@@ -277,6 +77,7 @@ var App = (function () {
      * return: Promise<Rectangle>
      *
      * Gets application viewport display resolution
+     * See also: Util/Rectangle
      *
      * #### Usage
      *
@@ -341,6 +142,7 @@ var App = (function () {
      * return: Promise<AudioDevice>
      *
      * Gets the primary microphone device used in the application
+     * See also: System/AudioDevice
      *
      * ### Usage
      *
@@ -369,6 +171,7 @@ var App = (function () {
      * return: Promise<AudioDevice>
      *
      * Gets the primary speaker/audio render device used in the application
+     * See also: System/AudioDevice
      *
      * ### Usage
      *
@@ -400,6 +203,7 @@ var App = (function () {
      * ```
      *
      * Sets the primary microphone device to be used in the application
+     * See also: System/AudioDevice
      *
      * ### Usage
      *
@@ -436,6 +240,7 @@ var App = (function () {
      * ```
      *
      * Sets the primary speaker/audio render device to be used in the application
+     * See also: System/AudioDevice
      *
      * ### Usage
      *
@@ -710,6 +515,7 @@ var App = (function () {
      * return: Promise<Transition>
      *
      * Gets the transition for scene changes
+     * See also: Core/Transition
      *
      * #### Usage
      *
@@ -739,6 +545,7 @@ var App = (function () {
      * ```
      *
      * Sets the transition for scene changes
+     * See also: Core/Transition
      *
      * #### Usage
      *
@@ -812,10 +619,16 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"../internal/util/xml":26,"../system/audio":27,"../util/rectangle":35,"./environment":5,"./transition":18}],5:[function(require,module,exports){
+},{"../internal/app":16,"../internal/internal":19,"../internal/util/json":21,"../internal/util/xml":23,"../system/audio":24,"../util/rectangle":33,"./environment":2,"./transition":15}],2:[function(require,module,exports){
+/**
+ * This class allows detection of the context in which the HTML is located.
+ */
 var Environment = (function () {
     function Environment() {
     }
+    /**
+     * This method is only used internally.
+     */
     Environment.initialize = function () {
         if (Environment._initialized) {
             return;
@@ -832,12 +645,26 @@ var Environment = (function () {
             window.external['GetViewId']() === undefined);
         Environment._initialized = true;
     };
+    /**
+     * return: boolean
+     *
+     * Determines if this HTML is running as a source.
+     */
     Environment.isSourcePlugin = function () {
         return Environment._isSourcePlugin;
     };
+    /**
+     * return: boolean
+     * Determines if this HTML is running within the source configuration window.
+     */
     Environment.isSourceConfig = function () {
         return Environment._isSourceConfig;
     };
+    /**
+     * return: boolean
+     *
+     * Determines if this HTML is running as an extension plugin.
+     */
     Environment.isExtension = function () {
         return Environment._isExtension;
     };
@@ -845,7 +672,7 @@ var Environment = (function () {
 })();
 exports.Environment = Environment;
 Environment.initialize();
-},{}],6:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -968,7 +795,7 @@ var AudioItem = (function (_super) {
 })(item_2.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
-},{"../../internal/item":23,"../../internal/util/mixin":25,"../environment":5,"./iaudio":10,"./item":15}],7:[function(require,module,exports){
+},{"../../internal/item":20,"../../internal/util/mixin":22,"../environment":2,"./iaudio":7,"./item":12}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -986,7 +813,7 @@ var item_2 = require('./item');
 /**
  * The CameraItem Class provides methods specifically used for camera items and
  * also methods that are shared between Item Classes. The
- * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
  * CameraItem object if there's a camera item on the specified scene.
  *
  * ### Basic Usage
@@ -1015,6 +842,8 @@ var CameraItem = (function (_super) {
     }
     /**
      * return: Promise<string>
+     *
+     * Gets the device ID of the underlying camera deviec.
      */
     CameraItem.prototype.getDeviceId = function () {
         var _this = this;
@@ -1091,7 +920,7 @@ var CameraItem = (function (_super) {
 })(item_2.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":23,"../../internal/util/mixin":25,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":15,"./itransition":16}],8:[function(require,module,exports){
+},{"../../internal/item":20,"../../internal/util/mixin":22,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1113,7 +942,7 @@ var environment_1 = require('../environment');
 /**
  * The GameItem Class provides methods specifically used for game items and
  * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene Class'} getItems would automatically return a
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
  * GameItem object if there's a game item on the specified scene.
  *
  * ### Basic Usage
@@ -1202,13 +1031,13 @@ var GameItem = (function (_super) {
     GameItem.prototype.setOfflineImage = function (path) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
+            if (_this._type !== item_3.ItemTypes.GAMESOURCE) {
                 reject(Error('Current item should be a game source'));
             }
             else if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update offline images of other sources'));
             }
-            else if (!(_this.value instanceof xml_1.XML)) {
+            else if (!(_this._value instanceof xml_1.XML)) {
                 _this.getValue().then(function () {
                     _this.setOfflineImage(path).then(function (itemObj) {
                         resolve(itemObj);
@@ -1219,7 +1048,7 @@ var GameItem = (function (_super) {
                 var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
                     '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
                 if (regExp.test(path) || path === '') {
-                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    var valueObj = json_1.JSON.parse(_this._value.toString());
                     valueObj['replace'] = path;
                     _this.setValue(xml_1.XML.parseJSON(valueObj)).then(function () {
                         resolve(_this);
@@ -1236,12 +1065,12 @@ var GameItem = (function (_super) {
     GameItem.prototype.getOfflineImage = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (_this.type !== item_3.ItemTypes.GAMESOURCE) {
+            if (_this._type !== item_3.ItemTypes.GAMESOURCE) {
                 reject(Error('Current item should be a game source'));
             }
             else {
                 _this.getValue().then(function () {
-                    var valueObj = json_1.JSON.parse(_this.value.toString());
+                    var valueObj = json_1.JSON.parse(_this._value.toString());
                     resolve(valueObj['replace'] ? valueObj['replace'] : '');
                 });
             }
@@ -1251,7 +1080,7 @@ var GameItem = (function (_super) {
 })(item_2.Item);
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":23,"../../internal/util/json":24,"../../internal/util/mixin":25,"../../internal/util/xml":26,"../environment":5,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":15,"./itransition":16}],9:[function(require,module,exports){
+},{"../../internal/item":20,"../../internal/util/json":21,"../../internal/util/mixin":22,"../../internal/util/xml":23,"../environment":2,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1272,6 +1101,11 @@ var HTMLItem = (function (_super) {
     function HTMLItem() {
         _super.apply(this, arguments);
     }
+    /**
+     * return: Promise<string>
+     *
+     * Gets the URL of this webpage source.
+     */
     HTMLItem.prototype.getURL = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -1281,6 +1115,11 @@ var HTMLItem = (function (_super) {
             });
         });
     };
+    /**
+     * param: value<string>
+     *
+     * Sets the URL of this webpage source.
+     */
     HTMLItem.prototype.setURL = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -1299,7 +1138,7 @@ var HTMLItem = (function (_super) {
 })(item_2.Item);
 exports.HTMLItem = HTMLItem;
 mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, iconfig_1.ItemConfigurable]);
-},{"../../internal/item":23,"../../internal/util/mixin":25,"./ichroma":11,"./icolor":12,"./iconfig":13,"./ilayout":14,"./item":15,"./itransition":16}],10:[function(require,module,exports){
+},{"../../internal/item":20,"../../internal/util/mixin":22,"./ichroma":8,"./icolor":9,"./iconfig":10,"./ilayout":11,"./item":12,"./itransition":13}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -1422,7 +1261,7 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":23,"../environment":5}],11:[function(require,module,exports){
+},{"../../internal/item":20,"../environment":2}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1811,7 +1650,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":23,"../../util/color":32}],12:[function(require,module,exports){
+},{"../../internal/item":20,"../../util/color":29}],9:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1956,7 +1795,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":23,"../../util/color":32}],13:[function(require,module,exports){
+},{"../../internal/item":20,"../../util/color":29}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -2041,7 +1880,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":20,"../../internal/internal":22,"../../internal/item":23,"../environment":5}],14:[function(require,module,exports){
+},{"../../internal/global":17,"../../internal/internal":19,"../../internal/item":20,"../environment":2}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -2123,16 +1962,87 @@ var ItemLayout = (function () {
             });
         });
     };
+    ItemLayout.prototype.getRotateY = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:rotate_y', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemLayout.prototype.setRotateY = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -360 || value > 360) {
+                reject(Error('Invalid value. Min: -360, Max: 360'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:rotate_y', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemLayout.prototype.getRotateX = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:rotate_x', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemLayout.prototype.setRotateX = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -360 || value > 360) {
+                reject(Error('Invalid value. Min: -360, Max: 360'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:rotate_x', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemLayout.prototype.getRotateZ = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            item_1.Item.get('prop:rotate_z', slot).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemLayout.prototype.setRotateZ = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -360 || value > 360) {
+                reject(Error('Invalid value. Min: -360, Max: 360'));
+            }
+            else {
+                var slot = item_1.Item.attach(_this._id);
+                item_1.Item.set('prop:rotate_z', String(value), slot).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":23,"../../util/rectangle":35}],15:[function(require,module,exports){
+},{"../../internal/item":20,"../../util/rectangle":33}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
+var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
 var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
 var scene_1 = require('../scene');
+var ilayout_1 = require('./ilayout');
 (function (ItemTypes) {
     ItemTypes[ItemTypes["UNDEFINED"] = 0] = "UNDEFINED";
     ItemTypes[ItemTypes["FILE"] = 1] = "FILE";
@@ -2152,22 +2062,22 @@ var ItemTypes = exports.ItemTypes;
 var Item = (function () {
     function Item(props) {
         props = props ? props : {};
-        this.name = props['name'];
-        this.cname = props['cname'];
+        this._name = props['name'];
+        this._cname = props['cname'];
         this._id = props['id'];
-        this.sceneID = props['sceneID'];
-        this.value = props['value'];
-        this.keepLoaded = props['keeploaded'];
-        this.type = Number(props['type']);
-        this.xmlparams = props;
+        this._sceneID = props['sceneID'];
+        this._value = props['value'];
+        this._keepLoaded = props['keeploaded'];
+        this._type = Number(props['type']);
+        this._xmlparams = props;
     }
     /** Sets the name of the item */
     Item.prototype.setName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
-            _this.name = value;
-            item_1.Item.set('prop:name', _this.name, slot).then(function () {
+            _this._name = value;
+            item_1.Item.set('prop:name', _this._name, slot).then(function () {
                 resolve(_this);
             });
         });
@@ -2178,7 +2088,7 @@ var Item = (function () {
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:name', slot).then(function (val) {
-                _this.name = val;
+                _this._name = val;
                 resolve(val);
             });
         });
@@ -2188,8 +2098,8 @@ var Item = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
-            _this.cname = value;
-            item_1.Item.set('prop:cname', _this.cname, slot).then(function () {
+            _this._cname = value;
+            item_1.Item.set('prop:cname', _this._cname, slot).then(function () {
                 resolve(_this);
             });
         });
@@ -2200,7 +2110,7 @@ var Item = (function () {
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:cname', slot).then(function (val) {
-                _this.cname = val;
+                _this._cname = val;
                 resolve(val);
             });
         });
@@ -2213,17 +2123,17 @@ var Item = (function () {
             item_1.Item.get('prop:item', slot).then(function (val) {
                 val = (val === 'null') ? '' : val;
                 if (val === '') {
-                    _this.value = '';
+                    _this._value = '';
                     resolve(val);
                 }
                 else {
                     try {
-                        _this.value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
-                        resolve(_this.value);
+                        _this._value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
+                        resolve(_this._value);
                     }
                     catch (e) {
                         // value is not valid XML (it is a string instead)
-                        _this.value = val;
+                        _this._value = val;
                         resolve(val);
                     }
                 }
@@ -2238,10 +2148,10 @@ var Item = (function () {
             var val = (typeof value === 'string') ?
                 value : value.toString();
             if (typeof value !== 'string') {
-                _this.value = json_1.JSON.parse(val);
+                _this._value = json_1.JSON.parse(val);
             }
             else {
-                _this.value = val;
+                _this._value = val;
             }
             item_1.Item.set('prop:item', val, slot).then(function () {
                 resolve(_this);
@@ -2254,8 +2164,8 @@ var Item = (function () {
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:keeploaded', slot).then(function (val) {
-                _this.keepLoaded = (val === '1');
-                resolve(_this.keepLoaded);
+                _this._keepLoaded = (val === '1');
+                resolve(_this._keepLoaded);
             });
         });
     };
@@ -2264,8 +2174,8 @@ var Item = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
-            _this.keepLoaded = value;
-            item_1.Item.set('prop:keeploaded', (_this.keepLoaded ? '1' : '0'), slot)
+            _this._keepLoaded = value;
+            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), slot)
                 .then(function () {
                 resolve(_this);
             });
@@ -2277,8 +2187,8 @@ var Item = (function () {
         return new Promise(function (resolve) {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:type', slot).then(function (val) {
-                _this.type = ItemTypes[ItemTypes[Number(val)]];
-                resolve(_this.type);
+                _this._type = ItemTypes[ItemTypes[Number(val)]];
+                resolve(_this._type);
             });
         });
     };
@@ -2293,19 +2203,19 @@ var Item = (function () {
     Item.prototype.getSceneID = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(Number(_this.sceneID) + 1);
+            resolve(Number(_this._sceneID) + 1);
         });
     };
     /** Convert the Item object to an XML string */
     Item.prototype.toXML = function () {
         var item = new json_1.JSON();
         item['tag'] = 'item';
-        item['name'] = this.name;
-        item['item'] = this.value;
-        item['type'] = this.type;
+        item['name'] = this._name;
+        item['item'] = this._value;
+        item['type'] = this._type;
         item['selfclosing'] = true;
-        if (this.cname) {
-            item['cname'] = this.cname;
+        if (this._cname) {
+            item['cname'] = this._cname;
         }
         return xml_1.XML.parseJSON(item);
     };
@@ -2328,7 +2238,8 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../../internal/item":23,"../../internal/util/json":24,"../../internal/util/xml":26,"../environment":5,"../scene":17}],16:[function(require,module,exports){
+mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
+},{"../../internal/item":20,"../../internal/util/json":21,"../../internal/util/mixin":22,"../../internal/util/xml":23,"../environment":2,"../scene":14,"./ilayout":11}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -2402,10 +2313,12 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":23,"../transition":18}],17:[function(require,module,exports){
+},{"../../internal/item":20,"../transition":15}],14:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
 var app_1 = require('../internal/app');
+var internal_1 = require('../internal/internal');
 var environment_1 = require('./environment');
 var item_1 = require('./item/item');
 var game_1 = require('./item/game');
@@ -2414,10 +2327,10 @@ var audio_1 = require('./item/audio');
 var html_1 = require('./item/html');
 var Scene = (function () {
     function Scene(sceneNum) {
-        this.id = sceneNum - 1;
+        this._id = sceneNum - 1;
     }
     ;
-    Scene.initializeScenePool = function () {
+    Scene._initializeScenePool = function () {
         if (Scene._scenePool.length === 0) {
             for (var i = 0; i < Scene._maxScenes; i++) {
                 Scene._scenePool[i] = new Scene(i + 1);
@@ -2425,37 +2338,31 @@ var Scene = (function () {
         }
     };
     /**
+     * return: Scene
+     *
      * Get a specific scene object given the scene number.
      *
-     * #Return
      *
-     * ```
-     * Scene
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var scene1 = Scene.getById(1);
      * ```
      */
     Scene.getById = function (sceneNum) {
         // initialize if necessary
-        Scene.initializeScenePool();
+        Scene._initializeScenePool();
         return Scene._scenePool[sceneNum - 1];
     };
     /**
+     * return: Promise<Scene[]>
+     *
      * Asynchronous functon to get a list of scene objects with a specific name.
      *
-     * #Return
      *
-     * ```
-     * Promise<Scene[]>
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var scenes = Scene.getByName('Game').then(function(scenes) {
      *    // manipulate scenes
      * });
@@ -2463,7 +2370,7 @@ var Scene = (function () {
      */
     Scene.getByName = function (sceneName) {
         // initialize if necessary
-        Scene.initializeScenePool();
+        Scene._initializeScenePool();
         var namePromise = Promise.all(Scene._scenePool.map(function (scene, index) {
             return app_1.App.get('presetname:' + index).then(function (name) {
                 if (sceneName === name) {
@@ -2488,17 +2395,14 @@ var Scene = (function () {
         });
     };
     /**
+     * return: Promise<Scene>
+     *
      * Get the currently active scene.
      *
-     * #Return
      *
-     * ```
-     * Scene
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * var myScene = Scene.getActiveScene();
      * ```
      */
@@ -2508,7 +2412,7 @@ var Scene = (function () {
                 app_1.App.get('presetconfig:-1').then(function (sceneString) {
                     var curScene = json_1.JSON.parse(sceneString);
                     if (curScene.children.length > 0) {
-                        resolve(Scene.searchSceneByItemId(curScene.children[0]['id']));
+                        resolve(Scene.searchSceneWithItemId(curScene.children[0]['id']));
                     }
                     else {
                         throw new Error('presetconfig cannot fetch current scene');
@@ -2523,17 +2427,54 @@ var Scene = (function () {
         });
     };
     /**
-     * Searches all scenes for an item by ID. ID search
-     * will return only a maximum of 1 result (IDs are unique).
+     * param: scene<number|Scene>
+     * ```
+     * return: Promise<boolean>
+     * ```
      *
+     * Change active scene. Does not work on source plugins.
+     */
+    Scene.setActiveScene = function (scene) {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else {
+                if (scene instanceof Scene) {
+                    scene.getID().then(function (id) {
+                        app_1.App.set('preset', String(id)).then(function (res) {
+                            resolve(res);
+                        });
+                    });
+                }
+                else if (typeof scene === 'number') {
+                    if (scene < 1 || scene > 12) {
+                        reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+                    }
+                    else {
+                        app_1.App.set('preset', String(scene - 1)).then(function (res) {
+                            resolve(res);
+                        });
+                    }
+                }
+                else {
+                    reject(Error('Invalid parameters'));
+                }
+            }
+        });
+    };
+    /**
+     *
+     * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+     * See also: Core/Item
      * #Return
      * ```
      * Item
      * ```
      *
-     * #Usage
+     * #### Usage
      *
-     * ```
+     * ```javascript
      * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
      *   // item is either an Item or null
      * });
@@ -2546,7 +2487,7 @@ var Scene = (function () {
             throw new Error('Not a valid ID format for items');
         }
         else {
-            Scene.initializeScenePool();
+            Scene._initializeScenePool();
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
@@ -2573,13 +2514,28 @@ var Scene = (function () {
         }
     };
     ;
-    Scene.searchSceneByItemId = function (id) {
+    /**
+     * return: Promise<Scene>
+     *
+     * Searches all scenes for one that contains the given item ID.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.searchSceneWithItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+     *   // scene contains the item
+     * });
+     * ```
+     *
+     */
+    Scene.searchSceneWithItemId = function (id) {
         var isID = /^{[A-F0-9-]*}$/i.test(id);
         if (!isID) {
             throw new Error('Not a valid ID format for items');
         }
         else {
-            Scene.initializeScenePool();
+            Scene._initializeScenePool();
             return new Promise(function (resolve) {
                 var match = null;
                 var found = false;
@@ -2607,16 +2563,14 @@ var Scene = (function () {
     };
     ;
     /**
+     * return: Promise<Item[]>
+     *
      * Searches all scenes for an item by name substring.
      *
-     * #Return
-     * ```
-     * Item[]
-     * ```
      *
-     * #Usage
+     * #### Usage
      *
-     * ```
+     * ```javascript
      * Scene.searchAllForItemName('camera').then(function(items) {
      *   // do something to each item in items array
      * });
@@ -2624,7 +2578,7 @@ var Scene = (function () {
      *
      */
     Scene.searchAllForItemName = function (param) {
-        Scene.initializeScenePool();
+        Scene._initializeScenePool();
         var matches = [];
         return new Promise(function (resolve) {
             return Promise.all(Scene._scenePool.map(function (scene) {
@@ -2665,8 +2619,12 @@ var Scene = (function () {
     ;
     /**
      * return: Promise<boolean>
+  
+     * Load scenes that are not yet initialized in XSplit Broadcaster.
      *
-     * Load scenes that isn't yet initialized in XSplit Broadcaster
+     * Note: For memory saving purposes, this is not called automatically.
+     * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
+     * This function is only available to extensions.
      *
      * #### Usage
      *
@@ -2699,17 +2657,14 @@ var Scene = (function () {
         });
     };
     /**
+     * return: number
+     *
      * Get the 1-indexed scene number of this scene object.
      *
-     * #Return
      *
-     * ```
-     * number
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * myScene.getSceneNumber().then(function(num) {
      *  console.log('My scene is scene number ' + num);
      * });
@@ -2718,21 +2673,18 @@ var Scene = (function () {
     Scene.prototype.getSceneNumber = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(_this.id + 1);
+            resolve(_this._id + 1);
         });
     };
     /**
+     * return: number
+     *
      * Get the name of this scene object.
      *
-     * #Return
      *
-     * ```
-     * number
-     * ```
+     * #### Usage
      *
-     * #Usage
-     *
-     * ```
+     * ```javascript
      * myScene.getSceneName().then(function(name) {
      *  console.log('My scene is named ' + name);
      * });
@@ -2741,17 +2693,18 @@ var Scene = (function () {
     Scene.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('presetname:' + _this.id).then(function (val) {
+            app_1.App.get('presetname:' + _this._id).then(function (val) {
                 resolve(val);
             });
         });
     };
     /**
+     *
      * Set the name of this scene object. Cannot be set by source plugins.
      *
-     * #Usage
+     * #### Usage
      *
-     * ```
+     * ```javascript
      * myScene.setName('Gameplay');
      * ```
      */
@@ -2762,23 +2715,21 @@ var Scene = (function () {
                 reject(Error('Scene names are readonly for source plugins.'));
             }
             else {
-                app_1.App.set('presetname:' + _this.id, name).then(function (value) {
+                app_1.App.set('presetname:' + _this._id, name).then(function (value) {
                     resolve(value);
                 });
             }
         });
     };
     /**
-     * Gets all the items in a specific scene.
+     * return: Promise<Item[]>
      *
-     * #Return
+     * Gets all the items (sources) in a specific scene.
+     * See also: Core/Item
      *
-     * ```
-     * Item[]
-     * ```
-     * #Usage
+     * #### Usage
      *
-     * ```
+     * ```javascript
      * myScene.getItems().then(function(items) {
      *  // do something to each item in items array
      * });
@@ -2787,7 +2738,7 @@ var Scene = (function () {
     Scene.prototype.getItems = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.getAsList('presetconfig:' + _this.id).then(function (jsonArr) {
+            app_1.App.getAsList('presetconfig:' + _this._id).then(function (jsonArr) {
                 var promiseArray = [];
                 // type checking to return correct Item subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
@@ -2813,7 +2764,7 @@ var Scene = (function () {
                 }); };
                 if (Array.isArray(jsonArr)) {
                     for (var i = 0; i < jsonArr.length; i++) {
-                        jsonArr[i]['sceneID'] = _this.id;
+                        jsonArr[i]['sceneID'] = _this._id;
                         promiseArray.push(typePromise(i));
                     }
                 }
@@ -2824,24 +2775,104 @@ var Scene = (function () {
         });
     };
     /**
-    * Checks if a scene is empty.
-    *
-    * #Usage
-    *
-    * ```
-    * myScene.isEmpty().then(function(empty) {
-    *   if (empty === true) {
-    *     console.log("My scene is empty.");
-    *   }
-    * });
-    * ```
-    */
+     * Checks if a scene is empty.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.isEmpty().then(function(empty) {
+     *   if (empty === true) {
+     *     console.log("My scene is empty.");
+     *   }
+     * });
+     * ```
+     */
     Scene.prototype.isEmpty = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('presetisempty:' + _this.id).then(function (val) {
+            app_1.App.get('presetisempty:' + _this._id).then(function (val) {
                 resolve(val === '1');
             });
+        });
+    };
+    /**
+     * param: Array<Item> | Array<string>
+     * ```
+     * return: Promise<Scene>
+     * ```
+     *
+     * Sets the item order of the current scene. It is ordered as bottom to top.
+     */
+    Scene.prototype.setItemOrder = function (items) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('not available for source plugins'));
+            }
+            else {
+                var ids = [];
+                Scene.getActiveScene().then(function (scene) {
+                    if (items.every(function (el) { return el instanceof item_1.Item; })) {
+                        return new Promise(function (resolve) {
+                            var promises = [];
+                            for (var i in items) {
+                                promises.push((function (_i) {
+                                    return new Promise(function (resolve) {
+                                        items[_i].getID().then(function (id) {
+                                            ids[_i] = id;
+                                            resolve(_this);
+                                        });
+                                    });
+                                })(i));
+                            }
+                            Promise.all(promises).then(function () {
+                                return scene.getSceneNumber();
+                            }).then(function (id) {
+                                resolve(id);
+                            });
+                        });
+                    }
+                    else {
+                        ids = items;
+                        return scene.getSceneNumber();
+                    }
+                }).then(function (id) {
+                    if ((Number(id) - 1) === _this._id && environment_1.Environment.isSourceConfig()) {
+                        internal_1.exec('SourcesListOrderSave', ids.join(','));
+                        resolve(_this);
+                    }
+                    else {
+                        var sceneName;
+                        _this.getName().then(function (name) {
+                            sceneName = name;
+                            return app_1.App.getAsList('presetconfig:' + _this._id);
+                        }).then(function (jsonArr) {
+                            var newOrder = new json_1.JSON();
+                            newOrder.children = [];
+                            newOrder['tag'] = 'placement';
+                            newOrder['name'] = sceneName;
+                            if (Array.isArray(jsonArr)) {
+                                var attrs = ['name', 'cname', 'item'];
+                                for (var i = 0; i < jsonArr.length; i++) {
+                                    for (var a = 0; a < attrs.length; a++) {
+                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                                            .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                                            .replace(/"/g, '&quot;');
+                                    }
+                                    newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                                }
+                                app_1.App.set('presetconfig:' + _this._id, xml_1.XML.parseJSON(newOrder).toString()).then(function () {
+                                    resolve(_this);
+                                });
+                            }
+                            else {
+                                reject(Error('Scene does not have any items'));
+                            }
+                        });
+                    }
+                });
+            }
         });
     };
     Scene._maxScenes = 12;
@@ -2849,21 +2880,32 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":19,"../internal/util/json":24,"./environment":5,"./item/audio":6,"./item/camera":7,"./item/game":8,"./item/html":9,"./item/item":15}],18:[function(require,module,exports){
+},{"../internal/app":16,"../internal/internal":19,"../internal/util/json":21,"../internal/util/xml":23,"./environment":2,"./item/audio":3,"./item/camera":4,"./item/game":5,"./item/html":6,"./item/item":12}],15:[function(require,module,exports){
+/**
+ * The Transition class represents a preset transition within XSplit Broadcaster.
+ * This may be used to set the application's transition scheme when switching scenes,
+ * or to set an individual source's transition when its visibility changes.
+ *
+ * Simply use one of the available Transition objects such as Transition.FAN or
+ * Transition.COLLAPSE as the parameter to the setTransition method of an App
+ * or Item instance.
+ */
 var Transition = (function () {
     function Transition(key) {
-        this.key = key; // retain key so that NONE is readable
-        this.value = Transition._transitionMap[key];
+        this._key = key; // retain key so that NONE is readable
+        this._value = Transition._transitionMap[key];
     }
-    // should only be used internally when setting a property
+    /**
+     * Converts this transition object to the underlying string representation to be read by XSplit Broadcaster.
+     */
     Transition.prototype.toString = function () {
-        return this.value;
+        return this._value;
     };
-    /** Converts this transition object to a easily identifiable string such as
-     *  'NONE'.
+    /**
+     * Converts this transition object to a easily identifiable string such as 'NONE'.
      */
     Transition.prototype.toTransitionKey = function () {
-        return this.key;
+        return this._key;
     };
     Transition._transitionMap = {
         NONE: '',
@@ -2896,7 +2938,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],19:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -2971,7 +3013,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":22,"./util/json":24}],20:[function(require,module,exports){
+},{"./internal":19,"./util/json":21}],17:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -2993,14 +3035,13 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],21:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
 var internal_1 = require('./internal');
 var global_1 = require('./global');
-var config_1 = require('../context/config');
-require('../util/ready');
+var config_1 = require('../window/config');
 function resolveRelativePath(path, base) {
     // ABSOLUTE PATHS
     if (path.substring(0, 7) === 'http://' ||
@@ -3108,7 +3149,7 @@ function init() {
     });
 }
 init();
-},{"../context/config":1,"../core/environment":5,"../util/ready":34,"./global":20,"./internal":22,"./item":23}],22:[function(require,module,exports){
+},{"../core/environment":2,"../window/config":34,"./global":17,"./internal":19,"./item":20}],19:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -3168,7 +3209,7 @@ window.SetVolume = function (volume) {
 window.OnDialogResult = function (result) {
     document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
-},{}],23:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -3246,7 +3287,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":5,"./internal":22}],24:[function(require,module,exports){
+},{"../core/environment":2,"./internal":19}],21:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -3316,7 +3357,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":26}],25:[function(require,module,exports){
+},{"./xml":23}],22:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -3328,7 +3369,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],26:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -3383,7 +3424,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],27:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -3721,10 +3762,11 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":24,"../internal/util/xml":26}],28:[function(require,module,exports){
+},{"../internal/util/json":21,"../internal/util/xml":23}],25:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
+var app_1 = require('../internal/app');
 /**
  * The CameraDevice Class is the object returned by
  * {@link #system/System System Class'} getCameraDevices method. It provides
@@ -3820,10 +3862,21 @@ var CameraDevice = (function () {
         });
         return cam;
     };
+    /**
+     *  Adds this camera device to the current scene.
+     */
+    CameraDevice.prototype.addToScene = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('addcamera', 'dev:' + _this._id).then(function () {
+                resolve(true);
+            });
+        });
+    };
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/util/json":24,"../internal/util/xml":26}],29:[function(require,module,exports){
+},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23}],26:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -4063,6 +4116,9 @@ var Game = (function () {
         gamesource['selfclosing'] = true;
         return xml_1.XML.parseJSON(gamesource);
     };
+    /**
+     *  Adds this game to the current scene.
+     */
     Game.prototype.addToScene = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -4074,7 +4130,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26,"../util/rectangle":35}],30:[function(require,module,exports){
+},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23,"../util/rectangle":33}],27:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -4108,6 +4164,9 @@ var MicrophoneDevice = (function () {
         microphone['selfclosing'] = true;
         return xml_1.XML.parseJSON(microphone);
     };
+    /**
+     *  Adds this microphone device to the current scene.
+     */
     MicrophoneDevice.prototype.addToScene = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -4119,14 +4178,13 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":19,"../internal/util/json":24,"../internal/util/xml":26}],31:[function(require,module,exports){
+},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23}],28:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
 var microphone_1 = require('./microphone');
 var camera_1 = require('./camera');
 var game_1 = require('./game');
-var json_1 = require('../internal/util/json');
 var environment_1 = require('../core/environment');
 var internal_1 = require('../internal/internal');
 /**
@@ -4136,8 +4194,8 @@ var internal_1 = require('../internal/internal');
  * ### Basic Usage
  *
  * ```javascript
- * var XML = require('xml');
- * XML.getAudioDevices(XML.AudioDeviceDataflow.CAPTURE, ...);
+ * var XJS = require('xjs');
+ * XJS.System.getAudioDevices(XJS.AudioDeviceDataflow.CAPTURE, ...);
  * ```
  */
 (function (AudioDeviceDataflow) {
@@ -4153,8 +4211,8 @@ var AudioDeviceDataflow = exports.AudioDeviceDataflow;
  * ### Basic Usage
  *
  * ```javascript
- * var XML = require('xml');
- * XML.getAudioDevices(..., XML.AudioDeviceState.ACTIVE);
+ * var XJS = require('xjs');
+ * XJS.System.getAudioDevices(..., XJS.AudioDeviceState.ACTIVE);
  * ```
  */
 (function (AudioDeviceState) {
@@ -4166,8 +4224,10 @@ var AudioDeviceDataflow = exports.AudioDeviceDataflow;
 })(exports.AudioDeviceState || (exports.AudioDeviceState = {}));
 var AudioDeviceState = exports.AudioDeviceState;
 /**
- * The System class provides you methods to fetch games, audio devices, and
- * camera devices.
+ * The System class provides you methods to fetch audio devices to manipulate
+ * the application's audio settings. It also allows you to fetch games,
+ * microphone devices and camera devices to add to scenes. Finally, some
+ * system-level functionality such as cursor position is exposed.
  *
  * ### Basic Usage
  *
@@ -4187,6 +4247,7 @@ var System = (function () {
      * return: Promise<AudioDevice[]>
      *
      * Gets audio devices, both input and output
+     * See also: System/AudioDevice
      *
      * #### Usage
      *
@@ -4234,6 +4295,7 @@ var System = (function () {
      * return: Promise<CameraDevice[]>
      *
      * Gets all camera devices
+     * See also: System/CameraDevice
      *
      * #### Usage
      *
@@ -4266,7 +4328,8 @@ var System = (function () {
     /**
      * return: Promise<Game[]>
      *
-     * Gets all camera devices
+     * Gets all currently running games
+     * See also: System/Game
      *
      * #### Usage
      *
@@ -4295,6 +4358,7 @@ var System = (function () {
      * return: Promise<MicrophoneDevice[]>
      *
      * Gets all audio capture devices that may be added to the stage
+     * See also: System/MicrophoneDevice
      *
      * #### Usage
      *
@@ -4319,7 +4383,7 @@ var System = (function () {
         });
     };
     /**
-     * return: Promise<JXON>
+     * return: Promise<JSON>
      *
      * Gets the position of the cursor. Does not work on Source Plugins.
      *
@@ -4341,7 +4405,7 @@ var System = (function () {
                 var res = internal_1.exec('GetCursorPos');
                 if (typeof res === 'string') {
                     var posArr = res.split(',');
-                    var pos = new json_1.JSON();
+                    var pos = {};
                     pos['x'] = Number(posArr[0]);
                     pos['y'] = Number(posArr[1]);
                     resolve(pos);
@@ -4353,7 +4417,7 @@ var System = (function () {
         });
     };
     /**
-     * param: JXON
+     * param: JSON: {x: number, y: number}
      *
      * Sets the position of the cursor. Does not work on Source Plugins.
      *
@@ -4368,11 +4432,11 @@ var System = (function () {
             if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('function is not available for source'));
             }
-            else if (typeof pos['x'] !== 'number' || typeof pos['y'] !== 'number') {
+            else if (typeof pos.x !== 'number' || typeof pos.y !== 'number') {
                 reject(Error('invalid parameters'));
             }
             else {
-                internal_1.exec('SetCursorPos', String(pos['x']), String(pos['y']));
+                internal_1.exec('SetCursorPos', String(pos.x), String(pos.y));
                 resolve(true);
             }
         });
@@ -4380,7 +4444,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":5,"../internal/app":19,"../internal/internal":22,"../internal/util/json":24,"./audio":27,"./camera":28,"./game":29,"./microphone":30}],32:[function(require,module,exports){
+},{"../core/environment":2,"../internal/app":16,"../internal/internal":19,"./audio":24,"./camera":25,"./game":26,"./microphone":27}],29:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -4456,7 +4520,37 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],33:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
+// simple event emitter
+var EventEmitter = (function () {
+    function EventEmitter() {
+        this._handlers = {};
+    }
+    /** This function attaches a handler to an event. Duplicate handlers are allowed. */
+    EventEmitter.prototype.on = function (event, handler) {
+        if (this._handlers[event] === undefined) {
+            this._handlers[event] = [];
+        }
+        this._handlers[event].push(handler);
+    };
+    /** This function lets an event trigger with any number of supplied parameters. */
+    EventEmitter.prototype.emit = function (event) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        if (this._handlers[event] === undefined) {
+            return;
+        }
+        for (var _a = 0, _b = this._handlers[event]; _a < _b.length; _a++) {
+            var handler = _b[_a];
+            handler.apply(this, params);
+        }
+    };
+    return EventEmitter;
+})();
+exports.EventEmitter = EventEmitter;
+},{}],31:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var IO = (function () {
@@ -4552,7 +4646,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-},{"../internal/internal":22}],34:[function(require,module,exports){
+},{"../internal/internal":19}],32:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -4571,7 +4665,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],35:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -4729,7 +4823,196 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],"xjs":[function(require,module,exports){
+},{}],34:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var eventemitter_1 = require('../util/eventemitter');
+var internal_1 = require('../internal/internal');
+/** This utility class exposes functionality for source plugin developers to
+ *  handle the configuration window for their source plugins. The framework also
+ *  uses this class for its own internal purposes.
+ *
+ *  Developers can use this class to specify how their configuration HTML
+ *  should be rendered within the built-in window in XSplit Broadcaster.
+ *  This class also serves as an event emitter for specific important events.
+ *
+ *  At the moment, the only relevant event for developers is:
+ *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ */
+var SourceConfigWindow = (function (_super) {
+    __extends(SourceConfigWindow, _super);
+    function SourceConfigWindow() {
+        var _this = this;
+        _super.call(this);
+        window.addEventListener('message', function (event) {
+            try {
+                var data = JSON.parse(event.data);
+            }
+            catch (e) {
+                // syntax error probably happened, exit gracefully
+                return;
+            }
+            switch (data.event) {
+                // currently, restrict messages to selected set
+                case 'set-selected-tab':
+                    this.emit(data.event, data.value);
+                    break;
+                case 'async-callback':
+                    this.emit(data.event, {
+                        asyncId: data.value.asyncId,
+                        result: data.value.result
+                    });
+                    break;
+            }
+        }.bind(this));
+        this.on('config-load', function () {
+            _this._informConfigLoaded();
+        });
+        SourceConfigWindow._instance = this;
+    }
+    SourceConfigWindow.getInstance = function () {
+        if (SourceConfigWindow._instance === undefined) {
+            SourceConfigWindow._instance = new SourceConfigWindow();
+        }
+        return SourceConfigWindow._instance;
+    };
+    // helper function to communicate with built-in container
+    SourceConfigWindow.prototype._notify = function (obj) {
+        window.parent.postMessage(JSON.stringify(obj), '*');
+    };
+    SourceConfigWindow.prototype.useFullWindow = function () {
+        this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    };
+    SourceConfigWindow.prototype.useTabbedWindow = function (config) {
+        this._setRenderMode(SourceConfigWindow._MODE_TABBED);
+        this._declareCustomTabs(config.customTabs);
+        this._setTabOrder(config.tabOrder);
+    };
+    SourceConfigWindow.prototype._setRenderMode = function (renderMode) {
+        this._mode = renderMode;
+        this._notify({
+            event: 'set-mode',
+            value: renderMode
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._setTabOrder = function (tabArray) {
+        this._notify({
+            event: 'set-tab-order',
+            value: JSON.stringify(tabArray)
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._declareCustomTabs = function (tabArray) {
+        this._notify({
+            event: 'set-custom-tabs',
+            value: JSON.stringify(tabArray)
+        });
+    };
+    ;
+    SourceConfigWindow.prototype._informConfigLoaded = function () {
+        this._notify({ event: 'load' });
+    };
+    /**
+     *  param: width<number>, height<number>
+     *
+     *  Resizes the configuration window.
+     */
+    SourceConfigWindow.prototype.resizeConfig = function (width, height) {
+        if (this._mode === 'full') {
+            this._notify({
+                event: 'resize',
+                value: JSON.stringify({
+                    width: width,
+                    height: height
+                })
+            });
+        }
+        else if (this._mode !== 'embedded') {
+            internal_1.exec('SetDialogSize', String(width), String(height));
+        }
+    };
+    ;
+    /** Closes the configuration window. */
+    SourceConfigWindow.prototype.closeConfig = function () {
+        internal_1.exec('Close');
+    };
+    ;
+    SourceConfigWindow._MODE_FULL = 'full';
+    SourceConfigWindow._MODE_TABBED = 'embedded';
+    return SourceConfigWindow;
+})(eventemitter_1.EventEmitter);
+exports.SourceConfigWindow = SourceConfigWindow;
+},{"../internal/internal":19,"../util/eventemitter":30}],35:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var eventemitter_1 = require('../util/eventemitter');
+/** This utility class is used internally by the framework for certain important
+ *  processes. This class also exposes certain important events that the source
+ *  plugin may emit.
+ *
+ *  Currently there are only two events:
+ *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
+ *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
+ *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ */
+var SourcePluginWindow = (function (_super) {
+    __extends(SourcePluginWindow, _super);
+    /**
+     *  Use getInstance() instead.
+     */
+    function SourcePluginWindow() {
+        _super.call(this);
+        this.on('message-source', function (message) {
+            if (message.request !== undefined) {
+                if (message.request === 'saveConfig') {
+                    this.emit('save-config', message.data);
+                }
+                else if (message.request === 'applyConfig') {
+                    this.emit('apply-config', message.data);
+                }
+            }
+        });
+        SourcePluginWindow._instance = this;
+    }
+    SourcePluginWindow.getInstance = function () {
+        if (SourcePluginWindow._instance === undefined) {
+            SourcePluginWindow._instance = new SourcePluginWindow();
+        }
+        return SourcePluginWindow._instance;
+    };
+    return SourcePluginWindow;
+})(eventemitter_1.EventEmitter);
+exports.SourcePluginWindow = SourcePluginWindow;
+window['MessageSource'] = function (message) {
+    SourcePluginWindow.getInstance().emit("message-source", JSON.parse(message));
+};
+window['SetConfiguration'] = function (configObj) {
+    try {
+        var data = JSON.parse(configObj);
+        var source = SourcePluginWindow.getInstance();
+        source.emit("apply-config", data);
+        source.emit("save-config", data);
+    }
+    catch (e) {
+        // syntax error probably happened, exit gracefully
+        return;
+    }
+};
+},{"../util/eventemitter":30}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -4751,8 +5034,8 @@ __export(require('./system/audio'));
 __export(require('./system/game'));
 __export(require('./system/camera'));
 __export(require('./system/microphone'));
-__export(require('./context/config'));
-__export(require('./context/source'));
+__export(require('./window/config'));
+__export(require('./window/source'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./context/config":1,"./context/source":3,"./core/app":4,"./core/environment":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/game":8,"./core/item/html":9,"./core/item/item":15,"./core/scene":17,"./core/transition":18,"./internal/init":21,"./system/audio":27,"./system/camera":28,"./system/game":29,"./system/microphone":30,"./system/system":31,"./util/color":32,"./util/io":33,"./util/ready":34,"./util/rectangle":35}]},{},["xjs"]);
+},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/source":35}]},{},["xjs"]);
