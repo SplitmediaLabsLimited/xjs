@@ -3,8 +3,9 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
+import {Addable} from './iaddable';
 
-export class MicrophoneDevice {
+export class MicrophoneDevice implements Addable {
   private _disp: string;
   private _name: string;
 
@@ -40,6 +41,9 @@ export class MicrophoneDevice {
     return XML.parseJSON(microphone);
   }
 
+  /**
+   *  Adds this microphone device to the current scene.
+   */
   addToScene(): Promise<boolean> {
     return new Promise(resolve => {
       iApp.callFunc('additem', this.toXML().toString()).then(() => {
