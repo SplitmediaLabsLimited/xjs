@@ -162,7 +162,15 @@ export class Stream {
   }
 
   /**
-   * param: { codec: string, framerate: number, adaptiveBitrate: boolean, maxBitrate: string, useMixerFPS: boolean }
+   * param: {
+   * ```
+   *   codec: string,
+   *   framerate: number,
+   *   adaptiveBitrate: boolean,
+   *   maxBitrate: string,
+   *   useMixerFPS: boolean
+   * }
+   * ```
    *
    * Set Video Configuration (advanced usage)
    */
