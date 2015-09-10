@@ -2,6 +2,8 @@
 
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
+import {Addable} from './iaddable';
+import {App as iApp} from '../internal/app';
 
 /**
  * The CameraDevice Class is the object returned by
@@ -26,7 +28,7 @@ import {XML} from '../internal/util/xml';
  * });
  * ```
  */
-export class CameraDevice {
+export class CameraDevice implements Addable {
   private _id: string;
   private _name: string;
 
@@ -105,5 +107,16 @@ export class CameraDevice {
     });
 
     return cam;
+  }
+
+  /**
+   *  Adds this camera device to the current scene.
+   */
+  addToScene(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.callFunc('addcamera', 'dev:' + this._id).then(() => {
+        resolve(true);
+      });
+    });
   }
 }

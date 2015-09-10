@@ -271,6 +271,9 @@ export class Game implements Addable {
     return XML.parseJSON(gamesource);
   }
 
+  /**
+   *  Adds this game to the current scene.
+   */
   addToScene(): Promise<boolean> {
     return new Promise(resolve => {
       iApp.callFunc('addgamesource', 'dev:' + this.toXML()).then(() => {
