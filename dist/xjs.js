@@ -619,7 +619,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":16,"../internal/internal":19,"../internal/util/json":21,"../internal/util/xml":23,"../system/audio":24,"../util/rectangle":33,"./environment":2,"./transition":15}],2:[function(require,module,exports){
+},{"../internal/app":17,"../internal/internal":20,"../internal/util/json":22,"../internal/util/xml":24,"../system/audio":25,"../util/rectangle":34,"./environment":2,"./transition":16}],2:[function(require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -795,7 +795,7 @@ var AudioItem = (function (_super) {
 })(item_2.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
-},{"../../internal/item":20,"../../internal/util/mixin":22,"../environment":2,"./iaudio":7,"./item":12}],4:[function(require,module,exports){
+},{"../../internal/item":21,"../../internal/util/mixin":23,"../environment":2,"./iaudio":7,"./item":12}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -920,7 +920,7 @@ var CameraItem = (function (_super) {
 })(item_2.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":20,"../../internal/util/mixin":22,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],5:[function(require,module,exports){
+},{"../../internal/item":21,"../../internal/util/mixin":23,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1080,7 +1080,7 @@ var GameItem = (function (_super) {
 })(item_2.Item);
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":20,"../../internal/util/json":21,"../../internal/util/mixin":22,"../../internal/util/xml":23,"../environment":2,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],6:[function(require,module,exports){
+},{"../../internal/item":21,"../../internal/util/json":22,"../../internal/util/mixin":23,"../../internal/util/xml":24,"../environment":2,"./ichroma":8,"./icolor":9,"./ilayout":11,"./item":12,"./itransition":13}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1138,7 +1138,7 @@ var HTMLItem = (function (_super) {
 })(item_2.Item);
 exports.HTMLItem = HTMLItem;
 mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, iconfig_1.ItemConfigurable]);
-},{"../../internal/item":20,"../../internal/util/mixin":22,"./ichroma":8,"./icolor":9,"./iconfig":10,"./ilayout":11,"./item":12,"./itransition":13}],7:[function(require,module,exports){
+},{"../../internal/item":21,"../../internal/util/mixin":23,"./ichroma":8,"./icolor":9,"./iconfig":10,"./ilayout":11,"./item":12,"./itransition":13}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -1261,7 +1261,7 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":20,"../environment":2}],8:[function(require,module,exports){
+},{"../../internal/item":21,"../environment":2}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1650,7 +1650,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":20,"../../util/color":29}],9:[function(require,module,exports){
+},{"../../internal/item":21,"../../util/color":30}],9:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1795,7 +1795,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":20,"../../util/color":29}],10:[function(require,module,exports){
+},{"../../internal/item":21,"../../util/color":30}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -1880,7 +1880,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":17,"../../internal/internal":19,"../../internal/item":20,"../environment":2}],11:[function(require,module,exports){
+},{"../../internal/global":18,"../../internal/internal":20,"../../internal/item":21,"../environment":2}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -2034,7 +2034,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":20,"../../util/rectangle":33}],12:[function(require,module,exports){
+},{"../../internal/item":21,"../../util/rectangle":34}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -2239,7 +2239,7 @@ var Item = (function () {
 })();
 exports.Item = Item;
 mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
-},{"../../internal/item":20,"../../internal/util/json":21,"../../internal/util/mixin":22,"../../internal/util/xml":23,"../environment":2,"../scene":14,"./ilayout":11}],13:[function(require,module,exports){
+},{"../../internal/item":21,"../../internal/util/json":22,"../../internal/util/mixin":23,"../../internal/util/xml":24,"../environment":2,"../scene":14,"./ilayout":11}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -2313,7 +2313,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":20,"../transition":15}],14:[function(require,module,exports){
+},{"../../internal/item":21,"../transition":16}],14:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -2880,7 +2880,371 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":16,"../internal/internal":19,"../internal/util/json":21,"../internal/util/xml":23,"./environment":2,"./item/audio":3,"./item/camera":4,"./item/game":5,"./item/html":6,"./item/item":12}],15:[function(require,module,exports){
+},{"../internal/app":17,"../internal/internal":20,"../internal/util/json":22,"../internal/util/xml":24,"./environment":2,"./item/audio":3,"./item/camera":4,"./item/game":5,"./item/html":6,"./item/item":12}],15:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var environment_1 = require('./environment');
+var app_1 = require('../internal/app');
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var streamStack = [];
+/**
+ * The Stream Class provides methods to start streaming or recording based
+ * on the parameters passed to its constructor.
+ *
+ * ### Basic Usage (Recording)
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var rec = new xjs.Stream({ filename: 'myfile.mp4', filepath: 'D:\\MyVids' });
+ * rec.start();
+ * setTimeout(function() { rec.pause(); }, 10000);
+ * setTimeout(function() { rec.stop(); }, 20000);
+ * ```
+ *
+ * You'll notice that we just have to specify the filename and filepath and
+ * then call the `start` method to start recording. Please make sure that
+ * you call `stop` when you're done recording.
+ *
+ * ### Basic Usage (Streaming)
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var rec = new xjs.Stream({
+ *   rtmpUrl: 'rtmp://somestreamurl',
+ *   streamName: 'My Awesome Stream'
+ * });
+ * rec.start();
+ * setTimeout(function() { rec.stop(); }, 20000);
+ * ```
+ *
+ * That should get you started with streaming. Please do note that while it
+ * would actually get you streaming, it will not update your XSplit Broadcaster's
+ * titlebar to reflect that you are currently streaming. This is currently
+ * a limitation.
+ *
+ * ### Basic Usage (Streaming with Carbon Copy)
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var rec = new xjs.Stream({
+ *   filename: 'myfile.mp4',
+ *   filepath: 'D:\\MyVids'
+ *   rtmpUrl: 'rtmp://somestreamurl',
+ *   streamName: 'My Awesome Stream'
+ * });
+ * rec.start();
+ * setTimeout(function() { rec.stop(); }, 20000);
+ * ```
+ *
+ * That would allow you to stream and at the same time, record your stream
+ * locally.
+ *
+ * You can create multiple instances of the Stream class in case you want to
+ * stream to multiple different rtmp urls.
+ */
+var Stream = (function () {
+    function Stream(options) {
+        // Extra Configuration options
+        this._rtmp2Ch = 0;
+        this._rtmpBuf = -1;
+        this._rtmpOpt = -1;
+        this._rtmpMaxLat = -1;
+        this._optFastStart = 1;
+        this._mux = 16777216;
+        // Video Configuration options
+        this._videoCodec = 'libx264ext';
+        this._videoQuality = 'standard';
+        this._videoBitrate = 2100;
+        this._videoFramerate = 30;
+        this._videoFrametime = Math.ceil(10000000 / this._videoFramerate);
+        this._videoUseMixerFPS = 0;
+        // Audio Configuration options
+        this._audioCodec = 'libw7aac';
+        this._audioBitrate = 96000;
+        this._audioFormat = '44100/1';
+        this._audioFormat2 = '44100/1';
+        if (environment_1.Environment.isSourcePlugin()) {
+            throw new Error('Cannot start/stop stream or recording on source plugins');
+        }
+        this._filename = options.filename || '';
+        this._filepath = options.filepath || '';
+        this._rtmpUrl = options.rtmpUrl || 'rtmp://nomaster';
+        this._streamName = options.streamName || '';
+        // Change the file extension depending on the rtmp url (if record or stream)
+        var fileExt = /\.[a-z0-9]+$/ig.exec(this._filename);
+        if (fileExt.length > 0 && this._rtmpUrl !== 'rtmp://nomaster') {
+            var extRegex = new RegExp(fileExt[0] + '$', 'ig');
+            this._filename = this._filename.replace(extRegex, '.flv');
+        }
+        else if (this._rtmpUrl !== 'rtmp://nomaster') {
+            this._filename += '.flv';
+        }
+        // Add Trailing backslash on the filepath
+        if (this._filepath.trim() !== '' && this._filepath.substr(-1) !== '\\') {
+            this._filepath += '\\';
+        }
+        this._id = this.generateID();
+    }
+    /**
+     * param: { rtmp2Ch: boolean, rtmpBuf: number, rtmpOpt: boolean, rtmpMaxLat: number}
+     *
+     * Set Streaming configuration.
+     */
+    Stream.prototype.setStreamConfiguration = function (obj) {
+        for (var i in obj) {
+            if (this.hasOwnProperty('_' + i)) {
+                this['_' + i] = typeof obj[i] === 'boolean' ? (obj[i] ? 1 : 0) : obj[i];
+            }
+        }
+    };
+    /**
+     * param: {
+     * ```
+     *   codec: string,
+     *   framerate: number,
+     *   adaptiveBitrate: boolean,
+     *   maxBitrate: string,
+     *   useMixerFPS: boolean
+     * }
+     * ```
+     *
+     * Set Video Configuration (advanced usage)
+     */
+    Stream.prototype.setVideoConfiguration = function (obj) {
+        var attr = '';
+        for (var i in obj) {
+            attr = i.charAt(0).toUpperCase() + i.slice(1);
+            if (this.hasOwnProperty('_video' + attr)) {
+                this['_video' + attr] = typeof obj[i] === 'boolean' ?
+                    (obj[i] ? 1 : 0) : obj[i];
+                if (i === 'framerate') {
+                    this._videoFrametime = Math.ceil(10000000 / this._videoFramerate);
+                }
+                else if (i === 'frametime') {
+                    this._videoFramerate = Math.ceil(10000000 / this._videoFrametime);
+                }
+            }
+        }
+    };
+    /**
+     * param: { codec: string, bitrate: number, format: number, format2: number }
+     *
+     * Set Audio Configuration (advanced usage)
+     */
+    Stream.prototype.setAudioConfiguration = function (obj) {
+        var attr = '';
+        for (var i in obj) {
+            attr = i.charAt(0).toUpperCase() + i.slice(1);
+            if (this.hasOwnProperty('_audio' + attr)) {
+                this['_audio' + attr] = typeof obj[i] === 'boolean' ?
+                    (obj[i] ? 1 : 0) : obj[i];
+            }
+        }
+    };
+    /**
+     * param: codec<string>
+     *
+     * Set the video codec, currently we only support x264.
+     */
+    Stream.prototype.setVideoCodec = function (codec) {
+        if (Stream._supportedCodecs[codec.toLowerCase()] === undefined) {
+            return;
+        }
+        this._videoCodec = codec.toLowerCase();
+    };
+    /**
+     * param: quality<string>
+     *
+     * Set the video quality. Valid qualities:
+     *
+     * - STANDARD
+     * - HIGH
+     * - VERY_HIGH
+     * - ULTRA_HIGH
+     */
+    Stream.prototype.setRecordingQuality = function (quality) {
+        if (Stream.recordQuality[quality] === undefined) {
+            return;
+        }
+        this._videoQuality = quality;
+    };
+    /**
+     * param: bitrate<number>
+     *
+     * Set streaming bitrate
+     */
+    Stream.prototype.setStreamingBitrate = function (bitrate) {
+        this._videoBitrate = bitrate;
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Start recording or streaming
+     */
+    Stream.prototype.start = function () {
+        var fileType = this._rtmpUrl === 'rtmp://nomaster' ? 'mp4' : 'flv';
+        var file = this._filepath ? this._filepath + this._filename : this._filename;
+        // Configure the extra config value
+        var extraConfig = '\\rtmp_2ch:' + (fileType === 'mp4' ? 1 : this._rtmp2Ch);
+        var configKeys = {
+            _rtmpBuf: 'rtmp_buf',
+            _rtmpOpt: 'rtmp_h264opt',
+            _rtmpMaxLat: 'rtmp_maxlat',
+            _optFastStart: 'opt_faststart',
+            _mux: 'mux:movflags:frag_keyframe+empty_moov&amp;frag_size'
+        };
+        for (var i in configKeys) {
+            if (this[i] !== -1) {
+                extraConfig += '\\' + '' + configKeys[i] + ':' + this[i];
+            }
+        }
+        // Actual streaming JSON object
+        var jsonObj = new json_1.JSON();
+        jsonObj['tag'] = 'channel';
+        jsonObj['name'] = this._id;
+        jsonObj['rtmpUrl'] = this._rtmpUrl;
+        jsonObj['streamName'] = this._streamName;
+        jsonObj['filetype'] = fileType;
+        jsonObj['file'] = fileType === 'mp4' ? 'mp4:' + file : file;
+        jsonObj['watermark'] = 0;
+        jsonObj['extraConfig'] = extraConfig;
+        jsonObj.children = [];
+        // Configuration tag
+        var configTag = new json_1.JSON();
+        configTag['tag'] = 'configuration';
+        configTag.children = [];
+        // Video tag
+        var videoTag = new json_1.JSON();
+        videoTag['tag'] = 'video';
+        videoTag['selfclosing'] = true;
+        // Recordings are automatically set to mp4 if mode is recording
+        videoTag['codec'] = this.generateCodecString(fileType === 'mp4');
+        videoTag['frametime'] = this._videoFrametime;
+        videoTag['adaptivebr'] = this._videoAdaptiveBitrate;
+        videoTag['maxBitrate'] = this._videoMaxBitrate ? this._videoMaxBitrate : '';
+        videoTag['dontUseDefaultMixerFPS'] = this._videoUseMixerFPS === 0 ? 1 : 0;
+        // Audio tag
+        var audioTag = new json_1.JSON();
+        audioTag['tag'] = 'audio';
+        audioTag['selfclosing'] = true;
+        audioTag['bitrate'] = this._audioBitrate;
+        audioTag['codec'] = this._audioCodec + '&amp;b:' + this._audioBitrate;
+        audioTag['format'] = this._audioFormat;
+        audioTag['format2'] = this._audioFormat2;
+        // Set children tags
+        configTag.children.push(videoTag, audioTag);
+        jsonObj.children.push(configTag);
+        // Send to XBC
+        var streamStr = xml_1.XML.parseJSON(jsonObj).toString();
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('startstream', streamStr).then(function (res) {
+                resolve(Number(res) === 0);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Pause recording
+     */
+    Stream.prototype.pause = function () {
+        var configTag = new json_1.JSON();
+        configTag['tag'] = 'configuration';
+        configTag['name'] = this._id;
+        configTag['run'] = 2;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('changestream', xml_1.XML.parseJSON(configTag).toString())
+                .then(function (res) {
+                resolve(res);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Resume recording
+     */
+    Stream.prototype.resume = function () {
+        var configTag = new json_1.JSON();
+        configTag['tag'] = 'configuration';
+        configTag['name'] = this._id;
+        configTag['run'] = 1;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('changestream', xml_1.XML.parseJSON(configTag).toString())
+                .then(function (res) {
+                resolve(res);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Stop recording or streaming
+     */
+    Stream.prototype.stop = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('stopstream', _this._id).then(function (res) {
+                resolve(res);
+            });
+        });
+    };
+    Stream.prototype.generateID = function () {
+        var rand = Math.floor(Math.random() * 10000);
+        var name = 'stream-' + rand;
+        if (streamStack.indexOf(name) !== -1) {
+            name = this.generateID();
+        }
+        else {
+            streamStack.push(name);
+        }
+        return name;
+    };
+    Stream.prototype.generateCodecString = function (isRecording) {
+        var codeStr = this._videoCodec;
+        switch (this._videoCodec) {
+            // For now, we'll only support x264 codecs, since we have no way for
+            // checking if the codec is available on the current machine.
+            // We're only sure that x264 is always available on any machine that
+            // supports XSplit
+            case 'libx264ext':
+            default:
+                var crfs = { standard: 23, high: 21, very_high: 18, ultra_high: 16 };
+                if (isRecording) {
+                    codeStr += '&amp;ex:preset:veryfast&amp;ex:crf:'
+                        + crfs[this._videoQuality] + '&amp;ex:fps:' + '10000000/'
+                        + this._videoFrametime;
+                }
+                else {
+                    codeStr += '&amp;ex:preset:veryfast&amp;ex:vbv-maxrate:'
+                        + this._videoBitrate + '&amp;ex:vbv-bufsize:' + this._videoBitrate
+                        + '&amp;ex:keyint:' + (this._videoFramerate * 2) + '&amp;ex:fps:'
+                        + '10000000/' + this._videoFrametime;
+                }
+                break;
+        }
+        return codeStr;
+    };
+    // Supported codecs
+    Stream._supportedCodecs = {
+        x264: 'libx264ext',
+        quickSync: 'libh264qsext',
+        vce: 'libh264vceext',
+        openh264: 'libh264openext',
+        nvenc: 'libh264nvext',
+        h264aver: 'libh264aver'
+    };
+    // Video Quality
+    Stream.recordQuality = {
+        STANDARD: 'standard',
+        HIGH: 'high',
+        VERY_HIGH: 'very_high',
+        ULTRA_HIGH: 'ultra_high'
+    };
+    return Stream;
+})();
+exports.Stream = Stream;
+},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24,"./environment":2}],16:[function(require,module,exports){
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -2938,7 +3302,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -3013,7 +3377,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":19,"./util/json":21}],17:[function(require,module,exports){
+},{"./internal":20,"./util/json":22}],18:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -3035,7 +3399,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -3149,7 +3513,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":2,"../window/config":34,"./global":17,"./internal":19,"./item":20}],19:[function(require,module,exports){
+},{"../core/environment":2,"../window/config":35,"./global":18,"./internal":20,"./item":21}],20:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -3209,7 +3573,7 @@ window.SetVolume = function (volume) {
 window.OnDialogResult = function (result) {
     document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -3287,7 +3651,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":2,"./internal":19}],21:[function(require,module,exports){
+},{"../core/environment":2,"./internal":20}],22:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -3357,7 +3721,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":23}],22:[function(require,module,exports){
+},{"./xml":24}],23:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -3369,7 +3733,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -3424,7 +3788,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -3762,7 +4126,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":21,"../internal/util/xml":23}],25:[function(require,module,exports){
+},{"../internal/util/json":22,"../internal/util/xml":24}],26:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -3876,7 +4240,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23}],26:[function(require,module,exports){
+},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24}],27:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -4130,7 +4494,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23,"../util/rectangle":33}],27:[function(require,module,exports){
+},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24,"../util/rectangle":34}],28:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -4178,7 +4542,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":16,"../internal/util/json":21,"../internal/util/xml":23}],28:[function(require,module,exports){
+},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24}],29:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
@@ -4444,7 +4808,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":2,"../internal/app":16,"../internal/internal":19,"./audio":24,"./camera":25,"./game":26,"./microphone":27}],29:[function(require,module,exports){
+},{"../core/environment":2,"../internal/app":17,"../internal/internal":20,"./audio":25,"./camera":26,"./game":27,"./microphone":28}],30:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -4520,7 +4884,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -4550,7 +4914,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var IO = (function () {
@@ -4646,7 +5010,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-},{"../internal/internal":19}],32:[function(require,module,exports){
+},{"../internal/internal":20}],33:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -4665,7 +5029,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -4823,7 +5187,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4950,7 +5314,7 @@ var SourceConfigWindow = (function (_super) {
     return SourceConfigWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourceConfigWindow = SourceConfigWindow;
-},{"../internal/internal":19,"../util/eventemitter":30}],35:[function(require,module,exports){
+},{"../internal/internal":20,"../util/eventemitter":31}],36:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5012,7 +5376,7 @@ window['SetConfiguration'] = function (configObj) {
         return;
     }
 };
-},{"../util/eventemitter":30}],"xjs":[function(require,module,exports){
+},{"../util/eventemitter":31}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -5024,6 +5388,7 @@ __export(require('./core/environment'));
 __export(require('./core/app'));
 __export(require('./core/scene'));
 __export(require('./core/transition'));
+__export(require('./core/stream'));
 __export(require('./core/item/item'));
 __export(require('./core/item/camera'));
 __export(require('./core/item/game'));
@@ -5038,4 +5403,4 @@ __export(require('./window/config'));
 __export(require('./window/source'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/source":35}]},{},["xjs"]);
+},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/item":12,"./core/scene":14,"./core/stream":15,"./core/transition":16,"./internal/init":19,"./system/audio":25,"./system/camera":26,"./system/game":27,"./system/microphone":28,"./system/system":29,"./util/color":30,"./util/io":32,"./util/ready":33,"./util/rectangle":34,"./window/config":35,"./window/source":36}]},{},["xjs"]);
