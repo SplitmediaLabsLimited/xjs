@@ -8,7 +8,6 @@ export * from './core/environment';
 export * from './core/app';
 export * from './core/scene';
 export * from './core/transition';
-export * from './core/stream';
 export * from './core/item/item';
 export * from './core/item/camera';
 export * from './core/item/game';
