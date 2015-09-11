@@ -19,8 +19,8 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
- * var App = new XJS.App();
+ * var xjs = require('xjs');
+ * var App = new xjs.App();
  *
  * App.getFrameTime().then(function(frametime) {
  *   window.frametime = frametime;
@@ -37,8 +37,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * var frameTimeP = App.getFrameTime();
-   * frameTimeP.then(function(res) {
+   * App.getFrameTime().then(function(res) {
    *   var frameTime = res;
    * });
    * ```
@@ -55,13 +54,13 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application default output resolution.
-   * See also: Util/Rectangle
+   * 
+   * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
    *
    * ```javascript
-   * var resolutionP = App.getResolution();
-   * resolutionP.then(function(res) {
+   * App.getResolution().then(function(res) {
    *   var height = res.getHeight();
    *   var width = res.getWidth();
    * });
@@ -81,13 +80,13 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application viewport display resolution
-   * See also: Util/Rectangle
+   * 
+   * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
    *
    * ```javascript
-   * var viewPortP = App.getViewport();
-   * viewPortP.then(function(res) {
+   * App.getViewport().then(function(res) {
    *   var height = res.getHeight();
    *   var width = res.getWidth();
    * });
@@ -111,8 +110,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * var versionP = App.getVersion();
-   * versionP.then(function(res) {
+   * App.getVersion().then(function(res) {
    *   var version = res;
    * });
    * ```
@@ -131,8 +129,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * var framesrenderedP = App.getFramesRendered();
-   * framesrenderedP.then(function(res) {
+   * App.getFramesRendered().then(function(res) {
    *   var framesrendered = res;
    * });
    * ```
@@ -148,10 +145,11 @@ export class App{
   // Audio Services
 
   /**
-   * return: Promise<AudioDevice>
+   * return: Promise<AudioDevice[]>
    *
    * Gets the primary microphone device used in the application
-   * See also: System/AudioDevice
+   * 
+   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -181,10 +179,11 @@ export class App{
   }
 
   /**
-   * return: Promise<AudioDevice>
+   * return: Promise<AudioDevice[]>
    *
    * Gets the primary speaker/audio render device used in the application
-   * See also: System/AudioDevice
+   * 
+   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -214,13 +213,14 @@ export class App{
   }
 
   /**
-   * param: device<AudioDevice>
+   * param: (device: AudioDevice)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the primary microphone device to be used in the application
-   * See also: System/AudioDevice
+   * 
+   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -252,13 +252,14 @@ export class App{
   }
 
   /**
-   * param: device<AudioDevice>
+   * param: (device: AudioDevice)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the primary speaker/audio render device to be used in the application
-   * See also: System/AudioDevice
+   * 
+   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -312,7 +313,7 @@ export class App{
   }
 
   /**
-   * param: enabled<boolean>
+   * param: (enabled: boolean)
    * ```
    * return: Promise<boolean>
    * ```
@@ -365,7 +366,7 @@ export class App{
   }
 
   /**
-   * param: sdPeriod<number>
+   * param: (sdPeriod: number)
    * ```
    * return: Promise<boolean>
    * ```
@@ -427,7 +428,7 @@ export class App{
 
 
   /**
-   * param: sdThreshold<number>
+   * param: (sdThreshold: number)
    * ```
    * return: Promise<boolean>
    * ```
@@ -471,9 +472,9 @@ export class App{
   static BORDER_ENABLE_MAXIMIZE: number = 16;
 
   /**
-   * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
+   * param: (url: string [, width: number = 300 [, height: number = 300 [, flags: number [, title: string ]]]])
    *
-   * Creates a persistent modal dialog.<br/>
+   * Creates a persistent modal dialog.
    * This method is not available for source
    *
    * #### Usage
@@ -509,7 +510,7 @@ export class App{
   }
 
   /**
-   * param: url<string>[, width<number>[, height<number>]]
+   * param: (url: string [, width: number = 300 [, height: number = 300]])
    *
    * Creates a dialog that automatically closes on outside click
    *
@@ -546,13 +547,13 @@ export class App{
    * return: Promise<Transition>
    *
    * Gets the transition for scene changes
-   * See also: Core/Transition
+   * 
+   * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage
    *
    * ```javascript
-   * var transitionP = App.getTransition();
-   * transitionP.then(function(res) {
+   * App.getTransition().then(function(res) {
    *   var transitionid = res;
    * });
    * ```
@@ -570,13 +571,14 @@ export class App{
   }
 
   /**
-   * param: transition<Transition>
+   * param: (transition: Transition)
    * ```
-   * return: Promise<Transition>
+   * return: Promise<boolean>
    * ```
    *
    * Sets the transition for scene changes
-   * See also: Core/Transition
+   * 
+   * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage
    *
@@ -606,8 +608,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * var transitionTimeP = App.getTransitionTime();
-   * transitionTimeP.then(function(res) {
+   * App.getTransitionTime().then(function(res) {
    *   var transitiontime = res;
    * });
    * ```
@@ -621,9 +622,9 @@ export class App{
   }
 
   /**
-   * param: transition<number>
+   * param: (time: number)
    * ```
-   * return: Promise<string>
+   * return: Promise<boolean>
    * ```
    *
    * Sets the scene transition duration in milliseconds
