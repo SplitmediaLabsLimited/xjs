@@ -334,127 +334,212 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setBorderColor:  (value: Color) => Promise<GameItem>;
 
-  // ItemChroma
+// ItemChroma
 
   /**
    * return: Promise<boolean>
    *
+   * Determines whether any type of chroma keying is enabled.
    */
   isChromaEnabled: () => Promise<boolean>;
+
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
+   *
+   * Enables or disables chroma keying. Use together with `getKeyingType()`.
    */
   setChromaEnabled: (value: boolean) => Promise<GameItem>;
+
   /**
    * return: Promise<KeyingType>
+   *
+   * Determines the chroma keying type being used.
    */
   getKeyingType: () => Promise<KeyingType>;
+
   /**
-   * param: value<KeyingType>
+   * param: (value: KeyingType)
+   *
+   * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
+   *
+   * After setting the keying type, you may tweak settings specific to that type.
+   * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
+   * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
+   * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
    */
   setKeyingType: (value: KeyingType) => Promise<GameItem>;
 
-  // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
    * return: Promise<ChromaAntiAliasLevel>
+   *
+   * Gets the antialiasing level for chroma keying.
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
+
   /**
-   * param: value<ChromaAntiAliasLevel>
+   * param: (value: ChromaAntiAliasLevel)
+   *
+   * Sets the antialiasing level for chroma keying.
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameItem>;
 
   // CHROMA LEGACY MODE
+
   /**
    * return: Promise<number>
+   *
+   * Gets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyBrightness: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   setChromaLegacyBrightness: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacySaturation: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
   setChromaLegacySaturation: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyHue: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
    */
   setChromaLegacyHue: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyThreshold: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   setChromaLegacyThreshold: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameItem>;
 
   // CHROMA KEY RGB MODE
+
   /**
    * return: Promise<ChromaPrimaryColors>
+   *
+   * Gets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
+
   /**
-   * param: value<ChromaPrimaryColors>
+   * param: (value: ChromaPrimaryColors)
+   *
+   * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyExposure: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   setChromaRGBKeyExposure: (value: number) => Promise<GameItem>;
 
   // COLOR KEY MODE
+
   /**
    * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyThreshold: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   setChromaColorKeyThreshold: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<number>
+   *
+   * Gets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyExposure: () => Promise<number>;
+
   /**
-   * param: value<number>
+   * param: (value: number)
+   *
+   * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   setChromaColorKeyExposure: (value: number) => Promise<GameItem>;
+
   /**
    * return: Promise<Color>
+   *
+   * Gets the color setting for keying in color key mode.
    */
   getChromaColorKeyColor: () => Promise<Color>;
+
   /**
-   * param: value<Color>
+   * param: (value: Color)
+   *
+   * Sets the color setting for keying in color key mode.
    */
   setChromaColorKeyColor: (value: Color) => Promise<GameItem>;
 

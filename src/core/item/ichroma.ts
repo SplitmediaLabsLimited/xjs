@@ -110,8 +110,6 @@ export class ItemChroma implements IItemChroma {
 
   }
 
-  // COMMON TO CHROMA LEGACY AND CHROMA RGB KEY
-
   getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
