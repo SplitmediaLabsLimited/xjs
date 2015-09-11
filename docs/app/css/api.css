@@ -150,6 +150,7 @@ body {
 }
 
 .member {
+  word-wrap: break-word;
   box-shadow: 0 0 5px 0 #cdcdcd;
   border-left: 5px solid #0095de;
   padding: 15px 38px;
