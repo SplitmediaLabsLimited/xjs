@@ -887,7 +887,7 @@ var CameraItem = (function (_super) {
     };
     // special chroma options pinning
     /**
-     * param: value<boolean>
+     * param: (value: boolean)
      *
      * Set this to true to share chroma keying settings across all instances of
      * this camera device on the stage.
@@ -902,7 +902,7 @@ var CameraItem = (function (_super) {
         });
     };
     /**
-     * return: value<boolean>
+     * return: Promise<boolean>
      *
      * Checks whether chroma keying settings are shared across all instances of
      * this camera device on the stage.
@@ -1335,7 +1335,6 @@ var ItemChroma = (function () {
             }
         });
     };
-    // COMMON TO CHROMA LEGACY AND CHROMA RGB KEY
     ItemChroma.prototype.getChromaAntiAliasLevel = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -5029,6 +5028,10 @@ __export(require('./core/item/camera'));
 __export(require('./core/item/game'));
 __export(require('./core/item/audio'));
 __export(require('./core/item/html'));
+var ichroma_1 = require('./core/item/ichroma');
+exports.KeyingType = ichroma_1.KeyingType;
+exports.ChromaPrimaryColors = ichroma_1.ChromaPrimaryColors;
+exports.ChromaAntiAliasLevel = ichroma_1.ChromaAntiAliasLevel;
 __export(require('./system/system'));
 __export(require('./system/audio'));
 __export(require('./system/game'));
@@ -5038,4 +5041,4 @@ __export(require('./window/config'));
 __export(require('./window/source'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/source":35}]},{},["xjs"]);
+},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/ichroma":8,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/source":35}]},{},["xjs"]);
