@@ -1,7 +1,7 @@
 {
   "name": "xjs",
   "main": "index.js",
-  "version": "0.0.0",
+  "version": "0.6.1",
   "homepage": "https://github.com/xjsframework/xjs",
   "authors": [],
   "ignore": [

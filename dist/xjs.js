@@ -17,8 +17,8 @@ var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
- * var App = new XJS.App();
+ * var xjs = require('xjs');
+ * var App = new xjs.App();
  *
  * App.getFrameTime().then(function(frametime) {
  *   window.frametime = frametime;
@@ -36,8 +36,7 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * var frameTimeP = App.getFrameTime();
-     * frameTimeP.then(function(res) {
+     * App.getFrameTime().then(function(res) {
      *   var frameTime = res;
      * });
      * ```
@@ -53,13 +52,13 @@ var App = (function () {
      * return: Promise<Rectangle>
      *
      * Gets application default output resolution.
-     * See also: Util/Rectangle
+     *
+     * See also: {@link #util/Rectangle Util/Rectangle}
      *
      * #### Usage
      *
      * ```javascript
-     * var resolutionP = App.getResolution();
-     * resolutionP.then(function(res) {
+     * App.getResolution().then(function(res) {
      *   var height = res.getHeight();
      *   var width = res.getWidth();
      * });
@@ -77,13 +76,13 @@ var App = (function () {
      * return: Promise<Rectangle>
      *
      * Gets application viewport display resolution
-     * See also: Util/Rectangle
+     *
+     * See also: {@link #util/Rectangle Util/Rectangle}
      *
      * #### Usage
      *
      * ```javascript
-     * var viewPortP = App.getViewport();
-     * viewPortP.then(function(res) {
+     * App.getViewport().then(function(res) {
      *   var height = res.getHeight();
      *   var width = res.getWidth();
      * });
@@ -105,8 +104,7 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * var versionP = App.getVersion();
-     * versionP.then(function(res) {
+     * App.getVersion().then(function(res) {
      *   var version = res;
      * });
      * ```
@@ -124,8 +122,7 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * var framesrenderedP = App.getFramesRendered();
-     * framesrenderedP.then(function(res) {
+     * App.getFramesRendered().then(function(res) {
      *   var framesrendered = res;
      * });
      * ```
@@ -139,10 +136,11 @@ var App = (function () {
     };
     // Audio Services
     /**
-     * return: Promise<AudioDevice>
+     * return: Promise<AudioDevice[]>
      *
      * Gets the primary microphone device used in the application
-     * See also: System/AudioDevice
+     *
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * ### Usage
      *
@@ -168,10 +166,11 @@ var App = (function () {
         });
     };
     /**
-     * return: Promise<AudioDevice>
+     * return: Promise<AudioDevice[]>
      *
      * Gets the primary speaker/audio render device used in the application
-     * See also: System/AudioDevice
+     *
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * ### Usage
      *
@@ -197,13 +196,14 @@ var App = (function () {
         });
     };
     /**
-     * param: device<AudioDevice>
+     * param: (device: AudioDevice)
      * ```
      * return: Promise<boolean>
      * ```
      *
      * Sets the primary microphone device to be used in the application
-     * See also: System/AudioDevice
+     *
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * ### Usage
      *
@@ -234,13 +234,14 @@ var App = (function () {
         });
     };
     /**
-     * param: device<AudioDevice>
+     * param: (device: AudioDevice)
      * ```
      * return: Promise<boolean>
      * ```
      *
      * Sets the primary speaker/audio render device to be used in the application
-     * See also: System/AudioDevice
+     *
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * ### Usage
      *
@@ -292,7 +293,7 @@ var App = (function () {
         });
     };
     /**
-     * param: enabled<boolean>
+     * param: (enabled: boolean)
      * ```
      * return: Promise<boolean>
      * ```
@@ -343,7 +344,7 @@ var App = (function () {
         });
     };
     /**
-     * param: sdPeriod<number>
+     * param: (sdPeriod: number)
      * ```
      * return: Promise<boolean>
      * ```
@@ -403,7 +404,7 @@ var App = (function () {
         });
     };
     /**
-     * param: sdThreshold<number>
+     * param: (sdThreshold: number)
      * ```
      * return: Promise<boolean>
      * ```
@@ -440,9 +441,9 @@ var App = (function () {
         });
     };
     /**
-     * param: url<string>[, width<number>[, height<number>[, flags<number>[, title<string>]]]]
+     * param: (url: string [, width: number = 300 [, height: number = 300 [, flags: number [, title: string ]]]])
      *
-     * Creates a persistent modal dialog.<br/>
+     * Creates a persistent modal dialog.
      * This method is not available for source
      *
      * #### Usage
@@ -476,7 +477,7 @@ var App = (function () {
         }
     };
     /**
-     * param: url<string>[, width<number>[, height<number>]]
+     * param: (url: string [, width: number = 300 [, height: number = 300]])
      *
      * Creates a dialog that automatically closes on outside click
      *
@@ -515,13 +516,13 @@ var App = (function () {
      * return: Promise<Transition>
      *
      * Gets the transition for scene changes
-     * See also: Core/Transition
+     *
+     * See also: {@link #core/Transition Core/Transition}
      *
      * #### Usage
      *
      * ```javascript
-     * var transitionP = App.getTransition();
-     * transitionP.then(function(res) {
+     * App.getTransition().then(function(res) {
      *   var transitionid = res;
      * });
      * ```
@@ -539,13 +540,14 @@ var App = (function () {
         });
     };
     /**
-     * param: transition<Transition>
+     * param: (transition: Transition)
      * ```
-     * return: Promise<Transition>
+     * return: Promise<boolean>
      * ```
      *
      * Sets the transition for scene changes
-     * See also: Core/Transition
+     *
+     * See also: {@link #core/Transition Core/Transition}
      *
      * #### Usage
      *
@@ -574,8 +576,7 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * var transitionTimeP = App.getTransitionTime();
-     * transitionTimeP.then(function(res) {
+     * App.getTransitionTime().then(function(res) {
      *   var transitiontime = res;
      * });
      * ```
@@ -588,9 +589,9 @@ var App = (function () {
         });
     };
     /**
-     * param: transition<number>
+     * param: (time: number)
      * ```
-     * return: Promise<string>
+     * return: Promise<boolean>
      * ```
      *
      * Sets the scene transition duration in milliseconds
@@ -2057,6 +2058,23 @@ var ItemTypes = exports.ItemTypes;
 /**
  * An Item represents an object that is used as a source on the stage.
  * Some possible sources are games, microphones, or a webpage.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Scene = xjs.Scene.getById(0);
+ *
+ * Scene.getItems().then(function(items) {
+ *   if (items.length === 0) return;
+ *
+ *   // There's a valid item, let's use that
+ *   var item = items[items.length - 1];
+ *   return item.setCustomName('ItemTesting');
+ * }).then(function(item) {
+ *   // Do something else here
+ * });
+ * ```
  */
 var Item = (function () {
     function Item(props) {
@@ -2070,7 +2088,29 @@ var Item = (function () {
         this._type = Number(props['type']);
         this._xmlparams = props;
     }
-    /** Sets the name of the item */
+    /**
+     * param: (value: string)
+     * ```
+     * return: Promise<Item>
+     * ```
+     *
+     * Sets the name of the item. This method also returns the current item instance,
+     * which could be used to execute functionality that requires setName to resolve
+     * first.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.setName('newNameHere').then(function(item) {
+     *   // Promise would resolve current item instance, which would allow us
+     *   // to execute other methods only after we're sure that setName is
+     *   // done with setting the prop:name to XSplit
+     *   return item.getName();
+     * }).then(function(name) {
+     *   // 'name' should be the updated value by now.
+     * });
+     * ```
+     */
     Item.prototype.setName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2081,7 +2121,19 @@ var Item = (function () {
             });
         });
     };
-    /** Gets the current name of the item */
+    /**
+     * return: Promise<string>
+     *
+     * Gets the current name of the item.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getName().then(function(name) {
+     *   // Do something with the name
+     * });
+     * ```
+     */
     Item.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2092,7 +2144,34 @@ var Item = (function () {
             });
         });
     };
-    /** Sets the custom name of the item */
+    /**
+     * param: (value: string)
+     * ```
+     * return: Promise<Item>
+     * ```
+     *
+     * Sets the custom name of the item. This method also returns the current item
+     * instance, which could be used to execute functionality that requires setName
+     * to resolve first.
+     *
+     * The main difference between `setName` and `setCustomName` is that the CustomName
+     * can be edited by the end users using XBC through the bottom panel. `setName` on
+     * the other hand would update the item's `prop:name`, which cannot be edited by the
+     * end users using XBC through the bottom panel.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.setCustomName('newNameHere').then(function(item) {
+     *   // Promise would resolve current item instance, which would allow us
+     *   // to execute other methods only after we're sure that setCustomName is
+     *   // done with setting the prop:cname to XSplit
+     *   return item.getCustomName();
+     * }).then(function(name) {
+     *   // 'name' should be the updated value by now.
+     * });
+     * ```
+     */
     Item.prototype.setCustomName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2103,7 +2182,19 @@ var Item = (function () {
             });
         });
     };
-    /** Gets the custom name of the item */
+    /**
+     * return: Promise<string>
+     *
+     * Gets the current custom name of the item.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getCustomName().then(function(name) {
+     *   // Do something with the name
+     * });
+     * ```
+     */
     Item.prototype.getCustomName = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2114,7 +2205,22 @@ var Item = (function () {
             });
         });
     };
-    /** Get the video item's main definition */
+    /**
+     * return: Promise<string|XML>
+     *
+     * Gets the current custom name of the item.
+     *
+     * This method has the possibility to return an XML object, which is an object
+     * generated by the framework. Call `toString()` to transform into an XML String.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getCustomName().then(function(name) {
+     *   // Do something with the name
+     * });
+     * ```
+     */
     Item.prototype.getValue = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2139,7 +2245,40 @@ var Item = (function () {
             });
         });
     };
-    /** Set the video item's main definition */
+    /**
+     * param: (value: string)
+     * ```
+     * return: Promise<Item>
+     * ```
+     *
+     * Set the video item's main definition. This method also returns the current item
+     * instance, which could be used to execute functionality that requires setName
+     * to resolve first.
+     *
+     * **WARNING:**
+     * Please do note that using this method COULD break the current item, possibly modifying
+     * its type IF you set an invalid string for the current item.
+     *
+     * #### Possible values by item type
+     * - FILE - path/URL
+     * - LIVE - Device ID
+     * - BITMAP - path
+     * - SCREEN - XML string
+     * - FLASHFILE - path
+     * - GAMESOURCE - XML string
+     * - HTML - path/URL or html:<plugin>
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
+     *   .then(function(item) {
+     *   // Promise would resolve current item instance, which would allow us
+     *   // to execute other methods only after we're sure that setCustomName
+     *   // is done with setting the prop:item to XSplit
+     * });
+     * ```
+     */
     Item.prototype.setValue = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2157,7 +2296,19 @@ var Item = (function () {
             });
         });
     };
-    /** Check if item is kept loaded in memory */
+    /**
+     * return: Promise<boolean>
+     *
+     * Check if item is kept loaded in memory
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getKeepLoaded().then(function(isLoaded) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
     Item.prototype.getKeepLoaded = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2168,7 +2319,24 @@ var Item = (function () {
             });
         });
     };
-    /** Set Keep loaded option to ON or OFF */
+    /**
+     * param: (value: boolean)
+     * ```
+     * return: Promise<Item>
+     * ```
+     *
+     * Set Keep loaded option to ON or OFF
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.setKeepLoaded(true).then(function(item) {
+     *   // Promise would resolve current item instance, which would allow us
+     *   // to execute other methods only after we're sure that setKeepLoaded is
+     *   // done with setting the prop:keeploaded to XSplit
+     * });
+     * ```
+     */
     Item.prototype.setKeepLoaded = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2180,7 +2348,19 @@ var Item = (function () {
             });
         });
     };
-    /** Get the type of the item */
+    /**
+     * return: Promise<ItemTypes>
+     *
+     * Get the type of the item
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getType().then(function(type) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
     Item.prototype.getType = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2191,14 +2371,38 @@ var Item = (function () {
             });
         });
     };
-    /** Get the ID of the item */
+    /**
+     * return: Promise<string>
+     *
+     * Get the ID of the item
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getID().then(function(id) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
     Item.prototype.getID = function () {
         var _this = this;
         return new Promise(function (resolve) {
             resolve(_this._id);
         });
     };
-    /** Get (1-indexed) Scene ID where the item is loaded */
+    /**
+     * return: Promise<number>
+     *
+     * Get (1-indexed) Scene ID where the item is loaded
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * item.getSceneID().then(function(id) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
     Item.prototype.getSceneID = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -2206,6 +2410,18 @@ var Item = (function () {
         });
     };
     /** Convert the Item object to an XML string */
+    /**
+     * return: XML
+     *
+     * Convert the Item object to an XML object. Please use `toString()` method to get the
+     * XML String.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var xml = item.toXML();
+     * ```
+     */
     Item.prototype.toXML = function () {
         var item = new json_1.JSON();
         item['tag'] = 'item';
@@ -2218,9 +2434,24 @@ var Item = (function () {
         }
         return xml_1.XML.parseJSON(item);
     };
-    /** Get the current source (when function is called by sources), or the source
+    /**
+     * return: Promise<Item>
+     *
+     * Get the current source (when function is called by sources), or the source
      * that was right-clicked to open the config window (when function is called
-     * from the config window) */
+     * from the config window)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * xjs.Item.getCurrentSource().then(function(item) {
+     *   // This will fetch the current item (the plugin)
+     * }).catch(function(err) {
+     *   // Handle the error here. Errors would only occur
+     *   // if we try to execute this method on Extension plugins
+     * });
+     * ```
+     */
     Item.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isExtension()) {
