@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 
@@ -44,19 +45,25 @@ export class SourcePluginWindow extends EventEmitter {
   }
 }
 
-window['MessageSource'] = function(message: string) {
-    SourcePluginWindow.getInstance().emit("message-source",
+if (Environment.isSourcePlugin()) {
+  window['MessageSource'] = function(message: string) {
+    SourcePluginWindow.getInstance().emit('message-source',
       JSON.parse(message));
-}
+  }
 
-window['SetConfiguration'] = function(configObj: string) {
+  window['SetConfiguration'] = function(configObj: string) {
     try {
-        var data = JSON.parse(configObj);
-        var source = SourcePluginWindow.getInstance();
-        source.emit("apply-config", data);
-        source.emit("save-config", data);
+      var data = JSON.parse(configObj);
+      var source = SourcePluginWindow.getInstance();
+      source.emit('apply-config', data);
+      source.emit('save-config', data);
     } catch (e) {
-        // syntax error probably happened, exit gracefully
-        return;
+      // syntax error probably happened, exit gracefully
+      return;
     }
+  }
+
+  window.SetBackGroundColor = function(color: string) {
+    SourcePluginWindow.getInstance().emit('set-background-color', color);
+  };
 }

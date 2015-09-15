@@ -5,4 +5,5 @@ interface Window {
   SetBackGroundColor: Function;
   SetVolume: Function;
   OnDialogResult: Function;
+  MessageSource: Function;
 }
