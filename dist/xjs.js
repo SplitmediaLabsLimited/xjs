@@ -67,7 +67,7 @@ var App = (function () {
     App.prototype.getResolution = function () {
         return new Promise(function (resolve) {
             app_1.App.get('resolution').then(function (val) {
-                var dimensions = val.split(",");
+                var dimensions = val.split(',');
                 resolve(rectangle_1.Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
             });
         });
@@ -91,7 +91,7 @@ var App = (function () {
     App.prototype.getViewport = function () {
         return new Promise(function (resolve) {
             app_1.App.get('viewport').then(function (val) {
-                var dimensions = val.split(",");
+                var dimensions = val.split(',');
                 resolve(rectangle_1.Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
             });
         });
@@ -160,7 +160,7 @@ var App = (function () {
                     resolve(audioDevices[0]);
                 }
                 else {
-                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                    resolve(new audio_1.AudioDevice({ id: 'empty' }));
                 }
             });
         });
@@ -190,7 +190,7 @@ var App = (function () {
                     resolve(audioDevices[1]);
                 }
                 else {
-                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                    resolve(new audio_1.AudioDevice({ id: 'empty' }));
                 }
             });
         });
@@ -3012,7 +3012,7 @@ var Scene = (function () {
      * ```javascript
      * myScene.isEmpty().then(function(empty) {
      *   if (empty === true) {
-     *     console.log("My scene is empty.");
+     *     console.log('My scene is empty.');
      *   }
      * });
      * ```
@@ -3316,7 +3316,7 @@ function readMetaConfigUrl() {
             catch (e) {
             }
             finally {
-                var metas = document.getElementsByTagName("meta");
+                var metas = document.getElementsByTagName('meta');
                 for (var i = metas.length - 1; i >= 0; i--) {
                     if (metas[i].name === 'xsplit:config-url') {
                         var url = resolveRelativePath(metas[i].content, window.location.href);
@@ -3423,21 +3423,6 @@ window.OnAsyncCallback = function (asyncID, result) {
     if (callback instanceof Function) {
         callback.call(this, decodeURIComponent(result));
     }
-};
-window.OnSceneLoad = function (view, scene) {
-    document.dispatchEvent(new CustomEvent('scene-load', { detail: { view: view, scene: scene } }));
-};
-window.SetConfiguration = function (config) {
-    document.dispatchEvent(new CustomEvent('set-configuration', { config: config }));
-};
-window.SetBackGroundColor = function (color) {
-    document.dispatchEvent(new CustomEvent('set-background-color', { color: color }));
-};
-window.SetVolume = function (volume) {
-    document.dispatchEvent(new CustomEvent('set-volume', { volume: volume }));
-};
-window.OnDialogResult = function (result) {
-    document.dispatchEvent(new CustomEvent('dialog-result', { detail: { result: result } }));
 };
 },{}],20:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -4545,8 +4530,8 @@ var System = (function () {
                         var device = devicesJSON[_i];
                         if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
                             String(device['disp']).toLowerCase() !==
-                                ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
-                                    "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+                                ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
+                                    '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase()) {
                             devices.push(camera_1.CameraDevice.parse(device));
                         }
                     }
@@ -4861,7 +4846,7 @@ var IO = (function () {
                 filterString += '||';
             }
             internal_1.exec('OpenFileDialogAsync', null, null, String(flags), filterString, function (path) {
-                if (path !== "null") {
+                if (path !== 'null') {
                     resolve(path.split('|'));
                 }
                 else {
@@ -5188,6 +5173,54 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var environment_1 = require('../core/environment');
+var eventemitter_1 = require('../util/eventemitter');
+var app_1 = require('../internal/app');
+var _RESIZE = '2';
+/** This utility class represents the extension window. It should allow manipulation
+ *  of the window (e.g., resizing), and should also serve as an event emitter
+ *  for all events that the window should be able to handle.
+ *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ */
+var ExtensionWindow = (function (_super) {
+    __extends(ExtensionWindow, _super);
+    function ExtensionWindow() {
+        _super.call(this);
+        ExtensionWindow._instance = this;
+    }
+    ExtensionWindow.getInstance = function () {
+        if (ExtensionWindow._instance === undefined) {
+            ExtensionWindow._instance = new ExtensionWindow();
+        }
+        return ExtensionWindow._instance;
+    };
+    /** param: (width: number, height: number)
+     *
+     *  Resizes this extension's window.
+     */
+    ExtensionWindow.prototype.resize = function (width, height) {
+        app_1.App.postMessage(_RESIZE, String(width), String(height));
+    };
+    return ExtensionWindow;
+})(eventemitter_1.EventEmitter);
+exports.ExtensionWindow = ExtensionWindow;
+if (environment_1.Environment.isExtension()) {
+    window.OnSceneLoad = function (view, scene) {
+        if (Number(view) === 0) {
+            ExtensionWindow.getInstance().emit('scene-load', Number(scene));
+        }
+    };
+}
+},{"../core/environment":2,"../internal/app":16,"../util/eventemitter":30}],36:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
@@ -5227,22 +5260,27 @@ var SourcePluginWindow = (function (_super) {
     return SourcePluginWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePluginWindow = SourcePluginWindow;
-window['MessageSource'] = function (message) {
-    SourcePluginWindow.getInstance().emit("message-source", JSON.parse(message));
-};
-window['SetConfiguration'] = function (configObj) {
-    try {
-        var data = JSON.parse(configObj);
-        var source = SourcePluginWindow.getInstance();
-        source.emit("apply-config", data);
-        source.emit("save-config", data);
-    }
-    catch (e) {
-        // syntax error probably happened, exit gracefully
-        return;
-    }
-};
-},{"../util/eventemitter":30}],"xjs":[function(require,module,exports){
+if (environment_1.Environment.isSourcePlugin()) {
+    window.MessageSource = function (message) {
+        SourcePluginWindow.getInstance().emit('message-source', JSON.parse(message));
+    };
+    window.SetConfiguration = function (configObj) {
+        try {
+            var data = JSON.parse(configObj);
+            var source = SourcePluginWindow.getInstance();
+            source.emit('apply-config', data);
+            source.emit('save-config', data);
+        }
+        catch (e) {
+            // syntax error probably happened, exit gracefully
+            return;
+        }
+    };
+    window.SetBackGroundColor = function (color) {
+        SourcePluginWindow.getInstance().emit('set-background-color', color);
+    };
+}
+},{"../core/environment":2,"../util/eventemitter":30}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -5270,6 +5308,7 @@ __export(require('./system/camera'));
 __export(require('./system/microphone'));
 __export(require('./window/config'));
 __export(require('./window/source'));
+__export(require('./window/extension'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/ichroma":8,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/source":35}]},{},["xjs"]);
+},{"./core/app":1,"./core/environment":2,"./core/item/audio":3,"./core/item/camera":4,"./core/item/game":5,"./core/item/html":6,"./core/item/ichroma":8,"./core/item/item":12,"./core/scene":14,"./core/transition":15,"./internal/init":18,"./system/audio":24,"./system/camera":25,"./system/game":26,"./system/microphone":27,"./system/system":28,"./util/color":29,"./util/io":31,"./util/ready":32,"./util/rectangle":33,"./window/config":34,"./window/extension":35,"./window/source":36}]},{},["xjs"]);

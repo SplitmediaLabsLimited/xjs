@@ -96,7 +96,7 @@ export class IO {
 
       exec('OpenFileDialogAsync', null, null, String(flags), filterString,
           path => {
-            if (path !== "null") {
+            if (path !== 'null') {
               resolve(path.split('|'));
             } else {
               reject(Error('File selection cancelled.'));

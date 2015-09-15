@@ -475,7 +475,7 @@ export class Scene {
   * ```javascript
   * myScene.isEmpty().then(function(empty) {
   *   if (empty === true) {
-  *     console.log("My scene is empty.");
+  *     console.log('My scene is empty.');
   *   }
   * });
   * ```

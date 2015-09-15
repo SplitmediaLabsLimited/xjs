@@ -50,7 +50,7 @@ function readMetaConfigUrl(): Promise<any> {
 
       }
       finally {
-        var metas = document.getElementsByTagName("meta");
+        var metas = document.getElementsByTagName('meta');
         for (var i = metas.length - 1; i >= 0; i--) {
           if (metas[i].name === 'xsplit:config-url') {
             let url = resolveRelativePath(

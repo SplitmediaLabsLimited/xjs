@@ -54,7 +54,7 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application default output resolution.
-   * 
+   *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
@@ -69,7 +69,7 @@ export class App{
   getResolution() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('resolution').then(val => {
-        var dimensions = val.split(",");
+        var dimensions = val.split(',');
         resolve(Rectangle.fromDimensions(parseInt(dimensions[0]),
           parseInt(dimensions[1])));
       });
@@ -80,7 +80,7 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application viewport display resolution
-   * 
+   *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
@@ -95,7 +95,7 @@ export class App{
   getViewport() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('viewport').then(val => {
-        var dimensions = val.split(",");
+        var dimensions = val.split(',');
         resolve(Rectangle.fromDimensions(parseInt(dimensions[0]),
           parseInt(dimensions[1])))
       });
@@ -148,7 +148,7 @@ export class App{
    * return: Promise<AudioDevice[]>
    *
    * Gets the primary microphone device used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -172,7 +172,7 @@ export class App{
         }
         else
         {
-          resolve(new AudioDevice({ id: "empty" }));
+          resolve(new AudioDevice({ id: 'empty' }));
         }
       });
     });
@@ -182,7 +182,7 @@ export class App{
    * return: Promise<AudioDevice[]>
    *
    * Gets the primary speaker/audio render device used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -206,7 +206,7 @@ export class App{
         }
         else
         {
-          resolve(new AudioDevice({ id: "empty" }));
+          resolve(new AudioDevice({ id: 'empty' }));
         }
       });
     });
@@ -219,7 +219,7 @@ export class App{
    * ```
    *
    * Sets the primary microphone device to be used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -258,7 +258,7 @@ export class App{
    * ```
    *
    * Sets the primary speaker/audio render device to be used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -547,7 +547,7 @@ export class App{
    * return: Promise<Transition>
    *
    * Gets the transition for scene changes
-   * 
+   *
    * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage
@@ -577,7 +577,7 @@ export class App{
    * ```
    *
    * Sets the transition for scene changes
-   * 
+   *
    * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage

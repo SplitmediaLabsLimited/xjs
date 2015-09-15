@@ -46,12 +46,12 @@ export class SourcePluginWindow extends EventEmitter {
 }
 
 if (Environment.isSourcePlugin()) {
-  window['MessageSource'] = function(message: string) {
+  window.MessageSource = function(message: string) {
     SourcePluginWindow.getInstance().emit('message-source',
       JSON.parse(message));
   }
 
-  window['SetConfiguration'] = function(configObj: string) {
+  window.SetConfiguration = function(configObj: string) {
     try {
       var data = JSON.parse(configObj);
       var source = SourcePluginWindow.getInstance();
