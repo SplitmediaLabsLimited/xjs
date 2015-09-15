@@ -2,6 +2,9 @@
 
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
+import {App} from '../internal/app';
+
+const _RESIZE = '2';
 
 /** This utility class represents the extension window. It should allow manipulation
  *  of the window (e.g., resizing), and should also serve as an event emitter
@@ -23,5 +26,13 @@ export class ExtensionWindow extends EventEmitter {
     super();
 
     ExtensionWindow._instance = this;
+  }
+
+  /** param: (width: number, height: number)
+   *
+   *  Resizes this extension's window.
+   */
+  resize(width: number, height: number) {
+    App.postMessage(_RESIZE, String(width), String(height));
   }
 }
