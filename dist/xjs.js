@@ -5229,6 +5229,7 @@ var eventemitter_1 = require('../util/eventemitter');
  *  Currently there are only two events:
  *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
  *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
+ *  - ```set-background-color```: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHex)
  *
  *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
  */
