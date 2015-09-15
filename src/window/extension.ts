@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
@@ -35,4 +36,12 @@ export class ExtensionWindow extends EventEmitter {
   resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
+}
+
+if (Environment.isExtension()) {
+  window.OnSceneLoad = function(view: number, scene: number) {
+    if (Number(view) === 0) { // only emit events when main view is changing
+      ExtensionWindow.getInstance().emit('scene-load', Number(scene));
+    }
+  };
 }
