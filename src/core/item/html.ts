@@ -15,6 +15,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {Environment} from '../environment';
 
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
@@ -236,7 +237,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * return: Promise<string>
    *
-   * Gets the javascript commands to be executed on source upon load
+   * Gets the custom CSS applied to the document upon loading
    */
   getCustomCSS(): Promise<string> {
     return new Promise(resolve => {
@@ -261,10 +262,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<string>
    *
-   * Sets the javascript commands to be executed on source
-   * upon setting and on load
+   * Sets the custom CSS to be applied to the document upon loading
    */
-  setCustomCSS(value: string, refresh = false): Promise<HTMLItem> {
+  setCustomCSS(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
       let slot = iItem.attach(this._id);
       let customObject = {};
@@ -311,14 +311,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
       .then(function() {
-        if (refresh) {
-           iItem.set('refresh', '', slot).then(function() {
-             resolve(this);
-           });
-        }
-        else {
-          resolve(this);
-        }
+        resolve(this);
       });
     });
   }
@@ -326,7 +319,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * return: Promise<string>
    *
-   * Gets if custom CSS is enabled and executed on load
+   * Gets if custom CSS is enabled and applied to the document on load
    */
   isCustomCSSEnabled(): Promise<boolean> {
     return new Promise(resolve => {
@@ -351,9 +344,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<string>
    *
-   * Enables or disables execution of the set BrowserJs upon load,
-   * note that disabling prompts source to be refreshed
-   * in order to remove the earlier set BrowserJS
+   * Enables or disables application of custom CSS to the document
    */
   enableCustomCSS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -403,9 +394,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
       })
       .then(function() {
         if (!value) {
-           iItem.set('refresh', '', slot).then(function() {
-             resolve(this);
-           });
+          let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
+          if (Environment.isSourcePlugin()) {
+            eval(cssScript);
+          }
+          else {
+            exec('CallInner', 'eval', cssScript);
+          }
+          resolve(this);
         }
         else {
           resolve(this);
