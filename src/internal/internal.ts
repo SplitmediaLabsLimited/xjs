@@ -74,9 +74,3 @@ window.SetVolume = function(volume: string) {
     'set-volume', { volume: volume }
   ));
 };
-
-window.OnDialogResult = function(result: string) {
-  document.dispatchEvent(new CustomEvent(
-    'dialog-result', { detail: { result: result } }
-  ));
-};
