@@ -93,6 +93,10 @@ export class Dialog{
    *  Sets the title of the dialog to be displayed.
    */
   setTitle(title: string): Dialog {
+    if (this._autoclose) {
+      throw new Error('Autoclosing dialogs cannot use this method.');
+    }
+
     this._title = title;
     return this;
   }
@@ -106,6 +110,10 @@ export class Dialog{
    */
   setBorderOptions(showBorder: boolean = false,
       resizable: boolean = false): Dialog {
+    if (this._autoclose) {
+      throw new Error('Autoclosing dialogs cannot use this method.');
+    }
+
     this._showBorder = showBorder;
     this._resizable = resizable;
     return this;
@@ -120,6 +128,10 @@ export class Dialog{
    */
   setButtons(isMinimizeActive: boolean = false,
       isMaximizeActive: boolean = false): Dialog {
+    if (this._autoclose) {
+      throw new Error('Autoclosing dialogs cannot use this method.');
+    }
+
     this._minimize = isMinimizeActive;
     this._maximize = isMaximizeActive;
     return this;
