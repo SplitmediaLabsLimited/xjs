@@ -104,21 +104,17 @@ export class SourceConfigWindow extends EventEmitter {
   /**
    *  param: width<number>, height<number>
    *
-   *  Resizes the configuration window.
+   *  Resizes the configuration window. Currently only works when using full
+   *  window mode.
    */
   resizeConfig(width: number, height: number) {
-    if (this._mode === 'full') {
-      this._notify({
-        event: 'resize',
-        value: JSON.stringify({
-          width: width,
-          height: height
-        })
-      });
-    }
-    else if (this._mode !== 'embedded'){
-      exec('SetDialogSize', String(width), String(height));
-    }
+    this._notify({
+      event: 'resize',
+      value: JSON.stringify({
+        width: width,
+        height: height
+      })
+    });
   };
 
   /** Closes the configuration window. */
