@@ -62,7 +62,8 @@ export class Dialog{
   /**
    *  param: (result: string)
    *
-   *  Closes this dialog with an optional string result.
+   *  Closes this dialog with an optional string result. (Call this from the
+   *  dialog.)
    */
   static return(result ?: string) {
     if (result !== undefined) {
@@ -70,6 +71,58 @@ export class Dialog{
     }
 
     exec('Close');
+  }
+
+  /**
+   *  param: (width: number, height: number)
+   *
+   *  return: Dialog
+   *
+   *  Sets the size of the dialog to be displayed.
+   */
+  setSize(width: number = 300, height: number = 300): Dialog {
+    this._size = Rectangle.fromDimensions(width, height);
+    return this;
+  }
+
+  /**
+   *  param: (title: string)
+   *
+   *  return: Dialog
+   *
+   *  Sets the title of the dialog to be displayed.
+   */
+  setTitle(title: string): Dialog {
+    this._title = title;
+    return this;
+  }
+
+  /**
+   *  param: (showBorder: boolean, resizable: boolean)
+   *
+   *  return: Dialog
+   *
+   *  Specifies the border and resizable flags for the dialog to be displayed.
+   */
+  setBorderOptions(showBorder: boolean = false,
+      resizable: boolean = false): Dialog {
+    this._showBorder = showBorder;
+    this._resizable = resizable;
+    return this;
+  }
+
+  /**
+   *  param: (isMinimizeActive: boolean, isMaximizeActive: boolean)
+   *
+   *  return: Dialog
+   *
+   *  Specifies if the window buttons (minimize and maximize) should be active.
+   */
+  setButtons(isMinimizeActive: boolean = false,
+      isMaximizeActive: boolean = false): Dialog {
+    this._minimize = isMinimizeActive;
+    this._maximize = isMaximizeActive;
+    return this;
   }
 
   /**
@@ -109,7 +162,7 @@ export class Dialog{
   }
 
   /**
-   *  Closes the created dialog.
+   *  Closes the dialog that this window spawned.
    */
   close(): void {
     exec('CloseDialog');
