@@ -1,5 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {App as iApp} from '../../internal/app';
@@ -14,6 +15,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {Environment} from '../environment';
 
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
@@ -27,6 +29,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:item', slot).then(url => {
+        let _url = String(url).split('*');
+        url = _url[0];
         resolve(url);
       });
     });
@@ -47,6 +51,462 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         } else {
           reject('Invalid value');
         }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the javascript commands to be executed on source upon load
+   */
+  getBrowserJS(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let customJS = '';
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(customJS);
+      });
+    });
+  }
+
+  /**
+   * param: value<string>
+   *
+   * Sets the javascript commands to be executed on source
+   * right upon setting and on load
+   */
+  setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch (e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['customCSS'] = customCSS;
+        customObject['customJS'] = value;
+
+        if (cssEnabled === true) {
+          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "';h.appendChild(xjsCSSOverwrite);";
+          scriptString = scriptString + cssScript;
+        }
+        if (value !== '' && scriptEnabled === true) {
+          scriptString = scriptString + value;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(function() {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(function() {
+        if (refresh) {
+          iItem.set('refresh', '', slot).then(function() {
+            resolve(this);
+          });
+        }
+        else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets if BrowserJS is enabled and executed on load
+   */
+  isBrowserJSEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let enabled = true;
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            enabled = (customObject['scriptEnabled'] == 'true');
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(enabled);
+      });
+    });
+  }
+
+  /**
+   * param: value<string>
+   *
+   * Enables or disables execution of the set BrowserJs upon load,
+   * note that disabling prompts source to be refreshed
+   * in order to remove the earlier set BrowserJS
+   */
+  enableBrowserJS(value: boolean): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = value.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = customCSS;
+
+        if (cssEnabled === true) {
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' + 
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') + '";"' +
+          'h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && value === true) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(function() {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(function() {
+        if (!value) {
+           iItem.set('refresh', '', slot).then(function() {
+             resolve(this);
+           });
+        }
+        else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the custom CSS applied to the document upon loading
+   */
+  getCustomCSS(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let customCSS = '';
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(customCSS);
+      });
+    });
+  }
+
+  /**
+   * param: value<string>
+   *
+   * Sets the custom CSS to be applied to the document upon loading
+   */
+  setCustomCSS(value: string): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = value;
+
+        if (cssEnabled === true) {
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          value.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+
+          '";h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && scriptEnabled === true) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(function() {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(function() {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets if custom CSS is enabled and applied to the document on load
+   */
+  isCustomCSSEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let enabled = true;
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            enabled = (customObject['cssEnabled'] == 'true');
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(enabled);
+      });
+    });
+  }
+
+  /**
+   * param: value<string>
+   *
+   * Enables or disables application of custom CSS to the document
+   */
+  enableCustomCSS(value: boolean): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['cssEnabled'] = value.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = customCSS;
+
+        if (value === true) {
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') +
+          '";h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && value === scriptEnabled) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(function() {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(function() {
+        if (!value) {
+          let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
+          if (Environment.isSourcePlugin()) {
+            eval(cssScript);
+          }
+          else {
+            exec('CallInner', 'eval', cssScript);
+          }
+          resolve(this);
+        }
+        else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if browser is rendered transparent
+   */
+  isBrowserTransparent(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:BrowserTransparent').then(isTransparent => {
+        resolve(isTransparent === '1');
+      });
+    });
+  }
+
+  /**
+   * param: Promise<boolean>
+   *
+   * Enable transparency of CEF browser
+   */
+  enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the custom browser window size for the source, if set,
+   * regardless of its layout on the mixer
+   */
+  getBrowserCustomSize():Promise<Rectangle> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      let customSize;
+      iItem.get('prop:BrowserSize', slot).then(val => {
+        if (val !== '') {
+          var [width, height] = decodeURIComponent(val).split(',');
+          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+        }
+        else {
+          customSize = Rectangle.fromDimensions(0, 0);
+        }
+        resolve(customSize);
+      });
+    });
+  }
+
+  /**
+   * param: Promise<Rectangle>
+   *
+   * Sets the custom browser window size for the source
+   * regardless of its layout on the mixer
+   */
+  setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
+        resolve(this);
       });
     });
   }
@@ -237,212 +697,125 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setBorderColor:  (value: Color) => Promise<HTMLItem>;
 
-// ItemChroma
-
+  // ItemChroma
   /**
    * return: Promise<boolean>
-   *
-   * Determines whether any type of chroma keying is enabled.
    */
   isChromaEnabled: () => Promise<boolean>;
-
   /**
-   * param: (value: boolean)
-   *
-   * Enables or disables chroma keying. Use together with `getKeyingType()`.
+   * param: value<boolean>
    */
   setChromaEnabled: (value: boolean) => Promise<HTMLItem>;
-
   /**
    * return: Promise<KeyingType>
-   *
-   * Determines the chroma keying type being used.
    */
   getKeyingType: () => Promise<KeyingType>;
-
   /**
-   * param: (value: KeyingType)
-   *
-   * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
-   *
-   * After setting the keying type, you may tweak settings specific to that type.
-   * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
-   * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
-   * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
+   * param: value<KeyingType>
    */
   setKeyingType: (value: KeyingType) => Promise<HTMLItem>;
 
+  // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
    * return: Promise<ChromaAntiAliasLevel>
-   *
-   * Gets the antialiasing level for chroma keying.
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-
   /**
-   * param: (value: ChromaAntiAliasLevel)
-   *
-   * Sets the antialiasing level for chroma keying.
+   * param: value<ChromaAntiAliasLevel>
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HTMLItem>;
 
   // CHROMA LEGACY MODE
-
   /**
    * return: Promise<number>
-   *
-   * Gets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyBrightness: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * param: value<number>
    */
   setChromaLegacyBrightness: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacySaturation: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   * param: value<number>
    */
   setChromaLegacySaturation: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyHue: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   * param: value<number>
    */
   setChromaLegacyHue: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * param: value<number>
    */
   setChromaLegacyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * param: value<number>
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<HTMLItem>;
 
   // CHROMA KEY RGB MODE
-
   /**
    * return: Promise<ChromaPrimaryColors>
-   *
-   * Gets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-
   /**
-   * param: (value: ChromaPrimaryColors)
-   *
-   * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   * param: value<ChromaPrimaryColors>
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * param: value<number>
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * param: value<number>
    */
   setChromaRGBKeyExposure: (value: number) => Promise<HTMLItem>;
 
   // COLOR KEY MODE
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   * param: value<number>
    */
   setChromaColorKeyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyExposure: () => Promise<number>;
-
   /**
-   * param: (value: number)
-   *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   * param: value<number>
    */
   setChromaColorKeyExposure: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<Color>
-   *
-   * Gets the color setting for keying in color key mode.
    */
   getChromaColorKeyColor: () => Promise<Color>;
-
   /**
-   * param: (value: Color)
-   *
-   * Sets the color setting for keying in color key mode.
+   * param: value<Color>
    */
   setChromaColorKeyColor: (value: Color) => Promise<HTMLItem>;
 
