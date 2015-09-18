@@ -210,7 +210,18 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = customCSS;
 
         if (cssEnabled === true) {
-          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '"+customCSS.replace(/(\r\n|\n|\r)/gm,'').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+"';h.appendChild(xjsCSSOverwrite);";
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' + 
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') + '";"' +
+          'h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === true) {
@@ -299,7 +310,18 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = value;
 
         if (cssEnabled === true) {
-          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '"+value.replace(/(\r\n|\n|\r)/gm,'').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+"';h.appendChild(xjsCSSOverwrite);";
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          value.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+
+          '";h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && scriptEnabled === true) {
@@ -381,7 +403,18 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = customCSS;
 
         if (value === true) {
-          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '"+customCSS.replace(/(\r\n|\n|\r)/gm,'').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+"';h.appendChild(xjsCSSOverwrite);";
+          let cssScript = 
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') +
+          '";h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === scriptEnabled) {
