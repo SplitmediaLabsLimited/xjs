@@ -816,7 +816,7 @@ describe('App ===', function() {
     });
   });
 
-  describe ('should be able to open a new modal dialog', function() {
+  xdescribe ('should be able to open a new modal dialog', function() {
     var newDialogOpen;
     beforeEach(function() {
       newDialogOpen = false;
@@ -833,7 +833,7 @@ describe('App ===', function() {
     });
   });
 
-  describe ('should be able to open a new dialog ' +
+  xdescribe ('should be able to open a new dialog ' +
     'that automatically closes on mouse leave', function() {
     var newAutoDialogOpen;
     beforeEach(function() {
@@ -851,7 +851,7 @@ describe('App ===', function() {
     });
   });
 
-  describe ('should be able to close the dialog', function() {
+  xdescribe ('should be able to close the dialog', function() {
     var dialogClose;
     beforeEach(function() {
       dialogClose = false;
