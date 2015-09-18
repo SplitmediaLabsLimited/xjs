@@ -11,6 +11,34 @@ import {exec} from '../internal/internal';
  *  configuration windows may use this.)
  *
  *  Note that opening a new dialog replaces the old one.
+ *
+ *  Most of the methods are chainable.
+ *
+ *  Sample usage:
+ *
+ *  ```javascript
+ *  var xjs = require('xjs');
+ *  var Dialog = xjs.Dialog;
+ *
+ *  xjs.ready().then(function() {
+ *    var button = document.getElementById('openDialogButton');
+ *    button.addEventListener('click', function() {
+ *      xjs.Dialog.createDialog('your.url/here.html')
+ *      .setSize(500, 800)
+ *      .setTitle('ThisDialogReturnsAString')
+ *      .setBorderOptions(true, false)
+ *      .setButtons(true, true)
+ *      .show()
+ *      .getResult().then(function(result) {
+ *        document.getElementById('input').value = result;
+ *      });
+ *    });
+ *  });
+ *
+ *  // in the opened dialog, simply call
+ *  // Dialog.return('returnedStringValue');
+ *  // to return a value
+ *  ```
  */
 export class Dialog{
   private _size: Rectangle;
@@ -37,6 +65,8 @@ export class Dialog{
    *
    *  Creates a Dialog object pointing to a URL. Call the other methods to
    *  modify the dialog's properties, and `show()` to spawn the dialog.
+   *
+   * *Chainable.*
    */
   static createDialog(url: string): Dialog {
     let dialog = new Dialog();
@@ -51,6 +81,8 @@ export class Dialog{
    *
    *  Creates a Dialog object pointing to a URL, that autocloses on an outside
    *  click. AutoDialogs only have access to the `setSize` and `show` methods.
+   *
+   * *Chainable.*
    */
   static createAutoDialog(url: string): Dialog {
     let dialog = new Dialog();
@@ -79,6 +111,8 @@ export class Dialog{
    *  return: Dialog
    *
    *  Sets the size of the dialog to be displayed.
+   *
+   * *Chainable.*
    */
   setSize(width: number = 300, height: number = 300): Dialog {
     this._size = Rectangle.fromDimensions(width, height);
@@ -91,6 +125,8 @@ export class Dialog{
    *  return: Dialog
    *
    *  Sets the title of the dialog to be displayed.
+   *
+   * *Chainable.*
    */
   setTitle(title: string): Dialog {
     if (this._autoclose) {
@@ -107,6 +143,8 @@ export class Dialog{
    *  return: Dialog
    *
    *  Specifies the border and resizable flags for the dialog to be displayed.
+   *
+   * *Chainable.*
    */
   setBorderOptions(showBorder: boolean = false,
       resizable: boolean = false): Dialog {
@@ -125,6 +163,8 @@ export class Dialog{
    *  return: Dialog
    *
    *  Specifies if the window buttons (minimize and maximize) should be active.
+   *
+   * *Chainable.*
    */
   setButtons(isMinimizeActive: boolean = false,
       isMaximizeActive: boolean = false): Dialog {
@@ -141,6 +181,8 @@ export class Dialog{
    *  return: Dialog
    *
    *  After configuring the dialog, call this function to spawn it.
+   *
+   * *Chainable.*
    */
   show(): Dialog {
     if (this._autoclose) {
