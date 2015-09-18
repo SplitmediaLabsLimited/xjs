@@ -2,17 +2,22 @@ import {App as iApp} from '../internal/app';
 import {JSON as JXON} from '../internal/util/json';
 
 export class Channel {
-  name: string;
-  stat: JXON;
-  channel: JXON;
+  private _name: string;
+  private _stat: JXON;
+  private _channel: JXON;
 
   /** Channel constructor (only used internally) */
   constructor(props: {name: string, stat: JXON, channel: JXON}) {
-    this.name = props.name;
-    this.stat = props.stat;
-    this.channel = props.channel;
+    this._name = props.name;
+    this._stat = props.stat;
+    this._channel = props.channel;
   }
 
+  /**
+   *  return: Promise<Channel[]>
+   *
+   *  Gets the list of currently active channels.
+   */
   static getActiveStreamChannels(): Promise<Channel[]> {
     return new Promise(resolve => {
       iApp.getAsList('recstat').then(activeStreams => {
@@ -33,10 +38,16 @@ export class Channel {
     });
   }
 
-  /** return: Promise<Channel[]>
+  /**
+   *  return: Promise<string>
    *
-   *  Gets the list of active stream channels.
+   *  Gets the name of the channel.
    */
+  getName(): Promise<string> {
+    return new Promise(resolve => {
+      resolve(this._name);
+    });
+  }
 
   /**
    * return: Promise<number>
@@ -44,7 +55,7 @@ export class Channel {
    * Gets the number of frames dropped */
   getStreamDrops(): Promise<number> {
     return new Promise(resolve => {
-      iApp.get('streamdrops:' + this.name).then(val => {
+      iApp.get('streamdrops:' + this._name).then(val => {
         var drops: string[] = val.split(','),
         dropped: number = Number(drops[0]) || 0
 
@@ -59,7 +70,7 @@ export class Channel {
    * Gets the number of frames rendered  */
   getStreamRenderedFrames(): Promise<number> {
     return new Promise(resolve => {
-      iApp.get('streamdrops:' + this.name).then(val => {
+      iApp.get('streamdrops:' + this._name).then(val => {
         var drops: string[] = val.split(','),
         rendered: number = Number(drops[1]) || 0;
 
@@ -69,11 +80,12 @@ export class Channel {
   }
 
   /**
+   * return: Promise<number>
    *
    * Gets the current duration of the stream in microseconds  */
   getStreamTime(): Promise<number> {
     return new Promise(resolve => {
-      iApp.get('streamtime:' + this.name).then(val => {
+      iApp.get('streamtime:' + this._name).then(val => {
          var duration: number = Number(val) / 10;
 
          resolve(duration);
