@@ -18,6 +18,10 @@ import {exec} from '../internal/internal';
 export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
 
+  /**
+   *  Gets the instance of the window utility. Use this instead of
+   *  the constructor.
+   */
   static getInstance() {
     if (SourcePluginWindow._instance === undefined) {
       SourcePluginWindow._instance = new SourcePluginWindow();

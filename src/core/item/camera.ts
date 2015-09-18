@@ -45,7 +45,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<string>
    *
-   * Gets the device ID of the underlying camera deviec.
+   * Gets the device ID of the underlying camera device.
    */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {

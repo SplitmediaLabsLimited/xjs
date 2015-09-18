@@ -24,6 +24,10 @@ export class SourceConfigWindow extends EventEmitter {
   private static _MODE_FULL: string = 'full';
   private static _MODE_TABBED: string = 'embedded';
 
+  /**
+   *  Gets the instance of the window utility. Use this instead of
+   *  the constructor.
+   */
   static getInstance() {
     if (SourceConfigWindow._instance === undefined) {
       SourceConfigWindow._instance = new SourceConfigWindow();
@@ -31,6 +35,9 @@ export class SourceConfigWindow extends EventEmitter {
     return SourceConfigWindow._instance;
   }
 
+  /**
+   *  Use getInstance() instead.
+   */
   constructor() {
     super();
     window.addEventListener('message', function(event) {
@@ -67,10 +74,27 @@ export class SourceConfigWindow extends EventEmitter {
     window.parent.postMessage(JSON.stringify(obj), '*');
   }
 
+  /**
+   *  Informs the application that the plugin intends to use the entire
+   *  window for rendering its configuration.
+   */
   useFullWindow() {
     this._setRenderMode(SourceConfigWindow._MODE_FULL);
   }
 
+  /**
+   *  param: ({customTabs: string[], tabOrder: string[]})
+   *
+   *  Informs the application that the plugin intends to use the existing tab
+   *  system to render its configuration window.
+   *
+   *  The `customTabs` node should contain a list of tab titles that the plugin
+   *  will create for itself.
+   *
+   *  The `tabOrder` node contains the desired order of tabs. This list comes
+   *  from the specified custom tabs, and the set of reusable XSplit tabs:
+   *  'Color', 'Layout' and 'Transition'.
+   */
   useTabbedWindow(config: { customTabs: string[], tabOrder: string[] }) {
     this._setRenderMode(SourceConfigWindow._MODE_TABBED);
     this._declareCustomTabs(config.customTabs);

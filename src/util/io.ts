@@ -34,7 +34,7 @@ export class IO {
     });
   }
 
-  /** Opens a URL in the user's default browser. URLs need to
+  /** Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
    *
    */
   static openUrl(url: string) {
@@ -46,6 +46,8 @@ export class IO {
   private static _FORCE_SHOW_HIDDEN: number = 0x10000000;
 
   /**
+   * param: ([options] [, filter]) -- see below
+
    * Opens a file dialog for the user to select a file (or multiple files).
    * Returns an array of strings, each of which contains the full path
    * and filename of a selected file. Rejects when the dialog is canceled.
