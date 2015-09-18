@@ -245,6 +245,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Item position
    *
    * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<GameItem>;
 

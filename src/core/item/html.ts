@@ -46,7 +46,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: (url: string)
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Sets the URL of this webpage source.
    *
@@ -92,10 +95,16 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: (js: string, refresh: boolean = false)
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Sets the javascript commands to be executed on source
-   * right upon setting and on load
+   * right upon setting and on load. Optionally set second parameter
+   * to true to refresh source (needed to clean previously executed JS code.)
+   *
+   * *Chainable.*
    */
   setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -157,7 +166,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * return: Promise<string>
+   * return: Promise<boolean>
    *
    * Gets if BrowserJS is enabled and executed on load
    */
@@ -183,10 +192,15 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
 
   /**
    * param: value<string>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
-   * Enables or disables execution of the set BrowserJs upon load,
-   * note that disabling prompts source to be refreshed
-   * in order to remove the earlier set BrowserJS
+   * Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require source to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable.*
    */
   enableBrowserJS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -223,7 +237,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = customCSS;
 
         if (cssEnabled === true) {
-          let cssScript = 
+          let cssScript =
           'var xjsCSSOverwrite = document.createElement("style");' +
           'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
           'xjsCSSOverwrite.type = "text/css";' +
@@ -231,7 +245,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
           'var existing = document' +
             '.querySelector("head #splitmedialabsCSSOverwrite");' +
           'if (existing != null)h.removeChild(existing);' +
-          'xjsCSSOverwrite.innerHTML = "' + 
+          'xjsCSSOverwrite.innerHTML = "' +
           customCSS.replace(/(\r\n|\n|\r)/gm,'')
             .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') + '";"' +
           'h.appendChild(xjsCSSOverwrite);';
@@ -285,8 +299,13 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
 
   /**
    * param: value<string>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Sets the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable.*
    */
   setCustomCSS(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -323,7 +342,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = value;
 
         if (cssEnabled === true) {
-          let cssScript = 
+          let cssScript =
           'var xjsCSSOverwrite = document.createElement("style");' +
           'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
           'xjsCSSOverwrite.type = "text/css";' +
@@ -378,8 +397,13 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
 
   /**
    * param: value<string>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Enables or disables application of custom CSS to the document
+   *
+   * *Chainable.*
    */
   enableCustomCSS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -416,7 +440,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         customObject['customCSS'] = customCSS;
 
         if (value === true) {
-          let cssScript = 
+          let cssScript =
           'var xjsCSSOverwrite = document.createElement("style");' +
           'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
           'xjsCSSOverwrite.type = "text/css";' +
@@ -472,8 +496,13 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
 
   /**
    * param: Promise<boolean>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
-   * Enable transparency of CEF browser
+   * Enable or disabled transparency of CEF browser
+   *
+   * *Chainable.*
    */
   enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
     return new Promise(resolve => {
@@ -489,6 +518,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    *
    * Gets the custom browser window size for the source, if set,
    * regardless of its layout on the mixer
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getBrowserCustomSize():Promise<Rectangle> {
     return new Promise(resolve => {
@@ -509,9 +540,16 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
 
   /**
    * param: Promise<Rectangle>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Sets the custom browser window size for the source
    * regardless of its layout on the mixer
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
     return new Promise(resolve => {
@@ -608,6 +646,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * Set Item position
    *
    * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<HTMLItem>;
 
