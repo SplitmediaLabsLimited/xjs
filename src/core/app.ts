@@ -54,7 +54,7 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application default output resolution.
-   * 
+   *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
@@ -80,7 +80,7 @@ export class App{
    * return: Promise<Rectangle>
    *
    * Gets application viewport display resolution
-   * 
+   *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
@@ -148,7 +148,7 @@ export class App{
    * return: Promise<AudioDevice[]>
    *
    * Gets the primary microphone device used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -182,7 +182,7 @@ export class App{
    * return: Promise<AudioDevice[]>
    *
    * Gets the primary speaker/audio render device used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -219,7 +219,7 @@ export class App{
    * ```
    *
    * Sets the primary microphone device to be used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -258,7 +258,7 @@ export class App{
    * ```
    *
    * Sets the primary speaker/audio render device to be used in the application
-   * 
+   *
    * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
@@ -463,91 +463,13 @@ export class App{
     });
   }
 
-  // Dialog Services
-
-  static BORDER_ENABLE: number          = 1;
-  static BORDER_ENABLE_CAPTION: number  = 2;
-  static BORDER_ENABLE_SIZING: number   = 4;
-  static BORDER_ENABLE_MINIMIZE: number = 8;
-  static BORDER_ENABLE_MAXIMIZE: number = 16;
-
-  /**
-   * param: (url: string [, width: number = 300 [, height: number = 300 [, flags: number [, title: string ]]]])
-   *
-   * Creates a persistent modal dialog.
-   * This method is not available for source
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * // you may use the following:
-   * //     * App.BORDER_ENABLE (1)
-   * //     * App.BORDER_ENABLE_CAPTION (2)
-   * //     * App.BORDER_ENABLE_SIZING (4)
-   * //     * App.BORDER_ENABLE_MINIMIZE (8)
-   * //     * App.BORDER_ENABLE_MAXIMIZE (16)
-   * App.newDialog(url, width, height, flags, title);
-   * ```
-   */
-  newDialog(
-    url: string,
-    width: number = 300,
-    height: number = 300,
-    flags?: number,
-    title?: string
-  ): void {
-    if (Environment.isSourcePlugin()) {
-      throw new TypeError('function is not available for source');
-    } else if (url !== undefined && url !== '') {
-      var params: any[] = ['NewDialog', url, '', width + ',' + height];
-      for (let i = 3; i < arguments.length; i++) {
-        if (arguments[i] !== undefined) params.push(String(arguments[i]));
-      }
-      exec.apply(this, params);
-    } else {
-      throw new Error('URL parameter expected');
-    }
-  }
-
-  /**
-   * param: (url: string [, width: number = 300 [, height: number = 300]])
-   *
-   * Creates a dialog that automatically closes on outside click
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * App.newAutoDialog(url, width, height);
-   * ```
-   */
-  newAutoDialog(url: string, width: number = 300, height: number = 300): void {
-    if (Environment.isSourcePlugin()) {
-      throw new TypeError('function is not available for source');
-    } else if (url !== undefined && url !== '') {
-      exec('NewAutoDialog', url, width + ',' + height);
-    } else {
-      throw new Error('URL parameter expected');
-    }
-  }
-
-  /**
-   * Close a created dialog
-   */
-  closeDialog(): void {
-    if (Environment.isSourcePlugin()) {
-      throw new TypeError('function is not available for source');
-    } else {
-      exec('CloseDialog');
-    }
-  }
-
   // Transition Services
 
   /**
    * return: Promise<Transition>
    *
    * Gets the transition for scene changes
-   * 
+   *
    * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage
@@ -577,7 +499,7 @@ export class App{
    * ```
    *
    * Sets the transition for scene changes
-   * 
+   *
    * See also: {@link #core/Transition Core/Transition}
    *
    * #### Usage
