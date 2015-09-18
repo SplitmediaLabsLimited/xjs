@@ -25,5 +25,6 @@ export * from './system/microphone';
 
 export * from './window/config';
 export * from './window/source';
+export * from './window/extension';
 
 export {ready} from './util/ready';

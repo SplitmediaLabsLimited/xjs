@@ -67,7 +67,7 @@ var App = (function () {
     App.prototype.getResolution = function () {
         return new Promise(function (resolve) {
             app_1.App.get('resolution').then(function (val) {
-                var dimensions = val.split(",");
+                var dimensions = val.split(',');
                 resolve(rectangle_1.Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
             });
         });
@@ -91,7 +91,7 @@ var App = (function () {
     App.prototype.getViewport = function () {
         return new Promise(function (resolve) {
             app_1.App.get('viewport').then(function (val) {
-                var dimensions = val.split(",");
+                var dimensions = val.split(',');
                 resolve(rectangle_1.Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
             });
         });
@@ -160,7 +160,7 @@ var App = (function () {
                     resolve(audioDevices[0]);
                 }
                 else {
-                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                    resolve(new audio_1.AudioDevice({ id: 'empty' }));
                 }
             });
         });
@@ -190,7 +190,7 @@ var App = (function () {
                     resolve(audioDevices[1]);
                 }
                 else {
-                    resolve(new audio_1.AudioDevice({ id: "empty" }));
+                    resolve(new audio_1.AudioDevice({ id: 'empty' }));
                 }
             });
         });
@@ -3581,7 +3581,7 @@ var Scene = (function () {
      * ```javascript
      * myScene.isEmpty().then(function(empty) {
      *   if (empty === true) {
-     *     console.log("My scene is empty.");
+     *     console.log('My scene is empty.');
      *   }
      * });
      * ```
@@ -3888,7 +3888,7 @@ function readMetaConfigUrl() {
             catch (e) {
             }
             finally {
-                var metas = document.getElementsByTagName("meta");
+                var metas = document.getElementsByTagName('meta');
                 for (var i = metas.length - 1; i >= 0; i--) {
                     if (metas[i].name === 'xsplit:config-url') {
                         var url = resolveRelativePath(metas[i].content, window.location.href);
@@ -5102,8 +5102,8 @@ var System = (function () {
                         var device = devicesJSON[_i];
                         if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
                             String(device['disp']).toLowerCase() !==
-                                ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
-                                    "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+                                ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
+                                    '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase()) {
                             devices.push(camera_1.CameraDevice.parse(device));
                         }
                     }
@@ -5435,7 +5435,7 @@ var IO = (function () {
                 filterString += '||';
             }
             internal_1.exec('OpenFileDialogAsync', null, null, String(flags), filterString, function (path) {
-                if (path !== "null") {
+                if (path !== 'null') {
                     resolve(path.split('|'));
                 }
                 else {
@@ -5786,6 +5786,54 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var environment_1 = require('../core/environment');
+var eventemitter_1 = require('../util/eventemitter');
+var app_1 = require('../internal/app');
+var _RESIZE = '2';
+/** This utility class represents the extension window. It should allow manipulation
+ *  of the window (e.g., resizing), and should also serve as an event emitter
+ *  for all events that the window should be able to handle.
+ *
+ *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ */
+var ExtensionWindow = (function (_super) {
+    __extends(ExtensionWindow, _super);
+    function ExtensionWindow() {
+        _super.call(this);
+        ExtensionWindow._instance = this;
+    }
+    ExtensionWindow.getInstance = function () {
+        if (ExtensionWindow._instance === undefined) {
+            ExtensionWindow._instance = new ExtensionWindow();
+        }
+        return ExtensionWindow._instance;
+    };
+    /** param: (width: number, height: number)
+     *
+     *  Resizes this extension's window.
+     */
+    ExtensionWindow.prototype.resize = function (width, height) {
+        app_1.App.postMessage(_RESIZE, String(width), String(height));
+    };
+    return ExtensionWindow;
+})(eventemitter_1.EventEmitter);
+exports.ExtensionWindow = ExtensionWindow;
+if (environment_1.Environment.isExtension()) {
+    window.OnSceneLoad = function (view, scene) {
+        if (Number(view) === 0) {
+            ExtensionWindow.getInstance().emit('scene-load', Number(scene));
+        }
+    };
+}
+},{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],37:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
@@ -5796,6 +5844,7 @@ var eventemitter_1 = require('../util/eventemitter');
  *  Currently there are only two events:
  *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
  *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
+ *  - ```set-background-color```: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *
  *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
  */
@@ -5831,22 +5880,27 @@ var SourcePluginWindow = (function (_super) {
     return SourcePluginWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePluginWindow = SourcePluginWindow;
-window['MessageSource'] = function (message) {
-    SourcePluginWindow.getInstance().emit("message-source", JSON.parse(message));
-};
-window['SetConfiguration'] = function (configObj) {
-    try {
-        var data = JSON.parse(configObj);
-        var source = SourcePluginWindow.getInstance();
-        source.emit("apply-config", data);
-        source.emit("save-config", data);
-    }
-    catch (e) {
-        // syntax error probably happened, exit gracefully
-        return;
-    }
-};
-},{"../util/eventemitter":31}],"xjs":[function(require,module,exports){
+if (environment_1.Environment.isSourcePlugin()) {
+    window.MessageSource = function (message) {
+        SourcePluginWindow.getInstance().emit('message-source', JSON.parse(message));
+    };
+    window.SetConfiguration = function (configObj) {
+        try {
+            var data = JSON.parse(configObj);
+            var source = SourcePluginWindow.getInstance();
+            source.emit('apply-config', data);
+            source.emit('save-config', data);
+        }
+        catch (e) {
+            // syntax error probably happened, exit gracefully
+            return;
+        }
+    };
+    window.setBackGroundColor = function (color) {
+        SourcePluginWindow.getInstance().emit('set-background-color', color);
+    };
+}
+},{"../core/environment":3,"../util/eventemitter":31}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -5875,6 +5929,7 @@ __export(require('./system/camera'));
 __export(require('./system/microphone'));
 __export(require('./window/config'));
 __export(require('./window/source'));
+__export(require('./window/extension'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/item/audio":4,"./core/item/camera":5,"./core/item/game":6,"./core/item/html":7,"./core/item/ichroma":9,"./core/item/item":13,"./core/scene":15,"./core/transition":16,"./internal/init":19,"./system/audio":25,"./system/camera":26,"./system/game":27,"./system/microphone":28,"./system/system":29,"./util/color":30,"./util/io":32,"./util/ready":33,"./util/rectangle":34,"./window/config":35,"./window/source":36}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/item/audio":4,"./core/item/camera":5,"./core/item/game":6,"./core/item/html":7,"./core/item/ichroma":9,"./core/item/item":13,"./core/scene":15,"./core/transition":16,"./internal/init":19,"./system/audio":25,"./system/camera":26,"./system/game":27,"./system/microphone":28,"./system/system":29,"./util/color":30,"./util/io":32,"./util/ready":33,"./util/rectangle":34,"./window/config":35,"./window/extension":36,"./window/source":37}]},{},["xjs"]);

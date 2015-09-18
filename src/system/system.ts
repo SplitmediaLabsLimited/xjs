@@ -135,8 +135,8 @@ export class System{
           for(let device of devicesJSON) {
             if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
               String(device['disp']).toLowerCase() !==
-              ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
-              "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+              ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
+              '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase()) {
               devices.push(CameraDevice.parse(device));
             }
           }
