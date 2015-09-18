@@ -14,9 +14,9 @@ import {exec} from '../internal/internal';
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  At the moment, the only relevant event for developers is:
- *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
 export class SourceConfigWindow extends EventEmitter {
   private static _instance: SourceConfigWindow;
@@ -25,8 +25,7 @@ export class SourceConfigWindow extends EventEmitter {
   private static _MODE_TABBED: string = 'embedded';
 
   /**
-   *  Gets the instance of the window utility. Use this instead of
-   *  the constructor.
+   *  Gets the instance of the window utility. Use this instead of the constructor.
    */
   static getInstance() {
     if (SourceConfigWindow._instance === undefined) {
