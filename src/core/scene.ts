@@ -487,18 +487,20 @@ export class Scene {
   }
 
   /**
-   * param: Array<Item> | Array<string>
+   * param: Array<Item> | Array<string> (item IDs)
    * ```
    * return: Promise<Scene>
    * ```
    *
-   * Sets the item order of the current scene. It is ordered as bottom to top.
+   * Sets the item order of the current scene. The first item in the array will
+   * be on top (will cover items below it).
    */
   setItemOrder(items: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));
       } else {
+        items.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return el instanceof Item })) {
