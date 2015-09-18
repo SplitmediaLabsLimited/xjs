@@ -17,6 +17,15 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
+/**
+ * The HTMLItem class represents a web page source. This covers both source
+ * plugins and non-plugin URLs.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
+ *  All methods marked as *Chainable* resolve with the original `HTMLItem`
+ *  instance.
+ */
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
   /**
@@ -40,6 +49,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<string>
    *
    * Sets the URL of this webpage source.
+   *
+   * *Chainable.*
    */
   setURL(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -538,6 +549,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * return: Promise<Rectangle>
    *
    * Get the position of the item
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getPosition:              () => Promise<Rectangle>;
 
@@ -566,6 +579,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
+   *
+   * *Chainable.*
    */
   setKeepAspectRatio:       (value: boolean) => Promise<HTMLItem>;
 
@@ -573,6 +588,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Position Lock to ON or OFF
+   *
+   * *Chainable.*
    */
   setPositionLocked:        (value: boolean) => Promise<HTMLItem>;
 
@@ -580,6 +597,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Enhance Resize to ON or OFF
+   *
+   * *Chainable.*
    */
   setEnhancedResizeEnabled:  (value: boolean) => Promise<HTMLItem>;
 
@@ -587,6 +606,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Rectangle>
    *
    * Set Item position
+   *
+   * *Chainable.*
    */
   setPosition:              (value: Rectangle) => Promise<HTMLItem>;
 
@@ -594,6 +615,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Y value of the item
+   *
+   * *Chainable.*
    */
   setRotateY:              (value: number) => Promise<HTMLItem>;
 
@@ -601,6 +624,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate X value of the item
+   *
+   * *Chainable.*
    */
   setRotateX:              (value: number) => Promise<HTMLItem>;
 
@@ -608,6 +633,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Z value of the item
+   *
+   * *Chainable.*
    */
   setRotateZ:              (value: number) => Promise<HTMLItem>;
 
@@ -659,6 +686,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Transparency
+   *
+   * *Chainable.*
    */
   setTransparency: (value: number) => Promise<HTMLItem>;
 
@@ -666,6 +695,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Brightness
+   *
+   * *Chainable.*
    */
   setBrightness:   (value: number) => Promise<HTMLItem>;
 
@@ -673,6 +704,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Contrast
+   *
+   * *Chainable.*
    */
   setContrast:     (value: number) => Promise<HTMLItem>;
 
@@ -680,6 +713,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Hue
+   *
+   * *Chainable.*
    */
   setHue:          (value: number) => Promise<HTMLItem>;
 
@@ -687,6 +722,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Saturation
+   *
+   * *Chainable.*
    */
   setSaturation:   (value: number) => Promise<HTMLItem>;
 
@@ -694,6 +731,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Color>
    *
    * Set Border Color
+   *
+   * *Chainable.*
    */
   setBorderColor:  (value: Color) => Promise<HTMLItem>;
 
@@ -704,6 +743,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   isChromaEnabled: () => Promise<boolean>;
   /**
    * param: value<boolean>
+   *
+   * *Chainable.*
    */
   setChromaEnabled: (value: boolean) => Promise<HTMLItem>;
   /**
@@ -712,6 +753,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getKeyingType: () => Promise<KeyingType>;
   /**
    * param: value<KeyingType>
+   * *Chainable.*
+   *
    */
   setKeyingType: (value: KeyingType) => Promise<HTMLItem>;
 
@@ -722,6 +765,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   /**
    * param: value<ChromaAntiAliasLevel>
+   *
+   * *Chainable.*
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HTMLItem>;
 
@@ -732,6 +777,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaLegacyBrightness: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaLegacyBrightness: (value: number) => Promise<HTMLItem>;
   /**
@@ -740,6 +787,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaLegacySaturation: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaLegacySaturation: (value: number) => Promise<HTMLItem>;
   /**
@@ -748,6 +797,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaLegacyHue: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaLegacyHue: (value: number) => Promise<HTMLItem>;
   /**
@@ -756,6 +807,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaLegacyThreshold: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaLegacyThreshold: (value: number) => Promise<HTMLItem>;
   /**
@@ -764,6 +817,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<HTMLItem>;
 
@@ -774,6 +829,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   /**
    * param: value<ChromaPrimaryColors>
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HTMLItem>;
   /**
@@ -782,6 +839,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaRGBKeyThreshold: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<HTMLItem>;
   /**
@@ -790,6 +849,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaRGBKeyExposure: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyExposure: (value: number) => Promise<HTMLItem>;
 
@@ -800,6 +861,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaColorKeyThreshold: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaColorKeyThreshold: (value: number) => Promise<HTMLItem>;
   /**
@@ -808,6 +871,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaColorKeyExposure: () => Promise<number>;
   /**
    * param: value<number>
+   *
+   * *Chainable.*
    */
   setChromaColorKeyExposure: (value: number) => Promise<HTMLItem>;
   /**
@@ -816,6 +881,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   getChromaColorKeyColor: () => Promise<Color>;
   /**
    * param: value<Color>
+   *
+   * *Chainable.*
    */
   setChromaColorKeyColor: (value: Color) => Promise<HTMLItem>;
 
@@ -832,6 +899,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set item to visible or hidden
+   *
+   * *Chainable.*
    */
   setVisible:        (value: boolean) => Promise<HTMLItem>;
 
@@ -846,6 +915,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Transition>
    *
    * Set item's transition type for when visibility is toggled
+   *
+   * *Chainable.*
    */
   setTransition:     (value: Transition) => Promise<HTMLItem>;
 
@@ -860,6 +931,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set item's transition time in milliseconds
+   *
+   * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<HTMLItem>;
 
@@ -876,6 +949,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Persists a JSON object for configuration. Available to sources only.
+   *
+   * *Chainable.*
    */
   saveConfig: (configObj: any) => Promise<HTMLItem>;
 
@@ -883,6 +958,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Requests the source to save a configuration. This makes the source emit the save-config event.
+   *
+   * *Chainable.*
    */
   requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
 
@@ -890,6 +967,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   *
+   * *Chainable.*
    */
   applyConfig: (configObj: any) => Promise<HTMLItem>;
 }

@@ -3,18 +3,42 @@
 import {Item as iItem} from '../../internal/item';
 import {Color} from '../../util/color';
 
+/**
+ *  Used by items that implement the Chroma interface.
+ *  Check `getKeyingType()`/`setKeyingType()` method of
+ *  {@link #core/CameraItem Core/CameraItem},
+ *  {@link #core/GameItem Core/GameItem}, and
+ *  {@link #core/HTMLItem Core/HTMLItem}.
+ */
 export enum KeyingType {
     LEGACY, // Chroma Key Legacy Mode
     COLORKEY, // Color Key Mode
     RGBKEY // Chroma Key RGB Mode
 }
 
+/**
+ *  Used by items that implement the Chroma interface, when using RGB mode
+ *  Chroma Key.
+ *
+ *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor()` method
+ *  of {@link #core/CameraItem Core/CameraItem},
+ *  {@link #core/GameItem Core/GameItem}, and
+ *  {@link #core/HTMLItem Core/HTMLItem}.
+ */
 export enum ChromaPrimaryColors {
     RED,
     GREEN,
     BLUE
 }
 
+/**
+ *  Used by items that implement the Chroma interface.
+ *
+ *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel()` method
+ *  of {@link #core/CameraItem Core/CameraItem},
+ *  {@link #core/GameItem Core/GameItem}, and
+ *  {@link #core/HTMLItem Core/HTMLItem}.
+ */
 export enum ChromaAntiAliasLevel {
     NONE,
     LOW,
@@ -27,7 +51,6 @@ export interface IItemChroma {
   getKeyingType(): Promise<KeyingType>; // prop:key_chromakeytype
   setKeyingType(value: KeyingType): Promise<IItemChroma>;
 
-  // BOTH CHROMA LEGACY AND CHROMA RGB
   getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
   setChromaAntiAliasLevel(value: ChromaAntiAliasLevel);
 
