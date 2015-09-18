@@ -5,6 +5,11 @@ import {exec} from '../internal/internal';
 export class IO {
 
   /**
+   * param: (path: string)
+   * ```
+   * return: Promise<string>
+   * ```
+   *
    * Returns a base-64 encoded string of the target file's contents.
    * UTF-8 encoded files may be decoded through:
    * ```javascript
@@ -18,6 +23,11 @@ export class IO {
   }
 
   /**
+   * param: (url: string)
+   * ```
+   * return: Promise<string>
+   * ```
+   *
    * Returns a base-64 encoded string of the target endpoint's contents.
    * Redirects are resolved, and this bypasses access-control-allow-origin.
    *
@@ -34,7 +44,10 @@ export class IO {
     });
   }
 
-  /** Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
+  /**
+   * param: (url: string)
+   *
+   * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
    *
    */
   static openUrl(url: string) {
@@ -47,9 +60,11 @@ export class IO {
 
   /**
    * param: ([options] [, filter]) -- see below
-
+   * ```
+   * return: Promise<string[]>
+   * ```
    * Opens a file dialog for the user to select a file (or multiple files).
-   * Returns an array of strings, each of which contains the full path
+   * Resolves with an array of strings, each of which contains the full path
    * and filename of a selected file. Rejects when the dialog is canceled.
    *
    * The first (optional) argument is a JSON object that can be used to indicate

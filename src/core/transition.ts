@@ -4,11 +4,11 @@
  * or to set an individual source's transition when its visibility changes.
  *
  * Simply use one of the available Transition objects such as Transition.FAN or
- * Transition.COLLAPSE as the parameter to the `setTransition` method of an App
- * instance, or a valid Item instance that supports transitions (this includes
- *  {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.)
+ * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
+ * App instance, or a valid Item instance that supports transitions (this
+ * includes {@link #core/CameraItem Core/CameraItem},
+ * {@link #core/GameItem Core/GameItem}, and
+ * {@link #core/HTMLItem Core/HTMLItem}.)
  */
 export class Transition {
   private _value: string;

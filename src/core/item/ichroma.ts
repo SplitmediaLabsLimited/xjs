@@ -20,7 +20,7 @@ export enum KeyingType {
  *  Used by items that implement the Chroma interface, when using RGB mode
  *  Chroma Key.
  *
- *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor` method
+ *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor()` method
  *  of {@link #core/CameraItem Core/CameraItem},
  *  {@link #core/GameItem Core/GameItem}, and
  *  {@link #core/HTMLItem Core/HTMLItem}.
@@ -34,7 +34,7 @@ export enum ChromaPrimaryColors {
 /**
  *  Used by items that implement the Chroma interface.
  *
- *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel` method
+ *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel()` method
  *  of {@link #core/CameraItem Core/CameraItem},
  *  {@link #core/GameItem Core/GameItem}, and
  *  {@link #core/HTMLItem Core/HTMLItem}.

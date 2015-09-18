@@ -12,6 +12,9 @@ import {Environment} from '../environment';
  * to the stage.
  *
  * Inherits from: {@link #core/Item Core/Item}
+ *
+ *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ *  instance.
  */
 export class AudioItem extends Item implements IItemAudio {
 
