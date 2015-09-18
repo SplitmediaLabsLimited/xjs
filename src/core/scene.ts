@@ -156,13 +156,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Item>
    *
    * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
-   * See also: Core/Item
-   * #Return
-   * ```
-   * Item
-   * ```
+   *
+   * See also: @{link #core/Item Core/Item}
    *
    * #### Usage
    *
@@ -416,7 +414,7 @@ export class Scene {
    * return: Promise<Item[]>
    *
    * Gets all the items (sources) in a specific scene.
-   * See also: Core/Item
+   * See also: @{link #core/Item Core/Item}
    *
    * #### Usage
    *
@@ -475,7 +473,7 @@ export class Scene {
   * ```javascript
   * myScene.isEmpty().then(function(empty) {
   *   if (empty === true) {
-  *     console.log("My scene is empty.");
+  *     console.log('My scene is empty.');
   *   }
   * });
   * ```
@@ -489,18 +487,20 @@ export class Scene {
   }
 
   /**
-   * param: Array<Item> | Array<string>
+   * param: Array<Item> | Array<string> (item IDs)
    * ```
    * return: Promise<Scene>
    * ```
    *
-   * Sets the item order of the current scene. It is ordered as bottom to top.
+   * Sets the item order of the current scene. The first item in the array will
+   * be on top (will cover items below it).
    */
   setItemOrder(items: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));
       } else {
+        items.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return el instanceof Item })) {

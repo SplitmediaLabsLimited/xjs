@@ -11,10 +11,12 @@ import {exec} from '../internal/internal';
  *  should be rendered within the built-in window in XSplit Broadcaster.
  *  This class also serves as an event emitter for specific important events.
  *
- *  At the moment, the only relevant event for developers is:
- *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  At the moment, the only relevant event for developers is:
+ *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
 export class SourceConfigWindow extends EventEmitter {
   private static _instance: SourceConfigWindow;
@@ -22,6 +24,9 @@ export class SourceConfigWindow extends EventEmitter {
   private static _MODE_FULL: string = 'full';
   private static _MODE_TABBED: string = 'embedded';
 
+  /**
+   *  Gets the instance of the window utility. Use this instead of the constructor.
+   */
   static getInstance() {
     if (SourceConfigWindow._instance === undefined) {
       SourceConfigWindow._instance = new SourceConfigWindow();
@@ -29,6 +34,9 @@ export class SourceConfigWindow extends EventEmitter {
     return SourceConfigWindow._instance;
   }
 
+  /**
+   *  Use getInstance() instead.
+   */
   constructor() {
     super();
     window.addEventListener('message', function(event) {
@@ -65,10 +73,29 @@ export class SourceConfigWindow extends EventEmitter {
     window.parent.postMessage(JSON.stringify(obj), '*');
   }
 
+  /**
+   *  Informs the application that the plugin intends to use the entire
+   *  window for rendering its configuration.
+   */
   useFullWindow() {
     this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    // use default size to avoid layout issues. plugin can resize later
+    this.resizeConfig(354, 390);
   }
 
+  /**
+   *  param: ({customTabs: string[], tabOrder: string[]})
+   *
+   *  Informs the application that the plugin intends to use the existing tab
+   *  system to render its configuration window.
+   *
+   *  The `customTabs` node should contain a list of tab titles that the plugin
+   *  will create for itself.
+   *
+   *  The `tabOrder` node contains the desired order of tabs. This list comes
+   *  from the specified custom tabs, and the set of reusable XSplit tabs:
+   *  'Color', 'Layout' and 'Transition'.
+   */
   useTabbedWindow(config: { customTabs: string[], tabOrder: string[] }) {
     this._setRenderMode(SourceConfigWindow._MODE_TABBED);
     this._declareCustomTabs(config.customTabs);
@@ -104,21 +131,17 @@ export class SourceConfigWindow extends EventEmitter {
   /**
    *  param: width<number>, height<number>
    *
-   *  Resizes the configuration window.
+   *  Resizes the configuration window. Currently only works when using full
+   *  window mode.
    */
   resizeConfig(width: number, height: number) {
-    if (this._mode === 'full') {
-      this._notify({
-        event: 'resize',
-        value: JSON.stringify({
-          width: width,
-          height: height
-        })
-      });
-    }
-    else if (this._mode !== 'embedded'){
-      exec('SetDialogSize', String(width), String(height));
-    }
+    this._notify({
+      event: 'resize',
+      value: JSON.stringify({
+        width: width,
+        height: height
+      })
+    });
   };
 
   /** Closes the configuration window. */

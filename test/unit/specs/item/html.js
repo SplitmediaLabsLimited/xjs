@@ -61,6 +61,118 @@ describe('HTMLItem', function() {
           },10);
         }
       break;
+
+      case 'prop:item':
+        if (local.hasOwnProperty('item'))
+        {
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, local.item);
+          }, 10);
+        }
+        else {
+          //search for id
+          var placement = parseXml(mockPresetConfig)
+            .getElementsByTagName("placement")[0];
+          var selected = '[id="' + attachedID + '"]';
+          var itemSelected = placement.querySelector(selected);
+          //return item attribute
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
+          },10);
+        }
+      break;
+
+      case 'prop:BrowserSize':
+        if (local.hasOwnProperty('browserSize'))
+        {
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, local.browserSize);
+          }, 10);
+        }
+        else {
+          //search for id
+          var placement = parseXml(mockPresetConfig)
+            .getElementsByTagName("placement")[0];
+          var selected = '[id="' + attachedID + '"]';
+          var itemSelected = placement.querySelector(selected);
+          //return browserJS attribute
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand,
+              itemSelected.getAttribute("BrowserSizeX") + ',' +
+              itemSelected.getAttribute("BrowserSizeY"));
+          },10);
+        }
+      break;
+
+      case 'prop:BrowserTransparent':
+        if (local.hasOwnProperty('browserTransparent'))
+        {
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, local.browserTransparent);
+          }, 10);
+        }
+        else {
+          //search for id
+          var placement = parseXml(mockPresetConfig)
+            .getElementsByTagName("placement")[0];
+          var selected = '[id="' + attachedID + '"]';
+          var itemSelected = placement.querySelector(selected);
+          //return browserJS attribute
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserTransparent"));
+          },10);
+        }
+      break;
+
+      case 'prop:BrowserJs':
+        if (local.hasOwnProperty('browserJS'))
+        {
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, local.browserJS);
+          }, 10);
+        }
+        else {
+          //search for id
+          var placement = parseXml(mockPresetConfig)
+            .getElementsByTagName("placement")[0];
+          var selected = '[id="' + attachedID + '"]';
+          var itemSelected = placement.querySelector(selected);
+          //return browserJS attribute
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserJs"));
+          },10);
+        }
+      break;
+
+      case 'prop:custom':
+        if (local.hasOwnProperty('custom'))
+        {
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, local.custom);
+          }, 10);
+        }
+        else {
+          //search for id
+          var placement = parseXml(mockPresetConfig)
+            .getElementsByTagName("placement")[0];
+          var selected = '[id="' + attachedID + '"]';
+          var itemSelected = placement.querySelector(selected);
+          //return custom attribute
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, itemSelected.getAttribute("custom"));
+          },10);
+        }
+      break;
     }
     return rand;
   };
@@ -86,6 +198,106 @@ describe('HTMLItem', function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
       break;
+
+      case 'prop:BrowserJs':
+        var isValid;
+        if (typeof val === 'string') {
+          local.browserJS = val;
+          urlSet = true;
+          isValid = '0';
+        }
+        else {
+          urlSet = false;
+          isValid = '-1';
+        }
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
+      case 'prop:BrowserSize':
+        var isValid;
+        var isResolution = false;
+
+        if (typeof val === 'string' || val.indexOf(',') > 0 ) {
+          isResolution = true;
+        }        
+
+        if (isResolution) {
+          local.browserSize = val;
+          urlSet = true;
+          isValid = '0';
+        }
+        else {
+          urlSet = false;
+          isValid = '-1';
+        }
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
+      case 'prop:BrowserTransparent':
+        var isValid;
+        if (val === '1' || val === '0') {
+          local.browserTransparent = val;
+          urlSet = true;
+          isValid = '0';
+        }
+        else {
+          urlSet = false;
+          isValid = '-1';
+        }
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
+      case 'prop:custom':
+        var isValid;
+        if (typeof val === 'string') {
+          try {
+            var customObject = JSON.parse(val);
+            if (customObject.hasOwnProperty('customCSS') &&
+              customObject.hasOwnProperty('customJS') &&
+              customObject.hasOwnProperty('scriptEnabled') &&
+              customObject.hasOwnProperty('cssEnabled')) {
+                local.custom = val;
+                urlSet = true;
+                isValid = '0';
+            }
+            else {
+              urlSet = false;
+              isValid = '-1';
+            }
+          }
+          catch(e) {
+            urlSet = false;
+            isValid = '-1';
+          }
+        }
+        else {
+          urlSet = false;
+          isValid = '-1';
+        }
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
+      case 'refresh':
+        var isValid;
+
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
     }
 
     return rand;
@@ -301,12 +513,209 @@ describe('HTMLItem', function() {
 
     it('should be able to set its own URL',
       function(done) {
+        urlSet = false;
         var promise = currentHTMLItem.setURL('https://www.xsplit.com/');
         promise.then(function() {
         	if (!isXSplit) {
         		expect(urlSet).toBe(true);
         	}
         	done();
+        })
+    });
+
+    it('should be able to get custom browser JS',
+      function(done) {
+        var promise = currentHTMLItem.getBrowserJS();
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(browserJS) {
+          expect(browserJS).toBeTypeOf('string');
+          done();
+        });
+    });
+
+    it('should be able to set custom browser JS',
+      function(done) {
+        urlSet = false;
+        var promise = currentHTMLItem.setBrowserJS('console.log("XJS");');
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          done();
+        })
+    });
+
+    it('should be able to get if browserJS is enabled',
+      function(done) {
+        var promise = currentHTMLItem.isBrowserJSEnabled();
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isEnabled) {
+          expect(isEnabled).toBeTypeOf('boolean');
+          done();
+        });
+    });
+
+    it('should be able to enable or disable custom browser JS',
+      function(done) {
+        urlSet = false;
+        var randomBoolean = !!Math.floor(Math.random() * 2);
+        var promise = currentHTMLItem.enableBrowserJS(randomBoolean);
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          return currentHTMLItem.isBrowserJSEnabled();
+        })
+        .then(function(firstEnabled) {
+          expect(firstEnabled).toBe(randomBoolean);
+          return currentHTMLItem.enableBrowserJS(!randomBoolean);
+        })
+        .then(function() {
+          return currentHTMLItem.isBrowserJSEnabled();
+        })
+        .then(function(secondEnabled) {
+          expect(secondEnabled).toBe(!randomBoolean);
+          done();          
+        });
+    });
+
+    it('should be able to get custom CSS',
+      function(done) {
+        var promise = currentHTMLItem.getCustomCSS('');
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(customCSS) {
+          expect(customCSS).toBeTypeOf('string');
+          done();
+        });
+    });
+
+    it('should be able to set custom CSS',
+      function(done) {
+        urlSet = false;
+        var promise = currentHTMLItem.setCustomCSS('*{background : red;}');
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          done();
+        })
+    });
+
+    it('should be able to get if custom CSS is enabled',
+      function(done) {
+        var promise = currentHTMLItem.isCustomCSSEnabled();
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isEnabled) {
+          expect(isEnabled).toBeTypeOf('boolean');
+          done();
+        });
+    });
+
+    it('should be able to enable or disable custom CSS',
+      function(done) {
+        urlSet = false;
+        var randomBoolean = !!Math.floor(Math.random() * 2);
+        var promise = currentHTMLItem.enableCustomCSS(randomBoolean);
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          return currentHTMLItem.isCustomCSSEnabled();
+        })
+        .then(function(firstEnabled) {
+          expect(firstEnabled).toBe(randomBoolean);
+          return currentHTMLItem.enableCustomCSS(!randomBoolean);
+        })
+        .then(function() {
+          return currentHTMLItem.isCustomCSSEnabled();
+        })
+        .then(function(secondEnabled) {
+          expect(secondEnabled).toBe(!randomBoolean);
+          done();          
+        });
+    });
+
+
+    it('should be able to get if browser is transparent',
+      function(done) {
+        var promise = currentHTMLItem.isBrowserTransparent();
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isEnabled) {
+          expect(isEnabled).toBeTypeOf('boolean');
+          done();
+        });
+    });
+
+    it('should be able to enable or disable browser transparency',
+      function(done) {
+        urlSet = false;
+        var randomBoolean = !!Math.floor(Math.random() * 2);
+        var promise = currentHTMLItem.enableBrowserTransparency(randomBoolean);
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          return currentHTMLItem.isBrowserTransparent();
+        })
+        .then(function(firstEnabled) {
+          expect(firstEnabled).toBe(randomBoolean);
+          return currentHTMLItem.enableBrowserTransparency(!randomBoolean);
+        })
+        .then(function() {
+          return currentHTMLItem.isBrowserTransparent();
+        })
+        .then(function(secondEnabled) {
+          expect(secondEnabled).toBe(!randomBoolean);
+          done();          
+        });
+    });
+
+    it('should be able to get its custom browser window size',
+      function(done) {
+        var promise = currentHTMLItem.getBrowserCustomSize();
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(browserSize) {
+          expect(browserSize).hasMethods([
+            'getTop',
+            'setTop',
+            'getLeft',
+            'setLeft',
+            'getRight',
+            'setRight',
+            'getBottom',
+            'setBottom',
+            'getWidth',
+            'setWidth',
+            'getHeight',
+            'setHeight',
+            'toDimensionString',
+            'toCoordinateString',
+            'toString'
+          ].join(','));
+          done();
+        });
+    });
+
+    it('should be able to set its custom browser window size',
+      function(done) {
+        urlSet = false;
+
+        var MockRectangle = function(width, height) {
+          this.width = width;
+          this.height = height;
+
+          this.toDimensionString = function()
+          {
+            return this.width + ',' + this.height ;
+          };
+        };
+
+        var promise = currentHTMLItem.setBrowserCustomSize(new MockRectangle(1280, 600));
+        promise.then(function() {
+          if (!isXSplit) {
+            expect(urlSet).toBe(true);
+          }
+          done();
         })
     });
   });

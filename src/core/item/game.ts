@@ -22,6 +22,8 @@ import {Environment} from '../environment';
  * {@link #core/Scene Scene} class' getItems method would automatically return a
  * GameItem object if there's a game item on the specified scene.
  *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -38,6 +40,9 @@ import {Environment} from '../environment';
  *   });
  * });
  * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `GameItem`
+ *  instance.
  */
 export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
@@ -59,6 +64,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: Promise<boolean>
    *
    * Set Game Special Optimization to on or off
+   *
+   * *Chainable.*
    */
   setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
@@ -87,6 +94,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Show Mouse in game to on or off
+   *
+   * *Chainable.*
    */
   setShowMouseEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
@@ -101,6 +110,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: path<string>
    *
    * Set the offline image of a game source
+   *
+   * *Chainable.*
    */
   setOfflineImage(path: string): Promise<GameItem> {
     return new Promise((resolve, reject) => {
@@ -175,6 +186,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * return: Promise<Rectangle>
    *
    * Get the position of the item
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getPosition:              () => Promise<Rectangle>;
 
@@ -203,6 +216,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
+   *
+   * *Chainable.*
    */
   setKeepAspectRatio:       (value: boolean) => Promise<GameItem>;
 
@@ -210,6 +225,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Position Lock to ON or OFF
+   *
+   * *Chainable.*
    */
   setPositionLocked:        (value: boolean) => Promise<GameItem>;
 
@@ -217,6 +234,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Enhance Resize to ON or OFF
+   *
+   * *Chainable.*
    */
   setEnhancedResizeEnabled:  (value: boolean) => Promise<GameItem>;
 
@@ -224,6 +243,10 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Rectangle>
    *
    * Set Item position
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<GameItem>;
 
@@ -231,6 +254,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Y value of the item
+   *
+   * *Chainable.*
    */
   setRotateY:              (value: number) => Promise<GameItem>;
 
@@ -238,6 +263,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate X value of the item
+   *
+   * *Chainable.*
    */
   setRotateX:              (value: number) => Promise<GameItem>;
 
@@ -245,6 +272,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Z value of the item
+   *
+   * *Chainable.*
    */
   setRotateZ:              (value: number) => Promise<GameItem>;
 
@@ -296,6 +325,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Transparency
+   *
+   * *Chainable.*
    */
   setTransparency: (value: number) => Promise<GameItem>;
 
@@ -303,6 +334,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Brightness
+   *
+   * *Chainable.*
    */
   setBrightness:   (value: number) => Promise<GameItem>;
 
@@ -310,6 +343,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Contrast
+   *
+   * *Chainable.*
    */
   setContrast:     (value: number) => Promise<GameItem>;
 
@@ -317,6 +352,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Hue
+   *
+   * *Chainable.*
    */
   setHue:          (value: number) => Promise<GameItem>;
 
@@ -324,6 +361,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Saturation
+   *
+   * *Chainable.*
    */
   setSaturation:   (value: number) => Promise<GameItem>;
 
@@ -331,6 +370,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Color>
    *
    * Set Border Color
+   *
+   * *Chainable.*
    */
   setBorderColor:  (value: Color) => Promise<GameItem>;
 
@@ -347,6 +388,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: boolean)
    *
    * Enables or disables chroma keying. Use together with `getKeyingType()`.
+   *
+   * *Chainable.*
    */
   setChromaEnabled: (value: boolean) => Promise<GameItem>;
 
@@ -361,6 +404,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: KeyingType)
    *
    * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
+   *
+   * *Chainable.*
    *
    * After setting the keying type, you may tweak settings specific to that type.
    * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
@@ -380,6 +425,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: ChromaAntiAliasLevel)
    *
    * Sets the antialiasing level for chroma keying.
+   *
+   * *Chainable.*
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameItem>;
 
@@ -396,6 +443,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
    */
   setChromaLegacyBrightness: (value: number) => Promise<GameItem>;
 
@@ -410,6 +459,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
    */
   setChromaLegacySaturation: (value: number) => Promise<GameItem>;
 
@@ -424,6 +475,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
    */
   setChromaLegacyHue: (value: number) => Promise<GameItem>;
 
@@ -438,6 +491,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
    */
   setChromaLegacyThreshold: (value: number) => Promise<GameItem>;
 
@@ -452,6 +507,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameItem>;
 
@@ -468,6 +525,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: ChromaPrimaryColors)
    *
    * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameItem>;
 
@@ -482,6 +541,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<GameItem>;
 
@@ -496,6 +557,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
    */
   setChromaRGBKeyExposure: (value: number) => Promise<GameItem>;
 
@@ -512,6 +575,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   *
+   * *Chainable.*
    */
   setChromaColorKeyThreshold: (value: number) => Promise<GameItem>;
 
@@ -526,6 +591,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: number)
    *
    * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   *
+   * *Chainable.*
    */
   setChromaColorKeyExposure: (value: number) => Promise<GameItem>;
 
@@ -540,6 +607,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: (value: Color)
    *
    * Sets the color setting for keying in color key mode.
+   *
+   * *Chainable.*
    */
   setChromaColorKeyColor: (value: Color) => Promise<GameItem>;
 
@@ -556,6 +625,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set item to visible or hidden
+   *
+   * *Chainable.*
    */
   setVisible:        (value: boolean) => Promise<GameItem>;
 
@@ -570,6 +641,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Transition>
    *
    * Set item's transition type for when visibility is toggled
+   *
+   * *Chainable.*
    */
   setTransition:     (value: Transition) => Promise<GameItem>;
 
@@ -584,6 +657,8 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set item's transition time in milliseconds
+   *
+   * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<GameItem>;
 }

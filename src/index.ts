@@ -6,6 +6,7 @@ export * from './util/io';
 
 export * from './core/environment';
 export * from './core/app';
+export * from './core/channel';
 export * from './core/scene';
 export * from './core/transition';
 export * from './core/item/item';
@@ -24,5 +25,7 @@ export * from './system/microphone';
 
 export * from './window/config';
 export * from './window/source';
+export * from './window/extension';
+export * from './window/dialog';
 
 export {ready} from './util/ready';

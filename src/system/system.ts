@@ -67,7 +67,7 @@ export class System{
    * return: Promise<AudioDevice[]>
    *
    * Gets audio devices, both input and output
-   * See also: System/AudioDevice
+   * See also: @{link #system/AudioDevice System/AudioDevice}
    *
    * #### Usage
    *
@@ -116,7 +116,7 @@ export class System{
    * return: Promise<CameraDevice[]>
    *
    * Gets all camera devices
-   * See also: System/CameraDevice
+   * See also: @{link #system/CameraDevice System/CameraDevice}
    *
    * #### Usage
    *
@@ -135,8 +135,8 @@ export class System{
           for(let device of devicesJSON) {
             if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
               String(device['disp']).toLowerCase() !==
-              ("@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\" +
-              "{778abfb2-e87b-48a2-8d33-675150fcf8a2}").toLowerCase()) {
+              ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
+              '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase()) {
               devices.push(CameraDevice.parse(device));
             }
           }
@@ -151,7 +151,7 @@ export class System{
    * return: Promise<Game[]>
    *
    * Gets all currently running games
-   * See also: System/Game
+   * See also: @{link #system/Game System/Game}
    *
    * #### Usage
    *
@@ -181,7 +181,7 @@ export class System{
    * return: Promise<MicrophoneDevice[]>
    *
    * Gets all audio capture devices that may be added to the stage
-   * See also: System/MicrophoneDevice
+   * See also: @{link #system/MicrophoneDevice System/MicrophoneDevice}
    *
    * #### Usage
    *
