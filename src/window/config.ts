@@ -11,6 +11,8 @@ import {exec} from '../internal/internal';
  *  should be rendered within the built-in window in XSplit Broadcaster.
  *  This class also serves as an event emitter for specific important events.
  *
+ * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
+ *
  *  At the moment, the only relevant event for developers is:
  *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
  *

@@ -20,6 +20,8 @@ import {Color} from '../../util/color';
  * {@link #core/Scene Scene} class' getItems method would automatically return a
  * CameraItem object if there's a camera item on the specified scene.
  *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
  * ### Basic Usage
  *
  * ```javascript

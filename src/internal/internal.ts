@@ -49,34 +49,3 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
     callback.call(this, decodeURIComponent(result));
   }
 };
-
-window.OnSceneLoad = function(view: number, scene: number) {
-  document.dispatchEvent(new CustomEvent(
-    'scene-load', { detail: { view: view, scene: scene } }
-  ));
-};
-
-
-window.SetConfiguration = function(config: string) {
-  document.dispatchEvent(new CustomEvent(
-    'set-configuration', { config: config }
-  ));
-};
-
-window.SetBackGroundColor = function(color: string) {
-  document.dispatchEvent(new CustomEvent(
-    'set-background-color', { color: color }
-  ));
-};
-
-window.SetVolume = function(volume: string) {
-  document.dispatchEvent(new CustomEvent(
-    'set-volume', { volume: volume }
-  ));
-};
-
-window.OnDialogResult = function(result: string) {
-  document.dispatchEvent(new CustomEvent(
-    'dialog-result', { detail: { result: result } }
-  ));
-};

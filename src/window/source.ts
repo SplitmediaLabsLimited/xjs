@@ -7,6 +7,8 @@ import {exec} from '../internal/internal';
  *  processes. This class also exposes certain important events that the source
  *  plugin may emit.
  *
+ * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
+ *
  *  Currently there are only two events:
  *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
  *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)

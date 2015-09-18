@@ -15,6 +15,12 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 
+/**
+ * The HTMLItem class represents a web page source. This covers both source
+ * plugins and non-plugin URLs.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ */
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
   /**

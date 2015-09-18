@@ -22,6 +22,8 @@ import {Environment} from '../environment';
  * {@link #core/Scene Scene} class' getItems method would automatically return a
  * GameItem object if there's a game item on the specified scene.
  *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
  * ### Basic Usage
  *
  * ```javascript
