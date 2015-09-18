@@ -60,6 +60,9 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
 
           // If the symbol is an Alias then for most things we want the original resolved symbol
           var resolvedExport = exportSymbol.resolvedSymbol || exportSymbol;
+          if (exportSymbol.resolvedSymbol && exportSymbol.resolvedSymbol.name === 'unknown') {
+            resolvedExport = exportSymbol;
+          }
           var exportDoc = createExportDoc(exportSymbol.name, resolvedExport, moduleDoc, basePath, parseInfo.typeChecker);
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
           // Generate docs for each of the export's members
