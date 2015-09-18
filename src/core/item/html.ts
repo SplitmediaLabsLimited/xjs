@@ -29,6 +29,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:item', slot).then(url => {
+        let _url = String(url).split('*');
+        url = _url[0];
         resolve(url);
       });
     });
