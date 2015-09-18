@@ -80,6 +80,8 @@ export class SourceConfigWindow extends EventEmitter {
    */
   useFullWindow() {
     this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    // use default size to avoid layout issues. plugin can resize later
+    this.resizeConfig(354, 390);
   }
 
   /**
