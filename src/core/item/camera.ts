@@ -145,6 +145,8 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    * Set Item position
    *
    * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<CameraItem>;
 

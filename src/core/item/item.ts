@@ -642,6 +642,8 @@ export class Item implements IItemLayout {
    *   // Promise resolves with same Item instance
    * });
    * ```
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<Item>;
 

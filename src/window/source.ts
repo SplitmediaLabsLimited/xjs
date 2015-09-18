@@ -11,18 +11,17 @@ import {exec} from '../internal/internal';
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  Currently there are only two events:
- *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
- *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
- *  - ```set-background-color```: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
+ *    - `save-config`: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
+ *    - `apply-config`: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
+ *    - `set-background-color`: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
 export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
 
   /**
-   *  Gets the instance of the window utility. Use this instead of
-   *  the constructor.
+   *  Gets the instance of the window utility. Use this instead of the constructor.
    */
   static getInstance() {
     if (SourcePluginWindow._instance === undefined) {
