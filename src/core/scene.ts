@@ -172,7 +172,7 @@ export class Scene {
    *
    */
   static searchAllForItemId(id: string): Promise<Item> {
-    let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+    let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
     if (!isID) {
       throw new Error('Not a valid ID format for items');
     } else {
