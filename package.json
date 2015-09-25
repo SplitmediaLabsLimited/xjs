@@ -1,10 +1,11 @@
 {
-  "name": "xjs",
-  "version": "0.6.1",
+  "name": "xjsframework",
+  "version": "0.7.0-npmtest.1",
   "description": "XSplit JS Framework",
   "scripts": {
     "test": "karma start --single-run --browsers Chrome"
   },
+  "main": "npm-xjs.js",
   "devDependencies": {
     "bower": "^1.4.1",
     "browser-sync": "^2.8.0",
@@ -33,11 +34,14 @@
     "type": "git",
     "url": "https://github.com/xjsframework/xjs.git"
   },
-  "author": "SplitmediaLabs, Ltd.",
-  "license": "ISC",
+  "author": "SplitmediaLabs, Ltd. <xjs@splitmedialabs.com>",
   "bugs": {
     "url": "https://github.com/xjsframework/xjs/issues",
     "email": "xjs@splitmedialabs.com"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme"
+  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  }
 }
