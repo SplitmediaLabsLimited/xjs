@@ -26,6 +26,22 @@ describe('System', function() {
             local.y = String(y);
           }
         });
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(prop) {
+          var rand = Math.floor(Math.random()*1000);
+
+          switch(prop) {
+            case 'html:fontlist':
+              setTimeout(function() {
+                window.OnAsyncCallback(rand, 'Times,Arial,Helvetica');
+              }, 10);
+              break;
+            default:
+              break;
+          }
+
+          return rand;
+        });
     }
   });
 
@@ -99,6 +115,21 @@ describe('System', function() {
     }).catch(function(err) {
       expect(err).toEqual(jasmine.any(Error));
       done();
+    });
+  });
+
+  it('should be able to get list of fonts', function(done) {
+    env.set(environments[0]);
+    System.getFonts().then(function(fonts) {
+      expect(fonts).toBeDefined();
+      expect(fonts).not.toBeEmptyArray();
+      env.set(environments[2]);
+    }).then(function() {
+      System.getFonts().then(function() {
+        done.fail('Fonts should not be available to sources.');
+      }).catch(function() {
+        done();
+      });
     });
   });
 });
