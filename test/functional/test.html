@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="xsplit:config-url" content="./test.html">
+
 	<title>XJS Functional Test</title>
 
 	<link href="css/style.css" rel="stylesheet" />
 
-	<!-- @TODO: Config Window when framework supports ConfigWindow -->
 </head>
 <body>
 	<script src="../../dist/xjs.js"></script>
+  <script src="js/cssjson.js"></script>
+  <script src="js/rose.js"></script>
 	<script src="js/main.js"></script>
 	<script src="specs/app.js"></script>
 	<script src="specs/item.js"></script>
@@ -16,5 +19,15 @@
 	<script src="specs/system/camera.js"></script>
   <script src="specs/item/audio.js"></script>
 	<script src="specs/system/system.js"></script>
+  <script>
+  /* globals require */
+  'use strict';
+  var xjs = require('xjs');
+  xjs.ready().then(function() {
+    var configWindow = xjs.SourceConfigWindow.getInstance();
+    configWindow.useFullWindow();
+    configWindow.resizeConfig(500, 500);
+  });
+  </script>
 </body>
 </html>
