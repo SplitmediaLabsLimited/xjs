@@ -94,8 +94,8 @@ export class Dialog{
   /**
    *  param: (result: string)
    *
-   *  Closes this dialog with an optional string result. (Call this from the
-   *  dialog.)
+   *  Closes this dialog with an optional string result. For more complex
+   *  return values, try JSON.stringify. (Call this from the dialog.)
    */
   static return(result ?: string) {
     if (result !== undefined) {
