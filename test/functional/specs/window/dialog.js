@@ -75,7 +75,7 @@
       {
         name: 'return',
         onClick: function() {
-          Dialog.return({'xjs-test':'true'});
+          Dialog.return(JSON.stringify({'xjs-test':'true'}));
         }
       }
     ]
