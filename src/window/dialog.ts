@@ -99,7 +99,14 @@ export class Dialog{
    *  param: (result: string)
    *
    *  Closes this dialog with an optional string result. For more complex
-   *  return values, try JSON.stringify. (Call this from the dialog.)
+   *  return values, try JSON.stringify. (Call this method from the dialog.)
+   *
+   *  As an alternative, lightweight dialogs that do not want to include xjs.js
+   *  may simply call native XBC methods to return a value.
+   *  ```javascript
+   *  external.SetDialogResult(stringResult);
+   *  external.Close();
+   *  ```
    */
   static return(result ?: string) {
     if (result !== undefined) {
