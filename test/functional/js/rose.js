@@ -1,4 +1,11 @@
 /// <reference path="../defs/cssjson.d.ts" />
+/**
+ * Rose Test
+ * Crude functional testing helper for XJS Framework.
+ * Version 0.1.0
+ *
+ * Released under the MIT license.
+ */
 var Rose = (function () {
     function Rose(elem) {
         this._contents = [];
@@ -26,12 +33,18 @@ var Rose = (function () {
         this.initEvents();
         this.initStyle();
     }
-    Rose.prototype.setContent = function (object) {
-        if (object === undefined)
+    /**
+     * Display contents to the UI.
+     *
+     * @param obj
+     *        The object that contains the tabname, id, and button list
+     */
+    Rose.prototype.setContent = function (obj) {
+        if (obj === undefined)
             return;
         var _button;
         this._buttons.innerHTML = '';
-        for (var _i = 0, _a = object.buttons; _i < _a.length; _i++) {
+        for (var _i = 0, _a = obj.buttons; _i < _a.length; _i++) {
             var button = _a[_i];
             _button = document.createElement('button');
             _button.textContent = button['name'] || 'Button';
@@ -39,6 +52,13 @@ var Rose = (function () {
             this._buttons.appendChild(_button);
         }
     };
+    /**
+     * Creates a Tab.
+     *
+     * @param tab
+     *        The object that contains the tabname and button list. This
+     *        will also save those details for later use.
+     */
     Rose.prototype.createTab = function (tab) {
         // Generate an ID
         var _id = this.generateID();
@@ -46,11 +66,23 @@ var Rose = (function () {
         _tab.textContent = tab.name;
         _tab.setAttribute('tab-id', _id);
         this._tabGroup.appendChild(_tab);
-        this._contents.push({ id: _id, name: tab.name, buttons: tab.buttons });
+        this._contents.push({
+            id: _id,
+            name: tab.name,
+            buttons: tab.buttons,
+            refresh: function () { _tab.click(); }
+        });
         if (this._tabGroup.children.length === 1) {
             _tab.click();
         }
+        return this._contents[this._contents.length - 1];
     };
+    /**
+     * Prints some text on the output element
+     *
+     * @param text
+     *        Any text to print to the output element
+     */
     Rose.prototype.output = function (text) {
         var _output = this._tabContents.querySelector('#rose-output');
         if (String(text).trim() !== '') {
@@ -61,6 +93,9 @@ var Rose = (function () {
         }
         _output.textContent = text;
     };
+    /**
+     * Initialize event handler of tab click
+     */
     Rose.prototype.initEvents = function () {
         var _this = this;
         // Tab Group onClick event
@@ -80,6 +115,9 @@ var Rose = (function () {
             }
         });
     };
+    /**
+     * Use JavaScript to append some CSS for rose tabs
+     */
     Rose.prototype.initStyle = function () {
         var _styleNode = document.createElement('style');
         var _styleObj = {
@@ -146,6 +184,11 @@ var Rose = (function () {
         _styleNode.textContent = CSSJSON.toCSS(_styleObj);
         document.body.appendChild(_styleNode);
     };
+    /**
+     * Generate a random ID
+     *
+     * @return {string} Alphanumeric ID
+     */
     Rose.prototype.generateID = function () {
         var _id = '';
         // generate random letters (max 4 letters)
