@@ -85,10 +85,14 @@ export class Dialog{
    * *Chainable.*
    */
   static createAutoDialog(url: string): Dialog {
-    let dialog = new Dialog();
-    dialog._url = url;
-    dialog._autoclose = true;
-    return dialog;
+    if (Environment.isSourceConfig()) {
+      throw new Error('Auto dialogs are not available for config windows.');
+    } else {
+      let dialog = new Dialog();
+      dialog._url = url;
+      dialog._autoclose = true;
+      return dialog;
+    }
   }
 
   /**
