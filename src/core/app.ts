@@ -53,7 +53,7 @@ export class App{
   /**
    * return: Promise<Rectangle>
    *
-   * Gets application default output resolution.
+   * Gets application default output resolution in pixels.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
