@@ -7,10 +7,13 @@ import {exec} from '../internal/internal';
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
- *  other URLS. Source plugins do not have this functionality (but their
+ *  other URLs. Source plugins do not have this functionality (but their
  *  configuration windows may use this.)
  *
- *  Note that opening a new dialog replaces the old one.
+ *  Note that opening a new dialog replaces the old one. Also, dialogs are
+ *  considered to be the same type of window as their parent windows: e.g.,
+ *  dialogs from extension windows are considered by the framework to have
+ *  access to the same functions as extensions.
  *
  *  Most of the methods are chainable.
  *
@@ -35,9 +38,9 @@ import {exec} from '../internal/internal';
  *    });
  *  });
  *
- *  // in the opened dialog, simply call
- *  // Dialog.return('returnedStringValue');
- *  // to return a value
+ *  // in the opened dialog, call Dialog.return() to return a value
+ *  //
+ *  // see documentation below for more details
  *  ```
  */
 export class Dialog{
