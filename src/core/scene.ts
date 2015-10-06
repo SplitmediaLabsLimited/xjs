@@ -160,7 +160,7 @@ export class Scene {
    *
    * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
-   * See also: @{link #core/Item Core/Item}
+   * See also: {@link #core/Item Core/Item}
    *
    * #### Usage
    *
@@ -414,7 +414,7 @@ export class Scene {
    * return: Promise<Item[]>
    *
    * Gets all the items (sources) in a specific scene.
-   * See also: @{link #core/Item Core/Item}
+   * See also: {@link #core/Item Core/Item}
    *
    * #### Usage
    *

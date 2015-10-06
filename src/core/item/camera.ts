@@ -142,9 +142,18 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: value<Rectangle>
    *
-   * Set Item position
+   * Set Item Position. Relative coordinates (0-1) are required.
    *
    * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
+   * item.setPosition(rect).then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */

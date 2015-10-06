@@ -92,7 +92,7 @@ export class Dialog{
   }
 
   /**
-   *  param: (result: string)
+   *  param: (result ?: string)
    *
    *  Closes this dialog with an optional string result. (Call this from the
    *  dialog.)
@@ -110,7 +110,7 @@ export class Dialog{
    *
    *  return: Dialog
    *
-   *  Sets the size of the dialog to be displayed.
+   *  Sets the size in pixels of the dialog to be displayed.
    *
    * *Chainable.*
    */
