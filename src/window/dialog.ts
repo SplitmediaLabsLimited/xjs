@@ -1,4 +1,5 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
@@ -44,6 +45,9 @@ import {exec} from '../internal/internal';
  *  ```
  */
 export class Dialog{
+  private _result: string;
+  private _resultListener: EventListener;
+
   private _size: Rectangle;
   private _title: string;
   private _url: string;
@@ -57,6 +61,16 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      this._result = null;
+
+      let eventListener = (e) => {
+        // self-deleting event listener
+        e.target.removeEventListener(e.type, eventListener);
+        this._result = e.detail;
+      };
+
+      document.addEventListener('xsplit-dialog-result', eventListener);
+
       return this;
     }
   }
@@ -208,13 +222,15 @@ export class Dialog{
    */
   getResult(): Promise<string> {
     return new Promise(resolve => {
-      let eventListener = (e) => {
-        // self-deleting event listener
-        e.target.removeEventListener(e.type, eventListener);
-        resolve(e.detail);
+      if (this._result !== null) {
+        resolve(this._result);
+      } else {
+        Object.observe(this, changes => {
+          if (changes.name === '_result') {
+            resolve(changes.object.result);
+          }
+        });
       }
-
-      document.addEventListener('xsplit-dialog-result', eventListener);
     });
   }
 
