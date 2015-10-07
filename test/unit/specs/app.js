@@ -10,6 +10,8 @@ describe('App ===', function() {
   var XJS = require('xjs');
   var App = new XJS.App();
   var Transition = XJS.Transition;
+  var env = new window.Environment(XJS);
+  var environments = ['config', 'extension', 'plugin'];
 
   describe('should get frametime', function() {
     beforeEach(function() {
@@ -2103,5 +2105,27 @@ describe('App ===', function() {
       expect(clearSet).toBe(true);
       done();
     });
+  });
+
+  describe('should be able to clear cookies', function() {
+    it('but not for source plugin window', function(done) {
+      env.set(environments[2]); // source plugin window
+      App.clearBrowserCookies().then(function() {
+        done.fail('Clear browser cookies should reject on source plugin,');
+      }, function() {
+        env.set(environments[0]); // source config window
+      }).then(App.clearBrowserCookies)
+      .then(function() {
+        env.set(environments[1]); // extension window
+      }, function() {
+        done.fail('Clear browser cookies should work in source config window.');
+      }).then(App.clearBrowserCookies)
+      .then(function() {
+        done();
+      }, function() {
+        done.fail('Clear browser cookies should work in extensions.');
+      });
+    });
+
   });
 });
