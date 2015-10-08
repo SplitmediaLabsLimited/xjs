@@ -14,6 +14,7 @@ export * from './core/item/camera';
 export * from './core/item/game';
 export * from './core/item/audio';
 export * from './core/item/html';
+export * from './core/item/flash';
 
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/item/ichroma';
 
