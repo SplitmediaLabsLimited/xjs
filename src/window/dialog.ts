@@ -67,9 +67,11 @@ export class Dialog{
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
         this._result = e.detail;
+        this._resultListener = null;
       };
 
       document.addEventListener('xsplit-dialog-result', eventListener);
+      this._resultListener = eventListener;
 
       return this;
     }
@@ -202,6 +204,8 @@ export class Dialog{
    * *Chainable.*
    */
   show(): Dialog {
+    this._result = null;
+
     if (this._autoclose) {
       exec('NewAutoDialog', this._url, '', this._size === undefined ?
         undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
@@ -224,7 +228,19 @@ export class Dialog{
     return new Promise(resolve => {
       if (this._result !== null) {
         resolve(this._result);
-      } else {
+      } else if (this._resultListener === null) { // no listener yet, attach one
+
+        let eventListener = (e) => {
+          // self-deleting event listener
+          e.target.removeEventListener(e.type, eventListener);
+          this._result = e.detail;
+          this._resultListener = null;
+          resolve(this._result);
+        };
+
+        document.addEventListener('xsplit-dialog-result', eventListener);
+        this._resultListener = eventListener;
+      } else { // listener already active
         Object.observe(this, changes => {
           if (changes.name === '_result') {
             resolve(changes.object.result);
