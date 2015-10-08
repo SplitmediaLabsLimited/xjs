@@ -112,6 +112,12 @@ describe('Scene', function() {
               }.bind(ctr), 10);
             break;
 
+            case 'prop:cname':
+              setTimeout(function() {
+                window.OnAsyncCallback(this, 'ChattyBoxxy');
+              }.bind(ctr), 10);
+            break;
+
             case 'prop:item':
               setTimeout(function() {
                 window.OnAsyncCallback(this, 'html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}');
@@ -129,6 +135,11 @@ describe('Scene', function() {
             case 'prop:name':
               setTimeout(function() {
                 window.OnAsyncCallback(this, 'HD Webcam C615');
+              }.bind(ctr), 10);
+            break;
+            case 'prop:cname':
+              setTimeout(function() {
+                window.OnAsyncCallback(this, 'MyCamera');
               }.bind(ctr), 10);
             break;
 

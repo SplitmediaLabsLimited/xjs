@@ -279,8 +279,15 @@ export class Scene {
               resolveScene();
             } else {
               return Promise.all(items.map(item => {
-                return new Promise(resolveItem => {
-                  item.getName().then(name => {
+                return new Promise((resolveItem, rejectItem) => {
+                  item.getCustomName().then(name => {
+                    if (name.match(param)) {
+                      matches.push(item);
+                      return '';
+                    } else {
+                      return item.getName();
+                    }
+                  }).then(name => {
                     if (name.match(param)) {
                       matches.push(item);
                       return '';
