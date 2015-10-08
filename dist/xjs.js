@@ -683,7 +683,7 @@ exports.Environment = Environment;
 Environment.initialize();
 },{}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -811,7 +811,7 @@ exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"../environment":3,"./iaudio":8,"./item":13}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -945,7 +945,7 @@ exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -1116,7 +1116,7 @@ exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/json":22,"../../internal/util/mixin":23,"../../internal/util/xml":24,"../environment":3,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -5663,7 +5663,7 @@ var Rectangle = (function () {
 exports.Rectangle = Rectangle;
 },{}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -5867,8 +5867,10 @@ var Dialog = (function () {
                 // self-deleting event listener
                 e.target.removeEventListener(e.type, eventListener);
                 _this._result = e.detail;
+                _this._resultListener = null;
             };
             document.addEventListener('xsplit-dialog-result', eventListener);
+            this._resultListener = eventListener;
             return this;
         }
     }
@@ -5992,6 +5994,7 @@ var Dialog = (function () {
      * *Chainable.*
      */
     Dialog.prototype.show = function () {
+        this._result = null;
         if (this._autoclose) {
             internal_1.exec('NewAutoDialog', this._url, '', this._size === undefined ?
                 undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
@@ -6013,10 +6016,25 @@ var Dialog = (function () {
             if (_this._result !== null) {
                 resolve(_this._result);
             }
+            else if (_this._resultListener === null) {
+                var eventListener = function (e) {
+                    // self-deleting event listener
+                    e.target.removeEventListener(e.type, eventListener);
+                    _this._result = e.detail;
+                    _this._resultListener = null;
+                    resolve(_this._result);
+                };
+                document.addEventListener('xsplit-dialog-result', eventListener);
+                _this._resultListener = eventListener;
+            }
             else {
                 Object.observe(_this, function (changes) {
-                    if (changes.name === '_result') {
-                        resolve(changes.object.result);
+                    // Search for changes with the name as result
+                    var change = changes.find(function (elem) {
+                        return elem.name === '_result';
+                    });
+                    if (change !== undefined) {
+                        resolve(change.object.result);
                     }
                 });
             }
@@ -6058,7 +6076,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
 }
 },{"../core/environment":3,"../internal/internal":20,"../util/rectangle":34}],37:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6115,7 +6133,7 @@ if (environment_1.Environment.isExtension()) {
 }
 },{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],38:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;

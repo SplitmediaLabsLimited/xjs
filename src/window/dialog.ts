@@ -242,8 +242,12 @@ export class Dialog{
         this._resultListener = eventListener;
       } else { // listener already active
         Object.observe(this, changes => {
-          if (changes.name === '_result') {
-            resolve(changes.object.result);
+          // Search for changes with the name as result
+          let change = changes.find(elem => {
+            return elem.name === '_result';
+          });
+          if (change !== undefined) {
+            resolve(change.object._result);
           }
         });
       }
