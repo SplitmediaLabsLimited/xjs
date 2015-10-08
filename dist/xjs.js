@@ -49,7 +49,7 @@ var App = (function () {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets application default output resolution.
+     * Gets application default output resolution in pixels.
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      *
@@ -683,7 +683,7 @@ exports.Environment = Environment;
 Environment.initialize();
 },{}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -811,7 +811,7 @@ exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"../environment":3,"./iaudio":8,"./item":13}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -945,7 +945,7 @@ exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -1116,7 +1116,7 @@ exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/json":22,"../../internal/util/mixin":23,"../../internal/util/xml":24,"../environment":3,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -1600,8 +1600,9 @@ var HTMLItem = (function (_super) {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets the custom browser window size for the source, if set,
-     * regardless of its layout on the mixer
+     * Gets the custom browser window size (in pixels) for the source, if set,
+     * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+     * custom size has been set.
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
@@ -2480,7 +2481,7 @@ var ItemLayout = (function () {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:pos', slot).then(function (val) {
                 var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
-                _this.position = rectangle_1.Rectangle.fromCoordinates(Number(top), Number(left), Number(right), Number(bottom));
+                _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
             });
         });
@@ -3241,7 +3242,7 @@ var Scene = (function () {
      *
      * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
      *
-     * See also: @{link #core/Item Core/Item}
+     * See also: {@link #core/Item Core/Item}
      *
      * #### Usage
      *
@@ -3496,7 +3497,7 @@ var Scene = (function () {
      * return: Promise<Item[]>
      *
      * Gets all the items (sources) in a specific scene.
-     * See also: @{link #core/Item Core/Item}
+     * See also: {@link #core/Item Core/Item}
      *
      * #### Usage
      *
@@ -4735,7 +4736,7 @@ var Game = (function () {
     /**
      * return: Rectangle
      *
-     * Gets the game resolution.
+     * Gets the game resolution in pixels.
      *
      * #### Usage
      *
@@ -5008,7 +5009,7 @@ var System = (function () {
      * return: Promise<AudioDevice[]>
      *
      * Gets audio devices, both input and output
-     * See also: @{link #system/AudioDevice System/AudioDevice}
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * #### Usage
      *
@@ -5056,7 +5057,7 @@ var System = (function () {
      * return: Promise<CameraDevice[]>
      *
      * Gets all camera devices
-     * See also: @{link #system/CameraDevice System/CameraDevice}
+     * See also: {@link #system/CameraDevice System/CameraDevice}
      *
      * #### Usage
      *
@@ -5090,7 +5091,7 @@ var System = (function () {
      * return: Promise<Game[]>
      *
      * Gets all currently running games
-     * See also: @{link #system/Game System/Game}
+     * See also: {@link #system/Game System/Game}
      *
      * #### Usage
      *
@@ -5119,7 +5120,7 @@ var System = (function () {
      * return: Promise<MicrophoneDevice[]>
      *
      * Gets all audio capture devices that may be added to the stage
-     * See also: @{link #system/MicrophoneDevice System/MicrophoneDevice}
+     * See also: {@link #system/MicrophoneDevice System/MicrophoneDevice}
      *
      * #### Usage
      *
@@ -5444,6 +5445,15 @@ function setReady() {
 }
 exports.setReady = setReady;
 },{}],34:[function(require,module,exports){
+/**
+ *  The Rectangle class is a utility class used in many different parts of the
+ *  framework. Please note that there are cases where the framework uses
+ *  absolute (pixel) measurements, and cases where relative measurements are
+ *  required (0 being the left/top edges and 1 being the right/bottom edges.)
+ *
+ *  Please check the documentation of each function to determine the necessary
+ *  parameters for the Rectangle to be created.
+ */
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -5549,6 +5559,15 @@ var Rectangle = (function () {
         }
         return this;
     };
+    /**
+     *  param: (width: number, height: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from width and height dimensions. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
     Rectangle.fromDimensions = function (width, height) {
         if (width < 0 || height < 0) {
             throw new Error('Rectangle dimensions cannot be negative.');
@@ -5558,6 +5577,15 @@ var Rectangle = (function () {
         rect._height = height;
         return rect;
     };
+    /**
+     *  param: (top: number, left: number, right: number, bottom: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from coordinates. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
     Rectangle.fromCoordinates = function (top, left, right, bottom) {
         if (top > bottom) {
             throw new Error('Top coordinate must be smaller than bottom.');
@@ -5572,9 +5600,20 @@ var Rectangle = (function () {
         rect.setBottom(bottom); // calculates height
         return rect;
     };
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the width and height values.
+     */
     Rectangle.prototype.toDimensionString = function () {
         return this._width + ',' + this._height;
     };
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the coordinates in the order:
+     *  left, top, right, bottom.
+     */
     Rectangle.prototype.toCoordinateString = function () {
         if (this._left === undefined) {
             throw new Error('This Rectangle instance does not have coordinates.');
@@ -5583,6 +5622,27 @@ var Rectangle = (function () {
             return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;
         }
     };
+    /**
+     *  return: string
+     *  ```
+     *  param: (format ?: string)
+     *  ```
+     *  Returns a string representation of the Rectangle object. If the format
+     *  optional parameter is omitted, then this is simply the string from
+     *  `toDimensionString()`. Sample usage:
+     *
+     *  ```javascript
+     *  console.log(rect.toString('Origin is at (:left, :top)'));```
+     *
+     *  You can format the output string by specifying the following markers in
+     *  the parameter:
+     *  - :left
+     *  - :top
+     *  - :right
+     *  - :bottom
+     *  - :width
+     *  - :height
+     */
     Rectangle.prototype.toString = function (value) {
         if (value === undefined) {
             return this.toDimensionString(); // all rectangles have dimensions
@@ -5603,7 +5663,7 @@ var Rectangle = (function () {
 exports.Rectangle = Rectangle;
 },{}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -5753,15 +5813,19 @@ var SourceConfigWindow = (function (_super) {
 exports.SourceConfigWindow = SourceConfigWindow;
 },{"../internal/internal":20,"../util/eventemitter":31}],36:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var environment_1 = require('../core/environment');
 var internal_1 = require('../internal/internal');
 /**
  *  This class is used to spawn new browser processes that can be used to open
- *  other URLS. Source plugins do not have this functionality (but their
+ *  other URLs. Source plugins do not have this functionality (but their
  *  configuration windows may use this.)
  *
- *  Note that opening a new dialog replaces the old one.
+ *  Note that opening a new dialog replaces the old one. Also, dialogs are
+ *  considered to be the same type of window as their parent windows: e.g.,
+ *  dialogs from extension windows are considered by the framework to have
+ *  access to the same functions as extensions.
  *
  *  Most of the methods are chainable.
  *
@@ -5786,17 +5850,25 @@ var internal_1 = require('../internal/internal');
  *    });
  *  });
  *
- *  // in the opened dialog, simply call
- *  // Dialog.return('returnedStringValue');
- *  // to return a value
+ *  // in the opened dialog, call Dialog.return() to return a value
+ *  //
+ *  // see documentation below for more details
  *  ```
  */
 var Dialog = (function () {
     function Dialog() {
+        var _this = this;
         if (environment_1.Environment.isSourcePlugin()) {
             throw new Error('Dialogs are not available for source plugins.');
         }
         else {
+            this._result = null;
+            var eventListener = function (e) {
+                // self-deleting event listener
+                e.target.removeEventListener(e.type, eventListener);
+                _this._result = e.detail;
+            };
+            document.addEventListener('xsplit-dialog-result', eventListener);
             return this;
         }
     }
@@ -5832,7 +5904,7 @@ var Dialog = (function () {
         return dialog;
     };
     /**
-     *  param: (result: string)
+     *  param: (result ?: string)
      *
      *  Closes this dialog with an optional string result. (Call this from the
      *  dialog.)
@@ -5848,7 +5920,7 @@ var Dialog = (function () {
      *
      *  return: Dialog
      *
-     *  Sets the size of the dialog to be displayed.
+     *  Sets the size in pixels of the dialog to be displayed.
      *
      * *Chainable.*
      */
@@ -5936,13 +6008,18 @@ var Dialog = (function () {
      *  Gets the string result returned from the spawned dialog.
      */
     Dialog.prototype.getResult = function () {
+        var _this = this;
         return new Promise(function (resolve) {
-            var eventListener = function (e) {
-                // self-deleting event listener
-                e.target.removeEventListener(e.type, eventListener);
-                resolve(e.detail);
-            };
-            document.addEventListener('xsplit-dialog-result', eventListener);
+            if (_this._result !== null) {
+                resolve(_this._result);
+            }
+            else {
+                Object.observe(_this, function (changes) {
+                    if (changes.name === '_result') {
+                        resolve(changes.object.result);
+                    }
+                });
+            }
         });
     };
     /**
@@ -5981,7 +6058,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
 }
 },{"../core/environment":3,"../internal/internal":20,"../util/rectangle":34}],37:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6038,7 +6115,7 @@ if (environment_1.Environment.isExtension()) {
 }
 },{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],38:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;

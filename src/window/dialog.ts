@@ -1,4 +1,5 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
@@ -7,10 +8,13 @@ import {exec} from '../internal/internal';
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
- *  other URLS. Source plugins do not have this functionality (but their
+ *  other URLs. Source plugins do not have this functionality (but their
  *  configuration windows may use this.)
  *
- *  Note that opening a new dialog replaces the old one.
+ *  Note that opening a new dialog replaces the old one. Also, dialogs are
+ *  considered to be the same type of window as their parent windows: e.g.,
+ *  dialogs from extension windows are considered by the framework to have
+ *  access to the same functions as extensions.
  *
  *  Most of the methods are chainable.
  *
@@ -35,12 +39,15 @@ import {exec} from '../internal/internal';
  *    });
  *  });
  *
- *  // in the opened dialog, simply call
- *  // Dialog.return('returnedStringValue');
- *  // to return a value
+ *  // in the opened dialog, call Dialog.return() to return a value
+ *  //
+ *  // see documentation below for more details
  *  ```
  */
 export class Dialog{
+  private _result: string;
+  private _resultListener: EventListener;
+
   private _size: Rectangle;
   private _title: string;
   private _url: string;
@@ -54,6 +61,16 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      this._result = null;
+
+      let eventListener = (e) => {
+        // self-deleting event listener
+        e.target.removeEventListener(e.type, eventListener);
+        this._result = e.detail;
+      };
+
+      document.addEventListener('xsplit-dialog-result', eventListener);
+
       return this;
     }
   }
@@ -92,7 +109,7 @@ export class Dialog{
   }
 
   /**
-   *  param: (result: string)
+   *  param: (result ?: string)
    *
    *  Closes this dialog with an optional string result. (Call this from the
    *  dialog.)
@@ -110,7 +127,7 @@ export class Dialog{
    *
    *  return: Dialog
    *
-   *  Sets the size of the dialog to be displayed.
+   *  Sets the size in pixels of the dialog to be displayed.
    *
    * *Chainable.*
    */
@@ -205,13 +222,15 @@ export class Dialog{
    */
   getResult(): Promise<string> {
     return new Promise(resolve => {
-      let eventListener = (e) => {
-        // self-deleting event listener
-        e.target.removeEventListener(e.type, eventListener);
-        resolve(e.detail);
+      if (this._result !== null) {
+        resolve(this._result);
+      } else {
+        Object.observe(this, changes => {
+          if (changes.name === '_result') {
+            resolve(changes.object.result);
+          }
+        });
       }
-
-      document.addEventListener('xsplit-dialog-result', eventListener);
     });
   }
 

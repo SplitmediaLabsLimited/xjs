@@ -626,11 +626,8 @@ export class Item implements IItemLayout {
 
   /**
    * param: (value: Rectangle)
-   * ```
-   * return: Promise<Item>
-   * ```
    *
-   * Set Item position
+   * Set Item Position. Relative coordinates (0-1) are required.
    *
    * *Chainable.*
    *
