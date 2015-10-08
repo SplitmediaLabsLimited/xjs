@@ -7,13 +7,6 @@
   var Dialog = XJS.Dialog;
   var newDialog = Dialog.createDialog('http://localhost:9000');
 
-  if (newDialog) {
-    newDialog.getResult().then(function(details) {
-      Rose.output(details);
-      console.log(details);
-    });
-  }
-
   Rose.createTab({
     name: 'Dialog',
     buttons: [
@@ -30,6 +23,16 @@
         onClick: function() {
           newDialog = Dialog.createAutoDialog('http://localhost:9000');
           Rose.output('Click Show!');
+        }
+      },
+
+      {
+        name: 'getResult',
+        onClick: function() {
+          newDialog.getResult().then(function(details) {
+            Rose.output(details);
+            console.log(details);
+          });
         }
       },
 
