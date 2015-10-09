@@ -41,32 +41,41 @@ function readMetaConfigUrl(): Promise<any> {
     if (Environment.isSourcePlugin()) {
       var configObj = {};
       // initialize config URL if necessary
+      var promise = new Promise(resolveInner => {
+        exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', result => {
+          resolveInner(decodeURIComponent(result));
+        });
+      });
 
-      try {
-        var config = exec('GetConfiguration');
-        configObj = JSON.parse(config);
-      }
-      catch(e) {
-
-      }
-      finally {
-        var metas = document.getElementsByTagName('meta');
-        for (var i = metas.length - 1; i >= 0; i--) {
-          if (metas[i].name === 'xsplit:config-url') {
-            let url = resolveRelativePath(
-              metas[i].content, window.location.href);
-            configObj['configUrl'] = url;
-
-            var persist = {
-              configUrl: url
-            };
-            Global.setPersistentConfig(persist);
-            break;
+      promise.then(browserConfig => {
+        try {
+          if (browserConfig === '' || browserConfig === 'null') {
+            browserConfig = exec('GetConfiguration');
           }
+          configObj = JSON.parse(<string>browserConfig);
         }
-        exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
-        resolve();
-      }
+        catch(e) {
+
+        }
+        finally {
+          var metas = document.getElementsByTagName('meta');
+          for (var i = metas.length - 1; i >= 0; i--) {
+            if (metas[i].name === 'xsplit:config-url') {
+              let url = resolveRelativePath(
+                metas[i].content, window.location.href);
+              configObj['configUrl'] = url;
+              var persist = {
+                configUrl: url
+              };
+              Global.setPersistentConfig(persist);
+              break;
+            }
+          }
+          exec('SetBrowserProperty', 'Configuration', JSON.stringify(configObj));
+          resolve();
+        }
+      });
+
     } else {
       resolve();
     }
