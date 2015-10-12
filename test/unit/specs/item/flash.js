@@ -164,6 +164,12 @@ describe('FlashItem', function() {
     enumerated = [];
     env.set('extension');
     if (!isXSplit) {
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{FLASHID}' });
+      var item2 = new XJS.Item({id : '{FLASHID2}'});
+      item1.getType();
+      item2.getType();
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
