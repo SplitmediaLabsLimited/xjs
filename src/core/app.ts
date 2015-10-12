@@ -568,8 +568,18 @@ export class App{
   }
 
   /**
+   * return: Promise<boolean>
+   *
    *  Clears all cookies across all browser instances. Not available to
    *  source plugins (call this from the configuration window instead.)
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.clearBrowserCookies.then(function(val) {
+   *  var isCleared = val;
+   * });
+   * ```
    */
   clearBrowserCookies(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -577,7 +587,7 @@ export class App{
         reject(new Error('This method is not available to source plugins.'));
       } else {
         exec('CallHost', 'deletecookie:videoitemprop');
-        resolve();
+        resolve(true);
       }
     });
   }
