@@ -20,9 +20,9 @@
 
 {%- for member in doc.members %}{% if not member.private %}
   <section class="member">
-    <h1 id="{$ member.name $}" class="name">
+    <a name="{$ member.name $}"><h1 id="{$ member.name $}" class="name">
       {$ member.name $}{% if member.optional %}?{% endif %}{$ paramList(member.params) $}
-    </h1>
+    </h1></a>
     {% marked %}
       {$ member.description $}
     {% endmarked %}
@@ -32,9 +32,9 @@
 
 {%- for static in doc.statics %}{% if static.name != 'prototype' %}
   <section class="member static">
-    <h1 id="{$ static.name $}" class="name">
+    <a name="{$ static.name $}"><h1 id="{$ static.name $}" class="name">
       <code>static</code> {$ static.name $}{% if static.optional %}?{% endif %}{$ paramList(static.params) $}
-    </h1>
+    </h1></a>
     {% marked %}
       {$ static.description $}
     {% endmarked %}
