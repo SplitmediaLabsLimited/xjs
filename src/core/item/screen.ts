@@ -20,8 +20,7 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 
 /**
- * The ScreenItem class represents a flash source item, which is any SWF file
- * loaded to XSplit Broadcaster.
+ * The ScreenItem class represents a screen capture item.
  *
  * Inherits from: {@link #core/Item Core/Item}
  *
