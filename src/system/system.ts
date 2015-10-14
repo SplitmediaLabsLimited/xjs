@@ -206,6 +206,45 @@ export class System{
     });
   }
 
+
+  /**
+   * return: Promise<string[]>
+   *
+   * Gets array of system-installed fonts 
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var mySelect = document.getElementById("mySelect");
+   * 
+   * System.getSystemFonts().then(function(fontsArray) {
+   *   var fontsArrayLength = fontsArray.length;
+   *   for (var i = 0; i < fontsArrayLength; ++i) {
+   *     var option = document.createElement("option");
+   *     option.text = "Kiwi";
+   *     mySelect.add(option);        
+   *   }
+   * });
+   * ```
+   */
+  static getFonts(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        iApp.get('html:fontlist').then(fontlist => {
+          if (typeof fontlist === 'string' && fontlist !== '') {
+            var fontArray = fontlist.split(',');
+            resolve(fontArray);
+          }
+          else {
+            reject(Error('cannot fetch list of available system fonts'));
+          }
+        });
+      }
+    });
+  }
+
   /**
    * return: Promise<JSON>
    *
