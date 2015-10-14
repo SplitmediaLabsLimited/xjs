@@ -255,7 +255,9 @@ export class Scene {
   /**
    * return: Promise<Item[]>
    *
-   * Searches all scenes for an item by name substring.
+   * Searches all scenes for an item by name substring. This function compares
+   * against custom name first (recommended) before falling back to the name
+   * property of the source.
    *
    *
    * #### Usage
