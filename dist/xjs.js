@@ -5,6 +5,8 @@ var rectangle_1 = require('../util/rectangle');
 var audio_1 = require('../system/audio');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
+var internal_1 = require('../internal/internal');
+var environment_1 = require('./environment');
 var transition_1 = require('./transition');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
@@ -538,10 +540,35 @@ var App = (function () {
             });
         });
     };
+    /**
+     * return: Promise<boolean>
+     *
+     *  Clears all cookies across all browser instances. Not available to
+     *  source plugins (call this from the configuration window instead.)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.clearBrowserCookies.then(function(val) {
+     *  var isCleared = val;
+     * });
+     * ```
+     */
+    App.prototype.clearBrowserCookies = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(new Error('This method is not available to source plugins.'));
+            }
+            else {
+                internal_1.exec('CallHost', 'deletecookie:videoitemprop');
+                resolve(true);
+            }
+        });
+    };
     return App;
 })();
 exports.App = App;
-},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24,"../system/audio":25,"../util/rectangle":34,"./transition":16}],2:[function(require,module,exports){
+},{"../internal/app":17,"../internal/internal":20,"../internal/util/json":22,"../internal/util/xml":24,"../system/audio":25,"../util/rectangle":34,"./environment":3,"./transition":16}],2:[function(require,module,exports){
 var app_1 = require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
@@ -683,7 +710,7 @@ exports.Environment = Environment;
 Environment.initialize();
 },{}],4:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -811,7 +838,7 @@ exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"../environment":3,"./iaudio":8,"./item":13}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -945,7 +972,7 @@ exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/mixin":23,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -1116,7 +1143,7 @@ exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
 },{"../../internal/item":21,"../../internal/util/json":22,"../../internal/util/mixin":23,"../../internal/util/xml":24,"../environment":3,"./ichroma":9,"./icolor":10,"./ilayout":12,"./item":13,"./itransition":14}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -3337,7 +3364,9 @@ var Scene = (function () {
     /**
      * return: Promise<Item[]>
      *
-     * Searches all scenes for an item by name substring.
+     * Searches all scenes for an item by name substring. This function compares
+     * against custom name first (recommended) before falling back to the name
+     * property of the source.
      *
      *
      * #### Usage
@@ -3361,8 +3390,16 @@ var Scene = (function () {
                         }
                         else {
                             return Promise.all(items.map(function (item) {
-                                return new Promise(function (resolveItem) {
-                                    item.getName().then(function (name) {
+                                return new Promise(function (resolveItem, rejectItem) {
+                                    item.getCustomName().then(function (name) {
+                                        if (name.match(param)) {
+                                            matches.push(item);
+                                            return '';
+                                        }
+                                        else {
+                                            return item.getName();
+                                        }
+                                    }).then(function (name) {
                                         if (name.match(param)) {
                                             matches.push(item);
                                             return '';
@@ -5663,7 +5700,7 @@ var Rectangle = (function () {
 exports.Rectangle = Rectangle;
 },{}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6034,7 +6071,7 @@ var Dialog = (function () {
                         return elem.name === '_result';
                     });
                     if (change !== undefined) {
-                        resolve(change.object.result);
+                        resolve(change.object._result);
                     }
                 });
             }
@@ -6076,7 +6113,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
 }
 },{"../core/environment":3,"../internal/internal":20,"../util/rectangle":34}],37:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6133,7 +6170,7 @@ if (environment_1.Environment.isExtension()) {
 }
 },{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],38:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
