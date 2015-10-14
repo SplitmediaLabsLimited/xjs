@@ -5,8 +5,6 @@ var rectangle_1 = require('../util/rectangle');
 var audio_1 = require('../system/audio');
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
-var internal_1 = require('../internal/internal');
-var environment_1 = require('./environment');
 var transition_1 = require('./transition');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
@@ -51,7 +49,7 @@ var App = (function () {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets application default output resolution.
+     * Gets application default output resolution in pixels.
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      *
@@ -440,77 +438,6 @@ var App = (function () {
             });
         });
     };
-    /**
-     * param: (url: string [, width: number = 300 [, height: number = 300 [, flags: number [, title: string ]]]])
-     *
-     * Creates a persistent modal dialog.
-     * This method is not available for source
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * // you may use the following:
-     * //     * App.BORDER_ENABLE (1)
-     * //     * App.BORDER_ENABLE_CAPTION (2)
-     * //     * App.BORDER_ENABLE_SIZING (4)
-     * //     * App.BORDER_ENABLE_MINIMIZE (8)
-     * //     * App.BORDER_ENABLE_MAXIMIZE (16)
-     * App.newDialog(url, width, height, flags, title);
-     * ```
-     */
-    App.prototype.newDialog = function (url, width, height, flags, title) {
-        if (width === void 0) { width = 300; }
-        if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourcePlugin()) {
-            throw new TypeError('function is not available for source');
-        }
-        else if (url !== undefined && url !== '') {
-            var params = ['NewDialog', url, '', width + ',' + height];
-            for (var i = 3; i < arguments.length; i++) {
-                if (arguments[i] !== undefined)
-                    params.push(String(arguments[i]));
-            }
-            internal_1.exec.apply(this, params);
-        }
-        else {
-            throw new Error('URL parameter expected');
-        }
-    };
-    /**
-     * param: (url: string [, width: number = 300 [, height: number = 300]])
-     *
-     * Creates a dialog that automatically closes on outside click
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * App.newAutoDialog(url, width, height);
-     * ```
-     */
-    App.prototype.newAutoDialog = function (url, width, height) {
-        if (width === void 0) { width = 300; }
-        if (height === void 0) { height = 300; }
-        if (environment_1.Environment.isSourcePlugin()) {
-            throw new TypeError('function is not available for source');
-        }
-        else if (url !== undefined && url !== '') {
-            internal_1.exec('NewAutoDialog', url, width + ',' + height);
-        }
-        else {
-            throw new Error('URL parameter expected');
-        }
-    };
-    /**
-     * Close a created dialog
-     */
-    App.prototype.closeDialog = function () {
-        if (environment_1.Environment.isSourcePlugin()) {
-            throw new TypeError('function is not available for source');
-        }
-        else {
-            internal_1.exec('CloseDialog');
-        }
-    };
     // Transition Services
     /**
      * return: Promise<Transition>
@@ -611,24 +538,23 @@ var App = (function () {
             });
         });
     };
-    // Dialog Services
-    App.BORDER_ENABLE = 1;
-    App.BORDER_ENABLE_CAPTION = 2;
-    App.BORDER_ENABLE_SIZING = 4;
-    App.BORDER_ENABLE_MINIMIZE = 8;
-    App.BORDER_ENABLE_MAXIMIZE = 16;
     return App;
 })();
 exports.App = App;
-},{"../internal/app":17,"../internal/internal":20,"../internal/util/json":22,"../internal/util/xml":24,"../system/audio":25,"../util/rectangle":34,"./environment":3,"./transition":16}],2:[function(require,module,exports){
+},{"../internal/app":17,"../internal/util/json":22,"../internal/util/xml":24,"../system/audio":25,"../util/rectangle":34,"./transition":16}],2:[function(require,module,exports){
 var app_1 = require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
     function Channel(props) {
-        this.name = props.name;
-        this.stat = props.stat;
-        this.channel = props.channel;
+        this._name = props.name;
+        this._stat = props.stat;
+        this._channel = props.channel;
     }
+    /**
+     *  return: Promise<Channel[]>
+     *
+     *  Gets the list of currently active channels.
+     */
     Channel.getActiveStreamChannels = function () {
         return new Promise(function (resolve) {
             app_1.App.getAsList('recstat').then(function (activeStreams) {
@@ -649,10 +575,17 @@ var Channel = (function () {
             });
         });
     };
-    /** return: Promise<Channel[]>
+    /**
+     *  return: Promise<string>
      *
-     *  Gets the list of active stream channels.
+     *  Gets the name of the channel.
      */
+    Channel.prototype.getName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this._name);
+        });
+    };
     /**
      * return: Promise<number>
      *
@@ -660,7 +593,7 @@ var Channel = (function () {
     Channel.prototype.getStreamDrops = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('streamdrops:' + _this.name).then(function (val) {
+            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
                 var drops = val.split(','), dropped = Number(drops[0]) || 0;
                 resolve(dropped);
             });
@@ -673,19 +606,20 @@ var Channel = (function () {
     Channel.prototype.getStreamRenderedFrames = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('streamdrops:' + _this.name).then(function (val) {
+            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
                 var drops = val.split(','), rendered = Number(drops[1]) || 0;
                 resolve(rendered);
             });
         });
     };
     /**
+     * return: Promise<number>
      *
      * Gets the current duration of the stream in microseconds  */
     Channel.prototype.getStreamTime = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('streamtime:' + _this.name).then(function (val) {
+            app_1.App.get('streamtime:' + _this._name).then(function (val) {
                 var duration = Number(val) / 10;
                 resolve(duration);
             });
@@ -1230,7 +1164,10 @@ var HTMLItem = (function (_super) {
         });
     };
     /**
-     * param: value<string>
+     * param: (url: string)
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
      * Sets the URL of this webpage source.
      *
@@ -1274,10 +1211,16 @@ var HTMLItem = (function (_super) {
         });
     };
     /**
-     * param: value<string>
+     * param: (js: string, refresh: boolean = false)
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
      * Sets the javascript commands to be executed on source
-     * right upon setting and on load
+     * right upon setting and on load. Optionally set second parameter
+     * to true to refresh source (needed to clean previously executed JS code.)
+     *
+     * *Chainable.*
      */
     HTMLItem.prototype.setBrowserJS = function (value, refresh) {
         var _this = this;
@@ -1334,7 +1277,7 @@ var HTMLItem = (function (_super) {
         });
     };
     /**
-     * return: Promise<string>
+     * return: Promise<boolean>
      *
      * Gets if BrowserJS is enabled and executed on load
      */
@@ -1358,10 +1301,15 @@ var HTMLItem = (function (_super) {
     };
     /**
      * param: value<string>
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
-     * Enables or disables execution of the set BrowserJs upon load,
-     * note that disabling prompts source to be refreshed
-     * in order to remove the earlier set BrowserJS
+     * Enables or disables execution of the set BrowserJs upon load.
+     * Note that disabling this will require source to be refreshed
+     * in order to remove any BrowserJS previously executed.
+     *
+     * *Chainable.*
      */
     HTMLItem.prototype.enableBrowserJS = function (value) {
         var _this = this;
@@ -1451,8 +1399,13 @@ var HTMLItem = (function (_super) {
     };
     /**
      * param: value<string>
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
      * Sets the custom CSS to be applied to the document upon loading
+     *
+     * *Chainable.*
      */
     HTMLItem.prototype.setCustomCSS = function (value) {
         var _this = this;
@@ -1535,8 +1488,13 @@ var HTMLItem = (function (_super) {
     };
     /**
      * param: value<string>
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
      * Enables or disables application of custom CSS to the document
+     *
+     * *Chainable.*
      */
     HTMLItem.prototype.enableCustomCSS = function (value) {
         var _this = this;
@@ -1622,8 +1580,13 @@ var HTMLItem = (function (_super) {
     };
     /**
      * param: Promise<boolean>
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
-     * Enable transparency of CEF browser
+     * Enable or disabled transparency of CEF browser
+     *
+     * *Chainable.*
      */
     HTMLItem.prototype.enableBrowserTransparency = function (value) {
         var _this = this;
@@ -1637,8 +1600,11 @@ var HTMLItem = (function (_super) {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets the custom browser window size for the source, if set,
-     * regardless of its layout on the mixer
+     * Gets the custom browser window size (in pixels) for the source, if set,
+     * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+     * custom size has been set.
+     *
+     * See also: {@link #util/Rectangle Util/Rectangle}
      */
     HTMLItem.prototype.getBrowserCustomSize = function () {
         var _this = this;
@@ -1659,9 +1625,16 @@ var HTMLItem = (function (_super) {
     };
     /**
      * param: Promise<Rectangle>
+     * ```
+     * return: Promise<HTMLItem>
+     * ```
      *
      * Sets the custom browser window size for the source
      * regardless of its layout on the mixer
+     *
+     * *Chainable.*
+     *
+     * See also: {@link #util/Rectangle Util/Rectangle}
      */
     HTMLItem.prototype.setBrowserCustomSize = function (value) {
         var _this = this;
@@ -2508,7 +2481,7 @@ var ItemLayout = (function () {
             var slot = item_1.Item.attach(_this._id);
             item_1.Item.get('prop:pos', slot).then(function (val) {
                 var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
-                _this.position = rectangle_1.Rectangle.fromCoordinates(Number(top), Number(left), Number(right), Number(bottom));
+                _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
             });
         });
@@ -3269,7 +3242,7 @@ var Scene = (function () {
      *
      * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
      *
-     * See also: @{link #core/Item Core/Item}
+     * See also: {@link #core/Item Core/Item}
      *
      * #### Usage
      *
@@ -3524,7 +3497,7 @@ var Scene = (function () {
      * return: Promise<Item[]>
      *
      * Gets all the items (sources) in a specific scene.
-     * See also: @{link #core/Item Core/Item}
+     * See also: {@link #core/Item Core/Item}
      *
      * #### Usage
      *
@@ -3595,12 +3568,13 @@ var Scene = (function () {
         });
     };
     /**
-     * param: Array<Item> | Array<string>
+     * param: Array<Item> | Array<string> (item IDs)
      * ```
      * return: Promise<Scene>
      * ```
      *
-     * Sets the item order of the current scene. It is ordered as bottom to top.
+     * Sets the item order of the current scene. The first item in the array will
+     * be on top (will cover items below it).
      */
     Scene.prototype.setItemOrder = function (items) {
         var _this = this;
@@ -3609,6 +3583,7 @@ var Scene = (function () {
                 reject(Error('not available for source plugins'));
             }
             else {
+                items.reverse();
                 var ids = [];
                 Scene.getActiveScene().then(function (scene) {
                     if (items.every(function (el) { return el instanceof item_1.Item; })) {
@@ -4761,7 +4736,7 @@ var Game = (function () {
     /**
      * return: Rectangle
      *
-     * Gets the game resolution.
+     * Gets the game resolution in pixels.
      *
      * #### Usage
      *
@@ -5034,7 +5009,7 @@ var System = (function () {
      * return: Promise<AudioDevice[]>
      *
      * Gets audio devices, both input and output
-     * See also: @{link #system/AudioDevice System/AudioDevice}
+     * See also: {@link #system/AudioDevice System/AudioDevice}
      *
      * #### Usage
      *
@@ -5082,7 +5057,7 @@ var System = (function () {
      * return: Promise<CameraDevice[]>
      *
      * Gets all camera devices
-     * See also: @{link #system/CameraDevice System/CameraDevice}
+     * See also: {@link #system/CameraDevice System/CameraDevice}
      *
      * #### Usage
      *
@@ -5116,7 +5091,7 @@ var System = (function () {
      * return: Promise<Game[]>
      *
      * Gets all currently running games
-     * See also: @{link #system/Game System/Game}
+     * See also: {@link #system/Game System/Game}
      *
      * #### Usage
      *
@@ -5145,7 +5120,7 @@ var System = (function () {
      * return: Promise<MicrophoneDevice[]>
      *
      * Gets all audio capture devices that may be added to the stage
-     * See also: @{link #system/MicrophoneDevice System/MicrophoneDevice}
+     * See also: {@link #system/MicrophoneDevice System/MicrophoneDevice}
      *
      * #### Usage
      *
@@ -5470,6 +5445,15 @@ function setReady() {
 }
 exports.setReady = setReady;
 },{}],34:[function(require,module,exports){
+/**
+ *  The Rectangle class is a utility class used in many different parts of the
+ *  framework. Please note that there are cases where the framework uses
+ *  absolute (pixel) measurements, and cases where relative measurements are
+ *  required (0 being the left/top edges and 1 being the right/bottom edges.)
+ *
+ *  Please check the documentation of each function to determine the necessary
+ *  parameters for the Rectangle to be created.
+ */
 var Rectangle = (function () {
     function Rectangle() {
     }
@@ -5575,6 +5559,15 @@ var Rectangle = (function () {
         }
         return this;
     };
+    /**
+     *  param: (width: number, height: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from width and height dimensions. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
     Rectangle.fromDimensions = function (width, height) {
         if (width < 0 || height < 0) {
             throw new Error('Rectangle dimensions cannot be negative.');
@@ -5584,6 +5577,15 @@ var Rectangle = (function () {
         rect._height = height;
         return rect;
     };
+    /**
+     *  param: (top: number, left: number, right: number, bottom: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from coordinates. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
     Rectangle.fromCoordinates = function (top, left, right, bottom) {
         if (top > bottom) {
             throw new Error('Top coordinate must be smaller than bottom.');
@@ -5598,9 +5600,20 @@ var Rectangle = (function () {
         rect.setBottom(bottom); // calculates height
         return rect;
     };
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the width and height values.
+     */
     Rectangle.prototype.toDimensionString = function () {
         return this._width + ',' + this._height;
     };
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the coordinates in the order:
+     *  left, top, right, bottom.
+     */
     Rectangle.prototype.toCoordinateString = function () {
         if (this._left === undefined) {
             throw new Error('This Rectangle instance does not have coordinates.');
@@ -5609,6 +5622,27 @@ var Rectangle = (function () {
             return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;
         }
     };
+    /**
+     *  return: string
+     *  ```
+     *  param: (format ?: string)
+     *  ```
+     *  Returns a string representation of the Rectangle object. If the format
+     *  optional parameter is omitted, then this is simply the string from
+     *  `toDimensionString()`. Sample usage:
+     *
+     *  ```javascript
+     *  console.log(rect.toString('Origin is at (:left, :top)'));```
+     *
+     *  You can format the output string by specifying the following markers in
+     *  the parameter:
+     *  - :left
+     *  - :top
+     *  - :right
+     *  - :bottom
+     *  - :width
+     *  - :height
+     */
     Rectangle.prototype.toString = function (value) {
         if (value === undefined) {
             return this.toDimensionString(); // all rectangles have dimensions
@@ -5648,9 +5682,9 @@ var internal_1 = require('../internal/internal');
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  At the moment, the only relevant event for developers is:
- *  - ```set-selected-tab```: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
 var SourceConfigWindow = (function (_super) {
     __extends(SourceConfigWindow, _super);
@@ -5687,8 +5721,7 @@ var SourceConfigWindow = (function (_super) {
         SourceConfigWindow._instance = this;
     }
     /**
-     *  Gets the instance of the window utility. Use this instead of
-     *  the constructor.
+     *  Gets the instance of the window utility. Use this instead of the constructor.
      */
     SourceConfigWindow.getInstance = function () {
         if (SourceConfigWindow._instance === undefined) {
@@ -5780,6 +5813,251 @@ var SourceConfigWindow = (function (_super) {
 exports.SourceConfigWindow = SourceConfigWindow;
 },{"../internal/internal":20,"../util/eventemitter":31}],36:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
+var rectangle_1 = require('../util/rectangle');
+var environment_1 = require('../core/environment');
+var internal_1 = require('../internal/internal');
+/**
+ *  This class is used to spawn new browser processes that can be used to open
+ *  other URLs. Source plugins do not have this functionality (but their
+ *  configuration windows may use this.)
+ *
+ *  Note that opening a new dialog replaces the old one. Also, dialogs are
+ *  considered to be the same type of window as their parent windows: e.g.,
+ *  dialogs from extension windows are considered by the framework to have
+ *  access to the same functions as extensions.
+ *
+ *  Most of the methods are chainable.
+ *
+ *  Sample usage:
+ *
+ *  ```javascript
+ *  var xjs = require('xjs');
+ *  var Dialog = xjs.Dialog;
+ *
+ *  xjs.ready().then(function() {
+ *    var button = document.getElementById('openDialogButton');
+ *    button.addEventListener('click', function() {
+ *      xjs.Dialog.createDialog('your.url/here.html')
+ *      .setSize(500, 800)
+ *      .setTitle('ThisDialogReturnsAString')
+ *      .setBorderOptions(true, false)
+ *      .setButtons(true, true)
+ *      .show()
+ *      .getResult().then(function(result) {
+ *        document.getElementById('input').value = result;
+ *      });
+ *    });
+ *  });
+ *
+ *  // in the opened dialog, call Dialog.return() to return a value
+ *  //
+ *  // see documentation below for more details
+ *  ```
+ */
+var Dialog = (function () {
+    function Dialog() {
+        var _this = this;
+        if (environment_1.Environment.isSourcePlugin()) {
+            throw new Error('Dialogs are not available for source plugins.');
+        }
+        else {
+            this._result = null;
+            var eventListener = function (e) {
+                // self-deleting event listener
+                e.target.removeEventListener(e.type, eventListener);
+                _this._result = e.detail;
+            };
+            document.addEventListener('xsplit-dialog-result', eventListener);
+            return this;
+        }
+    }
+    /**
+     *  param: (url: string)
+     *
+     *  return: Dialog
+     *
+     *  Creates a Dialog object pointing to a URL. Call the other methods to
+     *  modify the dialog's properties, and `show()` to spawn the dialog.
+     *
+     * *Chainable.*
+     */
+    Dialog.createDialog = function (url) {
+        var dialog = new Dialog();
+        dialog._url = url;
+        return dialog;
+    };
+    /**
+     *  param: (url: string)
+     *
+     *  return: Dialog
+     *
+     *  Creates a Dialog object pointing to a URL, that autocloses on an outside
+     *  click. AutoDialogs only have access to the `setSize` and `show` methods.
+     *
+     * *Chainable.*
+     */
+    Dialog.createAutoDialog = function (url) {
+        var dialog = new Dialog();
+        dialog._url = url;
+        dialog._autoclose = true;
+        return dialog;
+    };
+    /**
+     *  param: (result ?: string)
+     *
+     *  Closes this dialog with an optional string result. (Call this from the
+     *  dialog.)
+     */
+    Dialog.return = function (result) {
+        if (result !== undefined) {
+            internal_1.exec('SetDialogResult', result);
+        }
+        internal_1.exec('Close');
+    };
+    /**
+     *  param: (width: number, height: number)
+     *
+     *  return: Dialog
+     *
+     *  Sets the size in pixels of the dialog to be displayed.
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.setSize = function (width, height) {
+        if (width === void 0) { width = 300; }
+        if (height === void 0) { height = 300; }
+        this._size = rectangle_1.Rectangle.fromDimensions(width, height);
+        return this;
+    };
+    /**
+     *  param: (title: string)
+     *
+     *  return: Dialog
+     *
+     *  Sets the title of the dialog to be displayed.
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.setTitle = function (title) {
+        if (this._autoclose) {
+            throw new Error('Autoclosing dialogs cannot use this method.');
+        }
+        this._title = title;
+        return this;
+    };
+    /**
+     *  param: (showBorder: boolean, resizable: boolean)
+     *
+     *  return: Dialog
+     *
+     *  Specifies the border and resizable flags for the dialog to be displayed.
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.setBorderOptions = function (showBorder, resizable) {
+        if (showBorder === void 0) { showBorder = false; }
+        if (resizable === void 0) { resizable = false; }
+        if (this._autoclose) {
+            throw new Error('Autoclosing dialogs cannot use this method.');
+        }
+        this._showBorder = showBorder;
+        this._resizable = resizable;
+        return this;
+    };
+    /**
+     *  param: (isMinimizeActive: boolean, isMaximizeActive: boolean)
+     *
+     *  return: Dialog
+     *
+     *  Specifies if the window buttons (minimize and maximize) should be active.
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.setButtons = function (isMinimizeActive, isMaximizeActive) {
+        if (isMinimizeActive === void 0) { isMinimizeActive = false; }
+        if (isMaximizeActive === void 0) { isMaximizeActive = false; }
+        if (this._autoclose) {
+            throw new Error('Autoclosing dialogs cannot use this method.');
+        }
+        this._minimize = isMinimizeActive;
+        this._maximize = isMaximizeActive;
+        return this;
+    };
+    /**
+     *  return: Dialog
+     *
+     *  After configuring the dialog, call this function to spawn it.
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.show = function () {
+        if (this._autoclose) {
+            internal_1.exec('NewAutoDialog', this._url, '', this._size === undefined ?
+                undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
+        }
+        else {
+            internal_1.exec('NewDialog', this._url, '', this._size === undefined ?
+                undefined : (this._size.getWidth() + ',' + this._size.getHeight()), this._calculateFlags(), this._title);
+        }
+        return this;
+    };
+    /**
+     *  return: Promise<string>
+     *
+     *  Gets the string result returned from the spawned dialog.
+     */
+    Dialog.prototype.getResult = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._result !== null) {
+                resolve(_this._result);
+            }
+            else {
+                Object.observe(_this, function (changes) {
+                    if (changes.name === '_result') {
+                        resolve(changes.object.result);
+                    }
+                });
+            }
+        });
+    };
+    /**
+     *  Closes the dialog that this window spawned.
+     */
+    Dialog.prototype.close = function () {
+        internal_1.exec('CloseDialog');
+    };
+    Dialog.prototype._calculateFlags = function () {
+        var flags = 0;
+        if (this._showBorder) {
+            flags += 1;
+        }
+        if (this._resizable) {
+            flags += 4;
+        }
+        if (this._minimize) {
+            flags += 8;
+        }
+        if (this._maximize) {
+            flags += 16;
+        }
+        if (this._title || this._minimize || this._maximize) {
+            flags += 2;
+        }
+        return String(flags);
+    };
+    return Dialog;
+})();
+exports.Dialog = Dialog;
+if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isExtension()) {
+    window.OnDialogResult = function (result) {
+        document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
+            detail: result }));
+    };
+}
+},{"../core/environment":3,"../internal/internal":20,"../util/rectangle":34}],37:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5790,18 +6068,28 @@ var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
 var app_1 = require('../internal/app');
 var _RESIZE = '2';
-/** This utility class represents the extension window. It should allow manipulation
- *  of the window (e.g., resizing), and should also serve as an event emitter
+/** This utility class represents the extension window. It allows manipulation
+ *  of the window (e.g., resizing), and also serves as an event emitter
  *  for all events that the window should be able to handle.
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  Currently, only the following event is available:
+ *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
+ *
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
+ *
  */
 var ExtensionWindow = (function (_super) {
     __extends(ExtensionWindow, _super);
+    /**
+     *  Use getInstance() instead.
+     */
     function ExtensionWindow() {
         _super.call(this);
         ExtensionWindow._instance = this;
     }
+    /**
+     *  Gets the instance of the window utility. Use this instead of the constructor.
+     */
     ExtensionWindow.getInstance = function () {
         if (ExtensionWindow._instance === undefined) {
             ExtensionWindow._instance = new ExtensionWindow();
@@ -5825,7 +6113,7 @@ if (environment_1.Environment.isExtension()) {
         }
     };
 }
-},{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],37:[function(require,module,exports){
+},{"../core/environment":3,"../internal/app":17,"../util/eventemitter":31}],38:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5842,11 +6130,11 @@ var eventemitter_1 = require('../util/eventemitter');
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  Currently there are only two events:
- *  - ```save-config```: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
- *  - ```apply-config```: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
- *  - ```set-background-color```: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
+ *    - `save-config`: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
+ *    - `apply-config`: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
+ *    - `set-background-color`: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *
- *  Use the ```on(event: string, handler: Function)``` function to listen to an event.
+ *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
 var SourcePluginWindow = (function (_super) {
     __extends(SourcePluginWindow, _super);
@@ -5868,8 +6156,7 @@ var SourcePluginWindow = (function (_super) {
         SourcePluginWindow._instance = this;
     }
     /**
-     *  Gets the instance of the window utility. Use this instead of
-     *  the constructor.
+     *  Gets the instance of the window utility. Use this instead of the constructor.
      */
     SourcePluginWindow.getInstance = function () {
         if (SourcePluginWindow._instance === undefined) {
@@ -5930,6 +6217,7 @@ __export(require('./system/microphone'));
 __export(require('./window/config'));
 __export(require('./window/source'));
 __export(require('./window/extension'));
+__export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/item/audio":4,"./core/item/camera":5,"./core/item/game":6,"./core/item/html":7,"./core/item/ichroma":9,"./core/item/item":13,"./core/scene":15,"./core/transition":16,"./internal/init":19,"./system/audio":25,"./system/camera":26,"./system/game":27,"./system/microphone":28,"./system/system":29,"./util/color":30,"./util/io":32,"./util/ready":33,"./util/rectangle":34,"./window/config":35,"./window/extension":36,"./window/source":37}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/item/audio":4,"./core/item/camera":5,"./core/item/game":6,"./core/item/html":7,"./core/item/ichroma":9,"./core/item/item":13,"./core/scene":15,"./core/transition":16,"./internal/init":19,"./system/audio":25,"./system/camera":26,"./system/game":27,"./system/microphone":28,"./system/system":29,"./util/color":30,"./util/io":32,"./util/ready":33,"./util/rectangle":34,"./window/config":35,"./window/dialog":36,"./window/extension":37,"./window/source":38}]},{},["xjs"]);

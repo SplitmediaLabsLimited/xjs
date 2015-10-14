@@ -1,4 +1,5 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
@@ -44,6 +45,9 @@ import {exec} from '../internal/internal';
  *  ```
  */
 export class Dialog{
+  private _result: string;
+  private _resultListener: EventListener;
+
   private _size: Rectangle;
   private _title: string;
   private _url: string;
@@ -57,6 +61,18 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      this._result = null;
+
+      let eventListener = (e) => {
+        // self-deleting event listener
+        e.target.removeEventListener(e.type, eventListener);
+        this._result = e.detail;
+        this._resultListener = null;
+      };
+
+      document.addEventListener('xsplit-dialog-result', eventListener);
+      this._resultListener = eventListener;
+
       return this;
     }
   }
@@ -188,6 +204,8 @@ export class Dialog{
    * *Chainable.*
    */
   show(): Dialog {
+    this._result = null;
+
     if (this._autoclose) {
       exec('NewAutoDialog', this._url, '', this._size === undefined ?
         undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
@@ -208,13 +226,27 @@ export class Dialog{
    */
   getResult(): Promise<string> {
     return new Promise(resolve => {
-      let eventListener = (e) => {
-        // self-deleting event listener
-        e.target.removeEventListener(e.type, eventListener);
-        resolve(e.detail);
-      }
+      if (this._result !== null) {
+        resolve(this._result);
+      } else if (this._resultListener === null) { // no listener yet, attach one
 
-      document.addEventListener('xsplit-dialog-result', eventListener);
+        let eventListener = (e) => {
+          // self-deleting event listener
+          e.target.removeEventListener(e.type, eventListener);
+          this._result = e.detail;
+          this._resultListener = null;
+          resolve(this._result);
+        };
+
+        document.addEventListener('xsplit-dialog-result', eventListener);
+        this._resultListener = eventListener;
+      } else { // listener already active
+        Object.observe(this, changes => {
+          if (changes.name === '_result') {
+            resolve(changes.object.result);
+          }
+        });
+      }
     });
   }
 
