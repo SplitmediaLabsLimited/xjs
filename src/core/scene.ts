@@ -255,7 +255,9 @@ export class Scene {
   /**
    * return: Promise<Item[]>
    *
-   * Searches all scenes for an item by name substring.
+   * Searches all scenes for an item by name substring. This function compares
+   * against custom name first (recommended) before falling back to the name
+   * property of the source.
    *
    *
    * #### Usage
@@ -279,8 +281,15 @@ export class Scene {
               resolveScene();
             } else {
               return Promise.all(items.map(item => {
-                return new Promise(resolveItem => {
-                  item.getName().then(name => {
+                return new Promise((resolveItem, rejectItem) => {
+                  item.getCustomName().then(name => {
+                    if (name.match(param)) {
+                      matches.push(item);
+                      return '';
+                    } else {
+                      return item.getName();
+                    }
+                  }).then(name => {
                     if (name.match(param)) {
                       matches.push(item);
                       return '';
