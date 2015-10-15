@@ -163,6 +163,11 @@ describe('GameItem', function() {
     env.set(environments[1]);
     propTypeCount = 0;
     if (!isXSplit) {
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{GAMEID}' });
+      var item2 = new XJS.Item({id : '{GAMEID2}'});
+      item1.getType();
+      item2.getType();
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;

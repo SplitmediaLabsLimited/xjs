@@ -62,28 +62,6 @@ describe('HTMLItem', function() {
         }
       break;
 
-      case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
-          var irand = rand;
-          setTimeout(function() {
-            window.OnAsyncCallback(irand, local.item);
-          }, 10);
-        }
-        else {
-          //search for id
-          var placement = parseXml(mockPresetConfig)
-            .getElementsByTagName("placement")[0];
-          var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
-          //return item attribute
-          var irand = rand;
-          setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
-          },10);
-        }
-      break;
-
       case 'prop:BrowserSize':
         if (local.hasOwnProperty('browserSize'))
         {
@@ -222,7 +200,7 @@ describe('HTMLItem', function() {
 
         if (typeof val === 'string' || val.indexOf(',') > 0 ) {
           isResolution = true;
-        }        
+        }
 
         if (isResolution) {
           local.browserSize = val;
@@ -307,6 +285,12 @@ describe('HTMLItem', function() {
     enumerated = [];
     env.set('extension');
     if (!isXSplit) {
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{HTMLID}' });
+      var item2 = new XJS.Item({id : '{HTMLID2}'});
+      item1.getType();
+      item2.getType();
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
@@ -575,7 +559,7 @@ describe('HTMLItem', function() {
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
-          done();          
+          done();
         });
     });
 
@@ -631,7 +615,7 @@ describe('HTMLItem', function() {
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
-          done();          
+          done();
         });
     });
 
@@ -666,7 +650,7 @@ describe('HTMLItem', function() {
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
-          done();          
+          done();
         });
     });
 

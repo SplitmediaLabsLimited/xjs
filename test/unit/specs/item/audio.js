@@ -21,6 +21,12 @@ describe('AudioItem', function() {
   beforeAll(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       env.set('script');
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{AUDIOID}' });
+      var item2 = new XJS.Item({id : '{AUDIOID2}'});
+      item1.getType();
+      item2.getType();
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         ctr++;

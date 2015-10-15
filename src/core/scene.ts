@@ -11,6 +11,7 @@ import {CameraItem} from './item/camera';
 import {AudioItem} from './item/audio';
 import {HTMLItem} from './item/html';
 import {FlashItem} from './item/flash';
+import {ScreenItem} from './item/screen';
 
 export class Scene {
   private _id: number;
@@ -447,6 +448,8 @@ export class Scene {
           typeResolve(new GameItem(item));
         } else if (type === ItemTypes.HTML) {
           typeResolve(new HTMLItem(item));
+        } else if (type === ItemTypes.SCREEN) {
+          typeResolve(new ScreenItem(item));
         } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
           jsonArr[index]['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
