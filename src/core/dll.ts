@@ -15,13 +15,18 @@ export class Dll {
    *  otherwise, the first DLL to be found containing the function name will be
    *  called.
    *
+   *  You can add any number of additional parameters. If your DLL call requires
+   *  a callback, use that as the final parameter of this function.
+   *
    *  The return value will depend on the DLL call. Most synchronous calls will
    *  return a string value immediately, while those with callbacks may simply
-   *  return an integer identifier for the callback. See the documentation of
-   *  your specific DLL for more details.
+   *  return an integer identifier for the callback.
+   *
+   *  See the documentation of your specific DLL for more details.
    */
-  static callFunction(func: string, ...params: any[]): any {
-    let funcName: string = params.shift();
-    return exec('CallDll', funcName, params);
+  static callFunction(func: string, ...params: any[]): string {
+      params.unshift(func);
+      params.unshift('CallDll');
+      return exec.apply(this, params);
   }
 }
