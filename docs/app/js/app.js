@@ -1,3 +1,6 @@
+/* globals angular, $, Prism */
+'use strict';
+
 angular.module('app', [
   'navigation-modules'
 ])
@@ -13,7 +16,7 @@ angular.module('app', [
         event.preventDefault();
       }
     });
-  }
+  };
 })
 
 .directive('autoComplete', ['$rootScope', '$window', 'MODULES',
@@ -24,55 +27,77 @@ angular.module('app', [
   for (var sIdx in MODULES.sections) {
     searchObj.push({
       path: MODULES.sections[sIdx].path,
-      name: String(MODULES.sections[sIdx].name + ' ' +
-              MODULES.sections[sIdx].type).toLowerCase()
+      label: String(MODULES.sections[sIdx].name + ' ' +
+              MODULES.sections[sIdx].type)
     });
     for (var pIdx in MODULES.sections[sIdx].pages) {
       searchObj.push({
         path: MODULES.sections[sIdx].pages[pIdx].path,
-        name: String(MODULES.sections[sIdx].pages[pIdx].name + ' ' +
-                MODULES.sections[sIdx].pages[pIdx].type).toLowerCase()
+        label: String(MODULES.sections[sIdx].pages[pIdx].name + ' ' +
+                MODULES.sections[sIdx].pages[pIdx].type)
       });
+      for (var mIdx in MODULES.sections[sIdx].pages[pIdx].pages) {
+        searchObj.push({
+          path: MODULES.sections[sIdx].pages[pIdx].pages[mIdx].path,
+          label: String(MODULES.sections[sIdx].pages[pIdx].pages[mIdx].name)
+        });
+      }
     }
   }
 
   searchKeys = searchObj.map(function(obj) {
-    return obj.name;
+    return String(obj.label).toLowerCase();
   });
 
-  $search = $('#search');
+  var $search = $('#search');
   $rootScope.searchResults = [];
 
   $rootScope.search = function(e, ui) {
-    var keyword = ui === undefined ?
-      String($search.val()).toLowerCase() : ui.item.value;
-
-    if (ui !== undefined) e.preventDefault();
-    $search.val('');
     $rootScope.searchResults = [];
 
-    var searchResults = [];
-    var keywordIndex = searchKeys.indexOf(keyword);
+    if (e === undefined) {
+      var keyword = String($search.val()).toLowerCase();
+      var reg = new RegExp(keyword, 'i');
+      var exactSearch = [];
 
-    if (keywordIndex !== -1) {
-      $window.location.href = $window.location.pathname + '#' +
-        searchObj[keywordIndex].path;
-    } else {
-      var reg = new RegExp(keyword, 'ig');
-      for (var sIdx in searchKeys) {
-        if (reg.test(searchKeys[sIdx])) {
-          $rootScope.searchResults.push(searchObj[sIdx]);
+      searchKeys.forEach(function(item, idx) {
+        if (reg.test(item) &&
+          keyword !== String(item).toLowerCase()) {
+          $rootScope.searchResults.push(searchObj[idx]);
+        } else if (keyword === String(item).toLowerCase()) {
+          exactSearch.push(searchObj[idx]);
         }
+      });
+
+      if (exactSearch.length === 1) {
+        $window.location.href = $window.location.pathname + '#' +
+          exactSearch[0].path;
+      } else {
+        if (exactSearch.length > 1) {
+          $rootScope.searchResults = exactSearch;
+        }
+        $window.location.href = $window.location.pathname + '#search';
       }
-      $window.location.href = $window.location.pathname + '#search';
+
+      $search.val('');
+
+      return false;
+    } else {
+      e.preventDefault();
+
+      $window.location.href = $window.location.pathname + '#' + ui.item.path;
     }
-  }
+  };
 
   return {
     restrict: 'A',
-    link: function(scope, elem, attr, ctrl) {
+    link: function(scope, elem) {
       $(elem).autocomplete({
-        source: searchKeys,
+        source: function(request, response) {
+          var results = $.ui.autocomplete.filter(searchObj, request.term);
+
+          response(results.slice(0, 10));
+        },
         select: $rootScope.search
       });
     }
@@ -124,6 +149,6 @@ angular.module('app', [
     $scope.isActive = function(url) {
       var reg = new RegExp(url + '/');
       return reg.test(self.currentPath);
-    }
+    };
   }
 ]);
