@@ -12,6 +12,8 @@ import {AudioItem} from './item/audio';
 import {HTMLItem} from './item/html';
 import {FlashItem} from './item/flash';
 import {ScreenItem} from './item/screen';
+import {ImageItem} from './item/image';
+import {MediaItem} from './item/media';
 
 export class Scene {
   private _id: number;
@@ -450,6 +452,14 @@ export class Scene {
           typeResolve(new HTMLItem(item));
         } else if (type === ItemTypes.SCREEN) {
           typeResolve(new ScreenItem(item));
+        } else if (type === ItemTypes.BITMAP ||
+            type === ItemTypes.FILE &&
+            /\.gif$/.test(jsonArr['item'])) {
+          typeResolve(new ImageItem(item));
+        } else if (type === ItemTypes.FILE &&
+            /\.(gif|xbs)$/.test(jsonArr['item']) === false &&
+            /^(rtsp|rtmp):\/\//.test(jsonArr['item']) === false) {
+          typeResolve(new MediaItem(item));
         } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
           jsonArr[index]['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
