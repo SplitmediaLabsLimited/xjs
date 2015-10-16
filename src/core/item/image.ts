@@ -448,42 +448,6 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<ImageItem>;
-
-  // ItemConfigurable
-
-  /**
-   * return: Promise<any>
-   *
-   * Gets the configuration JSON
-   */
-  loadConfig: () => Promise<any>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Persists a JSON object for configuration. Available to sources only.
-   *
-   * *Chainable.*
-   */
-  saveConfig: (configObj: any) => Promise<ImageItem>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
-   *
-   * *Chainable.*
-   */
-  requestSaveConfig: (configObj: any) => Promise<ImageItem>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
-   *
-   * *Chainable.*
-   */
-  applyConfig: (configObj: any) => Promise<ImageItem>;
 }
 
 applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

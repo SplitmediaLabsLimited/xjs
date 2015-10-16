@@ -9,7 +9,6 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -26,7 +25,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `FlashItem`
  *  instance.
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
+export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   /**
    * return: Promise<Rectangle>
@@ -500,42 +499,6 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<FlashItem>;
-
-  // ItemConfigurable
-
-  /**
-   * return: Promise<any>
-   *
-   * Gets the configuration JSON
-   */
-  loadConfig: () => Promise<any>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Persists a JSON object for configuration. Available to sources only.
-   *
-   * *Chainable.*
-   */
-  saveConfig: (configObj: any) => Promise<FlashItem>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
-   *
-   * *Chainable.*
-   */
-  requestSaveConfig: (configObj: any) => Promise<FlashItem>;
-
-  /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
-   *
-   * *Chainable.*
-   */
-  applyConfig: (configObj: any) => Promise<FlashItem>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemConfigurable]);
+applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
