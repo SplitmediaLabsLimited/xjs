@@ -343,17 +343,6 @@ describe('FlashItem', function() {
 		        ].join(','));
     	}
     });
-
-    it('should implement the configurable interface', function() {
-    	if (currentFlashItem !== null) {
-	      expect(currentFlashItem).hasMethods([
-	        'loadConfig',
-	        'saveConfig',
-	        'requestSaveConfig',
-	        'applyConfig'
-	        ].join(','));
-    	}
-    });
   });
 
   describe('FlashItem-specific methods checking', function() {

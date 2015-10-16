@@ -295,17 +295,6 @@ describe('ScreenItem', function() {
             ].join(','));
       }
     });
-
-    it('should implement the configurable interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
-          'loadConfig',
-          'saveConfig',
-          'requestSaveConfig',
-          'applyConfig'
-          ].join(','));
-      }
-    });
   });
 
   describe('ScreenItem-specific methods checking', function() {
