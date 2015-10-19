@@ -16,16 +16,14 @@ describe('FlashItem', function() {
   var urlSet = false;
 
   var currentFlashItem;
-  var parseXml = function(xmlStr)
-  {
+  var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
   var getLocal = function(funcName) {
     rand += 1;
 
-    switch (funcName)
-    {
+    switch (funcName) {
       case 'prop:type':
         //search for id
         var placement = parseXml(mockPresetConfig)
@@ -40,14 +38,12 @@ describe('FlashItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
@@ -62,14 +58,12 @@ describe('FlashItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
@@ -84,14 +78,12 @@ describe('FlashItem', function() {
       break;
 
       case 'prop:BrowserSize':
-        if (local.hasOwnProperty('browserSize'))
-        {
+        if (local.hasOwnProperty('browserSize')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
@@ -121,8 +113,7 @@ describe('FlashItem', function() {
           local.item = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
         	urlSet = false;
           isValid = '-1';
         }
@@ -144,8 +135,7 @@ describe('FlashItem', function() {
           local.browserSize = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
           urlSet = false;
           isValid = '-1';
         }
@@ -173,8 +163,7 @@ describe('FlashItem', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
-        switch (funcName)
-        {
+        switch (funcName) {
           case 'presetconfig:0':
             var irand = rand;
             setTimeout(function() {
@@ -237,8 +226,7 @@ describe('FlashItem', function() {
           Promise.all(promiseArray).then(function() {
             done();
           });
-        }
-        else {
+        } else {
           done();
         }
       });
@@ -387,8 +375,7 @@ describe('FlashItem', function() {
           this.width = width;
           this.height = height;
 
-          this.toDimensionString = function()
-          {
+          this.toDimensionString = function() {
             return this.width + ',' + this.height ;
           };
         };

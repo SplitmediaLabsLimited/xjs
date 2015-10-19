@@ -100,8 +100,7 @@ export class System{
             if ((bitsFlow & dataflow) !== bitsFlow) {
                 continue;
             }
-            if (device['name'].toLowerCase().indexOf('xsplit') > -1)
-            {
+            if (device['name'].toLowerCase().indexOf('xsplit') > -1) {
               continue;
             }
             devices.push(AudioDevice.parse(device));
@@ -210,19 +209,19 @@ export class System{
   /**
    * return: Promise<string[]>
    *
-   * Gets array of system-installed fonts 
+   * Gets array of system-installed fonts
    *
    * #### Usage
    *
    * ```javascript
    * var mySelect = document.getElementById("mySelect");
-   * 
+   *
    * System.getSystemFonts().then(function(fontsArray) {
    *   var fontsArrayLength = fontsArray.length;
    *   for (var i = 0; i < fontsArrayLength; ++i) {
    *     var option = document.createElement("option");
    *     option.text = "Kiwi";
-   *     mySelect.add(option);        
+   *     mySelect.add(option);
    *   }
    * });
    * ```
@@ -236,8 +235,7 @@ export class System{
           if (typeof fontlist === 'string' && fontlist !== '') {
             var fontArray = fontlist.split(',');
             resolve(fontArray);
-          }
-          else {
+          } else {
             reject(Error('cannot fetch list of available system fonts'));
           }
         });

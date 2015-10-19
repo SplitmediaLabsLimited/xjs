@@ -48,8 +48,7 @@ export class XML {
     return new XML(json);
   }
 
-  static encode(str: string)
-  {
+  static encode(str: string) {
     return str.replace(/[&<>'']/g, function($0) {
       return '&' + {
         '&':  'amp',

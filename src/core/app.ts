@@ -166,11 +166,9 @@ export class App{
           return AudioDevice.parse(val);
         });
 
-        if (audioDevices.length && audioDevices.length > 0)
-        {
+        if (audioDevices.length && audioDevices.length > 0) {
           resolve(audioDevices[0]);
-        }
-        else
+        } else
         {
           resolve(new AudioDevice({ id: 'empty' }));
         }
@@ -200,11 +198,9 @@ export class App{
           return AudioDevice.parse(val);
         });
 
-        if (audioDevices.length && audioDevices.length > 1)
-        {
+        if (audioDevices.length && audioDevices.length > 1) {
           resolve(audioDevices[1]);
-        }
-        else
+        } else
         {
           resolve(new AudioDevice({ id: 'empty' }));
         }

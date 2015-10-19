@@ -157,8 +157,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
           iItem.set('refresh', '', slot).then(function() {
             resolve(this);
           });
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -264,8 +263,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
            iItem.set('refresh', '', slot).then(function() {
              resolve(this);
            });
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -467,13 +465,11 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
           let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
           if (Environment.isSourcePlugin()) {
             eval(cssScript);
-          }
-          else {
+          } else {
             exec('CallInner', 'eval', cssScript);
           }
           resolve(this);
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -530,8 +526,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        }
-        else {
+        } else {
           customSize = Rectangle.fromDimensions(0, 0);
         }
         resolve(customSize);

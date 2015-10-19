@@ -421,8 +421,7 @@ describe('App ===', function() {
           .and.callFake(function(funcName, value) {
           micDev2MicSet = false;
           if (funcName === 'microphonedev2') {
-            if (encodeURIComponent(value) === micDev2MicResult)
-            {
+            if (encodeURIComponent(value) === micDev2MicResult) {
               micDev2MicSet = true;
             }
             var randomNumber=Math.floor(Math.random()*1000);
@@ -442,8 +441,7 @@ describe('App ===', function() {
           this.hwenable = hwenable;
           this.delay = delay;
 
-          this.toString = function()
-          {
+          this.toString = function() {
             return '<dev id="' + this.id + '" level="' + this.level +
               '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
               '" hwenable="' + this.hwenable + '" delay="' + this.delay +
@@ -492,8 +490,7 @@ describe('App ===', function() {
           .and.callFake(function(funcName, value) {
           micDev2SpeakerSet = false;
           if (funcName === 'microphonedev2') {
-            if (encodeURIComponent(value) === micDev2SpeakerResult)
-            {
+            if (encodeURIComponent(value) === micDev2SpeakerResult) {
               micDev2SpeakerSet = true;
             }
             var randomNumber=Math.floor(Math.random()*1000);
@@ -513,8 +510,7 @@ describe('App ===', function() {
           this.hwenable = hwenable;
           this.delay = delay;
 
-          this.toString = function()
-          {
+          this.toString = function() {
             return '<dev id="' + this.id + '" level="' + this.level +
               '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
               '" hwenable="' + this.hwenable + '" delay="' + this.delay +
@@ -642,8 +638,7 @@ describe('App ===', function() {
           .and.callFake(function(funcName, value) {
           silenceDetectionEnabledSet = false;
           if (funcName === 'microphonegain') {
-            if (encodeURIComponent(value) === audioGainResultEnable)
-            {
+            if (encodeURIComponent(value) === audioGainResultEnable) {
               silenceDetectionEnabledSet = true;
             }
             var randomNumber=Math.floor(Math.random()*1000);
@@ -680,8 +675,7 @@ describe('App ===', function() {
           .and.callFake(function(funcName, value) {
           silenceDetectionThresholdSet = false;
           if (funcName === 'microphonegain') {
-            if (encodeURIComponent(value) === audioGainResultThreshold)
-            {
+            if (encodeURIComponent(value) === audioGainResultThreshold) {
               silenceDetectionThresholdSet = true;
             }
             var randomNumber=Math.floor(Math.random()*1000);
@@ -754,8 +748,7 @@ describe('App ===', function() {
           .and.callFake(function(funcName, value) {
           silenceDetectionPeriodSet = false;
           if (funcName === 'microphonegain') {
-            if (encodeURIComponent(value) === audioGainResultPeriod)
-            {
+            if (encodeURIComponent(value) === audioGainResultPeriod) {
               silenceDetectionPeriodSet = true;
             }
             var randomNumber=Math.floor(Math.random()*1000);

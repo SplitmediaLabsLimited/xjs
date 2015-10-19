@@ -18,16 +18,14 @@ describe('ImageItem', function() {
   var TYPE_FILE = 2;
 
   var currentImageItem;
-  var parseXml = function(xmlStr)
-  {
+  var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
   var getLocal = function(funcName) {
     rand += 1;
 
-    switch (funcName)
-    {
+    switch (funcName) {
       case 'prop:type':
         //search for id
         var placement = parseXml(mockPresetConfig)
@@ -42,14 +40,12 @@ describe('ImageItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
@@ -95,8 +91,7 @@ describe('ImageItem', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
-        switch (funcName)
-        {
+        switch (funcName) {
           case 'presetconfig:0':
             var irand = rand;
             setTimeout(function() {

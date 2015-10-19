@@ -44,8 +44,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        }
-        else {
+        } else {
           customSize = Rectangle.fromDimensions(0, 0);
         }
         resolve(customSize);

@@ -17,16 +17,14 @@ describe('HTMLItem', function() {
   var urlSet = false;
 
   var currentHTMLItem;
-  var parseXml = function(xmlStr)
-  {
+  var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
 
   var getLocal = function(funcName) {
     rand += 1;
 
-    switch (funcName)
-    {
+    switch (funcName) {
       case 'prop:type':
         //search for id
         var placement = parseXml(mockPresetConfig)
@@ -41,14 +39,12 @@ describe('HTMLItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -63,14 +59,12 @@ describe('HTMLItem', function() {
       break;
 
       case 'prop:BrowserSize':
-        if (local.hasOwnProperty('browserSize'))
-        {
+        if (local.hasOwnProperty('browserSize')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -87,14 +81,12 @@ describe('HTMLItem', function() {
       break;
 
       case 'prop:BrowserTransparent':
-        if (local.hasOwnProperty('browserTransparent'))
-        {
+        if (local.hasOwnProperty('browserTransparent')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserTransparent);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -109,14 +101,12 @@ describe('HTMLItem', function() {
       break;
 
       case 'prop:BrowserJs':
-        if (local.hasOwnProperty('browserJS'))
-        {
+        if (local.hasOwnProperty('browserJS')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserJS);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -131,14 +121,12 @@ describe('HTMLItem', function() {
       break;
 
       case 'prop:custom':
-        if (local.hasOwnProperty('custom'))
-        {
+        if (local.hasOwnProperty('custom')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.custom);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -166,8 +154,7 @@ describe('HTMLItem', function() {
           local.item = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
         	urlSet = false;
           isValid = '-1';
         }
@@ -183,8 +170,7 @@ describe('HTMLItem', function() {
           local.browserJS = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
           urlSet = false;
           isValid = '-1';
         }
@@ -206,8 +192,7 @@ describe('HTMLItem', function() {
           local.browserSize = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
           urlSet = false;
           isValid = '-1';
         }
@@ -223,8 +208,7 @@ describe('HTMLItem', function() {
           local.browserTransparent = val;
           urlSet = true;
           isValid = '0';
-        }
-        else {
+        } else {
           urlSet = false;
           isValid = '-1';
         }
@@ -246,8 +230,7 @@ describe('HTMLItem', function() {
                 local.custom = val;
                 urlSet = true;
                 isValid = '0';
-            }
-            else {
+            } else {
               urlSet = false;
               isValid = '-1';
             }
@@ -256,8 +239,7 @@ describe('HTMLItem', function() {
             urlSet = false;
             isValid = '-1';
           }
-        }
-        else {
+        } else {
           urlSet = false;
           isValid = '-1';
         }
@@ -294,8 +276,7 @@ describe('HTMLItem', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
-        switch (funcName)
-        {
+        switch (funcName) {
           case 'presetconfig:0':
             var irand = rand;
             setTimeout(function() {
@@ -358,8 +339,7 @@ describe('HTMLItem', function() {
           Promise.all(promiseArray).then(function() {
             done();
           });
-        }
-        else {
+        } else {
           done();
         }
       });
@@ -688,8 +668,7 @@ describe('HTMLItem', function() {
           this.width = width;
           this.height = height;
 
-          this.toDimensionString = function()
-          {
+          this.toDimensionString = function() {
             return this.width + ',' + this.height ;
           };
         };
