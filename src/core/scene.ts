@@ -454,24 +454,24 @@ export class Scene {
           typeResolve(new ScreenItem(item));
         } else if (type === ItemTypes.BITMAP ||
             type === ItemTypes.FILE &&
-            /\.gif$/.test(jsonArr['item'])) {
+            /\.gif$/.test(item['item'])) {
           typeResolve(new ImageItem(item));
         } else if (type === ItemTypes.FILE &&
-            /\.(gif|xbs)$/.test(jsonArr['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(jsonArr['item']) === false) {
+            /\.(gif|xbs)$/.test(item['item']) === false &&
+            /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
           typeResolve(new MediaItem(item));
-        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
-          jsonArr[index]['item'].indexOf(
+        } else if (Number(item['type']) === ItemTypes.LIVE &&
+          item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-          typeResolve(new CameraItem(jsonArr[index]));
-        } else if (Number(jsonArr[index]['type']) === ItemTypes.LIVE &&
-          jsonArr[index]['item'].indexOf(
+          typeResolve(new CameraItem(item));
+        } else if (Number(item['type']) === ItemTypes.LIVE &&
+          item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-          typeResolve(new AudioItem(jsonArr[index]));
-        } else if (Number(jsonArr[index]['type']) === ItemTypes.FLASHFILE) {
-          typeResolve(new FlashItem(jsonArr[index]));
+          typeResolve(new AudioItem(item));
+        } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
+          typeResolve(new FlashItem(item));
         } else {
-            typeResolve(new Item(jsonArr[index]));
+            typeResolve(new Item(item));
         }
       });
 

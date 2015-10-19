@@ -3953,27 +3953,27 @@ var Scene = (function () {
                     }
                     else if (type === item_1.ItemTypes.BITMAP ||
                         type === item_1.ItemTypes.FILE &&
-                            /\.gif$/.test(jsonArr['item'])) {
+                            /\.gif$/.test(item['item'])) {
                         typeResolve(new image_1.ImageItem(item));
                     }
                     else if (type === item_1.ItemTypes.FILE &&
-                        /\.(gif|xbs)$/.test(jsonArr['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(jsonArr['item']) === false) {
+                        /\.(gif|xbs)$/.test(item['item']) === false &&
+                        /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
                         typeResolve(new media_1.MediaItem(item));
                     }
-                    else if (Number(jsonArr[index]['type']) === item_1.ItemTypes.LIVE &&
-                        jsonArr[index]['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-                        typeResolve(new camera_1.CameraItem(jsonArr[index]));
+                    else if (Number(item['type']) === item_1.ItemTypes.LIVE &&
+                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+                        typeResolve(new camera_1.CameraItem(item));
                     }
-                    else if (Number(jsonArr[index]['type']) === item_1.ItemTypes.LIVE &&
-                        jsonArr[index]['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-                        typeResolve(new audio_1.AudioItem(jsonArr[index]));
+                    else if (Number(item['type']) === item_1.ItemTypes.LIVE &&
+                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+                        typeResolve(new audio_1.AudioItem(item));
                     }
-                    else if (Number(jsonArr[index]['type']) === item_1.ItemTypes.FLASHFILE) {
-                        typeResolve(new flash_1.FlashItem(jsonArr[index]));
+                    else if (Number(item['type']) === item_1.ItemTypes.FLASHFILE) {
+                        typeResolve(new flash_1.FlashItem(item));
                     }
                     else {
-                        typeResolve(new item_1.Item(jsonArr[index]));
+                        typeResolve(new item_1.Item(item));
                     }
                 }); };
                 if (Array.isArray(jsonArr)) {
