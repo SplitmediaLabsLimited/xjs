@@ -23,6 +23,7 @@ describe('GameItem', function() {
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
+  var TYPE_GAME = 7;
 
   var getLocal = function(funcName) {
     rand += 1;
@@ -219,7 +220,7 @@ describe('GameItem', function() {
             promiseArray[i] = (function(_i) {
               return new Promise(function(resolve) {
                 itemArray[_i].getType().then(function(type) {
-                  if (type === 7) {
+                  if (type === TYPE_GAME) {
                     enumerated.push(itemArray[_i]);
                   }
                   resolve(type);
@@ -240,7 +241,7 @@ describe('GameItem', function() {
   it('should be enumerated in the items list', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
-    var selected = '[type="7"]';
+    var selected = '[type="' + TYPE_GAME + '"]';
     var gameItems = placement.querySelectorAll(selected);
     expect(gameItems.length).toBe(enumerated.length);
     done();

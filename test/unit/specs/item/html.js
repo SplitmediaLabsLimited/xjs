@@ -15,6 +15,7 @@ describe('HTMLItem', function() {
   var rand = 0;
   var local = {};
   var urlSet = false;
+  var TYPE_HTML = 8;
 
   var currentHTMLItem;
   var parseXml = function(xmlStr) {
@@ -328,7 +329,7 @@ describe('HTMLItem', function() {
             promiseArray[i] = (function(_i) {
               return new Promise(function(resolve) {
                 itemArray[_i].getType().then(function(type) {
-                  if (type === 8) {
+                  if (type === TYPE_HTML) {
                     enumerated.push(itemArray[_i]);
                   }
                   resolve(type);
@@ -349,7 +350,7 @@ describe('HTMLItem', function() {
   it('should be enumerated in the items list', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
-    var selected = '[type="8"]';
+    var selected = '[type="' + TYPE_HTML + '"]';
     var htmlItems = placement.querySelectorAll(selected);
     expect(htmlItems.length).toBe(enumerated.length);
     done();

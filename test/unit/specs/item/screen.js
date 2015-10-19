@@ -13,6 +13,7 @@ describe('ScreenItem', function() {
   var attachedID;
   var rand = 0;
   var local = {};
+  var TYPE_SCREEN = 5;
 
   var currentScreenItem;
   var parseXml = function(xmlStr) {
@@ -172,7 +173,7 @@ describe('ScreenItem', function() {
               promiseArray[i] = (function(_i) {
                 return new Promise(function(resolve) {
                   itemArray[_i].getType().then(function(type) {
-                    if (type === 5) {
+                    if (type === TYPE_SCREEN) {
                       enumerated.push(itemArray[_i]);
                     }
                     resolve(type);
@@ -194,7 +195,7 @@ describe('ScreenItem', function() {
   it('should be enumerated in the items list', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
-    var selected = '[type="5"]';
+    var selected = '[type="' + TYPE_SCREEN + '"]';
     var ScreenItems = placement.querySelectorAll(selected);
     expect(ScreenItems.length).toBe(enumerated.length);
     done();

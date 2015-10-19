@@ -14,6 +14,7 @@ describe('FlashItem', function() {
   var rand = 0;
   var local = {};
   var urlSet = false;
+  var TYPE_FLASH = 6;
 
   var currentFlashItem;
   var parseXml = function(xmlStr) {
@@ -215,7 +216,7 @@ describe('FlashItem', function() {
             promiseArray[i] = (function(_i) {
               return new Promise(function(resolve) {
                 itemArray[_i].getType().then(function(type) {
-                  if (type === 6) {
+                  if (type === TYPE_FLASH) {
                     enumerated.push(itemArray[_i]);
                   }
                   resolve(type);
@@ -236,7 +237,7 @@ describe('FlashItem', function() {
   it('should be enumerated in the items list', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
-    var selected = '[type="6"]';
+    var selected = '[type="' + TYPE_FLASH + '"]';
     var FlashItems = placement.querySelectorAll(selected);
     expect(FlashItems.length).toBe(enumerated.length);
     done();
