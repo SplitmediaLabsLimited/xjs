@@ -215,30 +215,19 @@ describe('GameItem', function() {
         var itemArrayLength = itemArray.length;
 
         if (itemArrayLength > 0) {
-          var promiseArray = [];
           for (var i = 0; i < itemArrayLength; i++) {
-            promiseArray[i] = (function(_i) {
-              return new Promise(function(resolve) {
-                itemArray[_i].getType().then(function(type) {
-                  if (type === TYPE_GAME) {
-                    enumerated.push(itemArray[_i]);
-                  }
-                  resolve(type);
-                });
-              });
-            })(i);
+            if (itemArray[i] instanceof GameItem) {
+              enumerated.push(itemArray[i]);
+            }
           }
-          Promise.all(promiseArray).then(function() {
-            done();
-          });
-        } else {
-          done();
         }
+
+        done();
       });
     });
   });
 
-  it('should be enumerated in the items list', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_GAME + '"]';
