@@ -12,3 +12,5 @@ export * from '../src/core/item/audio';
 export * from '../src/core/item/html';
 export * from '../src/core/item/flash';
 export * from '../src/core/item/screen';
+export * from '../src/core/item/image';
+export * from '../src/core/item/media';

@@ -87,8 +87,7 @@ var Rose = (function () {
         var _output = this._tabContents.querySelector('#rose-output');
         if (String(text).trim() !== '') {
             _output.classList.add('show');
-        }
-        else {
+        } else {
             _output.classList.remove('show');
         }
         _output.textContent = text;
@@ -206,8 +205,7 @@ var Rose = (function () {
             return elem['id'] === _id;
         }) === undefined) {
             return _id;
-        }
-        else {
+        } else {
             return this.generateID();
         }
     };

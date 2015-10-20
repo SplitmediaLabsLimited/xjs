@@ -6,6 +6,7 @@ describe('ScreenItem', function() {
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
+  var ScreenItem = XJS.ScreenItem;
   var env = new window.Environment(XJS);
   var enumerated = [];
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -13,18 +14,17 @@ describe('ScreenItem', function() {
   var attachedID;
   var rand = 0;
   var local = {};
+  var TYPE_SCREEN = 5;
 
   var currentScreenItem;
-  var parseXml = function(xmlStr)
-  {
+  var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
   var getLocal = function(funcName) {
     rand += 1;
 
-    switch (funcName)
-    {
+    switch (funcName) {
       case 'prop:type':
         //search for id
         var placement = parseXml(mockPresetConfig)
@@ -39,14 +39,12 @@ describe('ScreenItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
@@ -121,8 +119,7 @@ describe('ScreenItem', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
-        switch (funcName)
-        {
+        switch (funcName) {
           case 'presetconfig:0':
             var irand = rand;
             setTimeout(function() {
@@ -172,35 +169,23 @@ describe('ScreenItem', function() {
           var itemArrayLength = itemArray.length;
 
           if (itemArrayLength > 0) {
-            var promiseArray = [];
             for (var i = 0; i < itemArrayLength; i++) {
-              promiseArray[i] = (function(_i) {
-                return new Promise(function(resolve) {
-                  itemArray[_i].getType().then(function(type) {
-                    if (type === 5) {
-                      enumerated.push(itemArray[_i]);
-                    }
-                    resolve(type);
-                  });
-                });
-              })(i);
+              if (itemArray[i] instanceof ScreenItem) {
+                enumerated.push(itemArray[i]);
+              }
             }
-            Promise.all(promiseArray).then(function() {
-              done();
-            });
           }
-          else {
-            done();
-          }
+
+          done();
         });
       });
     }
   });
 
-  it('should be enumerated in the items list', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
-    var selected = '[type="5"]';
+    var selected = '[type="' + TYPE_SCREEN + '"]';
     var ScreenItems = placement.querySelectorAll(selected);
     expect(ScreenItems.length).toBe(enumerated.length);
     done();
@@ -293,17 +278,6 @@ describe('ScreenItem', function() {
             'getTransitionTime',
             'setTransitionTime'
             ].join(','));
-      }
-    });
-
-    it('should implement the configurable interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
-          'loadConfig',
-          'saveConfig',
-          'requestSaveConfig',
-          'applyConfig'
-          ].join(','));
       }
     });
   });

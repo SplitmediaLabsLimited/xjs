@@ -40,8 +40,7 @@ export class SourcePluginWindow extends EventEmitter {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
           this.emit('save-config', message.data);
-        }
-        else if (message.request === 'applyConfig') {
+        } else if (message.request === 'applyConfig') {
           this.emit('apply-config', message.data);
         }
       }

@@ -18,6 +18,8 @@ export * from './core/item/audio';
 export * from './core/item/html';
 export * from './core/item/flash';
 export * from './core/item/screen';
+export * from './core/item/image';
+export * from './core/item/media';
 
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/item/ichroma';
 

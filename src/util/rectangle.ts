@@ -27,8 +27,7 @@ export class Rectangle {
     if (this._bottom !== undefined &&
       this._height !== (this._top - this._bottom)) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    }
-    else if (this._height !== undefined &&
+    } else if (this._height !== undefined &&
       this._bottom !== (this._top + this._height)) {
       this.setBottom(this._top + this._height);
     }
@@ -48,8 +47,7 @@ export class Rectangle {
     if (this._right !== undefined &&
       this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    }
-    else if (this._width !== undefined &&
+    } else if (this._width !== undefined &&
       this._height !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
@@ -69,8 +67,7 @@ export class Rectangle {
     if (this._left !== undefined &&
       this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    }
-    else if (this._width !== undefined &&
+    } else if (this._width !== undefined &&
       this._left !== (this._right - this._width)) {
       this.setLeft(this._right - this._width);
     }
@@ -90,8 +87,7 @@ export class Rectangle {
     if (this._top !== undefined &&
       this._height !== Math.abs(this._top - this._bottom)) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    }
-    else if (this._height !== undefined &&
+    } else if (this._height !== undefined &&
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }
@@ -111,8 +107,7 @@ export class Rectangle {
     if (this._right !== undefined &&
       this._left !== (this._right - this._width)) {
       this.setLeft(this._right - this._width);
-    }
-    else if (this._left !== undefined &&
+    } else if (this._left !== undefined &&
       this._right !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
@@ -132,8 +127,7 @@ export class Rectangle {
     if (this._top !== undefined &&
       this._bottom !== (this._top + this._height)) {
       this.setBottom(this._top + this._height);
-    }
-    else if (this._bottom !== undefined &&
+    } else if (this._bottom !== undefined &&
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }

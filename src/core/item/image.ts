@@ -3,76 +3,26 @@
 import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The FlashItem class represents a flash source item, which is any SWF file
- * loaded to XSplit Broadcaster.
+ * The ImageItem class represents an image source (includes GIF files).
  *
  * Inherits from: {@link #core/Item Core/Item}
  *
- *  All methods marked as *Chainable* resolve with the original `FlashItem`
+ *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
-
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom resolution (in pixels) for the source, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom resolution has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  getCustomResolution(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      let customSize;
-      iItem.get('prop:BrowserSize', slot).then(val => {
-        if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        } else {
-          customSize = Rectangle.fromDimensions(0, 0);
-        }
-        resolve(customSize);
-      });
-    });
-  }
-
-  /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<FlashItem>
-   * ```
-   *
-   * Sets the custom resolution for the source
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setCustomResolution(value: Rectangle): Promise<FlashItem> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
-        resolve(this);
-      });
-    });
-  }
+export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   // ItemLayout
 
@@ -134,7 +84,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setKeepAspectRatio: (value: boolean) => Promise<FlashItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<ImageItem>;
 
   /**
    * param: value<boolean>
@@ -143,7 +93,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setPositionLocked: (value: boolean) => Promise<FlashItem>;
+  setPositionLocked: (value: boolean) => Promise<ImageItem>;
 
   /**
    * param: value<boolean>
@@ -152,7 +102,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<FlashItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ImageItem>;
 
   /**
    * param: value<Rectangle>
@@ -172,7 +122,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition: (value: Rectangle) => Promise<FlashItem>;
+  setPosition: (value: Rectangle) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -181,7 +131,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setRotateY: (value: number) => Promise<FlashItem>;
+  setRotateY: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -190,7 +140,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setRotateX: (value: number) => Promise<FlashItem>;
+  setRotateX: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -199,7 +149,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setRotateZ: (value: number) => Promise<FlashItem>;
+  setRotateZ: (value: number) => Promise<ImageItem>;
 
   // ItemColor
 
@@ -252,7 +202,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<FlashItem>;
+  setTransparency: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -261,7 +211,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setBrightness: (value: number) => Promise<FlashItem>;
+  setBrightness: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -270,7 +220,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setContrast: (value: number) => Promise<FlashItem>;
+  setContrast: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -279,7 +229,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setHue: (value: number) => Promise<FlashItem>;
+  setHue: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<number>
@@ -288,7 +238,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setSaturation: (value: number) => Promise<FlashItem>;
+  setSaturation: (value: number) => Promise<ImageItem>;
 
   /**
    * param: value<Color>
@@ -297,7 +247,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setBorderColor: (value: Color) => Promise<FlashItem>;
+  setBorderColor: (value: Color) => Promise<ImageItem>;
 
   // ItemChroma
   /**
@@ -309,7 +259,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<FlashItem>;
+  setChromaEnabled: (value: boolean) => Promise<ImageItem>;
   /**
    * return: Promise<KeyingType>
    */
@@ -319,7 +269,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    * *Chainable.*
    *
    */
-  setKeyingType: (value: KeyingType) => Promise<FlashItem>;
+  setKeyingType: (value: KeyingType) => Promise<ImageItem>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -331,7 +281,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<FlashItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageItem>;
 
   // CHROMA LEGACY MODE
   /**
@@ -343,7 +293,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<FlashItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -353,7 +303,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<FlashItem>;
+  setChromaLegacySaturation: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -363,7 +313,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<FlashItem>;
+  setChromaLegacyHue: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -373,7 +323,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -383,7 +333,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<FlashItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageItem>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -395,7 +345,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<FlashItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -405,7 +355,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -415,7 +365,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<FlashItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ImageItem>;
 
   // COLOR KEY MODE
   /**
@@ -427,7 +377,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<number>
    */
@@ -437,7 +387,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<FlashItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<ImageItem>;
   /**
    * return: Promise<Color>
    */
@@ -447,7 +397,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<FlashItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ImageItem>;
 
   // ItemTransition
 
@@ -465,7 +415,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setVisible: (value: boolean) => Promise<FlashItem>;
+  setVisible: (value: boolean) => Promise<ImageItem>;
 
   /**
    * return: Promise<boolean>
@@ -481,7 +431,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setTransition: (value: Transition) => Promise<FlashItem>;
+  setTransition: (value: Transition) => Promise<ImageItem>;
 
   /**
    * return: Promise<number>
@@ -497,7 +447,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<FlashItem>;
+  setTransitionTime: (value: number) => Promise<ImageItem>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
