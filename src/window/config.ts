@@ -144,6 +144,19 @@ export class SourceConfigWindow extends EventEmitter {
     });
   };
 
+  /**
+   *  param: width<number>, height<number>
+   *
+   *  Resizes the configuration window. Currently only works when using full
+      window mode.
+   */
+  requestDialogTitleChange(name: string) {
+    this._notify({
+      event: 'change-dialog-title',
+      value: name
+    });
+  };
+
   /** Closes the configuration window. */
   closeConfig() {
     exec('Close');
