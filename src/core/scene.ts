@@ -267,57 +267,153 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchAllForItemName('camera').then(function(items) {
+   * Scene.searchItemsByName('camera').then(function(items) {
    *   // do something to each item in items array
    * });
    * ```
    *
    */
-  static searchAllForItemName(param: string): Promise<Item[]> {
-    Scene._initializeScenePool();
-    let matches: Item[] = [];
-
+  static searchItemsByName(param: string): Promise<Item[]> {
     return new Promise(resolve => {
-      return Promise.all(Scene._scenePool.map(scene => {
-        return new Promise(resolveScene => {
-          scene.getItems().then(items => {
-            if (items.length === 0) {
-              resolveScene();
-            } else {
-              return Promise.all(items.map(item => {
-                return new Promise((resolveItem, rejectItem) => {
-                  item.getCustomName().then(name => {
-                    if (name.match(param)) {
-                      matches.push(item);
-                      return '';
-                    } else {
-                      return item.getName();
-                    }
-                  }).then(name => {
-                    if (name.match(param)) {
-                      matches.push(item);
-                      return '';
-                    } else {
-                      return item.getValue();
-                    }
-                  }).then(value => {
-                    if (value.toString().match(param)) {
-                      matches.push(item);
-                    }
-                    resolveItem();
-                  });
-                });
-              })).then(() => {
-                resolveScene();
-              });
-            }
-          });
+      this.filterItems((item: Item, filterResolve: any) => {
+        item.getCustomName().then(cname => {
+          if (cname.match(param)) {
+            filterResolve(true);
+          } else {
+            return item.getName();
+          }
+        }).then(name => {
+          if (name.match(param)) {
+            filterResolve(true);
+          } else {
+            return item.getValue();
+          }
+        }).then(value => {
+          if (value.toString().match(param)) {
+            filterResolve(true);
+          } else {
+            filterResolve(false);
+          }
         });
-      })).then(() => {
-        resolve(matches);
+      }).then(items => {
+        resolve(items);
       });
     });
   };
+
+  /**
+   * param: function(item, resolve)
+   * ```
+   * return: Promise<Item[]>
+   * ```
+   *
+   * Searches all scenes for items that satisfies the provided testing function.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.filterItems(function(item, resolve) {
+   *   // We'll only fetch Flash Items by resolving 'true' if the item is an
+   *   // instance of FlashItem
+   *   resolve((item instanceof FlashItem));
+   * }).then(function(items) {
+   *   // items would either be an empty array if no Flash items was found, or
+   *   // an array of FlashItem objects
+   * });
+   * ```
+   */
+  static filterItems(func: any): Promise<Item[]> {
+    Scene._initializeScenePool();
+    let matches: Item[] = [];
+
+    return new Promise((resolve, reject) => {
+      if (typeof func === 'function') {
+        return Promise.all(Scene._scenePool.map(scene => {
+          return new Promise(resolveScene => {
+            scene.getItems().then(items => {
+              if (items.length === 0) {
+                resolveScene();
+              } else {
+                return Promise.all(items.map(item => {
+                  return new Promise(resolveItem => {
+                    func(item, (checker: boolean) => {
+                      if (checker) {
+                        matches.push(item);
+                      }
+                      resolveItem();
+                    });
+                  });
+                })).then(() => {
+                  resolveScene();
+                });
+              }
+            });
+          });
+        })).then(() => {
+          resolve(matches);
+        });
+      } else {
+        reject(Error('Parameter is not a function'));
+      }
+    });
+  }
+
+  /**
+   * param: function(item, resolve)
+   * ```
+   * return: Promise<Scene[]>
+   * ```
+   *
+   * Searches all scenes for items that satisfies the provided testing function,
+   * and then return the scene that contains the item.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.filterScenesByItems(function(item, resolve) {
+   *   // We'll only fetch the scenes with flash items by resolving 'true' if
+   *   // the item is an instance of FlashItem
+   *   resolve((item instanceof FlashItem));
+   * }).then(function(scenes) {
+   *   // scenes would be an array of all scenes with FlashItems
+   * });
+   * ```
+   */
+  static filterScenesByItems(func: any): Promise<Scene[]> {
+    Scene._initializeScenePool();
+    let matches: Scene[] = [];
+
+    return new Promise((resolve, reject) => {
+      if (typeof func === 'function') {
+        return Promise.all(Scene._scenePool.map(scene => {
+          return new Promise(resolveScene => {
+            scene.getItems().then(items => {
+              if (items.length === 0) {
+                resolveScene();
+              } else {
+                return Promise.all(items.map(item => {
+                  return new Promise(resolveItem => {
+                    func(item, (checker: boolean) => {
+                      if (checker) {
+                        matches.push(scene);
+                      }
+                      resolveItem();
+                    });
+                  });
+                })).then(() => {
+                  resolveScene();
+                });
+              }
+            });
+          });
+        })).then(() => {
+          resolve(matches);
+        });
+      } else {
+        reject(Error('Parameter is not a function'));
+      }
+    })
+  }
 
   /**
    * return: Promise<boolean>
