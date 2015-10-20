@@ -568,7 +568,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":22,"../internal/internal":25,"../internal/util/json":27,"../internal/util/xml":29,"../system/audio":30,"../util/rectangle":39,"./environment":4,"./transition":21}],2:[function(require,module,exports){
+},{"../internal/app":23,"../internal/internal":26,"../internal/util/json":28,"../internal/util/xml":30,"../system/audio":31,"../util/rectangle":41,"./environment":4,"./transition":22}],2:[function(require,module,exports){
 var app_1 = require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
@@ -655,7 +655,7 @@ var Channel = (function () {
     return Channel;
 })();
 exports.Channel = Channel;
-},{"../internal/app":22}],3:[function(require,module,exports){
+},{"../internal/app":23}],3:[function(require,module,exports){
 var internal_1 = require('../internal/internal');
 /**
  *  The Dll class allows access to functions in DLL files that are placed within
@@ -689,7 +689,7 @@ var Dll = (function () {
     return Dll;
 })();
 exports.Dll = Dll;
-},{"../internal/internal":25}],4:[function(require,module,exports){
+},{"../internal/internal":26}],4:[function(require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -743,6 +743,65 @@ var Environment = (function () {
 exports.Environment = Environment;
 Environment.initialize();
 },{}],5:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var environment_1 = require('../core/environment');
+var internal_1 = require('../internal/internal');
+var Extension = (function () {
+    function Extension() {
+        if (environment_1.Environment.isExtension()) {
+            this._presName = window.location.href;
+        }
+        else {
+            throw new Error('Extension class can only be used on Extension Plugins');
+        }
+    }
+    /**
+     *  Gets the instance of the Extension class. Use this instead of the constructor.
+     */
+    Extension.getInstance = function () {
+        if (Extension._instance === undefined) {
+            Extension._instance = new Extension();
+        }
+        return Extension._instance;
+    };
+    /**
+     * param: (configObj: JSON)
+     * ```
+     * return: Promise<ExtensionWindow|Error>
+     * ```
+     *
+     * Save the configuration object to the presentation
+     */
+    Extension.prototype.saveConfig = function (configObj) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if ({}.toString.call(configObj) === '[object Object]') {
+                internal_1.exec('SetPresProperty', _this._presName, JSON.stringify(configObj));
+                resolve(_this);
+            }
+            else {
+                reject(Error('Configuration object should be in JSON format'));
+            }
+        });
+    };
+    /**
+     * return: Promise<JSON>
+     *
+     * Get the saved configuration from the presentation
+     */
+    Extension.prototype.loadConfig = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            internal_1.exec('GetPresProperty', _this._presName, function (config) {
+                var configObj = config === '' ? {} : JSON.parse(config);
+                resolve(configObj);
+            });
+        });
+    };
+    return Extension;
+})();
+exports.Extension = Extension;
+},{"../core/environment":4,"../internal/internal":26}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -870,7 +929,7 @@ var AudioItem = (function (_super) {
 })(item_2.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"../environment":4,"./iaudio":10,"./item":16}],6:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/mixin":29,"../environment":4,"./iaudio":11,"./item":17}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1004,7 +1063,7 @@ var CameraItem = (function (_super) {
 })(item_2.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],7:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/mixin":29,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1086,7 +1145,7 @@ var FlashItem = (function (_super) {
 })(item_2.Item);
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"../../util/rectangle":39,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],8:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/mixin":29,"../../util/rectangle":41,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],9:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1257,7 +1316,7 @@ var GameItem = (function (_super) {
 })(item_2.Item);
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../environment":4,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],9:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/json":28,"../../internal/util/mixin":29,"../../internal/util/xml":30,"../environment":4,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1792,7 +1851,7 @@ var HTMLItem = (function (_super) {
 })(item_2.Item);
 exports.HTMLItem = HTMLItem;
 mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, iconfig_1.ItemConfigurable]);
-},{"../../internal/internal":25,"../../internal/item":26,"../../internal/util/mixin":28,"../../util/rectangle":39,"../environment":4,"./ichroma":11,"./icolor":12,"./iconfig":13,"./ilayout":14,"./item":16,"./itransition":17}],10:[function(require,module,exports){
+},{"../../internal/internal":26,"../../internal/item":27,"../../internal/util/mixin":29,"../../util/rectangle":41,"../environment":4,"./ichroma":12,"./icolor":13,"./iconfig":14,"./ilayout":15,"./item":17,"./itransition":18}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -1915,7 +1974,7 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":26,"../environment":4}],11:[function(require,module,exports){
+},{"../../internal/item":27,"../environment":4}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -2327,7 +2386,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":26,"../../util/color":35}],12:[function(require,module,exports){
+},{"../../internal/item":27,"../../util/color":37}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -2472,7 +2531,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":26,"../../util/color":35}],13:[function(require,module,exports){
+},{"../../internal/item":27,"../../util/color":37}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -2557,7 +2616,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":23,"../../internal/internal":25,"../../internal/item":26,"../environment":4}],14:[function(require,module,exports){
+},{"../../internal/global":24,"../../internal/internal":26,"../../internal/item":27,"../environment":4}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -2711,7 +2770,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":26,"../../util/rectangle":39}],15:[function(require,module,exports){
+},{"../../internal/item":27,"../../util/rectangle":41}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2742,7 +2801,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],16:[function(require,module,exports){
+},{"../../internal/util/mixin":29,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],17:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -3187,7 +3246,7 @@ var Item = (function () {
 })();
 exports.Item = Item;
 mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../environment":4,"../scene":20,"./ilayout":14}],17:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/json":28,"../../internal/util/mixin":29,"../../internal/util/xml":30,"../environment":4,"../scene":21,"./ilayout":15}],18:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -3261,7 +3320,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":26,"../transition":21}],18:[function(require,module,exports){
+},{"../../internal/item":27,"../transition":22}],19:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3292,7 +3351,7 @@ var MediaItem = (function (_super) {
 })(item_1.Item);
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],19:[function(require,module,exports){
+},{"../../internal/util/mixin":29,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],20:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3499,7 +3558,7 @@ var ScreenItem = (function (_super) {
 })(item_2.Item);
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../../util/rectangle":39,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],20:[function(require,module,exports){
+},{"../../internal/item":27,"../../internal/util/json":28,"../../internal/util/mixin":29,"../../internal/util/xml":30,"../../util/rectangle":41,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],21:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -4096,7 +4155,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":22,"../internal/internal":25,"../internal/util/json":27,"../internal/util/xml":29,"./environment":4,"./item/audio":5,"./item/camera":6,"./item/flash":7,"./item/game":8,"./item/html":9,"./item/image":15,"./item/item":16,"./item/media":18,"./item/screen":19}],21:[function(require,module,exports){
+},{"../internal/app":23,"../internal/internal":26,"../internal/util/json":28,"../internal/util/xml":30,"./environment":4,"./item/audio":6,"./item/camera":7,"./item/flash":8,"./item/game":9,"./item/html":10,"./item/image":16,"./item/item":17,"./item/media":19,"./item/screen":20}],22:[function(require,module,exports){
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -4157,7 +4216,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -4232,7 +4291,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":25,"./util/json":27}],23:[function(require,module,exports){
+},{"./internal":26,"./util/json":28}],24:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -4254,7 +4313,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -4377,7 +4436,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":4,"../window/config":40,"./global":23,"./internal":25,"./item":26}],25:[function(require,module,exports){
+},{"../core/environment":4,"../window/config":42,"./global":24,"./internal":26,"./item":27}],26:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -4422,7 +4481,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -4500,7 +4559,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"./internal":25}],27:[function(require,module,exports){
+},{"../core/environment":4,"./internal":26}],28:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -4570,7 +4629,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":29}],28:[function(require,module,exports){
+},{"./xml":30}],29:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -4582,7 +4641,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -4637,7 +4696,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -4975,7 +5034,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":27,"../internal/util/xml":29}],31:[function(require,module,exports){
+},{"../internal/util/json":28,"../internal/util/xml":30}],32:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5089,7 +5148,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29}],32:[function(require,module,exports){
+},{"../internal/app":23,"../internal/util/json":28,"../internal/util/xml":30}],33:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -5343,7 +5402,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29,"../util/rectangle":39}],33:[function(require,module,exports){
+},{"../internal/app":23,"../internal/util/json":28,"../internal/util/xml":30,"../util/rectangle":41}],34:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5391,7 +5450,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29}],34:[function(require,module,exports){
+},{"../internal/app":23,"../internal/util/json":28,"../internal/util/xml":30}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
@@ -5695,7 +5754,70 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":4,"../internal/app":22,"../internal/internal":25,"./audio":30,"./camera":31,"./game":32,"./microphone":33}],35:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":23,"../internal/internal":26,"./audio":31,"./camera":32,"./game":33,"./microphone":34}],36:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = require('../internal/app');
+/**
+ *  Class for adding a web source to the stage.
+ *  URLs will use http by default unless https
+ *  is specified. This class supports adding
+ *  locally hosted HTML files as well.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var Url = XJS.Url;
+ *
+ * var urlPromise = new Url('https://www.xsplit.com').addToScene();
+ * ```
+ */
+var Url = (function () {
+    /**
+     *  param: (url: string)
+     *
+     *  Creates a URL object. If unspecified, protocol is http.
+     */
+    function Url(url) {
+        this._url = url;
+    }
+    Url.prototype._getUrl = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (/^https?:\/\//i.test(_this._url)) {
+                resolve(_this._url);
+            }
+            else if (/[a-z]+:\/\//i.test(_this._url)) {
+                reject(new Error('You may only add HTTP or HTTPS URLs to the stage.'));
+            }
+            else {
+                resolve("http://" + _this._url);
+            }
+        });
+    };
+    /**
+     *  return: Promise<boolean>
+     *
+     *  Adds this URL to the current scene as an HTML source.
+     *
+     *  Will raise an error if URL is not http or https.
+     */
+    Url.prototype.addToScene = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this._getUrl().then(function (url) {
+                app_1.App.callFunc('addurl', url).then(function () {
+                    resolve(true);
+                });
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    };
+    return Url;
+})();
+exports.Url = Url;
+},{"../internal/app":23}],37:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -5771,7 +5893,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -5801,7 +5923,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var IO = (function () {
@@ -5914,7 +6036,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-},{"../internal/internal":25}],38:[function(require,module,exports){
+},{"../internal/internal":26}],40:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -5933,7 +6055,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -6150,7 +6272,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6300,7 +6422,7 @@ var SourceConfigWindow = (function (_super) {
     return SourceConfigWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourceConfigWindow = SourceConfigWindow;
-},{"../internal/internal":25,"../util/eventemitter":36}],41:[function(require,module,exports){
+},{"../internal/internal":26,"../util/eventemitter":38}],43:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 var rectangle_1 = require('../util/rectangle');
@@ -6575,7 +6697,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
             detail: result }));
     };
 }
-},{"../core/environment":4,"../internal/internal":25,"../util/rectangle":39}],42:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":26,"../util/rectangle":41}],44:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6632,7 +6754,7 @@ if (environment_1.Environment.isExtension()) {
         }
     };
 }
-},{"../core/environment":4,"../internal/app":22,"../util/eventemitter":36}],43:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":23,"../util/eventemitter":38}],45:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6706,7 +6828,7 @@ if (environment_1.Environment.isSourcePlugin()) {
         SourcePluginWindow.getInstance().emit('set-background-color', color);
     };
 }
-},{"../core/environment":4,"../util/eventemitter":36}],"xjs":[function(require,module,exports){
+},{"../core/environment":4,"../util/eventemitter":38}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -6720,6 +6842,7 @@ __export(require('./core/channel'));
 __export(require('./core/scene'));
 __export(require('./core/transition'));
 __export(require('./core/dll'));
+__export(require('./core/extension'));
 __export(require('./core/item/item'));
 __export(require('./core/item/camera'));
 __export(require('./core/item/game'));
@@ -6738,10 +6861,11 @@ __export(require('./system/audio'));
 __export(require('./system/game'));
 __export(require('./system/camera'));
 __export(require('./system/microphone'));
+__export(require('./system/url'));
 __export(require('./window/config'));
 __export(require('./window/source'));
 __export(require('./window/extension'));
 __export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/item/audio":5,"./core/item/camera":6,"./core/item/flash":7,"./core/item/game":8,"./core/item/html":9,"./core/item/ichroma":11,"./core/item/image":15,"./core/item/item":16,"./core/item/media":18,"./core/item/screen":19,"./core/scene":20,"./core/transition":21,"./internal/init":24,"./system/audio":30,"./system/camera":31,"./system/game":32,"./system/microphone":33,"./system/system":34,"./util/color":35,"./util/io":37,"./util/ready":38,"./util/rectangle":39,"./window/config":40,"./window/dialog":41,"./window/extension":42,"./window/source":43}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/flash":8,"./core/item/game":9,"./core/item/html":10,"./core/item/ichroma":12,"./core/item/image":16,"./core/item/item":17,"./core/item/media":19,"./core/item/screen":20,"./core/scene":21,"./core/transition":22,"./internal/init":25,"./system/audio":31,"./system/camera":32,"./system/game":33,"./system/microphone":34,"./system/system":35,"./system/url":36,"./util/color":37,"./util/io":39,"./util/ready":40,"./util/rectangle":41,"./window/config":42,"./window/dialog":43,"./window/extension":44,"./window/source":45}]},{},["xjs"]);
