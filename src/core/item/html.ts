@@ -190,7 +190,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: value<boolean>
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -369,7 +369,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * return: Promise<string>
+   * return: Promise<boolean>
    *
    * Gets if custom CSS is enabled and applied to the document on load
    */
@@ -394,7 +394,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: value<boolean>
    * ```
    * return: Promise<HTMLItem>
    * ```
