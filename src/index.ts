@@ -10,6 +10,7 @@ export * from './core/channel';
 export * from './core/scene';
 export * from './core/transition';
 export * from './core/dll';
+export * from './core/extension';
 export * from './core/item/item';
 export * from './core/item/camera';
 export * from './core/item/game';
