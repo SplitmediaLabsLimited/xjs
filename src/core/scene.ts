@@ -313,7 +313,7 @@ export class Scene {
    * Scene.filterItems(function(item, resolve) {
    *   // We'll only fetch Flash Items by resolving 'true' if the item is an
    *   // instance of FlashItem
-   *   resolve((item instancoef FlashItem));
+   *   resolve((item instanceof FlashItem));
    * }).then(function(items) {
    *   // items would either be an empty array if no Flash items was found, or
    *   // an array of FlashItem objects
