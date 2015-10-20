@@ -311,10 +311,9 @@ export class Scene {
    *
    * ```javascript
    * Scene.filterItems(function(item, resolve) {
-   *   // Let's try testing it out by its ItemType :D
-   *   item.getType().then(function(type) {
-   *     resolve(type === ItemTypes.FLASHFILE);
-   *   });
+   *   // We'll only fetch Flash Items by resolving 'true' if the item is an
+   *   // instance of FlashItem
+   *   resolve((item instancoef FlashItem));
    * }).then(function(items) {
    *   // items would either be an empty array if no Flash items was found, or
    *   // an array of FlashItem objects
@@ -370,10 +369,9 @@ export class Scene {
    *
    * ```javascript
    * Scene.filterScenesByItems(function(item, resolve) {
-   *   // Let's try testing it out by its ItemType :D
-   *   item.getType().then(function(type) {
-   *     resolve(type === ItemTypes.FLASHFILE);
-   *   });
+   *   // We'll only fetch the scenes with flash items by resolving 'true' if
+   *   // the item is an instance of FlashItem
+   *   resolve((item instanceof FlashItem));
    * }).then(function(scenes) {
    *   // scenes would be an array of all scenes with FlashItems
    * });
