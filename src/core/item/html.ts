@@ -149,12 +149,12 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (refresh) {
-          iItem.set('refresh', '', slot).then(function() {
+          iItem.set('refresh', '', slot).then(() =>  {
             resolve(this);
           });
         } else {
@@ -255,12 +255,12 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (!value) {
-           iItem.set('refresh', '', slot).then(function() {
+           iItem.set('refresh', '', slot).then(() => {
              resolve(this);
            });
         } else {
@@ -359,10 +359,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         resolve(this);
       });
     });
@@ -457,10 +457,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (!value) {
           let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
           if (Environment.isSourcePlugin()) {
