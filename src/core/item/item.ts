@@ -448,7 +448,7 @@ export class Item implements IItemLayout {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        Scene.searchAllForItemId(iItem.getBaseID()).then(item => {
+        Scene.searchItemsById(iItem.getBaseID()).then(item => {
           resolve(item); // this should always exist
         });
       }

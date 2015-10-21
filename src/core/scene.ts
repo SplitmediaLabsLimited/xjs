@@ -112,7 +112,7 @@ export class Scene {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
           if (curScene.children.length > 0) {
-            resolve(Scene.searchSceneWithItemId(curScene.children[0]['id']));
+            resolve(Scene.searchScenesByItemId(curScene.children[0]['id']));
           } else {
             throw new Error('presetconfig cannot fetch current scene');
           }
@@ -169,13 +169,13 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchAllForItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
    *   // item is either an Item or null
    * });
    * ```
    *
    */
-  static searchAllForItemId(id: string): Promise<Item> {
+  static searchItemsById(id: string): Promise<Item> {
     let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
     if (!isID) {
       throw new Error('Not a valid ID format for items');
@@ -217,13 +217,13 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchSceneWithItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
    *   // scene contains the item
    * });
    * ```
    *
    */
-  static searchSceneWithItemId(id: string): Promise<Scene> {
+  static searchScenesByItemId(id: string): Promise<Scene> {
     let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
     if (!isID) {
       throw new Error('Not a valid ID format for items');
