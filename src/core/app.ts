@@ -53,7 +53,7 @@ export class App{
   /**
    * return: Promise<Rectangle>
    *
-   * Gets application default output resolution.
+   * Gets application default output resolution in pixels.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
@@ -166,11 +166,9 @@ export class App{
           return AudioDevice.parse(val);
         });
 
-        if (audioDevices.length && audioDevices.length > 0)
-        {
+        if (audioDevices.length && audioDevices.length > 0) {
           resolve(audioDevices[0]);
-        }
-        else
+        } else
         {
           resolve(new AudioDevice({ id: 'empty' }));
         }
@@ -200,11 +198,9 @@ export class App{
           return AudioDevice.parse(val);
         });
 
-        if (audioDevices.length && audioDevices.length > 1)
-        {
+        if (audioDevices.length && audioDevices.length > 1) {
           resolve(audioDevices[1]);
-        }
-        else
+        } else
         {
           resolve(new AudioDevice({ id: 'empty' }));
         }
@@ -564,6 +560,31 @@ export class App{
       iApp.set('transitiontime', time.toString()).then(val => {
         resolve(val);
       });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   *  Clears all cookies across all browser instances. Not available to
+   *  source plugins (call this from the configuration window instead.)
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.clearBrowserCookies.then(function(val) {
+   *  var isCleared = val;
+   * });
+   * ```
+   */
+  clearBrowserCookies(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(new Error('This method is not available to source plugins.'));
+      } else {
+        exec('CallHost', 'deletecookie:videoitemprop');
+        resolve(true);
+      }
     });
   }
 }

@@ -43,6 +43,10 @@ body {
   width: 272px;
 }
 
+.ng-scope .ui-autocomplete {
+  text-transform: initial;
+}
+
 #search:focus {
   background: #FFF url('../assets/icon_search.png') no-repeat 230px -1px;
   border: 1px solid #d3d3d3;
@@ -174,7 +178,7 @@ h1.id {
   text-align: right;
 }
 
-#contents a,
+#contents a[href],
 .defined-in a {
   color: #0095de;
 }

@@ -149,16 +149,15 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (refresh) {
-          iItem.set('refresh', '', slot).then(function() {
+          iItem.set('refresh', '', slot).then(() =>  {
             resolve(this);
           });
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -191,7 +190,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: value<boolean>
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -256,16 +255,15 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (!value) {
-           iItem.set('refresh', '', slot).then(function() {
+           iItem.set('refresh', '', slot).then(() => {
              resolve(this);
            });
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -361,17 +359,17 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         resolve(this);
       });
     });
   }
 
   /**
-   * return: Promise<string>
+   * return: Promise<boolean>
    *
    * Gets if custom CSS is enabled and applied to the document on load
    */
@@ -396,7 +394,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   }
 
   /**
-   * param: value<string>
+   * param: value<boolean>
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -459,21 +457,19 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         }
         return iItem.set('prop:BrowserJs', scriptString, slot);
       })
-      .then(function() {
+      .then(() => {
         return iItem.set('prop:custom', JSON.stringify(customObject), slot);
       })
-      .then(function() {
+      .then(() => {
         if (!value) {
           let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
           if (Environment.isSourcePlugin()) {
             eval(cssScript);
-          }
-          else {
+          } else {
             exec('CallInner', 'eval', cssScript);
           }
           resolve(this);
-        }
-        else {
+        } else {
           resolve(this);
         }
       });
@@ -516,8 +512,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the custom browser window size for the source, if set,
-   * regardless of its layout on the mixer
+   * Gets the custom browser window size (in pixels) for the source, if set,
+   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+   * custom size has been set.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
@@ -529,8 +526,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        }
-        else {
+        } else {
           customSize = Rectangle.fromDimensions(0, 0);
         }
         resolve(customSize);
@@ -643,9 +639,18 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: value<Rectangle>
    *
-   * Set Item position
+   * Set Item Position. Relative coordinates (0-1) are required.
    *
    * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
+   * item.setPosition(rect).then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */

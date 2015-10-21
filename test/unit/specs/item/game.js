@@ -20,16 +20,15 @@ describe('GameItem', function() {
   var offlineImageSet = false;
   var currentGameItem;
   var environments = ['config', 'extension', 'plugin'];
-  var parseXml = function(xmlStr)
-  {
+  var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
+  var TYPE_GAME = 7;
 
   var getLocal = function(funcName) {
     rand += 1;
 
-    switch (funcName)
-    {
+    switch (funcName) {
       case 'prop:type':
         //search for id
         var placement = parseXml(mockPresetConfig)
@@ -44,14 +43,12 @@ describe('GameItem', function() {
       break;
 
       case 'GameCapSurfSharing':
-        if (local.hasOwnProperty('GameCapSurfSharing'))
-        {
+        if (local.hasOwnProperty('GameCapSurfSharing')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.GameCapSurfSharing);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -67,14 +64,12 @@ describe('GameItem', function() {
       break;
 
       case 'GameCapShowMouse':
-        if (local.hasOwnProperty('GameCapShowMouse'))
-        {
+        if (local.hasOwnProperty('GameCapShowMouse')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.GameCapShowMouse);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -90,14 +85,12 @@ describe('GameItem', function() {
       break;
 
       case 'prop:item':
-        if (local.hasOwnProperty('item'))
-        {
+        if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
-        }
-        else {
+        } else {
           //search for id
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
@@ -123,8 +116,7 @@ describe('GameItem', function() {
         if (val === '1' || val === '0') {
           local.GameCapSurfSharing = val;
           specialOptimizationSet = true;
-        }
-        else {
+        } else {
           specialOptimizationSet = false;
         }
 
@@ -134,8 +126,7 @@ describe('GameItem', function() {
         if (val === '1' || val === '0') {
           local.GameCapShowMouse = val;
           showMouseSet = true;
-        }
-        else {
+        } else {
           showMouseSet = false;
         }
       break;
@@ -144,8 +135,7 @@ describe('GameItem', function() {
         if (typeof val === 'string') {
           local.item = val;
           offlineImageSet = true;
-        }
-        else {
+        } else {
           offlineImageSet = false;
         }
       break;
@@ -163,11 +153,15 @@ describe('GameItem', function() {
     env.set(environments[1]);
     propTypeCount = 0;
     if (!isXSplit) {
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{GAMEID}' });
+      var item2 = new XJS.Item({id : '{GAMEID2}'});
+      item1.getType();
+      item2.getType();
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
-        switch (funcName)
-        {
+        switch (funcName) {
           case 'gsenum':
             var irand = rand;
             setTimeout(function() {
@@ -221,34 +215,22 @@ describe('GameItem', function() {
         var itemArrayLength = itemArray.length;
 
         if (itemArrayLength > 0) {
-          var promiseArray = [];
           for (var i = 0; i < itemArrayLength; i++) {
-            promiseArray[i] = (function(_i) {
-              return new Promise(function(resolve) {
-                itemArray[_i].getType().then(function(type) {
-                  if (type === 7) {
-                    enumerated.push(itemArray[_i]);
-                  }
-                  resolve(type);
-                });
-              });
-            })(i);
+            if (itemArray[i] instanceof GameItem) {
+              enumerated.push(itemArray[i]);
+            }
           }
-          Promise.all(promiseArray).then(function() {
-            done();
-          });
         }
-        else {
-          done();
-        }
+
+        done();
       });
     });
   });
 
-  it('should be enumerated in the items list', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
-    var selected = '[type="7"]';
+    var selected = '[type="' + TYPE_GAME + '"]';
     var gameItems = placement.querySelectorAll(selected);
     expect(gameItems.length).toBe(enumerated.length);
     done();
@@ -259,8 +241,7 @@ describe('GameItem', function() {
       if (enumerated.length > 0) {
         currentGameItem = enumerated[0];
         done();
-      }
-      else {
+      } else {
         System.getGames().then(function(games) {
           currentGameItem = new GameItem(games[games.length-1]);
           done();
@@ -348,8 +329,7 @@ describe('GameItem', function() {
       if (enumerated.length > 0) {
         currentGameItem = enumerated[0];
         done();
-      }
-      else {
+      } else {
         System.getGames().then(function(games) {
           currentGameItem = new GameItem(games[games.length-1]);
           done();

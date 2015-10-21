@@ -276,14 +276,12 @@ describe('Audio ===', function() {
       promise.then(function(devices) {
         var device = devices[0];
         var deviceString = device.toString();
-        if (!/xsplit broadcaster/ig.test(navigator.appVersion))
-        {
+        if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
           expect(deviceString).toBe('<dev' +
             ' id="{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}"' +
             ' level="1.000000" enable="1" hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>');
         }
-        var parseXml = function(xmlStr)
-        {
+        var parseXml = function(xmlStr) {
           return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
         };
         var audioDevice = parseXml(deviceString).getElementsByTagName('dev')[0];

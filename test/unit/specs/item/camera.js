@@ -10,6 +10,12 @@ describe('CameraItem', function() {
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       env.set('script');
+      // Reset the attached IDS
+      var item1 = new XJS.Item({id : '{CAMERAID}' });
+      var item2 = new XJS.Item({id : '{CAMERAID2}'});
+      item1.getType();
+      item2.getType();
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         ctr++;

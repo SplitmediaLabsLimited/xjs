@@ -1,4 +1,5 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
+/// <reference path="../../defs/object.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
@@ -7,10 +8,13 @@ import {exec} from '../internal/internal';
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
- *  other URLS. Source plugins do not have this functionality (but their
+ *  other URLs. Source plugins do not have this functionality (but their
  *  configuration windows may use this.)
  *
- *  Note that opening a new dialog replaces the old one.
+ *  Note that opening a new dialog replaces the old one. Also, dialogs are
+ *  considered to be the same type of window as their parent windows: e.g.,
+ *  dialogs from extension windows are considered by the framework to have
+ *  access to the same functions as extensions.
  *
  *  Most of the methods are chainable.
  *
@@ -35,12 +39,15 @@ import {exec} from '../internal/internal';
  *    });
  *  });
  *
- *  // in the opened dialog, simply call
- *  // Dialog.return('returnedStringValue');
- *  // to return a value
+ *  // in the opened dialog, call Dialog.return() to return a value
+ *  //
+ *  // see documentation below for more details
  *  ```
  */
 export class Dialog{
+  private _result: string;
+  private _resultListener: EventListener;
+
   private _size: Rectangle;
   private _title: string;
   private _url: string;
@@ -54,6 +61,18 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      this._result = null;
+
+      let eventListener = (e) => {
+        // self-deleting event listener
+        e.target.removeEventListener(e.type, eventListener);
+        this._result = e.detail;
+        this._resultListener = null;
+      };
+
+      document.addEventListener('xsplit-dialog-result', eventListener);
+      this._resultListener = eventListener;
+
       return this;
     }
   }
@@ -85,17 +104,28 @@ export class Dialog{
    * *Chainable.*
    */
   static createAutoDialog(url: string): Dialog {
-    let dialog = new Dialog();
-    dialog._url = url;
-    dialog._autoclose = true;
-    return dialog;
+    if (Environment.isSourceConfig()) {
+      throw new Error('Auto dialogs are not available for config windows.');
+    } else {
+      let dialog = new Dialog();
+      dialog._url = url;
+      dialog._autoclose = true;
+      return dialog;
+    }
   }
 
   /**
-   *  param: (result: string)
+   *  param: (result ?: string)
    *
-   *  Closes this dialog with an optional string result. (Call this from the
-   *  dialog.)
+   *  Closes this dialog with an optional string result. For more complex
+   *  return values, try JSON.stringify. (Call this method from the dialog.)
+   *
+   *  As an alternative, lightweight dialogs that do not want to include xjs.js
+   *  may simply call native XBC methods to return a value.
+   *  ```javascript
+   *  external.SetDialogResult(stringResult);
+   *  external.Close();
+   *  ```
    */
   static return(result ?: string) {
     if (result !== undefined) {
@@ -110,7 +140,7 @@ export class Dialog{
    *
    *  return: Dialog
    *
-   *  Sets the size of the dialog to be displayed.
+   *  Sets the size in pixels of the dialog to be displayed.
    *
    * *Chainable.*
    */
@@ -185,6 +215,8 @@ export class Dialog{
    * *Chainable.*
    */
   show(): Dialog {
+    this._result = null;
+
     if (this._autoclose) {
       exec('NewAutoDialog', this._url, '', this._size === undefined ?
         undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
@@ -205,13 +237,31 @@ export class Dialog{
    */
   getResult(): Promise<string> {
     return new Promise(resolve => {
-      let eventListener = (e) => {
-        // self-deleting event listener
-        e.target.removeEventListener(e.type, eventListener);
-        resolve(e.detail);
-      }
+      if (this._result !== null) {
+        resolve(this._result);
+      } else if (this._resultListener === null) { // no listener yet, attach one
 
-      document.addEventListener('xsplit-dialog-result', eventListener);
+        let eventListener = (e) => {
+          // self-deleting event listener
+          e.target.removeEventListener(e.type, eventListener);
+          this._result = e.detail;
+          this._resultListener = null;
+          resolve(this._result);
+        };
+
+        document.addEventListener('xsplit-dialog-result', eventListener);
+        this._resultListener = eventListener;
+      } else { // listener already active
+        Object.observe(this, changes => {
+          // Search for changes with the name as result
+          let change = changes.find(elem => {
+            return elem.name === '_result';
+          });
+          if (change !== undefined) {
+            resolve(change.object._result);
+          }
+        });
+      }
     });
   }
 
