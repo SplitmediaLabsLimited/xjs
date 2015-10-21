@@ -1,4 +1,4 @@
-/* globals require */
+/* globals require, console, __dirname */
 
 (function() {
   'use strict';
@@ -12,9 +12,6 @@
     bs          = require('browser-sync'),
     history     = require('connect-history-api-fallback'),
     Server      = require('karma').Server;
-
-  var BUNDLE_PATH = 'dist/xjs.js',
-      JS_DEPENDENCY = 'src/util/EventEmitter.min.js';
 
   gulp.task('browserify', function() {
     return browserify('./src/index.ts')
@@ -97,7 +94,7 @@
         baseDir: './dist/api/',
         middleware: [ history() ],
         routes: {
-            "/bower_components": "bower_components"
+            '/bower_components' : 'bower_components'
         }
       }
     });
