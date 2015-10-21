@@ -197,7 +197,7 @@ describe('Scene', function() {
 
     it('should be able to search for an item by ID', function(done) {
 
-      Scene.searchAllForItemId(sceneItems._id)
+      Scene.searchItemsById(sceneItems._id)
         .then(function(item) {
           expect(item).toBeInstanceOf(Item);
           done();
@@ -205,7 +205,7 @@ describe('Scene', function() {
     });
 
     it('should be able to get null when searching for nonexistent ID', function(done) {
-      Scene.searchAllForItemId('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
+      Scene.searchItemsById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
         .then(function(item) {
           expect(item).toBe(null);
           done();
