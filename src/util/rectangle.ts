@@ -1,3 +1,12 @@
+/**
+ *  The Rectangle class is a utility class used in many different parts of the
+ *  framework. Please note that there are cases where the framework uses
+ *  absolute (pixel) measurements, and cases where relative measurements are
+ *  required (0 being the left/top edges and 1 being the right/bottom edges.)
+ *
+ *  Please check the documentation of each function to determine the necessary
+ *  parameters for the Rectangle to be created.
+ */
 export class Rectangle {
   private _top: number;
   private _left: number;
@@ -18,8 +27,7 @@ export class Rectangle {
     if (this._bottom !== undefined &&
       this._height !== (this._top - this._bottom)) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    }
-    else if (this._height !== undefined &&
+    } else if (this._height !== undefined &&
       this._bottom !== (this._top + this._height)) {
       this.setBottom(this._top + this._height);
     }
@@ -39,8 +47,7 @@ export class Rectangle {
     if (this._right !== undefined &&
       this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    }
-    else if (this._width !== undefined &&
+    } else if (this._width !== undefined &&
       this._height !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
@@ -60,8 +67,7 @@ export class Rectangle {
     if (this._left !== undefined &&
       this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    }
-    else if (this._width !== undefined &&
+    } else if (this._width !== undefined &&
       this._left !== (this._right - this._width)) {
       this.setLeft(this._right - this._width);
     }
@@ -81,8 +87,7 @@ export class Rectangle {
     if (this._top !== undefined &&
       this._height !== Math.abs(this._top - this._bottom)) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    }
-    else if (this._height !== undefined &&
+    } else if (this._height !== undefined &&
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }
@@ -102,8 +107,7 @@ export class Rectangle {
     if (this._right !== undefined &&
       this._left !== (this._right - this._width)) {
       this.setLeft(this._right - this._width);
-    }
-    else if (this._left !== undefined &&
+    } else if (this._left !== undefined &&
       this._right !== (this._left + this._width)) {
       this.setRight(this._left + this._width);
     }
@@ -123,8 +127,7 @@ export class Rectangle {
     if (this._top !== undefined &&
       this._bottom !== (this._top + this._height)) {
       this.setBottom(this._top + this._height);
-    }
-    else if (this._bottom !== undefined &&
+    } else if (this._bottom !== undefined &&
       this._top !== (this._bottom - this._height)) {
       this.setTop(this._bottom - this._height);
     }
@@ -132,6 +135,15 @@ export class Rectangle {
     return this;
   }
 
+  /**
+   *  param: (width: number, height: number)
+   *  ```
+   *  return: Rectangle
+   *  ```
+   *  Creates a rectangle from width and height dimensions. Absolute (pixels)
+   *  and relative (0-1) dimensions are accepted. Refer to the documentation
+   *  of each individual function to see which one is necessary.
+   */
   static fromDimensions(width: number, height: number): Rectangle {
     if (width < 0 || height < 0) {
       throw new Error('Rectangle dimensions cannot be negative.');
@@ -143,6 +155,15 @@ export class Rectangle {
     return rect;
   }
 
+  /**
+   *  param: (top: number, left: number, right: number, bottom: number)
+   *  ```
+   *  return: Rectangle
+   *  ```
+   *  Creates a rectangle from coordinates. Absolute (pixels)
+   *  and relative (0-1) dimensions are accepted. Refer to the documentation
+   *  of each individual function to see which one is necessary.
+   */
   static fromCoordinates(top: number, left: number,
     right: number, bottom: number): Rectangle {
     if (top > bottom) {
@@ -159,10 +180,21 @@ export class Rectangle {
     return rect;
   }
 
+  /**
+   *  return: string
+   *
+   *  Returns a comma-separated string containing the width and height values.
+   */
   toDimensionString(): string {
     return this._width + ',' + this._height;
   }
 
+  /**
+   *  return: string
+   *
+   *  Returns a comma-separated string containing the coordinates in the order:
+   *  left, top, right, bottom.
+   */
   toCoordinateString(): string {
     if (this._left === undefined) {
       throw new Error('This Rectangle instance does not have coordinates.');
@@ -171,6 +203,27 @@ export class Rectangle {
     }
   }
 
+  /**
+   *  return: string
+   *  ```
+   *  param: (format ?: string)
+   *  ```
+   *  Returns a string representation of the Rectangle object. If the format
+   *  optional parameter is omitted, then this is simply the string from
+   *  `toDimensionString()`. Sample usage:
+   *
+   *  ```javascript
+   *  console.log(rect.toString('Origin is at (:left, :top)'));```
+   *
+   *  You can format the output string by specifying the following markers in
+   *  the parameter:
+   *  - :left
+   *  - :top
+   *  - :right
+   *  - :bottom
+   *  - :width
+   *  - :height
+   */
   toString(value ?: string): string {
     if (value === undefined) {
       return this.toDimensionString(); // all rectangles have dimensions

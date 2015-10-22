@@ -1,8 +1,7 @@
-(function()
-{
+(function() {
 	/**
 	 * Provides the mock external class
-	 * 
+	 *
 	 * Each individual method are just declared
 	 * for use when spying via Jasmine
 	 * (returns an error if undefined)
@@ -10,7 +9,7 @@
 	 * @class MockExternal
 	 * @static
 	 */
-	var MockExternal = 
+	var MockExternal =
 	{
 		/**
 		 * source|config|script
@@ -23,7 +22,7 @@
 		 * source|config|window
 		 */
 		AppGetPropertyAsync: function(name) {
-			
+
 		},
 
 		/**

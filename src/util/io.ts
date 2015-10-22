@@ -5,6 +5,11 @@ import {exec} from '../internal/internal';
 export class IO {
 
   /**
+   * param: (path: string)
+   * ```
+   * return: Promise<string>
+   * ```
+   *
    * Returns a base-64 encoded string of the target file's contents.
    * UTF-8 encoded files may be decoded through:
    * ```javascript
@@ -18,6 +23,11 @@ export class IO {
   }
 
   /**
+   * param: (url: string)
+   * ```
+   * return: Promise<string>
+   * ```
+   *
    * Returns a base-64 encoded string of the target endpoint's contents.
    * Redirects are resolved, and this bypasses access-control-allow-origin.
    *
@@ -34,7 +44,10 @@ export class IO {
     });
   }
 
-  /** Opens a URL in the user's default browser. URLs need to
+  /**
+   * param: (url: string)
+   *
+   * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
    *
    */
   static openUrl(url: string) {
@@ -46,8 +59,12 @@ export class IO {
   private static _FORCE_SHOW_HIDDEN: number = 0x10000000;
 
   /**
+   * param: ([options] [, filter]) -- see below
+   * ```
+   * return: Promise<string[]>
+   * ```
    * Opens a file dialog for the user to select a file (or multiple files).
-   * Returns an array of strings, each of which contains the full path
+   * Resolves with an array of strings, each of which contains the full path
    * and filename of a selected file. Rejects when the dialog is canceled.
    *
    * The first (optional) argument is a JSON object that can be used to indicate
@@ -96,7 +113,7 @@ export class IO {
 
       exec('OpenFileDialogAsync', null, null, String(flags), filterString,
           path => {
-            if (path !== "null") {
+            if (path !== 'null') {
               resolve(path.split('|'));
             } else {
               reject(Error('File selection cancelled.'));

@@ -29,12 +29,10 @@
       {
         name: 'toggleAudioItem',
         onClick: function() {
-          if (audioIndex < audioItems.length - 1)
-          {
+          if (audioIndex < audioItems.length - 1) {
             audioItem = audioItems[audioIndex + 1];
             audioIndex ++;
-          }
-          else {
+          } else {
             audioItem = audioItems[0];
             audioIndex = 0;
           }
@@ -101,8 +99,7 @@
             var newSilenceThreshold;
             if (silenceThreshold < 128) {
               newSilenceThreshold = silenceThreshold + 1;
-            }
-            else {
+            } else {
              newSilenceThreshold = 0;
             }
             return audioItem.setSilenceThreshold(newSilenceThreshold);
@@ -134,8 +131,7 @@
             var newSilencePeriod;
             if (silencePeriod < 10000) {
               newSilencePeriod = silencePeriod + 1;
-            }
-            else {
+            } else {
               newSilencePeriod = 0;
             }
             return audioItem.setSilencePeriod(newSilencePeriod);
@@ -168,8 +164,7 @@
             var newVolume;
             if (volume < 100) {
               newVolume = volume + 1;
-            }
-            else {
+            } else {
               newVolume = 0;
             }
             return audioItem.setVolume(newVolume);
@@ -227,8 +222,7 @@
             var newAudioOffset;
             if (audioOffset < 100000000) {
               newAudioOffset = audioOffset + 100000;
-            }
-            else {
+            } else {
               newAudioOffset = 0;
             }
             return audioItem.setAudioOffset(newAudioOffset);

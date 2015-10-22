@@ -24,6 +24,18 @@
     XJS.App.TRANSITION_WAVE
   ];
 
+  var randomWord = function(length) {
+    var rand;
+    var str = '';
+
+    for (var i = 0; i < length; i++) {
+      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
+      str += String.fromCharCode(rand);
+    }
+
+    return str;
+  };
+
   Rose.createTab({
     name: 'App',
     buttons: [
@@ -187,6 +199,26 @@
           App.setTransitionTime(transitionTime);
           console.trace(transitionTime);
           Rose.output(transitionTime);
+        }
+      },
+
+      {
+        name: 'clearBrowserCookies',
+        onClick: function() {
+          var expiration_date = new Date();
+          expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+          var cookie_string = "test_cookies=" + randomWord(5)
+            + "; path=/; expires=" + expiration_date.toGMTString();
+          document.cookie = cookie_string;
+          console.trace("INITIAL :: " + document.cookie);
+          Rose.output("INITIAL :: " + document.cookie);
+
+          App.clearBrowserCookies().then(function() {
+            setTimeout(function() {
+              console.trace("FINAL :: " + document.cookie);
+              Rose.output("FINAL :: " + document.cookie);              
+            }, 1000);
+          });
         }
       }
     ]

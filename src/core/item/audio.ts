@@ -10,6 +10,11 @@ import {Environment} from '../environment';
 /**
  * The AudioItem class represents an audio device that has been added
  * to the stage.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
+ *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ *  instance.
  */
 export class AudioItem extends Item implements IItemAudio {
 

@@ -1,10 +1,11 @@
 {
-  "name": "xjs",
-  "version": "0.6.1",
+  "name": "xjs-framework",
+  "version": "0.8.0",
   "description": "XSplit JS Framework",
   "scripts": {
     "test": "karma start --single-run --browsers Chrome"
   },
+  "main": "src/index.ts",
   "devDependencies": {
     "bower": "^1.4.1",
     "browser-sync": "^2.8.0",
@@ -26,18 +27,36 @@
     "lodash": "^3.10.0",
     "traceur": "0.0.87",
     "tsify": "^0.11.2",
-    "typescript": "^1.5.0-beta",
+    "typescript": "1.5.0-beta",
     "vinyl-source-stream": "^1.1.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/xjsframework/xjs.git"
   },
-  "author": "SplitmediaLabs, Ltd.",
-  "license": "ISC",
+  "keywords": [
+    "xsplit",
+    "plugin",
+    "framework"
+  ],
+  "author": "SplitmediaLabs, Ltd. <xjs@splitmedialabs.com>",
+  "license": "SEE LICENSE IN LICENSE",
   "bugs": {
     "url": "https://github.com/xjsframework/xjs/issues",
     "email": "xjs@splitmedialabs.com"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme"
+  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "files": [
+    "defs/",
+    "dist/",
+    "src/",
+    "test/",
+    "gulpfile.js",
+    "karma.conf.js",
+    "tsconfig.json"
+  ]
 }

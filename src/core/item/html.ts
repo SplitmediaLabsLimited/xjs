@@ -1,5 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {App as iApp} from '../../internal/app';
@@ -14,7 +15,17 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {Environment} from '../environment';
 
+/**
+ * The HTMLItem class represents a web page source. This covers both source
+ * plugins and non-plugin URLs.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
+ *  All methods marked as *Chainable* resolve with the original `HTMLItem`
+ *  instance.
+ */
 export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
   /**
@@ -27,15 +38,22 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
       let slot = iItem.attach(this._id);
 
       iItem.get('prop:item', slot).then(url => {
+        let _url = String(url).split('*');
+        url = _url[0];
         resolve(url);
       });
     });
   }
 
   /**
-   * param: value<string>
+   * param: (url: string)
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
    *
    * Sets the URL of this webpage source.
+   *
+   * *Chainable.*
    */
   setURL(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
@@ -47,6 +65,493 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         } else {
           reject('Invalid value');
         }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the javascript commands to be executed on source upon load
+   */
+  getBrowserJS(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let customJS = '';
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(customJS);
+      });
+    });
+  }
+
+  /**
+   * param: (js: string, refresh: boolean = false)
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Sets the javascript commands to be executed on source
+   * right upon setting and on load. Optionally set second parameter
+   * to true to refresh source (needed to clean previously executed JS code.)
+   *
+   * *Chainable.*
+   */
+  setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch (e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['customCSS'] = customCSS;
+        customObject['customJS'] = value;
+
+        if (cssEnabled === true) {
+          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "';h.appendChild(xjsCSSOverwrite);";
+          scriptString = scriptString + cssScript;
+        }
+        if (value !== '' && scriptEnabled === true) {
+          scriptString = scriptString + value;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(() => {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(() => {
+        if (refresh) {
+          iItem.set('refresh', '', slot).then(() =>  {
+            resolve(this);
+          });
+        } else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if BrowserJS is enabled and executed on load
+   */
+  isBrowserJSEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let enabled = true;
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            enabled = (customObject['scriptEnabled'] == 'true');
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(enabled);
+      });
+    });
+  }
+
+  /**
+   * param: value<boolean>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require source to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable.*
+   */
+  enableBrowserJS(value: boolean): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = value.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = customCSS;
+
+        if (cssEnabled === true) {
+          let cssScript =
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') + '";"' +
+          'h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && value === true) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(() => {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(() => {
+        if (!value) {
+           iItem.set('refresh', '', slot).then(() => {
+             resolve(this);
+           });
+        } else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the custom CSS applied to the document upon loading
+   */
+  getCustomCSS(): Promise<string> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let customCSS = '';
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(customCSS);
+      });
+    });
+  }
+
+  /**
+   * param: value<string>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Sets the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable.*
+   */
+  setCustomCSS(value: string): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            cssEnabled = (customObject['cssEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['cssEnabled'] = cssEnabled.toString();
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = value;
+
+        if (cssEnabled === true) {
+          let cssScript =
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          value.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+
+          '";h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && scriptEnabled === true) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(() => {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if custom CSS is enabled and applied to the document on load
+   */
+  isCustomCSSEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+
+      iItem.get('prop:custom', slot).then(custom => {
+        let enabled = true;
+        try {
+          let customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('cssEnabled')) {
+            enabled = (customObject['cssEnabled'] == 'true');
+          }
+        }
+        catch(e) {
+
+        }
+        resolve(enabled);
+      });
+    });
+  }
+
+  /**
+   * param: value<boolean>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Enables or disables application of custom CSS to the document
+   *
+   * *Chainable.*
+   */
+  enableCustomCSS(value: boolean): Promise<HTMLItem> {
+    return new Promise((resolve, reject) => {
+      let slot = iItem.attach(this._id);
+      let customObject = {};
+
+      iItem.get('prop:custom', slot).then(custom => {
+
+        let customJS = '';
+        let customCSS = '';
+        let scriptString = ' ';
+        let scriptEnabled = true;
+        let cssEnabled = true;
+
+        try {
+          customObject = JSON.parse(custom);
+          if (customObject.hasOwnProperty('scriptEnabled')) {
+            scriptEnabled = (customObject['scriptEnabled'] == 'true');
+          }
+          if (customObject.hasOwnProperty('customJS')) {
+            customJS = customObject['customJS'];
+          }
+          if (customObject.hasOwnProperty('customCSS')) {
+            customCSS = customObject['customCSS'];
+          }
+        }
+        catch(e) {
+
+        }
+
+        customObject['scriptEnabled'] = scriptEnabled.toString();
+        customObject['cssEnabled'] = value.toString();
+        customObject['customJS'] = customJS;
+        customObject['customCSS'] = customCSS;
+
+        if (value === true) {
+          let cssScript =
+          'var xjsCSSOverwrite = document.createElement("style");' +
+          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+          'xjsCSSOverwrite.type = "text/css";' +
+          'var h = document.querySelector("head");' +
+          'var existing = document' +
+            '.querySelector("head #splitmedialabsCSSOverwrite");' +
+          'if (existing != null)h.removeChild(existing);' +
+          'xjsCSSOverwrite.innerHTML = "' +
+          customCSS.replace(/(\r\n|\n|\r)/gm,'')
+            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') +
+          '";h.appendChild(xjsCSSOverwrite);';
+          scriptString = scriptString + cssScript;
+        }
+        if (customJS !== '' && value === scriptEnabled) {
+          scriptString = scriptString + customJS;
+        }
+        return iItem.set('prop:BrowserJs', scriptString, slot);
+      })
+      .then(() => {
+        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+      })
+      .then(() => {
+        if (!value) {
+          let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
+          if (Environment.isSourcePlugin()) {
+            eval(cssScript);
+          } else {
+            exec('CallInner', 'eval', cssScript);
+          }
+          resolve(this);
+        } else {
+          resolve(this);
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if browser is rendered transparent
+   */
+  isBrowserTransparent(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:BrowserTransparent').then(isTransparent => {
+        resolve(isTransparent === '1');
+      });
+    });
+  }
+
+  /**
+   * param: Promise<boolean>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Enable or disabled transparency of CEF browser
+   *
+   * *Chainable.*
+   */
+  enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the custom browser window size (in pixels) for the source, if set,
+   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+   * custom size has been set.
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  getBrowserCustomSize():Promise<Rectangle> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      let customSize;
+      iItem.get('prop:BrowserSize', slot).then(val => {
+        if (val !== '') {
+          var [width, height] = decodeURIComponent(val).split(',');
+          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+        } else {
+          customSize = Rectangle.fromDimensions(0, 0);
+        }
+        resolve(customSize);
+      });
+    });
+  }
+
+  /**
+   * param: Promise<Rectangle>
+   * ```
+   * return: Promise<HTMLItem>
+   * ```
+   *
+   * Sets the custom browser window size for the source
+   * regardless of its layout on the mixer
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
+        resolve(this);
       });
     });
   }
@@ -78,6 +583,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * return: Promise<Rectangle>
    *
    * Get the position of the item
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getPosition:              () => Promise<Rectangle>;
 
@@ -106,6 +613,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Aspect Ratio to ON or OFF
+   *
+   * *Chainable.*
    */
   setKeepAspectRatio:       (value: boolean) => Promise<HTMLItem>;
 
@@ -113,6 +622,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Position Lock to ON or OFF
+   *
+   * *Chainable.*
    */
   setPositionLocked:        (value: boolean) => Promise<HTMLItem>;
 
@@ -120,13 +631,28 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set Enhance Resize to ON or OFF
+   *
+   * *Chainable.*
    */
   setEnhancedResizeEnabled:  (value: boolean) => Promise<HTMLItem>;
 
   /**
    * param: value<Rectangle>
    *
-   * Set Item position
+   * Set Item Position. Relative coordinates (0-1) are required.
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
+   * item.setPosition(rect).then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setPosition:              (value: Rectangle) => Promise<HTMLItem>;
 
@@ -134,6 +660,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Y value of the item
+   *
+   * *Chainable.*
    */
   setRotateY:              (value: number) => Promise<HTMLItem>;
 
@@ -141,6 +669,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate X value of the item
+   *
+   * *Chainable.*
    */
   setRotateX:              (value: number) => Promise<HTMLItem>;
 
@@ -148,6 +678,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Rotate Z value of the item
+   *
+   * *Chainable.*
    */
   setRotateZ:              (value: number) => Promise<HTMLItem>;
 
@@ -199,6 +731,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Transparency
+   *
+   * *Chainable.*
    */
   setTransparency: (value: number) => Promise<HTMLItem>;
 
@@ -206,6 +740,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Brightness
+   *
+   * *Chainable.*
    */
   setBrightness:   (value: number) => Promise<HTMLItem>;
 
@@ -213,6 +749,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Contrast
+   *
+   * *Chainable.*
    */
   setContrast:     (value: number) => Promise<HTMLItem>;
 
@@ -220,6 +758,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Hue
+   *
+   * *Chainable.*
    */
   setHue:          (value: number) => Promise<HTMLItem>;
 
@@ -227,6 +767,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set Item Saturation
+   *
+   * *Chainable.*
    */
   setSaturation:   (value: number) => Promise<HTMLItem>;
 
@@ -234,215 +776,158 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Color>
    *
    * Set Border Color
+   *
+   * *Chainable.*
    */
   setBorderColor:  (value: Color) => Promise<HTMLItem>;
 
-// ItemChroma
-
+  // ItemChroma
   /**
    * return: Promise<boolean>
-   *
-   * Determines whether any type of chroma keying is enabled.
    */
   isChromaEnabled: () => Promise<boolean>;
-
   /**
-   * param: (value: boolean)
+   * param: value<boolean>
    *
-   * Enables or disables chroma keying. Use together with `getKeyingType()`.
+   * *Chainable.*
    */
   setChromaEnabled: (value: boolean) => Promise<HTMLItem>;
-
   /**
    * return: Promise<KeyingType>
-   *
-   * Determines the chroma keying type being used.
    */
   getKeyingType: () => Promise<KeyingType>;
-
   /**
-   * param: (value: KeyingType)
+   * param: value<KeyingType>
+   * *Chainable.*
    *
-   * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
-   *
-   * After setting the keying type, you may tweak settings specific to that type.
-   * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
-   * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
-   * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
    */
   setKeyingType: (value: KeyingType) => Promise<HTMLItem>;
 
+  // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
    * return: Promise<ChromaAntiAliasLevel>
-   *
-   * Gets the antialiasing level for chroma keying.
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-
   /**
-   * param: (value: ChromaAntiAliasLevel)
+   * param: value<ChromaAntiAliasLevel>
    *
-   * Sets the antialiasing level for chroma keying.
+   * *Chainable.*
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HTMLItem>;
 
   // CHROMA LEGACY MODE
-
   /**
    * return: Promise<number>
-   *
-   * Gets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyBrightness: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * *Chainable.*
    */
   setChromaLegacyBrightness: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacySaturation: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   * *Chainable.*
    */
   setChromaLegacySaturation: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyHue: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   * *Chainable.*
    */
   setChromaLegacyHue: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * *Chainable.*
    */
   setChromaLegacyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * *Chainable.*
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<HTMLItem>;
 
   // CHROMA KEY RGB MODE
-
   /**
    * return: Promise<ChromaPrimaryColors>
-   *
-   * Gets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-
   /**
-   * param: (value: ChromaPrimaryColors)
+   * param: value<ChromaPrimaryColors>
    *
-   * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   * *Chainable.*
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * *Chainable.*
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * *Chainable.*
    */
   setChromaRGBKeyExposure: (value: number) => Promise<HTMLItem>;
 
   // COLOR KEY MODE
-
   /**
    * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   * *Chainable.*
    */
   setChromaColorKeyThreshold: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
    */
   getChromaColorKeyExposure: () => Promise<number>;
-
   /**
-   * param: (value: number)
+   * param: value<number>
    *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   * *Chainable.*
    */
   setChromaColorKeyExposure: (value: number) => Promise<HTMLItem>;
-
   /**
    * return: Promise<Color>
-   *
-   * Gets the color setting for keying in color key mode.
    */
   getChromaColorKeyColor: () => Promise<Color>;
-
   /**
-   * param: (value: Color)
+   * param: value<Color>
    *
-   * Sets the color setting for keying in color key mode.
+   * *Chainable.*
    */
   setChromaColorKeyColor: (value: Color) => Promise<HTMLItem>;
 
@@ -459,6 +944,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<boolean>
    *
    * Set item to visible or hidden
+   *
+   * *Chainable.*
    */
   setVisible:        (value: boolean) => Promise<HTMLItem>;
 
@@ -473,6 +960,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<Transition>
    *
    * Set item's transition type for when visibility is toggled
+   *
+   * *Chainable.*
    */
   setTransition:     (value: Transition) => Promise<HTMLItem>;
 
@@ -487,6 +976,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: value<number>
    *
    * Set item's transition time in milliseconds
+   *
+   * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<HTMLItem>;
 
@@ -503,6 +994,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Persists a JSON object for configuration. Available to sources only.
+   *
+   * *Chainable.*
    */
   saveConfig: (configObj: any) => Promise<HTMLItem>;
 
@@ -510,6 +1003,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Requests the source to save a configuration. This makes the source emit the save-config event.
+   *
+   * *Chainable.*
    */
   requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
 
@@ -517,6 +1012,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    * param: config<JSON>
    *
    * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   *
+   * *Chainable.*
    */
   applyConfig: (configObj: any) => Promise<HTMLItem>;
 }

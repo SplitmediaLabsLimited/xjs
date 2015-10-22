@@ -115,7 +115,7 @@ export class Game implements Addable {
   /**
    * return: Rectangle
    *
-   * Gets the game resolution.
+   * Gets the game resolution in pixels.
    *
    * #### Usage
    *
