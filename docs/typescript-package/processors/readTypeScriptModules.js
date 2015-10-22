@@ -60,15 +60,15 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
 
           // If the symbol is an Alias then for most things we want the original resolved symbol
           var resolvedExport = exportSymbol.resolvedSymbol || exportSymbol;
-          if (exportSymbol.resolvedSymbol && exportSymbol.resolvedSymbol.name === 'unknown') {
-            resolvedExport = exportSymbol;
-          }
           var exportDoc = createExportDoc(exportSymbol.name, resolvedExport, moduleDoc, basePath, parseInfo.typeChecker);
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
+
+          exportDoc.members = [];
+          exportDoc.statics = [];
+
           // Generate docs for each of the export's members
           if (resolvedExport.flags & ts.SymbolFlags.HasMembers) {
-            exportDoc.members = [];
-            exportDoc.statics = [];
+
             for(var memberName in resolvedExport.members) {
               // FIXME(alexeagle): why do generic type params appear in members?
               if (memberName === 'T') {
@@ -93,45 +93,34 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
                 exportDoc.newMember = memberDoc;
               }
             }
+          }
 
-            for(var exportName in resolvedExport.exports) {
-              if (exportName === 'prototype') continue;
-
-              var staticSymbol = resolvedExport.exports[exportName];
-              var memberDoc = createMemberDoc(staticSymbol, exportDoc, basePath, parseInfo.typeChecker);
-
-              if (staticSymbol.name !== 'prototype' && staticSymbol.name.charAt(0) !== '_') {
-                docs.push(memberDoc);
-                exportDoc.statics.push(memberDoc);
-              }
+          if (exportDoc.docType === 'enum') {
+            for(var memberName in resolvedExport.exports) {
+              log.silly('>>>>>> member: ' + memberName + ' from ' + exportDoc.id + ' in ' + moduleDoc.id);
+              var memberSymbol = resolvedExport.exports[memberName];
+              var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
+              docs.push(memberDoc);
+              exportDoc.members.push(memberDoc);
             }
-
-            if (sortClassMembers) {
-              exportDoc.members.sort(function(a, b) {
-                if (a.name > b.name) return 1;
-                if (a.name < b.name) return -1;
-                return 0;
-              });
+          } else if (resolvedExport.flags & ts.SymbolFlags.HasExports) {
+            for (var exported in resolvedExport.exports) {
+              if (exported === 'prototype') continue;
+              if (hidePrivateMembers && exported.charAt(0) === '_') continue;
+              var memberSymbol = resolvedExport.exports[exported];
+              var memberDoc = createMemberDoc(memberSymbol, exportDoc, basePath, parseInfo.typeChecker);
+              memberDoc.isStatic = true;
+              docs.push(memberDoc);
+              exportDoc.statics.push(memberDoc);
             }
           }
 
-          if (exportDoc.docType == 'enum') {
-            exportDoc.members = [];
-            var ctr = -1;
-            for (var etype in resolvedExport.exports) {
-              if (resolvedExport.exports[etype].declarations[0]
-                .initializer !== undefined) {
-                ctr = resolvedExport.exports[etype].declarations[0]
-                  .initializer.text;
-              } else {
-                ctr++;
-              }
-
-              exportDoc.members.push({
-                id: ctr,
-                name: etype
-              });
-            }
+          if (sortClassMembers) {
+            exportDoc.members.sort(function(a, b) {
+              if (a.name > b.name) return 1;
+              if (a.name < b.name) return -1;
+              return 0;
+            });
           }
 
           // Add this export doc to its module doc
@@ -161,12 +150,17 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
   function createExportDoc(name, exportSymbol, moduleDoc, basePath, typeChecker) {
     var typeParamString = '';
     var heritageString = '';
+    var typeDefinition = '';
 
     exportSymbol.declarations.forEach(function(decl) {
       var sourceFile = ts.getSourceFileOfNode(decl);
 
       if (decl.typeParameters) {
         typeParamString = '<' + getText(sourceFile, decl.typeParameters) + '>';
+      }
+
+      if (decl.symbol.flags & ts.SymbolFlags.TypeAlias) {
+        typeDefinition = getText(sourceFile, decl.type);
       }
 
       if (decl.heritageClauses) {
@@ -202,6 +196,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       id: moduleDoc.id + '/' + name,
       typeParams: typeParamString,
       heritage: heritageString,
+      decorators: getDecorators(exportSymbol),
       aliases: aliasNames,
       moduleDoc: moduleDoc,
       content: getContent(exportSymbol),
@@ -209,12 +204,33 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       location: getLocation(exportSymbol)
     };
 
+    if (exportDoc.docType === 'var' || exportDoc.docType === 'const') {
+      exportDoc.symbolTypeName = exportSymbol.valueDeclaration.type &&
+                                 exportSymbol.valueDeclaration.type.typeName &&
+                                 exportSymbol.valueDeclaration.type.typeName.text;
+    }
+
+    if (exportDoc.docType === 'type-alias') {
+      exportDoc.returnType = getReturnType(typeChecker, exportSymbol);
+    }
+
     if(exportSymbol.flags & ts.SymbolFlags.Function) {
       exportDoc.parameters = getParameters(typeChecker, exportSymbol);
     }
     if(exportSymbol.flags & ts.SymbolFlags.Value) {
       exportDoc.returnType = getReturnType(typeChecker, exportSymbol);
     }
+    if (exportSymbol.flags & ts.SymbolFlags.TypeAlias) {
+      exportDoc.typeDefinition = typeDefinition;
+    }
+    if (isAbstract(exportSymbol)) {
+      exportDoc.abstract = true;
+    }
+
+    // Compute the original module name from the relative file path
+    exportDoc.originalModule = exportDoc.fileInfo.relativePath
+        .replace(new RegExp('\.' + exportDoc.fileInfo.extension + '$'), '');
+
     return exportDoc;
   }
 
@@ -223,12 +239,21 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
       docType: 'member',
       classDoc: classDoc,
       name: memberSymbol.name,
+      decorators: getDecorators(memberSymbol),
       content: getContent(memberSymbol),
       fileInfo: getFileInfo(memberSymbol, basePath),
       location: getLocation(memberSymbol)
     };
 
     memberDoc.typeParameters = getTypeParameters(typeChecker, memberSymbol);
+
+    if(classDoc.docType === 'enum' && memberSymbol.declarations &&
+      memberSymbol.declarations.length > 0 &&
+      memberSymbol.declarations[0].initializer) {
+      memberDoc.text = memberSymbol.declarations[0].initializer.text;
+    } else if (classDoc.docType === 'enum') {
+      memberDoc.text = '';
+    }
 
     if(memberSymbol.flags & (ts.SymbolFlags.Signature) ) {
       memberDoc.parameters = getParameters(typeChecker, memberSymbol);
@@ -266,6 +291,23 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     return memberDoc;
   }
 
+
+  function getDecorators(symbol) {
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
+    var sourceFile = ts.getSourceFileOfNode(declaration);
+
+    var decorators = declaration.decorators && declaration.decorators.map(function(decorator) {
+      decorator = decorator.expression;
+      return {
+        name: decorator.expression ? decorator.expression.text : decorator.text,
+        arguments: decorator.arguments && decorator.arguments.map(function(argument) {
+          return getText(sourceFile, argument).trim();
+        })
+      };
+    });
+    return decorators;
+  }
+
   function getParameters(typeChecker, symbol) {
     var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
@@ -276,7 +318,11 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
         ' at line ' + location.start.line);
     }
     return declaration.parameters.map(function(parameter) {
-      var paramText = getText(sourceFile, parameter.name);
+      var paramText = '';
+      if (parameter.dotDotDotToken) {
+        paramText += '...';
+      }
+      paramText += getText(sourceFile, parameter.name);
       if (parameter.questionToken || parameter.initializer) {
         paramText += '?';
       }
@@ -284,6 +330,9 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
         paramText += ':' + getType(sourceFile, parameter.type);
       } else {
         paramText += ': any';
+        if (parameter.dotDotDotToken) {
+          paramText += '[]';
+        }
       }
       return paramText.trim();
     });
@@ -307,6 +356,10 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     }
   }
 
+  function isAbstract(symbol) {
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
+    return declaration.flags & ts.NodeFlags.Abstract;
+  }
 
   function expandSourceFiles(sourceFiles, basePath) {
     var filePaths = [];
@@ -326,8 +379,8 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
   function getType(sourceFile, type) {
     var text = getText(sourceFile, type);
     while (text.indexOf(".") >= 0) {
-      // Keep namespaced symbols in Rx
-      if (text.match(/^\s*Rx\./)) break;
+      // Keep namespaced symbols in RxNext
+      if (text.match(/^\s*RxNext\./)) break;
       // handle the case List<thing.stuff> -> List<stuff>
       text = text.replace(/([^.<]*)\.([^>]*)/, "$2");
     }

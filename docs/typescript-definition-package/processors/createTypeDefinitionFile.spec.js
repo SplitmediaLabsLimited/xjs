@@ -14,28 +14,33 @@ describe('createTypeDefinitionFile processor', function() {
     // Initialize the processor
     processor.typeDefinitions = [{
       id: 'angular2/angular2',
-      modules: { 'angular2/angular2': 'angular2/angular2' }
+      modules: {
+        'angular2/angular2': {
+          id: 'angular2/angular2',
+          namespace: 'ng'
+        }
+      }
     }];
   });
 
 
 
-  describe('classes with private constructors', function() {
-    
+  describe('classes with @internal constructors', function() {
+
     it('should convert heritage from `implements` into `extends`', function() {
-      
+
       // Create some mock docs for testing
       var docs = [
         {
           id: 'angular2/angular2',
           exports: [
-            { docType: 'class', heritage: 'implements Xyz', constructorDoc: { private: true }  }
+            { docType: 'class', heritage: 'implements Xyz', constructorDoc: { internal: true }  }
           ]
         }
       ];
 
       docs = processor.$process(docs);
-      
+
       expect(docs.length).toEqual(1);
       expect(docs[0].docType).toEqual('type-definition');
 
@@ -44,5 +49,5 @@ describe('createTypeDefinitionFile processor', function() {
       expect(moduleDoc.exports[0].heritage).toEqual('extends Xyz');
     });
   });
-	
+
 });

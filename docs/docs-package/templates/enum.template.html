@@ -11,7 +11,12 @@
 {%- for member in doc.members %}{% if not member.private %}
   <section class="member">
     <h1 id="{$ member.name $}" class="name">
-      {$ member.name $} = {$ member.id $}
+      {$ member.name $} =&nbsp;
+        {%- if member.text != '' -%}
+          {$ member.text $}
+        {%- else -%}
+          {$ loop.index0 $}
+        {%- endif -%}
     </h1>
   </section>
 
