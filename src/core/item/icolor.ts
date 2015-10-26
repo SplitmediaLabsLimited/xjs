@@ -23,8 +23,7 @@ export class ItemColor implements IItemColor {
 
   getTransparency(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:alpha', slot).then(val => {
+      iItem.get('prop:alpha', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -35,8 +34,7 @@ export class ItemColor implements IItemColor {
       if (value < 0 || value > 255) {
         reject(RangeError('Transparency may only be in the range 0 to 255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:alpha', String(value), slot).then(() => {
+        iItem.set('prop:alpha', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -45,8 +43,7 @@ export class ItemColor implements IItemColor {
 
   getBrightness(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_brightness', slot).then(val => {
+      iItem.get('prop:cc_brightness', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -57,8 +54,7 @@ export class ItemColor implements IItemColor {
       if (value < -100 || value > 100) {
         reject(RangeError('Brightness may only be in the range -100 to 100.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:cc_brightness', String(value), slot).then(() => {
+        iItem.set('prop:cc_brightness', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -68,8 +64,7 @@ export class ItemColor implements IItemColor {
 
   getContrast(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_contrast', slot).then(val => {
+      iItem.get('prop:cc_contrast', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -80,8 +75,7 @@ export class ItemColor implements IItemColor {
       if (value < -100 || value > 100) {
         reject(RangeError('Contrast may only be in the range -100 to 100.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:cc_contrast', String(value), slot).then(() => {
+        iItem.set('prop:cc_contrast', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -90,8 +84,7 @@ export class ItemColor implements IItemColor {
 
   getHue(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_hue', slot).then(val => {
+      iItem.get('prop:cc_hue', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -102,8 +95,7 @@ export class ItemColor implements IItemColor {
       if (value < -180 || value > 180) {
         reject(RangeError('Contrast may only be in the range -180 to 180.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:cc_hue', String(value), slot).then(() => {
+        iItem.set('prop:cc_hue', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -112,8 +104,7 @@ export class ItemColor implements IItemColor {
 
   getSaturation(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_saturation', slot).then(val => {
+      iItem.get('prop:cc_saturation', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -124,8 +115,7 @@ export class ItemColor implements IItemColor {
       if (value < -100 || value > 100) {
         reject(RangeError('Saturation may only be in the range -100 to 100'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:cc_saturation', String(value), slot).then(() => {
+        iItem.set('prop:cc_saturation', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -135,8 +125,7 @@ export class ItemColor implements IItemColor {
 
   getBorderColor(): Promise<Color> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:border', slot).then(val => {
+      iItem.get('prop:border', this._id).then(val => {
         var bgr: number = Number(val) - 0x80000000;
         var color: Color = Color.fromBGRInt(bgr);
         resolve(color);
@@ -146,9 +135,8 @@ export class ItemColor implements IItemColor {
 
   setBorderColor(value: Color): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       iItem.set('prop:border',
-        String(value.getIbgr() - 0x80000000), slot).then(() => {
+        String(value.getIbgr() - 0x80000000), this._id).then(() => {
           resolve(this);
         });
     });

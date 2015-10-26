@@ -20,8 +20,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   isSilenceDetectionEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:AudioGainEnable', slot).then(val => {
+      iItem.get('prop:AudioGainEnable', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -32,8 +31,7 @@ export class AudioItem extends Item implements IItemAudio {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+        iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
         .then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
@@ -47,8 +45,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   getSilenceThreshold(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:AudioGain', slot).then(val => {
+      iItem.get('prop:AudioGain', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -65,8 +62,7 @@ export class AudioItem extends Item implements IItemAudio {
           Error('Only integers in the range 0-128 are acceptable for threshold')
         );
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:AudioGain', String(value), slot).then(res => {
+        iItem.set('prop:AudioGain', String(value), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {
@@ -79,8 +75,7 @@ export class AudioItem extends Item implements IItemAudio {
 
   getSilencePeriod(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:AudioGainLatency', slot).then(val => {
+      iItem.get('prop:AudioGainLatency', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -97,8 +92,7 @@ export class AudioItem extends Item implements IItemAudio {
           Error('Only integers in the range 0-10000 are acceptable for period')
         );
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:AudioGainLatency', String(value), slot).then(res => {
+        iItem.set('prop:AudioGainLatency', String(value), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {

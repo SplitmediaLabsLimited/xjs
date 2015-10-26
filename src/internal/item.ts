@@ -49,8 +49,9 @@ export class Item {
   }
 
   /** Get an item's local property asynchronously */
-  static get(name: string, slot: number = 0): Promise<string> {
+  static get(name: string, id: string): Promise<string> {
     return new Promise(resolve => {
+    let slot = Item.attach(id);
       exec('GetLocalPropertyAsync' +
         (String(slot) === '0' ? '' : slot + 1),
         name,
@@ -61,8 +62,9 @@ export class Item {
   }
 
   /** Sets an item's local property */
-  static set(name: string, value: string, slot: number = 0): Promise<boolean> {
+  static set(name: string, value: string, id: string): Promise<boolean> {
     return new Promise(resolve => {
+    let slot = Item.attach(id);
       exec('SetLocalPropertyAsync' +
         (String(slot) === '0' ? '' : slot + 1),
         name,
