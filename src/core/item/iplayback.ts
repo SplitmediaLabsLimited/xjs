@@ -16,8 +16,7 @@ export class ItemPlayback implements IItemPlayback {
 
   getSyncable(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('sync:syncable', slot).then(val => {
+      iItem.get('sync:syncable', this._id).then(val => {
         resolve(val === "1" ? true : false);
       });
     });
@@ -25,8 +24,7 @@ export class ItemPlayback implements IItemPlayback {
 
   getPlaybackPosition(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('sync:position', slot).then(val => {
+      iItem.get('sync:position', this._id).then(val => {
         resolve(Number(val) / 10000000);
       });
     });
@@ -34,17 +32,16 @@ export class ItemPlayback implements IItemPlayback {
 
   setPlaybackPosition(value: number): Promise<ItemPlayback> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('sync:position', String(value * 10000000), slot).then(() => {
-        resolve(this);
+      iItem.set('sync:position', String(value * 10000000),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
 
   getPlaybackDuration(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('sync:duration', slot).then(val => {
+      iItem.get('sync:duration', this._id).then(val => {
         resolve(Number(val) / 10000000);
       });
     });
@@ -52,8 +49,7 @@ export class ItemPlayback implements IItemPlayback {
 
   getPlaybackState(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('sync:state', slot).then(val => {
+      iItem.get('sync:state', this._id).then(val => {
         resolve(val === "running");
       });
     });
@@ -61,9 +57,9 @@ export class ItemPlayback implements IItemPlayback {
 
   setPlaybackState(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('sync:state', value ? "running" : "stopped", slot).then(() => {
-        resolve(this);
+      iItem.set('sync:state', value ? "running" : "stopped",
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
