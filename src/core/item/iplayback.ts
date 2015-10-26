@@ -9,6 +9,12 @@ export interface IItemPlayback {
   getPlaybackDuration(): Promise<number>;
   getPlaybackState(): Promise<boolean>;
   setPlaybackState(value: boolean): Promise<IItemPlayback>;
+  getPlaybackStartPosition(): Promise<number>;
+  setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
+  getPlaybackEndPosition(): Promise<number>;
+  setPlaybackEndPosition(value: number): Promise<number>;
+  getVolume(): Promise<number>;
+  setVolume(value: number): Promise<IItemPlayback>;
 }
 
 export class ItemPlayback implements IItemPlayback {
@@ -61,6 +67,57 @@ export class ItemPlayback implements IItemPlayback {
         this._id).then(() => {
           resolve(this);
       });
+    });
+  }
+
+  getPlaybackStartPosition(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:InPoint', this._id).then(val => {
+        resolve(Number(val) / 10000000);
+      });
+    });
+  }
+
+  setPlaybackStartPosition(value: number): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:InPoint', String(value * 10000000),
+        this._id).then(() => {
+          resolve(this);
+        });
+    });
+  }
+
+  getPlaybackEndPosition(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:OutPoint', this._id).then(val => {
+        resolve(Number(val) / 10000000);
+      });
+    });
+  }
+
+  setPlaybackEndPosition(value: number): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:OutPoint', String(value * 10000000),
+        this._id).then(() => {
+          resolve(this);
+        });
+    });
+  }
+
+  getVolume(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:volume', this._id).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setVolume(value: number): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:volume', String(value),
+        this._id).then(() => {
+          resolve(this);
+        });
     });
   }
 }
