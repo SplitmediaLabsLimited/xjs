@@ -797,8 +797,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.isSilenceDetectionEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGainEnable', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGainEnable', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -810,8 +809,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+                item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), _this._id)
                     .then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
@@ -826,8 +824,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.getSilenceThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGain', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGain', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -845,8 +842,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Only integers in the range 0-128 are acceptable for threshold'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGain', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:AudioGain', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -860,8 +856,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.getSilencePeriod = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGainLatency', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGainLatency', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -879,8 +874,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Only integers in the range 0-10000 are acceptable for period'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGainLatency', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:AudioGainLatency', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -953,8 +947,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getDeviceId = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (val) {
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
                 resolve(val);
             });
         });
@@ -971,8 +964,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.setColorOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:cc_pin', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -986,8 +978,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getColorOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_pin', slot).then(function (val) {
+            item_1.Item.get('prop:cc_pin', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -1004,8 +995,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.setKeyingOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:key_pin', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:key_pin', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1019,8 +1009,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getKeyingOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_pin', slot).then(function (val) {
+            item_1.Item.get('prop:key_pin', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -1071,9 +1060,8 @@ var FlashItem = (function (_super) {
     FlashItem.prototype.getCustomResolution = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var customSize;
-            item_1.Item.get('prop:BrowserSize', slot).then(function (val) {
+            item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
                     var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
@@ -1101,8 +1089,7 @@ var FlashItem = (function (_super) {
     FlashItem.prototype.setCustomResolution = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), slot).then(function () {
+            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1171,8 +1158,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.isSpecialOptimizationEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('GameCapSurfSharing').then(function (res) {
+            item_1.Item.get('GameCapSurfSharing', _this._id).then(function (res) {
                 resolve(res === '1');
             });
         });
@@ -1187,8 +1173,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.setSpecialOptimizationEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1201,8 +1186,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.isShowMouseEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('GameCapShowMouse').then(function (res) {
+            item_1.Item.get('GameCapShowMouse', _this._id).then(function (res) {
                 resolve(res === '1');
             });
         });
@@ -1217,8 +1201,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.setShowMouseEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1323,8 +1306,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getURL = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (url) {
+            item_1.Item.get('prop:item', _this._id).then(function (url) {
                 var _url = String(url).split('*');
                 url = _url[0];
                 resolve(url);
@@ -1344,8 +1326,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setURL = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:item', value, slot).then(function (code) {
+            item_1.Item.set('prop:item', value, _this._id).then(function (code) {
                 if (code) {
                     resolve(_this);
                 }
@@ -1363,8 +1344,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getBrowserJS = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 try {
                     var customObject = JSON.parse(custom);
@@ -1394,9 +1374,8 @@ var HTMLItem = (function (_super) {
         var _this = this;
         if (refresh === void 0) { refresh = false; }
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1427,14 +1406,14 @@ var HTMLItem = (function (_super) {
                 if (value !== '' && scriptEnabled === true) {
                     scriptString = scriptString + value;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (refresh) {
-                    item_1.Item.set('refresh', '', slot).then(function () {
+                    item_1.Item.set('refresh', '', _this._id).then(function () {
                         resolve(_this);
                     });
                 }
@@ -1452,8 +1431,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isBrowserJSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var enabled = true;
                 try {
                     var customObject = JSON.parse(custom);
@@ -1482,9 +1460,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableBrowserJS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1525,14 +1502,14 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && value === true) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (!value) {
-                    item_1.Item.set('refresh', '', slot).then(function () {
+                    item_1.Item.set('refresh', '', _this._id).then(function () {
                         resolve(_this);
                     });
                 }
@@ -1550,8 +1527,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getCustomCSS = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customCSS = '';
                 try {
                     var customObject = JSON.parse(custom);
@@ -1578,9 +1554,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1621,10 +1596,10 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && scriptEnabled === true) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 resolve(_this);
@@ -1639,8 +1614,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isCustomCSSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var enabled = true;
                 try {
                     var customObject = JSON.parse(custom);
@@ -1667,9 +1641,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1710,10 +1683,10 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && value === scriptEnabled) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (!value) {
@@ -1740,8 +1713,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isBrowserTransparent = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:BrowserTransparent').then(function (isTransparent) {
+            item_1.Item.get('prop:BrowserTransparent', _this._id).then(function (isTransparent) {
                 resolve(isTransparent === '1');
             });
         });
@@ -1759,8 +1731,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableBrowserTransparency = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('prop:BrowserTransparent', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1777,9 +1748,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getBrowserCustomSize = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var customSize;
-            item_1.Item.get('prop:BrowserSize', slot).then(function (val) {
+            item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
                     var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
@@ -1807,8 +1777,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setBrowserCustomSize = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), slot).then(function () {
+            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1827,8 +1796,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.getVolume = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:volume', slot).then(function (val) {
+            item_1.Item.get('prop:volume', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -1840,9 +1808,8 @@ var ItemAudio = (function () {
                 reject(Error('Source plugins cannot update audio source properties.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
                 value = value < 0 ? 0 : value > 100 ? 100 : value;
-                item_1.Item.set('prop:volume', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:volume', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -1856,8 +1823,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.isMute = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:mute', slot).then(function (val) {
+            item_1.Item.get('prop:mute', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -1869,8 +1835,7 @@ var ItemAudio = (function () {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:mute', (value ? '1' : '0'), slot).then(function (res) {
+                item_1.Item.set('prop:mute', (value ? '1' : '0'), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -1884,8 +1849,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.getAudioOffset = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioDelay', slot).then(function (val) {
+            item_1.Item.get('prop:AudioDelay', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -1897,8 +1861,7 @@ var ItemAudio = (function () {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioDelay', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:AudioDelay', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -1912,8 +1875,7 @@ var ItemAudio = (function () {
     ItemAudio.prototype.isStreamOnlyEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:sounddev', slot).then(function (val) {
+            item_1.Item.get('prop:sounddev', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -1925,8 +1887,7 @@ var ItemAudio = (function () {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:sounddev', (value ? '1' : '0'), slot).then(function (res) {
+                item_1.Item.set('prop:sounddev', (value ? '1' : '0'), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -1992,8 +1953,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.isChromaEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromakey', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromakey', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2005,8 +1965,7 @@ var ItemChroma = (function () {
                 reject(TypeError('Parameter should be boolean.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot).then(function () {
+                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2015,8 +1974,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getKeyingType = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromakeytype', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromakeytype', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2031,8 +1989,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a KeyingType value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromakeytype', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromakeytype', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2041,8 +1998,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaAntiAliasLevel = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_antialiasing', slot).then(function (val) {
+            item_1.Item.get('prop:key_antialiasing', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2057,8 +2013,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a ChromaAntiAliasLevel value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_antialiasing', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_antialiasing', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2068,8 +2023,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyBrightness = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromabr', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromabr', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2084,8 +2038,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromabr', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromabr', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2094,8 +2047,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacySaturation = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromasat', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromasat', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2110,8 +2062,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromasat', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromasat', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2120,8 +2071,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyHue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromahue', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromahue', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2136,8 +2086,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-180.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromahue', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromahue', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2146,8 +2095,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromarang', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromarang', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2162,8 +2110,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromarang', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromarang', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2172,8 +2119,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyAlphaSmoothing = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromaranga', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromaranga', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2188,8 +2134,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromaranga', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromaranga', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2199,8 +2144,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyPrimaryColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeyprimary', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeyprimary', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2215,8 +2159,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a ChromaPrimaryColors value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2226,8 +2169,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeythresh', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeythresh', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2242,8 +2184,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeythresh', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2253,8 +2194,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyExposure = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeybalance', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeybalance', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2269,8 +2209,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeybalance', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2281,8 +2220,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorrang', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorrang', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2297,8 +2235,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_colorrang', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_colorrang', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2307,8 +2244,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyExposure = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorranga', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorranga', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2323,8 +2259,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_colorranga', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_colorranga', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2333,8 +2268,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorrgb', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorrgb', _this._id).then(function (val) {
                 var color = color_1.Color.fromBGRString(val);
                 resolve(color);
             });
@@ -2343,8 +2277,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.setChromaColorKeyColor = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), slot).then(function () {
+            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2362,8 +2295,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getTransparency = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:alpha', slot).then(function (val) {
+            item_1.Item.get('prop:alpha', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2375,8 +2307,7 @@ var ItemColor = (function () {
                 reject(RangeError('Transparency may only be in the range 0 to 255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:alpha', String(value), slot).then(function () {
+                item_1.Item.set('prop:alpha', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2385,8 +2316,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getBrightness = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_brightness', slot).then(function (val) {
+            item_1.Item.get('prop:cc_brightness', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2398,8 +2328,7 @@ var ItemColor = (function () {
                 reject(RangeError('Brightness may only be in the range -100 to 100.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_brightness', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_brightness', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2408,8 +2337,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getContrast = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_contrast', slot).then(function (val) {
+            item_1.Item.get('prop:cc_contrast', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2421,8 +2349,7 @@ var ItemColor = (function () {
                 reject(RangeError('Contrast may only be in the range -100 to 100.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_contrast', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_contrast', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2431,8 +2358,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getHue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_hue', slot).then(function (val) {
+            item_1.Item.get('prop:cc_hue', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2444,8 +2370,7 @@ var ItemColor = (function () {
                 reject(RangeError('Contrast may only be in the range -180 to 180.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_hue', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_hue', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2454,8 +2379,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getSaturation = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_saturation', slot).then(function (val) {
+            item_1.Item.get('prop:cc_saturation', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2467,8 +2391,7 @@ var ItemColor = (function () {
                 reject(RangeError('Saturation may only be in the range -100 to 100'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_saturation', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_saturation', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2477,8 +2400,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getBorderColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:border', slot).then(function (val) {
+            item_1.Item.get('prop:border', _this._id).then(function (val) {
                 var bgr = Number(val) - 0x80000000;
                 var color = color_1.Color.fromBGRInt(bgr);
                 resolve(color);
@@ -2488,8 +2410,7 @@ var ItemColor = (function () {
     ItemColor.prototype.setBorderColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot).then(function () {
+            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2509,8 +2430,7 @@ var ItemConfigurable = (function () {
     ItemConfigurable.prototype.loadConfig = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:BrowserConfiguration', slot).then(function (config) {
+            item_1.Item.get('prop:BrowserConfiguration', _this._id).then(function (config) {
                 var configObj = config === 'null' ? {} : JSON.parse(config);
                 var persist = global_1.Global.getPersistentConfig();
                 for (var key in persist) {
@@ -2592,8 +2512,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isKeepAspectRatio = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:keep_ar', slot).then(function (val) {
+            item_1.Item.get('prop:keep_ar', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2601,8 +2520,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setKeepAspectRatio = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:keep_ar', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2610,8 +2528,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isPositionLocked = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:lockmove', slot).then(function (val) {
+            item_1.Item.get('prop:lockmove', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2619,8 +2536,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setPositionLocked = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:lockmove', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:lockmove', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2628,8 +2544,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isEnhancedResizeEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:mipmaps', slot).then(function (val) {
+            item_1.Item.get('prop:mipmaps', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2637,8 +2552,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setEnhancedResizeEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:mipmaps', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2646,8 +2560,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getPosition = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:pos', slot).then(function (val) {
+            item_1.Item.get('prop:pos', _this._id).then(function (val) {
                 var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
@@ -2657,9 +2570,8 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setPosition = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this.position = value;
-            item_1.Item.set('prop:pos', value.toCoordinateString(), slot).then(function () {
+            item_1.Item.set('prop:pos', value.toCoordinateString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2667,8 +2579,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateY = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_y', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_y', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2680,8 +2591,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_y', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_y', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2690,8 +2600,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateX = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_x', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_x', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2703,8 +2612,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_x', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_x', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2713,8 +2621,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateZ = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_z', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_z', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2726,8 +2633,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_z', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_z', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2862,9 +2768,8 @@ var Item = (function () {
     Item.prototype.setName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._name = value;
-            item_1.Item.set('prop:name', _this._name, slot).then(function () {
+            item_1.Item.set('prop:name', _this._name, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2885,8 +2790,7 @@ var Item = (function () {
     Item.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:name', slot).then(function (val) {
+            item_1.Item.get('prop:name', _this._id).then(function (val) {
                 _this._name = val;
                 resolve(val);
             });
@@ -2920,9 +2824,8 @@ var Item = (function () {
     Item.prototype.setCustomName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._cname = value;
-            item_1.Item.set('prop:cname', _this._cname, slot).then(function () {
+            item_1.Item.set('prop:cname', _this._cname, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2943,8 +2846,7 @@ var Item = (function () {
     Item.prototype.getCustomName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cname', slot).then(function (val) {
+            item_1.Item.get('prop:cname', _this._id).then(function (val) {
                 _this._cname = val;
                 resolve(val);
             });
@@ -2970,8 +2872,7 @@ var Item = (function () {
     Item.prototype.getValue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (val) {
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
                 val = (val === 'null') ? '' : val;
                 if (val === '') {
                     _this._value = '';
@@ -3026,7 +2927,6 @@ var Item = (function () {
     Item.prototype.setValue = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var val = (typeof value === 'string') ?
                 value : value.toString();
             if (typeof value !== 'string') {
@@ -3035,7 +2935,7 @@ var Item = (function () {
             else {
                 _this._value = val;
             }
-            item_1.Item.set('prop:item', val, slot).then(function () {
+            item_1.Item.set('prop:item', val, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3056,8 +2956,7 @@ var Item = (function () {
     Item.prototype.getKeepLoaded = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:keeploaded', slot).then(function (val) {
+            item_1.Item.get('prop:keeploaded', _this._id).then(function (val) {
                 _this._keepLoaded = (val === '1');
                 resolve(_this._keepLoaded);
             });
@@ -3084,9 +2983,8 @@ var Item = (function () {
     Item.prototype.setKeepLoaded = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._keepLoaded = value;
-            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), slot)
+            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), _this._id)
                 .then(function () {
                 resolve(_this);
             });
@@ -3108,8 +3006,7 @@ var Item = (function () {
     Item.prototype.getType = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:type', slot).then(function (val) {
+            item_1.Item.get('prop:type', _this._id).then(function (val) {
                 _this._type = ItemTypes[ItemTypes[Number(val)]];
                 resolve(_this._type);
             });
@@ -3222,8 +3119,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.isVisible = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:visible', slot).then(function (val) {
+            item_1.Item.get('prop:visible', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -3231,8 +3127,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.setVisible = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:visible', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:visible', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3240,8 +3135,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.getTransition = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:transitionid', slot).then(function (val) {
+            item_1.Item.get('prop:transitionid', _this._id).then(function (val) {
                 if (val === '') {
                     resolve(transition_1.Transition.NONE);
                 }
@@ -3254,8 +3148,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.setTransition = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:transitionid', value.toString(), slot).then(function () {
+            item_1.Item.set('prop:transitionid', value.toString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3263,8 +3156,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.getTransitionTime = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:transitiontime', slot).then(function (val) {
+            item_1.Item.get('prop:transitiontime', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -3276,8 +3168,7 @@ var ItemTransition = (function () {
                 reject(RangeError('Transparency may only be in the range 0 to 60000.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:transitiontime', String(value), slot).then(function () {
+                item_1.Item.set('prop:transitiontime', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -3387,8 +3278,7 @@ var ScreenItem = (function (_super) {
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
                 return new Promise(function (iResolve) {
-                    var slot = item_1.Item.attach(_this._id);
-                    item_1.Item.get('screenresolution', slot).then(function (res) {
+                    item_1.Item.get('screenresolution', _this._id).then(function (res) {
                         var _res = res.split(',');
                         iResolve({
                             value: val,
@@ -3494,8 +3384,7 @@ var ScreenItem = (function (_super) {
     ScreenItem.prototype.isStickToTitle = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:ScrCapTrackWindowTitle', slot).then(function (val) {
+            item_1.Item.get('prop:ScrCapTrackWindowTitle', _this._id).then(function (val) {
                 resolve(val === '0');
             });
         });
@@ -3513,8 +3402,7 @@ var ScreenItem = (function (_super) {
     ScreenItem.prototype.setStickToTitle = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', slot)
+            item_1.Item.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', _this._id)
                 .then(function () {
                 resolve(_this);
             });
@@ -4585,9 +4473,9 @@ var Item = (function () {
         }
     };
     /** Get an item's local property asynchronously */
-    Item.get = function (name, slot) {
-        if (slot === void 0) { slot = 0; }
+    Item.get = function (name, id) {
         return new Promise(function (resolve) {
+            var slot = Item.attach(id);
             internal_1.exec('GetLocalPropertyAsync' +
                 (String(slot) === '0' ? '' : slot + 1), name, function (val) {
                 resolve(val);
@@ -4595,9 +4483,9 @@ var Item = (function () {
         });
     };
     /** Sets an item's local property */
-    Item.set = function (name, value, slot) {
-        if (slot === void 0) { slot = 0; }
+    Item.set = function (name, value, id) {
         return new Promise(function (resolve) {
+            var slot = Item.attach(id);
             internal_1.exec('SetLocalPropertyAsync' +
                 (String(slot) === '0' ? '' : slot + 1), name, value, function (val) {
                 resolve(!(Number(val) < 0));

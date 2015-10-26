@@ -19,8 +19,7 @@ export class ItemAudio implements IItemAudio {
 
   getVolume(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:volume', slot).then(val => {
+      iItem.get('prop:volume', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -31,9 +30,8 @@ export class ItemAudio implements IItemAudio {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio source properties.'));
       } else {
-        let slot = iItem.attach(this._id);
         value = value < 0 ? 0 : value > 100 ? 100 : value;
-        iItem.set('prop:volume', String(value), slot).then(res => {
+        iItem.set('prop:volume', String(value), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {
@@ -46,8 +44,7 @@ export class ItemAudio implements IItemAudio {
 
   isMute(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:mute', slot).then(val => {
+      iItem.get('prop:mute', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -58,8 +55,7 @@ export class ItemAudio implements IItemAudio {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:mute', (value ? '1' : '0'), slot).then(res => {
+        iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {
@@ -72,8 +68,7 @@ export class ItemAudio implements IItemAudio {
 
   getAudioOffset(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:AudioDelay', slot).then(val => {
+      iItem.get('prop:AudioDelay', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -84,8 +79,7 @@ export class ItemAudio implements IItemAudio {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:AudioDelay', String(value), slot).then(res => {
+        iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {
@@ -98,8 +92,7 @@ export class ItemAudio implements IItemAudio {
 
   isStreamOnlyEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:sounddev', slot).then(val => {
+      iItem.get('prop:sounddev', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -110,8 +103,7 @@ export class ItemAudio implements IItemAudio {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:sounddev', (value ? '1' : '0'), slot).then(res => {
+        iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(res => {
           if (!res) {
             reject(Error('Item set property failed'));
           } else {

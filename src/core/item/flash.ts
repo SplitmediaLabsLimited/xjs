@@ -38,9 +38,8 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getCustomResolution(): Promise<Rectangle> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       let customSize;
-      iItem.get('prop:BrowserSize', slot).then(val => {
+      iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
@@ -67,9 +66,9 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   setCustomResolution(value: Rectangle): Promise<FlashItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
-        resolve(this);
+      iItem.set('prop:BrowserSize', value.toDimensionString(),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }

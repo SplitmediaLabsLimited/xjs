@@ -69,8 +69,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
     return new Promise(resolve => {
       this.getValue().then(val => {
         return new Promise(iResolve => {
-          let slot = iItem.attach(this._id);
-          iItem.get('screenresolution', slot).then(res => {
+          iItem.get('screenresolution', this._id).then(res => {
             let _res = res.split(',');
             iResolve({
               value : val,
@@ -184,8 +183,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   isStickToTitle(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:ScrCapTrackWindowTitle', slot).then(val => {
+      iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
         resolve(val === '0');
       });
     });
@@ -203,8 +201,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setStickToTitle(value: boolean): Promise<ScreenItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', slot)
+      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
         .then(() => {
           resolve(this);
         });

@@ -21,8 +21,7 @@ export class ItemLayout implements IItemLayout {
 
   isKeepAspectRatio(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:keep_ar', slot).then(val => {
+      iItem.get('prop:keep_ar', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -30,8 +29,7 @@ export class ItemLayout implements IItemLayout {
 
   setKeepAspectRatio(value: boolean): Promise<ItemLayout> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:keep_ar', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:keep_ar', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -39,8 +37,7 @@ export class ItemLayout implements IItemLayout {
 
   isPositionLocked(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:lockmove', slot).then(val => {
+      iItem.get('prop:lockmove', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -48,8 +45,7 @@ export class ItemLayout implements IItemLayout {
 
   setPositionLocked(value: boolean): Promise<ItemLayout> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:lockmove', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:lockmove', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -57,8 +53,7 @@ export class ItemLayout implements IItemLayout {
 
   isEnhancedResizeEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:mipmaps', slot).then(val => {
+      iItem.get('prop:mipmaps', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -66,8 +61,7 @@ export class ItemLayout implements IItemLayout {
 
   setEnhancedResizeEnabled(value: boolean): Promise<ItemLayout> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:mipmaps', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:mipmaps', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -75,8 +69,7 @@ export class ItemLayout implements IItemLayout {
 
   getPosition():Promise<Rectangle> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:pos', slot).then(val => {
+      iItem.get('prop:pos', this._id).then(val => {
         var [left, top, right, bottom] = decodeURIComponent(val).split(',');
         this.position = Rectangle.fromCoordinates(Number(left), Number(top),
           Number(right), Number(bottom));
@@ -87,18 +80,16 @@ export class ItemLayout implements IItemLayout {
 
   setPosition(value: Rectangle): Promise<ItemLayout> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this.position = value;
-      iItem.set('prop:pos', value.toCoordinateString(), slot).then(() => {
-        resolve(this);
+        iItem.set('prop:pos', value.toCoordinateString(), this._id).then(() => {
+          resolve(this);
       });
     });
   }
 
   getRotateY(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:rotate_y', slot).then(val => {
+      iItem.get('prop:rotate_y', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -109,8 +100,7 @@ export class ItemLayout implements IItemLayout {
       if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:rotate_y', String(value), slot).then(() => {
+        iItem.set('prop:rotate_y', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -119,8 +109,7 @@ export class ItemLayout implements IItemLayout {
 
   getRotateX(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:rotate_x', slot).then(val => {
+      iItem.get('prop:rotate_x', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -131,8 +120,7 @@ export class ItemLayout implements IItemLayout {
       if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:rotate_x', String(value), slot).then(() => {
+        iItem.set('prop:rotate_x', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -141,8 +129,7 @@ export class ItemLayout implements IItemLayout {
 
   getRotateZ(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:rotate_z', slot).then(val => {
+      iItem.get('prop:rotate_z', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -153,8 +140,7 @@ export class ItemLayout implements IItemLayout {
       if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:rotate_z', String(value), slot).then(() => {
+        iItem.set('prop:rotate_z', String(value), this._id).then(() => {
           resolve(this);
         });
       }

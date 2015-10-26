@@ -53,8 +53,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapSurfSharing').then(res => {
+      iItem.get('GameCapSurfSharing', this._id).then(res => {
         resolve(res === '1');
       });
     });
@@ -69,9 +68,9 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
+      iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
@@ -83,8 +82,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapShowMouse').then(res => {
+      iItem.get('GameCapShowMouse', this._id).then(res => {
         resolve(res === '1');
       });
     });
@@ -99,8 +97,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setShowMouseEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(() => {
+      iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
       });
     });

@@ -35,9 +35,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getURL(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:item', slot).then(url => {
+      iItem.get('prop:item', this._id).then(url => {
         let _url = String(url).split('*');
         url = _url[0];
         resolve(url);
@@ -57,9 +55,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setURL(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
-
-      iItem.set('prop:item', value, slot).then(code => {
+      iItem.set('prop:item', value, this._id).then(code => {
         if (code) {
           resolve(this);
         } else {
@@ -76,9 +72,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getBrowserJS(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let customJS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -108,10 +102,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -147,14 +140,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (value !== '' && scriptEnabled === true) {
           scriptString = scriptString + value;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (refresh) {
-          iItem.set('refresh', '', slot).then(() =>  {
+          iItem.set('refresh', '', this._id).then(() =>  {
             resolve(this);
           });
         } else {
@@ -171,9 +164,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isBrowserJSEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -203,10 +194,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   enableBrowserJS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -253,16 +243,16 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (customJS !== '' && value === true) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (!value) {
-           iItem.set('refresh', '', slot).then(() => {
-             resolve(this);
-           });
+          iItem.set('refresh', '', this._id).then(() => {
+            resolve(this);
+          });
         } else {
           resolve(this);
         }
@@ -277,9 +267,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getCustomCSS(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let customCSS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -307,10 +295,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setCustomCSS(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -357,10 +344,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (customJS !== '' && scriptEnabled === true) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         resolve(this);
@@ -375,9 +362,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isCustomCSSEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -405,10 +390,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   enableCustomCSS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -455,10 +439,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
         if (customJS !== '' && value === scriptEnabled) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (!value) {
@@ -483,8 +467,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isBrowserTransparent(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:BrowserTransparent').then(isTransparent => {
+      iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
         resolve(isTransparent === '1');
       });
     });
@@ -502,9 +485,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
+      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
@@ -520,9 +503,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getBrowserCustomSize():Promise<Rectangle> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       let customSize;
-      iItem.get('prop:BrowserSize', slot).then(val => {
+      iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
@@ -549,9 +531,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
-        resolve(this);
+      iItem.set('prop:BrowserSize', value.toDimensionString(),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }

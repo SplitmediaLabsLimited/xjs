@@ -52,8 +52,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
+      iItem.get('prop:item', this._id).then(val => {
         resolve(val);
       });
     });
@@ -296,8 +295,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setColorOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:cc_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:cc_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -311,8 +309,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_pin', slot).then(val => {
+      iItem.get('prop:cc_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -567,8 +564,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:key_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:key_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -583,8 +579,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_pin', slot).then(val => {
+      iItem.get('prop:key_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
