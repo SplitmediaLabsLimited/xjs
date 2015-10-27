@@ -11,6 +11,11 @@ export enum ActionAfterPlayback {
   HIDE
 }
 
+const AUDIO_REGEX =
+  /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/;
+const VIDEO_REGEX =
+  /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
+
 export interface IItemPlayback {
   getSyncable(): Promise<boolean>;
   getPlaybackPosition(): Promise<number>;
@@ -38,6 +43,11 @@ export interface IItemPlayback {
   setShowPlaybackPosition(value: boolean): Promise<IItemPlayback>;
   getCuePoints(): Promise<CuePoint[]>;
   setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
+
+  getValue(): Promise<string>;
+  setValue(value: string): Promise<IItemPlayback>;
+  isAudio(): Promise<boolean>;
+  isVideo(): Promise<boolean>;
 }
 
 export class ItemPlayback implements IItemPlayback {
@@ -258,6 +268,46 @@ export class ItemPlayback implements IItemPlayback {
     return new Promise(resolve => {
       const cuePointString = cuePoints.map(point => point.toString()).join(',');
       resolve(this);
+    });
+  }
+
+  isAudio(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:item', this._id).then(filename => {
+        resolve(AUDIO_REGEX.test(filename));
+      });
+    });
+  }
+
+  isVideo(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:item', this._id).then(filename => {
+        resolve(VIDEO_REGEX.test(filename));
+      });
+    });
+  }
+
+  getValue(): Promise<string> {
+    return new Promise(resolve => {
+      // we do not do any additional checking since we are assured of the type
+      iItem.get('prop:item', this._id).then(val => {
+        resolve(val);
+      });
+    });
+  };
+
+  setValue(filename: string): Promise<ItemPlayback> {
+    return new Promise((resolve, reject) => {
+      if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
+        iItem.set('prop:item', filename, this._id)
+        .then(() => iItem.set('prop:name', filename, this._id))
+        .then(() => iItem.set('prop:CuePoints', '', this._id))
+        .then(() => {
+          resolve(this);
+        })
+      } else {
+        reject(new Error('You can only set the value to a valid media type'));
+      }
     });
   }
 }
