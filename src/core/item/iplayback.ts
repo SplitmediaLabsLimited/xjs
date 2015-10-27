@@ -1,6 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
+import {CuePoint} from './cuepoint';
 
 export enum ActionAfterPlayback {
   NONE,
@@ -35,6 +36,8 @@ export interface IItemPlayback {
   setRememberPlaybackPosition(value: boolean): Promise<IItemPlayback>;
   getShowPlaybackPosition(): Promise<boolean>;
   setShowPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  getCuePoints(): Promise<CuePoint[]>;
+  setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
 }
 
 export class ItemPlayback implements IItemPlayback {
@@ -234,5 +237,27 @@ export class ItemPlayback implements IItemPlayback {
         resolve(this);
       });
     })
+  }
+
+  getCuePoints(): Promise<CuePoint[]> {
+    return new Promise(resolve => {
+      iItem.get('prop:CuePoints', this._id).then(cuePointString => {
+        if (cuePointString === '') {
+          resolve([]);
+        } else {
+          const cuePointStrings: string[] = cuePointString.split(',');
+          const cuePoints: CuePoint[] = cuePointStrings.map(
+            string => CuePoint._fromString(string));
+          resolve(cuePoints);
+        }
+      })
+    });
+  }
+
+  setCuePoints(cuePoints: CuePoint[]): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      const cuePointString = cuePoints.map(point => point.toString()).join(',');
+      resolve(this);
+    });
   }
 }
