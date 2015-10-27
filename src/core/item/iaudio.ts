@@ -26,19 +26,11 @@ export class ItemAudio implements IItemAudio {
   }
 
   setVolume(value: number): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Source plugins cannot update audio source properties.'));
-      } else {
-        value = value < 0 ? 0 : value > 100 ? 100 : value;
-        iItem.set('prop:volume', String(value), this._id).then(res => {
-          if (!res) {
-            reject(Error('Item set property failed'));
-          } else {
-            resolve(this);
-          }
+    return new Promise(resolve => {
+      iItem.set('prop:volume', String(value),
+        this._id).then(() => {
+          resolve(this);
         });
-      }
     });
   }
 
@@ -51,19 +43,11 @@ export class ItemAudio implements IItemAudio {
   }
 
   setMute(value: boolean): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Source plugins cannot update audio sources properties'));
-      } else {
-        iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(res => {
-          if (!res) {
-            reject(Error('Item set property failed'));
-          } else {
-            resolve(this);
-          }
-        });
-      }
-    });
+    return new Promise(resolve => {
+      iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
   }
 
   getAudioOffset(): Promise<number> {
@@ -75,19 +59,11 @@ export class ItemAudio implements IItemAudio {
   }
 
   setAudioOffset(value: number): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Source plugins cannot update audio sources properties'));
-      } else {
-        iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
-          if (!res) {
-            reject(Error('Item set property failed'));
-          } else {
-            resolve(this);
-          }
-        });
-      }
-    });
+    return new Promise(resolve => {
+      iItem.set('prop:AudioDelay', String(value), this._id).then(() => {
+        resolve(this);
+      });
+    })
   }
 
   isStreamOnlyEnabled(): Promise<boolean> {
@@ -99,18 +75,10 @@ export class ItemAudio implements IItemAudio {
   }
 
   setStreamOnlyEnabled(value: boolean): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Source plugins cannot update audio sources properties'));
-      } else {
-        iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(res => {
-          if (!res) {
-            reject(Error('Item set property failed'));
-          } else {
-            resolve(this);
-          }
-        });
-      }
-    });
+    return new Promise(resolve => {
+      iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
   }
 }
