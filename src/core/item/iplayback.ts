@@ -2,6 +2,14 @@
 
 import {Item as iItem} from '../../internal/item';
 
+export enum ActionAfterPlayback {
+  NONE,
+  REWIND,
+  LOOP,
+  TRANSPARENT,
+  HIDE
+}
+
 export interface IItemPlayback {
   getSyncable(): Promise<boolean>;
   getPlaybackPosition(): Promise<number>;
@@ -15,6 +23,18 @@ export interface IItemPlayback {
   setPlaybackEndPosition(value: number): Promise<number>;
   getVolume(): Promise<number>;
   setVolume(value: number): Promise<IItemPlayback>;
+  isStreamOnlyEnabled(): Promise<boolean>;
+  setStreamOnlyEnabled(value: boolean): Promise<IItemPlayback>;
+  getActionAfterPlayback(): Promise<ActionAfterPlayback>;
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
+  getStartOnSceneLoad(): Promise<boolean>;
+  setStartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
+  getForceDeinterlace(): Promise<boolean>;
+  setForceDeinterlace(value: boolean): Promise<IItemPlayback>;
+  getRememberPlaybackPosition(): Promise<boolean>;
+  setRememberPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  getShowPlaybackPosition(): Promise<boolean>;
+  setShowPlaybackPosition(value: boolean): Promise<IItemPlayback>;
 }
 
 export class ItemPlayback implements IItemPlayback {
@@ -80,10 +100,9 @@ export class ItemPlayback implements IItemPlayback {
 
   setPlaybackStartPosition(value: number): Promise<ItemPlayback> {
     return new Promise(resolve => {
-      iItem.set('prop:InPoint', String(value * 10000000),
-        this._id).then(() => {
-          resolve(this);
-        });
+      iItem.set('prop:InPoint', String(value * 10000000), this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 
@@ -100,7 +119,7 @@ export class ItemPlayback implements IItemPlayback {
       iItem.set('prop:OutPoint', String(value * 10000000),
         this._id).then(() => {
           resolve(this);
-        });
+      });
     });
   }
 
@@ -114,10 +133,106 @@ export class ItemPlayback implements IItemPlayback {
 
   setVolume(value: number): Promise<ItemPlayback> {
     return new Promise(resolve => {
-      iItem.set('prop:volume', String(value),
+      iItem.set('prop:volume', String(value), this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  isStreamOnlyEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:sounddev', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setStreamOnlyEnabled(value: boolean): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
+  }
+
+  getActionAfterPlayback(): Promise<ActionAfterPlayback> {
+    return new Promise(resolve => {
+      iItem.get('prop:OpWhenFinished', this._id).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  getStartOnSceneLoad(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:StartOnLoad', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setStartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
+  }
+
+  getForceDeinterlace(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:fdeinterlace', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setForceDeinterlace(value: boolean): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:fdeinterlace', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
+  }
+
+  getRememberPlaybackPosition(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:RememberPosition', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setRememberPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:RememberPosition', (value ? '1' : '0'),
         this._id).then(() => {
           resolve(this);
-        });
+      });
+    })
+  }
+
+  getShowPlaybackPosition(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ShowPosition', this._id).then(val => {
+        resolve(val === '1');
+      });
     });
+  }
+
+  setShowPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
   }
 }
