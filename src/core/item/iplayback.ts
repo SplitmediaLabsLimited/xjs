@@ -17,35 +17,35 @@ const VIDEO_REGEX =
   /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
 
 export interface IItemPlayback {
-  getSyncable(): Promise<boolean>;
+  isSeekable(): Promise<boolean>;
   getPlaybackPosition(): Promise<number>;
   setPlaybackPosition(value: number): Promise<IItemPlayback>;
   getPlaybackDuration(): Promise<number>;
-  getPlaybackState(): Promise<boolean>;
-  setPlaybackState(value: boolean): Promise<IItemPlayback>;
+  isPlaying(): Promise<boolean>;
+  setPlaying(value: boolean): Promise<IItemPlayback>;
   getPlaybackStartPosition(): Promise<number>;
   setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
   getPlaybackEndPosition(): Promise<number>;
-  setPlaybackEndPosition(value: number): Promise<number>;
+  setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
   getVolume(): Promise<number>;
   setVolume(value: number): Promise<IItemPlayback>;
-  isStreamOnlyEnabled(): Promise<boolean>;
-  setStreamOnlyEnabled(value: boolean): Promise<IItemPlayback>;
+  isAudibleOnlyOnStream(): Promise<boolean>;
+  setAudibleOnlyOnStream(value: boolean): Promise<IItemPlayback>;
   getActionAfterPlayback(): Promise<ActionAfterPlayback>;
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
-  getStartOnSceneLoad(): Promise<boolean>;
-  setStartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
-  getForceDeinterlace(): Promise<boolean>;
+  isAutostartOnSceneLoad(): Promise<boolean>;
+  setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
+  isForceDeinterlace(): Promise<boolean>;
   setForceDeinterlace(value: boolean): Promise<IItemPlayback>;
-  getRememberPlaybackPosition(): Promise<boolean>;
-  setRememberPlaybackPosition(value: boolean): Promise<IItemPlayback>;
-  getShowPlaybackPosition(): Promise<boolean>;
-  setShowPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  isRememberingPlaybackPosition(): Promise<boolean>;
+  setRememberingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  isShowingPlaybackPosition(): Promise<boolean>;
+  setShowingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
   getCuePoints(): Promise<CuePoint[]>;
   setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
 
   getValue(): Promise<string>;
-  setValue(value: string): Promise<IItemPlayback>;
+  setValue(value: string): Promise<any>;
   isAudio(): Promise<boolean>;
   isVideo(): Promise<boolean>;
 }
@@ -53,7 +53,7 @@ export interface IItemPlayback {
 export class ItemPlayback implements IItemPlayback {
   private _id: string;
 
-  getSyncable(): Promise<boolean> {
+  isSeekable(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('sync:syncable', this._id).then(val => {
         resolve(val === "1" ? true : false);
@@ -86,7 +86,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  getPlaybackState(): Promise<boolean> {
+  isPlaying(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('sync:state', this._id).then(val => {
         resolve(val === "running");
@@ -94,7 +94,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackState(value: boolean): Promise<ItemPlayback> {
+  setPlaying(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
       iItem.set('sync:state', value ? "running" : "stopped",
         this._id).then(() => {
@@ -152,7 +152,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  isStreamOnlyEnabled(): Promise<boolean> {
+  isAudibleOnlyOnStream(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:sounddev', this._id).then(val => {
         resolve(val === '1');
@@ -160,7 +160,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setStreamOnlyEnabled(value: boolean): Promise<ItemPlayback> {
+  setAudibleOnlyOnStream(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -184,7 +184,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  getStartOnSceneLoad(): Promise<boolean> {
+  isAutostartOnSceneLoad(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:StartOnLoad', this._id).then(val => {
         resolve(val === '1');
@@ -192,7 +192,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setStartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
+  setAutostartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
       iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -200,7 +200,7 @@ export class ItemPlayback implements IItemPlayback {
     })
   }
 
-  getForceDeinterlace(): Promise<boolean> {
+  isForceDeinterlace(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:fdeinterlace', this._id).then(val => {
         resolve(val === '1');
@@ -216,7 +216,7 @@ export class ItemPlayback implements IItemPlayback {
     })
   }
 
-  getRememberPlaybackPosition(): Promise<boolean> {
+  isRememberingPlaybackPosition(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:RememberPosition', this._id).then(val => {
         resolve(val === '1');
@@ -224,7 +224,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setRememberPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setRememberingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
       iItem.set('prop:RememberPosition', (value ? '1' : '0'),
         this._id).then(() => {
@@ -233,7 +233,7 @@ export class ItemPlayback implements IItemPlayback {
     })
   }
 
-  getShowPlaybackPosition(): Promise<boolean> {
+  isShowingPlaybackPosition(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:ShowPosition', this._id).then(val => {
         resolve(val === '1');
@@ -241,7 +241,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setShowPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setShowingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
       iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);

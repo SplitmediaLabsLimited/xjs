@@ -8,6 +8,8 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
+import {CuePoint} from './cuepoint';
 import {Item} from './item';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -22,7 +24,8 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class MediaItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemPlayback {
 
   // ItemLayout
 
@@ -448,6 +451,51 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<MediaItem>;
+
+  // ItemPlayback
+
+  /**
+   *  return: Promise<boolean>
+   *
+   *  Determines if it is possible to move the playback position of this media
+   *  source. It is possible for some video formats to not allow seeking of the
+   *  playback position.
+   */
+  isSeekable: () => Promise<boolean>;
+
+  getPlaybackPosition: () => Promise<number>;
+  setPlaybackPosition: (value: number) => Promise<MediaItem>;
+  getPlaybackDuration: () => Promise<number>;
+  isPlaying: () => Promise<boolean>;
+  setPlaying: (value: boolean) => Promise<MediaItem>;
+  getPlaybackStartPosition: () => Promise<number>;
+  setPlaybackStartPosition: (value: number) => Promise<MediaItem>;
+  getPlaybackEndPosition: () => Promise<number>;
+  setPlaybackEndPosition: (value: number) => Promise<MediaItem>;
+  getVolume: () => Promise<number>;
+  setVolume: (value: number) => Promise<MediaItem>;
+  isAudibleOnlyOnStream: () => Promise<boolean>;
+  setAudibleOnlyOnStream: (value: boolean) => Promise<MediaItem>;
+  getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+  setAutostartOnSceneLoad: (value: boolean) => Promise<MediaItem>;
+  isForceDeinterlace: () => Promise<boolean>;
+  setForceDeinterlace: (value: boolean) => Promise<MediaItem>;
+  isRememberingPlaybackPosition: () => Promise<boolean>;
+  setRememberingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+  isShowingPlaybackPosition: () => Promise<boolean>;
+  setShowingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+  getCuePoints: () => Promise<CuePoint[]>;
+  setCuePoints: (value: CuePoint[]) => Promise<MediaItem>;
+
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<MediaItem>;
+
+  isAudio: () => Promise<boolean>;
+  isVideo: () => Promise<boolean>;
 }
 
-applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma,
+  ItemTransition, ItemPlayback]);
