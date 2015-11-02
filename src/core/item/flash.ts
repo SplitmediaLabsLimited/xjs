@@ -127,7 +127,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   getRotateZ: () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -136,7 +136,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setKeepAspectRatio: (value: boolean) => Promise<FlashItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -145,7 +145,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setPositionLocked: (value: boolean) => Promise<FlashItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -154,7 +154,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setEnhancedResizeEnabled: (value: boolean) => Promise<FlashItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -174,7 +174,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setPosition: (value: Rectangle) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -183,7 +183,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setRotateY: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -192,7 +192,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setRotateX: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -245,7 +245,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   getBorderColor: () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -254,7 +254,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setTransparency: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -263,7 +263,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setBrightness: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -272,7 +272,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setContrast: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -281,7 +281,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setHue: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -290,7 +290,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   setSaturation: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -304,7 +304,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   isChromaEnabled: () => Promise<boolean>;
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * *Chainable.*
    */
@@ -314,7 +314,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getKeyingType: () => Promise<KeyingType>;
   /**
-   * param: value<KeyingType>
+   * param: (value: KeyingType)
    * *Chainable.*
    *
    */
@@ -326,7 +326,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   /**
-   * param: value<ChromaAntiAliasLevel>
+   * param: (value: ChromaAntiAliasLevel)
    *
    * *Chainable.*
    */
@@ -338,7 +338,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyBrightness: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -348,7 +348,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacySaturation: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -358,7 +358,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyHue: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -368,7 +368,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -378,7 +378,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -390,7 +390,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   /**
-   * param: value<ChromaPrimaryColors>
+   * param: (value: ChromaPrimaryColors)
    *
    * *Chainable.*
    */
@@ -400,7 +400,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -410,7 +410,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -422,7 +422,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -432,7 +432,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -442,7 +442,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyColor: () => Promise<Color>;
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * *Chainable.*
    */
@@ -458,7 +458,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   isVisible: () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -474,7 +474,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   getTransition: () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -490,7 +490,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *
