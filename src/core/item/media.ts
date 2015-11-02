@@ -551,6 +551,8 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * Gets the specified action after playback for this item is done (either
    * playback reaches the end of the video, or the specified playback end
    * position.)
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
    */
   getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
 
@@ -562,6 +564,8 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * position.)
    *
    * *Chainable.*
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
    */
   setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
 
@@ -670,6 +674,8 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * return: Promise<CuePoint[]>
    *
    * Gets the set of Cue Points created for this item.
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
    */
   getCuePoints: () => Promise<CuePoint[]>;
 
@@ -679,6 +685,8 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * Assign the specified array of Cue Points for this item.
    *
    * *Chainable.*
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
    */
   setCuePoints: (value: CuePoint[]) => Promise<MediaItem>;
 

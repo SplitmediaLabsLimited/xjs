@@ -21,6 +21,8 @@ export * from './core/item/image';
 export * from './core/item/media';
 
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/item/ichroma';
+export {ActionAfterPlayback} from './core/item/iplayback';
+export {CuePoint} from './core/item/cuepoint';
 
 export * from './system/system';
 export * from './system/audio';
