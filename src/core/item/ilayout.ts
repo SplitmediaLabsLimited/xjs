@@ -78,7 +78,7 @@ export class ItemLayout implements IItemLayout {
       let slot = iItem.attach(this._id);
       iItem.get('prop:pos', slot).then(val => {
         var [left, top, right, bottom] = decodeURIComponent(val).split(',');
-        this.position = Rectangle.fromCoordinates(Number(left), Number(top),
+        this.position = Rectangle.fromCoordinates(Number(top), Number(left),
           Number(right), Number(bottom));
         resolve(this.position);
       });
