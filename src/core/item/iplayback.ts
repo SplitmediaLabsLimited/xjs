@@ -29,10 +29,10 @@ export interface IItemPlayback {
   setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
   getVolume(): Promise<number>;
   setVolume(value: number): Promise<IItemPlayback>;
-  isAudibleOnlyOnStream(): Promise<boolean>;
-  setAudibleOnlyOnStream(value: boolean): Promise<IItemPlayback>;
   getActionAfterPlayback(): Promise<ActionAfterPlayback>;
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
+  isAudibleOnlyOnStream(): Promise<boolean>;
+  setAudibleOnlyOnStream(value: boolean): Promise<IItemPlayback>;
   isAutostartOnSceneLoad(): Promise<boolean>;
   setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
   isForceDeinterlace(): Promise<boolean>;
@@ -136,6 +136,22 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
+  getActionAfterPlayback(): Promise<ActionAfterPlayback> {
+    return new Promise(resolve => {
+      iItem.get('prop:OpWhenFinished', this._id).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
+    return new Promise(resolve => {
+      iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
   getVolume(): Promise<number> {
     return new Promise(resolve => {
       iItem.get('prop:volume', this._id).then(val => {
@@ -166,22 +182,6 @@ export class ItemPlayback implements IItemPlayback {
         resolve(this);
       });
     })
-  }
-
-  getActionAfterPlayback(): Promise<ActionAfterPlayback> {
-    return new Promise(resolve => {
-      iItem.get('prop:OpWhenFinished', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
-
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
-    return new Promise(resolve => {
-      iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
-        resolve(this);
-      });
-    });
   }
 
   isAutostartOnSceneLoad(): Promise<boolean> {
