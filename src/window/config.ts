@@ -145,10 +145,12 @@ export class SourceConfigWindow extends EventEmitter {
   };
 
   /**
-   *  param: width<number>, height<number>
+   *  param: name<string>
    *
-   *  Resizes the configuration window. Currently only works when using full
-      window mode.
+   *  Changes the title of the source properties dialog.
+   *  Note: The title change is temporary, as re-opening the source properties
+   *  resets the title to the display name of the source
+   *  (custom name takes precedence over name)
    */
   requestDialogTitleChange(name: string) {
     this._notify({
