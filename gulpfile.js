@@ -1,4 +1,4 @@
-/* globals require, console, __dirname */
+/* globals require, console, __dirname, Buffer */
 
 (function() {
   'use strict';
@@ -11,7 +11,10 @@
     source      = require('vinyl-source-stream'),
     bs          = require('browser-sync'),
     history     = require('connect-history-api-fallback'),
-    Server      = require('karma').Server;
+    Server      = require('karma').Server,
+    data        = require('gulp-data'),
+    path        = require('path'),
+    argv        = require('yargs').argv;
 
   gulp.task('browserify', function() {
     return browserify('./src/index.ts')
@@ -46,6 +49,76 @@
       },
       port: 9000
     });
+  });
+
+  //-------------------------------------------------------
+  // Version bump task
+  //-------------------------------------------------------
+
+  /**
+   * auto increment/decrement version
+   *
+   * @param  version Current version (format: n.n.n)
+   * @param  type    Version up type (major = 0, minor = 1, patch = 2)
+   * @param  mode    inc/dec
+   * @return newVersion
+   */
+  var bumpVersion = function(version, type, mode) {
+    var ver = version.split('.');
+
+    if (mode === 'dec') {
+      ver[type] = Number(ver[type]) <= 0 ? 0 : Number(ver[type]) - 1;
+    } else {
+      ver[type] = Number(ver[type]) + 1;
+    }
+
+    return ver.join('.');
+  };
+
+  gulp.task('version', ['default'], function() {
+    var argTypes = ['major', 'minor', 'patch'];
+    var type = 1;
+    var version = '0.0.0';
+
+    for (var i in argTypes) {
+      if (argv[argTypes[i]] !== undefined) {
+        type = i;
+        break;
+      }
+    }
+
+    return gulp.src(['./package.json', './bower.json', './dist/xjs.js'],
+        {base: './'})
+      .pipe(data(function(file) {
+        var updatedContents = '';
+
+        if (path.basename(file.path) === 'xjs.js') {
+          updatedContents = String(file.contents);
+
+          updatedContents =
+            '/****************************\n' +
+            ' * XSplit JS Framework\n' +
+            ' * version: ' + version + '\n' +
+            ' * (c) 2015 SplitmediaLabs, inc.\n' +
+            ' ****************************/\n' + updatedContents;
+        } else {
+          var jsonObj = JSON.parse(file.contents);
+
+          jsonObj.version = bumpVersion(
+            jsonObj.version,
+            type,
+            argv.down ? 'dec' : 'inc'
+          );
+
+          version = jsonObj.version;
+
+          updatedContents = JSON.stringify(jsonObj, null, 2);
+        }
+
+        file.contents = new Buffer(updatedContents);
+        return file;
+      }))
+      .pipe(gulp.dest('.'));
   });
 
   //-------------------------------------------------------

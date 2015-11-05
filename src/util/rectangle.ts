@@ -156,7 +156,7 @@ export class Rectangle {
   }
 
   /**
-   *  param: (top: number, left: number, right: number, bottom: number)
+   *  param: (left: number, top: number, right: number, bottom: number)
    *  ```
    *  return: Rectangle
    *  ```
@@ -164,7 +164,7 @@ export class Rectangle {
    *  and relative (0-1) dimensions are accepted. Refer to the documentation
    *  of each individual function to see which one is necessary.
    */
-  static fromCoordinates(top: number, left: number,
+  static fromCoordinates(left: number, top: number,
     right: number, bottom: number): Rectangle {
     if (top > bottom) {
       throw new Error('Top coordinate must be smaller than bottom.');

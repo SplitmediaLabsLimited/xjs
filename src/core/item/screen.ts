@@ -43,8 +43,8 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
         } else {
           let _value: JXON = JXON.parse(val);
           resolve(Rectangle.fromCoordinates(
-            Number(_value['top']),
             Number(_value['left']),
+            Number(_value['top']),
             Number(_value['width']) + Number(_value['left']),
             Number(_value['height']) + Number(_value['top'])
           ));
@@ -75,8 +75,8 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
             iResolve({
               value : val,
               res : Rectangle.fromCoordinates(
-                Number(_res[1]),
                 Number(_res[0]),
+                Number(_res[1]),
                 Number(_res[2]),
                 Number(_res[3])
               )

@@ -3,6 +3,8 @@ export * from '../src/core/app';
 export * from '../src/core/scene';
 export * from '../src/core/transition';
 export * from '../src/core/channel';
+export * from '../src/core/dll';
+export * from '../src/core/extension';
 export {Item} from '../src/core/item/item';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from '../src/core/item/ichroma';
 export * from '../src/core/item/camera';
