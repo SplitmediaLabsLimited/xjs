@@ -112,18 +112,18 @@ angular.module('app', [
 
     this.updateCurrentPage = function(path) {
       this.currentPage = null;
-      self.currentPath = path.substring(1);
+      self.currentPath = path;
 
       self.sections.forEach(function(section) {
         // Short-circuit out if the page has been found
         if ( self.currentPage ) {
           return;
         }
-        if ('/' + section.path === path) {
+        if (section.path === path) {
           self.currentPage = section;
         } else {
           section.pages.forEach(function(page) {
-            if ('/' + page.path === path) {
+            if (page.path === path) {
               self.currentPage = page;
             }
           });

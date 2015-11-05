@@ -9,7 +9,7 @@
 <ul class="quicklink">
 {%- for exportDoc in doc.exports %}
   {% if not exportDoc.private -%}
-  <li><h3><a href="#/{$ exportDoc.path $}">{$ exportDoc.name $} {$ exportDoc.docType $}</a></h3></li>
+  <li><h3><a href="#{$ exportDoc.path $}">{$ exportDoc.name $} {$ exportDoc.docType $}</a></h3></li>
   {%- endif %}
 {%- endfor %}
 </ul>

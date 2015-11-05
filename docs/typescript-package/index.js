@@ -1,11 +1,10 @@
-require('../../tools/transpiler/index.js').init();
-
 var basePackage = require('dgeni-packages/base');
+var jsdocPackage = require('dgeni-packages/jsdoc');
 var Package = require('dgeni').Package;
 var path = require('canonical-path');
 
 // Define the dgeni package for generating the docs
-module.exports = new Package('typescript-parsing', [basePackage])
+module.exports = new Package('typescript-parsing', [basePackage, jsdocPackage])
 
 // Register the services and file readers
 .factory(require('./services/modules'))
@@ -14,6 +13,8 @@ module.exports = new Package('typescript-parsing', [basePackage])
 .factory(require('./services/tsParser/getFileInfo'))
 .factory(require('./services/tsParser/getExportDocType'))
 .factory(require('./services/tsParser/getContent'))
+
+.factory(require('./services/convertPrivateClassesToInterfaces'))
 
 .factory('EXPORT_DOC_TYPES', function() {
   return [
@@ -37,6 +38,9 @@ module.exports = new Package('typescript-parsing', [basePackage])
   log.level = 'warn';
 })
 
+.config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push({ name: 'internal', transforms: function() { return true; } });
+})
 
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {
@@ -57,7 +61,7 @@ module.exports = new Package('typescript-parsing', [basePackage])
 
   computePathsProcessor.pathTemplates.push({
     docTypes: ['module'],
-    pathTemplate: '${id}',
+    pathTemplate: '/${id}',
     outputPathTemplate: MODULES_DOCS_PATH + '/${id}/index.html'
   });
 
