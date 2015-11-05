@@ -1,3 +1,8 @@
+/****************************
+ * XSplit JS Framework
+ * version: 0.9.0
+ * (c) 2015 SplitmediaLabs, inc.
+ ****************************/
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
@@ -3365,7 +3370,7 @@ var ScreenItem = (function (_super) {
                 }
                 else {
                     var _value = json_1.JSON.parse(val);
-                    resolve(rectangle_1.Rectangle.fromCoordinates(Number(_value['top']), Number(_value['left']), Number(_value['width']) + Number(_value['left']), Number(_value['height']) + Number(_value['top'])));
+                    resolve(rectangle_1.Rectangle.fromCoordinates(Number(_value['left']), Number(_value['top']), Number(_value['width']) + Number(_value['left']), Number(_value['height']) + Number(_value['top'])));
                 }
             });
         });
@@ -3392,7 +3397,7 @@ var ScreenItem = (function (_super) {
                         var _res = res.split(',');
                         iResolve({
                             value: val,
-                            res: rectangle_1.Rectangle.fromCoordinates(Number(_res[1]), Number(_res[0]), Number(_res[2]), Number(_res[3]))
+                            res: rectangle_1.Rectangle.fromCoordinates(Number(_res[0]), Number(_res[1]), Number(_res[2]), Number(_res[3]))
                         });
                     });
                 });
@@ -6253,7 +6258,7 @@ var Rectangle = (function () {
         return rect;
     };
     /**
-     *  param: (top: number, left: number, right: number, bottom: number)
+     *  param: (left: number, top: number, right: number, bottom: number)
      *  ```
      *  return: Rectangle
      *  ```
@@ -6261,7 +6266,7 @@ var Rectangle = (function () {
      *  and relative (0-1) dimensions are accepted. Refer to the documentation
      *  of each individual function to see which one is necessary.
      */
-    Rectangle.fromCoordinates = function (top, left, right, bottom) {
+    Rectangle.fromCoordinates = function (left, top, right, bottom) {
         if (top > bottom) {
             throw new Error('Top coordinate must be smaller than bottom.');
         }
@@ -6473,6 +6478,21 @@ var SourceConfigWindow = (function (_super) {
                 width: width,
                 height: height
             })
+        });
+    };
+    ;
+    /**
+     *  param: name<string>
+     *
+     *  Changes the title of the source properties dialog.
+     *  Note: The title change is temporary, as re-opening the source properties
+     *  resets the title to the display name of the source
+     *  (custom name takes precedence over name)
+     */
+    SourceConfigWindow.prototype.requestDialogTitleChange = function (name) {
+        this._notify({
+            event: 'change-dialog-title',
+            value: name
         });
     };
     ;
