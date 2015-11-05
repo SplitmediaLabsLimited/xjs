@@ -144,6 +144,21 @@ export class SourceConfigWindow extends EventEmitter {
     });
   };
 
+  /**
+   *  param: name<string>
+   *
+   *  Changes the title of the source properties dialog.
+   *  Note: The title change is temporary, as re-opening the source properties
+   *  resets the title to the display name of the source
+   *  (custom name takes precedence over name)
+   */
+  requestDialogTitleChange(name: string) {
+    this._notify({
+      event: 'change-dialog-title',
+      value: name
+    });
+  };
+
   /** Closes the configuration window. */
   closeConfig() {
     exec('Close');
