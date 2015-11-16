@@ -54,4 +54,18 @@ if (Environment.isExtension()) {
       ExtensionWindow.getInstance().emit('scene-load', Number(scene));
     }
   };
+
+  window.SourcesListHighlight = (view, id) => {
+    if (view === 0) { // main view {
+      ExtensionWindow.getInstance().emit('sources-list-highlight', id === '' ?
+        null : id);
+    }
+  };
+
+  window.SourcesListSelect = (view, id) => {
+    if (view === 0) { // main view
+      ExtensionWindow.getInstance().emit('sources-list-select', id === '' ?
+        null : id);
+    }
+  };
 }
