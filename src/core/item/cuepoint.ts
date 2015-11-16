@@ -29,7 +29,7 @@ export class CuePoint {
 
   static _fromString(value: string): CuePoint {
     const [time, action] = [value.substring(0, value.length - 1),
-      value.charAt(value.length)]
+      value.charAt(value.length - 1)]
     return new CuePoint(Number(time), action);
   }
 
