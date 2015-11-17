@@ -22,7 +22,6 @@ describe('Playback interface', function() {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
-  var rand = 0;
   var xCallback = function(id, result) {
     setTimeout(function() {
       window.OnAsyncCallback(id, result);
@@ -30,38 +29,35 @@ describe('Playback interface', function() {
   };
 
   var getLocal = function(property) {
-    rand += 1;
-
-    var irand = rand;
+    var asyncId = (new Date()).getTime();
 
     if (property.startsWith('prop:')) {
       property = property.replace(/^prop:/, '')
     }
 
     if (local.hasOwnProperty(property)) {
-      xCallback(irand, local[property]);
+      xCallback(asyncId, local[property]);
     } else {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
       var itemSelected = placement.querySelector(selected);
-      xCallback(irand, itemSelected.getAttribute(property));
+      xCallback(asyncId, itemSelected.getAttribute(property));
     }
 
-    return irand;
+    return asyncId;
   };
 
   var setLocal = function(property, value) {
-    rand += 1;
-    var irand = rand;
+    var asyncId = (new Date()).getTime();
 
     if (property.startsWith('prop:')) {
       property = property.replace(/^prop:/, '')
     }
 
     local[property] = value;
-    xCallback(irand, '0');
-    return irand;
+    xCallback(asyncId, '0');
+    return asyncId;
   };
 
   beforeEach(function(done) {
@@ -75,19 +71,18 @@ describe('Playback interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      rand += 1;
-      var irand = rand;
+      var asyncId = (new Date()).getTime();
       switch (funcName) {
         case 'presetconfig:0':
-          xCallback(irand, encodeURIComponent(mockPresetConfig));
+          xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         case 'preset:0':
-          xCallback(irand, '0');
+          xCallback(asyncId, '0');
           break;
       }
 
-      return irand;
+      return asyncId;
     });
 
     spyOn(window.external, 'SearchVideoItem')
