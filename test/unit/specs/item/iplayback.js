@@ -33,6 +33,11 @@ describe('Playback interface', function() {
     rand += 1;
 
     var irand = rand;
+
+    if (property.startsWith('prop:')) {
+      property = property.replace(/^prop:/, '')
+    }
+
     if (local.hasOwnProperty(property)) {
       xCallback(irand, local[property]);
     } else {
@@ -42,13 +47,21 @@ describe('Playback interface', function() {
       var itemSelected = placement.querySelector(selected);
       xCallback(irand, itemSelected.getAttribute(property));
     }
+
+    return irand;
   };
 
   var setLocal = function(property, value) {
     rand += 1;
     var irand = rand;
+
+    if (property.startsWith('prop:')) {
+      property = property.replace(/^prop:/, '')
+    }
+
     local[property] = value;
     xCallback(irand, '0');
+    return irand;
   };
 
   beforeEach(function(done) {
@@ -68,7 +81,13 @@ describe('Playback interface', function() {
         case 'presetconfig:0':
           xCallback(irand, encodeURIComponent(mockPresetConfig));
           break;
+
+        case 'preset:0':
+          xCallback(irand, '0');
+          break;
       }
+
+      return irand;
     });
 
     spyOn(window.external, 'SearchVideoItem')
@@ -120,5 +139,43 @@ describe('Playback interface', function() {
     }).catch(function(error) {
       done.fail(error);
     });
+  });
+
+  it('contains all the necessary playback methods', function() {
+    var methods = [
+      'isSeekable',
+      'getPlaybackPosition',
+      'setPlaybackPosition',
+      'getPlaybackDuration',
+      'isPlaying',
+      'setPlaying',
+      'getPlaybackStartPosition',
+      'setPlaybackStartPosition',
+      'getPlaybackEndPosition',
+      'setPlaybackEndPosition',
+      'getVolume',
+      'setVolume',
+      'getActionAfterPlayback',
+      'setActionAfterPlayback',
+      'isAudibleOnlyOnStream',
+      'setAudibleOnlyOnStream',
+      'isAutostartOnSceneLoad',
+      'setAutostartOnSceneLoad',
+      'isForceDeinterlace',
+      'setForceDeinterlace',
+      'isRememberingPlaybackPosition',
+      'setRememberingPlaybackPosition',
+      'isShowingPlaybackPosition',
+      'setShowingPlaybackPosition',
+      'getCuePoints',
+      'setCuePoints',
+      'getValue',
+      'setValue',
+      'isAudio',
+      'isVideo'
+      ].join(',');
+
+    expect(enumeratedItems[0]).hasMethods(methods);
+    expect(enumeratedItems[1]).hasMethods(methods);
   });
 });
