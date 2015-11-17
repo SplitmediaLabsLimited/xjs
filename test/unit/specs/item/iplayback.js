@@ -35,7 +35,8 @@ describe('Playback interface', function() {
       property = property.replace(/^prop:/, '')
     }
 
-    if (local.hasOwnProperty(property)) {
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
+      property)) {
       xCallback(asyncId, local[property]);
     } else {
       var placement = parseXml(mockPresetConfig)
@@ -55,7 +56,11 @@ describe('Playback interface', function() {
       property = property.replace(/^prop:/, '')
     }
 
-    local[property] = value;
+    if (local[attachedId] === undefined) {
+      local[attachedId] = {};
+    }
+
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
@@ -68,6 +73,8 @@ describe('Playback interface', function() {
     var item2 = new XJS.Item({id : '{ID2}'});
     item1.getType();
     item2.getType();
+
+    local = {};
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
