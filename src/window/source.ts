@@ -50,6 +50,15 @@ export class SourcePluginWindow extends EventEmitter {
     SourcePluginWindow._instance = this;
   }
 
+  // We modify the configuration sent from the source properties window
+  // so that we do not see 'persistent' configuration such as config-url.
+  // When saving, this is restored back to the config object through
+  // Item#saveConfig().
+  //
+  // Note that we could have chosen to hide this from Item#requestSaveConfig()
+  // or Item#applyConfig() calls, but unfortunately, the context of the source
+  // properties window cannot always correctly determine the global config nodes
+  // when dealing with sources other than the current source (right-clicked.)
   private _hideGlobalConfig(data: any) {
     let persist = Global.getPersistentConfig();
 
