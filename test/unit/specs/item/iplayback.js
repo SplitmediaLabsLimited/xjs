@@ -31,13 +31,13 @@ describe('Playback interface', function() {
   var getLocal = function(property) {
     var asyncId = (new Date()).getTime();
 
-    if (property.startsWith('prop:')) {
-      property = property.replace(/^prop:/, '')
+    if (property.substring(0, 5) === 'prop:') {
+      property = property.replace(/^prop:/, '');
     }
 
-    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
+    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
       property)) {
-      xCallback(asyncId, local[property]);
+      xCallback(asyncId, local[attachedId][property]);
     } else {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
@@ -52,8 +52,8 @@ describe('Playback interface', function() {
   var setLocal = function(property, value) {
     var asyncId = (new Date()).getTime();
 
-    if (property.startsWith('prop:')) {
-      property = property.replace(/^prop:/, '')
+    if (property.substring(0, 5) === 'prop:') {
+      property = property.replace(/^prop:/, '');
     }
 
     if (local[attachedId] === undefined) {
