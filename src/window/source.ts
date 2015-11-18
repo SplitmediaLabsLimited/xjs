@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {Global} from '../internal/global';
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
@@ -39,14 +40,24 @@ export class SourcePluginWindow extends EventEmitter {
     this.on('message-source', function(message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
-          this.emit('save-config', message.data);
+          this.emit('save-config', this._hideGlobalConfig(message.data));
         } else if (message.request === 'applyConfig') {
-          this.emit('apply-config', message.data);
+          this.emit('apply-config', this._hideGlobalConfig(message.data));
         }
       }
     });
 
     SourcePluginWindow._instance = this;
+  }
+
+  private _hideGlobalConfig(data: any) {
+    let persist = Global.getPersistentConfig();
+
+    for (var key in persist) {
+      delete data[key];
+    }
+
+    return data;
   }
 }
 
