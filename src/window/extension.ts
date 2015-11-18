@@ -11,8 +11,10 @@ const _RESIZE = '2';
  *  of the window (e.g., resizing), and also serves as an event emitter
  *  for all events that the window should be able to handle.
  *
- *  Currently, only the following event is available:
+ *  Currently, the following events are available:
  *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
+ *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
+ *    - `sources-list-select`: notifies when a user clicks a source in the stage. Handler is a function f(id: string)
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
