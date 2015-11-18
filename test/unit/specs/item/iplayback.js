@@ -60,7 +60,7 @@ describe('Playback interface', function() {
       local[attachedId] = {};
     }
 
-    local[attachedId][property] = value;
+    local.attachedId[property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
