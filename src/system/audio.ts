@@ -377,7 +377,7 @@ export class AudioDevice{
     audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
       .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
       .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : -1))
-      .setSystemEnabled(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+      .setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
       .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
 
     return audio;
