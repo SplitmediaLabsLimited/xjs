@@ -95,4 +95,13 @@ export class ItemAudio implements IItemAudio {
       }
     });
   }
+
+  isAudioAvailable(): Promise<boolean> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:audioavail', slot).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
 }
