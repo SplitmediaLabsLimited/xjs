@@ -10,6 +10,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {IItemAudio, ItemAudio} from './iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -1041,7 +1042,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<AudioItem>;
+  setVolume: (value: number) => Promise<HTMLItem>;
 
   /**
    * param: value<boolean>
@@ -1050,7 +1051,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<AudioItem>;
+  setMute:  (value: boolean) => Promise<HTMLItem>;
 
   /**
    * return: Promise<boolean>
@@ -1066,7 +1067,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<HTMLItem>;
 
   /**
    * return: Promise<boolean>

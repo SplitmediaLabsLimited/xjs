@@ -665,7 +665,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<AudioItem>;
+  setVolume: (value: number) => Promise<CameraItem>;
 
   /**
    * param: value<boolean>
@@ -674,7 +674,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<AudioItem>;
+  setMute:  (value: boolean) => Promise<CameraItem>;
 
   /**
    * return: Promise<boolean>
@@ -690,7 +690,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<CameraItem>;
 
   /**
    * return: Promise<boolean>

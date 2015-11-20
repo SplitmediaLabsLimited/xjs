@@ -8,8 +8,6 @@ export interface IItemAudio {
   setVolume(value: number): Promise<IItemAudio>;
   isMute(): Promise<boolean>;
   setMute(value: boolean): Promise<IItemAudio>;
-  getAudioOffset(): Promise<number>;
-  setAudioOffset(value: number): Promise<IItemAudio>;
   isStreamOnlyEnabled(): Promise<boolean>;
   setStreamOnlyEnabled(value: boolean): Promise<IItemAudio>;
 }
