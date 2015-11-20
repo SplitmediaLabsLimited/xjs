@@ -122,6 +122,8 @@ export class AudioItem extends Item implements IItemAudio {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('Source plugins cannot update audio sources properties'));
+      } else if (value < 0) {
+        reject(Error('Audio offset cannot be negative'));
       } else {
         let slot = iItem.attach(this._id);
         iItem.set('prop:AudioDelay', String(value), slot).then(res => {
