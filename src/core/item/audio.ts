@@ -109,30 +109,80 @@ export class AudioItem extends Item implements IItemAudio {
     });
   }
 
+  getAudioOffset(): Promise<number> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      iItem.get('prop:AudioDelay', slot).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  setAudioOffset(value: number): Promise<ItemAudio> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Source plugins cannot update audio sources properties'));
+      } else {
+        let slot = iItem.attach(this._id);
+        iItem.set('prop:AudioDelay', String(value), slot).then(res => {
+          if (!res) {
+            reject(Error('Item set property failed'));
+          } else {
+            resolve(this);
+          }
+        });
+      }
+    });
+  }
+
   // ItemAudio
 
-  /** Get item's volume level expressed as an integer from 0 to 100 */
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
   getVolume: () => Promise<number>;
 
-  /** Check if item's mute option is active */
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
   isMute:   () => Promise<boolean>;
 
-  /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
   setVolume: (value: number) => Promise<AudioItem>;
 
-  /** Set item's Mute property to ON or OFF */
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
   setMute:  (value: boolean) => Promise<AudioItem>;
 
-  /** Gets delay in milliseconds */
-  getAudioOffset: () => Promise<number>;
-
-  /** Sets delay in milliseconds */
-  setAudioOffset: (value: number) => Promise<AudioItem>;
-
-  /** Checks if audio is also output to system sound */
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
   isStreamOnlyEnabled: () => Promise<boolean>;
 
-  /** Sets whether audio should also be output to system sound */
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
   setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
 }
 

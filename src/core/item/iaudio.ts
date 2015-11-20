@@ -70,32 +70,6 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  getAudioOffset(): Promise<number> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:AudioDelay', slot).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
-
-  setAudioOffset(value: number): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Source plugins cannot update audio sources properties'));
-      } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:AudioDelay', String(value), slot).then(res => {
-          if (!res) {
-            reject(Error('Item set property failed'));
-          } else {
-            resolve(this);
-          }
-        });
-      }
-    });
-  }
-
   isStreamOnlyEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       let slot = iItem.attach(this._id);
