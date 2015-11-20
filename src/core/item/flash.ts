@@ -25,7 +25,8 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `FlashItem`
  *  instance.
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class FlashItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemAudio {
 
   /**
    * return: Promise<Rectangle>
@@ -498,6 +499,64 @@ export class FlashItem extends Item implements IItemLayout, IItemColor, IItemChr
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<FlashItem>;
+
+  // ItemAudio
+
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
+  getVolume: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
+  isMute:   () => Promise<boolean>;
+
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
+  setVolume: (value: number) => Promise<AudioItem>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setMute:  (value: boolean) => Promise<AudioItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
+  isStreamOnlyEnabled: () => Promise<boolean>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
+  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemAudio]);

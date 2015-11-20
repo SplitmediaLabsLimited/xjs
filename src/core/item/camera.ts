@@ -8,6 +8,7 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {IItemAudio, ItemAudio} from './iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -44,7 +45,8 @@ import {Color} from '../../util/color';
  *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
-export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class CameraItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemAudio {
   /**
    * return: Promise<string>
    *
@@ -639,6 +641,64 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<CameraItem>;
+
+ // ItemAudio
+
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
+  getVolume: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
+  isMute:   () => Promise<boolean>;
+
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
+  setVolume: (value: number) => Promise<AudioItem>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setMute:  (value: boolean) => Promise<AudioItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
+  isStreamOnlyEnabled: () => Promise<boolean>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
+  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(CameraItem, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
+  ItemAudio]);

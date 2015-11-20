@@ -186,6 +186,13 @@ export class AudioItem extends Item implements IItemAudio {
    * *Chainable.*
    */
   setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
 applyMixins(Item, [ItemAudio]);
