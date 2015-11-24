@@ -287,6 +287,20 @@ export class Game implements Addable {
 
   static _autoDetect: Game;
 
+  /**
+   *  return: Game
+   *
+   *  Returns a special Game object that may be added to the stage. This
+   *  object automatically detects any compatible games that are running
+   *  and focused, and changes the displayed game on the stage accordingly.
+   *
+   *  #### Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Game.autoDetect().addToScene();
+   * ```
+   */
   static autoDetect(): Game {
     if (Game._autoDetect === undefined) {
       Game._autoDetect = new Game();
