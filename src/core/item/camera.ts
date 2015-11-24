@@ -54,8 +54,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
+      iItem.get('prop:item', this._id).then(val => {
         resolve(val);
       });
     });
@@ -115,7 +114,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getRotateZ:              () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -124,7 +123,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -133,7 +132,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setPositionLocked:        (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -142,7 +141,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -162,7 +161,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setPosition:              (value: Rectangle) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -171,7 +170,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setRotateY:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -180,7 +179,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setRotateX:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -233,7 +232,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getBorderColor:  () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -242,7 +241,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setTransparency: (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -251,7 +250,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setBrightness:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -260,7 +259,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setContrast:     (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -269,7 +268,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setHue:          (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -278,7 +277,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setSaturation:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -289,7 +288,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   // special color options pinning
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set this to true to share color settings across all instances of this
    * camera device on the stage.
@@ -298,8 +297,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   setColorOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:cc_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:cc_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -313,8 +311,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_pin', slot).then(val => {
+      iItem.get('prop:cc_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -569,8 +566,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:key_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:key_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -585,8 +581,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_pin', slot).then(val => {
+      iItem.get('prop:key_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -602,7 +597,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   isVisible:         () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -618,7 +613,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getTransition:     () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -634,7 +629,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *

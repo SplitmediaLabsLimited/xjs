@@ -568,7 +568,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":22,"../internal/internal":25,"../internal/util/json":27,"../internal/util/xml":29,"../system/audio":30,"../util/rectangle":40,"./environment":3,"./transition":21}],2:[function(require,module,exports){
+},{"../internal/app":24,"../internal/internal":27,"../internal/util/json":29,"../internal/util/xml":31,"../system/audio":32,"../util/rectangle":42,"./environment":3,"./transition":23}],2:[function(require,module,exports){
 var app_1 = require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
@@ -655,7 +655,7 @@ var Channel = (function () {
     return Channel;
 })();
 exports.Channel = Channel;
-},{"../internal/app":22}],3:[function(require,module,exports){
+},{"../internal/app":24}],3:[function(require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -767,13 +767,12 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
-},{"../core/environment":3,"../internal/internal":25}],5:[function(require,module,exports){
+},{"../core/environment":3,"../internal/internal":27}],5:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -797,8 +796,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.isSilenceDetectionEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGainEnable', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGainEnable', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -810,8 +808,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Source plugins cannot update audio sources properties'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), slot)
+                item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), _this._id)
                     .then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
@@ -826,8 +823,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.getSilenceThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGain', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGain', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -845,8 +841,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Only integers in the range 0-128 are acceptable for threshold'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGain', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:AudioGain', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -860,8 +855,7 @@ var AudioItem = (function (_super) {
     AudioItem.prototype.getSilencePeriod = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioGainLatency', slot).then(function (val) {
+            item_1.Item.get('prop:AudioGainLatency', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -879,8 +873,7 @@ var AudioItem = (function (_super) {
                 reject(Error('Only integers in the range 0-10000 are acceptable for period'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioGainLatency', String(value), slot).then(function (res) {
+                item_1.Item.set('prop:AudioGainLatency', String(value), _this._id).then(function (res) {
                     if (!res) {
                         reject(Error('Item set property failed'));
                     }
@@ -895,13 +888,12 @@ var AudioItem = (function (_super) {
 })(item_2.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"../environment":3,"./iaudio":10,"./item":16}],6:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/mixin":30,"../environment":3,"./iaudio":11,"./item":18}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -953,8 +945,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getDeviceId = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (val) {
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
                 resolve(val);
             });
         });
@@ -971,8 +962,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.setColorOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:cc_pin', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:cc_pin', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -986,8 +976,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getColorOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_pin', slot).then(function (val) {
+            item_1.Item.get('prop:cc_pin', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -1004,8 +993,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.setKeyingOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:key_pin', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:key_pin', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1019,8 +1007,7 @@ var CameraItem = (function (_super) {
     CameraItem.prototype.getKeyingOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_pin', slot).then(function (val) {
+            item_1.Item.get('prop:key_pin', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -1029,13 +1016,44 @@ var CameraItem = (function (_super) {
 })(item_2.Item);
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],7:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/mixin":30,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":18,"./itransition":19}],7:[function(require,module,exports){
+var CuePoint = (function () {
+    function CuePoint(time, action) {
+        this._time = time;
+        this._action = action;
+    }
+    CuePoint.prototype.toString = function () {
+        return String(this._time * 10000000) + this._action;
+    };
+    CuePoint.prototype.setTime = function (time) {
+        this._time = time;
+    };
+    CuePoint.prototype.setAction = function (action) {
+        this._action = action;
+    };
+    CuePoint.prototype.getTime = function () {
+        return this._time / 10000000;
+    };
+    CuePoint.prototype.getAction = function () {
+        return this._action;
+    };
+    CuePoint._fromString = function (value) {
+        var _a = [value.substring(0, value.length - 1),
+            value.charAt(value.length)], time = _a[0], action = _a[1];
+        return new CuePoint(Number(time), action);
+    };
+    CuePoint.PAUSE = 'p';
+    CuePoint.RESUME = 'r';
+    CuePoint.CUT = 's';
+    return CuePoint;
+})();
+exports.CuePoint = CuePoint;
+},{}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -1071,9 +1089,8 @@ var FlashItem = (function (_super) {
     FlashItem.prototype.getCustomResolution = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var customSize;
-            item_1.Item.get('prop:BrowserSize', slot).then(function (val) {
+            item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
                     var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
@@ -1101,8 +1118,7 @@ var FlashItem = (function (_super) {
     FlashItem.prototype.setCustomResolution = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), slot).then(function () {
+            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1111,13 +1127,12 @@ var FlashItem = (function (_super) {
 })(item_2.Item);
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/mixin":28,"../../util/rectangle":40,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],8:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/mixin":30,"../../util/rectangle":42,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":18,"./itransition":19}],9:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -1171,8 +1186,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.isSpecialOptimizationEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('GameCapSurfSharing').then(function (res) {
+            item_1.Item.get('GameCapSurfSharing', _this._id).then(function (res) {
                 resolve(res === '1');
             });
         });
@@ -1187,8 +1201,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.setSpecialOptimizationEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1201,8 +1214,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.isShowMouseEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('GameCapShowMouse').then(function (res) {
+            item_1.Item.get('GameCapShowMouse', _this._id).then(function (res) {
                 resolve(res === '1');
             });
         });
@@ -1217,8 +1229,7 @@ var GameItem = (function (_super) {
     GameItem.prototype.setShowMouseEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1282,13 +1293,12 @@ var GameItem = (function (_super) {
 })(item_2.Item);
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../environment":3,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],9:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/json":29,"../../internal/util/mixin":30,"../../internal/util/xml":31,"../environment":3,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":18,"./itransition":19}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var internal_1 = require('../../internal/internal');
 var mixin_1 = require('../../internal/util/mixin');
@@ -1323,8 +1333,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getURL = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (url) {
+            item_1.Item.get('prop:item', _this._id).then(function (url) {
                 var _url = String(url).split('*');
                 url = _url[0];
                 resolve(url);
@@ -1344,8 +1353,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setURL = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:item', value, slot).then(function (code) {
+            item_1.Item.set('prop:item', value, _this._id).then(function (code) {
                 if (code) {
                     resolve(_this);
                 }
@@ -1363,8 +1371,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getBrowserJS = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 try {
                     var customObject = JSON.parse(custom);
@@ -1394,9 +1401,8 @@ var HTMLItem = (function (_super) {
         var _this = this;
         if (refresh === void 0) { refresh = false; }
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1427,14 +1433,14 @@ var HTMLItem = (function (_super) {
                 if (value !== '' && scriptEnabled === true) {
                     scriptString = scriptString + value;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (refresh) {
-                    item_1.Item.set('refresh', '', slot).then(function () {
+                    item_1.Item.set('refresh', '', _this._id).then(function () {
                         resolve(_this);
                     });
                 }
@@ -1452,8 +1458,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isBrowserJSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var enabled = true;
                 try {
                     var customObject = JSON.parse(custom);
@@ -1482,9 +1487,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableBrowserJS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1525,14 +1529,14 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && value === true) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (!value) {
-                    item_1.Item.set('refresh', '', slot).then(function () {
+                    item_1.Item.set('refresh', '', _this._id).then(function () {
                         resolve(_this);
                     });
                 }
@@ -1550,8 +1554,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getCustomCSS = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customCSS = '';
                 try {
                     var customObject = JSON.parse(custom);
@@ -1578,9 +1581,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1621,10 +1623,10 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && scriptEnabled === true) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 resolve(_this);
@@ -1639,8 +1641,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isCustomCSSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var enabled = true;
                 try {
                     var customObject = JSON.parse(custom);
@@ -1667,9 +1668,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
             var customObject = {};
-            item_1.Item.get('prop:custom', slot).then(function (custom) {
+            item_1.Item.get('prop:custom', _this._id).then(function (custom) {
                 var customJS = '';
                 var customCSS = '';
                 var scriptString = ' ';
@@ -1710,10 +1710,10 @@ var HTMLItem = (function (_super) {
                 if (customJS !== '' && value === scriptEnabled) {
                     scriptString = scriptString + customJS;
                 }
-                return item_1.Item.set('prop:BrowserJs', scriptString, slot);
+                return item_1.Item.set('prop:BrowserJs', scriptString, _this._id);
             })
                 .then(function () {
-                return item_1.Item.set('prop:custom', JSON.stringify(customObject), slot);
+                return item_1.Item.set('prop:custom', JSON.stringify(customObject), _this._id);
             })
                 .then(function () {
                 if (!value) {
@@ -1740,8 +1740,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.isBrowserTransparent = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:BrowserTransparent').then(function (isTransparent) {
+            item_1.Item.get('prop:BrowserTransparent', _this._id).then(function (isTransparent) {
                 resolve(isTransparent === '1');
             });
         });
@@ -1759,8 +1758,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.enableBrowserTransparency = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(function () {
+            item_1.Item.set('prop:BrowserTransparent', (value ? '1' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1777,9 +1775,8 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.getBrowserCustomSize = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var customSize;
-            item_1.Item.get('prop:BrowserSize', slot).then(function (val) {
+            item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
                     var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
@@ -1807,8 +1804,7 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setBrowserCustomSize = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), slot).then(function () {
+            item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -1817,130 +1813,80 @@ var HTMLItem = (function (_super) {
 })(item_2.Item);
 exports.HTMLItem = HTMLItem;
 mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, iconfig_1.ItemConfigurable]);
-},{"../../internal/internal":25,"../../internal/item":26,"../../internal/util/mixin":28,"../../util/rectangle":40,"../environment":3,"./ichroma":11,"./icolor":12,"./iconfig":13,"./ilayout":14,"./item":16,"./itransition":17}],10:[function(require,module,exports){
+},{"../../internal/internal":27,"../../internal/item":28,"../../internal/util/mixin":30,"../../util/rectangle":42,"../environment":3,"./ichroma":12,"./icolor":13,"./iconfig":14,"./ilayout":15,"./item":18,"./itransition":19}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
-var environment_1 = require('../environment');
 var ItemAudio = (function () {
     function ItemAudio() {
     }
     ItemAudio.prototype.getVolume = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:volume', slot).then(function (val) {
+            item_1.Item.get('prop:volume', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
     };
     ItemAudio.prototype.setVolume = function (value) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Source plugins cannot update audio source properties.'));
-            }
-            else {
-                var slot = item_1.Item.attach(_this._id);
-                value = value < 0 ? 0 : value > 100 ? 100 : value;
-                item_1.Item.set('prop:volume', String(value), slot).then(function (res) {
-                    if (!res) {
-                        reject(Error('Item set property failed'));
-                    }
-                    else {
-                        resolve(_this);
-                    }
-                });
-            }
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:volume', String(value), _this._id).then(function () {
+                resolve(_this);
+            });
         });
     };
     ItemAudio.prototype.isMute = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:mute', slot).then(function (val) {
+            item_1.Item.get('prop:mute', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
     };
     ItemAudio.prototype.setMute = function (value) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Source plugins cannot update audio sources properties'));
-            }
-            else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:mute', (value ? '1' : '0'), slot).then(function (res) {
-                    if (!res) {
-                        reject(Error('Item set property failed'));
-                    }
-                    else {
-                        resolve(_this);
-                    }
-                });
-            }
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:mute', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
         });
     };
     ItemAudio.prototype.getAudioOffset = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:AudioDelay', slot).then(function (val) {
+            item_1.Item.get('prop:AudioDelay', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
     };
     ItemAudio.prototype.setAudioOffset = function (value) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Source plugins cannot update audio sources properties'));
-            }
-            else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:AudioDelay', String(value), slot).then(function (res) {
-                    if (!res) {
-                        reject(Error('Item set property failed'));
-                    }
-                    else {
-                        resolve(_this);
-                    }
-                });
-            }
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:AudioDelay', String(value), _this._id).then(function () {
+                resolve(_this);
+            });
         });
     };
     ItemAudio.prototype.isStreamOnlyEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:sounddev', slot).then(function (val) {
+            item_1.Item.get('prop:sounddev', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
     };
     ItemAudio.prototype.setStreamOnlyEnabled = function (value) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Source plugins cannot update audio sources properties'));
-            }
-            else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:sounddev', (value ? '1' : '0'), slot).then(function (res) {
-                    if (!res) {
-                        reject(Error('Item set property failed'));
-                    }
-                    else {
-                        resolve(_this);
-                    }
-                });
-            }
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:sounddev', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
         });
     };
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":26,"../environment":3}],11:[function(require,module,exports){
+},{"../../internal/item":28}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -1992,8 +1938,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.isChromaEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromakey', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromakey', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2005,8 +1950,7 @@ var ItemChroma = (function () {
                 reject(TypeError('Parameter should be boolean.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), slot).then(function () {
+                item_1.Item.set('prop:key_chromakey', (value ? '1' : '0'), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2015,8 +1959,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getKeyingType = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromakeytype', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromakeytype', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2031,8 +1974,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a KeyingType value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromakeytype', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromakeytype', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2041,8 +1983,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaAntiAliasLevel = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_antialiasing', slot).then(function (val) {
+            item_1.Item.get('prop:key_antialiasing', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2057,8 +1998,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a ChromaAntiAliasLevel value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_antialiasing', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_antialiasing', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2068,8 +2008,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyBrightness = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromabr', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromabr', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2084,8 +2023,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromabr', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromabr', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2094,8 +2032,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacySaturation = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromasat', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromasat', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2110,8 +2047,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromasat', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromasat', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2120,8 +2056,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyHue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromahue', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromahue', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2136,8 +2071,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-180.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromahue', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromahue', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2146,8 +2080,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromarang', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromarang', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2162,8 +2095,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromarang', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromarang', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2172,8 +2104,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaLegacyAlphaSmoothing = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromaranga', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromaranga', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2188,8 +2119,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromaranga', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_chromaranga', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2199,8 +2129,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyPrimaryColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeyprimary', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeyprimary', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2215,8 +2144,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Use a ChromaPrimaryColors value as the parameter.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeyprimary', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2226,8 +2154,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeythresh', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeythresh', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2242,8 +2169,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeythresh', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeythresh', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2253,8 +2179,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaRGBKeyExposure = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_chromargbkeybalance', slot).then(function (val) {
+            item_1.Item.get('prop:key_chromargbkeybalance', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2269,8 +2194,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_chromargbkeybalance', String(value), slot)
+                item_1.Item.set('prop:key_chromargbkeybalance', String(value), _this._id)
                     .then(function () {
                     resolve(_this);
                 });
@@ -2281,8 +2205,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorrang', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorrang', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2297,8 +2220,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_colorrang', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_colorrang', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2307,8 +2229,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyExposure = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorranga', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorranga', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2323,8 +2244,7 @@ var ItemChroma = (function () {
                 reject(RangeError('Valid value is an integer from 0-255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:key_colorranga', String(value), slot).then(function () {
+                item_1.Item.set('prop:key_colorranga', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2333,8 +2253,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.getChromaColorKeyColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:key_colorrgb', slot).then(function (val) {
+            item_1.Item.get('prop:key_colorrgb', _this._id).then(function (val) {
                 var color = color_1.Color.fromBGRString(val);
                 resolve(color);
             });
@@ -2343,8 +2262,7 @@ var ItemChroma = (function () {
     ItemChroma.prototype.setChromaColorKeyColor = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), slot).then(function () {
+            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2352,7 +2270,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":26,"../../util/color":36}],12:[function(require,module,exports){
+},{"../../internal/item":28,"../../util/color":38}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -2362,8 +2280,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getTransparency = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:alpha', slot).then(function (val) {
+            item_1.Item.get('prop:alpha', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2375,8 +2292,7 @@ var ItemColor = (function () {
                 reject(RangeError('Transparency may only be in the range 0 to 255.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:alpha', String(value), slot).then(function () {
+                item_1.Item.set('prop:alpha', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2385,8 +2301,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getBrightness = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_brightness', slot).then(function (val) {
+            item_1.Item.get('prop:cc_brightness', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2398,8 +2313,7 @@ var ItemColor = (function () {
                 reject(RangeError('Brightness may only be in the range -100 to 100.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_brightness', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_brightness', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2408,8 +2322,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getContrast = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_contrast', slot).then(function (val) {
+            item_1.Item.get('prop:cc_contrast', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2421,8 +2334,7 @@ var ItemColor = (function () {
                 reject(RangeError('Contrast may only be in the range -100 to 100.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_contrast', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_contrast', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2431,8 +2343,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getHue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_hue', slot).then(function (val) {
+            item_1.Item.get('prop:cc_hue', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2444,8 +2355,7 @@ var ItemColor = (function () {
                 reject(RangeError('Contrast may only be in the range -180 to 180.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_hue', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_hue', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2454,8 +2364,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getSaturation = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cc_saturation', slot).then(function (val) {
+            item_1.Item.get('prop:cc_saturation', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2467,8 +2376,7 @@ var ItemColor = (function () {
                 reject(RangeError('Saturation may only be in the range -100 to 100'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:cc_saturation', String(value), slot).then(function () {
+                item_1.Item.set('prop:cc_saturation', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2477,8 +2385,7 @@ var ItemColor = (function () {
     ItemColor.prototype.getBorderColor = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:border', slot).then(function (val) {
+            item_1.Item.get('prop:border', _this._id).then(function (val) {
                 var bgr = Number(val) - 0x80000000;
                 var color = color_1.Color.fromBGRInt(bgr);
                 resolve(color);
@@ -2488,8 +2395,7 @@ var ItemColor = (function () {
     ItemColor.prototype.setBorderColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), slot).then(function () {
+            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2497,7 +2403,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":26,"../../util/color":36}],13:[function(require,module,exports){
+},{"../../internal/item":28,"../../util/color":38}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -2509,8 +2415,7 @@ var ItemConfigurable = (function () {
     ItemConfigurable.prototype.loadConfig = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:BrowserConfiguration', slot).then(function (config) {
+            item_1.Item.get('prop:BrowserConfiguration', _this._id).then(function (config) {
                 var configObj = config === 'null' ? {} : JSON.parse(config);
                 var persist = global_1.Global.getPersistentConfig();
                 for (var key in persist) {
@@ -2582,7 +2487,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":23,"../../internal/internal":25,"../../internal/item":26,"../environment":3}],14:[function(require,module,exports){
+},{"../../internal/global":25,"../../internal/internal":27,"../../internal/item":28,"../environment":3}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -2592,8 +2497,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isKeepAspectRatio = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:keep_ar', slot).then(function (val) {
+            item_1.Item.get('prop:keep_ar', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2601,8 +2505,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setKeepAspectRatio = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:keep_ar', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:keep_ar', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2610,8 +2513,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isPositionLocked = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:lockmove', slot).then(function (val) {
+            item_1.Item.get('prop:lockmove', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2619,8 +2521,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setPositionLocked = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:lockmove', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:lockmove', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2628,8 +2529,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.isEnhancedResizeEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:mipmaps', slot).then(function (val) {
+            item_1.Item.get('prop:mipmaps', _this._id).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -2637,8 +2537,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setEnhancedResizeEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:mipmaps', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:mipmaps', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2646,8 +2545,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getPosition = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:pos', slot).then(function (val) {
+            item_1.Item.get('prop:pos', _this._id).then(function (val) {
                 var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
@@ -2657,9 +2555,8 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setPosition = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this.position = value;
-            item_1.Item.set('prop:pos', value.toCoordinateString(), slot).then(function () {
+            item_1.Item.set('prop:pos', value.toCoordinateString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2667,8 +2564,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateY = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_y', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_y', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2680,8 +2576,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_y', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_y', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2690,8 +2585,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateX = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_x', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_x', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2703,8 +2597,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_x', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_x', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2713,8 +2606,7 @@ var ItemLayout = (function () {
     ItemLayout.prototype.getRotateZ = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:rotate_z', slot).then(function (val) {
+            item_1.Item.get('prop:rotate_z', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -2726,8 +2618,7 @@ var ItemLayout = (function () {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:rotate_z', String(value), slot).then(function () {
+                item_1.Item.set('prop:rotate_z', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -2736,13 +2627,12 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":26,"../../util/rectangle":40}],15:[function(require,module,exports){
+},{"../../internal/item":28,"../../util/rectangle":42}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var ilayout_1 = require('./ilayout');
@@ -2767,7 +2657,283 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],16:[function(require,module,exports){
+},{"../../internal/util/mixin":30,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":18,"./itransition":19}],17:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = require('../../internal/item');
+var cuepoint_1 = require('./cuepoint');
+(function (ActionAfterPlayback) {
+    ActionAfterPlayback[ActionAfterPlayback["NONE"] = 0] = "NONE";
+    ActionAfterPlayback[ActionAfterPlayback["REWIND"] = 1] = "REWIND";
+    ActionAfterPlayback[ActionAfterPlayback["LOOP"] = 2] = "LOOP";
+    ActionAfterPlayback[ActionAfterPlayback["TRANSPARENT"] = 3] = "TRANSPARENT";
+    ActionAfterPlayback[ActionAfterPlayback["HIDE"] = 4] = "HIDE";
+})(exports.ActionAfterPlayback || (exports.ActionAfterPlayback = {}));
+var ActionAfterPlayback = exports.ActionAfterPlayback;
+var AUDIO_REGEX = /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/;
+var VIDEO_REGEX = /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
+var ItemPlayback = (function () {
+    function ItemPlayback() {
+    }
+    ItemPlayback.prototype.isSeekable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('sync:syncable', _this._id).then(function (val) {
+                resolve(val === "1" ? true : false);
+            });
+        });
+    };
+    ItemPlayback.prototype.getPlaybackPosition = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('sync:position', _this._id).then(function (val) {
+                resolve(Number(val) / 10000000);
+            });
+        });
+    };
+    ItemPlayback.prototype.setPlaybackPosition = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('sync:position', String(value * 10000000), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getPlaybackDuration = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('sync:duration', _this._id).then(function (val) {
+                resolve(Number(val) / 10000000);
+            });
+        });
+    };
+    ItemPlayback.prototype.isPlaying = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('sync:state', _this._id).then(function (val) {
+                resolve(val === "running");
+            });
+        });
+    };
+    ItemPlayback.prototype.setPlaying = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('sync:state', value ? "running" : "stopped", _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getPlaybackStartPosition = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:InPoint', _this._id).then(function (val) {
+                resolve(Number(val) / 10000000);
+            });
+        });
+    };
+    ItemPlayback.prototype.setPlaybackStartPosition = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:InPoint', String(value * 10000000), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getPlaybackEndPosition = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:OutPoint', _this._id).then(function (val) {
+                resolve(Number(val) / 10000000);
+            });
+        });
+    };
+    ItemPlayback.prototype.setPlaybackEndPosition = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:OutPoint', String(value * 10000000), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getVolume = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:volume', _this._id).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemPlayback.prototype.setVolume = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:volume', String(value), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.isAudibleOnlyOnStream = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:sounddev', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemPlayback.prototype.setAudibleOnlyOnStream = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:sounddev', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getActionAfterPlayback = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:OpWhenFinished', _this._id).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    ItemPlayback.prototype.setActionAfterPlayback = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:OpWhenFinished', String(value), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.isAutostartOnSceneLoad = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:StartOnLoad', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemPlayback.prototype.setAutostartOnSceneLoad = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:StartOnLoad', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.isForceDeinterlace = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:fdeinterlace', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemPlayback.prototype.setForceDeinterlace = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:fdeinterlace', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.isRememberingPlaybackPosition = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:RememberPosition', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemPlayback.prototype.setRememberingPlaybackPosition = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:RememberPosition', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.isShowingPlaybackPosition = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:ShowPosition', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    ItemPlayback.prototype.setShowingPlaybackPosition = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:ShowPosition', (value ? '1' : '0'), _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemPlayback.prototype.getCuePoints = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:CuePoints', _this._id).then(function (cuePointString) {
+                if (cuePointString === '') {
+                    resolve([]);
+                }
+                else {
+                    var cuePointStrings = cuePointString.split(',');
+                    var cuePoints = cuePointStrings.map(function (string) { return cuepoint_1.CuePoint._fromString(string); });
+                    resolve(cuePoints);
+                }
+            });
+        });
+    };
+    ItemPlayback.prototype.setCuePoints = function (cuePoints) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var cuePointString = cuePoints.map(function (point) { return point.toString(); }).join(',');
+            resolve(_this);
+        });
+    };
+    ItemPlayback.prototype.isAudio = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:item', _this._id).then(function (filename) {
+                resolve(AUDIO_REGEX.test(filename));
+            });
+        });
+    };
+    ItemPlayback.prototype.isVideo = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:item', _this._id).then(function (filename) {
+                resolve(VIDEO_REGEX.test(filename));
+            });
+        });
+    };
+    ItemPlayback.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            // we do not do any additional checking since we are assured of the type
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    ;
+    ItemPlayback.prototype.setValue = function (filename) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
+                item_1.Item.set('prop:item', filename, _this._id)
+                    .then(function () { return item_1.Item.set('prop:name', filename, _this._id); })
+                    .then(function () { return item_1.Item.set('prop:CuePoints', '', _this._id); })
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
+            else {
+                reject(new Error('You can only set the value to a valid media type'));
+            }
+        });
+    };
+    return ItemPlayback;
+})();
+exports.ItemPlayback = ItemPlayback;
+},{"../../internal/item":28,"./cuepoint":7}],18:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -2862,9 +3028,8 @@ var Item = (function () {
     Item.prototype.setName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._name = value;
-            item_1.Item.set('prop:name', _this._name, slot).then(function () {
+            item_1.Item.set('prop:name', _this._name, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2885,8 +3050,7 @@ var Item = (function () {
     Item.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:name', slot).then(function (val) {
+            item_1.Item.get('prop:name', _this._id).then(function (val) {
                 _this._name = val;
                 resolve(val);
             });
@@ -2920,9 +3084,8 @@ var Item = (function () {
     Item.prototype.setCustomName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._cname = value;
-            item_1.Item.set('prop:cname', _this._cname, slot).then(function () {
+            item_1.Item.set('prop:cname', _this._cname, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -2943,8 +3106,7 @@ var Item = (function () {
     Item.prototype.getCustomName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:cname', slot).then(function (val) {
+            item_1.Item.get('prop:cname', _this._id).then(function (val) {
                 _this._cname = val;
                 resolve(val);
             });
@@ -2970,8 +3132,7 @@ var Item = (function () {
     Item.prototype.getValue = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:item', slot).then(function (val) {
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
                 val = (val === 'null') ? '' : val;
                 if (val === '') {
                     _this._value = '';
@@ -3026,7 +3187,6 @@ var Item = (function () {
     Item.prototype.setValue = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             var val = (typeof value === 'string') ?
                 value : value.toString();
             if (typeof value !== 'string') {
@@ -3035,7 +3195,7 @@ var Item = (function () {
             else {
                 _this._value = val;
             }
-            item_1.Item.set('prop:item', val, slot).then(function () {
+            item_1.Item.set('prop:item', val, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3056,8 +3216,7 @@ var Item = (function () {
     Item.prototype.getKeepLoaded = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:keeploaded', slot).then(function (val) {
+            item_1.Item.get('prop:keeploaded', _this._id).then(function (val) {
                 _this._keepLoaded = (val === '1');
                 resolve(_this._keepLoaded);
             });
@@ -3084,9 +3243,8 @@ var Item = (function () {
     Item.prototype.setKeepLoaded = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
             _this._keepLoaded = value;
-            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), slot)
+            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), _this._id)
                 .then(function () {
                 resolve(_this);
             });
@@ -3108,8 +3266,7 @@ var Item = (function () {
     Item.prototype.getType = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:type', slot).then(function (val) {
+            item_1.Item.get('prop:type', _this._id).then(function (val) {
                 _this._type = ItemTypes[ItemTypes[Number(val)]];
                 resolve(_this._type);
             });
@@ -3212,7 +3369,7 @@ var Item = (function () {
 })();
 exports.Item = Item;
 mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../environment":3,"../scene":20,"./ilayout":14}],17:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/json":29,"../../internal/util/mixin":30,"../../internal/util/xml":31,"../environment":3,"../scene":22,"./ilayout":15}],19:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -3222,8 +3379,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.isVisible = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:visible', slot).then(function (val) {
+            item_1.Item.get('prop:visible', _this._id).then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
@@ -3231,8 +3387,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.setVisible = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:visible', value ? '1' : '0', slot).then(function () {
+            item_1.Item.set('prop:visible', value ? '1' : '0', _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3240,8 +3395,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.getTransition = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:transitionid', slot).then(function (val) {
+            item_1.Item.get('prop:transitionid', _this._id).then(function (val) {
                 if (val === '') {
                     resolve(transition_1.Transition.NONE);
                 }
@@ -3254,8 +3408,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.setTransition = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:transitionid', value.toString(), slot).then(function () {
+            item_1.Item.set('prop:transitionid', value.toString(), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3263,8 +3416,7 @@ var ItemTransition = (function () {
     ItemTransition.prototype.getTransitionTime = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:transitiontime', slot).then(function (val) {
+            item_1.Item.get('prop:transitiontime', _this._id).then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -3276,8 +3428,7 @@ var ItemTransition = (function () {
                 reject(RangeError('Transparency may only be in the range 0 to 60000.'));
             }
             else {
-                var slot = item_1.Item.attach(_this._id);
-                item_1.Item.set('prop:transitiontime', String(value), slot).then(function () {
+                item_1.Item.set('prop:transitiontime', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
             }
@@ -3286,19 +3437,19 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":26,"../transition":21}],18:[function(require,module,exports){
+},{"../../internal/item":28,"../transition":23}],20:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
+var iplayback_1 = require('./iplayback');
 var item_1 = require('./item');
 /**
  * The MediaItem class represents a playable media file.
@@ -3316,14 +3467,14 @@ var MediaItem = (function (_super) {
     return MediaItem;
 })(item_1.Item);
 exports.MediaItem = MediaItem;
-mixin_1.applyMixins(MediaItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":28,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],19:[function(require,module,exports){
+mixin_1.applyMixins(MediaItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
+    itransition_1.ItemTransition, iplayback_1.ItemPlayback]);
+},{"../../internal/util/mixin":30,"./ichroma":12,"./icolor":13,"./ilayout":15,"./iplayback":17,"./item":18,"./itransition":19}],21:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -3387,8 +3538,7 @@ var ScreenItem = (function (_super) {
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
                 return new Promise(function (iResolve) {
-                    var slot = item_1.Item.attach(_this._id);
-                    item_1.Item.get('screenresolution', slot).then(function (res) {
+                    item_1.Item.get('screenresolution', _this._id).then(function (res) {
                         var _res = res.split(',');
                         iResolve({
                             value: val,
@@ -3494,8 +3644,7 @@ var ScreenItem = (function (_super) {
     ScreenItem.prototype.isStickToTitle = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.get('prop:ScrCapTrackWindowTitle', slot).then(function (val) {
+            item_1.Item.get('prop:ScrCapTrackWindowTitle', _this._id).then(function (val) {
                 resolve(val === '0');
             });
         });
@@ -3513,8 +3662,7 @@ var ScreenItem = (function (_super) {
     ScreenItem.prototype.setStickToTitle = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            var slot = item_1.Item.attach(_this._id);
-            item_1.Item.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', slot)
+            item_1.Item.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', _this._id)
                 .then(function () {
                 resolve(_this);
             });
@@ -3524,7 +3672,7 @@ var ScreenItem = (function (_super) {
 })(item_2.Item);
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":26,"../../internal/util/json":27,"../../internal/util/mixin":28,"../../internal/util/xml":29,"../../util/rectangle":40,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],20:[function(require,module,exports){
+},{"../../internal/item":28,"../../internal/util/json":29,"../../internal/util/mixin":30,"../../internal/util/xml":31,"../../util/rectangle":42,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":18,"./itransition":19}],22:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -4219,7 +4367,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":22,"../internal/internal":25,"../internal/util/json":27,"../internal/util/xml":29,"./environment":3,"./item/audio":5,"./item/camera":6,"./item/flash":7,"./item/game":8,"./item/html":9,"./item/image":15,"./item/item":16,"./item/media":18,"./item/screen":19}],21:[function(require,module,exports){
+},{"../internal/app":24,"../internal/internal":27,"../internal/util/json":29,"../internal/util/xml":31,"./environment":3,"./item/audio":5,"./item/camera":6,"./item/flash":8,"./item/game":9,"./item/html":10,"./item/image":16,"./item/item":18,"./item/media":20,"./item/screen":21}],23:[function(require,module,exports){
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -4280,7 +4428,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -4355,7 +4503,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":25,"./util/json":27}],23:[function(require,module,exports){
+},{"./internal":27,"./util/json":29}],25:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -4377,7 +4525,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -4500,7 +4648,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":3,"../window/config":41,"./global":23,"./internal":25,"./item":26}],25:[function(require,module,exports){
+},{"../core/environment":3,"../window/config":43,"./global":25,"./internal":27,"./item":28}],27:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -4545,7 +4693,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -4585,9 +4733,9 @@ var Item = (function () {
         }
     };
     /** Get an item's local property asynchronously */
-    Item.get = function (name, slot) {
-        if (slot === void 0) { slot = 0; }
+    Item.get = function (name, id) {
         return new Promise(function (resolve) {
+            var slot = Item.attach(id);
             internal_1.exec('GetLocalPropertyAsync' +
                 (String(slot) === '0' ? '' : slot + 1), name, function (val) {
                 resolve(val);
@@ -4595,9 +4743,9 @@ var Item = (function () {
         });
     };
     /** Sets an item's local property */
-    Item.set = function (name, value, slot) {
-        if (slot === void 0) { slot = 0; }
+    Item.set = function (name, value, id) {
         return new Promise(function (resolve) {
+            var slot = Item.attach(id);
             internal_1.exec('SetLocalPropertyAsync' +
                 (String(slot) === '0' ? '' : slot + 1), name, value, function (val) {
                 resolve(!(Number(val) < 0));
@@ -4623,7 +4771,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":3,"./internal":25}],27:[function(require,module,exports){
+},{"../core/environment":3,"./internal":27}],29:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -4693,7 +4841,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":29}],28:[function(require,module,exports){
+},{"./xml":31}],30:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -4705,7 +4853,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -4760,7 +4908,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5098,7 +5246,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":27,"../internal/util/xml":29}],31:[function(require,module,exports){
+},{"../internal/util/json":29,"../internal/util/xml":31}],33:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5212,7 +5360,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29}],32:[function(require,module,exports){
+},{"../internal/app":24,"../internal/util/json":29,"../internal/util/xml":31}],34:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -5466,7 +5614,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29,"../util/rectangle":40}],33:[function(require,module,exports){
+},{"../internal/app":24,"../internal/util/json":29,"../internal/util/xml":31,"../util/rectangle":42}],35:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5514,7 +5662,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":22,"../internal/util/json":27,"../internal/util/xml":29}],34:[function(require,module,exports){
+},{"../internal/app":24,"../internal/util/json":29,"../internal/util/xml":31}],36:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
@@ -5818,7 +5966,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":3,"../internal/app":22,"../internal/internal":25,"./audio":30,"./camera":31,"./game":32,"./microphone":33}],35:[function(require,module,exports){
+},{"../core/environment":3,"../internal/app":24,"../internal/internal":27,"./audio":32,"./camera":33,"./game":34,"./microphone":35}],37:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -5881,7 +6029,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":22}],36:[function(require,module,exports){
+},{"../internal/app":24}],38:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -5957,7 +6105,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -5987,7 +6135,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var IO = (function () {
@@ -6100,7 +6248,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-},{"../internal/internal":25}],39:[function(require,module,exports){
+},{"../internal/internal":27}],41:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -6119,7 +6267,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -6336,13 +6484,12 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var eventemitter_1 = require('../util/eventemitter');
 var internal_1 = require('../internal/internal');
@@ -6486,7 +6633,7 @@ var SourceConfigWindow = (function (_super) {
     return SourceConfigWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourceConfigWindow = SourceConfigWindow;
-},{"../internal/internal":25,"../util/eventemitter":37}],42:[function(require,module,exports){
+},{"../internal/internal":27,"../util/eventemitter":39}],44:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 var rectangle_1 = require('../util/rectangle');
@@ -6761,13 +6908,12 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
             detail: result }));
     };
 }
-},{"../core/environment":3,"../internal/internal":25,"../util/rectangle":40}],43:[function(require,module,exports){
+},{"../core/environment":3,"../internal/internal":27,"../util/rectangle":42}],45:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
@@ -6818,13 +6964,12 @@ if (environment_1.Environment.isExtension()) {
         }
     };
 }
-},{"../core/environment":3,"../internal/app":22,"../util/eventemitter":37}],44:[function(require,module,exports){
+},{"../core/environment":3,"../internal/app":24,"../util/eventemitter":39}],46:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
@@ -6892,7 +7037,7 @@ if (environment_1.Environment.isSourcePlugin()) {
         SourcePluginWindow.getInstance().emit('set-background-color', color);
     };
 }
-},{"../core/environment":3,"../util/eventemitter":37}],"xjs":[function(require,module,exports){
+},{"../core/environment":3,"../util/eventemitter":39}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -6931,4 +7076,4 @@ __export(require('./window/extension'));
 __export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/extension":4,"./core/item/audio":5,"./core/item/camera":6,"./core/item/flash":7,"./core/item/game":8,"./core/item/html":9,"./core/item/ichroma":11,"./core/item/image":15,"./core/item/item":16,"./core/item/media":18,"./core/item/screen":19,"./core/scene":20,"./core/transition":21,"./internal/init":24,"./system/audio":30,"./system/camera":31,"./system/game":32,"./system/microphone":33,"./system/system":34,"./system/url":35,"./util/color":36,"./util/io":38,"./util/ready":39,"./util/rectangle":40,"./window/config":41,"./window/dialog":42,"./window/extension":43,"./window/source":44}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/environment":3,"./core/extension":4,"./core/item/audio":5,"./core/item/camera":6,"./core/item/flash":8,"./core/item/game":9,"./core/item/html":10,"./core/item/ichroma":12,"./core/item/image":16,"./core/item/item":18,"./core/item/media":20,"./core/item/screen":21,"./core/scene":22,"./core/transition":23,"./internal/init":26,"./system/audio":32,"./system/camera":33,"./system/game":34,"./system/microphone":35,"./system/system":36,"./system/url":37,"./util/color":38,"./util/io":40,"./util/ready":41,"./util/rectangle":42,"./window/config":43,"./window/dialog":44,"./window/extension":45,"./window/source":46}]},{},["xjs"]);

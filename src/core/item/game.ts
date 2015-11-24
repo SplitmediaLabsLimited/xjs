@@ -53,8 +53,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapSurfSharing').then(res => {
+      iItem.get('GameCapSurfSharing', this._id).then(res => {
         resolve(res === '1');
       });
     });
@@ -69,9 +68,9 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
+      iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
@@ -83,15 +82,14 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapShowMouse').then(res => {
+      iItem.get('GameCapShowMouse', this._id).then(res => {
         resolve(res === '1');
       });
     });
   }
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Show Mouse in game to on or off
    *
@@ -99,8 +97,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setShowMouseEnabled(value: boolean): Promise<GameItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(() => {
+      iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
       });
     });
@@ -213,7 +210,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   getRotateZ:              () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -222,7 +219,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setKeepAspectRatio:       (value: boolean) => Promise<GameItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -231,7 +228,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setPositionLocked:        (value: boolean) => Promise<GameItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -240,7 +237,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setEnhancedResizeEnabled:  (value: boolean) => Promise<GameItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -260,7 +257,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setPosition:              (value: Rectangle) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -269,7 +266,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setRotateY:              (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -278,7 +275,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setRotateX:              (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -331,7 +328,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   getBorderColor:  () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -340,7 +337,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setTransparency: (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -349,7 +346,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setBrightness:   (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -358,7 +355,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setContrast:     (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -367,7 +364,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setHue:          (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -376,7 +373,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   setSaturation:   (value: number) => Promise<GameItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -631,7 +628,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   isVisible:         () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -647,7 +644,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   getTransition:     () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -663,7 +660,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *

@@ -37,9 +37,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getURL(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:item', slot).then(url => {
+      iItem.get('prop:item', this._id).then(url => {
         let _url = String(url).split('*');
         url = _url[0];
         resolve(url);
@@ -59,9 +57,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   setURL(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
-
-      iItem.set('prop:item', value, slot).then(code => {
+      iItem.set('prop:item', value, this._id).then(code => {
         if (code) {
           resolve(this);
         } else {
@@ -78,9 +74,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getBrowserJS(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let customJS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -110,10 +104,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -149,14 +142,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
         if (value !== '' && scriptEnabled === true) {
           scriptString = scriptString + value;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (refresh) {
-          iItem.set('refresh', '', slot).then(() =>  {
+          iItem.set('refresh', '', this._id).then(() =>  {
             resolve(this);
           });
         } else {
@@ -173,9 +166,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   isBrowserJSEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -192,7 +183,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   }
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -205,10 +196,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   enableBrowserJS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -255,16 +245,16 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
         if (customJS !== '' && value === true) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (!value) {
-           iItem.set('refresh', '', slot).then(() => {
-             resolve(this);
-           });
+          iItem.set('refresh', '', this._id).then(() => {
+            resolve(this);
+          });
         } else {
           resolve(this);
         }
@@ -279,9 +269,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getCustomCSS(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let customCSS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -298,7 +286,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   }
 
   /**
-   * param: value<string>
+   * param: (value: string)
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -309,10 +297,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   setCustomCSS(value: string): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -359,10 +346,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
         if (customJS !== '' && scriptEnabled === true) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         resolve(this);
@@ -377,9 +364,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   isCustomCSSEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -396,7 +381,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   }
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    * ```
    * return: Promise<HTMLItem>
    * ```
@@ -407,10 +392,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   enableCustomCSS(value: boolean): Promise<HTMLItem> {
     return new Promise((resolve, reject) => {
-      let slot = iItem.attach(this._id);
       let customObject = {};
 
-      iItem.get('prop:custom', slot).then(custom => {
+      iItem.get('prop:custom', this._id).then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -457,10 +441,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
         if (customJS !== '' && value === scriptEnabled) {
           scriptString = scriptString + customJS;
         }
-        return iItem.set('prop:BrowserJs', scriptString, slot);
+        return iItem.set('prop:BrowserJs', scriptString, this._id);
       })
       .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), slot);
+        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
       })
       .then(() => {
         if (!value) {
@@ -485,8 +469,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   isBrowserTransparent(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:BrowserTransparent').then(isTransparent => {
+      iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
         resolve(isTransparent === '1');
       });
     });
@@ -504,9 +487,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
+      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
@@ -522,9 +505,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getBrowserCustomSize():Promise<Rectangle> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       let customSize;
-      iItem.get('prop:BrowserSize', slot).then(val => {
+      iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
@@ -551,9 +533,9 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:BrowserSize', value.toDimensionString(), slot).then(() => {
-        resolve(this);
+      iItem.set('prop:BrowserSize', value.toDimensionString(),
+        this._id).then(() => {
+          resolve(this);
       });
     });
   }
@@ -612,7 +594,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   getRotateZ:              () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -621,7 +603,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setKeepAspectRatio:       (value: boolean) => Promise<HTMLItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -630,7 +612,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setPositionLocked:        (value: boolean) => Promise<HTMLItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -639,7 +621,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setEnhancedResizeEnabled:  (value: boolean) => Promise<HTMLItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -659,7 +641,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setPosition:              (value: Rectangle) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -668,7 +650,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setRotateY:              (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -677,7 +659,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setRotateX:              (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -730,7 +712,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   getBorderColor:  () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -739,7 +721,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setTransparency: (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -748,7 +730,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setBrightness:   (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -757,7 +739,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setContrast:     (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -766,7 +748,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setHue:          (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -775,7 +757,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   setSaturation:   (value: number) => Promise<HTMLItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -789,7 +771,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   isChromaEnabled: () => Promise<boolean>;
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * *Chainable.*
    */
@@ -799,7 +781,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getKeyingType: () => Promise<KeyingType>;
   /**
-   * param: value<KeyingType>
+   * param: (value: KeyingType)
    * *Chainable.*
    *
    */
@@ -811,7 +793,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   /**
-   * param: value<ChromaAntiAliasLevel>
+   * param: (value: ChromaAntiAliasLevel)
    *
    * *Chainable.*
    */
@@ -823,7 +805,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaLegacyBrightness: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -833,7 +815,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaLegacySaturation: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -843,7 +825,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaLegacyHue: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -853,7 +835,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaLegacyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -863,7 +845,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -875,7 +857,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   /**
-   * param: value<ChromaPrimaryColors>
+   * param: (value: ChromaPrimaryColors)
    *
    * *Chainable.*
    */
@@ -885,7 +867,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -895,7 +877,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaRGBKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -907,7 +889,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaColorKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -917,7 +899,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaColorKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -927,7 +909,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   getChromaColorKeyColor: () => Promise<Color>;
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * *Chainable.*
    */
@@ -943,7 +925,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   isVisible:         () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -959,7 +941,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   getTransition:     () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -975,7 +957,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *
