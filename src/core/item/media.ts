@@ -9,6 +9,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
+import {IItemAudio, ItemAudio} from './iaudio';
 import {CuePoint} from './cuepoint';
 import {Item} from './item';
 import {Transition} from '../transition';
@@ -25,7 +26,7 @@ import {Environment} from '../environment';
  *  instance.
  */
 export class MediaItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemPlayback {
+  IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
 
   // ItemLayout
 
@@ -569,39 +570,6 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    */
   setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
 
-
-  /**
-   * return: Promise<number>
-   *
-   * Get item's volume level expressed as an integer from 0 to 100.
-   */
-  getVolume: () => Promise<number>;
-
-  /**
-   * param: (value: number)
-   *
-   * Set volume level of item as an integer from 0 (muted) to 100 (maximum).
-   *
-   * *Chainable.*
-   */
-  setVolume: (value: number) => Promise<MediaItem>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is also output to system sound or only on the stream.
-   */
-  isAudibleOnlyOnStream: () => Promise<boolean>;
-
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether audio should also be output to system sound or on stream only.
-   *
-   * *Chainable.*
-   */
-  setAudibleOnlyOnStream: (value: boolean) => Promise<MediaItem>;
-
   /**
    * return: Promise<boolean>
    *
@@ -707,7 +675,64 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * Checks if this item's file type is a video file type.
    */
   isVideo: () => Promise<boolean>;
+
+  // ItemAudio
+
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
+  getVolume: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
+  isMute:   () => Promise<boolean>;
+
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
+  setVolume: (value: number) => Promise<MediaItem>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setMute:  (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
+  isStreamOnlyEnabled: () => Promise<boolean>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
+  setStreamOnlyEnabled: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
 applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma,
-  ItemTransition, ItemPlayback]);
+  ItemTransition, ItemPlayback, ItemAudio]);

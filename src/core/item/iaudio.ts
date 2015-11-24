@@ -8,8 +8,6 @@ export interface IItemAudio {
   setVolume(value: number): Promise<IItemAudio>;
   isMute(): Promise<boolean>;
   setMute(value: boolean): Promise<IItemAudio>;
-  getAudioOffset(): Promise<number>;
-  setAudioOffset(value: number): Promise<IItemAudio>;
   isStreamOnlyEnabled(): Promise<boolean>;
   setStreamOnlyEnabled(value: boolean): Promise<IItemAudio>;
 }
@@ -27,6 +25,7 @@ export class ItemAudio implements IItemAudio {
 
   setVolume(value: number): Promise<ItemAudio> {
     return new Promise(resolve => {
+      value = value < 0 ? 0 : value > 100 ? 100 : value;
       iItem.set('prop:volume', String(value),
         this._id).then(() => {
           resolve(this);
@@ -50,22 +49,6 @@ export class ItemAudio implements IItemAudio {
     })
   }
 
-  getAudioOffset(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:AudioDelay', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
-
-  setAudioOffset(value: number): Promise<ItemAudio> {
-    return new Promise(resolve => {
-      iItem.set('prop:AudioDelay', String(value), this._id).then(() => {
-        resolve(this);
-      });
-    })
-  }
-
   isStreamOnlyEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:sounddev', this._id).then(val => {
@@ -80,5 +63,13 @@ export class ItemAudio implements IItemAudio {
         resolve(this);
       });
     })
+  }
+
+  isAudioAvailable(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:audioavail', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
   }
 }

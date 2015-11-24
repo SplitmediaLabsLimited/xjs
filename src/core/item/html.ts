@@ -25,7 +25,9 @@ import {Environment} from '../environment';
  * Inherits from: {@link #core/Item Core/Item}
  *
  *  All methods marked as *Chainable* resolve with the original `HTMLItem`
- *  instance.
+ * instance. Also, any audio setting, i.e. volume, mute, stream only
+ * may not be properly reflected in the source unless native browser audio support
+ * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HTMLItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemConfigurable, IItemAudio {

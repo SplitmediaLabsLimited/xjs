@@ -27,12 +27,8 @@ export interface IItemPlayback {
   setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
   getPlaybackEndPosition(): Promise<number>;
   setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
-  getVolume(): Promise<number>;
-  setVolume(value: number): Promise<IItemPlayback>;
   getActionAfterPlayback(): Promise<ActionAfterPlayback>;
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
-  isAudibleOnlyOnStream(): Promise<boolean>;
-  setAudibleOnlyOnStream(value: boolean): Promise<IItemPlayback>;
   isAutostartOnSceneLoad(): Promise<boolean>;
   setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
   isForceDeinterlace(): Promise<boolean>;
@@ -150,38 +146,6 @@ export class ItemPlayback implements IItemPlayback {
         resolve(this);
       });
     });
-  }
-
-  getVolume(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:volume', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
-
-  setVolume(value: number): Promise<ItemPlayback> {
-    return new Promise(resolve => {
-      iItem.set('prop:volume', String(value), this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  isAudibleOnlyOnStream(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:sounddev', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
-
-  setAudibleOnlyOnStream(value: boolean): Promise<ItemPlayback> {
-    return new Promise(resolve => {
-      iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
-        resolve(this);
-      });
-    })
   }
 
   isAutostartOnSceneLoad(): Promise<boolean> {

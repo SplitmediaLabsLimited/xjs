@@ -24,7 +24,9 @@ import {Environment} from '../environment';
  * Inherits from: {@link #core/Item Core/Item}
  *
  *  All methods marked as *Chainable* resolve with the original `FlashItem`
- *  instance.
+ * instance. Also, any audio setting, i.e. volume, mute, stream only
+ * may not be properly reflected in the source unless native flash audio support
+ * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class FlashItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio {
@@ -54,7 +56,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   }
 
   /**
-   * param: Promise<Rectangle>
+   * param: (value: Rectangle)
    * ```
    * return: Promise<FlashItem>
    * ```
@@ -517,7 +519,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   isMute:   () => Promise<boolean>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
    *
@@ -526,7 +528,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   setVolume: (value: number) => Promise<FlashItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item's Mute property to ON or OFF
    *
@@ -542,7 +544,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   isStreamOnlyEnabled: () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Sets whether audio should also be output to system sound
    *
