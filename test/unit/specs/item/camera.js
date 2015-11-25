@@ -152,5 +152,17 @@ describe('CameraItem', function() {
         'setTransitionTime'
         ].join(','));
     });
+
+    it('should implement audio interface', function() {
+      expect(this.cameraItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 });

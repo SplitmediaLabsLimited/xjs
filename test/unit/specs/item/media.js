@@ -266,5 +266,17 @@ describe('MediaItem', function() {
         ].join(','));
       }
     });
+
+    it('should implement audio interface', function() {
+      expect(currentMediaItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 });

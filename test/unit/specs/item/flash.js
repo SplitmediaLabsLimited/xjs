@@ -322,6 +322,18 @@ describe('FlashItem', function() {
 		        ].join(','));
     	}
     });
+
+    it('should implement audio interface', function() {
+      expect(currentFlashItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 
   describe('FlashItem-specific methods checking', function() {
