@@ -2121,4 +2121,32 @@ describe('App ===', function() {
     });
 
   });
+
+  describe('should be able to get hashed user identity', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'GetGlobalProperty')
+        .and.callFake(function(prop) {
+          if (prop === 'userid') {
+            return '+965Bu+jXY+jUvCCbSAJbQ==';
+          }
+        });
+    });
+
+    it('as a string', function(done) {
+      App.getUserIdHash().then(function(hash) {
+        expect(hash).toBeTypeOf('string');
+        done();
+      });
+    });
+
+    it('encoded using some has function', function(done) {
+      // simple checking of character set, not really testing other constraints
+      var regex = /^[A-Za-z0-9+=]+$/;
+
+      App.getUserIdHash().then(function(hash) {
+        expect(regex.test(hash)).toBe(true);
+        done();
+      });
+    });
+  });
 });
