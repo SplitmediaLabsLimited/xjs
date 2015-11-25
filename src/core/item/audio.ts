@@ -142,7 +142,10 @@ export class AudioItem extends Item implements IItemAudio {
    */
   setAudioOffset(value: number): Promise<ItemAudio> {
     return new Promise((resolve, reject) => {
-      if (value < 0) {
+      if (typeof value !== 'number') {
+        reject(Error('Only numbers are acceptable values for period'));
+      }
+      else if (value < 0) {
         reject(Error('Audio offset cannot be negative'));
       } else {
         iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
