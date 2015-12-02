@@ -64,6 +64,7 @@ export class Dll extends EventEmitter {
 
   /**
    *  param: (funcName: string, ...params: string[])
+   *
    *  return: string (see DLL documentation)
    *
    *  Calls a function from a loaded DLL. The first DLL to be found containing
@@ -87,6 +88,18 @@ export class Dll extends EventEmitter {
       } else {
         reject('DLL call not accessible.');
       }
+    });
+  }
+
+  /**
+   *  return: Promise<boolean>
+   *
+   *  Determines if user has granted DLL access for this plugin, or whether
+   *  DLL security is disabled altogether.
+   */
+  static isAccessGranted(): Promise<boolean> {
+    return new Promise(resolve => {
+      resolve(exec('CheckDllGrant') === '1');
     });
   }
 }
