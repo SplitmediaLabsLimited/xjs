@@ -339,9 +339,9 @@ describe('App ===', function() {
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
-            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
-            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
-            ' setSystemEnabled, getDelay, setDelay, toString');
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
           expect(audioDevice.toString()).toEqual('<dev id="default:1:0"' +
             ' level="0.900000" enable="1" hwlevel="-1.000000" hwenable="255"' +
             ' delay="0" mix="0"/>');
@@ -363,9 +363,9 @@ describe('App ===', function() {
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
-            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
-            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
-            ' setSystemEnabled, getDelay, setDelay, toString');
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
           expect(audioDevice.toString()).toEqual('<dev id="default:0:0"' +
             ' level="1.500000" enable="1" hwlevel="-1.000000" hwenable="255"' +
             ' delay="0" mix="0"/>');
@@ -428,6 +428,11 @@ describe('App ===', function() {
           return App.getPrimaryMic();
         }).then(function(audioDevice) {
           expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimaryMicLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -466,6 +471,11 @@ describe('App ===', function() {
           return App.getPrimaryMic();
         }).then(function(audioDevice) {
           expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimaryMicSystemLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -482,6 +492,11 @@ describe('App ===', function() {
           return App.getPrimaryMic();
         }).then(function(audioDevice) {
           expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimaryMicSystemEnabled(42)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -498,35 +513,15 @@ describe('App ===', function() {
           return App.getPrimaryMic();
         }).then(function(audioDevice) {
           expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimaryMicDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     describe ('primary speaker level', function() {
       var promise;
@@ -539,6 +534,11 @@ describe('App ===', function() {
           return App.getPrimarySpeaker();
         }).then(function(audioDevice) {
           expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimarySpeakerLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -577,6 +577,11 @@ describe('App ===', function() {
           return App.getPrimarySpeaker();
         }).then(function(audioDevice) {
           expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimarySpeakerSystemLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -593,6 +598,11 @@ describe('App ===', function() {
           return App.getPrimarySpeaker();
         }).then(function(audioDevice) {
           expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimarySpeakerSystemEnabled(20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
@@ -609,6 +619,11 @@ describe('App ===', function() {
           return App.getPrimarySpeaker();
         }).then(function(audioDevice) {
           expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimarySpeakerDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
