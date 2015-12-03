@@ -197,7 +197,9 @@ export class System{
         if (micsJXON !== undefined) {
           let micsJXONLength = micsJXON.length;
           for (var i = 0; i < micsJXONLength; ++i) {
-            mics.push(MicrophoneDevice.parse(micsJXON[i]));
+            if (micsJXON[i]['WaveInId'] !== undefined) {
+              mics.push(MicrophoneDevice.parse(micsJXON[i]));  
+            }
           }
         }
         resolve(mics);
