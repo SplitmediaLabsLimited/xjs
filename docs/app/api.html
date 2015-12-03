@@ -56,9 +56,9 @@
         </div>
         <div ng-show="searchResults.length != 0">
           <h1>Search Results</h1>
-          <ul class="quicklink">
+          <ul class="quicklink search-results">
             <li ng-repeat="result in searchResults">
-              <h3><a href="api.html#{{ result.path }}">{{ result.label + ' ' + result.type }}</a></h3>
+              <h3><a href="api.html#{{ result.path }}">{{ result.label + ' ' + result.type }}<span class="grey">{{ result.parent }}</span></a></h3>
             </li>
           </ul>
         </div>
