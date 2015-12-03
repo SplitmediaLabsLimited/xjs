@@ -166,10 +166,10 @@ export class AudioDevice{
    * #### Usage
    *
    * ```javascript
-   * audioDevice.setLevel(100);
+   * audioDevice._setLevel(100);
    * ```
    */
-  setLevel(level: number) {
+  _setLevel(level: number) {
     this._level = level;
 
     return this;
@@ -201,10 +201,10 @@ export class AudioDevice{
    * #### Usage
    *
    * ```javascript
-   * audioDevice.setEnabled(true);
+   * audioDevice._setEnabled(true);
    * ```
    */
-  setEnabled(enabled: boolean) {
+  _setEnabled(enabled: boolean) {
     this._enable = enabled;
 
     return this;
@@ -236,10 +236,10 @@ export class AudioDevice{
    * #### Usage
    *
    * ```javascript
-   * audioDevice.setSystemLevel(100);
+   * audioDevice._setSystemLevel(100);
    * ```
    */
-  setSystemLevel(hwlevel: number) {
+  _setSystemLevel(hwlevel: number) {
     this._hwlevel = hwlevel;
 
     return this;
@@ -275,10 +275,10 @@ export class AudioDevice{
    * //     * AudioDevice.SYSTEM_LEVEL_MUTE (0)
    * //     * AudioDevice.SYSTEM_LEVEL_ENABLE (1)
    * //     * AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED (255)
-   * audioDevice.setSystemEnabled(AudioDevice.SYSTEM_LEVEL_MUTE);
+   * audioDevice._setSystemEnabled(AudioDevice.SYSTEM_LEVEL_MUTE);
    * ```
    */
-  setSystemEnabled(hwenabled: number) {
+  _setSystemEnabled(hwenabled: number) {
     this._hwenable = hwenabled;
 
     return this;
@@ -310,10 +310,10 @@ export class AudioDevice{
    * #### Usage
    *
    * ```javascript
-   * audioDevice.setDelay(100);
+   * audioDevice._setDelay(100);
    * ```
    */
-  setDelay(delay: number) {
+  _setDelay(delay: number) {
     this._delay = delay;
 
     return this;
@@ -335,9 +335,9 @@ export class AudioDevice{
     device.tag = 'dev';
     device.selfclosing = true;
     device['id']       = this.getId();
-    device['level']    = this.getLevel().toFixed(6);
+    device['level']    = (this.getLevel()/100).toFixed(6);
     device['enable']   = this.isEnabled() ? 1 : 0;
-    device['hwlevel']  = this.getSystemLevel().toFixed(6);
+    device['hwlevel']  = (this.getSystemLevel()/100).toFixed(6);
     device['hwenable'] = this.getSystemEnabled();
     device['delay']    = this.getDelay();
     device['mix']      = this._mix;
@@ -374,11 +374,11 @@ export class AudioDevice{
       defaultMultimedia : (deviceJXON['DefaultMultimedia'] === '1')
     });
 
-    audio.setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] : 1))
-      .setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
-      .setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] : -1))
-      .setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
-      .setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
+    audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level']*100 : 100))
+      ._setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
+      ._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
+      ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
+      ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
 
     return audio;
   }

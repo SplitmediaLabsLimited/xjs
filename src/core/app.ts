@@ -26,6 +26,13 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  *   window.frametime = frametime;
  * });
  * ```
+ *
+ * For methods referring to application audio
+ * (i.e. mic and speaker settings, silence detection, etc.).
+ * This will affect XBC settings
+ * but will not be reflected in the General Settings Window
+ * (also will not be persistent after logging out of/exiting the application).
+ *
  */
 export class App{
 
@@ -207,14 +214,12 @@ export class App{
   }
 
   /**
-   * param: volume<number>
+   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the application audio level of the primary microphone set
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -226,6 +231,9 @@ export class App{
    */
   setPrimaryMicLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
 
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
@@ -234,7 +242,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           var micDevice = audioDevices[0];
-          micDevice.setLevel(volume);
+          micDevice._setLevel(volume);
           audioDevices[0] = micDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -249,7 +257,6 @@ export class App{
         } else {
           reject(Error('No audio device is set as primary microphone'));
         }
-
       });
     });
   }
@@ -261,8 +268,6 @@ export class App{
    * ```
    *
    * Sets whether the primary microphone set is enabled or disabled in the applicaation
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -282,7 +287,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           var micDevice = audioDevices[0];
-          micDevice.setEnabled(enabled);
+          micDevice._setEnabled(enabled);
           audioDevices[0] = micDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -303,14 +308,12 @@ export class App{
   }
 
   /**
-   * param: volume<number>
+   * param: volume<number> (0 to 100)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the system audio level of the primary microphone set
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -322,6 +325,9 @@ export class App{
    */
   setPrimaryMicSystemLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
 
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
@@ -330,7 +336,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           var micDevice = audioDevices[0];
-          micDevice.setSystemLevel(volume);
+          micDevice._setSystemLevel(volume);
           audioDevices[0] = micDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -345,20 +351,17 @@ export class App{
         } else {
           reject(Error('No audio device is set as primary microphone'));
         }
-
       });
     });
   }
 
   /**
-   * param: hwenabled<number>
+   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets whether the primary microphone set is enabled or disabled in the system
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -371,6 +374,10 @@ export class App{
   setPrimaryMicSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+        reject(Error('Value can only be 0, 1 or 255'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -378,7 +385,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           var micDevice = audioDevices[0];
-          micDevice.setSystemEnabled(hwenabled);
+          micDevice._setSystemEnabled(hwenabled);
           audioDevices[0] = micDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -399,14 +406,12 @@ export class App{
   }
 
   /**
-   * param: delay<number>
+   * param: delay<number> (100 nanoseconds in units)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the loopback capture delay of the primary microphone set
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -419,6 +424,10 @@ export class App{
   setPrimaryMicDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (delay < 0) {
+        reject(Error('Delay can only be positive'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -426,7 +435,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           var micDevice = audioDevices[0];
-          micDevice.setDelay(delay);
+          micDevice._setDelay(delay);
           audioDevices[0] = micDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -447,14 +456,12 @@ export class App{
   }
 
   /**
-   * param: volume<number>
+   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the application audio level of the primary speaker/audio render device
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -467,6 +474,10 @@ export class App{
   setPrimarySpeakerLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -474,7 +485,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           var speakerDevice = audioDevices[1];
-          speakerDevice.setLevel(volume);
+          speakerDevice._setLevel(volume);
           audioDevices[1] = speakerDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -501,8 +512,6 @@ export class App{
    *
    * Sets whether the primary speaker/audio render device set is enabled or disabled in the applicaation
    *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
-   *
    * ### Usage
    *
    * ```javascript
@@ -521,7 +530,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           var speakerDevice = audioDevices[1];
-          speakerDevice.setEnabled(enabled);
+          speakerDevice._setEnabled(enabled);
           audioDevices[1] = speakerDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -542,14 +551,12 @@ export class App{
   }
 
   /**
-   * param: volume<number>
+   * param: volume<number> (0 to 100)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the system audio level of the primary speaker/audio render device set
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -562,6 +569,9 @@ export class App{
   setPrimarySpeakerSystemLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -569,7 +579,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           var speakerDevice = audioDevices[1];
-          speakerDevice.setSystemLevel(volume);
+          speakerDevice._setSystemLevel(volume);
           audioDevices[1] = speakerDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -590,14 +600,12 @@ export class App{
   }
 
   /**
-   * param: hwenabled<number>
+   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets whether the primary speaker/audio render device set is enabled or disabled in the system
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -610,6 +618,10 @@ export class App{
   setPrimarySpeakerSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+        reject(Error('Value can only 0, 1 or 255'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -617,7 +629,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           var speakerDevice = audioDevices[1];
-          speakerDevice.setSystemEnabled(hwenabled);
+          speakerDevice._setSystemEnabled(hwenabled);
           audioDevices[1] = speakerDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
@@ -638,14 +650,12 @@ export class App{
   }
 
   /**
-   * param: delay<number>
+   * param: delay<number> (100 nanoseconds in units)
    * ```
    * return: Promise<boolean>
    * ```
    *
    * Sets the loopback capture delay of the primary speaker/audio render device
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
    *
    * ### Usage
    *
@@ -658,6 +668,10 @@ export class App{
   setPrimarySpeakerDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
+      if (delay < 0) {
+        reject(Error('Delay can only be positive'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -665,7 +679,7 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           var speakerDevice = audioDevices[1];
-          speakerDevice.setDelay(delay);
+          speakerDevice._setDelay(delay);
           audioDevices[1] = speakerDevice;
           var dev = '';
           if (Array.isArray(audioDevices)) {
