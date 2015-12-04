@@ -76,7 +76,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   isStreamPaused(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:StreamPause', this._id).then(val => {
-        resolve(val === "1");
+        resolve(val === '1');
       });
     });
   }
@@ -88,13 +88,13 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   setStreamPaused(value: boolean): Promise<CameraItem> {
     return new Promise((resolve, reject) => {
-      iItem.set('prop:StreamPause', value ? "1" : "0",
+      iItem.set('prop:StreamPause', value ? '1' : '0',
         this._id).then(() => {
           return iItem.get('prop:StreamPause', this._id);
         })
         .then(val => {
-          if (value === (val === ("1"))) {
-            resolve(this);  
+          if (value === (val === ('1'))) {
+            resolve(this);
           } else {
             reject(new Error('Camera feed cannot be paused/resumed or is not present'));
           }
@@ -105,14 +105,14 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<boolean>
    *
-   * Checks if camera device is a hardware encoder or not. This check may fail 
+   * Checks if camera device is a hardware encoder or not. This check may fail
    * if camera device is reinitializing or not present (value defaults to false)
    *
    */
   isHardwareEncoder(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:hwencoder', this._id).then(val => {
-        resolve(val === "1");
+        resolve(val === '1');
       });
     });
   }
@@ -282,7 +282,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
               micDevice = val[i];
               break;
             }
-          }          
+          }
         }
 
         if (micDevice !== undefined) {

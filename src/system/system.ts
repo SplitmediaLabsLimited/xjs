@@ -198,7 +198,7 @@ export class System{
           let micsJXONLength = micsJXON.length;
           for (var i = 0; i < micsJXONLength; ++i) {
             if (micsJXON[i]['WaveInId'] !== undefined) {
-              mics.push(MicrophoneDevice.parse(micsJXON[i]));  
+              mics.push(MicrophoneDevice.parse(micsJXON[i]));
             }
           }
         }
@@ -221,8 +221,8 @@ export class System{
    * System.getSystemFonts().then(function(fontsArray) {
    *   var fontsArrayLength = fontsArray.length;
    *   for (var i = 0; i < fontsArrayLength; ++i) {
-   *     var option = document.createElement("option");
-   *     option.text = "Kiwi";
+   *     var option = document.createElement('option');
+   *     option.text = 'Kiwi';
    *     mySelect.add(option);
    *   }
    * });

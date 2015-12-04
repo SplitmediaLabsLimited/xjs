@@ -52,7 +52,7 @@ export class ItemPlayback implements IItemPlayback {
   isSeekable(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('sync:syncable', this._id).then(val => {
-        resolve(val === "1" ? true : false);
+        resolve(val === '1' ? true : false);
       });
     });
   }

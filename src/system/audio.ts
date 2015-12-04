@@ -118,7 +118,7 @@ export class AudioDevice{
    *
    * ```javascript
    * var audioDataFlow = device.getDataFlow();
-   *   //where possible values are "render" or "capture"
+   *   //where possible values are 'render' or 'capture'
    * ```
    */
   getDataFlow(): string {
