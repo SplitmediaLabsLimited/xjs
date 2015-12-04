@@ -55,7 +55,8 @@ export class Dll extends EventEmitter {
   static _emitter = new Dll();
 
   static emit(event: string, ...params: any[]) {
-    Dll._emitter.emit.apply(Dll._emitter, params.unshift(event));
+    params.unshift(event);
+    Dll._emitter.emit.apply(Dll._emitter, params);
   }
 
   static on(event: string, handler: Function) {
@@ -76,7 +77,7 @@ export class Dll extends EventEmitter {
    *
    *  See the documentation of your specific DLL for more details.
    */
-  static callFunction(func: string, ...params: string[]): Promise<string> {
+  static call(func: string, ...params: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
       const funcCall = Dll._SAFE_FUNCTION_WHITELIST.indexOf(func) === -1 ?
         'CallDllEx' : 'CallDll';
