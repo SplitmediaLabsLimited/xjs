@@ -74,8 +74,7 @@ export class SourceConfigWindow extends EventEmitter {
   }
 
   /**
-   *  Informs the application that the plugin intends to use the entire
-   *  window for rendering its configuration.
+   *  Informs the application that the plugin intends to use the entire window for rendering its configuration.
    */
   useFullWindow() {
     this._setRenderMode(SourceConfigWindow._MODE_FULL);
