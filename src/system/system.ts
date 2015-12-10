@@ -21,9 +21,9 @@ import {exec} from '../internal/internal';
  * ```
  */
 export enum AudioDeviceDataflow {
-    RENDER = 1,
-    CAPTURE = 2,
-    ALL = 3
+  RENDER = 1,
+  CAPTURE = 2,
+  ALL = 3
 }
 
 /**
@@ -38,11 +38,11 @@ export enum AudioDeviceDataflow {
  * ```
  */
 export enum AudioDeviceState {
-    ACTIVE = 1,
-    DISABLED = 2,
-    UNPLUGGED = 4,
-    NOTPRESENT = 8,
-    ALL = 15
+  ACTIVE = 1,
+  DISABLED = 2,
+  UNPLUGGED = 4,
+  NOTPRESENT = 8,
+  ALL = 15
 }
 
 /**

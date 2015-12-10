@@ -31,6 +31,7 @@ export * from './system/game';
 export * from './system/camera';
 export * from './system/microphone';
 export * from './system/url';
+export * from './system/screen';
 
 export * from './window/config';
 export * from './window/source';
