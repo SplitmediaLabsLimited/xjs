@@ -572,7 +572,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * App.clearBrowserCookies.then(function(val) {
+   * App.clearBrowserCookies().then(function(val) {
    *  var isCleared = val;
    * });
    * ```
