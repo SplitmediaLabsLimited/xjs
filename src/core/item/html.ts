@@ -511,7 +511,10 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
       iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+          customSize = Rectangle.fromDimensions(
+            Number(width) / window.devicePixelRatio,
+            Number(height) / window.devicePixelRatio
+          );
         } else {
           customSize = Rectangle.fromDimensions(0, 0);
         }
@@ -535,8 +538,12 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    */
   setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
     return new Promise(resolve => {
-      iItem.set('prop:BrowserSize', value.toDimensionString(),
-        this._id).then(() => {
+      // Set the correct width and height based on the DPI settings
+      value.setWidth(value.getWidth() * window.devicePixelRatio);
+      value.setHeight(value.getHeight() * window.devicePixelRatio);
+
+      iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
+        .then(() => {
           resolve(this);
       });
     });
