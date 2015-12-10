@@ -8,4 +8,6 @@ interface Window {
   MessageSource: Function;
   UpdateLocalProperty: Function;
   Setdlldogrant: Function;
+  SourcesListHighlight: Function;
+  SourcesListSelect: Function;
 }
