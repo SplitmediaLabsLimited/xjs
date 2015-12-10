@@ -54,6 +54,30 @@ body {
   outline: none;
 }
 
+.ui-menu .ui-menu-item {
+  display: flex;
+}
+
+.ui-menu .ui-menu-item span {
+}
+
+.ui-menu .ui-menu-item .grey {
+  padding: 0 0 0 10px;
+  color: #ccc;
+  font-size: 0.9em;
+  text-align: right;
+  flex: 1;
+}
+
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+  font-weight: normal;
+}
+
 /* Navigation Styles */
 
 .navigation {
@@ -190,4 +214,17 @@ h1.id {
 
 .static .name code {
   color: #0095de;
+}
+
+.search-results a[href] {
+  display: flex;
+}
+
+.search-results .grey {
+  flex: 1;
+  text-align: right;
+  color: #bbb;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 0.9em;
 }
