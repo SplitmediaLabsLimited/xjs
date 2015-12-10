@@ -17,8 +17,7 @@ export class ItemTransition implements IItemTransition {
 
   isVisible(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:visible', slot).then(val => {
+      iItem.get('prop:visible', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -26,8 +25,7 @@ export class ItemTransition implements IItemTransition {
 
   setVisible(value: boolean): Promise<ItemTransition> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:visible', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:visible', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -35,8 +33,7 @@ export class ItemTransition implements IItemTransition {
 
   getTransition(): Promise<Transition> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:transitionid', slot).then(val => {
+      iItem.get('prop:transitionid', this._id).then(val => {
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
@@ -48,8 +45,7 @@ export class ItemTransition implements IItemTransition {
 
   setTransition(value: Transition): Promise<ItemTransition> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:transitionid', value.toString(), slot).then(() => {
+      iItem.set('prop:transitionid', value.toString(), this._id).then(() => {
         resolve(this);
       });
     });
@@ -57,8 +53,7 @@ export class ItemTransition implements IItemTransition {
 
   getTransitionTime(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:transitiontime', slot).then(val => {
+      iItem.get('prop:transitiontime', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -69,8 +64,7 @@ export class ItemTransition implements IItemTransition {
       if (value < 0 || value > 60000) {
         reject(RangeError('Transparency may only be in the range 0 to 60000.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:transitiontime', String(value), slot).then(() => {
+        iItem.set('prop:transitiontime', String(value), this._id).then(() => {
           resolve(this);
         });
       }

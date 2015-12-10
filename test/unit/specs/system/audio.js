@@ -193,7 +193,7 @@ describe('Audio ===', function() {
     it('can be set with a volume level', function(done) {
       promise.then(function(devices) {
         var device = devices[0];
-        device.setLevel(1.5);
+        device._setLevel(1.5);
         expect(device.getLevel()).toBe(1.5);
         done();
       });
@@ -210,9 +210,9 @@ describe('Audio ===', function() {
       function(done) {
       promise.then(function(devices) {
         var device = devices[0];
-        device.setEnabled(false);
+        device._setEnabled(false);
         expect(device.isEnabled()).toBe(false);
-        device.setEnabled(true);
+        device._setEnabled(true);
         expect(device.isEnabled()).toBe(true);
         done();
       });
@@ -228,7 +228,7 @@ describe('Audio ===', function() {
     it('can be set with a system volume level', function(done) {
       promise.then(function(devices) {
         var device = devices[0];
-        device.setSystemLevel(1.5);
+        device._setSystemLevel(1.5);
         expect(device.getSystemLevel()).toBe(1.5);
         done();
       });
@@ -246,11 +246,11 @@ describe('Audio ===', function() {
       promise.then(function(devices) {
         var device = devices[0];
 
-        device.setSystemEnabled(AudioDeviceSystemDisabled);
+        device._setSystemEnabled(AudioDeviceSystemDisabled);
         expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemDisabled);
-        device.setSystemEnabled(AudioDeviceSystemEnabled);
+        device._setSystemEnabled(AudioDeviceSystemEnabled);
         expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemEnabled);
-        device.setSystemEnabled(AudioDeviceSystemMuteDisallowed);
+        device._setSystemEnabled(AudioDeviceSystemMuteDisallowed);
         expect(device.getSystemEnabled()).toEqual(AudioDeviceSystemMuteDisallowed);
         done();
       });
@@ -266,7 +266,7 @@ describe('Audio ===', function() {
     it('can be configured to be set with a delay', function(done) {
       promise.then(function(devices) {
         var device = devices[0];
-        device.setDelay(1.5);
+        device._setDelay(1.5);
         expect(device.getDelay()).toBe(1.5);
         done();
       });
@@ -286,9 +286,9 @@ describe('Audio ===', function() {
         };
         var audioDevice = parseXml(deviceString).getElementsByTagName('dev')[0];
         expect(audioDevice.getAttribute("id") == device.getId() &&
-          audioDevice.getAttribute("level") == parseFloat(device.getLevel()) &&
+          audioDevice.getAttribute("level")*100 == parseFloat(device.getLevel()) &&
           (audioDevice.getAttribute("enable") == '1') == device.isEnabled() &&
-          audioDevice.getAttribute("hwlevel") ==
+          audioDevice.getAttribute("hwlevel")*100 ==
             parseFloat(device.getSystemLevel()) &&
           audioDevice.getAttribute("hwenable") == device.getSystemEnabled() &&
           audioDevice.getAttribute("delay") == parseFloat(device.getDelay())

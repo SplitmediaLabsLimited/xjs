@@ -19,6 +19,21 @@ export class MicrophoneDevice implements Addable {
   }
 
   /**
+   * return: string
+   *
+   * Gets the display ID
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var micDisplayID = device.getDisplayID();
+   * ```
+   */
+  getDisplayID(): string {
+    return this._disp;
+  }
+
+  /**
    * return: XML
    *
    * Converts Microphone object into an XML object

@@ -233,5 +233,50 @@ describe('MediaItem', function() {
           ].join(','));
       }
     });
+
+    it('should implement the playback interface', function() {
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
+          'isSeekable',
+          'getPlaybackPosition',
+          'setPlaybackPosition',
+          'getPlaybackDuration',
+          'isPlaying',
+          'setPlaying',
+          'getPlaybackStartPosition',
+          'setPlaybackStartPosition',
+          'getPlaybackEndPosition',
+          'setPlaybackEndPosition',
+          'getActionAfterPlayback',
+          'setActionAfterPlayback',
+          'isAutostartOnSceneLoad',
+          'setAutostartOnSceneLoad',
+          'isForceDeinterlace',
+          'setForceDeinterlace',
+          'isRememberingPlaybackPosition',
+          'setRememberingPlaybackPosition',
+          'isShowingPlaybackPosition',
+          'setShowingPlaybackPosition',
+          'getCuePoints',
+          'setCuePoints',
+          'getValue',
+          'setValue',
+          'isAudio',
+          'isVideo'
+        ].join(','));
+      }
+    });
+
+    it('should implement audio interface', function() {
+      expect(currentMediaItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 });
