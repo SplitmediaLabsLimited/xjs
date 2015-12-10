@@ -1005,4 +1005,17 @@ export class App{
       }
     });
   }
+
+  /**
+   * return: Promise<string>
+   *
+   * Returns a hashed string that may be used to differentiate among logged-in
+   * users. This will be useful in such cases as persisting data to be used by
+   * certain XSplit users only.
+   */
+  getUserIdHash(): Promise<string> {
+    return new Promise(resolve => {
+      resolve(iApp.getGlobalProperty('userid'));
+    });
+  }
 }
