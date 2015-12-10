@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {Global} from '../internal/global';
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
@@ -39,14 +40,33 @@ export class SourcePluginWindow extends EventEmitter {
     this.on('message-source', function(message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
-          this.emit('save-config', message.data);
+          this.emit('save-config', this._hideGlobalConfig(message.data));
         } else if (message.request === 'applyConfig') {
-          this.emit('apply-config', message.data);
+          this.emit('apply-config', this._hideGlobalConfig(message.data));
         }
       }
     });
 
     SourcePluginWindow._instance = this;
+  }
+
+  // We modify the configuration sent from the source properties window
+  // so that we do not see 'persistent' configuration such as config-url.
+  // When saving, this is restored back to the config object through
+  // Item#saveConfig().
+  //
+  // Note that we could have chosen to hide this from Item#requestSaveConfig()
+  // or Item#applyConfig() calls, but unfortunately, the context of the source
+  // properties window cannot always correctly determine the global config nodes
+  // when dealing with sources other than the current source (right-clicked.)
+  private _hideGlobalConfig(data: any) {
+    let persist = Global.getPersistentConfig();
+
+    for (var key in persist) {
+      delete data[key];
+    }
+
+    return data;
   }
 }
 
