@@ -46,7 +46,7 @@ export class CameraDevice implements Addable {
    * #### Usage
    *
    * ```javascript
-   * var cameraID = device.getID();
+   * var cameraID = device.getId();
    * ```
    */
   getId(): string {

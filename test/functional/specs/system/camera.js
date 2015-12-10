@@ -17,7 +17,7 @@
     name: 'CameraDevice',
     buttons: [
       {
-        name: 'getID',
+        name: 'getId',
         onClick: function() {
           var camID = cameraDevice.getId();
           console.trace(camID);

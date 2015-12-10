@@ -362,7 +362,7 @@ export class Item implements IItemLayout {
    * });
    * ```
    */
-  getID(): Promise<string> {
+  getId(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._id);
     });

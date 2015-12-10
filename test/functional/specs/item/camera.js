@@ -85,9 +85,9 @@
       },
 
       {
-        name: 'getID',
+        name: 'getId',
         onClick: function() {
-          currentItem.getID().then(function(val) {
+          currentItem.getId().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
