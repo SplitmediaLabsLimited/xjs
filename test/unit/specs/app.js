@@ -138,8 +138,15 @@ describe('App ===', function() {
     it('that always return as string', function(done) {
       var promise = App.getVersion();
       promise.then(function(version) {
-        expect(version).toBeDefined();
-        expect(version).toBeTypeOf('string');
+        if (/xsplit broadcaster/ig.test(navigator.appVersion)) {
+          expect(version).toBeDefined();
+          expect(version).toBeTypeOf('string');
+          done();
+        } else {
+          done.fail('Should reject if browser is not XBC');
+        }
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
         done();
       });
     });
