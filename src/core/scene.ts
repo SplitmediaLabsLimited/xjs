@@ -5,15 +5,15 @@ import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
-import {Item, ItemTypes} from './item/item';
-import {GameItem} from './item/game';
-import {CameraItem} from './item/camera';
-import {AudioItem} from './item/audio';
-import {HTMLItem} from './item/html';
-import {FlashItem} from './item/flash';
-import {ScreenItem} from './item/screen';
-import {ImageItem} from './item/image';
-import {MediaItem} from './item/media';
+import {Source, SourceTypes} from './source/source';
+import {GameItem} from './source/game';
+import {CameraItem} from './source/camera';
+import {AudioItem} from './source/audio';
+import {HTMLItem} from './source/html';
+import {FlashItem} from './source/flash';
+import {ScreenItem} from './source/screen';
+import {ImageItem} from './source/image';
+import {MediaItem} from './source/media';
 
 export class Scene {
   private _id: number;
@@ -160,7 +160,7 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Item>
+   * return: Promise<Source>
    *
    * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
@@ -175,7 +175,7 @@ export class Scene {
    * ```
    *
    */
-  static searchItemsById(id: string): Promise<Item> {
+  static searchItemsById(id: string): Promise<Source> {
     let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
     if (!isID) {
       throw new Error('Not a valid ID format for items');
@@ -257,7 +257,7 @@ export class Scene {
   };
 
   /**
-   * return: Promise<Item[]>
+   * return: Promise<Source[]>
    *
    * Searches all scenes for an item by name substring. This function compares
    * against custom name first (recommended) before falling back to the name
@@ -273,9 +273,9 @@ export class Scene {
    * ```
    *
    */
-  static searchItemsByName(param: string): Promise<Item[]> {
+  static searchItemsByName(param: string): Promise<Source[]> {
     return new Promise(resolve => {
-      this.filterItems((item: Item, filterResolve: any) => {
+      this.filterItems((item: Source, filterResolve: any) => {
         item.getCustomName().then(cname => {
           if (cname.match(param)) {
             filterResolve(true);
@@ -288,7 +288,7 @@ export class Scene {
               filterResolve(true);
             } else {
               return item.getValue();
-            }            
+            }
           }
         }).then(value => {
           if (value !== undefined) {
@@ -308,7 +308,7 @@ export class Scene {
   /**
    * param: function(item, resolve)
    * ```
-   * return: Promise<Item[]>
+   * return: Promise<Source[]>
    * ```
    *
    * Searches all scenes for items that satisfies the provided testing function.
@@ -326,9 +326,9 @@ export class Scene {
    * });
    * ```
    */
-  static filterItems(func: any): Promise<Item[]> {
+  static filterItems(func: any): Promise<Source[]> {
     Scene._initializeScenePool();
-    let matches: Item[] = [];
+    let matches: Source[] = [];
 
     return new Promise((resolve, reject) => {
       if (typeof func === 'function') {
@@ -524,7 +524,7 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Item[]>
+   * return: Promise<Source[]>
    *
    * Gets all the items (sources) in a specific scene.
    * See also: {@link #core/Item Core/Item}
@@ -537,41 +537,41 @@ export class Scene {
    * });
    * ```
    */
-  getItems(): Promise<Item[]> {
+  getItems(): Promise<Source[]> {
     return new Promise(resolve => {
     iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
-      var promiseArray: Promise<Item>[] = [];
+      var promiseArray: Promise<Source>[] = [];
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
         let item = jsonArr[index];
         let type = Number(item['type']);
-        if (type === ItemTypes.GAMESOURCE) {
+        if (type === SourceTypes.GAMESOURCE) {
           typeResolve(new GameItem(item));
-        } else if (type === ItemTypes.HTML) {
+        } else if (type === SourceTypes.HTML) {
           typeResolve(new HTMLItem(item));
-        } else if (type === ItemTypes.SCREEN) {
+        } else if (type === SourceTypes.SCREEN) {
           typeResolve(new ScreenItem(item));
-        } else if (type === ItemTypes.BITMAP ||
-            type === ItemTypes.FILE &&
+        } else if (type === SourceTypes.BITMAP ||
+            type === SourceTypes.FILE &&
             /\.gif$/.test(item['item'])) {
           typeResolve(new ImageItem(item));
-        } else if (type === ItemTypes.FILE &&
+        } else if (type === SourceTypes.FILE &&
             /\.(gif|xbs)$/.test(item['item']) === false &&
             /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
           typeResolve(new MediaItem(item));
-        } else if (Number(item['type']) === ItemTypes.LIVE &&
+        } else if (Number(item['type']) === SourceTypes.LIVE &&
           item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
           typeResolve(new CameraItem(item));
-        } else if (Number(item['type']) === ItemTypes.LIVE &&
+        } else if (Number(item['type']) === SourceTypes.LIVE &&
           item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
           typeResolve(new AudioItem(item));
-        } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
+        } else if (Number(item['type']) === SourceTypes.FLASHFILE) {
           typeResolve(new FlashItem(item));
         } else {
-            typeResolve(new Item(item));
+            typeResolve(new Source(item));
         }
       });
 
@@ -611,7 +611,7 @@ export class Scene {
   }
 
   /**
-   * param: Array<Item> | Array<string> (item IDs)
+   * param: Array<Source> | Array<string> (item IDs)
    * ```
    * return: Promise<Scene>
    * ```
@@ -627,7 +627,7 @@ export class Scene {
         items.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (items.every(el => { return el instanceof Item })) {
+          if (items.every(el => { return el instanceof Source })) {
             return new Promise(resolve => {
               let promises = [];
               for (let i in items) {

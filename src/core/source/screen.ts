@@ -9,71 +9,202 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {IItemAudio, ItemAudio} from './iaudio';
-import {Item} from './item';
+import {Source} from './source';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {JSON as JXON} from '../../internal/util/json';
+import {XML} from '../../internal/util/xml';
 
 /**
- * The FlashItem class represents a flash source item, which is any SWF file
- * loaded to XSplit Broadcaster.
+ * The ScreenItem class represents a screen capture item.
  *
  * Inherits from: {@link #core/Item Core/Item}
  *
- *  All methods marked as *Chainable* resolve with the original `FlashItem`
- * instance. Also, any audio setting, i.e. volume, mute, stream only
- * may not be properly reflected in the source unless native flash audio support
- * is enabled. (Tools menu > General Settings > Advanced tab)
+ *  All methods marked as *Chainable* resolve with the original `ScreenItem`
+ *  instance.
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemAudio {
-
+export class ScreenItem extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the custom resolution (in pixels) for the source, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom resolution has been set.
+   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
+   * object.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  getCustomResolution(): Promise<Rectangle> {
+   getCaptureArea(): Promise<Rectangle> {
     return new Promise(resolve => {
-      let customSize;
-      iItem.get('prop:BrowserSize', this._id).then(val => {
-        if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+      this.getValue().then(val => {
+        if (!(val instanceof XML)) {
+          resolve(Rectangle.fromCoordinates(0, 0, 0, 0));
         } else {
-          customSize = Rectangle.fromDimensions(0, 0);
+          let _value: JXON = JXON.parse(val);
+          resolve(Rectangle.fromCoordinates(
+            Number(_value['left']),
+            Number(_value['top']),
+            Number(_value['width']) + Number(_value['left']),
+            Number(_value['height']) + Number(_value['top'])
+          ));
         }
-        resolve(customSize);
       });
     });
   }
 
   /**
-   * param: (value: Rectangle)
+   * param: Promise<Rectangle>
    * ```
-   * return: Promise<FlashItem>
+   * return: Promise<ScreenItem>
    * ```
    *
-   * Sets the custom resolution for the source
-   * regardless of its layout on the mixer
+   * Sets the Window Capture Area of the Screen Capture Item.
    *
    * *Chainable.*
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setCustomResolution(value: Rectangle): Promise<FlashItem> {
+  setCaptureArea(dimension: Rectangle): Promise<ScreenItem> {
     return new Promise(resolve => {
-      iItem.set('prop:BrowserSize', value.toDimensionString(),
-        this._id).then(() => {
+      this.getValue().then(val => {
+        return new Promise(iResolve => {
+          iItem.get('screenresolution', this._id).then(res => {
+            let _res = res.split(',');
+            iResolve({
+              value : val,
+              res : Rectangle.fromCoordinates(
+                Number(_res[0]),
+                Number(_res[1]),
+                Number(_res[2]),
+                Number(_res[3])
+              )
+            });
+          });
+        });
+      }).then((obj: { value: any, res: Rectangle }) => {
+        let _config = new JXON();
+
+        if (!(obj.value instanceof XML)) {
+          _config['tag'] = 'screen';
+          _config['module'] = '';
+          _config['window'] = '';
+          _config['hwnd'] = '0';
+          _config['wclient'] = '0';
+          _config['left'] = '0';
+          _config['top'] = '0';
+          _config['width'] = '0';
+          _config['height'] = '0';
+        } else {
+          _config = JXON.parse(obj.value);
+        }
+
+        _config['left'] = dimension.getLeft() >= obj.res.getLeft() ?
+          dimension.getLeft() : Number(_config['left']) >= obj.res.getLeft() ?
+            _config['left'] : obj.res.getLeft();
+        _config['top'] = dimension.getTop() >= obj.res.getTop() ?
+          dimension.getTop() : Number(_config['top']) >= obj.res.getTop() ?
+            _config['top'] : obj.res.getTop();
+        _config['width'] = dimension.getWidth() <= obj.res.getWidth() ?
+          dimension.getWidth() : Number(_config['width']) <=
+            obj.res.getWidth() ? _config['width'] : obj.res.getWidth();
+        _config['height'] = dimension.getHeight() <= obj.res.getHeight() ?
+          dimension.getHeight() : Number(_config['height']) <=
+            obj.res.getHeight() ? _config['height'] : obj.res.getHeight();
+
+        this.setValue(XML.parseJSON(_config)).then(() => {
           resolve(this);
+        });
       });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if the Screen Capture Item only captures the
+   * Client area (does not capture the title bar, menu bar, window border, etc.)
+   */
+  isClientArea(): Promise<boolean> {
+    return new Promise(resolve => {
+      this.getValue().then(val => {
+        if (!(val instanceof XML)) {
+          resolve(false);
+        } else {
+          let _value: JXON = JXON.parse(val);
+          resolve(_value['wclient'] === '1');
+        }
+      });
+    });
+  }
+
+  /**
+   * param: Promise<boolean>
+   * ```
+   * return: Promise<ScreenItem>
+   * ```
+   *
+   * Set the Screen Capture to capture the Client area only or include
+   * the titlebar, menu bar, window border, etc.
+   */
+  setClientArea(value: boolean): Promise<ScreenItem> {
+    return new Promise(resolve => {
+      this.getValue().then(val => {
+        let _config = new JXON();
+
+        if (!(val instanceof XML)) {
+          _config['tag'] = 'screen';
+          _config['module'] = '';
+          _config['window'] = '';
+          _config['hwnd'] = '0';
+          _config['wclient'] = '0';
+          _config['left'] = '0';
+          _config['top'] = '0';
+          _config['width'] = '0';
+          _config['height'] = '0';
+        } else {
+          _config = JXON.parse(val);
+        }
+
+        _config['wclient'] = (value ? '1' : '0');
+
+        this.setValue(XML.parseJSON(_config)).then(() => {
+          resolve(this);
+        })
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if the Screen Capture Item captures a window based on
+   * the window's title.
+   */
+  isStickToTitle(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
+        resolve(val === '0');
+      });
+    });
+  }
+
+  /**
+   * param: Promise<boolean>
+   * ```
+   * return: Promise<ScreenItem>
+   * ```
+   *
+   * Set the Screen Capture to capture the window based on the window title.
+   * Useful when capturing programs with multiple tabs, for you to only
+   * capture a particular tab.
+   */
+  setStickToTitle(value: boolean): Promise<ScreenItem> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
+        .then(() => {
+          resolve(this);
+        });
     });
   }
 
@@ -137,7 +268,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setKeepAspectRatio: (value: boolean) => Promise<FlashItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * param: (value: boolean)
@@ -146,7 +277,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPositionLocked: (value: boolean) => Promise<FlashItem>;
+  setPositionLocked: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * param: (value: boolean)
@@ -155,7 +286,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<FlashItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * param: (value: Rectangle)
@@ -175,7 +306,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition: (value: Rectangle) => Promise<FlashItem>;
+  setPosition: (value: Rectangle) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -184,7 +315,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateY: (value: number) => Promise<FlashItem>;
+  setRotateY: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -193,7 +324,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateX: (value: number) => Promise<FlashItem>;
+  setRotateX: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -202,7 +333,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateZ: (value: number) => Promise<FlashItem>;
+  setRotateZ: (value: number) => Promise<ScreenItem>;
 
   // ItemColor
 
@@ -255,7 +386,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<FlashItem>;
+  setTransparency: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -264,7 +395,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrightness: (value: number) => Promise<FlashItem>;
+  setBrightness: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -273,7 +404,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setContrast: (value: number) => Promise<FlashItem>;
+  setContrast: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -282,7 +413,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setHue: (value: number) => Promise<FlashItem>;
+  setHue: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: number)
@@ -291,7 +422,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setSaturation: (value: number) => Promise<FlashItem>;
+  setSaturation: (value: number) => Promise<ScreenItem>;
 
   /**
    * param: (value: Color)
@@ -300,7 +431,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBorderColor: (value: Color) => Promise<FlashItem>;
+  setBorderColor: (value: Color) => Promise<ScreenItem>;
 
   // ItemChroma
   /**
@@ -312,7 +443,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<FlashItem>;
+  setChromaEnabled: (value: boolean) => Promise<ScreenItem>;
   /**
    * return: Promise<KeyingType>
    */
@@ -322,7 +453,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    * *Chainable.*
    *
    */
-  setKeyingType: (value: KeyingType) => Promise<FlashItem>;
+  setKeyingType: (value: KeyingType) => Promise<ScreenItem>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -334,7 +465,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<FlashItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ScreenItem>;
 
   // CHROMA LEGACY MODE
   /**
@@ -346,7 +477,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<FlashItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -356,7 +487,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<FlashItem>;
+  setChromaLegacySaturation: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -366,7 +497,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<FlashItem>;
+  setChromaLegacyHue: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -376,7 +507,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -386,7 +517,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<FlashItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ScreenItem>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -398,7 +529,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<FlashItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -408,7 +539,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -418,7 +549,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<FlashItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ScreenItem>;
 
   // COLOR KEY MODE
   /**
@@ -430,7 +561,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<FlashItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<number>
    */
@@ -440,7 +571,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<FlashItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<ScreenItem>;
   /**
    * return: Promise<Color>
    */
@@ -450,7 +581,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<FlashItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ScreenItem>;
 
   // ItemTransition
 
@@ -468,7 +599,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVisible: (value: boolean) => Promise<FlashItem>;
+  setVisible: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * return: Promise<boolean>
@@ -484,7 +615,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransition: (value: Transition) => Promise<FlashItem>;
+  setTransition: (value: Transition) => Promise<ScreenItem>;
 
   /**
    * return: Promise<number>
@@ -500,65 +631,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<FlashItem>;
-
-  // ItemAudio
-
-  /**
-   * return: Promise<number>
-   *
-   * Get item's volume level expressed as an integer from 0 to 100
-   */
-  getVolume: () => Promise<number>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item's mute option is active
-   */
-  isMute:   () => Promise<boolean>;
-
-  /**
-   * param: (value: number)
-   *
-   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
-   *
-   * *Chainable.*
-   */
-  setVolume: (value: number) => Promise<FlashItem>;
-
-  /**
-   * param: (value: boolean)
-   *
-   * Set item's Mute property to ON or OFF
-   *
-   * *Chainable.*
-   */
-  setMute:  (value: boolean) => Promise<FlashItem>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is also output to system sound
-   */
-  isStreamOnlyEnabled: () => Promise<boolean>;
-
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether audio should also be output to system sound
-   *
-   * *Chainable.*
-   */
-  setStreamOnlyEnabled: (value: boolean) => Promise<FlashItem>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is available
-   */
-  isAudioAvailable: () => Promise<boolean>;
+  setTransitionTime: (value: number) => Promise<ScreenItem>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemAudio]);
+applyMixins(ScreenItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

@@ -8,12 +8,12 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Transition} from '../transition';
-import {Item} from './item';
+import {Source} from './source';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
-import {ItemTypes} from './item';
+import {SourceTypes} from './source';
 import {Environment} from '../environment';
 
 /**
@@ -44,7 +44,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class GameItem extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   /**
    * return: Promise<boolean>
@@ -112,7 +112,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   setOfflineImage(path: string): Promise<GameItem> {
     return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== SourceTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else if (Environment.isSourcePlugin()) {
         reject(
@@ -145,7 +145,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    */
   getOfflineImage(): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
+      if (this._type !== SourceTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
       } else {
         this.getValue().then(() => {

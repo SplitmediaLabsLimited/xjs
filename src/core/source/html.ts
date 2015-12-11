@@ -11,7 +11,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {IItemAudio, ItemAudio} from './iaudio';
-import {Item} from './item';
+import {Source} from './source';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -29,7 +29,7 @@ import {Environment} from '../environment';
  * may not be properly reflected in the source unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class HTMLItem extends Item implements IItemLayout, IItemColor,
+export class HTMLItem extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemConfigurable, IItemAudio {
 
   /**

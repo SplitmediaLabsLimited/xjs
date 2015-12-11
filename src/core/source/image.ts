@@ -8,7 +8,7 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
+import {Source} from './source';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
@@ -22,7 +22,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ImageItem extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   // ItemLayout
 

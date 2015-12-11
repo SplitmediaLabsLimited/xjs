@@ -11,7 +11,7 @@ import {ItemTransition, IItemTransition} from './itransition';
 import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
 import {IItemAudio, ItemAudio} from './iaudio';
 import {CuePoint} from './cuepoint';
-import {Item} from './item';
+import {Source} from './source';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
@@ -25,7 +25,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor,
+export class MediaItem extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
 
   // ItemLayout

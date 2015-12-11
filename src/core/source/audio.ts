@@ -4,7 +4,7 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {IItemAudio, ItemAudio} from './iaudio';
 import {Scene} from '../scene';
-import {Item} from './item';
+import {Source} from './source';
 import {Environment} from '../environment';
 
 /**
@@ -16,7 +16,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `AudioItem`
  *  instance.
  */
-export class AudioItem extends Item implements IItemAudio {
+export class AudioItem extends Source implements IItemAudio {
   /**
    * return: Promise<boolean>
    *
@@ -123,7 +123,7 @@ export class AudioItem extends Item implements IItemAudio {
   /**
    * return: Promise<number>
    *
-   * Gets audio delay (1 unit = 100ns) 
+   * Gets audio delay (1 unit = 100ns)
    */
   getAudioOffset(): Promise<number> {
     return new Promise(resolve => {
@@ -213,4 +213,4 @@ export class AudioItem extends Item implements IItemAudio {
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(Item, [ItemAudio]);
+applyMixins(Source, [ItemAudio]);

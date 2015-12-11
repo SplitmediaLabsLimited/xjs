@@ -9,7 +9,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {IItemAudio, ItemAudio} from './iaudio';
-import {Item} from './item';
+import {Source} from './source';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -47,7 +47,7 @@ import {System} from '../../system/system';
  *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
-export class CameraItem extends Item implements IItemLayout, IItemColor,
+export class CameraItem extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio {
     private _delayExclusionObject = {
       roxio : "vid_1b80&pid_e0(01|11|12)",
