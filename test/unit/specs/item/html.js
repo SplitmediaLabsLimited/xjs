@@ -269,10 +269,10 @@ describe('HtmlSource', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Source({id : '{HTMLID}' });
-      var item2 = new XJS.Source({id : '{HTMLID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{HTMLID}' });
+      var source2 = new XJS.Source({id : '{HTMLID2}'});
+      source1.getType();
+      source2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -340,8 +340,8 @@ describe('HtmlSource', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_HTML + '"]';
-    var htmlItems = placement.querySelectorAll(selected);
-    expect(htmlItems.length).toBe(enumerated.length);
+    var htmlSources = placement.querySelectorAll(selected);
+    expect(htmlSources.length).toBe(enumerated.length);
     done();
   });
 

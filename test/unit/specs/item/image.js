@@ -66,10 +66,10 @@ describe('ImageSource', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Source({id : '{SCREENID}' });
-      var item2 = new XJS.Source({id : '{SCREENID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{SCREENID}' });
+      var source2 = new XJS.Source({id : '{SCREENID2}'});
+      source1.getType();
+      source2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -137,15 +137,15 @@ describe('ImageSource', function() {
       .getElementsByTagName('placement')[0];
     // regular images
     var bitmapSelector = '[type="' + TYPE_BITMAP + '"]';
-    var bitmapItems = placement.querySelectorAll(bitmapSelector);
+    var bitmapSources = placement.querySelectorAll(bitmapSelector);
     // gifs
     var gifSelector = '[type="' + TYPE_FILE + '"]';
-    var fileTypeItems = placement.querySelectorAll(gifSelector);
-    var gifItems = [].filter.call(fileTypeItems, function(node) {
+    var fileTypeSources = placement.querySelectorAll(gifSelector);
+    var gifSources = [].filter.call(fileTypeSources, function(node) {
       return /\.gif$/.test(node.getAttribute('item'));
     });
 
-    expect(bitmapItems.length + gifItems.length).toBe(enumerated.length);
+    expect(bitmapSources.length + gifSources.length).toBe(enumerated.length);
     done();
   });
 

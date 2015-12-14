@@ -154,10 +154,10 @@ describe('GameSource', function() {
     propTypeCount = 0;
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Source({id : '{GAMEID}' });
-      var item2 = new XJS.Source({id : '{GAMEID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{GAMEID}' });
+      var source2 = new XJS.Source({id : '{GAMEID2}'});
+      source1.getType();
+      source2.getType();
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
@@ -231,8 +231,8 @@ describe('GameSource', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_GAME + '"]';
-    var gameItems = placement.querySelectorAll(selected);
-    expect(gameItems.length).toBe(enumerated.length);
+    var gameSources = placement.querySelectorAll(selected);
+    expect(gameSources.length).toBe(enumerated.length);
     done();
   });
 
@@ -324,7 +324,7 @@ describe('GameSource', function() {
     });
   });
 
-  describe('gameItem-specific methods checking', function() {
+  describe('gameSource-specific methods checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
         currentGameSource = enumerated[0];

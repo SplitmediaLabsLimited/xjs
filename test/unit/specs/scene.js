@@ -5,7 +5,7 @@ describe('Scene', function() {
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Item = XJS.Source;
+  var Source = XJS.Source;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
 
@@ -52,7 +52,7 @@ describe('Scene', function() {
 
   describe('object instance', function() {
     var scene;
-    var sceneItems;
+    var sceneSources;
 
     beforeAll(function(done) {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
@@ -189,26 +189,26 @@ describe('Scene', function() {
     it('should be able to get the sources', function(done) {
       scene.getItems().then(function(sources) {
         expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Item);
-        sceneItems = sources[0];
+        expect(sources).eachToBeInstanceOf(Source);
+        sceneSources = sources[0];
         done();
       });
     });
 
     it('should be able to search for a source by ID', function(done) {
 
-      Scene.searchItemsById(sceneItems._id)
+      Scene.searchItemsById(sceneSources._id)
         .then(function(source) {
-          expect(source).toBeInstanceOf(Item);
+          expect(source).toBeInstanceOf(Source);
           done();
         });
     });
 
     it('should be able to search by ID in a case-insensitive way', function(done) {
 
-      Scene.searchItemsById(sceneItems._id.toLowerCase())
+      Scene.searchItemsById(sceneSources._id.toLowerCase())
         .then(function(source) {
-          expect(source).toBeInstanceOf(Item);
+          expect(source).toBeInstanceOf(Source);
           done();
         });
     });
@@ -222,10 +222,10 @@ describe('Scene', function() {
     });
 
     it('should be able to search for a source by Name', function(done) {
-      Scene.searchItemsByName(sceneItems.name)
+      Scene.searchItemsByName(sceneSources.name)
         .then(function(sources) {
           expect(sources).toBeInstanceOf(Array);
-          expect(sources).eachToBeInstanceOf(Item);
+          expect(sources).eachToBeInstanceOf(Source);
           done();
         });
     });
@@ -245,7 +245,7 @@ describe('Scene', function() {
         });
       }).then(function(sources) {
         expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Item);
+        expect(sources).eachToBeInstanceOf(Source);
         done();
       });
     });

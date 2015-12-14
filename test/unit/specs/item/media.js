@@ -65,10 +65,10 @@ describe('MediaSource', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Source({id : '{SCREENID}' });
-      var item2 = new XJS.Source({id : '{SCREENID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{SCREENID}' });
+      var source2 = new XJS.Source({id : '{SCREENID2}'});
+      source1.getType();
+      source2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -134,13 +134,13 @@ describe('MediaSource', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     var fileSelector = '[type="' + TYPE_FILE + '"]';
-    var fileTypeItems = placement.querySelectorAll(fileSelector);
-    var mediaItems = [].filter.call(fileTypeItems, function(node) {
+    var fileTypeSources = placement.querySelectorAll(fileSelector);
+    var mediaSources = [].filter.call(fileTypeSources, function(node) {
       return /\.(gif|xbs)$/.test(node.getAttribute('item')) === false &&
         /^(rtsp|rtmp):\/\//.test(node.getAttribute('item')) === false;
     });
 
-    expect(mediaItems.length).toBe(enumerated.length);
+    expect(mediaSources.length).toBe(enumerated.length);
     done();
   });
 

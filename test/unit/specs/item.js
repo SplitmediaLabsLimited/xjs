@@ -12,12 +12,12 @@ function randomWord(length) {
   return str;
 }
 
-describe('Item', function() {
-  var Item;
+describe('Source', function() {
+  var Source;
   var local = {};
   var XJS = require('xjs');
   if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-    Item = new XJS.Source({
+    Source = new XJS.Source({
       id: '{D0FF055A-57BF-43BB-8F25-907DA028A2CC}',
       sceneID : 1
     });
@@ -88,7 +88,7 @@ describe('Item', function() {
             throw new Error('NO ITEMS ON CURRENT SCENE');
           }
 
-          Item = sources[0];
+          Source = sources[0];
           done();
         });
       });
@@ -97,8 +97,8 @@ describe('Item', function() {
 
   it('should be able to set and get the name', function(done) {
     var word = randomWord(5);
-    Item.setName(word);
-    Item.getName().then(function(val) {
+    Source.setName(word);
+    Source.getName().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
@@ -106,8 +106,8 @@ describe('Item', function() {
 
   it('should be able to set and get the custom name', function(done) {
     var word = randomWord(5);
-    Item.setCustomName(word);
-    Item.getCustomName().then(function(val) {
+    Source.setCustomName(word);
+    Source.getCustomName().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
@@ -115,16 +115,16 @@ describe('Item', function() {
 
   xit('should be able to set and get the value', function() {
     var word = randomWord(5);
-    Item.setValue(word);
-    Item.getValue().then(function(val) {
+    Source.setValue(word);
+    Source.getValue().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
   });
 
   it('should be able to set and get keep loaded property', function(done) {
-    Item.setKeepLoaded(!local.keeploaded);
-    Item.getKeepLoaded().then(function(val) {
+    Source.setKeepLoaded(!local.keeploaded);
+    Source.getKeepLoaded().then(function(val) {
       expect(val).toBeTypeOf('boolean');
       local.keeploaded = val;
       done();
@@ -132,14 +132,14 @@ describe('Item', function() {
   });
 
   it('should be able to get the id', function(done) {
-    Item.getID().then(function(val) {
+    Source.getID().then(function(val) {
       expect(val).toBeDefined();
       done();
     });
   });
 
   it('should be able to get the scene id', function(done) {
-    Item.getSceneID().then(function(val) {
+    Source.getSceneID().then(function(val) {
       expect(val).toBeTypeOf('number');
       expect(val).not.toBeNaN();
       done();
@@ -147,7 +147,7 @@ describe('Item', function() {
   });
 
   it('should have toXML method', function() {
-    expect(Item).hasMethods('toXML');
+    expect(Source).hasMethods('toXML');
   });
 
   it('should have static getCurrentSource method', function() {
