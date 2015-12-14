@@ -12,7 +12,7 @@ import {AudioSource} from './source/audio';
 import {HtmlSource} from './source/html';
 import {FlashSource} from './source/flash';
 import {ScreenSource} from './source/screen';
-import {ImageItem} from './source/image';
+import {ImageSource} from './source/image';
 import {MediaSource} from './source/media';
 
 export class Scene {
@@ -555,7 +555,7 @@ export class Scene {
         } else if (type === SourceTypes.BITMAP ||
             type === SourceTypes.FILE &&
             /\.gif$/.test(item['item'])) {
-          typeResolve(new ImageItem(item));
+          typeResolve(new ImageSource(item));
         } else if (type === SourceTypes.FILE &&
             /\.(gif|xbs)$/.test(item['item']) === false &&
             /^(rtsp|rtmp):\/\//.test(item['item']) === false) {

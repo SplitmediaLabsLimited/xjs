@@ -15,14 +15,14 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The ImageItem class represents an image source (includes GIF files).
+ * The ImageSource class represents an image source (includes GIF files).
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `ImageItem`
+ *  All methods marked as *Chainable* resolve with the original `ImageSource`
  *  instance.
  */
-export class ImageItem extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ImageSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   // ItemLayout
 
@@ -84,7 +84,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setKeepAspectRatio: (value: boolean) => Promise<ImageItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<ImageSource>;
 
   /**
    * param: (value: boolean)
@@ -93,7 +93,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setPositionLocked: (value: boolean) => Promise<ImageItem>;
+  setPositionLocked: (value: boolean) => Promise<ImageSource>;
 
   /**
    * param: (value: boolean)
@@ -102,7 +102,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<ImageItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ImageSource>;
 
   /**
    * param: (value: Rectangle)
@@ -122,7 +122,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition: (value: Rectangle) => Promise<ImageItem>;
+  setPosition: (value: Rectangle) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -131,7 +131,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setRotateY: (value: number) => Promise<ImageItem>;
+  setRotateY: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -140,7 +140,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setRotateX: (value: number) => Promise<ImageItem>;
+  setRotateX: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -149,7 +149,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setRotateZ: (value: number) => Promise<ImageItem>;
+  setRotateZ: (value: number) => Promise<ImageSource>;
 
   // ItemColor
 
@@ -202,7 +202,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<ImageItem>;
+  setTransparency: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -211,7 +211,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setBrightness: (value: number) => Promise<ImageItem>;
+  setBrightness: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -220,7 +220,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setContrast: (value: number) => Promise<ImageItem>;
+  setContrast: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -229,7 +229,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setHue: (value: number) => Promise<ImageItem>;
+  setHue: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: number)
@@ -238,7 +238,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setSaturation: (value: number) => Promise<ImageItem>;
+  setSaturation: (value: number) => Promise<ImageSource>;
 
   /**
    * param: (value: Color)
@@ -247,7 +247,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setBorderColor: (value: Color) => Promise<ImageItem>;
+  setBorderColor: (value: Color) => Promise<ImageSource>;
 
   // ItemChroma
   /**
@@ -259,7 +259,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<ImageItem>;
+  setChromaEnabled: (value: boolean) => Promise<ImageSource>;
   /**
    * return: Promise<KeyingType>
    */
@@ -269,7 +269,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    * *Chainable.*
    *
    */
-  setKeyingType: (value: KeyingType) => Promise<ImageItem>;
+  setKeyingType: (value: KeyingType) => Promise<ImageSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -281,7 +281,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageSource>;
 
   // CHROMA LEGACY MODE
   /**
@@ -293,7 +293,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<ImageItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -303,7 +303,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<ImageItem>;
+  setChromaLegacySaturation: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -313,7 +313,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<ImageItem>;
+  setChromaLegacyHue: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -323,7 +323,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<ImageItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -333,7 +333,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageSource>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -345,7 +345,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -355,7 +355,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<ImageItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -365,7 +365,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<ImageItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ImageSource>;
 
   // COLOR KEY MODE
   /**
@@ -377,7 +377,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<ImageItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<number>
    */
@@ -387,7 +387,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<ImageItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<ImageSource>;
   /**
    * return: Promise<Color>
    */
@@ -397,7 +397,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<ImageItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ImageSource>;
 
   // ItemTransition
 
@@ -415,7 +415,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setVisible: (value: boolean) => Promise<ImageItem>;
+  setVisible: (value: boolean) => Promise<ImageSource>;
 
   /**
    * return: Promise<boolean>
@@ -431,7 +431,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setTransition: (value: Transition) => Promise<ImageItem>;
+  setTransition: (value: Transition) => Promise<ImageSource>;
 
   /**
    * return: Promise<number>
@@ -447,7 +447,7 @@ export class ImageItem extends Source implements IItemLayout, IItemColor, IItemC
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<ImageItem>;
+  setTransitionTime: (value: number) => Promise<ImageSource>;
 }
 
-applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ImageSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
