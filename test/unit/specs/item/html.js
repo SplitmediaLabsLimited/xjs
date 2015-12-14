@@ -1,11 +1,11 @@
 
 /* globals describe, it, expect, require, beforeEach, spyOn, done */
 
-describe('HTMLItem', function() {
+describe('HtmlSource', function() {
   'use strict';
 
   var XJS = require('xjs');
-  var HTMLItem = XJS.HTMLItem;
+  var HtmlSource = XJS.HtmlSource;
   var Scene = XJS.Scene;
   var env = new window.Environment(XJS);
   var enumerated;
@@ -17,7 +17,7 @@ describe('HTMLItem', function() {
   var urlSet = false;
   var TYPE_HTML = 8;
 
-  var currentHTMLItem;
+  var currentHtmlSource;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
@@ -31,11 +31,11 @@ describe('HTMLItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName("placement")[0];
         var selected = '[id="' + attachedID + '"]';
-        var itemSelected = placement.querySelector(selected);
+        var sourceSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
+          window.OnAsyncCallback(irand, sourceSelected.getAttribute("type"));
         },10);
       break;
 
@@ -50,11 +50,11 @@ describe('HTMLItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute("item"));
           },10);
         }
       break;
@@ -70,13 +70,13 @@ describe('HTMLItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return browserJS attribute
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
-              itemSelected.getAttribute("BrowserSizeX") + ',' +
-              itemSelected.getAttribute("BrowserSizeY"));
+              sourceSelected.getAttribute("BrowserSizeX") + ',' +
+              sourceSelected.getAttribute("BrowserSizeY"));
           },10);
         }
       break;
@@ -92,11 +92,11 @@ describe('HTMLItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return browserJS attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserTransparent"));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute("BrowserTransparent"));
           },10);
         }
       break;
@@ -112,11 +112,11 @@ describe('HTMLItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return browserJS attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserJs"));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute("BrowserJs"));
           },10);
         }
       break;
@@ -132,11 +132,11 @@ describe('HTMLItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return custom attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("custom"));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute("custom"));
           },10);
         }
       break;
@@ -269,8 +269,8 @@ describe('HTMLItem', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{HTMLID}' });
-      var item2 = new XJS.Item({id : '{HTMLID2}'});
+      var item1 = new XJS.Source({id : '{HTMLID}' });
+      var item2 = new XJS.Source({id : '{HTMLID2}'});
       item1.getType();
       item2.getType();
 
@@ -319,14 +319,14 @@ describe('HTMLItem', function() {
       .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
-      newScene.getItems().then(function(items) {
-        var itemArray = items;
-        var itemArrayLength = itemArray.length;
+      newScene.getItems().then(function(sources) {
+        var sourceArray = sources;
+        var sourceArrayLength = sourceArray.length;
 
-        if (itemArrayLength > 0) {
-          for (var i = 0; i < itemArrayLength; i++) {
-            if (itemArray[i] instanceof HTMLItem) {
-              enumerated.push(itemArray[i]);
+        if (sourceArrayLength > 0) {
+          for (var i = 0; i < sourceArrayLength; i++) {
+            if (sourceArray[i] instanceof HtmlSource) {
+              enumerated.push(sourceArray[i]);
             }
           }
         }
@@ -348,14 +348,14 @@ describe('HTMLItem', function() {
   describe('interface method checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentHTMLItem = enumerated[0];
+        currentHtmlSource = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-    	if (currentHTMLItem !== null) {
-	      expect(currentHTMLItem).hasMethods([
+    	if (currentHtmlSource !== null) {
+	      expect(currentHtmlSource).hasMethods([
 	        'isKeepAspectRatio',
 	        'setKeepAspectRatio',
 	        'isPositionLocked',
@@ -369,8 +369,8 @@ describe('HTMLItem', function() {
     });
 
     it('should implement the color interface', function() {
-    	if (currentHTMLItem !== null) {
-	      expect(currentHTMLItem).hasMethods([
+    	if (currentHtmlSource !== null) {
+	      expect(currentHtmlSource).hasMethods([
 	        'getTransparency',
 	        'setTransparency',
 	        'getBrightness',
@@ -388,8 +388,8 @@ describe('HTMLItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-			if (currentHTMLItem !== null) {
-	      expect(currentHTMLItem).hasMethods([
+			if (currentHtmlSource !== null) {
+	      expect(currentHtmlSource).hasMethods([
 	        'isChromaEnabled',
 	        'setChromaEnabled',
 	        'getKeyingType',
@@ -423,8 +423,8 @@ describe('HTMLItem', function() {
     });
 
     it('should implement the transition interface', function() {
-    	if (currentHTMLItem !== null) {
-	      expect(currentHTMLItem).hasMethods([
+    	if (currentHtmlSource !== null) {
+	      expect(currentHtmlSource).hasMethods([
 		        'isVisible',
 		        'setVisible',
 		        'getTransition',
@@ -436,8 +436,8 @@ describe('HTMLItem', function() {
     });
 
     it('should implement the configurable interface', function() {
-    	if (currentHTMLItem !== null) {
-	      expect(currentHTMLItem).hasMethods([
+    	if (currentHtmlSource !== null) {
+	      expect(currentHtmlSource).hasMethods([
 	        'loadConfig',
 	        'saveConfig',
 	        'requestSaveConfig',
@@ -447,7 +447,7 @@ describe('HTMLItem', function() {
     });
 
     it('should implement audio interface', function() {
-      expect(currentHTMLItem).hasMethods([
+      expect(currentHtmlSource).hasMethods([
         'isMute',
         'setMute',
         'getVolume',
@@ -459,17 +459,17 @@ describe('HTMLItem', function() {
     });
   });
 
-  describe('HTMLItem-specific methods checking', function() {
+  describe('HtmlSource-specific methods checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentHTMLItem = enumerated[0];
+        currentHtmlSource = enumerated[0];
         done();
       }
     });
 
     it('should be able to get its own URL',
       function(done) {
-        var promise = currentHTMLItem.getURL();
+        var promise = currentHtmlSource.getURL();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('string');
@@ -480,7 +480,7 @@ describe('HTMLItem', function() {
     it('should be able to set its own URL',
       function(done) {
         urlSet = false;
-        var promise = currentHTMLItem.setURL('https://www.xsplit.com/');
+        var promise = currentHtmlSource.setURL('https://www.xsplit.com/');
         promise.then(function() {
         	if (!isXSplit) {
         		expect(urlSet).toBe(true);
@@ -491,7 +491,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get custom browser JS',
       function(done) {
-        var promise = currentHTMLItem.getBrowserJS();
+        var promise = currentHtmlSource.getBrowserJS();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(browserJS) {
           expect(browserJS).toBeTypeOf('string');
@@ -502,7 +502,7 @@ describe('HTMLItem', function() {
     it('should be able to set custom browser JS',
       function(done) {
         urlSet = false;
-        var promise = currentHTMLItem.setBrowserJS('console.log("XJS");');
+        var promise = currentHtmlSource.setBrowserJS('console.log("XJS");');
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);
@@ -513,7 +513,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get if browserJS is enabled',
       function(done) {
-        var promise = currentHTMLItem.isBrowserJSEnabled();
+        var promise = currentHtmlSource.isBrowserJSEnabled();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('boolean');
@@ -525,19 +525,19 @@ describe('HTMLItem', function() {
       function(done) {
         urlSet = false;
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHTMLItem.enableBrowserJS(randomBoolean);
+        var promise = currentHtmlSource.enableBrowserJS(randomBoolean);
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);
           }
-          return currentHTMLItem.isBrowserJSEnabled();
+          return currentHtmlSource.isBrowserJSEnabled();
         })
         .then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);
-          return currentHTMLItem.enableBrowserJS(!randomBoolean);
+          return currentHtmlSource.enableBrowserJS(!randomBoolean);
         })
         .then(function() {
-          return currentHTMLItem.isBrowserJSEnabled();
+          return currentHtmlSource.isBrowserJSEnabled();
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
@@ -547,7 +547,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get custom CSS',
       function(done) {
-        var promise = currentHTMLItem.getCustomCSS('');
+        var promise = currentHtmlSource.getCustomCSS('');
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(customCSS) {
           expect(customCSS).toBeTypeOf('string');
@@ -558,7 +558,7 @@ describe('HTMLItem', function() {
     it('should be able to set custom CSS',
       function(done) {
         urlSet = false;
-        var promise = currentHTMLItem.setCustomCSS('*{background : red;}');
+        var promise = currentHtmlSource.setCustomCSS('*{background : red;}');
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);
@@ -569,7 +569,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get if custom CSS is enabled',
       function(done) {
-        var promise = currentHTMLItem.isCustomCSSEnabled();
+        var promise = currentHtmlSource.isCustomCSSEnabled();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('boolean');
@@ -581,19 +581,19 @@ describe('HTMLItem', function() {
       function(done) {
         urlSet = false;
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHTMLItem.enableCustomCSS(randomBoolean);
+        var promise = currentHtmlSource.enableCustomCSS(randomBoolean);
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);
           }
-          return currentHTMLItem.isCustomCSSEnabled();
+          return currentHtmlSource.isCustomCSSEnabled();
         })
         .then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);
-          return currentHTMLItem.enableCustomCSS(!randomBoolean);
+          return currentHtmlSource.enableCustomCSS(!randomBoolean);
         })
         .then(function() {
-          return currentHTMLItem.isCustomCSSEnabled();
+          return currentHtmlSource.isCustomCSSEnabled();
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
@@ -604,7 +604,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get if browser is transparent',
       function(done) {
-        var promise = currentHTMLItem.isBrowserTransparent();
+        var promise = currentHtmlSource.isBrowserTransparent();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('boolean');
@@ -616,19 +616,19 @@ describe('HTMLItem', function() {
       function(done) {
         urlSet = false;
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHTMLItem.enableBrowserTransparency(randomBoolean);
+        var promise = currentHtmlSource.enableBrowserTransparency(randomBoolean);
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);
           }
-          return currentHTMLItem.isBrowserTransparent();
+          return currentHtmlSource.isBrowserTransparent();
         })
         .then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);
-          return currentHTMLItem.enableBrowserTransparency(!randomBoolean);
+          return currentHtmlSource.enableBrowserTransparency(!randomBoolean);
         })
         .then(function() {
-          return currentHTMLItem.isBrowserTransparent();
+          return currentHtmlSource.isBrowserTransparent();
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
@@ -638,7 +638,7 @@ describe('HTMLItem', function() {
 
     it('should be able to get its custom browser window size',
       function(done) {
-        var promise = currentHTMLItem.getBrowserCustomSize();
+        var promise = currentHtmlSource.getBrowserCustomSize();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(browserSize) {
           expect(browserSize).hasMethods([
@@ -668,7 +668,7 @@ describe('HTMLItem', function() {
 
         var rect = XJS.Rectangle.fromDimensions(1280, 600);
 
-        var promise = currentHTMLItem.setBrowserCustomSize(rect);
+        var promise = currentHtmlSource.setBrowserCustomSize(rect);
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);

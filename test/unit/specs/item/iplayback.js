@@ -42,8 +42,8 @@ describe('Playback interface', function() {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
-      var itemSelected = placement.querySelector(selected);
-      xCallback(asyncId, itemSelected.getAttribute(property));
+      var sourceSelected = placement.querySelector(selected);
+      xCallback(asyncId, sourceSelected.getAttribute(property));
     }
 
     return asyncId;
@@ -69,8 +69,8 @@ describe('Playback interface', function() {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
     // reset attached IDs
-    var item1 = new XJS.Item({id : '{ID}'});
-    var item2 = new XJS.Item({id : '{ID2}'});
+    var item1 = new XJS.Source({id : '{ID}'});
+    var item2 = new XJS.Source({id : '{ID2}'});
     item1.getType();
     item2.getType();
 
@@ -116,8 +116,8 @@ describe('Playback interface', function() {
 
     Scene.getActiveScene().then(function(newScene) {
       return newScene.getItems();
-    }).then(function(items) {
-      enumeratedItems = items;
+    }).then(function(sources) {
+      enumeratedItems = sources;
       done();
     });
   });

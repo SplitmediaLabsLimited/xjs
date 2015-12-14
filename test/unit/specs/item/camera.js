@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, spyOn */
 
-describe('CameraItem', function() {
+describe('CameraSource', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -40,8 +40,8 @@ describe('CameraItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedId + '"]';
-        var itemSelected = placement.querySelector(selected);
-        xCallback(asyncId, itemSelected.getAttribute(property));
+        var sourceSelected = placement.querySelector(selected);
+        xCallback(asyncId, sourceSelected.getAttribute(property));
       }
     }
 
@@ -60,7 +60,7 @@ describe('CameraItem', function() {
     }
 
     if (!shouldFail) {
-      local[attachedId][property] = value;  
+      local[attachedId][property] = value;
     }
     xCallback(asyncId, '0');
     return asyncId;
@@ -70,8 +70,8 @@ describe('CameraItem', function() {
 
     env.set('extension');
     // Reset the attached IDS
-    var item1 = new XJS.Item({id : '{CAMERAID}' });
-    var item2 = new XJS.Item({id : '{CAMERAID2}'});
+    var item1 = new XJS.Source({id : '{CAMERAID}' });
+    var item2 = new XJS.Source({id : '{CAMERAID2}'});
     item1.getType();
     item2.getType();
 
@@ -85,11 +85,11 @@ describe('CameraItem', function() {
 
         case 'dshowenum:asrc':
           if (!shouldFail2) {
-            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Line 1 (Virtual Audio Cable)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));  
+            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Line 1 (Virtual Audio Cable)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           } else {
             xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           }
-          
+
         break;
 
         case 'preset:0':
@@ -129,10 +129,10 @@ describe('CameraItem', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getItems().then(function(items) {
-        for (var i in items) {
-          if (items[i] instanceof XJS.CameraItem) {
-            _this.cameraItem = items[i];
+      scene.getItems().then(function(sources) {
+        for (var i in sources) {
+          if (sources[i] instanceof XJS.CameraSource) {
+            _this.cameraItem = sources[i];
             break;
           }
         }
@@ -141,7 +141,7 @@ describe('CameraItem', function() {
     });
   });
 
-  describe('CameraItem-specific methods checking, ', function() {
+  describe('CameraSource-specific methods checking, ', function() {
 
     it('should be able to get its own device ID', function(done) {
       var promise = this.cameraItem.getDeviceId();

@@ -1,12 +1,12 @@
 
 /* globals describe, it, expect, require, beforeEach, spyOn, done */
 
-describe('FlashItem', function() {
+describe('FlashSource', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var FlashItem = XJS.FlashItem;
+  var FlashSource = XJS.FlashSource;
   var env = new window.Environment(XJS);
   var enumerated;
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -17,7 +17,7 @@ describe('FlashItem', function() {
   var urlSet = false;
   var TYPE_FLASH = 6;
 
-  var currentFlashItem;
+  var currentFlashSource;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -31,11 +31,11 @@ describe('FlashItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedID + '"]';
-        var itemSelected = placement.querySelector(selected);
+        var sourceSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
+          window.OnAsyncCallback(irand, sourceSelected.getAttribute('type'));
         },10);
       break;
 
@@ -50,11 +50,11 @@ describe('FlashItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -70,11 +70,11 @@ describe('FlashItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -90,13 +90,13 @@ describe('FlashItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return browserJS attribute
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
-              itemSelected.getAttribute('BrowserSizeX') + ',' +
-              itemSelected.getAttribute('BrowserSizeY'));
+              sourceSelected.getAttribute('BrowserSizeX') + ',' +
+              sourceSelected.getAttribute('BrowserSizeY'));
           },10);
         }
       break;
@@ -157,8 +157,8 @@ describe('FlashItem', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{FLASHID}' });
-      var item2 = new XJS.Item({id : '{FLASHID2}'});
+      var item1 = new XJS.Source({id : '{FLASHID}' });
+      var item2 = new XJS.Source({id : '{FLASHID2}'});
       item1.getType();
       item2.getType();
 
@@ -207,14 +207,14 @@ describe('FlashItem', function() {
       .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
-      newScene.getItems().then(function(items) {
-        var itemArray = items;
-        var itemArrayLength = itemArray.length;
+      newScene.getItems().then(function(sources) {
+        var sourceArray = sources;
+        var sourceArrayLength = sourceArray.length;
 
-        if (itemArrayLength > 0) {
-          for (var i = 0; i < itemArrayLength; i++) {
-            if (itemArray[i] instanceof FlashItem) {
-              enumerated.push(itemArray[i]);
+        if (sourceArrayLength > 0) {
+          for (var i = 0; i < sourceArrayLength; i++) {
+            if (sourceArray[i] instanceof FlashSource) {
+              enumerated.push(sourceArray[i]);
             }
           }
         }
@@ -228,22 +228,22 @@ describe('FlashItem', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     var selected = '[type="' + TYPE_FLASH + '"]';
-    var FlashItems = placement.querySelectorAll(selected);
-    expect(FlashItems.length).toBe(enumerated.length);
+    var FlashSources = placement.querySelectorAll(selected);
+    expect(FlashSources.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentFlashItem = enumerated[0];
+        currentFlashSource = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-    	if (currentFlashItem !== null) {
-	      expect(currentFlashItem).hasMethods([
+    	if (currentFlashSource !== null) {
+	      expect(currentFlashSource).hasMethods([
 	        'isKeepAspectRatio',
 	        'setKeepAspectRatio',
 	        'isPositionLocked',
@@ -257,8 +257,8 @@ describe('FlashItem', function() {
     });
 
     it('should implement the color interface', function() {
-    	if (currentFlashItem !== null) {
-	      expect(currentFlashItem).hasMethods([
+    	if (currentFlashSource !== null) {
+	      expect(currentFlashSource).hasMethods([
 	        'getTransparency',
 	        'setTransparency',
 	        'getBrightness',
@@ -276,8 +276,8 @@ describe('FlashItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-			if (currentFlashItem !== null) {
-	      expect(currentFlashItem).hasMethods([
+			if (currentFlashSource !== null) {
+	      expect(currentFlashSource).hasMethods([
 	        'isChromaEnabled',
 	        'setChromaEnabled',
 	        'getKeyingType',
@@ -311,8 +311,8 @@ describe('FlashItem', function() {
     });
 
     it('should implement the transition interface', function() {
-    	if (currentFlashItem !== null) {
-	      expect(currentFlashItem).hasMethods([
+    	if (currentFlashSource !== null) {
+	      expect(currentFlashSource).hasMethods([
 		        'isVisible',
 		        'setVisible',
 		        'getTransition',
@@ -324,7 +324,7 @@ describe('FlashItem', function() {
     });
 
     it('should implement audio interface', function() {
-      expect(currentFlashItem).hasMethods([
+      expect(currentFlashSource).hasMethods([
         'isMute',
         'setMute',
         'getVolume',
@@ -336,17 +336,17 @@ describe('FlashItem', function() {
     });
   });
 
-  describe('FlashItem-specific methods checking', function() {
+  describe('FlashSource-specific methods checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentFlashItem = enumerated[0];
+        currentFlashSource = enumerated[0];
         done();
       }
     });
 
     it('should be able to get its custom browser window size',
       function(done) {
-        var promise = currentFlashItem.getCustomResolution();
+        var promise = currentFlashSource.getCustomResolution();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(browserSize) {
           expect(browserSize).hasMethods([
@@ -383,7 +383,7 @@ describe('FlashItem', function() {
           };
         };
 
-        var promise = currentFlashItem.setCustomResolution(new MockRectangle(1280, 600));
+        var promise = currentFlashSource.setCustomResolution(new MockRectangle(1280, 600));
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);

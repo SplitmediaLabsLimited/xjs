@@ -5,7 +5,7 @@
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Item = XJS.Item;
+  var Item = XJS.Source;
 
   function randomWord(length) {
     var rand;
@@ -23,22 +23,22 @@
   // work on XBC, we should always go through Scene class first
   Scene.getActiveScene().then(function(scene) {
     return scene.getItems();
-  }).then(function(items) {
-    if (items.length === 0) {
+  }).then(function(sources) {
+    if (sources.length === 0) {
       throw new Error('NO ITEMS ON CURRENT SCENE!');
     }
 
-    var itemIndex = 0;
-    var currentItem = items[itemIndex];
+    var sourceIndex = 0;
+    var currentItem = sources[sourceIndex];
 
     Rose.createTab({
       name: 'Item',
       buttons: [
         {
-          name: 'toggle attached item',
+          name: 'toggle attached source',
           onClick: function() {
-            itemIndex = (itemIndex >= items.length - 1) ? 0 : itemIndex++;
-            currentItem = items[itemIndex];
+            sourceIndex = (sourceIndex >= sources.length - 1) ? 0 : sourceIndex++;
+            currentItem = sources[sourceIndex];
             Rose.output(currentItem);
           }
         },
@@ -156,9 +156,9 @@
         {
           name: 'getCurrentSource',
           onClick: function() {
-            Item.getCurrentSource().then(function(items) {
-              console.log(items);
-              Rose.output(items);
+            Item.getCurrentSource().then(function(sources) {
+              console.log(sources);
+              Rose.output(sources);
             });
           }
         }

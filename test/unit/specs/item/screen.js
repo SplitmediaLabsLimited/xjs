@@ -1,12 +1,12 @@
 
 /* globals describe, it, expect, require, beforeEach, beforeAll, spyOn, done */
 
-describe('ScreenItem', function() {
+describe('ScreenSource', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var ScreenItem = XJS.ScreenItem;
+  var ScreenSource = XJS.ScreenSource;
   var env = new window.Environment(XJS);
   var enumerated = [];
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -16,7 +16,7 @@ describe('ScreenItem', function() {
   var local = {};
   var TYPE_SCREEN = 5;
 
-  var currentScreenItem;
+  var currentScreenSource;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -30,11 +30,11 @@ describe('ScreenItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedID + '"]';
-        var itemSelected = placement.querySelector(selected);
+        var sourceSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
+          window.OnAsyncCallback(irand, sourceSelected.getAttribute('type'));
         },10);
       break;
 
@@ -49,11 +49,11 @@ describe('ScreenItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -111,8 +111,8 @@ describe('ScreenItem', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{SCREENID}' });
-      var item2 = new XJS.Item({id : '{SCREENID2}'});
+      var item1 = new XJS.Source({id : '{SCREENID}' });
+      var item2 = new XJS.Source({id : '{SCREENID2}'});
       item1.getType();
       item2.getType();
 
@@ -164,14 +164,14 @@ describe('ScreenItem', function() {
       done();
     } else {
       Scene.getActiveScene().then(function(newScene) {
-        newScene.getItems().then(function(items) {
-          var itemArray = items;
-          var itemArrayLength = itemArray.length;
+        newScene.getItems().then(function(sources) {
+          var sourceArray = sources;
+          var sourceArrayLength = sourceArray.length;
 
-          if (itemArrayLength > 0) {
-            for (var i = 0; i < itemArrayLength; i++) {
-              if (itemArray[i] instanceof ScreenItem) {
-                enumerated.push(itemArray[i]);
+          if (sourceArrayLength > 0) {
+            for (var i = 0; i < sourceArrayLength; i++) {
+              if (sourceArray[i] instanceof ScreenSource) {
+                enumerated.push(sourceArray[i]);
               }
             }
           }
@@ -186,22 +186,22 @@ describe('ScreenItem', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     var selected = '[type="' + TYPE_SCREEN + '"]';
-    var ScreenItems = placement.querySelectorAll(selected);
-    expect(ScreenItems.length).toBe(enumerated.length);
+    var ScreenSources = placement.querySelectorAll(selected);
+    expect(ScreenSources.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeAll(function(done) {
       if (enumerated.length > 0) {
-        currentScreenItem = enumerated[0];
+        currentScreenSource = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
+      if (currentScreenSource !== null) {
+        expect(currentScreenSource).hasMethods([
           'isKeepAspectRatio',
           'setKeepAspectRatio',
           'isPositionLocked',
@@ -215,8 +215,8 @@ describe('ScreenItem', function() {
     });
 
     it('should implement the color interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
+      if (currentScreenSource !== null) {
+        expect(currentScreenSource).hasMethods([
           'getTransparency',
           'setTransparency',
           'getBrightness',
@@ -234,8 +234,8 @@ describe('ScreenItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
+      if (currentScreenSource !== null) {
+        expect(currentScreenSource).hasMethods([
           'isChromaEnabled',
           'setChromaEnabled',
           'getKeyingType',
@@ -269,8 +269,8 @@ describe('ScreenItem', function() {
     });
 
     it('should implement the transition interface', function() {
-      if (currentScreenItem !== null) {
-        expect(currentScreenItem).hasMethods([
+      if (currentScreenSource !== null) {
+        expect(currentScreenSource).hasMethods([
             'isVisible',
             'setVisible',
             'getTransition',
@@ -282,17 +282,17 @@ describe('ScreenItem', function() {
     });
   });
 
-  describe('ScreenItem-specific methods checking', function() {
+  describe('ScreenSource-specific methods checking', function() {
     beforeAll(function(done) {
       if (enumerated.length > 0) {
-        currentScreenItem = enumerated[0];
+        currentScreenSource = enumerated[0];
         done();
       }
     });
 
     it('should be able to get the capture area',
       function(done) {
-        var promise = currentScreenItem.getCaptureArea();
+        var promise = currentScreenSource.getCaptureArea();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(captureArea) {
           expect(captureArea).hasMethods([
@@ -320,7 +320,7 @@ describe('ScreenItem', function() {
       function(done) {
         var rect = XJS.Rectangle.fromCoordinates(0, 0, 1920, 1080);
         local.item = undefined;
-        currentScreenItem.setCaptureArea(rect).then(function() {
+        currentScreenSource.setCaptureArea(rect).then(function() {
           expect(local.item).toBeTypeOf('string');
           done();
         });
@@ -328,7 +328,7 @@ describe('ScreenItem', function() {
 
     it('should be able to get the client area value',
       function(done) {
-        currentScreenItem.isClientArea().then(function(val) {
+        currentScreenSource.isClientArea().then(function(val) {
           expect(val).toBeTypeOf('boolean');
           done();
         });
@@ -337,7 +337,7 @@ describe('ScreenItem', function() {
     it('should be able to set the client area value',
       function(done) {
         local.item = undefined;
-        currentScreenItem.setClientArea(true).then(function() {
+        currentScreenSource.setClientArea(true).then(function() {
           expect(local.item).toBeTypeOf('string');
           done();
         });
@@ -345,7 +345,7 @@ describe('ScreenItem', function() {
 
     it('should be able to get the stick to title value',
       function(done) {
-        currentScreenItem.isStickToTitle().then(function(val) {
+        currentScreenSource.isStickToTitle().then(function(val) {
           expect(val).toBeTypeOf('boolean');
           done();
         });
@@ -354,7 +354,7 @@ describe('ScreenItem', function() {
     it('should be able to set the stick to title value',
       function(done) {
         local.item = undefined;
-        currentScreenItem.setStickToTitle(true).then(function() {
+        currentScreenSource.setStickToTitle(true).then(function() {
           expect(local.stickTitle).toBeTypeOf('string');
           done();
         });

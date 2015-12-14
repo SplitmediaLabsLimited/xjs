@@ -5,7 +5,7 @@ describe('Scene', function() {
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Item = XJS.Item;
+  var Item = XJS.Source;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
 
@@ -186,20 +186,20 @@ describe('Scene', function() {
       });
     });
 
-    it('should be able to get the items', function(done) {
-      scene.getItems().then(function(items) {
-        expect(items).toBeInstanceOf(Array);
-        expect(items).eachToBeInstanceOf(Item);
-        sceneItems = items[0];
+    it('should be able to get the sources', function(done) {
+      scene.getItems().then(function(sources) {
+        expect(sources).toBeInstanceOf(Array);
+        expect(sources).eachToBeInstanceOf(Item);
+        sceneItems = sources[0];
         done();
       });
     });
 
-    it('should be able to search for an item by ID', function(done) {
+    it('should be able to search for a source by ID', function(done) {
 
       Scene.searchItemsById(sceneItems._id)
-        .then(function(item) {
-          expect(item).toBeInstanceOf(Item);
+        .then(function(source) {
+          expect(source).toBeInstanceOf(Item);
           done();
         });
     });
@@ -207,53 +207,53 @@ describe('Scene', function() {
     it('should be able to search by ID in a case-insensitive way', function(done) {
 
       Scene.searchItemsById(sceneItems._id.toLowerCase())
-        .then(function(item) {
-          expect(item).toBeInstanceOf(Item);
+        .then(function(source) {
+          expect(source).toBeInstanceOf(Item);
           done();
         });
     });
 
     it('should be able to get null when searching for nonexistent ID', function(done) {
       Scene.searchItemsById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
-        .then(function(item) {
-          expect(item).toBe(null);
+        .then(function(source) {
+          expect(source).toBe(null);
           done();
         });
     });
 
-    it('should be able to search for an item by Name', function(done) {
+    it('should be able to search for a source by Name', function(done) {
       Scene.searchItemsByName(sceneItems.name)
-        .then(function(items) {
-          expect(items).toBeInstanceOf(Array);
-          expect(items).eachToBeInstanceOf(Item);
+        .then(function(sources) {
+          expect(sources).toBeInstanceOf(Array);
+          expect(sources).eachToBeInstanceOf(Item);
           done();
         });
     });
 
     it('should be able to get empty array when searching for nonexistent name', function(done) {
       Scene.searchItemsByName('{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        .then(function(items) {
-          expect(items).toBeEmptyArray();
+        .then(function(sources) {
+          expect(sources).toBeEmptyArray();
           done();
         });
     });
 
-    it('should be able to search for an item by a custom function', function(done) {
-      Scene.filterItems(function(item, resolve) {
-        item.getType().then(function(type) {
-          resolve(type === XJS.ItemTypes.HTML);
+    it('should be able to search for a source by a custom function', function(done) {
+      Scene.filterItems(function(source, resolve) {
+        source.getType().then(function(type) {
+          resolve(type === XJS.SourceTypes.HTML);
         });
-      }).then(function(items) {
-        expect(items).toBeInstanceOf(Array);
-        expect(items).eachToBeInstanceOf(Item);
+      }).then(function(sources) {
+        expect(sources).toBeInstanceOf(Array);
+        expect(sources).eachToBeInstanceOf(Item);
         done();
       });
     });
 
-    it('should be able to search for a scene with an item based on a custom function', function(done) {
-      Scene.filterScenesByItems(function(item, resolve) {
-        item.getType().then(function(type) {
-          resolve(type === XJS.ItemTypes.HTML);
+    it('should be able to search for a scene with a source based on a custom function', function(done) {
+      Scene.filterScenesByItems(function(source, resolve) {
+        source.getType().then(function(type) {
+          resolve(type === XJS.SourceTypes.HTML);
         });
       }).then(function(scene) {
         expect(scene).toBeInstanceOf(Array);

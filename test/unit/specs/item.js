@@ -17,7 +17,7 @@ describe('Item', function() {
   var local = {};
   var XJS = require('xjs');
   if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-    Item = new XJS.Item({
+    Item = new XJS.Source({
       id: '{D0FF055A-57BF-43BB-8F25-907DA028A2CC}',
       sceneID : 1
     });
@@ -83,12 +83,12 @@ describe('Item', function() {
     } else {
       XJS.Environment.initialize();
       XJS.Scene.getActiveScene().then(function(scene) {
-        scene.getItems().then(function(items) {
-          if (items.length === 0) {
+        scene.getItems().then(function(sources) {
+          if (sources.length === 0) {
             throw new Error('NO ITEMS ON CURRENT SCENE');
           }
 
-          Item = items[0];
+          Item = sources[0];
           done();
         });
       });
@@ -151,6 +151,6 @@ describe('Item', function() {
   });
 
   it('should have static getCurrentSource method', function() {
-    expect(XJS.Item).hasMethods('getCurrentSource');
+    expect(XJS.Source).hasMethods('getCurrentSource');
   });
 });

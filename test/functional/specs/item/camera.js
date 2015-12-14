@@ -7,10 +7,10 @@
 
   var currentItem;
   XJS.Scene.getActiveScene().then(function(scene) {
-    scene.getItems().then(function(items) {
-      for (var i in items) {
-        if (items[i] instanceof XJS.CameraItem) {
-          currentItem = items[i];
+    scene.getItems().then(function(sources) {
+      for (var i in sources) {
+        if (sources[i] instanceof XJS.CameraSource) {
+          currentItem = sources[i];
           return;
         }
       }
@@ -18,7 +18,7 @@
   });
 
   Rose.createTab({
-    name: 'CameraItem',
+    name: 'CameraSource',
     buttons: [
       {
         name: 'setName',

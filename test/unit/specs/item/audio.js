@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeAll, spyOn, console */
 
-describe('AudioItem', function() {
+describe('AudioSource', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -24,8 +24,8 @@ describe('AudioItem', function() {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       env.set('script');
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{AUDIOID}' });
-      var item2 = new XJS.Item({id : '{AUDIOID2}'});
+      var item1 = new XJS.Source({id : '{AUDIOID}' });
+      var item2 = new XJS.Source({id : '{AUDIOID2}'});
       item1.getType();
       item2.getType();
 
@@ -199,10 +199,10 @@ describe('AudioItem', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getItems().then(function(items) {
-        for (var i in items) {
-          if (items[i] instanceof XJS.AudioItem) {
-            _this.audioItem = items[i];
+      scene.getItems().then(function(sources) {
+        for (var i in sources) {
+          if (sources[i] instanceof XJS.AudioSource) {
+            _this.audioItem = sources[i];
             done();
           }
         }
@@ -231,8 +231,8 @@ describe('AudioItem', function() {
   describe('should be able to set and get the silence threshold', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 128);
-      this.audioItem.setSilenceThreshold(val).then(function(item) {
-        item.getSilenceThreshold().then(function(num) {
+      this.audioItem.setSilenceThreshold(val).then(function(source) {
+        source.getSilenceThreshold().then(function(num) {
           expect(num).toBeTypeOf('number');
           expect(num).toEqual(val);
           done();
@@ -282,8 +282,8 @@ describe('AudioItem', function() {
   describe('should be able to set and get the silence period', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 10000);
-      this.audioItem.setSilencePeriod(val).then(function(item) {
-        item.getSilencePeriod().then(function(num) {
+      this.audioItem.setSilencePeriod(val).then(function(source) {
+        source.getSilencePeriod().then(function(num) {
           expect(num).toBeTypeOf('number');
           expect(num).toEqual(val);
           done();
@@ -331,8 +331,8 @@ describe('AudioItem', function() {
   describe('should be able to set and get the audio offset', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 10000);
-      this.audioItem.setAudioOffset(val).then(function(item) {
-        item.getAudioOffset().then(function(num) {
+      this.audioItem.setAudioOffset(val).then(function(source) {
+        source.getAudioOffset().then(function(num) {
           expect(num).toBeTypeOf('number');
           expect(num).toEqual(val);
           done();

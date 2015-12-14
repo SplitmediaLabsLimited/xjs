@@ -10,10 +10,10 @@
   var audioIndex;
 
   XJS.Scene.getActiveScene().then(function(scene) {
-    scene.getItems().then(function(items) {
-      for (var i in items) {
-        if (items[i] instanceof XJS.AudioItem) {
-          audioItems.push(items[i]);
+    scene.getItems().then(function(sources) {
+      for (var i in sources) {
+        if (sources[i] instanceof XJS.AudioSource) {
+          audioItems.push(sources[i]);
         }
       }
       if (audioItems.length > 0) {
@@ -24,10 +24,10 @@
   });
 
   Rose.createTab({
-    name: 'AudioItem',
+    name: 'AudioSource',
     buttons: [
       {
-        name: 'toggleAudioItem',
+        name: 'toggleAudioSource',
         onClick: function() {
           if (audioIndex < audioItems.length - 1) {
             audioItem = audioItems[audioIndex + 1];
