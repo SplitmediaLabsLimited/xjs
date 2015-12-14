@@ -17,12 +17,12 @@ import {SourceTypes} from './source';
 import {Environment} from '../environment';
 
 /**
- * The GameItem Class provides methods specifically used for game items and
+ * The GameSource Class provides methods specifically used for game items and
  * also methods that is shared between Item Classes. The
  * {@link #core/Scene Scene} class' getItems method would automatically return a
- * GameItem object if there's a game item on the specified scene.
+ * GameSource object if there's a game item on the specified scene.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
  * ### Basic Usage
  *
@@ -32,7 +32,7 @@ import {Environment} from '../environment';
  * XJS.Scene.getActiveScene().then(function(scene) {
  *   scene.getItems().then(function(items) {
  *     for (var i in items) {
- *       if (items[i] instanceof XJS.GameItem) {
+ *       if (items[i] instanceof XJS.GameSource) {
  *         // Manipulate your game item here
  *         items[i].setOfflineImage(path); // just an example here
  *       }
@@ -41,10 +41,10 @@ import {Environment} from '../environment';
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `GameItem`
+ *  All methods marked as *Chainable* resolve with the original `GameSource`
  *  instance.
  */
-export class GameItem extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class GameSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   /**
    * return: Promise<boolean>
@@ -66,7 +66,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
+  setSpecialOptimizationEnabled(value: boolean): Promise<GameSource> {
     return new Promise(resolve => {
       iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
         this._id).then(() => {
@@ -95,7 +95,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setShowMouseEnabled(value: boolean): Promise<GameItem> {
+  setShowMouseEnabled(value: boolean): Promise<GameSource> {
     return new Promise(resolve => {
       iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -110,7 +110,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setOfflineImage(path: string): Promise<GameItem> {
+  setOfflineImage(path: string): Promise<GameSource> {
     return new Promise((resolve, reject) => {
       if (this._type !== SourceTypes.GAMESOURCE) {
         reject(Error('Current item should be a game source'));
@@ -216,7 +216,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<GameItem>;
+  setKeepAspectRatio:       (value: boolean) => Promise<GameSource>;
 
   /**
    * param: (value: boolean)
@@ -225,7 +225,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setPositionLocked:        (value: boolean) => Promise<GameItem>;
+  setPositionLocked:        (value: boolean) => Promise<GameSource>;
 
   /**
    * param: (value: boolean)
@@ -234,7 +234,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<GameItem>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<GameSource>;
 
   /**
    * param: (value: Rectangle)
@@ -254,7 +254,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition:              (value: Rectangle) => Promise<GameItem>;
+  setPosition:              (value: Rectangle) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -263,7 +263,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setRotateY:              (value: number) => Promise<GameItem>;
+  setRotateY:              (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -272,7 +272,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setRotateX:              (value: number) => Promise<GameItem>;
+  setRotateX:              (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -281,7 +281,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setRotateZ:              (value: number) => Promise<GameItem>;
+  setRotateZ:              (value: number) => Promise<GameSource>;
 
   // ItemColor
 
@@ -334,7 +334,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<GameItem>;
+  setTransparency: (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -343,7 +343,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setBrightness:   (value: number) => Promise<GameItem>;
+  setBrightness:   (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -352,7 +352,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setContrast:     (value: number) => Promise<GameItem>;
+  setContrast:     (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -361,7 +361,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setHue:          (value: number) => Promise<GameItem>;
+  setHue:          (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: number)
@@ -370,7 +370,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setSaturation:   (value: number) => Promise<GameItem>;
+  setSaturation:   (value: number) => Promise<GameSource>;
 
   /**
    * param: (value: Color)
@@ -379,7 +379,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setBorderColor:  (value: Color) => Promise<GameItem>;
+  setBorderColor:  (value: Color) => Promise<GameSource>;
 
 // ItemChroma
 
@@ -397,7 +397,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<GameItem>;
+  setChromaEnabled: (value: boolean) => Promise<GameSource>;
 
   /**
    * return: Promise<KeyingType>
@@ -418,7 +418,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
    * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
    */
-  setKeyingType: (value: KeyingType) => Promise<GameItem>;
+  setKeyingType: (value: KeyingType) => Promise<GameSource>;
 
   /**
    * return: Promise<ChromaAntiAliasLevel>
@@ -434,7 +434,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameSource>;
 
   // CHROMA LEGACY MODE
 
@@ -452,7 +452,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<GameItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -468,7 +468,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<GameItem>;
+  setChromaLegacySaturation: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -484,7 +484,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<GameItem>;
+  setChromaLegacyHue: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -500,7 +500,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<GameItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -516,7 +516,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameSource>;
 
   // CHROMA KEY RGB MODE
 
@@ -534,7 +534,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -550,7 +550,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<GameItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -566,7 +566,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<GameItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<GameSource>;
 
   // COLOR KEY MODE
 
@@ -584,7 +584,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<GameItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -600,7 +600,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<GameItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<GameSource>;
 
   /**
    * return: Promise<Color>
@@ -616,7 +616,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<GameItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<GameSource>;
 
   // ItemTransition
 
@@ -634,7 +634,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setVisible:        (value: boolean) => Promise<GameItem>;
+  setVisible:        (value: boolean) => Promise<GameSource>;
 
   /**
    * return: Promise<boolean>
@@ -650,7 +650,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setTransition:     (value: Transition) => Promise<GameItem>;
+  setTransition:     (value: Transition) => Promise<GameSource>;
 
   /**
    * return: Promise<number>
@@ -666,7 +666,7 @@ export class GameItem extends Source implements IItemLayout, IItemColor, IItemCh
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<GameItem>;
+  setTransitionTime: (value: number) => Promise<GameSource>;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(GameSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

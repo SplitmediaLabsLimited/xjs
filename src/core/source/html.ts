@@ -19,17 +19,17 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The HTMLItem class represents a web page source. This covers both source
+ * The HtmlSource class represents a web page source. This covers both source
  * plugins and non-plugin URLs.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `HTMLItem`
+ *  All methods marked as *Chainable* resolve with the original `HtmlSource`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
  * may not be properly reflected in the source unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class HTMLItem extends Source implements IItemLayout, IItemColor,
+export class HtmlSource extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemConfigurable, IItemAudio {
 
   /**
@@ -50,14 +50,14 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: (url: string)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the URL of this webpage source.
    *
    * *Chainable.*
    */
-  setURL(value: string): Promise<HTMLItem> {
+  setURL(value: string): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:item', value, this._id).then(code => {
         if (code) {
@@ -95,7 +95,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: (js: string, refresh: boolean = false)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the javascript commands to be executed on source
@@ -104,7 +104,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
+  setBrowserJS(value: string, refresh = false): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -187,7 +187,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables execution of the set BrowserJs upon load.
@@ -196,7 +196,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  enableBrowserJS(value: boolean): Promise<HTMLItem> {
+  enableBrowserJS(value: boolean): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -290,14 +290,14 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: (value: string)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom CSS to be applied to the document upon loading
    *
    * *Chainable.*
    */
-  setCustomCSS(value: string): Promise<HTMLItem> {
+  setCustomCSS(value: string): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -385,14 +385,14 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables application of custom CSS to the document
    *
    * *Chainable.*
    */
-  enableCustomCSS(value: boolean): Promise<HTMLItem> {
+  enableCustomCSS(value: boolean): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -480,14 +480,14 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: Promise<boolean>
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enable or disabled transparency of CEF browser
    *
    * *Chainable.*
    */
-  enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
+  enableBrowserTransparency(value: boolean): Promise<HtmlSource> {
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
         this._id).then(() => {
@@ -526,7 +526,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   /**
    * param: Promise<Rectangle>
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom browser window size for the source
@@ -536,7 +536,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
+  setBrowserCustomSize(value: Rectangle): Promise<HtmlSource> {
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
       value.setWidth(value.getWidth() * window.devicePixelRatio);
@@ -609,7 +609,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<HTMLItem>;
+  setKeepAspectRatio:       (value: boolean) => Promise<HtmlSource>;
 
   /**
    * param: (value: boolean)
@@ -618,7 +618,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPositionLocked:        (value: boolean) => Promise<HTMLItem>;
+  setPositionLocked:        (value: boolean) => Promise<HtmlSource>;
 
   /**
    * param: (value: boolean)
@@ -627,7 +627,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<HTMLItem>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<HtmlSource>;
 
   /**
    * param: (value: Rectangle)
@@ -647,7 +647,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition:              (value: Rectangle) => Promise<HTMLItem>;
+  setPosition:              (value: Rectangle) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -656,7 +656,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateY:              (value: number) => Promise<HTMLItem>;
+  setRotateY:              (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -665,7 +665,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateX:              (value: number) => Promise<HTMLItem>;
+  setRotateX:              (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -674,7 +674,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateZ:              (value: number) => Promise<HTMLItem>;
+  setRotateZ:              (value: number) => Promise<HtmlSource>;
 
   // ItemColor
 
@@ -727,7 +727,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<HTMLItem>;
+  setTransparency: (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -736,7 +736,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrightness:   (value: number) => Promise<HTMLItem>;
+  setBrightness:   (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -745,7 +745,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setContrast:     (value: number) => Promise<HTMLItem>;
+  setContrast:     (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -754,7 +754,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setHue:          (value: number) => Promise<HTMLItem>;
+  setHue:          (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: number)
@@ -763,7 +763,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setSaturation:   (value: number) => Promise<HTMLItem>;
+  setSaturation:   (value: number) => Promise<HtmlSource>;
 
   /**
    * param: (value: Color)
@@ -772,7 +772,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBorderColor:  (value: Color) => Promise<HTMLItem>;
+  setBorderColor:  (value: Color) => Promise<HtmlSource>;
 
   // ItemChroma
   /**
@@ -784,7 +784,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<HTMLItem>;
+  setChromaEnabled: (value: boolean) => Promise<HtmlSource>;
   /**
    * return: Promise<KeyingType>
    */
@@ -794,7 +794,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    * *Chainable.*
    *
    */
-  setKeyingType: (value: KeyingType) => Promise<HTMLItem>;
+  setKeyingType: (value: KeyingType) => Promise<HtmlSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -806,7 +806,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HTMLItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HtmlSource>;
 
   // CHROMA LEGACY MODE
   /**
@@ -818,7 +818,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -828,7 +828,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<HTMLItem>;
+  setChromaLegacySaturation: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -838,7 +838,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyHue: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -848,7 +848,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -858,7 +858,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<HtmlSource>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -870,7 +870,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HTMLItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -880,7 +880,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -890,7 +890,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<HTMLItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<HtmlSource>;
 
   // COLOR KEY MODE
   /**
@@ -902,7 +902,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<number>
    */
@@ -912,7 +912,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<HTMLItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<HtmlSource>;
   /**
    * return: Promise<Color>
    */
@@ -922,7 +922,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<HTMLItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<HtmlSource>;
 
   // ItemTransition
 
@@ -940,7 +940,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVisible:        (value: boolean) => Promise<HTMLItem>;
+  setVisible:        (value: boolean) => Promise<HtmlSource>;
 
   /**
    * return: Promise<boolean>
@@ -956,7 +956,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransition:     (value: Transition) => Promise<HTMLItem>;
+  setTransition:     (value: Transition) => Promise<HtmlSource>;
 
   /**
    * return: Promise<number>
@@ -972,7 +972,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<HTMLItem>;
+  setTransitionTime: (value: number) => Promise<HtmlSource>;
 
   // ItemConfigurable
 
@@ -990,7 +990,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  saveConfig: (configObj: any) => Promise<HTMLItem>;
+  saveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
    * param: config<JSON>
@@ -999,7 +999,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
+  requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
    * param: config<JSON>
@@ -1008,7 +1008,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  applyConfig: (configObj: any) => Promise<HTMLItem>;
+  applyConfig: (configObj: any) => Promise<HtmlSource>;
 
   // ItemAudio
 
@@ -1033,7 +1033,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<HTMLItem>;
+  setVolume: (value: number) => Promise<HtmlSource>;
 
   /**
    * param: value<boolean>
@@ -1042,7 +1042,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<HTMLItem>;
+  setMute:  (value: boolean) => Promise<HtmlSource>;
 
   /**
    * return: Promise<boolean>
@@ -1058,7 +1058,7 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<HTMLItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * return: Promise<boolean>
@@ -1068,5 +1068,5 @@ export class HTMLItem extends Source implements IItemLayout, IItemColor,
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(HTMLItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(HtmlSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemConfigurable, ItemAudio]);

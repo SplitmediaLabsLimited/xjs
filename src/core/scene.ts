@@ -6,14 +6,14 @@ import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source, SourceTypes} from './source/source';
-import {GameItem} from './source/game';
-import {CameraItem} from './source/camera';
-import {AudioItem} from './source/audio';
-import {HTMLItem} from './source/html';
-import {FlashItem} from './source/flash';
-import {ScreenItem} from './source/screen';
+import {GameSource} from './source/game';
+import {CameraSource} from './source/camera';
+import {AudioSource} from './source/audio';
+import {HtmlSource} from './source/html';
+import {FlashSource} from './source/flash';
+import {ScreenSource} from './source/screen';
 import {ImageItem} from './source/image';
-import {MediaItem} from './source/media';
+import {MediaSource} from './source/media';
 
 export class Scene {
   private _id: number;
@@ -164,7 +164,7 @@ export class Scene {
    *
    * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
-   * See also: {@link #core/Item Core/Item}
+   * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
    *
@@ -318,11 +318,11 @@ export class Scene {
    * ```javascript
    * Scene.filterItems(function(item, resolve) {
    *   // We'll only fetch Flash Items by resolving 'true' if the item is an
-   *   // instance of FlashItem
-   *   resolve((item instanceof FlashItem));
+   *   // instance of FlashSource
+   *   resolve((item instanceof FlashSource));
    * }).then(function(items) {
    *   // items would either be an empty array if no Flash items was found, or
-   *   // an array of FlashItem objects
+   *   // an array of FlashSource objects
    * });
    * ```
    */
@@ -376,10 +376,10 @@ export class Scene {
    * ```javascript
    * Scene.filterScenesByItems(function(item, resolve) {
    *   // We'll only fetch the scenes with flash items by resolving 'true' if
-   *   // the item is an instance of FlashItem
-   *   resolve((item instanceof FlashItem));
+   *   // the item is an instance of FlashSource
+   *   resolve((item instanceof FlashSource));
    * }).then(function(scenes) {
-   *   // scenes would be an array of all scenes with FlashItems
+   *   // scenes would be an array of all scenes with FlashSources
    * });
    * ```
    */
@@ -527,7 +527,7 @@ export class Scene {
    * return: Promise<Source[]>
    *
    * Gets all the items (sources) in a specific scene.
-   * See also: {@link #core/Item Core/Item}
+   * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
    *
@@ -547,11 +547,11 @@ export class Scene {
         let item = jsonArr[index];
         let type = Number(item['type']);
         if (type === SourceTypes.GAMESOURCE) {
-          typeResolve(new GameItem(item));
+          typeResolve(new GameSource(item));
         } else if (type === SourceTypes.HTML) {
-          typeResolve(new HTMLItem(item));
+          typeResolve(new HtmlSource(item));
         } else if (type === SourceTypes.SCREEN) {
-          typeResolve(new ScreenItem(item));
+          typeResolve(new ScreenSource(item));
         } else if (type === SourceTypes.BITMAP ||
             type === SourceTypes.FILE &&
             /\.gif$/.test(item['item'])) {
@@ -559,17 +559,17 @@ export class Scene {
         } else if (type === SourceTypes.FILE &&
             /\.(gif|xbs)$/.test(item['item']) === false &&
             /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
-          typeResolve(new MediaItem(item));
+          typeResolve(new MediaSource(item));
         } else if (Number(item['type']) === SourceTypes.LIVE &&
           item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-          typeResolve(new CameraItem(item));
+          typeResolve(new CameraSource(item));
         } else if (Number(item['type']) === SourceTypes.LIVE &&
           item['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-          typeResolve(new AudioItem(item));
+          typeResolve(new AudioSource(item));
         } else if (Number(item['type']) === SourceTypes.FLASHFILE) {
-          typeResolve(new FlashItem(item));
+          typeResolve(new FlashSource(item));
         } else {
             typeResolve(new Source(item));
         }

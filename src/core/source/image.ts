@@ -17,7 +17,7 @@ import {Environment} from '../environment';
 /**
  * The ImageItem class represents an image source (includes GIF files).
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.

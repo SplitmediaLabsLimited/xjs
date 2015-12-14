@@ -8,15 +8,15 @@ import {Source} from './source';
 import {Environment} from '../environment';
 
 /**
- * The AudioItem class represents an audio device that has been added
+ * The AudioSource class represents an audio device that has been added
  * to the stage.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ *  All methods marked as *Chainable* resolve with the original `AudioSource`
  *  instance.
  */
-export class AudioItem extends Source implements IItemAudio {
+export class AudioSource extends Source implements IItemAudio {
   /**
    * return: Promise<boolean>
    *
@@ -37,7 +37,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
+  setSilenceDetectionEnabled(value: boolean): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
       .then(res => {
@@ -67,7 +67,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilenceThreshold(value: number): Promise<AudioItem> {
+  setSilenceThreshold(value: number): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
@@ -104,7 +104,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilencePeriod(value: number): Promise<AudioItem> {
+  setSilencePeriod(value: number): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -178,7 +178,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<AudioItem>;
+  setVolume: (value: number) => Promise<AudioSource>;
 
   /**
    * param: (value: boolean)
@@ -187,7 +187,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<AudioItem>;
+  setMute:  (value: boolean) => Promise<AudioSource>;
 
   /**
    * return: Promise<boolean>
@@ -203,7 +203,7 @@ export class AudioItem extends Source implements IItemAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<AudioSource>;
 
   /**
    * return: Promise<boolean>

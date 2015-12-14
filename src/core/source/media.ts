@@ -18,14 +18,14 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The MediaItem class represents a playable media file.
+ * The MediaSource class represents a playable media file.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `MediaItem`
+ *  All methods marked as *Chainable* resolve with the original `MediaSource`
  *  instance.
  */
-export class MediaItem extends Source implements IItemLayout, IItemColor,
+export class MediaSource extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
 
   // ItemLayout
@@ -88,7 +88,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setKeepAspectRatio: (value: boolean) => Promise<MediaItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<MediaSource>;
 
   /**
    * param: (value: boolean)
@@ -97,7 +97,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPositionLocked: (value: boolean) => Promise<MediaItem>;
+  setPositionLocked: (value: boolean) => Promise<MediaSource>;
 
   /**
    * param: (value: boolean)
@@ -106,7 +106,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<MediaItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<MediaSource>;
 
   /**
    * param: (value: Rectangle)
@@ -126,7 +126,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition: (value: Rectangle) => Promise<MediaItem>;
+  setPosition: (value: Rectangle) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -135,7 +135,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateY: (value: number) => Promise<MediaItem>;
+  setRotateY: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -144,7 +144,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateX: (value: number) => Promise<MediaItem>;
+  setRotateX: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -153,7 +153,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateZ: (value: number) => Promise<MediaItem>;
+  setRotateZ: (value: number) => Promise<MediaSource>;
 
   // ItemColor
 
@@ -206,7 +206,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<MediaItem>;
+  setTransparency: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -215,7 +215,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrightness: (value: number) => Promise<MediaItem>;
+  setBrightness: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -224,7 +224,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setContrast: (value: number) => Promise<MediaItem>;
+  setContrast: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -233,7 +233,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setHue: (value: number) => Promise<MediaItem>;
+  setHue: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: number)
@@ -242,7 +242,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setSaturation: (value: number) => Promise<MediaItem>;
+  setSaturation: (value: number) => Promise<MediaSource>;
 
   /**
    * param: (value: Color)
@@ -251,7 +251,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBorderColor: (value: Color) => Promise<MediaItem>;
+  setBorderColor: (value: Color) => Promise<MediaSource>;
 
   // ItemChroma
   /**
@@ -263,7 +263,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<MediaItem>;
+  setChromaEnabled: (value: boolean) => Promise<MediaSource>;
   /**
    * return: Promise<KeyingType>
    */
@@ -273,7 +273,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    * *Chainable.*
    *
    */
-  setKeyingType: (value: KeyingType) => Promise<MediaItem>;
+  setKeyingType: (value: KeyingType) => Promise<MediaSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   /**
@@ -285,7 +285,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<MediaItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<MediaSource>;
 
   // CHROMA LEGACY MODE
   /**
@@ -297,7 +297,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<MediaItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -307,7 +307,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<MediaItem>;
+  setChromaLegacySaturation: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -317,7 +317,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<MediaItem>;
+  setChromaLegacyHue: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -327,7 +327,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -337,7 +337,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<MediaItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<MediaSource>;
 
   // CHROMA KEY RGB MODE
   /**
@@ -349,7 +349,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<MediaItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -359,7 +359,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -369,7 +369,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<MediaItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<MediaSource>;
 
   // COLOR KEY MODE
   /**
@@ -381,7 +381,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<number>
    */
@@ -391,7 +391,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<MediaItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<MediaSource>;
   /**
    * return: Promise<Color>
    */
@@ -401,7 +401,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<MediaItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<MediaSource>;
 
   // ItemTransition
 
@@ -419,7 +419,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVisible: (value: boolean) => Promise<MediaItem>;
+  setVisible: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -435,7 +435,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransition: (value: Transition) => Promise<MediaItem>;
+  setTransition: (value: Transition) => Promise<MediaSource>;
 
   /**
    * return: Promise<number>
@@ -451,7 +451,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<MediaItem>;
+  setTransitionTime: (value: number) => Promise<MediaSource>;
 
   // ItemPlayback
 
@@ -480,7 +480,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPlaybackPosition: (value: number) => Promise<MediaItem>;
+  setPlaybackPosition: (value: number) => Promise<MediaSource>;
 
   /**
    * return: Promise<number>
@@ -504,7 +504,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPlaying: (value: boolean) => Promise<MediaItem>;
+  setPlaying: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<number>
@@ -524,7 +524,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPlaybackStartPosition: (value: number) => Promise<MediaItem>;
+  setPlaybackStartPosition: (value: number) => Promise<MediaSource>;
 
   /**
    * return: Promise<number>
@@ -544,7 +544,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPlaybackEndPosition: (value: number) => Promise<MediaItem>;
+  setPlaybackEndPosition: (value: number) => Promise<MediaSource>;
 
   /**
    * return: Promise<ActionAfterPlayback>
@@ -568,7 +568,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
    */
-  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -586,7 +586,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setAutostartOnSceneLoad: (value: boolean) => Promise<MediaItem>;
+  setAutostartOnSceneLoad: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -602,7 +602,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setForceDeinterlace: (value: boolean) => Promise<MediaItem>;
+  setForceDeinterlace: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -620,7 +620,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRememberingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+  setRememberingPlaybackPosition: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -636,7 +636,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setShowingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+  setShowingPlaybackPosition: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<CuePoint[]>
@@ -656,11 +656,11 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #core/CuePoint Core/CuePoint}
    */
-  setCuePoints: (value: CuePoint[]) => Promise<MediaItem>;
+  setCuePoints: (value: CuePoint[]) => Promise<MediaSource>;
 
   // Inherited from base class, no need to redefine
   // getValue: () => Promise<string>;
-  // setValue: (value: string) => Promise<MediaItem>;
+  // setValue: (value: string) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -699,7 +699,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<MediaItem>;
+  setVolume: (value: number) => Promise<MediaSource>;
 
   /**
    * param: value<boolean>
@@ -708,7 +708,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<MediaItem>;
+  setMute:  (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -724,7 +724,7 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<MediaItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<MediaSource>;
 
   /**
    * return: Promise<boolean>
@@ -734,5 +734,5 @@ export class MediaItem extends Source implements IItemLayout, IItemColor,
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma,
+applyMixins(MediaSource, [ItemLayout, ItemColor, ItemChroma,
   ItemTransition, ItemPlayback, ItemAudio]);

@@ -18,12 +18,12 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {System} from '../../system/system';
 
 /**
- * The CameraItem Class provides methods specifically used for camera items and
+ * The CameraSource Class provides methods specifically used for camera items and
  * also methods that are shared between Item Classes. The
  * {@link #core/Scene Scene} class' getItems method would automatically return a
- * CameraItem object if there's a camera item on the specified scene.
+ * CameraSource object if there's a camera item on the specified scene.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
  * ### Basic Usage
  *
@@ -33,7 +33,7 @@ import {System} from '../../system/system';
  * XJS.Scene.getActiveScene().then(function(scene) {
  *   scene.getItems().then(function(items) {
  *     for (var i in items) {
- *       if (items[i] instanceof XJS.CameraItem) {
+ *       if (items[i] instanceof XJS.CameraSource) {
  *         // Manipulate your camera item here
  *         items[i].getDeviceId().then(function(id) {
  *           // Do something with the id
@@ -44,10 +44,10 @@ import {System} from '../../system/system';
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `CameraItem`
+ *  All methods marked as *Chainable* resolve with the original `CameraSource`
  *  instance.
  */
-export class CameraItem extends Source implements IItemLayout, IItemColor,
+export class CameraSource extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio {
     private _delayExclusionObject = {
       roxio : "vid_1b80&pid_e0(01|11|12)",
@@ -86,7 +86,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * Sets whether camera feed is paused or not
    */
-  setStreamPaused(value: boolean): Promise<CameraItem> {
+  setStreamPaused(value: boolean): Promise<CameraSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:StreamPause', value ? '1' : '0',
         this._id).then(() => {
@@ -148,7 +148,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setDelay(value: number): Promise<CameraItem> {
+  setDelay(value: number): Promise<CameraSource> {
     return new Promise((resolve, reject) => {
       var isPositive, audioOffset;
       this.isHardwareEncoder().then(val => {
@@ -221,7 +221,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setAudioOffset(value: number): Promise<CameraItem> {
+  setAudioOffset(value: number): Promise<CameraSource> {
     return new Promise((resolve, reject) => {
       var itemAudio, delay;
       iItem.get('prop:itemaudio', this._id).then(val => {
@@ -301,7 +301,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setAudioInput(value: MicrophoneDevice): Promise<CameraItem> {
+  setAudioInput(value: MicrophoneDevice): Promise<CameraSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:itemaudio', value.getDisplayID(), this._id)
       .then(val => {
@@ -370,7 +370,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
+  setKeepAspectRatio:       (value: boolean) => Promise<CameraSource>;
 
   /**
    * param: (value: boolean)
@@ -379,7 +379,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setPositionLocked:        (value: boolean) => Promise<CameraItem>;
+  setPositionLocked:        (value: boolean) => Promise<CameraSource>;
 
   /**
    * param: (value: boolean)
@@ -388,7 +388,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraSource>;
 
   /**
    * param: (value: Rectangle)
@@ -408,7 +408,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setPosition:              (value: Rectangle) => Promise<CameraItem>;
+  setPosition:              (value: Rectangle) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -417,7 +417,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateY:              (value: number) => Promise<CameraItem>;
+  setRotateY:              (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -426,7 +426,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateX:              (value: number) => Promise<CameraItem>;
+  setRotateX:              (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -435,7 +435,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setRotateZ:              (value: number) => Promise<CameraItem>;
+  setRotateZ:              (value: number) => Promise<CameraSource>;
 
   // ItemColor
 
@@ -488,7 +488,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransparency: (value: number) => Promise<CameraItem>;
+  setTransparency: (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -497,7 +497,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrightness:   (value: number) => Promise<CameraItem>;
+  setBrightness:   (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -506,7 +506,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setContrast:     (value: number) => Promise<CameraItem>;
+  setContrast:     (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -515,7 +515,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setHue:          (value: number) => Promise<CameraItem>;
+  setHue:          (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: number)
@@ -524,7 +524,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setSaturation:   (value: number) => Promise<CameraItem>;
+  setSaturation:   (value: number) => Promise<CameraSource>;
 
   /**
    * param: (value: Color)
@@ -533,7 +533,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBorderColor:  (value: Color) => Promise<CameraItem>;
+  setBorderColor:  (value: Color) => Promise<CameraSource>;
 
   // special color options pinning
 
@@ -545,7 +545,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setColorOptionsPinned(value: boolean): Promise<CameraItem> {
+  setColorOptionsPinned(value: boolean): Promise<CameraSource> {
     return new Promise(resolve => {
       iItem.set('prop:cc_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
@@ -583,7 +583,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaEnabled: (value: boolean) => Promise<CameraItem>;
+  setChromaEnabled: (value: boolean) => Promise<CameraSource>;
 
   /**
    * return: Promise<KeyingType>
@@ -604,7 +604,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
    * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
    */
-  setKeyingType: (value: KeyingType) => Promise<CameraItem>;
+  setKeyingType: (value: KeyingType) => Promise<CameraSource>;
 
   /**
    * return: Promise<ChromaAntiAliasLevel>
@@ -620,7 +620,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<CameraItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<CameraSource>;
 
   // CHROMA LEGACY MODE
 
@@ -638,7 +638,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyBrightness: (value: number) => Promise<CameraItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -654,7 +654,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacySaturation: (value: number) => Promise<CameraItem>;
+  setChromaLegacySaturation: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -670,7 +670,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyHue: (value: number) => Promise<CameraItem>;
+  setChromaLegacyHue: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -686,7 +686,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -702,7 +702,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<CameraItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<CameraSource>;
 
   // CHROMA KEY RGB MODE
 
@@ -720,7 +720,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<CameraItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -736,7 +736,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -752,7 +752,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<CameraItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<CameraSource>;
 
   // COLOR KEY MODE
 
@@ -770,7 +770,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -786,7 +786,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyExposure: (value: number) => Promise<CameraItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<CameraSource>;
 
   /**
    * return: Promise<Color>
@@ -802,7 +802,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setChromaColorKeyColor: (value: Color) => Promise<CameraItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<CameraSource>;
 
   // special chroma options pinning
 
@@ -814,7 +814,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
+  setKeyingOptionsPinned(value: boolean): Promise<CameraSource> {
     return new Promise(resolve => {
       iItem.set('prop:key_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
@@ -853,7 +853,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVisible:        (value: boolean) => Promise<CameraItem>;
+  setVisible:        (value: boolean) => Promise<CameraSource>;
 
   /**
    * return: Promise<boolean>
@@ -869,7 +869,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransition:     (value: Transition) => Promise<CameraItem>;
+  setTransition:     (value: Transition) => Promise<CameraSource>;
 
   /**
    * return: Promise<number>
@@ -885,7 +885,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setTransitionTime: (value: number) => Promise<CameraItem>;
+  setTransitionTime: (value: number) => Promise<CameraSource>;
 
  // ItemAudio
 
@@ -910,7 +910,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setVolume: (value: number) => Promise<CameraItem>;
+  setVolume: (value: number) => Promise<CameraSource>;
 
   /**
    * param: value<boolean>
@@ -919,7 +919,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setMute:  (value: boolean) => Promise<CameraItem>;
+  setMute:  (value: boolean) => Promise<CameraSource>;
 
   /**
    * return: Promise<boolean>
@@ -935,7 +935,7 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<CameraItem>;
+  setStreamOnlyEnabled: (value: boolean) => Promise<CameraSource>;
 
   /**
    * return: Promise<boolean>
@@ -945,5 +945,5 @@ export class CameraItem extends Source implements IItemLayout, IItemColor,
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
+applyMixins(CameraSource, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
   ItemAudio]);

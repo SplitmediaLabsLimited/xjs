@@ -6,9 +6,9 @@ import {Color} from '../../util/color';
 /**
  *  Used by items that implement the Chroma interface.
  *  Check `getKeyingType()`/`setKeyingType()` method of
- *  {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  {@link #core/CameraSource Core/CameraSource},
+ *  {@link #core/GameSource Core/GameSource}, and
+ *  {@link #core/HtmlSource Core/HtmlSource}.
  */
 export enum KeyingType {
     LEGACY, // Chroma Key Legacy Mode
@@ -21,9 +21,9 @@ export enum KeyingType {
  *  Chroma Key.
  *
  *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor()` method
- *  of {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  of {@link #core/CameraSource Core/CameraSource},
+ *  {@link #core/GameSource Core/GameSource}, and
+ *  {@link #core/HtmlSource Core/HtmlSource}.
  */
 export enum ChromaPrimaryColors {
     RED,
@@ -35,9 +35,9 @@ export enum ChromaPrimaryColors {
  *  Used by items that implement the Chroma interface.
  *
  *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel()` method
- *  of {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  of {@link #core/CameraSource Core/CameraSource},
+ *  {@link #core/GameSource Core/GameSource}, and
+ *  {@link #core/HtmlSource Core/HtmlSource}.
  */
 export enum ChromaAntiAliasLevel {
     NONE,
