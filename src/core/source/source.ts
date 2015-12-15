@@ -9,7 +9,7 @@ import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
 
-export enum ItemTypes {
+export enum SourceTypes {
   UNDEFINED,
   FILE,
   LIVE,
@@ -22,7 +22,7 @@ export enum ItemTypes {
 }
 
 /**
- * An `Item` represents an object that is used as a source on the stage.
+ * A `Source` represents an object that is used as a source on the stage.
  * Some possible sources are games, microphones, or a webpage.
  *
  * ### Basic Usage
@@ -31,37 +31,37 @@ export enum ItemTypes {
  * var xjs = require('xjs');
  * var Scene = xjs.Scene.getById(0);
  *
- * Scene.getItems().then(function(items) {
- *   if (items.length === 0) return;
+ * Scene.getSources().then(function(sources) {
+ *   if (sources.length === 0) return;
  *
- *   // There's a valid item, let's use that
- *   var item = items[items.length - 1];
- *   return item.setCustomName('ItemTesting');
- * }).then(function(item) {
+ *   // There's a valid source, let's use that
+ *   var source = sources[sources.length - 1];
+ *   return source.setCustomName('SourceTesting');
+ * }).then(function(source) {
  *   // Do something else here
  * });
  * ```
- * All methods marked as *Chainable* resolve with the original `Item` instance.
+ * All methods marked as *Chainable* resolve with the original `Source` instance.
  * This allows you to perform sequential operations correctly:
  * ```javascript
  * var xjs = require('xjs');
- * var Item = xjs.Item;
+ * var Source = xjs.Source;
  *
  * // a source that sets its own properties on load
  * xjs.ready()
- *    .then(Item.getCurrentSource)
- *    .then(function(item) {
- *     return item.setCustomName('MyCustomName');
- *  }).then(function(item) {
- *     return item.setKeepLoaded(true);
- *  }).then(function(item) {
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source) {
+ *     return source.setCustomName('MyCustomName');
+ *  }).then(function(source) {
+ *     return source.setKeepLoaded(true);
+ *  }).then(function(source) {
  *     // set more properties here
  *  });
  * ```
  */
-export class Item implements IItemLayout {
+export class Source implements IItemLayout {
   protected _id: string;
-  protected _type: ItemTypes;
+  protected _type: SourceTypes;
   protected _value: any;
   private _name: string;
   private _cname: string;
@@ -87,10 +87,10 @@ export class Item implements IItemLayout {
   /**
    * param: (value: string)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
-   * Sets the name of the item.
+   * Sets the name of the source.
    *
    * *Chainable.*
    *
@@ -98,18 +98,17 @@ export class Item implements IItemLayout {
    *
    * ```javascript
    * item.setName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when name has been set
+   *   // Promise resolves with same Source instance when name has been set
    *   return item.getName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
    * });
    * ```
    */
-  setName(value: string): Promise<Item> {
+  setName(value: string): Promise<Source> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._name = value;
-      iItem.set('prop:name', this._name, slot).then(() => {
+      iItem.set('prop:name', this._name, this._id).then(() => {
         resolve(this);
       });
     });
@@ -118,7 +117,7 @@ export class Item implements IItemLayout {
   /**
    * return: Promise<string>
    *
-   * Gets the name of the item.
+   * Gets the name of the source.
    *
    * #### Usage
    *
@@ -130,8 +129,7 @@ export class Item implements IItemLayout {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:name', slot).then(val => {
+      iItem.get('prop:name', this._id).then(val => {
         this._name = val;
         resolve(val);
       });
@@ -141,10 +139,10 @@ export class Item implements IItemLayout {
   /**
    * param: (value: string)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
-   * Sets the custom name of the item.
+   * Sets the custom name of the source.
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on
@@ -156,18 +154,17 @@ export class Item implements IItemLayout {
    *
    * ```javascript
    * item.setCustomName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when custom name has been set
+   *   // Promise resolves with same Source instance when custom name has been set
    *   return item.getCustomName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
    * });
    * ```
    */
-  setCustomName(value: string): Promise<Item> {
+  setCustomName(value: string): Promise<Source> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._cname = value;
-      iItem.set('prop:cname', this._cname, slot).then(() => {
+      iItem.set('prop:cname', this._cname, this._id).then(() => {
         resolve(this);
       });
     });
@@ -176,7 +173,7 @@ export class Item implements IItemLayout {
   /**
    * return: Promise<string>
    *
-   * Gets the custom name of the item.
+   * Gets the custom name of the source.
    *
    * #### Usage
    *
@@ -188,8 +185,7 @@ export class Item implements IItemLayout {
    */
   getCustomName(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cname', slot).then(val => {
+      iItem.get('prop:cname', this._id).then(val => {
         this._cname = val;
         resolve(val);
       });
@@ -199,7 +195,7 @@ export class Item implements IItemLayout {
   /**
    * return: Promise<string|XML>
    *
-   * Gets the custom name of the item.
+   * Gets the custom name of the source.
    *
    * This method can resolve with an XML object, which is an object generated by
    * the framework. Call `toString()` to transform into an XML String. (See the
@@ -215,8 +211,7 @@ export class Item implements IItemLayout {
    */
   getValue(): Promise<string|XML> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
+      iItem.get('prop:item', this._id).then(val => {
         val = (val === 'null') ? '' : val;
         if (val === '') { // don't return XML for null values
           this._value = '';
@@ -238,7 +233,7 @@ export class Item implements IItemLayout {
   /**
    * param: (value: string)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set the video item's main definition.
@@ -263,13 +258,12 @@ export class Item implements IItemLayout {
    * ```javascript
    * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
    *   .then(function(item) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
-  setValue(value: string | XML): Promise<Item> {
+  setValue(value: string | XML): Promise<Source> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       var val: string = (typeof value === 'string') ?
         <string> value : (<XML> value).toString();
       if (typeof value !== 'string') { // XML
@@ -277,7 +271,7 @@ export class Item implements IItemLayout {
       } else {
         this._value = val;
       }
-      iItem.set('prop:item', val, slot).then(() => {
+      iItem.set('prop:item', val, this._id).then(() => {
         resolve(this);
       });
     });
@@ -298,8 +292,7 @@ export class Item implements IItemLayout {
    */
   getKeepLoaded(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:keeploaded', slot).then(val => {
+      iItem.get('prop:keeploaded', this._id).then(val => {
         this._keepLoaded = (val === '1');
         resolve(this._keepLoaded);
       });
@@ -309,7 +302,7 @@ export class Item implements IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Keep loaded option to ON or OFF
@@ -320,15 +313,14 @@ export class Item implements IItemLayout {
    *
    * ```javascript
    * item.setKeepLoaded(true).then(function(item) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
-  setKeepLoaded(value: boolean): Promise<Item> {
+  setKeepLoaded(value: boolean): Promise<Source> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._keepLoaded = value;
-      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), slot)
+      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
       });
@@ -336,9 +328,9 @@ export class Item implements IItemLayout {
   }
 
   /**
-   * return: Promise<ItemTypes>
+   * return: Promise<SourceTypes>
    *
-   * Get the type of the item
+   * Get the type of the source
    *
    * #### Usage
    *
@@ -348,11 +340,10 @@ export class Item implements IItemLayout {
    * });
    * ```
    */
-  getType(): Promise<ItemTypes> {
+  getType(): Promise<SourceTypes> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:type', slot).then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
+      iItem.get('prop:type', this._id).then(val => {
+        this._type = SourceTypes[SourceTypes[Number(val)]];
         resolve(this._type);
       });
     });
@@ -361,7 +352,7 @@ export class Item implements IItemLayout {
   /**
    * return: Promise<string>
    *
-   * Get the ID of the item
+   * Get the ID of the source
    *
    * #### Usage
    *
@@ -399,7 +390,7 @@ export class Item implements IItemLayout {
   /**
    * return: XML
    *
-   * Convert the Item object to an XML object. Use `toString()` to
+   * Convert the Source object to an XML object. Use `toString()` to
    * get the string version of the returned object.
    *
    * #### Usage
@@ -425,7 +416,7 @@ export class Item implements IItemLayout {
   }
 
   /**
-   * return: Promise<Item>
+   * return: Promise<Source>
    *
    * Get the current source (when function is called by sources), or the source
    * that was right-clicked to open the config window (when function is called
@@ -442,7 +433,7 @@ export class Item implements IItemLayout {
    * });
    * ```
    */
-  static getCurrentSource(): Promise<Item> {
+  static getCurrentSource(): Promise<Source> {
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
@@ -455,7 +446,7 @@ export class Item implements IItemLayout {
     });
   }
 
-   // ItemLayout
+   // SourceLayout
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -495,38 +486,38 @@ export class Item implements IItemLayout {
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio: (value: boolean) => Promise<Item>;
+  setKeepAspectRatio:       (value: boolean) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked: (value: boolean) => Promise<Item>;
+  setPositionLocked:        (value: boolean) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<Item>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition: (value: Rectangle) => Promise<Item>;
+  setPosition:              (value: Rectangle) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY: (value: number) => Promise<Item>;
+  setRotateY:              (value: number) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX: (value: number) => Promise<Item>;
+  setRotateX:              (value: number) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ: (value: number) => Promise<Item>;
+  setRotateZ:              (value: number) => Promise<Source>;
 
 }
 
-applyMixins(Item, [ItemLayout]);
+applyMixins(Source, [ItemLayout]);

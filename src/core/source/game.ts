@@ -2,25 +2,27 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
+import {Source} from './source';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {JSON as JXON} from '../../internal/util/json';
+import {XML} from '../../internal/util/xml';
+import {SourceTypes} from './source';
+import {Environment} from '../environment';
 
 /**
- * The CameraItem Class provides methods specifically used for camera items and
- * also methods that are shared between Item Classes. The
+ * The GameSource Class provides methods specifically used for game items and
+ * also methods that is shared between Item Classes. The
  * {@link #core/Scene Scene} class' getItems method would automatically return a
- * CameraItem object if there's a camera item on the specified scene.
+ * GameSource object if there's a game item on the specified scene.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
  * ### Basic Usage
  *
@@ -30,32 +32,127 @@ import {Color} from '../../util/color';
  * XJS.Scene.getActiveScene().then(function(scene) {
  *   scene.getItems().then(function(items) {
  *     for (var i in items) {
- *       if (items[i] instanceof XJS.CameraItem) {
- *         // Manipulate your camera item here
- *         items[i].getDeviceId().then(function(id) {
- *           // Do something with the id
- *         });
+ *       if (items[i] instanceof XJS.GameSource) {
+ *         // Manipulate your game item here
+ *         items[i].setOfflineImage(path); // just an example here
  *       }
  *     }
  *   });
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `CameraItem`
+ *  All methods marked as *Chainable* resolve with the original `GameSource`
  *  instance.
  */
-export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class GameSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Game Special Optimization is currently enabled or not
+   */
+  isSpecialOptimizationEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('GameCapSurfSharing', this._id).then(res => {
+        resolve(res === '1');
+      });
+    });
+  }
+
+  /**
+   * param: Promise<boolean>
+   *
+   * Set Game Special Optimization to on or off
+   *
+   * *Chainable.*
+   */
+  setSpecialOptimizationEnabled(value: boolean): Promise<GameSource> {
+    return new Promise(resolve => {
+      iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Show Mouse is currently enabled or not
+   */
+  isShowMouseEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('GameCapShowMouse', this._id).then(res => {
+        resolve(res === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   *
+   * Set Show Mouse in game to on or off
+   *
+   * *Chainable.*
+   */
+  setShowMouseEnabled(value: boolean): Promise<GameSource> {
+    return new Promise(resolve => {
+      iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * param: path<string>
+   *
+   * Set the offline image of a game source
+   *
+   * *Chainable.*
+   */
+  setOfflineImage(path: string): Promise<GameSource> {
+    return new Promise((resolve, reject) => {
+      if (this._type !== SourceTypes.GAMESOURCE) {
+        reject(Error('Current item should be a game source'));
+      } else if (Environment.isSourcePlugin()) {
+        reject(
+          Error('Source plugins cannot update offline images of other sources')
+        );
+      } else if (!(this._value instanceof XML)) {
+        this.getValue().then(() => {
+          this.setOfflineImage(path).then(itemObj => {
+            resolve(itemObj);
+          });
+        });
+      } else {
+        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
+          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+        if (regExp.test(path) || path === '') {
+          var valueObj = JXON.parse(this._value.toString());
+          valueObj['replace'] = path;
+          this.setValue(XML.parseJSON(valueObj)).then(() => {
+            resolve(this);
+          });
+        }
+      }
+    });
+  }
+
   /**
    * return: Promise<string>
    *
-   * Gets the device ID of the underlying camera device.
+   * Get the offline image of a game source
    */
-  getDeviceId(): Promise<string> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
-        resolve(val);
-      });
+  getOfflineImage(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (this._type !== SourceTypes.GAMESOURCE) {
+        reject(Error('Current item should be a game source'));
+      } else {
+        this.getValue().then(() => {
+          var valueObj = JXON.parse(this._value.toString());
+          resolve(valueObj['replace'] ? valueObj['replace'] : '');
+        });
+      }
     });
   }
 
@@ -64,73 +161,73 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
-  isKeepAspectRatio:        () => Promise<boolean>;
+  isKeepAspectRatio: () => Promise<boolean>;
 
   /**
    * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
    */
-  isPositionLocked:         () => Promise<boolean>;
+  isPositionLocked: () => Promise<boolean>;
 
   /**
    * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
    */
-  isEnhancedResizeEnabled:   () => Promise<boolean>;
+  isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
-  getPosition:              () => Promise<Rectangle>;
+  getPosition: () => Promise<Rectangle>;
 
   /**
    * See: {@link #core/IItemLayout#getRotateY getRotateY}
    */
-  getRotateY:              () => Promise<number>;
+  getRotateY: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemLayout#getRotateX getRotateX}
    */
-  getRotateX:              () => Promise<number>;
+  getRotateX: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
-  getRotateZ:              () => Promise<number>;
+  getRotateZ: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
+  setKeepAspectRatio:       (value: boolean) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked:        (value: boolean) => Promise<CameraItem>;
+  setPositionLocked:        (value: boolean) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition:              (value: Rectangle) => Promise<CameraItem>;
+  setPosition:              (value: Rectangle) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY:              (value: number) => Promise<CameraItem>;
+  setRotateY:              (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX:              (value: number) => Promise<CameraItem>;
+  setRotateX:              (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ:              (value: number) => Promise<CameraItem>;
-
+  setRotateZ:              (value: number) => Promise<GameSource>;
+  
   // ItemColor
 
   /**
@@ -141,93 +238,59 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemColor#getBrightness getBrightness}
    */
-  getBrightness:   () => Promise<number>;
+  getBrightness: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemColor#getContrast getContrast}
    */
-  getContrast:     () => Promise<number>;
+  getContrast: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemColor#getHue getHue}
    */
-  getHue:          () => Promise<number>;
+  getHue: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemColor#getSaturation getSaturation}
    */
-  getSaturation:   () => Promise<number>;
+  getSaturation: () => Promise<number>;
 
   /**
    * See: {@link #core/IItemColor#getBorderColor getBorderColor}
    */
-  getBorderColor:  () => Promise<Color>;
+  getBorderColor: () => Promise<Color>;
 
   /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
-  setTransparency: (value: number) => Promise<CameraItem>;
+  setTransparency: (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness:   (value: number) => Promise<CameraItem>;
+  setBrightness:   (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast:     (value: number) => Promise<CameraItem>;
+  setContrast:     (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue:          (value: number) => Promise<CameraItem>;
+  setHue:          (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation:   (value: number) => Promise<CameraItem>;
+  setSaturation:   (value: number) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor:  (value: Color) => Promise<CameraItem>;
+  setBorderColor:  (value: Color) => Promise<GameSource>;
 
-  // special color options pinning
-
-  /**
-   * param: value<boolean>
-   *
-   * Set this to true to share color settings across all instances of this
-   * camera device on the stage.
-   *
-   * *Chainable.*
-   */
-  setColorOptionsPinned(value: boolean): Promise<CameraItem> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:cc_pin', value ? '1' : '0', slot).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether color settings are shared across all instances of
-   * this camera device on the stage.
-   */
-  getColorOptionsPinned(): Promise<boolean> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_pin', slot).then(val => {
-        resolve(val === '1' ? true : false);
-      });
-    });
-  }
-
-  // ItemChroma
+// ItemChroma
 
   /**
    * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
@@ -237,7 +300,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
-  setChromaEnabled: (value: boolean) => Promise<CameraItem>;
+  setChromaEnabled: (value: boolean) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
@@ -247,7 +310,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
-  setKeyingType: (value: KeyingType) => Promise<CameraItem>;
+  setKeyingType: (value: KeyingType) => Promise<GameSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   
@@ -259,7 +322,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<CameraItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameSource>;
 
   // CHROMA LEGACY MODE
    
@@ -271,7 +334,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
-  setChromaLegacyBrightness: (value: number) => Promise<CameraItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
@@ -281,7 +344,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
-  setChromaLegacySaturation: (value: number) => Promise<CameraItem>;
+  setChromaLegacySaturation: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
@@ -291,7 +354,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
-  setChromaLegacyHue: (value: number) => Promise<CameraItem>;
+  setChromaLegacyHue: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
@@ -301,7 +364,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
-  setChromaLegacyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
@@ -311,7 +374,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<CameraItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameSource>;
 
   // CHROMA KEY RGB MODE
   
@@ -323,7 +386,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<CameraItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
@@ -333,7 +396,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
@@ -343,7 +406,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<CameraItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<GameSource>;
 
   // COLOR KEY MODE
   
@@ -355,7 +418,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<CameraItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
@@ -365,7 +428,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
-  setChromaColorKeyExposure: (value: number) => Promise<CameraItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
@@ -375,64 +438,29 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
-  setChromaColorKeyColor: (value: Color) => Promise<CameraItem>;
-
-  // special chroma options pinning
-
-  /**
-   * param: (value: boolean)
-   *
-   * Set this to true to share chroma keying settings across all instances of
-   * this camera device on the stage.
-   *
-   * *Chainable.*
-   */
-  setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:key_pin', value ? '1' : '0', slot).then(() => {
-        resolve(this);
-      });
-    });
-
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether chroma keying settings are shared across all instances of
-   * this camera device on the stage.
-   */
-  getKeyingOptionsPinned(): Promise<boolean> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_pin', slot).then(val => {
-        resolve(val === '1' ? true : false);
-      });
-    });
-  }
+  setChromaColorKeyColor: (value: Color) => Promise<GameSource>;
 
   // ItemTransition
-  
+
   /**
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
-  isVisible:         () => Promise<boolean>;
+  isVisible: () => Promise<boolean>;
   
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible:        (value: boolean) => Promise<CameraItem>;
+  setVisible:        (value: boolean) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
-  getTransition:     () => Promise<Transition>;
+  getTransition: () => Promise<Transition>;
   
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition:     (value: Transition) => Promise<CameraItem>;
+  setTransition:     (value: Transition) => Promise<GameSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -442,7 +470,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
-  setTransitionTime: (value: number) => Promise<CameraItem>;
+  setTransitionTime: (value: number) => Promise<GameSource>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(GameSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

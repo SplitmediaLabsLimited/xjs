@@ -1,163 +1,32 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
+ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
+import {IItemAudio, ItemAudio} from './iaudio';
+import {CuePoint} from './cuepoint';
+import {Source} from './source';
 import {Transition} from '../transition';
-import {Item} from './item';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
-import {ItemTypes} from './item';
 import {Environment} from '../environment';
 
 /**
- * The GameItem Class provides methods specifically used for game items and
- * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * GameItem object if there's a game item on the specified scene.
+ * The MediaSource class represents a playable media file.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- * ### Basic Usage
- *
- * ```javascript
- * var XJS = require('xjs');
- *
- * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.GameItem) {
- *         // Manipulate your game item here
- *         items[i].setOfflineImage(path); // just an example here
- *       }
- *     }
- *   });
- * });
- * ```
- *
- *  All methods marked as *Chainable* resolve with the original `GameItem`
+ *  All methods marked as *Chainable* resolve with the original `MediaSource`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
-   */
-  isSpecialOptimizationEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapSurfSharing').then(res => {
-        resolve(res === '1');
-      });
-    });
-  }
-
-  /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
-   */
-  setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapSurfSharing', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
-   */
-  isShowMouseEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('GameCapShowMouse').then(res => {
-        resolve(res === '1');
-      });
-    });
-  }
-
-  /**
-   * param: value<boolean>
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
-   */
-  setShowMouseEnabled(value: boolean): Promise<GameItem> {
-    return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('GameCapShowMouse', (value ? '1' : '0'), slot).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * param: path<string>
-   *
-   * Set the offline image of a game source
-   *
-   * *Chainable.*
-   */
-  setOfflineImage(path: string): Promise<GameItem> {
-    return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game source'));
-      } else if (Environment.isSourcePlugin()) {
-        reject(
-          Error('Source plugins cannot update offline images of other sources')
-        );
-      } else if (!(this._value instanceof XML)) {
-        this.getValue().then(() => {
-          this.setOfflineImage(path).then(itemObj => {
-            resolve(itemObj);
-          });
-        });
-      } else {
-        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-        if (regExp.test(path) || path === '') {
-          var valueObj = JXON.parse(this._value.toString());
-          valueObj['replace'] = path;
-          this.setValue(XML.parseJSON(valueObj)).then(() => {
-            resolve(this);
-          });
-        }
-      }
-    });
-  }
-
-  /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game source
-   */
-  getOfflineImage(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game source'));
-      } else {
-        this.getValue().then(() => {
-          var valueObj = JXON.parse(this._value.toString());
-          resolve(valueObj['replace'] ? valueObj['replace'] : '');
-        });
-      }
-    });
-  }
+export class MediaSource extends Source implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
 
   // ItemLayout
 
@@ -199,39 +68,39 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio: (value: boolean) => Promise<GameItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<HTMLItem>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked: (value: boolean) => Promise<GameItem>;
+  setPositionLocked: (value: boolean) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<GameItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition: (value: Rectangle) => Promise<GameItem>;
+  setPosition: (value: Rectangle) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY: (value: number) => Promise<GameItem>;
+  setRotateY: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX: (value: number) => Promise<GameItem>;
+  setRotateX: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ: (value: number) => Promise<GameItem>;
-  
-  // ItemColor
+  setRotateZ: (value: number) => Promise<MediaSource>;
+
+// ItemColor
 
   /**
    * See: {@link #core/IItemColor#getTransparency getTransparency}
@@ -266,34 +135,34 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
-  setTransparency: (value: number) => Promise<GameItem>;
+  setTransparency: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness: (value: number) => Promise<GameItem>;
+  setBrightness: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast: (value: number) => Promise<GameItem>;
+  setContrast: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue: (value: number) => Promise<GameItem>;
+  setHue: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation: (value: number) => Promise<GameItem>;
+  setSaturation: (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor: (value: Color) => Promise<GameItem>;
+  setBorderColor: (value: Color) => Promise<MediaSource>;
 
-// ItemChroma
+  // ItemChroma
 
   /**
    * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
@@ -303,145 +172,145 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
-  setChromaEnabled: (value: boolean) => Promise<GameItem>;
-  
+  setChromaEnabled: (value: boolean) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
-  setKeyingType: (value: KeyingType) => Promise<GameItem>;
+  setKeyingType: (value: KeyingType) => Promise<MediaSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<MediaSource>;
 
   // CHROMA LEGACY MODE
-   
+ 
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
-  setChromaLegacyBrightness: (value: number) => Promise<GameItem>;
-  
+  setChromaLegacyBrightness: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
-  setChromaLegacySaturation: (value: number) => Promise<GameItem>;
-  
+  setChromaLegacySaturation: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
-  setChromaLegacyHue: (value: number) => Promise<GameItem>;
-  
+  setChromaLegacyHue: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
-  setChromaLegacyThreshold: (value: number) => Promise<GameItem>;
-  
+  setChromaLegacyThreshold: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<MediaSource>;
 
   // CHROMA KEY RGB MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameItem>;
-  
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<GameItem>;
-  
+  setChromaRGBKeyThreshold: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<GameItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<MediaSource>;
 
   // COLOR KEY MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<GameItem>;
-  
+  setChromaColorKeyThreshold: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
-  setChromaColorKeyExposure: (value: number) => Promise<GameItem>;
-  
+  setChromaColorKeyExposure: (value: number) => Promise<MediaSource>;
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
-  setChromaColorKeyColor: (value: Color) => Promise<GameItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<MediaSource>;
 
   // ItemTransition
 
@@ -453,7 +322,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible: (value: boolean) => Promise<GameItem>;
+  setVisible: (value: boolean) => Promise<MediaSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
@@ -463,7 +332,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition: (value: Transition) => Promise<GameItem>;
+  setTransition: (value: Transition) => Promise<MediaSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -473,7 +342,157 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
-  setTransitionTime: (value: number) => Promise<GameItem>;
+  setTransitionTime: (value: number) => Promise<MediaSource>;
+
+  // ItemPlayback
+  
+  /**
+   * See: {@link #core/IItemPlayback#isSeekable isSeekable}
+   */
+  isSeekable: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackPosition getPlaybackPosition}
+   */
+  getPlaybackPosition: () => Promise<number>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackPosition setPlaybackPosition}
+   */
+  setPlaybackPosition: (value: number) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackDuration getPlaybackDuration}
+   */
+  getPlaybackDuration: () => Promise<number>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isPlaying isPlaying}
+   */
+  isPlaying: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setPlaying setPlaying}
+   */
+  setPlaying: (value: boolean) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackStartPosition getPlaybackStartPosition}
+   */
+  getPlaybackStartPosition: () => Promise<number>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackStartPosition setPlaybackStartPosition}
+   */
+  setPlaybackStartPosition: (value: number) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackEndPosition getPlaybackEndPosition}
+   */
+  getPlaybackEndPosition: () => Promise<number>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackEndPosition setPlaybackEndPosition}
+   */
+  setPlaybackEndPosition: (value: number) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getActionAfterPlayback getActionAfterPlayback}
+   */
+  getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setActionAfterPlayback setActionAfterPlayback}
+   */
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isForceDeinterlace isForceDeinterlace}
+   */
+  isForceDeinterlace: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setForceDeinterlace setForceDeinterlace}
+   */
+  setForceDeinterlace: (value: boolean) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
+   */
+  isRememberingPlaybackPosition: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
+   */
+  setRememberingPlaybackPosition: (value: boolean) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
+   */
+  isShowingPlaybackPosition: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
+   */
+  setShowingPlaybackPosition: (value: boolean) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#getCuePoints getCuePoints}
+   */
+  getCuePoints: () => Promise<CuePoint[]>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#setCuePoints setCuePoints}
+   */
+  setCuePoints: (value: CuePoint[]) => Promise<MediaSource>;
+
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<MediaSource>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isAudio isAudio}
+   */
+  isAudio: () => Promise<boolean>;
+  
+  /**
+   * See: {@link #core/IItemPlayback#isVideo isVideo}
+   */
+  isVideo: () => Promise<boolean>;
+
+  // ItemAudio
+
+  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  getVolume: () => Promise<number>;
+
+  /** See: {@link #core/IItemAudio#isMute isMute} */
+  isMute: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<MediaSource>;
+
+  /** See: {@link #core/IItemAudio#setMute setMute} */
+  setMute: (value: boolean) => Promise<MediaSource>;
+
+  /** See: {@link #core/IItemAudio#isStreamOnlyEnabled isStreamOnlyEnabled} */
+  isStreamOnlyEnabled: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemAudio#setStreamOnlyEnabled setStreamOnlyEnabled} */
+  setStreamOnlyEnabled: (value: boolean) => Promise<MediaSource>;
+
+  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(MediaSource, [ItemLayout, ItemColor, ItemChroma,
+  ItemTransition, ItemPlayback, ItemAudio]);

@@ -14,6 +14,7 @@
     Server      = require('karma').Server,
     data        = require('gulp-data'),
     path        = require('path'),
+    rename      = require('gulp-rename'),
     argv        = require('yargs').argv;
 
   gulp.task('browserify', function() {
@@ -24,6 +25,23 @@
       .require('./src/index.ts', {expose: 'xjs'})
       .bundle()
       .pipe(source('xjs.js'))
+      .pipe(gulp.dest('dist'));
+  });
+
+  gulp.task('es2015', ['browserify'], function(done) {
+    return gulp.src('./dist/xjs.js')
+      .pipe(data(function(file) {
+        var content = String(file.contents);
+
+        content = content.replace(/require/ig, '_require');
+
+        content = '(function() {\n' + content +
+          '\nmodule.exports = _require(\'xjs\');\n})();';
+
+        file.contents = new Buffer(content);
+        return file;
+      }))
+      .pipe(rename('xjs-es2015.js'))
       .pipe(gulp.dest('dist'));
   });
 
@@ -87,12 +105,17 @@
       }
     }
 
-    return gulp.src(['./package.json', './bower.json', './dist/xjs.js'],
-        {base: './'})
+    return gulp.src(
+      [
+        './package.json',
+        './bower.json',
+        './dist/xjs.js',
+        './dist/xjs-es2015.js'
+      ], {base: './'})
       .pipe(data(function(file) {
         var updatedContents = '';
 
-        if (path.basename(file.path) === 'xjs.js') {
+        if (/xjs/.test(path.basename(file.path))) {
           updatedContents = String(file.contents);
 
           updatedContents =
@@ -175,5 +198,5 @@
 
   gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 
-  gulp.task('default', ['browserify']);
+  gulp.task('default', ['es2015']);
 }());

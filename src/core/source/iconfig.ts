@@ -47,8 +47,7 @@ export class ItemConfigurable {
 
   loadConfig(): Promise<any> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:BrowserConfiguration', slot).then(
+      iItem.get('prop:BrowserConfiguration', this._id).then(
         config => {
           let configObj = config === 'null' ? {} : JSON.parse(config);
           let persist = Global.getPersistentConfig();
@@ -89,7 +88,7 @@ export class ItemConfigurable {
           }
         } else {
           reject(Error(
-            'Extensions and source configuration windows are ' +
+            'Extensions and source properties windows are ' +
             'not allowed to directly save configuration objects. ' +
             'Call requestSaveConfig() instead.'));
         }

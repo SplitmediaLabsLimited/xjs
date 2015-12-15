@@ -9,7 +9,7 @@ import {exec} from '../internal/internal';
 /**
  *  This class is used to spawn new browser processes that can be used to open
  *  other URLs. Source plugins do not have this functionality (but their
- *  configuration windows may use this.)
+ *  properties windows may use this.)
  *
  *  Note that opening a new dialog replaces the old one. Also, dialogs are
  *  considered to be the same type of window as their parent windows: e.g.,

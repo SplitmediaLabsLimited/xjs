@@ -1,10 +1,10 @@
 /* globals describe, it, expect, require, beforeEach, spyOn, done */
 
-describe('GameItem', function() {
+describe('GameSource', function() {
   'use strict';
 
   var XJS = require('xjs');
-  var GameItem = XJS.GameItem;
+  var GameSource = XJS.GameSource;
   var System = XJS.System;
   var Scene = XJS.Scene;
   var env = new window.Environment(XJS);
@@ -18,7 +18,7 @@ describe('GameItem', function() {
   var specialOptimizationSet = false;
   var showMouseSet = false;
   var offlineImageSet = false;
-  var currentGameItem;
+  var currentGameSource;
   var environments = ['config', 'extension', 'plugin'];
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
@@ -34,11 +34,11 @@ describe('GameItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName("placement")[0];
         var selected = '[id="' + attachedID + '"]';
-        var itemSelected = placement.querySelector(selected);
+        var sourceSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
+          window.OnAsyncCallback(irand, sourceSelected.getAttribute("type"));
         },10);
       break;
 
@@ -53,12 +53,12 @@ describe('GameItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return GameCapSurfSharing attribute
           setTimeout(function() {
             var irand = rand;
             window.OnAsyncCallback(irand,
-              itemSelected.getAttribute("GameCapSurfSharing"));
+              sourceSelected.getAttribute("GameCapSurfSharing"));
           },10);
         }
       break;
@@ -74,12 +74,12 @@ describe('GameItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return GameCapShowMouse attribute
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
-              itemSelected.getAttribute("GameCapShowMouse"));
+              sourceSelected.getAttribute("GameCapShowMouse"));
           },10);
         }
       break;
@@ -95,11 +95,11 @@ describe('GameItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return type attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute("item"));
           },10);
         }
       break;
@@ -154,10 +154,10 @@ describe('GameItem', function() {
     propTypeCount = 0;
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{GAMEID}' });
-      var item2 = new XJS.Item({id : '{GAMEID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{GAMEID}' });
+      var source2 = new XJS.Source({id : '{GAMEID2}'});
+      source1.getType();
+      source2.getType();
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
@@ -210,14 +210,14 @@ describe('GameItem', function() {
       .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
-      newScene.getItems().then(function(items) {
-        var itemArray = items;
-        var itemArrayLength = itemArray.length;
+      newScene.getItems().then(function(sources) {
+        var sourceArray = sources;
+        var sourceArrayLength = sourceArray.length;
 
-        if (itemArrayLength > 0) {
-          for (var i = 0; i < itemArrayLength; i++) {
-            if (itemArray[i] instanceof GameItem) {
-              enumerated.push(itemArray[i]);
+        if (sourceArrayLength > 0) {
+          for (var i = 0; i < sourceArrayLength; i++) {
+            if (sourceArray[i] instanceof GameSource) {
+              enumerated.push(sourceArray[i]);
             }
           }
         }
@@ -231,26 +231,26 @@ describe('GameItem', function() {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_GAME + '"]';
-    var gameItems = placement.querySelectorAll(selected);
-    expect(gameItems.length).toBe(enumerated.length);
+    var gameSources = placement.querySelectorAll(selected);
+    expect(gameSources.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentGameItem = enumerated[0];
+        currentGameSource = enumerated[0];
         done();
       } else {
         System.getGames().then(function(games) {
-          currentGameItem = new GameItem(games[games.length-1]);
+          currentGameSource = new GameSource(games[games.length-1]);
           done();
         }.bind(this));
       }
     });
 
     it('should implement the layout interface', function() {
-      expect(currentGameItem).hasMethods([
+      expect(currentGameSource).hasMethods([
         'isKeepAspectRatio',
         'setKeepAspectRatio',
         'isPositionLocked',
@@ -263,7 +263,7 @@ describe('GameItem', function() {
     });
 
     it('should implement the color interface', function() {
-      expect(currentGameItem).hasMethods([
+      expect(currentGameSource).hasMethods([
         'getTransparency',
         'setTransparency',
         'getBrightness',
@@ -280,7 +280,7 @@ describe('GameItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-      expect(currentGameItem).hasMethods([
+      expect(currentGameSource).hasMethods([
         'isChromaEnabled',
         'setChromaEnabled',
         'getKeyingType',
@@ -313,7 +313,7 @@ describe('GameItem', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(currentGameItem).hasMethods([
+      expect(currentGameSource).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -324,14 +324,14 @@ describe('GameItem', function() {
     });
   });
 
-  describe('gameItem-specific methods checking', function() {
+  describe('gameSource-specific methods checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentGameItem = enumerated[0];
+        currentGameSource = enumerated[0];
         done();
       } else {
         System.getGames().then(function(games) {
-          currentGameItem = new GameItem(games[games.length-1]);
+          currentGameSource = new GameSource(games[games.length-1]);
           done();
         }.bind(this));
       }
@@ -339,7 +339,7 @@ describe('GameItem', function() {
 
     it('should be able to check whether special optimization is enabled or not',
       function(done) {
-        var promise = currentGameItem.isSpecialOptimizationEnabled();
+        var promise = currentGameSource.isSpecialOptimizationEnabled();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeBoolean();
@@ -350,14 +350,14 @@ describe('GameItem', function() {
     it('should be able to enable or disable special optimization',
       function(done) {
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
+        currentGameSource.setSpecialOptimizationEnabled(randomBoolean);
         if (!isXSplit) {
           expect(specialOptimizationSet).toBe(true);
         }
-        currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
+        currentGameSource.isSpecialOptimizationEnabled().then(function(firstEnabled) {
           expect(firstEnabled).toBe(randomBoolean);
-          currentGameItem.setSpecialOptimizationEnabled(!randomBoolean);
-          return currentGameItem.isSpecialOptimizationEnabled();
+          currentGameSource.setSpecialOptimizationEnabled(!randomBoolean);
+          return currentGameSource.isSpecialOptimizationEnabled();
         })
         .then(function(secondEnabled) {
           expect(secondEnabled).toBe(!randomBoolean);
@@ -367,7 +367,7 @@ describe('GameItem', function() {
 
     it('should be able to check whether mouse is shown or not in game capture',
       function(done) {
-        var promise = currentGameItem.isShowMouseEnabled();
+        var promise = currentGameSource.isShowMouseEnabled();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(isEnabled) {
           expect(isEnabled).toBeBoolean();
@@ -377,14 +377,14 @@ describe('GameItem', function() {
 
     it('should be able to show or hide mouse in game capture', function(done) {
       var randomBoolean = !!Math.floor(Math.random() * 2);
-      currentGameItem.setShowMouseEnabled(randomBoolean);
+      currentGameSource.setShowMouseEnabled(randomBoolean);
       if (!isXSplit) {
         expect(showMouseSet).toBe(true);
       }
-      currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
+      currentGameSource.isShowMouseEnabled().then(function(firstEnabled) {
         expect(firstEnabled).toBe(randomBoolean);
-        currentGameItem.setShowMouseEnabled(!randomBoolean);
-        return currentGameItem.isShowMouseEnabled();
+        currentGameSource.setShowMouseEnabled(!randomBoolean);
+        return currentGameSource.isShowMouseEnabled();
       })
       .then(function(secondEnabled) {
         expect(secondEnabled).toBe(!randomBoolean);
@@ -394,7 +394,7 @@ describe('GameItem', function() {
 
     it('should be able to get offline image',
       function(done) {
-        var promise = currentGameItem.getOfflineImage();
+        var promise = currentGameSource.getOfflineImage();
         expect(promise).toBeInstanceOf(Promise);
         promise.then(function(offlineImage) {
           expect(offlineImage).toBeTypeOf('string');
@@ -406,11 +406,11 @@ describe('GameItem', function() {
       var firstPath = 'C:\\someFolder\\someFile.jpg';
       var secondPath = 'C:\\anotherFolder\\anotherFile.jpg';
 
-      currentGameItem.setOfflineImage(firstPath).then(function(item) {
-        item.getOfflineImage().then(function(offlineImage) {
+      currentGameSource.setOfflineImage(firstPath).then(function(source) {
+        source.getOfflineImage().then(function(offlineImage) {
           expect(offlineImage).toEqual(firstPath);
-          currentGameItem.setOfflineImage(secondPath);
-          return currentGameItem.getOfflineImage();
+          currentGameSource.setOfflineImage(secondPath);
+          return currentGameSource.getOfflineImage();
         })
         .then(function(offlineImage2) {
           expect(offlineImage2).toEqual(secondPath);

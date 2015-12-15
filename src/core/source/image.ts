@@ -8,21 +8,21 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
+import {Source} from './source';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The MediaItem class represents a playable media file.
+ * The ImageSource class represents an image source (includes GIF files).
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `MediaItem`
+ *  All methods marked as *Chainable* resolve with the original `ImageSource`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ImageSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   // ItemLayout
 
@@ -64,37 +64,37 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
     /**
      * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
      */
-    setKeepAspectRatio: (value: boolean) => Promise<MediaItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
      */
-    setPositionLocked: (value: boolean) => Promise<MediaItem>;
+  setPositionLocked: (value: boolean) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
      */
-    setEnhancedResizeEnabled: (value: boolean) => Promise<MediaItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setPosition setPosition}
      */
-    setPosition: (value: Rectangle) => Promise<MediaItem>;
+  setPosition: (value: Rectangle) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setRotateY setRotateY}
      */
-    setRotateY: (value: number) => Promise<MediaItem>;
+  setRotateY: (value: number) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setRotateX setRotateX}
      */
-    setRotateX: (value: number) => Promise<MediaItem>;
+  setRotateX: (value: number) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
      */
-    setRotateZ: (value: number) => Promise<MediaItem>;
+  setRotateZ: (value: number) => Promise<ImageSource>;
 
   // ItemColor
 
@@ -131,32 +131,32 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
-  setTransparency: (value: number) => Promise<MediaItem>;
+  setTransparency: (value: number) => Promise<ImageSource>;
 
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness: (value: number) => Promise<MediaItem>;
+  setBrightness: (value: number) => Promise<ImageSource>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast: (value: number) => Promise<MediaItem>;
+  setContrast: (value: number) => Promise<ImageSource>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue: (value: number) => Promise<MediaItem>;
+  setHue: (value: number) => Promise<ImageSource>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation: (value: number) => Promise<MediaItem>;
+  setSaturation: (value: number) => Promise<ImageSource>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor: (value: Color) => Promise<MediaItem>;
+  setBorderColor: (value: Color) => Promise<ImageSource>;
 
   // ItemChroma
 
@@ -168,7 +168,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
-  setChromaEnabled: (value: boolean) => Promise<MediaItem>;
+  setChromaEnabled: (value: boolean) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
@@ -178,7 +178,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
-  setKeyingType: (value: KeyingType) => Promise<MediaItem>;
+  setKeyingType: (value: KeyingType) => Promise<ImageSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   
@@ -190,7 +190,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<MediaItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageSource>;
 
   // CHROMA LEGACY MODE
    
@@ -202,7 +202,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
-  setChromaLegacyBrightness: (value: number) => Promise<MediaItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
@@ -212,7 +212,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
-  setChromaLegacySaturation: (value: number) => Promise<MediaItem>;
+  setChromaLegacySaturation: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
@@ -222,7 +222,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
-  setChromaLegacyHue: (value: number) => Promise<MediaItem>;
+  setChromaLegacyHue: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
@@ -232,7 +232,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
-  setChromaLegacyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
@@ -242,7 +242,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<MediaItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageSource>;
 
   // CHROMA KEY RGB MODE
   
@@ -254,7 +254,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<MediaItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
@@ -264,7 +264,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
@@ -274,7 +274,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<MediaItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ImageSource>;
 
   // COLOR KEY MODE
   
@@ -286,7 +286,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<MediaItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
@@ -296,7 +296,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
-  setChromaColorKeyExposure: (value: number) => Promise<MediaItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
@@ -306,7 +306,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
-  setChromaColorKeyColor: (value: Color) => Promise<MediaItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ImageSource>;
 
   // ItemTransition
 
@@ -318,7 +318,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible: (value: boolean) => Promise<MediaItem>;
+  setVisible: (value: boolean) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
@@ -328,7 +328,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition: (value: Transition) => Promise<MediaItem>;
+  setTransition: (value: Transition) => Promise<ImageSource>;
   
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -338,7 +338,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
-  setTransitionTime: (value: number) => Promise<MediaItem>;
+  setTransitionTime: (value: number) => Promise<ImageSource>;
 }
 
-applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ImageSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

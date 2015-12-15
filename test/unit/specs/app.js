@@ -138,8 +138,15 @@ describe('App ===', function() {
     it('that always return as string', function(done) {
       var promise = App.getVersion();
       promise.then(function(version) {
-        expect(version).toBeDefined();
-        expect(version).toBeTypeOf('string');
+        if (/xsplit broadcaster/ig.test(navigator.appVersion)) {
+          expect(version).toBeDefined();
+          expect(version).toBeTypeOf('string');
+          done();
+        } else {
+          done.fail('Should reject if browser is not XBC');
+        }
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
         done();
       });
     });
@@ -339,9 +346,9 @@ describe('App ===', function() {
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
-            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
-            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
-            ' setSystemEnabled, getDelay, setDelay, toString');
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
           expect(audioDevice.toString()).toEqual('<dev id="default:1:0"' +
             ' level="0.900000" enable="1" hwlevel="-1.000000" hwenable="255"' +
             ' delay="0" mix="0"/>');
@@ -363,9 +370,9 @@ describe('App ===', function() {
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
-            ' isDefaultDevice, getLevel, setLevel, isEnabled, setEnabled,' +
-            ' getSystemLevel, setSystemLevel, getSystemEnabled,' +
-            ' setSystemEnabled, getDelay, setDelay, toString');
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
           expect(audioDevice.toString()).toEqual('<dev id="default:0:0"' +
             ' level="1.500000" enable="1" hwlevel="-1.000000" hwenable="255"' +
             ' delay="0" mix="0"/>');
@@ -375,9 +382,8 @@ describe('App ===', function() {
     });
   });
 
-  describe ('should be able to set audio devices', function() {
-    var micDev2Mock =
-      encodeURIComponent('<devices>' +
+  describe ('should be able to set attributes of audio devices', function() {
+    window.micDev2 = encodeURIComponent('<devices>' +
         '<dev id="default:1:0" level="1.000000" enable="1"' +
           ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
         '<dev id="default:0:0" level="1.000000" enable="1"' +
@@ -387,6 +393,7 @@ describe('App ===', function() {
           ' enable="1" hwlevel="-1.000000" hwenable="255"' +
           ' delay="0" mix="0"/>' +
         '</devices>');
+
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -394,150 +401,241 @@ describe('App ===', function() {
           var randomNumber=Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, micDev2Mock);
+            window.OnAsyncCallback(randomNumber, micDev2);
           },10);
+
+          return randomNumber;
+        }
+      });
+
+      spyOn(window.external, 'AppSetPropertyAsync')
+        .and.callFake(function(funcName, value) {
+
+        if (funcName === 'microphonedev2') {
+          micDev2 = encodeURIComponent(value);
+
+          var randomNumber=Math.floor(Math.random()*1000);
+          setTimeout(function() {
+            window.OnAsyncCallback(randomNumber, '1');
+          }, 10);
 
           return randomNumber;
         }
       });
     });
 
-    describe ('primary mic', function() {
-      var micDev2MicResult =
-        encodeURIComponent('<devices>' +
-          '<dev id="default:1:0" level="0.900000" enable="1"' +
-            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
-          '<dev id="default:0:0" level="1.000000" enable="1"' +
-            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
-          '<dev id="{0.0.0.00000000}.' +
-            '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
-            ' enable="1" hwlevel="-1.000000" hwenable="255"' +
-            ' delay="0" mix="0"/>' +
-          '</devices>');
-      var micDev2MicSet;
+    describe ('primary mic level', function() {
       var promise;
-      beforeEach(function() {
-        spyOn(window.external, 'AppSetPropertyAsync')
-          .and.callFake(function(funcName, value) {
-          micDev2MicSet = false;
-          if (funcName === 'microphonedev2') {
-            if (encodeURIComponent(value) === micDev2MicResult) {
-              micDev2MicSet = true;
-            }
-            var randomNumber=Math.floor(Math.random()*1000);
-            setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '1');
-            }, 10);
 
-            return randomNumber;
-          }
-        });
-
-        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
-          this.id = id;
-          this.level = level;
-          this.enable = enable;
-          this.hwlevel = hwlevel;
-          this.hwenable = hwenable;
-          this.delay = delay;
-
-          this.toString = function() {
-            return '<dev id="' + this.id + '" level="' + this.level +
-              '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
-              '" hwenable="' + this.hwenable + '" delay="' + this.delay +
-              '" mix="0"/>';
-          };
-        };
-        promise = App.setPrimaryMic(new MockAudioDevice(
-          'default:1:0',
-          '0.900000',
-          '1',
-          '-1.000000',
-          '255',
-          '0'
-          ));
-      });
-
-      it('through a promise', function() {
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimaryMicLevel(45);
         expect(promise).toBeInstanceOf(Promise);
-      });
-
-      it('as a boolean', function(done) {
-        promise.then(function() {
-          expect(micDev2MicSet).toBe(true);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimaryMicLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
           done();
         });
       });
     });
 
-    describe ('primary speaker', function() {
-      var micDev2SpeakerResult =
-        encodeURIComponent('<devices>' +
-          '<dev id="default:1:0" level="1.000000" enable="1"' +
-            ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
-          '<dev id="{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}"' +
-          ' level="0.555555" enable="1" hwlevel="-1.000000" hwenable="255"' +
-          ' delay="0" mix="0"/>' +
-          '<dev id="{0.0.0.00000000}.' +
-            '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
-            ' enable="1" hwlevel="-1.000000" hwenable="255"' +
-            ' delay="0" mix="0"/>' +
-          '</devices>');
-      var micDev2SpeakerSet;
+    describe ('primary mic enabled', function() {
       var promise;
-      beforeEach(function() {
-        spyOn(window.external, 'AppSetPropertyAsync')
-          .and.callFake(function(funcName, value) {
-          micDev2SpeakerSet = false;
-          if (funcName === 'microphonedev2') {
-            if (encodeURIComponent(value) === micDev2SpeakerResult) {
-              micDev2SpeakerSet = true;
-            }
-            var randomNumber=Math.floor(Math.random()*1000);
-            setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '1');
-            }, 10);
 
-            return randomNumber;
-          }
-        });
-
-        var MockAudioDevice = function(id, level, enable, hwlevel, hwenable, delay) {
-          this.id = id;
-          this.level = level;
-          this.enable = enable;
-          this.hwlevel = hwlevel;
-          this.hwenable = hwenable;
-          this.delay = delay;
-
-          this.toString = function() {
-            return '<dev id="' + this.id + '" level="' + this.level +
-              '" enable="'+ this.enable + '" hwlevel="'  + this.hwlevel +
-              '" hwenable="' + this.hwenable + '" delay="' + this.delay +
-              '" mix="0"/>';
-          };
-        };
-        promise = App.setPrimarySpeaker(new MockAudioDevice(
-          '{0.0.0.00000000}.{8974636f-61d2-4bb9-a7f4-01d587455c63}',
-          '0.555555',
-          '1',
-          '-1.000000',
-          '255',
-          '0'
-          ));
-      });
-
-      it('through a promise', function() {
+      it ('through a promise as a boolean', function(done) {
+        promise = App.setPrimaryMicEnabled(false);
         expect(promise).toBeInstanceOf(Promise);
-      });
-
-      it('as a boolean', function(done) {
-        promise.then(function() {
-          expect(micDev2SpeakerSet).toBe(true);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(false);
+          return App.setPrimaryMicEnabled(true);
+        }).then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(true);
           done();
         });
       });
     });
+
+    describe ('primary mic system level', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimaryMicSystemLevel(25);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimaryMicSystemLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary mic system enabled', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimaryMicSystemEnabled(255);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimaryMicSystemEnabled(42)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary mic delay', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimaryMicDelay(5555);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimaryMicDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker level', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimarySpeakerLevel(45);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimarySpeakerLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker enabled', function() {
+      var promise;
+
+      it ('through a promise as a boolean', function(done) {
+        promise = App.setPrimarySpeakerEnabled(false);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(false);
+          return App.setPrimarySpeakerEnabled(true);
+        }).then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(true);
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker system level', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimarySpeakerSystemLevel(25);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimarySpeakerSystemLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker system enabled', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimarySpeakerSystemEnabled(255);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimarySpeakerSystemEnabled(20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe ('primary speaker delay', function() {
+      var promise;
+
+      it ('through a promise as a number', function(done) {
+        promise = App.setPrimarySpeakerDelay(5555);
+        expect(promise).toBeInstanceOf(Promise);
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimarySpeakerDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
   });
 
   describe ('should be able to get silence detection values', function() {
@@ -1354,7 +1452,7 @@ describe('App ===', function() {
           },10);
           return randomNumber;
 
-        // add these below only because each scene has separate getting of items
+        // add these below only because each scene has separate getting of sources
         // this should be addressed to reuse the initial call for presetconfig
         } else if (funcName == 'presetconfig:0') {
           var randomNumber=Math.floor(Math.random()*1000);
@@ -1797,7 +1895,7 @@ describe('App ===', function() {
           },10);
           return randomNumber;
 
-        // add these below only because each scene has separate getting of items,
+        // add these below only because each scene has separate getting of sources,
         // this should be addressed to reuse the initial call for presetconfig
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
@@ -2120,5 +2218,33 @@ describe('App ===', function() {
       });
     });
 
+  });
+
+  describe('should be able to get hashed user identity', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'GetGlobalProperty')
+        .and.callFake(function(prop) {
+          if (prop === 'userid') {
+            return '+965Bu+jXY+jUvCCbSAJbQ==';
+          }
+        });
+    });
+
+    it('as a string', function(done) {
+      App.getUserIdHash().then(function(hash) {
+        expect(hash).toBeTypeOf('string');
+        done();
+      });
+    });
+
+    it('encoded using some has function', function(done) {
+      // simple checking of character set, not really testing other constraints
+      var regex = /^[A-Za-z0-9+=]+$/;
+
+      App.getUserIdHash().then(function(hash) {
+        expect(regex.test(hash)).toBe(true);
+        done();
+      });
+    });
   });
 });

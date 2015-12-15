@@ -8,24 +8,25 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
+import {Source} from './source';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The ImageItem class represents an image source (includes GIF files).
+ * The ImageSource class represents an image source (includes GIF files).
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `ImageItem`
+ *  All methods marked as *Chainable* resolve with the original `ImageSource`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ImageSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
   // ItemLayout
 
+<<<<<<< HEAD:src/core/item/image.ts
     /**
      * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
      */
@@ -95,6 +96,132 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
      * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
      */
     setRotateZ: (value: number) => Promise<ImageItem>;
+=======
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Aspect Ratio is set to ON or OFF
+   */
+  isKeepAspectRatio: () => Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Position Locked is set to ON or OFF
+   */
+  isPositionLocked: () => Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Enhance Resize is Enabled or Disabled
+   */
+  isEnhancedResizeEnabled: () => Promise<boolean>;
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Get the position of the item
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  getPosition: () => Promise<Rectangle>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Y value of the item
+   */
+  getRotateY: () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate X value of the item
+   */
+  getRotateX: () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Rotate Z value of the item
+   */
+  getRotateZ: () => Promise<number>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Set Aspect Ratio to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setKeepAspectRatio: (value: boolean) => Promise<ImageSource>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Set Position Lock to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setPositionLocked: (value: boolean) => Promise<ImageSource>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Set Enhance Resize to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ImageSource>;
+
+  /**
+   * param: (value: Rectangle)
+   *
+   * Set Item Position. Relative coordinates (0-1) are required.
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
+   * item.setPosition(rect).then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  setPosition: (value: Rectangle) => Promise<ImageSource>;
+
+  /**
+   * param: (value: number)
+   *
+   * Set Rotate Y value of the item
+   *
+   * *Chainable.*
+   */
+  setRotateY: (value: number) => Promise<ImageSource>;
+
+  /**
+   * param: (value: number)
+   *
+   * Set Rotate X value of the item
+   *
+   * *Chainable.*
+   */
+  setRotateX: (value: number) => Promise<ImageSource>;
+
+  /**
+   * param: (value: number)
+   *
+   * Set Rotate Z value of the item
+   *
+   * *Chainable.*
+   */
+  setRotateZ: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
 
   // ItemColor
 
@@ -129,34 +256,82 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   getBorderColor: () => Promise<Color>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setTransparency setTransparency}
+=======
+   * param: (value: number)
+   *
+   * Set Item Transparency
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setTransparency: (value: number) => Promise<ImageItem>;
+  setTransparency: (value: number) => Promise<ImageSource>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setBrightness setBrightness}
+=======
+   * param: (value: number)
+   *
+   * Set Item Brightness
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setBrightness: (value: number) => Promise<ImageItem>;
+  setBrightness: (value: number) => Promise<ImageSource>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setContrast setContrast}
+=======
+   * param: (value: number)
+   *
+   * Set Item Contrast
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setContrast: (value: number) => Promise<ImageItem>;
+  setContrast: (value: number) => Promise<ImageSource>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setHue setHue}
+=======
+   * param: (value: number)
+   *
+   * Set Item Hue
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setHue: (value: number) => Promise<ImageItem>;
+  setHue: (value: number) => Promise<ImageSource>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setSaturation setSaturation}
+=======
+   * param: (value: number)
+   *
+   * Set Item Saturation
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setSaturation: (value: number) => Promise<ImageItem>;
+  setSaturation: (value: number) => Promise<ImageSource>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
+=======
+   * param: (value: Color)
+   *
+   * Set Border Color
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setBorderColor: (value: Color) => Promise<ImageItem>;
+  setBorderColor: (value: Color) => Promise<ImageSource>;
 
   // ItemChroma
 
@@ -166,19 +341,33 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   isChromaEnabled: () => Promise<boolean>;
 
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
   setChromaEnabled: (value: boolean) => Promise<ImageItem>;
   
+=======
+   * param: (value: boolean)
+   *
+   * *Chainable.*
+   */
+  setChromaEnabled: (value: boolean) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
+=======
+   * param: (value: KeyingType)
+   * *Chainable.*
+   *
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setKeyingType: (value: KeyingType) => Promise<ImageItem>;
+  setKeyingType: (value: KeyingType) => Promise<ImageSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
   
@@ -188,9 +377,15 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
+=======
+   * param: (value: ChromaAntiAliasLevel)
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageSource>;
 
   // CHROMA LEGACY MODE
    
@@ -200,49 +395,87 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   getChromaLegacyBrightness: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
   setChromaLegacyBrightness: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaLegacyBrightness: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
   setChromaLegacySaturation: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaLegacySaturation: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
   setChromaLegacyHue: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaLegacyHue: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
   setChromaLegacyThreshold: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaLegacyThreshold: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageSource>;
 
   // CHROMA KEY RGB MODE
   
@@ -252,29 +485,51 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageItem>;
   
+=======
+   * param: (value: ChromaPrimaryColors)
+   *
+   * *Chainable.*
+   */
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaRGBKeyThreshold: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<ImageItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ImageSource>;
 
   // COLOR KEY MODE
   
@@ -284,29 +539,51 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   getChromaColorKeyThreshold: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
   setChromaColorKeyThreshold: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaColorKeyThreshold: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
   setChromaColorKeyExposure: (value: number) => Promise<ImageItem>;
   
+=======
+   * param: (value: number)
+   *
+   * *Chainable.*
+   */
+  setChromaColorKeyExposure: (value: number) => Promise<ImageSource>;
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
+=======
+   * param: (value: Color)
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setChromaColorKeyColor: (value: Color) => Promise<ImageItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ImageSource>;
 
   // ItemTransition
 
@@ -316,29 +593,59 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   isVisible: () => Promise<boolean>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible: (value: boolean) => Promise<ImageItem>;
   
+=======
+   * param: (value: boolean)
+   *
+   * Set item to visible or hidden
+   *
+   * *Chainable.*
+   */
+  setVisible: (value: boolean) => Promise<ImageSource>;
+
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition: (value: Transition) => Promise<ImageItem>;
   
+=======
+   * param: (value: Transition)
+   *
+   * Set item's transition type for when visibility is toggled
+   *
+   * *Chainable.*
+   */
+  setTransition: (value: Transition) => Promise<ImageSource>;
+
+>>>>>>> origin/issue-34:src/core/source/image.ts
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
   
   /**
+<<<<<<< HEAD:src/core/item/image.ts
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
+=======
+   * param: (value: number)
+   *
+   * Set item's transition time in milliseconds
+   *
+   * *Chainable.*
+>>>>>>> origin/issue-34:src/core/source/image.ts
    */
-  setTransitionTime: (value: number) => Promise<ImageItem>;
+  setTransitionTime: (value: number) => Promise<ImageSource>;
 }
 
-applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ImageSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

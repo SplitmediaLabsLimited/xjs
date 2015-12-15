@@ -44,6 +44,7 @@ export class Game implements Addable {
   private _fpsCapture: number;
   private _imagename: string;
   private _replace: string;
+  private _gameTrack: boolean;
 
   /**
    * return: number
@@ -280,5 +281,53 @@ export class Game implements Addable {
         resolve(true);
       });
     });
+  }
+
+
+
+  static _autoDetect: Game;
+
+  /**
+   *  return: Game
+   *
+   *  Returns a special Game object that may be added to the stage. This
+   *  object automatically detects any compatible games that are running
+   *  and focused, and changes the displayed game on the stage accordingly.
+   *
+   *  #### Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Game.autoDetect().addToScene();
+   * ```
+   */
+  static autoDetect(): Game {
+    if (Game._autoDetect === undefined) {
+      Game._autoDetect = new Game();
+      let ad = Game._autoDetect;
+      ad._pid = 0;
+      ad._handle = 0;
+      ad._hwnd = 0;
+      ad._gapitype = "";
+      ad._width = 0;
+      ad._height = 0;
+      ad._flags = 0;
+      ad._wndname = "";
+      ad._lastframets = 0;
+      ad._fpsRender = 0;
+      ad._fpsCapture = 0;
+      ad._imagename = "";
+
+      Game._autoDetect.addToScene = function() {
+        return new Promise(resolve => {
+          let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"/>';
+          iApp.callFunc('additem', adstring).then(() => {
+            resolve(true);
+          });
+        });
+      };
+    }
+
+    return Game._autoDetect;
   }
 }
