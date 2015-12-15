@@ -4,7 +4,7 @@ import {Environment} from '../core/environment';
 import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
-import {SourceConfigWindow} from '../window/config';
+import {SourcePropsWindow} from '../window/config';
 
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
@@ -106,7 +106,7 @@ function informWhenConfigLoaded(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourceConfig()) {
       window.addEventListener('load', () => {
-        SourceConfigWindow.getInstance().emit('config-load');
+        SourcePropsWindow.getInstance().emit('config-load');
         resolve();
       });
     } else {

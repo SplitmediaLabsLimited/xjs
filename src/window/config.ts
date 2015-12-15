@@ -4,7 +4,7 @@ import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 
 /** This utility class exposes functionality for source plugin developers to
- *  handle the configuration window for their source plugins. The framework also
+ *  handle the properties window for their source plugins. The framework also
  *  uses this class for its own internal purposes.
  *
  *  Developers can use this class to specify how their configuration HTML
@@ -14,12 +14,12 @@ import {exec} from '../internal/internal';
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  At the moment, the only relevant event for developers is:
- *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so properties window can update itself accordingly.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
-export class SourceConfigWindow extends EventEmitter {
-  private static _instance: SourceConfigWindow;
+export class SourcePropsWindow extends EventEmitter {
+  private static _instance: SourcePropsWindow;
   private _mode;
   private static _MODE_FULL: string = 'full';
   private static _MODE_TABBED: string = 'embedded';
@@ -28,10 +28,10 @@ export class SourceConfigWindow extends EventEmitter {
    *  Gets the instance of the window utility. Use this instead of the constructor.
    */
   static getInstance() {
-    if (SourceConfigWindow._instance === undefined) {
-      SourceConfigWindow._instance = new SourceConfigWindow();
+    if (SourcePropsWindow._instance === undefined) {
+      SourcePropsWindow._instance = new SourcePropsWindow();
     }
-    return SourceConfigWindow._instance;
+    return SourcePropsWindow._instance;
   }
 
   /**
@@ -65,7 +65,7 @@ export class SourceConfigWindow extends EventEmitter {
       this._informConfigLoaded();
     });
 
-    SourceConfigWindow._instance = this;
+    SourcePropsWindow._instance = this;
   }
 
   // helper function to communicate with built-in container
@@ -77,7 +77,7 @@ export class SourceConfigWindow extends EventEmitter {
    *  Informs the application that the plugin intends to use the entire window for rendering its configuration.
    */
   useFullWindow() {
-    this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    this._setRenderMode(SourcePropsWindow._MODE_FULL);
     // use default size to avoid layout issues. plugin can resize later
     this.resizeConfig(354, 390);
   }
@@ -86,7 +86,7 @@ export class SourceConfigWindow extends EventEmitter {
    *  param: ({customTabs: string[], tabOrder: string[]})
    *
    *  Informs the application that the plugin intends to use the existing tab
-   *  system to render its configuration window.
+   *  system to render its properties window.
    *
    *  The `customTabs` node should contain a list of tab titles that the plugin
    *  will create for itself.
@@ -96,7 +96,7 @@ export class SourceConfigWindow extends EventEmitter {
    *  'Color', 'Layout' and 'Transition'.
    */
   useTabbedWindow(config: { customTabs: string[], tabOrder: string[] }) {
-    this._setRenderMode(SourceConfigWindow._MODE_TABBED);
+    this._setRenderMode(SourcePropsWindow._MODE_TABBED);
     this._declareCustomTabs(config.customTabs);
     this._setTabOrder(config.tabOrder);
   }
@@ -130,7 +130,7 @@ export class SourceConfigWindow extends EventEmitter {
   /**
    *  param: width<number>, height<number>
    *
-   *  Resizes the configuration window. Currently only works when using full
+   *  Resizes the properties window. Currently only works when using full
    *  window mode.
    */
   resizeConfig(width: number, height: number) {
@@ -158,7 +158,7 @@ export class SourceConfigWindow extends EventEmitter {
     });
   };
 
-  /** Closes the configuration window. */
+  /** Closes the properties window. */
   closeConfig() {
     exec('Close');
   };

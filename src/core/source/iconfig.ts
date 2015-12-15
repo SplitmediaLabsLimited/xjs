@@ -58,7 +58,7 @@ export class ItemConfigurable {
           }
         } else {
           reject(Error(
-            'Extensions and source configuration windows are ' +
+            'Extensions and source properties windows are ' +
             'not allowed to directly save configuration objects. ' +
             'Call requestSaveConfig() instead.'));
         }

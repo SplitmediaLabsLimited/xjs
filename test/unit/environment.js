@@ -18,7 +18,7 @@ window.Environment = function(xjs) {
  *
  * - plugin (source plugin)
  * - extension (extension plugin)
- * - config (source configuration window)
+ * - config (source properties window)
  */
 Environment.prototype.set = function(env) {
   // Prevent modifying Environment IF executed within XBC
