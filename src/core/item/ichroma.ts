@@ -46,40 +46,240 @@ export enum ChromaAntiAliasLevel {
 }
 
 export interface IItemChroma {
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Determines whether any type of chroma keying is enabled.
+   */
   isChromaEnabled(): Promise<boolean>; // prop:key_chromakey
+
+  /**
+   * param: (value: boolean)
+   *
+   * Enables or disables chroma keying. Use together with `getKeyingType()`.
+   *
+   * *Chainable.*
+   */
   setChromaEnabled(value: boolean): Promise<IItemChroma>;
+
+  /**
+   * return: Promise<KeyingType>
+   *
+   * Determines the chroma keying type being used.
+   */
   getKeyingType(): Promise<KeyingType>; // prop:key_chromakeytype
+
+  /**
+   * param: (value: KeyingType)
+   *
+   * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
+   *
+   * *Chainable.*
+   *
+   * After setting the keying type, you may tweak settings specific to that type.
+   * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
+   * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
+   * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
+   */
   setKeyingType(value: KeyingType): Promise<IItemChroma>;
 
+  /**
+   * return: Promise<ChromaAntiAliasLevel>
+   *
+   * Gets the antialiasing level for chroma keying.
+   */
   getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
+  
+  /**
+   * param: (value: ChromaAntiAliasLevel)
+   *
+   * Sets the antialiasing level for chroma keying.
+   *
+   * *Chainable.*
+   */
   setChromaAntiAliasLevel(value: ChromaAntiAliasLevel);
 
   // CHROMA LEGACY MODE
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   */
   getChromaLegacyBrightness(): Promise<number>; // prop:key_chromabr  // ONLY FOR LEGACY MODE. Brightness
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
+   */
   setChromaLegacyBrightness(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   */
   getChromaLegacySaturation(): Promise<number>; // prop:key_chromasat // ONLY FOR LEGACY MODE. Saturation
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
+   */
   setChromaLegacySaturation(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   */
   getChromaLegacyHue(): Promise<number>; // prop:key_chromahue // ONLY FOR LEGACY MODE. Hue
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
+   */
   setChromaLegacyHue(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   */
   getChromaLegacyThreshold(): Promise<number>; // prop:key_chromarang // ONLY FOR LEGACY MODE. (below hue). Threshold?
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
+   */
   setChromaLegacyThreshold(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   */
   getChromaLegacyAlphaSmoothing(): Promise<number>; // prop:key_chromaranga // ONLY FOR LEGACY MODE. Alpha Smoothing
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   *
+   * *Chainable.*
+   */
   setChromaLegacyAlphaSmoothing(value: number): Promise<IItemChroma>;
 
   // CHROMA KEY RGB MODE
+
+  /**
+   * return: Promise<ChromaPrimaryColors>
+   *
+   * Gets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   */
   getChromaRGBKeyPrimaryColor(): Promise<ChromaPrimaryColors>; // prop:key_chromargbkeyprimary. Key Color
+  
+  /**
+   * param: (value: ChromaPrimaryColors)
+   *
+   * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
+   */
   setChromaRGBKeyPrimaryColor(value: ChromaPrimaryColors): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   */
   getChromaRGBKeyThreshold(): Promise<number>; // prop:key_chromargbkeythresh. Threshold
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
+   */
   setChromaRGBKeyThreshold(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   */
   getChromaRGBKeyExposure(): Promise<number>; // prop:key_chromargbkeybalance. Exposure
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   *
+   * *Chainable.*
+   */
   setChromaRGBKeyExposure(value: number): Promise<IItemChroma>;
 
   // COLOR KEY MODE
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   */
   getChromaColorKeyThreshold(): Promise<number>; // prop:key_colorrang // ONLY FOR COLOR KEY MODE. Threshold
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   *
+   * *Chainable.*
+   */
   setChromaColorKeyThreshold(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<number>
+   *
+   * Gets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   */
   getChromaColorKeyExposure(): Promise<number>; // prop:key_colorranga // ONLY FOR COLOR KEY MODE. Exposure
+  
+  /**
+   * param: (value: number)
+   *
+   * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   *
+   * *Chainable.*
+   */
   setChromaColorKeyExposure(value: number): Promise<IItemChroma>;
+  
+  /**
+   * return: Promise<Color>
+   *
+   * Gets the color setting for keying in color key mode.
+   */
   getChromaColorKeyColor(): Promise<Color>; // prop:key_colorrgb // ONLY FOR COLOR KEY MODE
+  
+  /**
+   * param: (value: Color)
+   *
+   * Sets the color setting for keying in color key mode.
+   *
+   * *Chainable.*
+   */
   setChromaColorKeyColor(value: Color): Promise<IItemChroma>;
 }
 

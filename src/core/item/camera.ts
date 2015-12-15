@@ -62,225 +62,134 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   // ItemLayout
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Aspect Ratio is set to ON or OFF
+   * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
   isKeepAspectRatio:        () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Position Locked is set to ON or OFF
+   * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
    */
   isPositionLocked:         () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Enhance Resize is Enabled or Disabled
+   * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
    */
   isEnhancedResizeEnabled:   () => Promise<boolean>;
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Get the position of the item
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition:              () => Promise<Rectangle>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Y value of the item
+   * See: {@link #core/IItemLayout#getRotateY getRotateY}
    */
   getRotateY:              () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate X value of the item
+   * See: {@link #core/IItemLayout#getRotateX getRotateX}
    */
   getRotateX:              () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Z value of the item
+   * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ:              () => Promise<number>;
 
   /**
-   * param: value<boolean>
-   *
-   * Set Aspect Ratio to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
   setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
-   *
-   * Set Position Lock to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
   setPositionLocked:        (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
-   *
-   * Set Enhance Resize to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
   setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<Rectangle>
-   *
-   * Set Item Position. Relative coordinates (0-1) are required.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
-   * item.setPosition(rect).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#setPosition setPosition}
    */
   setPosition:              (value: Rectangle) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Rotate Y value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
   setRotateY:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Rotate X value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
   setRotateX:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Rotate Z value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
   setRotateZ:              (value: number) => Promise<CameraItem>;
 
   // ItemColor
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Transparency value
+   * See: {@link #core/IItemColor#getTransparency getTransparency}
    */
   getTransparency: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Brightness value
+   * See: {@link #core/IItemColor#getBrightness getBrightness}
    */
   getBrightness:   () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Contrast value
+   * See: {@link #core/IItemColor#getContrast getContrast}
    */
   getContrast:     () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Hue value
+   * See: {@link #core/IItemColor#getHue getHue}
    */
   getHue:          () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Saturation value
+   * See: {@link #core/IItemColor#getSaturation getSaturation}
    */
   getSaturation:   () => Promise<number>;
 
   /**
-   * return: Promise<Color>
-   *
-   * Get Border Color
+   * See: {@link #core/IItemColor#getBorderColor getBorderColor}
    */
   getBorderColor:  () => Promise<Color>;
 
   /**
-   * param: value<number>
-   *
-   * Set Item Transparency
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Item Brightness
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
   setBrightness:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Item Contrast
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setContrast setContrast}
    */
   setContrast:     (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Item Hue
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setHue setHue}
    */
   setHue:          (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
-   *
-   * Set Item Saturation
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
   setSaturation:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<Color>
-   *
-   * Set Border Color
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
   setBorderColor:  (value: Color) => Promise<CameraItem>;
 
@@ -321,237 +230,150 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   // ItemChroma
 
   /**
-   * return: Promise<boolean>
-   *
-   * Determines whether any type of chroma keying is enabled.
+   * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
    */
   isChromaEnabled: () => Promise<boolean>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Enables or disables chroma keying. Use together with `getKeyingType()`.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
   setChromaEnabled: (value: boolean) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<KeyingType>
-   *
-   * Determines the chroma keying type being used.
+   * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
-
+  
   /**
-   * param: (value: KeyingType)
-   *
-   * Sets the chroma keying scheme to any one of three possible choices: Chroma RGB Key, Color Key, or Legacy Mode.
-   *
-   * *Chainable.*
-   *
-   * After setting the keying type, you may tweak settings specific to that type.
-   * - RGB Key: methods prefixed with `getChromaRGBKey-\*` or `setChromaRGBKey-\*`
-   * - Color Key: methods prefixed with `getChromaColorKey-\*` or `setChromaColorKey-\*`
-   * - Chroma Legacy Mode: methods prefixed with `getChromaLegacy-\*` or `setChromaLegacy-\*`
+   * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
   setKeyingType: (value: KeyingType) => Promise<CameraItem>;
 
+  // BOTH CHROMA LEGACY AND CHROMA RGB
+  
   /**
-   * return: Promise<ChromaAntiAliasLevel>
-   *
-   * Gets the antialiasing level for chroma keying.
+   * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-
+  
   /**
-   * param: (value: ChromaAntiAliasLevel)
-   *
-   * Sets the antialiasing level for chroma keying.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<CameraItem>;
 
   // CHROMA LEGACY MODE
-
+   
   /**
-   * return: Promise<number>
-   *
-   * Gets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the brightness setting (0-255). Only relevant when chroma keying is in Legacy mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
   setChromaLegacyBrightness: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
+   * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
   setChromaLegacySaturation: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
+   * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the hue setting (0-180).  Only relevant when chroma keying is in Legacy mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
   setChromaLegacyHue: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
   setChromaLegacyThreshold: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
+   * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the alpha smoothing setting (0-255). Only relevant when chroma keying is in Legacy mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<CameraItem>;
 
   // CHROMA KEY RGB MODE
-
+  
   /**
-   * return: Promise<ChromaPrimaryColors>
-   *
-   * Gets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
+   * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-
+  
   /**
-   * param: (value: ChromaPrimaryColors)
-   *
-   * Sets the primary color setting for chroma key. Only relevant when chroma keying is in RGB mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in RGB mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
+   * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in RGB mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
   setChromaRGBKeyExposure: (value: number) => Promise<CameraItem>;
 
   // COLOR KEY MODE
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
+   * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the threshold setting (0-255). Only relevant when chroma keying is in color key mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
   setChromaColorKeyThreshold: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Gets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
+   * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Sets the exposure setting (0-255). Only relevant when chroma keying is in color key mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
   setChromaColorKeyExposure: (value: number) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<Color>
-   *
-   * Gets the color setting for keying in color key mode.
+   * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
-
+  
   /**
-   * param: (value: Color)
-   *
-   * Sets the color setting for keying in color key mode.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
   setChromaColorKeyColor: (value: Color) => Promise<CameraItem>;
 
@@ -591,52 +413,34 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   }
 
   // ItemTransition
-
+  
   /**
-   * return: Promise<boolean>
-   *
-   * Check if item is visible on stage
+   * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible:         () => Promise<boolean>;
-
+  
   /**
-   * param: value<boolean>
-   *
-   * Set item to visible or hidden
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<boolean>
-   *
-   * Get item's transition type for when visibility is toggled
+   * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition:     () => Promise<Transition>;
-
+  
   /**
-   * param: value<Transition>
-   *
-   * Set item's transition type for when visibility is toggled
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<CameraItem>;
-
+  
   /**
-   * return: Promise<number>
-   *
-   * Get item's transition time in milliseconds
+   * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-
+  
   /**
-   * param: value<number>
-   *
-   * Set item's transition time in milliseconds
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<CameraItem>;
 }

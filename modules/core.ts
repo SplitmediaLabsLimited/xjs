@@ -15,3 +15,7 @@ export * from '../src/core/item/flash';
 export * from '../src/core/item/screen';
 export * from '../src/core/item/image';
 export * from '../src/core/item/media';
+export {IItemChroma} from '../src/core/item/ichroma';
+export {IItemColor} from '../src/core/item/icolor';
+export {IItemLayout} from '../src/core/item/ilayout';
+export {IItemTransition} from '../src/core/item/itransition';

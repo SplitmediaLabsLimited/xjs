@@ -4,17 +4,101 @@ import {Item as iItem} from '../../internal/item';
 import {Color} from '../../util/color';
 
 export interface IItemColor {
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Transparency value
+   */
   getTransparency(): Promise<number>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Item Transparency
+   *
+   * *Chainable.*
+   */
   setTransparency(value: number): Promise<any>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Brightness value
+   */
   getBrightness(): Promise<number>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Item Brightness
+   *
+   * *Chainable.*
+   */
   setBrightness(value: number): Promise<any>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Contrast value
+   */
   getContrast(): Promise<number>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Item Contrast
+   *
+   * *Chainable.*
+   */
   setContrast(value: number): Promise<any>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Hue value
+   */
   getHue(): Promise<number>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Item Hue
+   *
+   * *Chainable.*
+   */
   setHue(value: number): Promise<any>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get Item Saturation value
+   */
   getSaturation(): Promise<number>;
+
+  /**
+   * param: value<number>
+   *
+   * Set Item Saturation
+   *
+   * *Chainable.*
+   */
   setSaturation(value: number): Promise<any>;
+
+  /**
+   * return: Promise<Color>
+   *
+   * Get Border Color
+   */
   getBorderColor(): Promise<Color>;
+  
+  /**
+   * param: value<Color>
+   *
+   * Set Border Color
+   *
+   * *Chainable.*
+   */
   setBorderColor(value: Color): Promise<any>;
 }
 
