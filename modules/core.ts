@@ -19,3 +19,5 @@ export {IItemChroma} from '../src/core/item/ichroma';
 export {IItemColor} from '../src/core/item/icolor';
 export {IItemLayout} from '../src/core/item/ilayout';
 export {IItemTransition} from '../src/core/item/itransition';
+export {IItemAudio} from '../src/core/item/iaudio';
+export {IItemConfigurable} from '../src/core/item/iconfig';

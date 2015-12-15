@@ -111,28 +111,28 @@ export class AudioItem extends Item implements IItemAudio {
 
   // ItemAudio
 
-  /** Get item's volume level expressed as an integer from 0 to 100 */
+  /** See: {@link #core/IItemAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** Check if item's mute option is active */
+  /** See: {@link #core/IItemAudio#isMute isMute} */
   isMute:   () => Promise<boolean>;
 
-  /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
+  /** See: {@link #core/IItemAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<AudioItem>;
 
-  /** Set item's Mute property to ON or OFF */
+  /** See: {@link #core/IItemAudio#setMute setMute} */
   setMute:  (value: boolean) => Promise<AudioItem>;
 
-  /** Gets delay in milliseconds */
+  /** See: {@link #core/IItemAudio#getAudioOffset getAudioOffset} */
   getAudioOffset: () => Promise<number>;
 
-  /** Sets delay in milliseconds */
+  /** See: {@link #core/IItemAudio#setAudioOffset setAudioOffset} */
   setAudioOffset: (value: number) => Promise<AudioItem>;
 
-  /** Checks if audio is also output to system sound */
+  /** See: {@link #core/IItemAudio#isStreamOnlyEnabled isStreamOnlyEnabled} */
   isStreamOnlyEnabled: () => Promise<boolean>;
 
-  /** Sets whether audio should also be output to system sound */
+  /** See: {@link #core/IItemAudio#setStreamOnlyEnabled setStreamOnlyEnabled} */
   setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
 }
 

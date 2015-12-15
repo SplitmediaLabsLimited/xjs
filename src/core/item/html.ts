@@ -873,38 +873,24 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor, IItemChro
   setTransitionTime: (value: number) => Promise<HTMLItem>;
 
   // ItemConfigurable
-
+  
   /**
-   * return: Promise<any>
-   *
-   * Gets the configuration JSON
+   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
-
+  
   /**
-   * param: config<JSON>
-   *
-   * Persists a JSON object for configuration. Available to sources only.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HTMLItem>;
-
+  
   /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
-
+  
   /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<HTMLItem>;
 }

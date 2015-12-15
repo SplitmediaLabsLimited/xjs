@@ -6,9 +6,39 @@ import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 
 export interface IItemConfigurable {
+
+  /**
+   * return: Promise<any>
+   *
+   * Gets the configuration JSON
+   */
   loadConfig(): Promise<any>;
+
+  /**
+   * param: config<JSON>
+   *
+   * Persists a JSON object for configuration. Available to sources only.
+   *
+   * *Chainable.*
+   */
   saveConfig(configObj: any);
+
+  /**
+   * param: config<JSON>
+   *
+   * Requests the source to save a configuration. This makes the source emit the save-config event.
+   *
+   * *Chainable.*
+   */
   requestSaveConfig(configObj: any);
+  
+  /**
+   * param: config<JSON>
+   *
+   * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   *
+   * *Chainable.*
+   */
   applyConfig(configObj: any);
 }
 

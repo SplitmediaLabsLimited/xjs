@@ -4,13 +4,29 @@ import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 
 export interface IItemAudio {
+
+  /** Get item's volume level expressed as an integer from 0 to 100 */
   getVolume(): Promise<number>;
+
+  /** Set volume level of item as an integer from 0 (muted) to 100 (maximum) */
   setVolume(value: number): Promise<IItemAudio>;
+
+  /** Check if item's mute option is active */
   isMute(): Promise<boolean>;
+
+  /** Set item's Mute property to ON or OFF */
   setMute(value: boolean): Promise<IItemAudio>;
+
+  /** Gets delay in milliseconds */
   getAudioOffset(): Promise<number>;
+
+  /** Sets delay in milliseconds */
   setAudioOffset(value: number): Promise<IItemAudio>;
+
+  /** Checks if audio is also output to system sound */
   isStreamOnlyEnabled(): Promise<boolean>;
+
+  /** Sets whether audio should also be output to system sound */
   setStreamOnlyEnabled(value: boolean): Promise<IItemAudio>;
 }
 
