@@ -1,5 +1,4 @@
 /* globals angular, $, Prism */
-'use strict';
 
 angular.module('app', [
   'navigation-modules'
@@ -34,12 +33,16 @@ angular.module('app', [
       searchObj.push({
         path: MODULES.sections[sIdx].pages[pIdx].path,
         label: String(MODULES.sections[sIdx].pages[pIdx].name + ' ' +
-                MODULES.sections[sIdx].pages[pIdx].type)
+                MODULES.sections[sIdx].pages[pIdx].type),
+        parent: String(MODULES.sections[sIdx].name + ' ' +
+                MODULES.sections[sIdx].type)
       });
       for (var mIdx in MODULES.sections[sIdx].pages[pIdx].pages) {
         searchObj.push({
           path: MODULES.sections[sIdx].pages[pIdx].pages[mIdx].path,
-          label: String(MODULES.sections[sIdx].pages[pIdx].pages[mIdx].name)
+          label: String(MODULES.sections[sIdx].pages[pIdx].pages[mIdx].name),
+          parent: String(MODULES.sections[sIdx].pages[pIdx].name + ' ' +
+                  MODULES.sections[sIdx].pages[pIdx].type)
         });
       }
     }
@@ -99,7 +102,13 @@ angular.module('app', [
           response(results.slice(0, 10));
         },
         select: $rootScope.search
-      });
+      })
+      .autocomplete('instance')._renderItem = function(ul, item) {
+        return $('<li>')
+          .append('<span>' + item.label + '</span>' +
+            (item.parent ? '<span class="grey">' + item.parent + '</span>' : '')
+          ).appendTo(ul);
+      };
     }
   };
 }])
