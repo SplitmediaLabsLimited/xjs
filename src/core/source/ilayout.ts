@@ -181,7 +181,7 @@ export interface IItemLayout {
    * });
    * ```
    */
-  setRotateY(value: number): Promise<ItemLayout>;
+  setRotateY(value: number): Promise<IItemLayout>;
 
   /**
    * return: Promise<number>
@@ -216,7 +216,7 @@ export interface IItemLayout {
    * });
    * ```
    */
-  setRotateX(value: number): Promise<ItemLayout>;
+  setRotateX(value: number): Promise<IItemLayout>;
 
   /**
    * return: Promise<number>
@@ -259,7 +259,7 @@ export interface IItemLayout {
    * });
    * ```
    */
-  setRotateZ(value: number): Promise<ItemLayout>;
+  setRotateZ(value: number): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {

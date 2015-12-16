@@ -68,7 +68,7 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio: (value: boolean) => Promise<HTMLItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}

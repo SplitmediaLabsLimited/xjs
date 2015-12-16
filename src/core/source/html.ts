@@ -589,7 +589,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio: (value: boolean) => Promise<HTMLItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}

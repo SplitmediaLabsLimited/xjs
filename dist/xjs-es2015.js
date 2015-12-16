@@ -1,13 +1,14 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function() {
+_require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _require=="function"&&_require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _require=="function"&&_require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var app_1 = require('../internal/app');
-var rectangle_1 = require('../util/rectangle');
-var audio_1 = require('../system/audio');
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var internal_1 = require('../internal/internal');
-var environment_1 = require('./environment');
-var transition_1 = require('./transition');
+var app_1 = _require('../internal/app');
+var rectangle_1 = _require('../util/rectangle');
+var audio_1 = _require('../system/audio');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var internal_1 = _require('../internal/internal');
+var environment_1 = _require('./environment');
+var transition_1 = _require('./transition');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
 /**
@@ -17,7 +18,7 @@ var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
  * ### Basic Usage
  *
  * ```javascript
- * var xjs = require('xjs');
+ * var xjs = _require('xjs');
  * var App = new xjs.App();
  *
  * App.getFrameTime().then(function(frametime) {
@@ -873,7 +874,7 @@ var App = (function () {
      * #### Usage
      *
      * ```javascript
-     * var xjs = require('xjs'),
+     * var xjs = _require('xjs'),
      *     Transition = xjs.Transition,
      *     App = new xjs.App();
   
@@ -972,8 +973,8 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"../system/audio":33,"../util/rectangle":45,"./environment":4,"./transition":24}],2:[function(require,module,exports){
-var app_1 = require('../internal/app');
+},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"../system/audio":33,"../util/rectangle":45,"./environment":4,"./transition":24}],2:[function(_require,module,exports){
+var app_1 = _require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
     function Channel(props) {
@@ -1059,7 +1060,7 @@ var Channel = (function () {
     return Channel;
 })();
 exports.Channel = Channel;
-},{"../internal/app":25}],3:[function(require,module,exports){
+},{"../internal/app":25}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1067,8 +1068,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var internal_1 = require('../internal/internal');
-var eventemitter_1 = require('../util/eventemitter');
+var internal_1 = _require('../internal/internal');
+var eventemitter_1 = _require('../util/eventemitter');
 /**
  *  The Dll class allows access to functions in DLL files that are placed within
  *  the Scriptdlls folder.
@@ -1093,7 +1094,7 @@ var Dll = (function (_super) {
      *  param: (path: string)
      *
      *  Loads a DLL for the plugin to use. Currently, only Xjs.dll is auto-
-     *  loaded and does not require loading. Loading DLLs will trigger a
+     *  loaded and does not _require loading. Loading DLLs will trigger a
      *  notification for the user, requesting access to be granted to DLL files.
      *
      *  Paths are relative to the main XBC application folder, so sample usage is:
@@ -1123,7 +1124,7 @@ var Dll = (function (_super) {
      *
      *  Calls a function from a loaded DLL. The first DLL to be found containing
      *  the function name will be called, so you need to ensure there are no
-     *  function name collisions among DLLs for functions you require.
+     *  function name collisions among DLLs for functions you _require.
      *
      *  Some DLLs have callbacks. Assign a handler function to that callback in
      *  the global namespace, and the DLL will call that function accordingly.
@@ -1200,7 +1201,7 @@ window.Setdlldogrant = function (value) {
         Dll.emit('access-revoked');
     }
 };
-},{"../internal/internal":28,"../util/eventemitter":42}],4:[function(require,module,exports){
+},{"../internal/internal":28,"../util/eventemitter":42}],4:[function(_require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -1253,10 +1254,10 @@ var Environment = (function () {
 })();
 exports.Environment = Environment;
 Environment.initialize();
-},{}],5:[function(require,module,exports){
+},{}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var environment_1 = require('../core/environment');
-var internal_1 = require('../internal/internal');
+var environment_1 = _require('../core/environment');
+var internal_1 = _require('../internal/internal');
 var Extension = (function () {
     function Extension() {
         if (environment_1.Environment.isExtension()) {
@@ -1312,22 +1313,22 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
-},{"../core/environment":4,"../internal/internal":28}],6:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":28}],6:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var app_1 = require('../internal/app');
-var internal_1 = require('../internal/internal');
-var environment_1 = require('./environment');
-var source_1 = require('./source/source');
-var game_1 = require('./source/game');
-var camera_1 = require('./source/camera');
-var audio_1 = require('./source/audio');
-var html_1 = require('./source/html');
-var flash_1 = require('./source/flash');
-var screen_1 = require('./source/screen');
-var image_1 = require('./source/image');
-var media_1 = require('./source/media');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var app_1 = _require('../internal/app');
+var internal_1 = _require('../internal/internal');
+var environment_1 = _require('./environment');
+var source_1 = _require('./source/source');
+var game_1 = _require('./source/game');
+var camera_1 = _require('./source/camera');
+var audio_1 = _require('./source/audio');
+var html_1 = _require('./source/html');
+var flash_1 = _require('./source/flash');
+var screen_1 = _require('./source/screen');
+var image_1 = _require('./source/image');
+var media_1 = _require('./source/media');
 var Scene = (function () {
     function Scene(sceneNum) {
         this._id = sceneNum - 1;
@@ -2011,7 +2012,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"./environment":4,"./source/audio":7,"./source/camera":8,"./source/flash":10,"./source/game":11,"./source/html":12,"./source/image":18,"./source/media":21,"./source/screen":22,"./source/source":23}],7:[function(require,module,exports){
+},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"./environment":4,"./source/audio":7,"./source/camera":8,"./source/flash":10,"./source/game":11,"./source/html":12,"./source/image":18,"./source/media":21,"./source/screen":22,"./source/source":23}],7:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2019,10 +2020,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var iaudio_1 = require('./iaudio');
-var source_1 = require('./source');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var iaudio_1 = _require('./iaudio');
+var source_1 = _require('./source');
 /**
  * The AudioSource class represents an audio device that has been added
  * to the stage.
@@ -2180,7 +2181,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(source_1.Source, [iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"./iaudio":13,"./source":23}],8:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/mixin":31,"./iaudio":13,"./source":23}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2188,15 +2189,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var iaudio_1 = require('./iaudio');
-var source_1 = require('./source');
-var system_1 = require('../../system/system');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var iaudio_1 = _require('./iaudio');
+var source_1 = _require('./source');
+var system_1 = _require('../../system/system');
 /**
  * The CameraSource Class provides methods specifically used for camera items and
  * also methods that are shared between Item Classes. The
@@ -2208,7 +2209,7 @@ var system_1 = require('../../system/system');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
  *   scene.getItems().then(function(items) {
@@ -2559,7 +2560,7 @@ var CameraSource = (function (_super) {
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../system/system":39,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],9:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/mixin":31,"../../system/system":39,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],9:[function(_require,module,exports){
 var CuePoint = (function () {
     function CuePoint(time, action) {
         this._time = time;
@@ -2620,7 +2621,7 @@ var CuePoint = (function () {
     return CuePoint;
 })();
 exports.CuePoint = CuePoint;
-},{}],10:[function(require,module,exports){
+},{}],10:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2628,15 +2629,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var iaudio_1 = require('./iaudio');
-var source_1 = require('./source');
-var rectangle_1 = require('../../util/rectangle');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var iaudio_1 = _require('./iaudio');
+var source_1 = _require('./source');
+var rectangle_1 = _require('../../util/rectangle');
 /**
  * The FlashSource class represents a flash source item, which is any SWF file
  * loaded to XSplit Broadcaster.
@@ -2704,7 +2705,7 @@ var FlashSource = (function (_super) {
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],11:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2712,17 +2713,17 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var source_1 = require('./source');
-var json_1 = require('../../internal/util/json');
-var xml_1 = require('../../internal/util/xml');
-var source_2 = require('./source');
-var environment_1 = require('../environment');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var source_1 = _require('./source');
+var json_1 = _require('../../internal/util/json');
+var xml_1 = _require('../../internal/util/xml');
+var source_2 = _require('./source');
+var environment_1 = _require('../environment');
 /**
  * The GameSource Class provides methods specifically used for game items and
  * also methods that is shared between Item Classes. The
@@ -2734,7 +2735,7 @@ var environment_1 = require('../environment');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
  *   scene.getItems().then(function(items) {
@@ -2871,7 +2872,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],12:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],12:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2879,18 +2880,18 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var internal_1 = require('../../internal/internal');
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var iconfig_1 = require('./iconfig');
-var iaudio_1 = require('./iaudio');
-var source_1 = require('./source');
-var rectangle_1 = require('../../util/rectangle');
-var environment_1 = require('../environment');
+var internal_1 = _require('../../internal/internal');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var iconfig_1 = _require('./iconfig');
+var iaudio_1 = _require('./iaudio');
+var source_1 = _require('./source');
+var rectangle_1 = _require('../../util/rectangle');
+var environment_1 = _require('../environment');
 /**
  * The HtmlSource class represents a web page source. This covers both source
  * plugins and non-plugin URLs.
@@ -3061,7 +3062,7 @@ var HtmlSource = (function (_super) {
      * ```
      *
      * Enables or disables execution of the set BrowserJs upon load.
-     * Note that disabling this will require source to be refreshed
+     * Note that disabling this will _require source to be refreshed
      * in order to remove any BrowserJS previously executed.
      *
      * *Chainable.*
@@ -3400,9 +3401,9 @@ var HtmlSource = (function (_super) {
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.ItemConfigurable, iaudio_1.ItemAudio]);
-},{"../../internal/internal":28,"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"../environment":4,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":17,"./itransition":20,"./source":23}],13:[function(require,module,exports){
+},{"../../internal/internal":28,"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"../environment":4,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":17,"./itransition":20,"./source":23}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
+var item_1 = _require('../../internal/item');
 var ItemAudio = (function () {
     function ItemAudio() {
     }
@@ -3466,10 +3467,10 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":29}],14:[function(require,module,exports){
+},{"../../internal/item":29}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var color_1 = require('../../util/color');
+var item_1 = _require('../../internal/item');
+var color_1 = _require('../../util/color');
 /**
  *  Used by items that implement the Chroma interface.
  *  Check `getKeyingType()`/`setKeyingType()` method of
@@ -3850,10 +3851,10 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":29,"../../util/color":41}],15:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/color":41}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var color_1 = require('../../util/color');
+var item_1 = _require('../../internal/item');
+var color_1 = _require('../../util/color');
 var ItemColor = (function () {
     function ItemColor() {
     }
@@ -3983,12 +3984,12 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":29,"../../util/color":41}],16:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/color":41}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var global_1 = require('../../internal/global');
-var internal_1 = require('../../internal/internal');
-var environment_1 = require('../environment');
+var item_1 = _require('../../internal/item');
+var global_1 = _require('../../internal/global');
+var internal_1 = _require('../../internal/internal');
+var environment_1 = _require('../environment');
 var ItemConfigurable = (function () {
     function ItemConfigurable() {
     }
@@ -4067,10 +4068,10 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":26,"../../internal/internal":28,"../../internal/item":29,"../environment":4}],17:[function(require,module,exports){
+},{"../../internal/global":26,"../../internal/internal":28,"../../internal/item":29,"../environment":4}],17:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var rectangle_1 = require('../../util/rectangle');
+var item_1 = _require('../../internal/item');
+var rectangle_1 = _require('../../util/rectangle');
 var ItemLayout = (function () {
     function ItemLayout() {
     }
@@ -4207,7 +4208,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":29,"../../util/rectangle":45}],18:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/rectangle":45}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4215,12 +4216,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var source_1 = require('./source');
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var source_1 = _require('./source');
 /**
  * The ImageSource class represents an image source (includes GIF files).
  *
@@ -4238,10 +4239,10 @@ var ImageSource = (function (_super) {
 })(source_1.Source);
 exports.ImageSource = ImageSource;
 mixin_1.applyMixins(ImageSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":31,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],19:[function(require,module,exports){
+},{"../../internal/util/mixin":31,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var cuepoint_1 = require('./cuepoint');
+var item_1 = _require('../../internal/item');
+var cuepoint_1 = _require('./cuepoint');
 (function (ActionAfterPlayback) {
     ActionAfterPlayback[ActionAfterPlayback["NONE"] = 0] = "NONE";
     ActionAfterPlayback[ActionAfterPlayback["REWIND"] = 1] = "REWIND";
@@ -4482,10 +4483,10 @@ var ItemPlayback = (function () {
     return ItemPlayback;
 })();
 exports.ItemPlayback = ItemPlayback;
-},{"../../internal/item":29,"./cuepoint":9}],20:[function(require,module,exports){
+},{"../../internal/item":29,"./cuepoint":9}],20:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var item_1 = require('../../internal/item');
-var transition_1 = require('../transition');
+var item_1 = _require('../../internal/item');
+var transition_1 = _require('../transition');
 var ItemTransition = (function () {
     function ItemTransition() {
     }
@@ -4550,7 +4551,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":29,"../transition":24}],21:[function(require,module,exports){
+},{"../../internal/item":29,"../transition":24}],21:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4558,14 +4559,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var iplayback_1 = require('./iplayback');
-var iaudio_1 = require('./iaudio');
-var source_1 = require('./source');
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var iplayback_1 = _require('./iplayback');
+var iaudio_1 = _require('./iaudio');
+var source_1 = _require('./source');
 /**
  * The MediaSource class represents a playable media file.
  *
@@ -4584,7 +4585,7 @@ var MediaSource = (function (_super) {
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.ItemPlayback, iaudio_1.ItemAudio]);
-},{"../../internal/util/mixin":31,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./iplayback":19,"./itransition":20,"./source":23}],22:[function(require,module,exports){
+},{"../../internal/util/mixin":31,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./iplayback":19,"./itransition":20,"./source":23}],22:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4592,16 +4593,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var ilayout_1 = require('./ilayout');
-var icolor_1 = require('./icolor');
-var ichroma_1 = require('./ichroma');
-var itransition_1 = require('./itransition');
-var source_1 = require('./source');
-var rectangle_1 = require('../../util/rectangle');
-var json_1 = require('../../internal/util/json');
-var xml_1 = require('../../internal/util/xml');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var source_1 = _require('./source');
+var rectangle_1 = _require('../../util/rectangle');
+var json_1 = _require('../../internal/util/json');
+var xml_1 = _require('../../internal/util/xml');
 /**
  * The ScreenSource class represents a screen capture item.
  *
@@ -4788,15 +4789,15 @@ var ScreenSource = (function (_super) {
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
 mixin_1.applyMixins(ScreenSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../../util/rectangle":45,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],23:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../../util/rectangle":45,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],23:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var environment_1 = require('../environment');
-var json_1 = require('../../internal/util/json');
-var xml_1 = require('../../internal/util/xml');
-var scene_1 = require('../scene');
-var ilayout_1 = require('./ilayout');
+var mixin_1 = _require('../../internal/util/mixin');
+var item_1 = _require('../../internal/item');
+var environment_1 = _require('../environment');
+var json_1 = _require('../../internal/util/json');
+var xml_1 = _require('../../internal/util/xml');
+var scene_1 = _require('../scene');
+var ilayout_1 = _require('./ilayout');
 (function (SourceTypes) {
     SourceTypes[SourceTypes["UNDEFINED"] = 0] = "UNDEFINED";
     SourceTypes[SourceTypes["FILE"] = 1] = "FILE";
@@ -4816,7 +4817,7 @@ var SourceTypes = exports.SourceTypes;
  * ### Basic Usage
  *
  * ```javascript
- * var xjs = require('xjs');
+ * var xjs = _require('xjs');
  * var Scene = xjs.Scene.getById(0);
  *
  * Scene.getSources().then(function(sources) {
@@ -4832,7 +4833,7 @@ var SourceTypes = exports.SourceTypes;
  * All methods marked as *Chainable* resolve with the original `Source` instance.
  * This allows you to perform sequential operations correctly:
  * ```javascript
- * var xjs = require('xjs');
+ * var xjs = _require('xjs');
  * var Source = xjs.Source;
  *
  * // a source that sets its own properties on load
@@ -5224,7 +5225,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":6,"./ilayout":17}],24:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":6,"./ilayout":17}],24:[function(_require,module,exports){
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -5285,10 +5286,10 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],25:[function(require,module,exports){
+},{}],25:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var internal_1 = require('./internal');
-var json_1 = require('./util/json');
+var internal_1 = _require('./internal');
+var json_1 = _require('./util/json');
 var POSTMESSAGE_CLOSE = '1';
 var POSTMESSAGE_SIZE = '2';
 var App = (function () {
@@ -5360,7 +5361,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":28,"./util/json":30}],26:[function(require,module,exports){
+},{"./internal":28,"./util/json":30}],26:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -5382,13 +5383,13 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],27:[function(require,module,exports){
+},{}],27:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var environment_1 = require('../core/environment');
-var item_1 = require('./item');
-var internal_1 = require('./internal');
-var global_1 = require('./global');
-var config_1 = require('../window/config');
+var environment_1 = _require('../core/environment');
+var item_1 = _require('./item');
+var internal_1 = _require('./internal');
+var global_1 = _require('./global');
+var config_1 = _require('../window/config');
 function resolveRelativePath(path, base) {
     // ABSOLUTE PATHS
     if (path.substring(0, 7) === 'http://' ||
@@ -5505,7 +5506,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":4,"../window/config":46,"./global":26,"./internal":28,"./item":29}],28:[function(require,module,exports){
+},{"../core/environment":4,"../window/config":46,"./global":26,"./internal":28,"./item":29}],28:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -5550,10 +5551,10 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],29:[function(require,module,exports){
+},{}],29:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var internal_1 = require('./internal');
-var environment_1 = require('../core/environment');
+var internal_1 = _require('./internal');
+var environment_1 = _require('../core/environment');
 var Item = (function () {
     function Item() {
     }
@@ -5628,8 +5629,8 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"./internal":28}],30:[function(require,module,exports){
-var xml_1 = require('./xml');
+},{"../core/environment":4,"./internal":28}],30:[function(_require,module,exports){
+var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
         if (xml === undefined || xml === '') {
@@ -5698,7 +5699,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":32}],31:[function(require,module,exports){
+},{"./xml":32}],31:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -5710,7 +5711,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],32:[function(require,module,exports){
+},{}],32:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -5765,10 +5766,10 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],33:[function(require,module,exports){
+},{}],33:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
 /**
  * The AudioDevice Class is the object returned by
  * {@link #system/System System Class'} getAudioDevices method. It provides you
@@ -5778,7 +5779,7 @@ var xml_1 = require('../internal/util/xml');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var System = XJS.System;
  *
  * System.getAudioDevices().then(function(audios) {
@@ -6103,11 +6104,11 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":30,"../internal/util/xml":32}],34:[function(require,module,exports){
+},{"../internal/util/json":30,"../internal/util/xml":32}],34:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var app_1 = require('../internal/app');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var app_1 = _require('../internal/app');
 /**
  * The CameraDevice Class is the object returned by
  * {@link #system/System System Class'} getCameraDevices method. It provides
@@ -6117,7 +6118,7 @@ var app_1 = require('../internal/app');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var System = XJS.System;
  *
  * System.getCameraDevices().then(function(cameras) {
@@ -6217,9 +6218,9 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],35:[function(require,module,exports){
+},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],35:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var app_1 = require('../internal/app');
+var app_1 = _require('../internal/app');
 /**
  *  Class for adding files (such as images and media)
  *  from your file system to the stage.
@@ -6227,7 +6228,7 @@ var app_1 = require('../internal/app');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var File = XJS.File;
  *
  * var filePromise = new File('C:\\Users\\Public\\Music\\song.mp3').addToScene();
@@ -6264,12 +6265,12 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/app":25}],36:[function(require,module,exports){
+},{"../internal/app":25}],36:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var rectangle_1 = require('../util/rectangle');
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var app_1 = require('../internal/app');
+var rectangle_1 = _require('../util/rectangle');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var app_1 = _require('../internal/app');
 /**
  * The Game Class is the object returned by {@link #system/System System Class'}
  * getGames method. It provides you with methods to fetch the game object's
@@ -6279,7 +6280,7 @@ var app_1 = require('../internal/app');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var System = XJS.System;
  * var xml;
  *
@@ -6450,7 +6451,7 @@ var Game = (function () {
      * #### Usage
      *
      * ```javascript
-     * var XJS = require('xjs');
+     * var XJS = _require('xjs');
      * var game = XJS.Game.parse(jsonObj);
      * ```
      */
@@ -6525,7 +6526,7 @@ var Game = (function () {
      *  #### Usage
      *
      * ```javascript
-     * var xjs = require('xjs');
+     * var xjs = _require('xjs');
      * xjs.Game.autoDetect().addToScene();
      * ```
      */
@@ -6559,11 +6560,11 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32,"../util/rectangle":45}],37:[function(require,module,exports){
+},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32,"../util/rectangle":45}],37:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var app_1 = require('../internal/app');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var app_1 = _require('../internal/app');
 var MicrophoneDevice = (function () {
     function MicrophoneDevice() {
     }
@@ -6621,8 +6622,8 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],38:[function(require,module,exports){
-var internal_1 = require('../internal/internal');
+},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],38:[function(_require,module,exports){
+var internal_1 = _require('../internal/internal');
 /**
  *  This class servers to allow developers to add new screen regions or window
  *  regions to the stage in XSplit Broadcaster.
@@ -6643,15 +6644,15 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../internal/internal":28}],39:[function(require,module,exports){
+},{"../internal/internal":28}],39:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var app_1 = require('../internal/app');
-var audio_1 = require('./audio');
-var microphone_1 = require('./microphone');
-var camera_1 = require('./camera');
-var game_1 = require('./game');
-var environment_1 = require('../core/environment');
-var internal_1 = require('../internal/internal');
+var app_1 = _require('../internal/app');
+var audio_1 = _require('./audio');
+var microphone_1 = _require('./microphone');
+var camera_1 = _require('./camera');
+var game_1 = _require('./game');
+var environment_1 = _require('../core/environment');
+var internal_1 = _require('../internal/internal');
 /**
  * This enum is used for {@link #system/System System Class'} getAudioDevices
  * method's first parameter.
@@ -6659,7 +6660,7 @@ var internal_1 = require('../internal/internal');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * XJS.System.getAudioDevices(XJS.AudioDeviceDataflow.CAPTURE, ...);
  * ```
  */
@@ -6676,7 +6677,7 @@ var AudioDeviceDataflow = exports.AudioDeviceDataflow;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * XJS.System.getAudioDevices(..., XJS.AudioDeviceState.ACTIVE);
  * ```
  */
@@ -6697,7 +6698,7 @@ var AudioDeviceState = exports.AudioDeviceState;
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var System = XJS.System;
  *
  * System.getCameraDevices().then(function(cameras) {
@@ -6949,9 +6950,9 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":4,"../internal/app":25,"../internal/internal":28,"./audio":33,"./camera":34,"./game":36,"./microphone":37}],40:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":25,"../internal/internal":28,"./audio":33,"./camera":34,"./game":36,"./microphone":37}],40:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var app_1 = require('../internal/app');
+var app_1 = _require('../internal/app');
 /**
  *  Class for adding a web source to the stage.
  *  URLs will use http by default unless https
@@ -6961,7 +6962,7 @@ var app_1 = require('../internal/app');
  * ### Basic Usage
  *
  * ```javascript
- * var XJS = require('xjs');
+ * var XJS = _require('xjs');
  * var Url = XJS.Url;
  *
  * var urlPromise = new Url('https://www.xsplit.com').addToScene();
@@ -7012,7 +7013,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":25}],41:[function(require,module,exports){
+},{"../internal/app":25}],41:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -7088,7 +7089,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],42:[function(require,module,exports){
+},{}],42:[function(_require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -7118,9 +7119,9 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],43:[function(require,module,exports){
+},{}],43:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
-var internal_1 = require('../internal/internal');
+var internal_1 = _require('../internal/internal');
 var IO = (function () {
     function IO() {
     }
@@ -7231,7 +7232,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-},{"../internal/internal":28}],44:[function(require,module,exports){
+},{"../internal/internal":28}],44:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -7250,12 +7251,12 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],45:[function(require,module,exports){
+},{}],45:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
  *  absolute (pixel) measurements, and cases where relative measurements are
- *  required (0 being the left/top edges and 1 being the right/bottom edges.)
+ *  _required (0 being the left/top edges and 1 being the right/bottom edges.)
  *
  *  Please check the documentation of each function to determine the necessary
  *  parameters for the Rectangle to be created.
@@ -7467,7 +7468,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],46:[function(require,module,exports){
+},{}],46:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7475,8 +7476,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var eventemitter_1 = require('../util/eventemitter');
-var internal_1 = require('../internal/internal');
+var eventemitter_1 = _require('../util/eventemitter');
+var internal_1 = _require('../internal/internal');
 /** This utility class exposes functionality for source plugin developers to
  *  handle the properties window for their source plugins. The framework also
  *  uses this class for its own internal purposes.
@@ -7631,12 +7632,12 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../internal/internal":28,"../util/eventemitter":42}],47:[function(require,module,exports){
+},{"../internal/internal":28,"../util/eventemitter":42}],47:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
-var rectangle_1 = require('../util/rectangle');
-var environment_1 = require('../core/environment');
-var internal_1 = require('../internal/internal');
+var rectangle_1 = _require('../util/rectangle');
+var environment_1 = _require('../core/environment');
+var internal_1 = _require('../internal/internal');
 /**
  *  This class is used to spawn new browser processes that can be used to open
  *  other URLs. Source plugins do not have this functionality (but their
@@ -7652,7 +7653,7 @@ var internal_1 = require('../internal/internal');
  *  Sample usage:
  *
  *  ```javascript
- *  var xjs = require('xjs');
+ *  var xjs = _require('xjs');
  *  var Dialog = xjs.Dialog;
  *
  *  xjs.ready().then(function() {
@@ -7906,7 +7907,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
             detail: result }));
     };
 }
-},{"../core/environment":4,"../internal/internal":28,"../util/rectangle":45}],48:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":28,"../util/rectangle":45}],48:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7914,9 +7915,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var environment_1 = require('../core/environment');
-var eventemitter_1 = require('../util/eventemitter');
-var app_1 = require('../internal/app');
+var environment_1 = _require('../core/environment');
+var eventemitter_1 = _require('../util/eventemitter');
+var app_1 = _require('../internal/app');
 var _RESIZE = '2';
 /** This utility class represents the extension window. It allows manipulation
  *  of the window (e.g., resizing), and also serves as an event emitter
@@ -7977,7 +7978,7 @@ if (environment_1.Environment.isExtension()) {
         }
     };
 }
-},{"../core/environment":4,"../internal/app":25,"../util/eventemitter":42}],49:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":25,"../util/eventemitter":42}],49:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7985,9 +7986,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var global_1 = require('../internal/global');
-var environment_1 = require('../core/environment');
-var eventemitter_1 = require('../util/eventemitter');
+var global_1 = _require('../internal/global');
+var environment_1 = _require('../core/environment');
+var eventemitter_1 = _require('../util/eventemitter');
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
  *  plugin may emit.
@@ -8068,50 +8069,53 @@ if (environment_1.Environment.isSourcePlugin()) {
         SourcePluginWindow.getInstance().emit('set-background-color', color);
     };
 }
-},{"../core/environment":4,"../internal/global":26,"../util/eventemitter":42}],"xjs":[function(require,module,exports){
+},{"../core/environment":4,"../internal/global":26,"../util/eventemitter":42}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-require('./internal/init');
-__export(require('./util/color'));
-__export(require('./util/rectangle'));
-__export(require('./util/io'));
-__export(require('./core/environment'));
-__export(require('./core/app'));
-__export(require('./core/channel'));
-__export(require('./core/scene'));
-__export(require('./core/transition'));
-__export(require('./core/dll'));
-__export(require('./core/extension'));
-__export(require('./core/source/source'));
-__export(require('./core/source/camera'));
-__export(require('./core/source/game'));
-__export(require('./core/source/audio'));
-__export(require('./core/source/html'));
-__export(require('./core/source/flash'));
-__export(require('./core/source/screen'));
-__export(require('./core/source/image'));
-__export(require('./core/source/media'));
-var ichroma_1 = require('./core/source/ichroma');
+_require('./internal/init');
+__export(_require('./util/color'));
+__export(_require('./util/rectangle'));
+__export(_require('./util/io'));
+__export(_require('./core/environment'));
+__export(_require('./core/app'));
+__export(_require('./core/channel'));
+__export(_require('./core/scene'));
+__export(_require('./core/transition'));
+__export(_require('./core/dll'));
+__export(_require('./core/extension'));
+__export(_require('./core/source/source'));
+__export(_require('./core/source/camera'));
+__export(_require('./core/source/game'));
+__export(_require('./core/source/audio'));
+__export(_require('./core/source/html'));
+__export(_require('./core/source/flash'));
+__export(_require('./core/source/screen'));
+__export(_require('./core/source/image'));
+__export(_require('./core/source/media'));
+var ichroma_1 = _require('./core/source/ichroma');
 exports.KeyingType = ichroma_1.KeyingType;
 exports.ChromaPrimaryColors = ichroma_1.ChromaPrimaryColors;
 exports.ChromaAntiAliasLevel = ichroma_1.ChromaAntiAliasLevel;
-var iplayback_1 = require('./core/source/iplayback');
+var iplayback_1 = _require('./core/source/iplayback');
 exports.ActionAfterPlayback = iplayback_1.ActionAfterPlayback;
-var cuepoint_1 = require('./core/source/cuepoint');
+var cuepoint_1 = _require('./core/source/cuepoint');
 exports.CuePoint = cuepoint_1.CuePoint;
-__export(require('./system/system'));
-__export(require('./system/audio'));
-__export(require('./system/game'));
-__export(require('./system/camera'));
-__export(require('./system/microphone'));
-__export(require('./system/url'));
-__export(require('./system/screen'));
-__export(require('./system/file'));
-__export(require('./window/config'));
-__export(require('./window/source'));
-__export(require('./window/extension'));
-__export(require('./window/dialog'));
-var ready_1 = require('./util/ready');
+__export(_require('./system/system'));
+__export(_require('./system/audio'));
+__export(_require('./system/game'));
+__export(_require('./system/camera'));
+__export(_require('./system/microphone'));
+__export(_require('./system/url'));
+__export(_require('./system/screen'));
+__export(_require('./system/file'));
+__export(_require('./window/config'));
+__export(_require('./window/source'));
+__export(_require('./window/extension'));
+__export(_require('./window/dialog'));
+var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
 },{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/scene":6,"./core/source/audio":7,"./core/source/camera":8,"./core/source/cuepoint":9,"./core/source/flash":10,"./core/source/game":11,"./core/source/html":12,"./core/source/ichroma":14,"./core/source/image":18,"./core/source/iplayback":19,"./core/source/media":21,"./core/source/screen":22,"./core/source/source":23,"./core/transition":24,"./internal/init":27,"./system/audio":33,"./system/camera":34,"./system/file":35,"./system/game":36,"./system/microphone":37,"./system/screen":38,"./system/system":39,"./system/url":40,"./util/color":41,"./util/io":43,"./util/ready":44,"./util/rectangle":45,"./window/config":46,"./window/dialog":47,"./window/extension":48,"./window/source":49}]},{},["xjs"]);
+
+module.exports = _require('xjs');
+})();
