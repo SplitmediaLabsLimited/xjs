@@ -105,7 +105,7 @@ export class App{
   /**
    * return: Promise<string>
    *
-   * Refers to XSplit Broadcaster DLL file version number
+   * Refers to XSplit Broadcaster version number
    *
    * #### Usage
    *
@@ -116,8 +116,14 @@ export class App{
    * ```
    */
   getVersion() : Promise<string> {
-    return new Promise(resolve => {
-      resolve(iApp.get('version'));
+    return new Promise((resolve, reject) => {
+      var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+      var xbcMatch = navigator.appVersion.match(xbcPattern);
+      if (xbcMatch !== null) {
+        resolve(xbcMatch[1]);
+      } else {
+        reject(Error('not loaded in XSplit Broadcaster'));
+      }
     });
   }
 
