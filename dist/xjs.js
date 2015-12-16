@@ -2543,7 +2543,7 @@ var HTMLItem = (function (_super) {
             item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
                     var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
-                    customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
+                    customSize = rectangle_1.Rectangle.fromDimensions(Number(width) / window.devicePixelRatio, Number(height) / window.devicePixelRatio);
                 }
                 else {
                     customSize = rectangle_1.Rectangle.fromDimensions(0, 0);
@@ -2568,6 +2568,9 @@ var HTMLItem = (function (_super) {
     HTMLItem.prototype.setBrowserCustomSize = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
+            // Set the correct width and height based on the DPI settings
+            value.setWidth(value.getWidth() * window.devicePixelRatio);
+            value.setHeight(value.getHeight() * window.devicePixelRatio);
             item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
                 resolve(_this);
             });
