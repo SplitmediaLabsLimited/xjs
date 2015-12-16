@@ -46,40 +46,40 @@ export enum ChromaAntiAliasLevel {
 }
 
 export interface IItemChroma {
-  isChromaEnabled(): Promise<boolean>; // prop:key_chromakey
+  isChromaEnabled(): Promise<boolean>;
   setChromaEnabled(value: boolean): Promise<IItemChroma>;
-  getKeyingType(): Promise<KeyingType>; // prop:key_chromakeytype
+  getKeyingType(): Promise<KeyingType>;
   setKeyingType(value: KeyingType): Promise<IItemChroma>;
 
-  getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel>; // prop:key_antialiasing
+  getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel>;
   setChromaAntiAliasLevel(value: ChromaAntiAliasLevel);
 
   // CHROMA LEGACY MODE
-  getChromaLegacyBrightness(): Promise<number>; // prop:key_chromabr  // ONLY FOR LEGACY MODE. Brightness
+  getChromaLegacyBrightness(): Promise<number>;
   setChromaLegacyBrightness(value: number): Promise<IItemChroma>;
-  getChromaLegacySaturation(): Promise<number>; // prop:key_chromasat // ONLY FOR LEGACY MODE. Saturation
+  getChromaLegacySaturation(): Promise<number>;
   setChromaLegacySaturation(value: number): Promise<IItemChroma>;
-  getChromaLegacyHue(): Promise<number>; // prop:key_chromahue // ONLY FOR LEGACY MODE. Hue
+  getChromaLegacyHue(): Promise<number>;
   setChromaLegacyHue(value: number): Promise<IItemChroma>;
-  getChromaLegacyThreshold(): Promise<number>; // prop:key_chromarang // ONLY FOR LEGACY MODE. (below hue). Threshold?
+  getChromaLegacyThreshold(): Promise<number>;
   setChromaLegacyThreshold(value: number): Promise<IItemChroma>;
-  getChromaLegacyAlphaSmoothing(): Promise<number>; // prop:key_chromaranga // ONLY FOR LEGACY MODE. Alpha Smoothing
+  getChromaLegacyAlphaSmoothing(): Promise<number>;
   setChromaLegacyAlphaSmoothing(value: number): Promise<IItemChroma>;
 
   // CHROMA KEY RGB MODE
-  getChromaRGBKeyPrimaryColor(): Promise<ChromaPrimaryColors>; // prop:key_chromargbkeyprimary. Key Color
+  getChromaRGBKeyPrimaryColor(): Promise<ChromaPrimaryColors>;
   setChromaRGBKeyPrimaryColor(value: ChromaPrimaryColors): Promise<IItemChroma>;
-  getChromaRGBKeyThreshold(): Promise<number>; // prop:key_chromargbkeythresh. Threshold
+  getChromaRGBKeyThreshold(): Promise<number>;
   setChromaRGBKeyThreshold(value: number): Promise<IItemChroma>;
-  getChromaRGBKeyExposure(): Promise<number>; // prop:key_chromargbkeybalance. Exposure
+  getChromaRGBKeyExposure(): Promise<number>;
   setChromaRGBKeyExposure(value: number): Promise<IItemChroma>;
 
   // COLOR KEY MODE
-  getChromaColorKeyThreshold(): Promise<number>; // prop:key_colorrang // ONLY FOR COLOR KEY MODE. Threshold
+  getChromaColorKeyThreshold(): Promise<number>;
   setChromaColorKeyThreshold(value: number): Promise<IItemChroma>;
-  getChromaColorKeyExposure(): Promise<number>; // prop:key_colorranga // ONLY FOR COLOR KEY MODE. Exposure
+  getChromaColorKeyExposure(): Promise<number>;
   setChromaColorKeyExposure(value: number): Promise<IItemChroma>;
-  getChromaColorKeyColor(): Promise<Color>; // prop:key_colorrgb // ONLY FOR COLOR KEY MODE
+  getChromaColorKeyColor(): Promise<Color>;
   setChromaColorKeyColor(value: Color): Promise<IItemChroma>;
 }
 
@@ -88,8 +88,7 @@ export class ItemChroma implements IItemChroma {
 
   isChromaEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromakey', slot).then(val => {
+      iItem.get('prop:key_chromakey', this._id).then(val => {
         resolve(val === '1');
       });
     });
@@ -100,9 +99,9 @@ export class ItemChroma implements IItemChroma {
       if (typeof value !== 'boolean') {
         reject(TypeError('Parameter should be boolean.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromakey', (value ? '1' : '0'), slot).then(() => {
-          resolve(this);
+        iItem.set('prop:key_chromakey', (value ? '1' : '0'),
+          this._id).then(() => {
+            resolve(this);
         });
       }
     });
@@ -110,8 +109,7 @@ export class ItemChroma implements IItemChroma {
 
   getKeyingType(): Promise<KeyingType> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromakeytype', slot).then(val => {
+      iItem.get('prop:key_chromakeytype', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -124,9 +122,9 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 2) {
         reject(RangeError('Use a KeyingType value as the parameter.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromakeytype', String(value), slot).then(() => {
-          resolve(this);
+        iItem.set('prop:key_chromakeytype', String(value),
+          this._id).then(() => {
+            resolve(this);
         });
       }
     });
@@ -135,8 +133,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaAntiAliasLevel(): Promise<ChromaAntiAliasLevel> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_antialiasing', slot).then(val => {
+      iItem.get('prop:key_antialiasing', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -149,8 +146,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 2) {
         reject(RangeError('Use a ChromaAntiAliasLevel value as the parameter.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_antialiasing', String(value), slot).then(() => {
+        iItem.set('prop:key_antialiasing', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -161,8 +157,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaLegacyBrightness(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromabr', slot).then(val => {
+      iItem.get('prop:key_chromabr', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -175,8 +170,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromabr', String(value), slot).then(() => {
+        iItem.set('prop:key_chromabr', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -185,8 +179,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaLegacySaturation(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromasat', slot).then(val => {
+      iItem.get('prop:key_chromasat', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -199,8 +192,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromasat', String(value), slot).then(() => {
+        iItem.set('prop:key_chromasat', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -210,8 +202,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaLegacyHue(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromahue', slot).then(val => {
+      iItem.get('prop:key_chromahue', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -224,8 +215,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 180) {
         reject(RangeError('Valid value is an integer from 0-180.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromahue', String(value), slot).then(() => {
+        iItem.set('prop:key_chromahue', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -235,8 +225,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaLegacyThreshold(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromarang', slot).then(val => {
+      iItem.get('prop:key_chromarang', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -249,8 +238,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromarang', String(value), slot).then(() => {
+        iItem.set('prop:key_chromarang', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -259,8 +247,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaLegacyAlphaSmoothing(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromaranga', slot).then(val => {
+      iItem.get('prop:key_chromaranga', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -273,8 +260,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromaranga', String(value), slot).then(() => {
+        iItem.set('prop:key_chromaranga', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -285,8 +271,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaRGBKeyPrimaryColor(): Promise<ChromaPrimaryColors> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromargbkeyprimary', slot).then(val => {
+      iItem.get('prop:key_chromargbkeyprimary', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -299,8 +284,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 2) {
         reject(RangeError('Use a ChromaPrimaryColors value as the parameter.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromargbkeyprimary', String(value), slot)
+        iItem.set('prop:key_chromargbkeyprimary', String(value), this._id)
           .then(() => {
             resolve(this);
         });
@@ -310,8 +294,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaRGBKeyThreshold(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromargbkeythresh', slot).then(val => {
+      iItem.get('prop:key_chromargbkeythresh', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -324,8 +307,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromargbkeythresh', String(value), slot)
+        iItem.set('prop:key_chromargbkeythresh', String(value), this._id)
           .then(() => {
             resolve(this);
         });
@@ -335,8 +317,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaRGBKeyExposure(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_chromargbkeybalance', slot).then(val => {
+        iItem.get('prop:key_chromargbkeybalance', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -349,12 +330,11 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_chromargbkeybalance', String(value), slot)
+        iItem.set('prop:key_chromargbkeybalance', String(value), this._id)
           .then(() => {
             resolve(this);
         });
-      }
+    }
     });
   }
 
@@ -362,8 +342,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaColorKeyThreshold(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_colorrang', slot).then(val => {
+        iItem.get('prop:key_colorrang', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -376,8 +355,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_colorrang', String(value), slot).then(() => {
+          iItem.set('prop:key_colorrang', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -387,8 +365,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaColorKeyExposure(): Promise<number> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_colorranga', slot).then(val => {
+        iItem.get('prop:key_colorranga', this._id).then(val => {
         resolve(Number(val));
       });
     });
@@ -401,8 +378,7 @@ export class ItemChroma implements IItemChroma {
       } else if (value < 0 || value > 255) {
         reject(RangeError('Valid value is an integer from 0-255.'));
       } else {
-        let slot = iItem.attach(this._id);
-        iItem.set('prop:key_colorranga', String(value), slot).then(() => {
+          iItem.set('prop:key_colorranga', String(value), this._id).then(() => {
           resolve(this);
         });
       }
@@ -411,8 +387,7 @@ export class ItemChroma implements IItemChroma {
 
   getChromaColorKeyColor(): Promise<Color> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_colorrgb', slot).then(val => {
+      iItem.get('prop:key_colorrgb', this._id).then(val => {
         let color: Color = Color.fromBGRString(val);
         resolve(color);
       });
@@ -421,9 +396,9 @@ export class ItemChroma implements IItemChroma {
 
   setChromaColorKeyColor(value: Color): Promise<ItemChroma> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:key_colorrgb', String(value.getIbgr()), slot).then(() => {
-        resolve(this);
+        iItem.set('prop:key_colorrgb', String(value.getIbgr()),
+          this._id).then(() => {
+            resolve(this);
       });
     });
   }

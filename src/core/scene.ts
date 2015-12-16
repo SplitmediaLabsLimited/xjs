@@ -283,16 +283,20 @@ export class Scene {
             return item.getName();
           }
         }).then(name => {
-          if (name.match(param)) {
-            filterResolve(true);
-          } else {
-            return item.getValue();
+          if (name !== undefined) {
+            if (name.match(param)) {
+              filterResolve(true);
+            } else {
+              return item.getValue();
+            }            
           }
         }).then(value => {
-          if (value.toString().match(param)) {
-            filterResolve(true);
-          } else {
-            filterResolve(false);
+          if (value !== undefined) {
+            if (value.toString().match(param)) {
+              filterResolve(true);
+            } else {
+              filterResolve(false);
+            }
           }
         });
       }).then(items => {

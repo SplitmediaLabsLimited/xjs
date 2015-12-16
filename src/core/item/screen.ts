@@ -69,8 +69,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
     return new Promise(resolve => {
       this.getValue().then(val => {
         return new Promise(iResolve => {
-          let slot = iItem.attach(this._id);
-          iItem.get('screenresolution', slot).then(res => {
+          iItem.get('screenresolution', this._id).then(res => {
             let _res = res.split(',');
             iResolve({
               value : val,
@@ -184,8 +183,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   isStickToTitle(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:ScrCapTrackWindowTitle', slot).then(val => {
+      iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
         resolve(val === '0');
       });
     });
@@ -203,8 +201,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setStickToTitle(value: boolean): Promise<ScreenItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', slot)
+      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
         .then(() => {
           resolve(this);
         });
@@ -265,7 +262,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   getRotateZ: () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -274,7 +271,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setKeepAspectRatio: (value: boolean) => Promise<ScreenItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -283,7 +280,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setPositionLocked: (value: boolean) => Promise<ScreenItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -292,7 +289,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setEnhancedResizeEnabled: (value: boolean) => Promise<ScreenItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -312,7 +309,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setPosition: (value: Rectangle) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -321,7 +318,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setRotateY: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -330,7 +327,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setRotateX: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -383,7 +380,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   getBorderColor: () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -392,7 +389,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setTransparency: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -401,7 +398,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setBrightness: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -410,7 +407,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setContrast: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -419,7 +416,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setHue: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -428,7 +425,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   setSaturation: (value: number) => Promise<ScreenItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -442,7 +439,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   isChromaEnabled: () => Promise<boolean>;
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * *Chainable.*
    */
@@ -452,7 +449,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getKeyingType: () => Promise<KeyingType>;
   /**
-   * param: value<KeyingType>
+   * param: (value: KeyingType)
    * *Chainable.*
    *
    */
@@ -464,7 +461,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   /**
-   * param: value<ChromaAntiAliasLevel>
+   * param: (value: ChromaAntiAliasLevel)
    *
    * *Chainable.*
    */
@@ -476,7 +473,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaLegacyBrightness: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -486,7 +483,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaLegacySaturation: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -496,7 +493,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaLegacyHue: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -506,7 +503,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaLegacyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -516,7 +513,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -528,7 +525,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   /**
-   * param: value<ChromaPrimaryColors>
+   * param: (value: ChromaPrimaryColors)
    *
    * *Chainable.*
    */
@@ -538,7 +535,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -548,7 +545,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaRGBKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -560,7 +557,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaColorKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -570,7 +567,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaColorKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -580,7 +577,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getChromaColorKeyColor: () => Promise<Color>;
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * *Chainable.*
    */
@@ -596,7 +593,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   isVisible: () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -612,7 +609,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   getTransition: () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -628,7 +625,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *

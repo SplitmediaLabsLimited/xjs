@@ -445,6 +445,18 @@ describe('HTMLItem', function() {
 	        ].join(','));
     	}
     });
+
+    it('should implement audio interface', function() {
+      expect(currentHTMLItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyEnabled',
+        'setStreamOnlyEnabled',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 
   describe('HTMLItem-specific methods checking', function() {
