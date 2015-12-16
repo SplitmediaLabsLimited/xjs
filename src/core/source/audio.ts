@@ -13,6 +13,8 @@ import {Environment} from '../environment';
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
+ * Implements: {@link #core/IItemAudio Core/IItemAudio}
+ *
  *  All methods marked as *Chainable* resolve with the original `AudioSource`
  *  instance.
  */

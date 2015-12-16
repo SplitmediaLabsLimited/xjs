@@ -24,6 +24,11 @@ import {Environment} from '../environment';
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition}
+ *
  * ### Basic Usage
  *
  * ```javascript

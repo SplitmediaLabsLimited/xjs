@@ -25,6 +25,8 @@ export enum SourceTypes {
  * A `Source` represents an object that is used as a source on the stage.
  * Some possible sources are games, microphones, or a webpage.
  *
+ * Implements: {@link #core/IItemLayout Core/IItemLayout}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -139,7 +141,8 @@ export class Source implements IItemLayout {
   /**
    * param: (value: string)
    * ```
-   * return: Promise<Source>
+   * return: Promise<
+   >
    * ```
    *
    * Sets the custom name of the source.

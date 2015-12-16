@@ -24,7 +24,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Aspect Ratio to ON or OFF
@@ -59,7 +59,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Position Lock to ON or OFF
@@ -94,7 +94,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Enhance Resize to ON or OFF
@@ -166,7 +166,7 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Rotate Y value of the item
@@ -201,7 +201,7 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Rotate X value of the item
@@ -236,7 +236,7 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Item>
+   * return: Promise<Source>
    * ```
    *
    * Set Rotate Z value of the item.

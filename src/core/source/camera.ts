@@ -19,11 +19,17 @@ import {System} from '../../system/system';
 
 /**
  * The CameraSource Class provides methods specifically used for camera items and
- * also methods that are shared between Item Classes. The
+ * also methods that are shared between Source Classes. The
  * {@link #core/Scene Scene} class' getItems method would automatically return a
  * CameraSource object if there's a camera item on the specified scene.
  *
  * Inherits from: {@link #core/Source Core/Source}
+ *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio}
  *
  * ### Basic Usage
  *

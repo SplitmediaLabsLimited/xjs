@@ -8,14 +8,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get Item Transparency value
+   * Get Source Transparency value
    */
   getTransparency(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set Item Transparency
+   * Set Source Transparency
    *
    * *Chainable.*
    */
@@ -24,14 +24,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get Item Brightness value
+   * Get Source Brightness value
    */
   getBrightness(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set Item Brightness
+   * Set Source Brightness
    *
    * *Chainable.*
    */
@@ -40,14 +40,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get Item Contrast value
+   * Get Source Contrast value
    */
   getContrast(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set Item Contrast
+   * Set Source Contrast
    *
    * *Chainable.*
    */
@@ -56,14 +56,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get Item Hue value
+   * Get Source Hue value
    */
   getHue(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set Item Hue
+   * Set Source Hue
    *
    * *Chainable.*
    */
@@ -72,14 +72,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get Item Saturation value
+   * Get Source Saturation value
    */
   getSaturation(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set Item Saturation
+   * Set Source Saturation
    *
    * *Chainable.*
    */
