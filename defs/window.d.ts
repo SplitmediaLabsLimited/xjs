@@ -6,4 +6,6 @@ interface Window {
   SetVolume: Function;
   OnDialogResult: Function;
   MessageSource: Function;
+  SourcesListHighlight: Function;
+  SourcesListSelect: Function;
 }
