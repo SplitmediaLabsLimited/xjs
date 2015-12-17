@@ -204,6 +204,15 @@ describe('Scene', function() {
         });
     });
 
+    it('should be able to search by ID in a case-insensitive way', function(done) {
+
+      Scene.searchItemsById(sceneItems._id.toLowerCase())
+        .then(function(item) {
+          expect(item).toBeInstanceOf(Item);
+          done();
+        });
+    });
+
     it('should be able to get null when searching for nonexistent ID', function(done) {
       Scene.searchItemsById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
         .then(function(item) {
