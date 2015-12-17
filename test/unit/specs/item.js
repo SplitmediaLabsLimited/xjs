@@ -132,7 +132,7 @@ describe('Item', function() {
   });
 
   it('should be able to get the id', function(done) {
-    Item.getID().then(function(val) {
+    Item.getId().then(function(val) {
       expect(val).toBeDefined();
       done();
     });

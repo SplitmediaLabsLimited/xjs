@@ -87,7 +87,7 @@ export class AudioDevice{
    * #### Usage
    *
    * ```javascript
-   * var audioDeviceID = device.getID();
+   * var audioDeviceID = device.getId();
    * ```
    */
   getId(): string {

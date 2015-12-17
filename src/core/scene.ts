@@ -139,7 +139,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         if (scene instanceof Scene) {
-          scene.getID().then(id => {
+          scene.getId().then(id => {
             iApp.set('preset', String(id)).then(res => {
               resolve(res);
             });
@@ -288,7 +288,7 @@ export class Scene {
               filterResolve(true);
             } else {
               return item.getValue();
-            }            
+            }
           }
         }).then(value => {
           if (value !== undefined) {

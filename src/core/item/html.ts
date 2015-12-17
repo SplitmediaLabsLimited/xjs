@@ -542,8 +542,8 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
       value.setWidth(value.getWidth() * window.devicePixelRatio);
       value.setHeight(value.getHeight() * window.devicePixelRatio);
       
-      iItem.set('prop:BrowserSize', value.toDimensionString(),
-        this._id).then(() => {
+      iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
+        .then(() => {
           resolve(this);
       });
     });
