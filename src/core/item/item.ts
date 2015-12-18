@@ -446,6 +446,32 @@ export class Item implements IItemLayout {
     });
   }
 
+  /**
+   *  return: Promise<Item>
+   *
+   *  Refreshes the specified source.
+   *
+   *  #### Usage
+   *  ```javascript
+   *  // Sample 1: let source refresh itself
+   *  xjs.Item.getCurrentSource().then(function(source) {
+   *    source.refresh(); // execution of JavaScript halts because of refresh
+   *  });
+   *
+   *  // Sample 2: refresh some other source 'otherSource'
+   *  otherSource.refresh().then(function(source) {
+   *    // further manipulation of other source goes here
+   *  });
+   *  ```
+   */
+  refresh(): Promise<Item> {
+    return new Promise(resolve => {
+      iItem.set('refresh', '', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
    // ItemLayout
 
   /**
