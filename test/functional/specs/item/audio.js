@@ -238,9 +238,9 @@
       },
 
       {
-        name: 'isStreamOnlyEnabled',
+        name: 'isStreamOnlyAudio',
         onClick: function() {
-          audioItem.isStreamOnlyEnabled().then(function(isStreamOnly) {
+          audioItem.isStreamOnlyAudio().then(function(isStreamOnly) {
             console.trace(isStreamOnly);
             Rose.output(isStreamOnly);
           });
@@ -248,13 +248,13 @@
       },
 
       {
-        name: 'setStreamOnlyEnabled',
+        name: 'setStreamOnlyAudio',
         onClick: function() {
-          audioItem.isStreamOnlyEnabled().then(function(isStreamOnly) {
-            return audioItem.setStreamOnlyEnabled(!isStreamOnly);
+          audioItem.isStreamOnlyAudio().then(function(isStreamOnly) {
+            return audioItem.setStreamOnlyAudio(!isStreamOnly);
           })
           .then(function(result) {
-            return audioItem.isStreamOnlyEnabled();
+            return audioItem.isStreamOnlyAudio();
           })
           .then(function(isStreamOnly2) {
             console.trace(isStreamOnly2);

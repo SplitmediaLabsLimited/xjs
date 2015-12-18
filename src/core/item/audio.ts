@@ -194,7 +194,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * Checks if audio is also output to system sound
    */
-  isStreamOnlyEnabled: () => Promise<boolean>;
+  isStreamOnlyAudio: () => Promise<boolean>;
 
   /**
    * param: (value: boolean)
@@ -203,7 +203,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<AudioItem>;
+  setStreamOnlyAudio: (value: boolean) => Promise<AudioItem>;
 
   /**
    * return: Promise<boolean>

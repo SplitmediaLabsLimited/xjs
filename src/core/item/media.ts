@@ -715,7 +715,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    *
    * Checks if audio is also output to system sound
    */
-  isStreamOnlyEnabled: () => Promise<boolean>;
+  isStreamOnlyAudio: () => Promise<boolean>;
 
   /**
    * param: value<boolean>
@@ -724,7 +724,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<MediaItem>;
+  setStreamOnlyAudio: (value: boolean) => Promise<MediaItem>;
 
   /**
    * return: Promise<boolean>

@@ -1042,7 +1042,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * Checks if audio is also output to system sound
    */
-  isStreamOnlyEnabled: () => Promise<boolean>;
+  isStreamOnlyAudio: () => Promise<boolean>;
 
   /**
    * param: value<boolean>
@@ -1051,7 +1051,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<HTMLItem>;
+  setStreamOnlyAudio: (value: boolean) => Promise<HTMLItem>;
 
   /**
    * return: Promise<boolean>

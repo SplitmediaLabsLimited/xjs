@@ -8,8 +8,8 @@ export interface IItemAudio {
   setVolume(value: number): Promise<IItemAudio>;
   isMute(): Promise<boolean>;
   setMute(value: boolean): Promise<IItemAudio>;
-  isStreamOnlyEnabled(): Promise<boolean>;
-  setStreamOnlyEnabled(value: boolean): Promise<IItemAudio>;
+  isStreamOnlyAudio(): Promise<boolean>;
+  setStreamOnlyAudio(value: boolean): Promise<IItemAudio>;
 }
 
 export class ItemAudio implements IItemAudio {
@@ -49,7 +49,7 @@ export class ItemAudio implements IItemAudio {
     })
   }
 
-  isStreamOnlyEnabled(): Promise<boolean> {
+  isStreamOnlyAudio(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:sounddev', this._id).then(val => {
         resolve(val === '1');
@@ -57,7 +57,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setStreamOnlyEnabled(value: boolean): Promise<ItemAudio> {
+  setStreamOnlyAudio(value: boolean): Promise<ItemAudio> {
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);

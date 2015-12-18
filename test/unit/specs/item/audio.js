@@ -367,8 +367,8 @@ describe('AudioItem', function() {
         'setMute',
         'getVolume',
         'setVolume',
-        'isStreamOnlyEnabled',
-        'setStreamOnlyEnabled',
+        'isStreamOnlyAudio',
+        'setStreamOnlyAudio',
         'isAudioAvailable'
       ].join(','));
     });
