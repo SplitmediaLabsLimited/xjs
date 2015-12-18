@@ -926,7 +926,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * Checks if audio is also output to system sound
    */
-  isStreamOnlyEnabled: () => Promise<boolean>;
+  isStreamOnlyAudio: () => Promise<boolean>;
 
   /**
    * param: value<boolean>
@@ -935,7 +935,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setStreamOnlyEnabled: (value: boolean) => Promise<CameraItem>;
+  setStreamOnlyAudio: (value: boolean) => Promise<CameraItem>;
 
   /**
    * return: Promise<boolean>
