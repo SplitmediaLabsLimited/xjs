@@ -446,6 +446,19 @@ export class Item implements IItemLayout {
     });
   }
 
+  /**
+   *  return: Promise<Item>
+   *
+   *
+   */
+  refresh(): Promise<Item> {
+    return new Promise(resolve => {
+      iItem.set('refresh', '', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
    // ItemLayout
 
   /**
