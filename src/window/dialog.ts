@@ -254,11 +254,11 @@ export class Dialog{
       } else { // listener already active
         Object.observe(this, changes => {
           // Search for changes with the name as result
-          let change = changes.find(elem => {
+          let change = changes.filter(elem => {
             return elem.name === '_result';
           });
-          if (change !== undefined) {
-            resolve(change.object._result);
+          if (change !== undefined && change.length > 0) {
+            resolve(change[0].object._result);
           }
         });
       }
