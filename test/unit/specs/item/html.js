@@ -445,6 +445,18 @@ describe('HTMLItem', function() {
 	        ].join(','));
     	}
     });
+
+    it('should implement audio interface', function() {
+      expect(currentHTMLItem).hasMethods([
+        'isMute',
+        'setMute',
+        'getVolume',
+        'setVolume',
+        'isStreamOnlyAudio',
+        'setStreamOnlyAudio',
+        'isAudioAvailable'
+      ].join(','));
+    });
   });
 
   describe('HTMLItem-specific methods checking', function() {
@@ -654,16 +666,9 @@ describe('HTMLItem', function() {
       function(done) {
         urlSet = false;
 
-        var MockRectangle = function(width, height) {
-          this.width = width;
-          this.height = height;
+        var rect = XJS.Rectangle.fromDimensions(1280, 600);
 
-          this.toDimensionString = function() {
-            return this.width + ',' + this.height ;
-          };
-        };
-
-        var promise = currentHTMLItem.setBrowserCustomSize(new MockRectangle(1280, 600));
+        var promise = currentHTMLItem.setBrowserCustomSize(rect);
         promise.then(function() {
           if (!isXSplit) {
             expect(urlSet).toBe(true);

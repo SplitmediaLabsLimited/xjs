@@ -17,8 +17,7 @@ export class ItemConfigurable {
 
   loadConfig(): Promise<any> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:BrowserConfiguration', slot).then(
+      iItem.get('prop:BrowserConfiguration', this._id).then(
         config => {
           let configObj = config === 'null' ? {} : JSON.parse(config);
           let persist = Global.getPersistentConfig();

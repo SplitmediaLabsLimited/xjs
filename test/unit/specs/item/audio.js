@@ -8,12 +8,14 @@ describe('AudioItem', function() {
   var local = {
     silenceDetection : false,
     audioGain: 0,
-    audioLatency: 0
+    audioLatency: 0,
+    audioOffset: 0
   };
   var local2 = {
     silenceDetection : false,
     audioGain: 0,
-    audioLatency: 0
+    audioLatency: 0,
+    audioOffset: 0
   };
 
   var env = new window.Environment(XJS);
@@ -72,6 +74,12 @@ describe('AudioItem', function() {
                 window.OnAsyncCallback(_ctr, local.audioLatency);
               }, 10);
             break;
+
+            case 'prop:AudioDelay':
+              setTimeout(function() {
+                window.OnAsyncCallback(_ctr, local.audioOffset);
+              }, 10);
+            break;
           }
         })(ctr);
 
@@ -103,6 +111,13 @@ describe('AudioItem', function() {
                 local.audioLatency = val;
               }, 10);
             break;
+
+            case 'prop:AudioDelay':
+              setTimeout(function() {
+                window.OnAsyncCallback(_ctr, '1');
+                local.audioOffset = val;
+              }, 10);
+            break;
           }
         })(ctr);
 
@@ -129,6 +144,12 @@ describe('AudioItem', function() {
             case 'prop:AudioGainLatency':
               setTimeout(function() {
                 window.OnAsyncCallback(_ctr, local2.audioLatency);
+              }, 10);
+            break;
+
+            case 'prop:AudioDelay':
+              setTimeout(function() {
+                window.OnAsyncCallback(_ctr, local2.audioOffset);
               }, 10);
             break;
           }
@@ -160,6 +181,13 @@ describe('AudioItem', function() {
               setTimeout(function() {
                 window.OnAsyncCallback(_ctr, '1');
                 local2.audioLatency = val;
+              }, 10);
+            break;
+
+            case 'prop:AudioDelay':
+              setTimeout(function() {
+                window.OnAsyncCallback(_ctr, '1');
+                local2.audioOffset = val;
               }, 10);
             break;
           }
@@ -300,6 +328,37 @@ describe('AudioItem', function() {
     });
   });
 
+  describe('should be able to set and get the audio offset', function() {
+    it('as a number', function(done) {
+      var val = Math.floor(Math.random() * 10000);
+      this.audioItem.setAudioOffset(val).then(function(item) {
+        item.getAudioOffset().then(function(num) {
+          expect(num).toBeTypeOf('number');
+          expect(num).toEqual(val);
+          done();
+        });
+      });
+    });
+
+    it('not lower than 0', function(done) {
+      this.audioItem.setAudioOffset(-1).then(function() {
+        done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      });
+    });
+
+    it('not a alphanumeric string', function(done) {
+      this.audioItem.setAudioOffset('asdf').then(function() {
+        done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      });
+    });
+  });
+
   describe('interface method checking', function() {
 
     it('should implement audio interface', function() {
@@ -308,10 +367,9 @@ describe('AudioItem', function() {
         'setMute',
         'getVolume',
         'setVolume',
-        'getAudioOffset',
-        'setAudioOffset',
-        'isStreamOnlyEnabled',
-        'setStreamOnlyEnabled'
+        'isStreamOnlyAudio',
+        'setStreamOnlyAudio',
+        'isAudioAvailable'
       ].join(','));
     });
   });

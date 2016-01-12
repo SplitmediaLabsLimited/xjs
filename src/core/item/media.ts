@@ -8,6 +8,9 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
+import {IItemAudio, ItemAudio} from './iaudio';
+import {CuePoint} from './cuepoint';
 import {Item} from './item';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -22,7 +25,8 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class MediaItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
 
   // ItemLayout
 
@@ -78,7 +82,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   getRotateZ: () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -87,7 +91,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setKeepAspectRatio: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -96,7 +100,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setPositionLocked: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -105,7 +109,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setEnhancedResizeEnabled: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -125,7 +129,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setPosition: (value: Rectangle) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -134,7 +138,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setRotateY: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -143,7 +147,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setRotateX: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -196,7 +200,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   getBorderColor: () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -205,7 +209,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setTransparency: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -214,7 +218,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setBrightness: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -223,7 +227,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setContrast: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -232,7 +236,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setHue: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -241,7 +245,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   setSaturation: (value: number) => Promise<MediaItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -255,7 +259,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   isChromaEnabled: () => Promise<boolean>;
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * *Chainable.*
    */
@@ -265,7 +269,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getKeyingType: () => Promise<KeyingType>;
   /**
-   * param: value<KeyingType>
+   * param: (value: KeyingType)
    * *Chainable.*
    *
    */
@@ -277,7 +281,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
   /**
-   * param: value<ChromaAntiAliasLevel>
+   * param: (value: ChromaAntiAliasLevel)
    *
    * *Chainable.*
    */
@@ -289,7 +293,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyBrightness: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -299,7 +303,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacySaturation: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -309,7 +313,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyHue: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -319,7 +323,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -329,7 +333,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -341,7 +345,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
   /**
-   * param: value<ChromaPrimaryColors>
+   * param: (value: ChromaPrimaryColors)
    *
    * *Chainable.*
    */
@@ -351,7 +355,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -361,7 +365,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaRGBKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -373,7 +377,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyThreshold: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -383,7 +387,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyExposure: () => Promise<number>;
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * *Chainable.*
    */
@@ -393,7 +397,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
    */
   getChromaColorKeyColor: () => Promise<Color>;
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * *Chainable.*
    */
@@ -409,7 +413,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   isVisible: () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -425,7 +429,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   getTransition: () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -441,13 +445,294 @@ export class MediaItem extends Item implements IItemLayout, IItemColor, IItemChr
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<MediaItem>;
+
+  // ItemPlayback
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Determines if it is possible to move the playback position of this media
+   * source. It is possible for some video formats to not allow seeking of the
+   * playback position.
+   */
+  isSeekable: () => Promise<boolean>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the playback position of this item in seconds. The system can
+   * store precision up to 100ns.
+   */
+  getPlaybackPosition: () => Promise<number>;
+
+  /**
+   * param: (value: number)
+   *
+   * Sets the playback position of this item. Parameter is in seconds, up to
+   * a precision level of 100ns.
+   *
+   * *Chainable.*
+   */
+  setPlaybackPosition: (value: number) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the total playback duration of this item in seconds. Precision is up
+   * to 100ns units.
+   */
+  getPlaybackDuration: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if current item is playing.
+   */
+  isPlaying: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Plays (or pauses playback for) this item.
+   *
+   * *Chainable.*
+   */
+  setPlaying: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * will return to the start position.
+   */
+  getPlaybackStartPosition: () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Sets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * will return to the start position.
+   *
+   * *Chainable.*
+   */
+  setPlaybackStartPosition: (value: number) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
+   * execute the specified action after playback (rewind, loop, etc.)
+   */
+  getPlaybackEndPosition: () => Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Sets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
+   * execute the specified action after playback (rewind, loop, etc.)
+   *
+   * *Chainable.*
+   */
+  setPlaybackEndPosition: (value: number) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<ActionAfterPlayback>
+   *
+   * Gets the specified action after playback for this item is done (either
+   * playback reaches the end of the video, or the specified playback end
+   * position.)
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+   */
+  getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+
+  /**
+   * param: (value: ActionAfterPlayback)
+   *
+   * Sets the action to be executed on this item once playback is done (either
+   * playback reaches the end of the video, or the specified playback end
+   * position.)
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+   */
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether this item is set to start playback when the application
+   * switches to this item's scene.
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Specifies whether this item is set to start playback when the application
+   * switches to this item's scene.
+   *
+   * *Chainable.*
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether Force Deinterlace is active.
+   */
+  isForceDeinterlace: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets the Force Deinterlace setting.
+   *
+   * *Chainable.*
+   */
+  setForceDeinterlace: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check whether this item should retain its playback position when switching
+   * scenes.
+   */
+  isRememberingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether this item should retain its playback position when switching
+   * scenes.
+   *
+   * *Chainable.*
+   */
+  setRememberingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item is set to display its playback position.
+   */
+  isShowingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether this item should display its playback position.
+   *
+   * *Chainable.*
+   */
+  setShowingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<CuePoint[]>
+   *
+   * Gets the set of Cue Points created for this item.
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
+   */
+  getCuePoints: () => Promise<CuePoint[]>;
+
+  /**
+   * param: (value: CuePoint[])
+   *
+   * Assign the specified array of Cue Points for this item.
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
+   */
+  setCuePoints: (value: CuePoint[]) => Promise<MediaItem>;
+
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item's file type is an audio file type.
+   */
+  isAudio: () => Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item's file type is a video file type.
+   */
+  isVideo: () => Promise<boolean>;
+
+  // ItemAudio
+
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
+  getVolume: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
+  isMute:   () => Promise<boolean>;
+
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
+  setVolume: (value: number) => Promise<MediaItem>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setMute:  (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
+  isStreamOnlyAudio: () => Promise<boolean>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
+  setStreamOnlyAudio: (value: boolean) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma,
+  ItemTransition, ItemPlayback, ItemAudio]);

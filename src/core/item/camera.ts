@@ -8,11 +8,14 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
+import {IItemAudio, ItemAudio} from './iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
+import {System} from '../../system/system';
 
 /**
  * The CameraItem Class provides methods specifically used for camera items and
@@ -44,7 +47,14 @@ import {Color} from '../../util/color';
  *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
-export class CameraItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class CameraItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemAudio {
+    private _delayExclusionObject = {
+      roxio : "vid_1b80&pid_e0(01|11|12)",
+      hauppauge1 : "vid_2040&pid_49(0[0-3]|8[0-3])",
+      hauppauge2 : "vid_2040&pid_e50[012a4]"
+    };
+
   /**
    * return: Promise<string>
    *
@@ -52,9 +62,250 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
+      iItem.get('prop:item', this._id).then(val => {
         resolve(val);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera feed is paused
+   */
+  isStreamPaused(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:StreamPause', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether camera feed is paused or not
+   */
+  setStreamPaused(value: boolean): Promise<CameraItem> {
+    return new Promise((resolve, reject) => {
+      iItem.set('prop:StreamPause', value ? '1' : '0',
+        this._id).then(() => {
+          return iItem.get('prop:StreamPause', this._id);
+        })
+        .then(val => {
+          if (value === (val === ('1'))) {
+            resolve(this);
+          } else {
+            reject(new Error('Camera feed cannot be paused/resumed or is not present'));
+          }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is a hardware encoder or not. This check may fail
+   * if camera device is reinitializing or not present (value defaults to false)
+   *
+   */
+  isHardwareEncoder(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:hwencoder', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets feed capture delay in milliseconds
+   */
+  getDelay(): Promise<number> {
+    return new Promise(resolve => {
+      var streamDelay, audioDelay;
+      iItem.get('prop:StreamDelay', this._id).then(val => {
+        streamDelay = Number(val);
+        return iItem.get('prop:AudioDelay', this._id);
+      })
+      .then(val => {
+        audioDelay = Number(val);
+
+        if (streamDelay < audioDelay) {
+          resolve(streamDelay/10000);
+        } else {
+          resolve(audioDelay/10000);
+        }
+      });
+    });
+  }
+
+  /**
+   * param: (value: number)
+   *
+   * Sets feed capture delay in milliseconds, accepts only positive delay
+   *
+   * *Chainable.*
+   */
+  setDelay(value: number): Promise<CameraItem> {
+    return new Promise((resolve, reject) => {
+      var isPositive, audioOffset;
+      this.isHardwareEncoder().then(val => {
+        if (val === true) {
+          reject(new Error('Cannot set delay to hardware encoder devices'));
+        } else {
+          return this.getValue();
+        }
+      })
+      .then(val => {
+        for (var key in this._delayExclusionObject)
+        {
+          var regex = new RegExp(
+            this._delayExclusionObject[key].toLowerCase(), 'g' );
+          if(typeof val === 'string' && val.toLowerCase().match(regex) != null)
+          {
+            reject(new Error('Cannot set delay to specific device'));
+            break;
+          }
+        }
+        return this.getAudioOffset();
+      })
+      .then(val => {
+        audioOffset = val;
+        if (audioOffset >= 0) {
+          isPositive = true;
+          return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
+        } else {
+          isPositive = false;
+          return iItem.set('prop:StreamDelay',
+            String((value + (audioOffset * -1)) * 10000), this._id);
+        }
+      })
+      .then(val => {
+        if (isPositive) {
+          return iItem.set('prop:AudioDelay',
+            String((value + audioOffset) * 10000), this._id);
+        } else {
+          return iItem.set('prop:AudioDelay', String(value * 10000), this._id);
+        }
+      }). then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets audio delay with respect to video feed in milliseconds
+   */
+  getAudioOffset(): Promise<number> {
+    return new Promise(resolve => {
+      var streamDelay, audioDelay;
+      iItem.get('prop:StreamDelay', this._id).then(val => {
+        streamDelay = Number(val);
+        return iItem.get('prop:AudioDelay', this._id);
+      })
+      .then(val => {
+        audioDelay = Number(val);
+        resolve((audioDelay - streamDelay)/10000);
+      });
+    });
+  }
+
+  /**
+   * param: (value: number)
+   *
+   * Sets audio delay with respect to video feed in milliseconds
+   *
+   * *Chainable.*
+   */
+  setAudioOffset(value: number): Promise<CameraItem> {
+    return new Promise((resolve, reject) => {
+      var itemAudio, delay;
+      iItem.get('prop:itemaudio', this._id).then(val => {
+        itemAudio = val;
+        return this.isAudioAvailable();
+      })
+      .then(val => {
+        if (val === false && itemAudio === '') {
+          reject(new Error('Device has no audio'));
+        } else {
+          return this.getDelay();
+        }
+      })
+      .then(val => {
+        delay = val;
+        if (value >= 0) {
+          return iItem.set('prop:StreamDelay', String(delay * 10000), this._id);
+        } else {
+          return iItem.set('prop:StreamDelay',
+            String((delay + (value * -1)) * 10000), this._id);
+        }
+      })
+      .then(val => {
+        if (value >= 0) {
+          return iItem.set('prop:AudioDelay',
+            String((delay + value) * 10000), this._id);
+        } else {
+          return iItem.set('prop:AudioDelay', String(delay * 10000), this._id);
+        }
+      }). then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<MicrophoneDevice>
+   *
+   * Gets the microphone device tied as an audio input,
+   * rejected if no microphone device is used
+   */
+  getAudioInput(): Promise<MicrophoneDevice> {
+    return new Promise((resolve, reject) => {
+      var itemAudioId;
+      iItem.get('prop:itemaudio', this._id).then(val => {
+        if (val === '') {
+          reject(new Error('No tied audio input'));
+        } else {
+          itemAudioId = val;
+          return System.getMicrophones();
+        }
+      })
+      .then(val => {
+        var micDevice;
+        if (val !== undefined) {
+          for (var i = 0; i < val.length; ++i) {
+            if (val[i].getDisplayID() === itemAudioId) {
+              micDevice = val[i];
+              break;
+            }
+          }
+        }
+
+        if (micDevice !== undefined) {
+          resolve(micDevice);
+        } else {
+          reject(new Error('Tied audio input not present'));
+        }
+      });
+    });
+  }
+
+  /**
+   * param: (value: number)
+   *
+   * Sets the microphone device to be tied as an audio input
+   *
+   * *Chainable.*
+   */
+  setAudioInput(value: MicrophoneDevice): Promise<CameraItem> {
+    return new Promise((resolve, reject) => {
+      iItem.set('prop:itemaudio', value.getDisplayID(), this._id)
+      .then(val => {
+        resolve(this);
       });
     });
   }
@@ -113,7 +364,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getRotateZ:              () => Promise<number>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Aspect Ratio to ON or OFF
    *
@@ -122,7 +373,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setKeepAspectRatio:       (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Position Lock to ON or OFF
    *
@@ -131,7 +382,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setPositionLocked:        (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set Enhance Resize to ON or OFF
    *
@@ -140,7 +391,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setEnhancedResizeEnabled:  (value: boolean) => Promise<CameraItem>;
 
   /**
-   * param: value<Rectangle>
+   * param: (value: Rectangle)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -160,7 +411,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setPosition:              (value: Rectangle) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Y value of the item
    *
@@ -169,7 +420,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setRotateY:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate X value of the item
    *
@@ -178,7 +429,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setRotateX:              (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Rotate Z value of the item
    *
@@ -231,7 +482,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getBorderColor:  () => Promise<Color>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Transparency
    *
@@ -240,7 +491,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setTransparency: (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Brightness
    *
@@ -249,7 +500,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setBrightness:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Contrast
    *
@@ -258,7 +509,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setContrast:     (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Hue
    *
@@ -267,7 +518,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setHue:          (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set Item Saturation
    *
@@ -276,7 +527,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   setSaturation:   (value: number) => Promise<CameraItem>;
 
   /**
-   * param: value<Color>
+   * param: (value: Color)
    *
    * Set Border Color
    *
@@ -287,7 +538,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   // special color options pinning
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set this to true to share color settings across all instances of this
    * camera device on the stage.
@@ -296,8 +547,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setColorOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:cc_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:cc_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -311,8 +561,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getColorOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cc_pin', slot).then(val => {
+      iItem.get('prop:cc_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -567,8 +816,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.set('prop:key_pin', value ? '1' : '0', slot).then(() => {
+      iItem.set('prop:key_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
@@ -583,8 +831,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
    */
   getKeyingOptionsPinned(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:key_pin', slot).then(val => {
+      iItem.get('prop:key_pin', this._id).then(val => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -600,7 +847,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   isVisible:         () => Promise<boolean>;
 
   /**
-   * param: value<boolean>
+   * param: (value: boolean)
    *
    * Set item to visible or hidden
    *
@@ -616,7 +863,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getTransition:     () => Promise<Transition>;
 
   /**
-   * param: value<Transition>
+   * param: (value: Transition)
    *
    * Set item's transition type for when visibility is toggled
    *
@@ -632,13 +879,71 @@ export class CameraItem extends Item implements IItemLayout, IItemColor, IItemCh
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: value<number>
+   * param: (value: number)
    *
    * Set item's transition time in milliseconds
    *
    * *Chainable.*
    */
   setTransitionTime: (value: number) => Promise<CameraItem>;
+
+ // ItemAudio
+
+  /**
+   * return: Promise<number>
+   *
+   * Get item's volume level expressed as an integer from 0 to 100
+   */
+  getVolume: () => Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item's mute option is active
+   */
+  isMute:   () => Promise<boolean>;
+
+  /**
+   * param: value<number>
+   *
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   *
+   * *Chainable.*
+   */
+  setVolume: (value: number) => Promise<CameraItem>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Set item's Mute property to ON or OFF
+   *
+   * *Chainable.*
+   */
+  setMute:  (value: boolean) => Promise<CameraItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is also output to system sound
+   */
+  isStreamOnlyAudio: () => Promise<boolean>;
+
+  /**
+   * param: value<boolean>
+   *
+   * Sets whether audio should also be output to system sound
+   *
+   * *Chainable.*
+   */
+  setStreamOnlyAudio: (value: boolean) => Promise<CameraItem>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if audio is available
+   */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(CameraItem, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
+  ItemAudio]);

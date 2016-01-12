@@ -26,6 +26,13 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  *   window.frametime = frametime;
  * });
  * ```
+ *
+ * For methods referring to application audio
+ * (i.e. mic and speaker settings, silence detection, etc.).
+ * This will affect XBC settings
+ * but will not be reflected in the General Settings Window
+ * (also will not be persistent after logging out of/exiting the application).
+ *
  */
 export class App{
 
@@ -105,7 +112,7 @@ export class App{
   /**
    * return: Promise<string>
    *
-   * Refers to XSplit Broadcaster DLL file version number
+   * Refers to XSplit Broadcaster version number
    *
    * #### Usage
    *
@@ -116,8 +123,14 @@ export class App{
    * ```
    */
   getVersion() : Promise<string> {
-    return new Promise(resolve => {
-      resolve(iApp.get('version'));
+    return new Promise((resolve, reject) => {
+      var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+      var xbcMatch = navigator.appVersion.match(xbcPattern);
+      if (xbcMatch !== null) {
+        resolve(xbcMatch[1]);
+      } else {
+        reject(Error('not loaded in XSplit Broadcaster'));
+      }
     });
   }
 
@@ -160,7 +173,7 @@ export class App{
    * ```
    */
   getPrimaryMic(): Promise<AudioDevice[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -168,9 +181,8 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 0) {
           resolve(audioDevices[0]);
-        } else
-        {
-          resolve(new AudioDevice({ id: 'empty' }));
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
         }
       });
     });
@@ -192,7 +204,7 @@ export class App{
    * ```
    */
   getPrimarySpeaker(): Promise<AudioDevice[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
@@ -200,88 +212,495 @@ export class App{
 
         if (audioDevices.length && audioDevices.length > 1) {
           resolve(audioDevices[1]);
-        } else
-        {
-          resolve(new AudioDevice({ id: 'empty' }));
+        } else {
+          reject(Error('No audio device is set as primary speaker'));
         }
       });
     });
   }
 
   /**
-   * param: (device: AudioDevice)
+   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
    * ```
    * return: Promise<boolean>
    * ```
    *
-   * Sets the primary microphone device to be used in the application
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
+   * Sets the application audio level of the primary microphone set
    *
    * ### Usage
    *
    * ```javascript
-   * App.setPrimaryMic(device).then(function(val) {
+   * App.setPrimaryMicLevel(volume).then(function(val) {
    *   var isSet = val;
    * });
    * ```
    */
-  setPrimaryMic(device: AudioDevice): Promise<boolean> {
-    return new Promise(resolve => {
+  setPrimaryMicLevel(volume: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
         });
-        audioDevices[0] = device;
-        var dev = '';
-        if (Array.isArray(audioDevices)) {
-            for (var i = 0; i < audioDevices.length; ++i) {
-                dev += audioDevices[i].toString();
-            }
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setLevel(volume);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
         }
-        dev = '<devices>' + dev + '</devices>';
-        iApp.set('microphonedev2', dev).then(setVal => {
-          resolve(setVal);
-        });
       });
     });
   }
 
   /**
-   * param: (device: AudioDevice)
+   * param: enabled<boolean>
    * ```
    * return: Promise<boolean>
    * ```
    *
-   * Sets the primary speaker/audio render device to be used in the application
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
+   * Sets whether the primary microphone set is enabled or disabled in the applicaation
    *
    * ### Usage
    *
    * ```javascript
-   * App.setPrimarySpeaker(device).then(function(val) {
+   * App.setPrimaryMicEnabled(enabled).then(function(val) {
    *   var isSet = val;
    * });
    * ```
    */
-  setPrimarySpeaker(device: AudioDevice): Promise<boolean> {
-    return new Promise(resolve => {
+  setPrimaryMicEnabled(enabled: boolean): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
           return AudioDevice.parse(val);
         });
-        audioDevices[1] = device;
-        var dev = '';
-        if (Array.isArray(audioDevices)) {
-            for (var i = 0; i < audioDevices.length; ++i) {
-                dev += audioDevices[i].toString();
-            }
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setEnabled(enabled);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
         }
-        dev = '<devices>' + dev + '</devices>';
-        iApp.set('microphonedev2', dev).then(setVal => {
-          resolve(setVal);
+
+      });
+    });
+  }
+
+  /**
+   * param: volume<number> (0 to 100)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the system audio level of the primary microphone set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimaryMicSystemLevel(volume).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimaryMicSystemLevel(volume: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
         });
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setSystemLevel(volume);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
+        }
+      });
+    });
+  }
+
+  /**
+   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets whether the primary microphone set is enabled or disabled in the system
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimaryMicSystemEnabled(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimaryMicSystemEnabled(hwenabled: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+        reject(Error('Value can only be 0, 1 or 255'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setSystemEnabled(hwenabled);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
+        }
+
+      });
+    });
+  }
+
+  /**
+   * param: delay<number> (100 nanoseconds in units)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the loopback capture delay of the primary microphone set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimaryMicDelay(delay).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimaryMicDelay(delay: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (delay < 0) {
+        reject(Error('Delay can only be positive'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setDelay(delay);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
+        }
+
+      });
+    });
+  }
+
+  /**
+   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the application audio level of the primary speaker/audio render device
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeakerLevel(volume).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeakerLevel(volume: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 1) {
+          var speakerDevice = audioDevices[1];
+          speakerDevice._setLevel(volume);
+          audioDevices[1] = speakerDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary speaker/audio render device'));
+        }
+      });
+    });
+  }
+
+  /**
+   * param: enabled<boolean>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets whether the primary speaker/audio render device set is enabled or disabled in the applicaation
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeakerEnabled(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeakerEnabled(enabled: boolean): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 1) {
+          var speakerDevice = audioDevices[1];
+          speakerDevice._setEnabled(enabled);
+          audioDevices[1] = speakerDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary speaker/audio render device'));
+        }
+
+      });
+    });
+  }
+
+  /**
+   * param: volume<number> (0 to 100)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the system audio level of the primary speaker/audio render device set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeakerSystemLevel(volume).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeakerSystemLevel(volume: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 1) {
+          var speakerDevice = audioDevices[1];
+          speakerDevice._setSystemLevel(volume);
+          audioDevices[1] = speakerDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary speaker/audio render device'));
+        }
+
+      });
+    });
+  }
+
+  /**
+   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets whether the primary speaker/audio render device set is enabled or disabled in the system
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeakerSystemEnabled(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeakerSystemEnabled(hwenabled: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+        reject(Error('Value can only 0, 1 or 255'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 1) {
+          var speakerDevice = audioDevices[1];
+          speakerDevice._setSystemEnabled(hwenabled);
+          audioDevices[1] = speakerDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary speaker/audio render device'));
+        }
+
+      });
+    });
+  }
+
+  /**
+   * param: delay<number> (100 nanoseconds in units)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the loopback capture delay of the primary speaker/audio render device
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.setPrimarySpeakerDelay(delay).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  setPrimarySpeakerDelay(delay: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+      if (delay < 0) {
+        reject(Error('Delay can only be positive'));
+      }
+
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 1) {
+          var speakerDevice = audioDevices[1];
+          speakerDevice._setDelay(delay);
+          audioDevices[1] = speakerDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(setVal);
+          });
+        } else {
+          reject(Error('No audio device is set as primary speaker/audio render device'));
+        }
+
       });
     });
   }
@@ -309,7 +728,7 @@ export class App{
   }
 
   /**
-   * param: (enabled: boolean)
+   * param: enabled<boolean>
    * ```
    * return: Promise<boolean>
    * ```
@@ -362,7 +781,7 @@ export class App{
   }
 
   /**
-   * param: (sdPeriod: number)
+   * param: sdPeriod<number>
    * ```
    * return: Promise<boolean>
    * ```
@@ -422,9 +841,8 @@ export class App{
     });
   }
 
-
   /**
-   * param: (sdThreshold: number)
+   * param: sdThreshold<number>
    * ```
    * return: Promise<boolean>
    * ```
@@ -489,7 +907,7 @@ export class App{
   }
 
   /**
-   * param: (transition: Transition)
+   * param: transition<Transition>
    * ```
    * return: Promise<boolean>
    * ```
@@ -540,7 +958,7 @@ export class App{
   }
 
   /**
-   * param: (time: number)
+   * param: time<number>
    * ```
    * return: Promise<boolean>
    * ```
@@ -572,7 +990,7 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * App.clearBrowserCookies.then(function(val) {
+   * App.clearBrowserCookies().then(function(val) {
    *  var isCleared = val;
    * });
    * ```
@@ -585,6 +1003,19 @@ export class App{
         exec('CallHost', 'deletecookie:videoitemprop');
         resolve(true);
       }
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Returns a hashed string that may be used to differentiate among logged-in
+   * users. This will be useful in such cases as persisting data to be used by
+   * certain XSplit users only.
+   */
+  getUserIdHash(): Promise<string> {
+    return new Promise(resolve => {
+      resolve(iApp.getGlobalProperty('userid'));
     });
   }
 }

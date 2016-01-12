@@ -6,4 +6,8 @@ interface Window {
   SetVolume: Function;
   OnDialogResult: Function;
   MessageSource: Function;
+  UpdateLocalProperty: Function;
+  Setdlldogrant: Function;
+  SourcesListHighlight: Function;
+  SourcesListSelect: Function;
 }

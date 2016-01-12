@@ -38,7 +38,7 @@ export class Url implements Addable {
       } else if (/[a-z]+:\/\//i.test(this._url)) {
         reject(new Error('You may only add HTTP or HTTPS URLs to the stage.'));
       } else {
-        resolve("http://" + this._url);
+        resolve('http://' + this._url);
       }
     });
   }

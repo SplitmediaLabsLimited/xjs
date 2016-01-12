@@ -139,7 +139,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         if (scene instanceof Scene) {
-          scene.getID().then(id => {
+          scene.getId().then(id => {
             iApp.set('preset', String(id)).then(res => {
               resolve(res);
             });
@@ -190,7 +190,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
-                if (item['_id'] === id) {
+                if (item['_id'] === id.toUpperCase()) {
                   match = item;
                   return true;
                 } else {
@@ -238,7 +238,7 @@ export class Scene {
           if (match === null) {
             scene.getItems().then(items => {
               found = items.some(item => { // unique ID, so get first result
-                if (item['_id'] === id) {
+                if (item['_id'] === id.toUpperCase()) {
                   match = Scene.getById(idx + 1);
                   return true;
                 } else {
@@ -283,16 +283,20 @@ export class Scene {
             return item.getName();
           }
         }).then(name => {
-          if (name.match(param)) {
-            filterResolve(true);
-          } else {
-            return item.getValue();
+          if (name !== undefined) {
+            if (name.match(param)) {
+              filterResolve(true);
+            } else {
+              return item.getValue();
+            }
           }
         }).then(value => {
-          if (value.toString().match(param)) {
-            filterResolve(true);
-          } else {
-            filterResolve(false);
+          if (value !== undefined) {
+            if (value.toString().match(param)) {
+              filterResolve(true);
+            } else {
+              filterResolve(false);
+            }
           }
         });
       }).then(items => {

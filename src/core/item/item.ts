@@ -107,9 +107,8 @@ export class Item implements IItemLayout {
    */
   setName(value: string): Promise<Item> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._name = value;
-      iItem.set('prop:name', this._name, slot).then(() => {
+      iItem.set('prop:name', this._name, this._id).then(() => {
         resolve(this);
       });
     });
@@ -130,8 +129,7 @@ export class Item implements IItemLayout {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:name', slot).then(val => {
+      iItem.get('prop:name', this._id).then(val => {
         this._name = val;
         resolve(val);
       });
@@ -165,9 +163,8 @@ export class Item implements IItemLayout {
    */
   setCustomName(value: string): Promise<Item> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._cname = value;
-      iItem.set('prop:cname', this._cname, slot).then(() => {
+      iItem.set('prop:cname', this._cname, this._id).then(() => {
         resolve(this);
       });
     });
@@ -188,8 +185,7 @@ export class Item implements IItemLayout {
    */
   getCustomName(): Promise<string> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:cname', slot).then(val => {
+      iItem.get('prop:cname', this._id).then(val => {
         this._cname = val;
         resolve(val);
       });
@@ -215,8 +211,7 @@ export class Item implements IItemLayout {
    */
   getValue(): Promise<string|XML> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:item', slot).then(val => {
+      iItem.get('prop:item', this._id).then(val => {
         val = (val === 'null') ? '' : val;
         if (val === '') { // don't return XML for null values
           this._value = '';
@@ -269,7 +264,6 @@ export class Item implements IItemLayout {
    */
   setValue(value: string | XML): Promise<Item> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       var val: string = (typeof value === 'string') ?
         <string> value : (<XML> value).toString();
       if (typeof value !== 'string') { // XML
@@ -277,7 +271,7 @@ export class Item implements IItemLayout {
       } else {
         this._value = val;
       }
-      iItem.set('prop:item', val, slot).then(() => {
+      iItem.set('prop:item', val, this._id).then(() => {
         resolve(this);
       });
     });
@@ -298,8 +292,7 @@ export class Item implements IItemLayout {
    */
   getKeepLoaded(): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:keeploaded', slot).then(val => {
+      iItem.get('prop:keeploaded', this._id).then(val => {
         this._keepLoaded = (val === '1');
         resolve(this._keepLoaded);
       });
@@ -326,9 +319,8 @@ export class Item implements IItemLayout {
    */
   setKeepLoaded(value: boolean): Promise<Item> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
       this._keepLoaded = value;
-      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), slot)
+      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
       });
@@ -350,8 +342,7 @@ export class Item implements IItemLayout {
    */
   getType(): Promise<ItemTypes> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
-      iItem.get('prop:type', slot).then(val => {
+      iItem.get('prop:type', this._id).then(val => {
         this._type = ItemTypes[ItemTypes[Number(val)]];
         resolve(this._type);
       });
@@ -371,7 +362,7 @@ export class Item implements IItemLayout {
    * });
    * ```
    */
-  getID(): Promise<string> {
+  getId(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._id);
     });
@@ -452,6 +443,32 @@ export class Item implements IItemLayout {
           resolve(item); // this should always exist
         });
       }
+    });
+  }
+
+  /**
+   *  return: Promise<Item>
+   *
+   *  Refreshes the specified source.
+   *
+   *  #### Usage
+   *  ```javascript
+   *  // Sample 1: let source refresh itself
+   *  xjs.Item.getCurrentSource().then(function(source) {
+   *    source.refresh(); // execution of JavaScript halts because of refresh
+   *  });
+   *
+   *  // Sample 2: refresh some other source 'otherSource'
+   *  otherSource.refresh().then(function(source) {
+   *    // further manipulation of other source goes here
+   *  });
+   *  ```
+   */
+  refresh(): Promise<Item> {
+    return new Promise(resolve => {
+      iItem.set('refresh', '', this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 
