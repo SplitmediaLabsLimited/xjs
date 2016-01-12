@@ -19,37 +19,22 @@ import {EventEmitter} from '../util/eventemitter';
  *
  */
 export class Dll extends EventEmitter {
-  static _SAFE_FUNCTION_WHITELIST: string[] = [
-    'xsplit.GetForegroundWindow',
-    'xsplit.GetWindowState',
-    'xsplit.GetWindowProcessId',
-    'xsplit.GetProcessDetails',
-    'xsplit.EnumProcesses',
-    'xsplit.GetProcessModules',
-    'xsplit.GetProcessWindowsList',
-    'xsplit.GetWindowTitle',
-    'xsplit.GetWindowClassName',
-    'xsplit.GetSysCpuUsage',
-    'xsplit.GetProcCpuUsage',
-    'xsplit.GetSysMemoryUsage',
-    'xsplit.GetProcMemoryUsage'
-  ];
-
   /**
    *  param: (path: string)
    *
-   *  Loads a DLL for the plugin to use. Currently, only Xjs.dll is auto-
-   *  loaded and does not require loading. Loading DLLs will trigger a
+   *  Loads one or more DLLs for the plugin to use. Currently, only Xjs.dll is
+   *  auto-loaded and does not require loading. Loading DLLs will trigger a
    *  notification for the user, requesting access to be granted to DLL files.
+   *  Your plugin should only call this once, at the beginning of execution.
    *
    *  Paths are relative to the main XBC application folder, so sample usage is:
    *
    *  ```javascript
-   *  Dll.load('Scriptdlls\\SplitMediaLabs\\XjsEx.dll');
+   *  Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']);
    *  ```
    */
-  static load(path: string) {
-    exec('LoadDll', path);
+  static load(path: string[]) {
+    exec('LoadDll', path.join(','));
   }
 
   static _emitter = new Dll();
@@ -68,19 +53,12 @@ export class Dll extends EventEmitter {
    *
    *  return: string (see DLL documentation)
    *
-   *  Calls a function from a loaded DLL. The first DLL to be found containing
-   *  the function name will be called, so you need to ensure there are no
-   *  function name collisions among DLLs for functions you require.
-   *
-   *  Some DLLs have callbacks. Assign a handler function to that callback in
-   *  the global namespace, and the DLL will call that function accordingly.
-   *
-   *  See the documentation of your specific DLL for more details.
+   *  Calls a function from a loaded "safe" DLL. The only safe DLL we are
+   *  currently exposing is `Xjs.dll`.
    */
   static call(func: string, ...params: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
-      const funcCall = Dll._SAFE_FUNCTION_WHITELIST.indexOf(func) === -1 ?
-        'CallDllEx' : 'CallDll';
+      const funcCall = 'CallDll';
       params.unshift(func);
       params.unshift(funcCall);
       const retValue: string = exec.apply(this, params);
@@ -91,6 +69,35 @@ export class Dll extends EventEmitter {
       }
     });
   }
+
+  /**
+   *  param: (funcName: string, ...params: string[])
+   *
+   *  return: string (see DLL documentation)
+   *
+   *  Calls a function from a loaded "unsafe" DLL. The first DLL containing
+   *  the function name will be called, so you need to ensure there are no
+   *  function name collisions among DLLs for functions you require.
+   *
+   *  Some DLLs have callbacks. Assign a handler function to that callback in
+   *  the global namespace, and the DLL will call that function accordingly.
+   *
+   *  See the documentation of your specific DLL for more details.
+   */
+  static callEx(func: string, ...params: string[]): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const funcCall = 'CallDllEx';
+      params.unshift(func);
+      params.unshift(funcCall);
+      const retValue: string = exec.apply(this, params);
+      if (retValue !== undefined) {
+        resolve(retValue);
+      } else {
+        reject('DLL call not accessible.');
+      }
+    });
+  }
+
 
   /**
    *  return: Promise<boolean>
