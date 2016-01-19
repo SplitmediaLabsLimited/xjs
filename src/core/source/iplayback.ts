@@ -3,6 +3,11 @@
 import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
 
+/**
+ *  Used by sources that implement the Playback interface.
+ *  Check `getActionAfterPlayback()`/`setActionAfterPlayback()` method of
+ *  {@link #core/MediaSource#getActionAfterPlayback Core/MediaSource}.
+ */
 export enum ActionAfterPlayback {
   NONE,
   REWIND,
@@ -17,32 +22,225 @@ const VIDEO_REGEX =
   /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
 
 export interface IItemPlayback {
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Determines if it is possible to move the playback position of this media
+   * source. It is possible for some video formats to not allow seeking of the
+   * playback position.
+   */
   isSeekable(): Promise<boolean>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the playback position of this item in seconds. The system can
+   * store precision up to 100ns.
+   */
   getPlaybackPosition(): Promise<number>;
+
+  /**
+   * param: (value: number)
+   *
+   * Sets the playback position of this item. Parameter is in seconds, up to
+   * a precision level of 100ns.
+   *
+   * *Chainable.*
+   */
   setPlaybackPosition(value: number): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the total playback duration of this item in seconds. Precision is up
+   * to 100ns units.
+   */
   getPlaybackDuration(): Promise<number>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if current item is playing.
+   */
   isPlaying(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Plays (or pauses playback for) this item.
+   *
+   * *Chainable.*
+   */
   setPlaying(value: boolean): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * will return to the start position.
+   */
   getPlaybackStartPosition(): Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Sets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * will return to the start position.
+   *
+   * *Chainable.*
+   */
   setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
+   * execute the specified action after playback (rewind, loop, etc.)
+   */
   getPlaybackEndPosition(): Promise<number>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Sets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
+   * execute the specified action after playback (rewind, loop, etc.)
+   *
+   * *Chainable.*
+   */
   setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<ActionAfterPlayback>
+   *
+   * Gets the specified action after playback for this item is done (either
+   * playback reaches the end of the video, or the specified playback end
+   * position.)
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+   */
   getActionAfterPlayback(): Promise<ActionAfterPlayback>;
+
+  /**
+   * param: (value: ActionAfterPlayback)
+   *
+   * Sets the action to be executed on this item once playback is done (either
+   * playback reaches the end of the video, or the specified playback end
+   * position.)
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+   */
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether this item is set to start playback when the application
+   * switches to this item's scene.
+   */
   isAutostartOnSceneLoad(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Specifies whether this item is set to start playback when the application
+   * switches to this item's scene.
+   *
+   * *Chainable.*
+   */
   setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether Force Deinterlace is active.
+   */
   isForceDeinterlace(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets the Force Deinterlace setting.
+   *
+   * *Chainable.*
+   */
   setForceDeinterlace(value: boolean): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check whether this item should retain its playback position when switching
+   * scenes.
+   */
   isRememberingPlaybackPosition(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether this item should retain its playback position when switching
+   * scenes.
+   *
+   * *Chainable.*
+   */
   setRememberingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item is set to display its playback position.
+   */
   isShowingPlaybackPosition(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether this item should display its playback position.
+   *
+   * *Chainable.*
+   */
   setShowingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+
+  /**
+   * return: Promise<CuePoint[]>
+   *
+   * Gets the set of Cue Points created for this item.
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
+   */
   getCuePoints(): Promise<CuePoint[]>;
+
+  /**
+   * param: (value: CuePoint[])
+   *
+   * Assign the specified array of Cue Points for this item.
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #core/CuePoint Core/CuePoint}
+   */
   setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
 
   getValue(): Promise<string>;
   setValue(value: string): Promise<any>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item's file type is an audio file type.
+   */
   isAudio(): Promise<boolean>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if this item's file type is a video file type.
+   */
   isVideo(): Promise<boolean>;
 }
 

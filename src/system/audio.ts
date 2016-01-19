@@ -7,7 +7,10 @@ import {XML as XML} from '../internal/util/xml';
  * The AudioDevice Class is the object returned by
  * {@link #system/System System Class'} getAudioDevices method. It provides you
  * with methods to fetch the audio device object's attributes, and also provides
- * methods to convert it back to an XML object that is compatible with XBC
+ * methods to convert it back to an XML object that is compatible with XBC.
+ *
+ * If you are looking to add a microphone device to the stage, please see
+ * {@link #system/MicrophoneDevice System/MicrophoneDevice} instead.
  *
  * ### Basic Usage
  *

@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, spyOn */
 
-describe('CameraItem', function() {
+describe('CameraSource', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -40,8 +40,8 @@ describe('CameraItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedId + '"]';
-        var itemSelected = placement.querySelector(selected);
-        xCallback(asyncId, itemSelected.getAttribute(property));
+        var sourceSelected = placement.querySelector(selected);
+        xCallback(asyncId, sourceSelected.getAttribute(property));
       }
     }
 
@@ -60,7 +60,7 @@ describe('CameraItem', function() {
     }
 
     if (!shouldFail) {
-      local[attachedId][property] = value;  
+      local[attachedId][property] = value;
     }
     xCallback(asyncId, '0');
     return asyncId;
@@ -70,10 +70,10 @@ describe('CameraItem', function() {
 
     env.set('extension');
     // Reset the attached IDS
-    var item1 = new XJS.Item({id : '{CAMERAID}' });
-    var item2 = new XJS.Item({id : '{CAMERAID2}'});
-    item1.getType();
-    item2.getType();
+    var source1 = new XJS.Source({id : '{CAMERAID}' });
+    var source2 = new XJS.Source({id : '{CAMERAID2}'});
+    source1.getType();
+    source2.getType();
 
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
@@ -85,11 +85,11 @@ describe('CameraItem', function() {
 
         case 'dshowenum:asrc':
           if (!shouldFail2) {
-            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Line 1 (Virtual Audio Cable)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));  
+            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Line 1 (Virtual Audio Cable)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           } else {
             xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           }
-          
+
         break;
 
         case 'preset:0':
@@ -129,10 +129,10 @@ describe('CameraItem', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getItems().then(function(items) {
-        for (var i in items) {
-          if (items[i] instanceof XJS.CameraItem) {
-            _this.cameraItem = items[i];
+      scene.getItems().then(function(sources) {
+        for (var i in sources) {
+          if (sources[i] instanceof XJS.CameraSource) {
+            _this.cameraSource = sources[i];
             break;
           }
         }
@@ -141,10 +141,10 @@ describe('CameraItem', function() {
     });
   });
 
-  describe('CameraItem-specific methods checking, ', function() {
+  describe('CameraSource-specific methods checking, ', function() {
 
     it('should be able to get its own device ID', function(done) {
-      var promise = this.cameraItem.getDeviceId();
+      var promise = this.cameraSource.getDeviceId();
       expect(promise).toBeInstanceOf(Promise);
       promise.then(function(id) {
         expect(id).toBeTypeOf('string');
@@ -153,7 +153,7 @@ describe('CameraItem', function() {
     });
 
     it('should be able to get and set if stream is paused', function(done) {
-      var promise = this.cameraItem.isStreamPaused();
+      var promise = this.cameraSource.isStreamPaused();
       var pauseValue;
       var _this = this;
       expect(promise).toBeInstanceOf(Promise);
@@ -161,15 +161,15 @@ describe('CameraItem', function() {
         expect(isPaused).toBeTypeOf('boolean');
         pauseValue = !isPaused;
         shouldFail = true;
-        return _this.cameraItem.setStreamPaused(pauseValue);
+        return _this.cameraSource.setStreamPaused(pauseValue);
       }).then(function() {
         done.fail('Set failure was not detected');
       }).catch(function(err) {
         expect(err).toEqual(jasmine.any(Error));
         shouldFail = false;
-        return _this.cameraItem.setStreamPaused(pauseValue);
+        return _this.cameraSource.setStreamPaused(pauseValue);
       }).then(function() {
-        return _this.cameraItem.isStreamPaused();
+        return _this.cameraSource.isStreamPaused();
       }).then(function(val) {
         expect(val).toEqual(pauseValue);
         done();
@@ -178,27 +178,27 @@ describe('CameraItem', function() {
 
     it('should be able to get and set audio input', function(done) {
       var _this = this;
-      var promise = _this.cameraItem.getAudioInput();
+      var promise = _this.cameraSource.getAudioInput();
       var micDevice;
       promise.then(function(audioInput) {
         expect(audioInput).toBeInstanceOf(XJS.MicrophoneDevice);
         return System.getMicrophones();
       }).then(function(micDevices) {
         micDevice = micDevices[0];
-        return _this.cameraItem.setAudioInput(micDevice);
+        return _this.cameraSource.setAudioInput(micDevice);
       }).then(function() {
-        return _this.cameraItem.getAudioInput();
+        return _this.cameraSource.getAudioInput();
       }).then(function(newDevice) {
         expect(newDevice).toEqual(micDevice);
         shouldFail = true;
-        return _this.cameraItem.getAudioInput();
+        return _this.cameraSource.getAudioInput();
       }).then(function() {
         done.fail('No audio input not detected');
       }).catch(function(err) {
         expect(err).toEqual(jasmine.any(Error));
         shouldFail = false;
         shouldFail2 = true;
-        return _this.cameraItem.getAudioInput();
+        return _this.cameraSource.getAudioInput();
       }).then(function(value) {
         done.fail('Audio input not in dshowenum not detected');
       }).catch(function(err) {
@@ -213,7 +213,7 @@ describe('CameraItem', function() {
   describe('interface method checking', function() {
 
     it('should implement the layout interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'isKeepAspectRatio',
         'setKeepAspectRatio',
         'isPositionLocked',
@@ -226,7 +226,7 @@ describe('CameraItem', function() {
     });
 
     it('should implement the color interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'getTransparency',
         'setTransparency',
         'getBrightness',
@@ -243,7 +243,7 @@ describe('CameraItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'isChromaEnabled',
         'setChromaEnabled',
         'getKeyingType',
@@ -276,7 +276,7 @@ describe('CameraItem', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -287,7 +287,7 @@ describe('CameraItem', function() {
     });
 
     it('should have color and chroma key options pinning', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'setColorOptionsPinned',
         'getColorOptionsPinned',
         'setKeyingOptionsPinned',
@@ -296,7 +296,7 @@ describe('CameraItem', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -307,7 +307,7 @@ describe('CameraItem', function() {
     });
 
     it('should implement audio interface', function() {
-      expect(this.cameraItem).hasMethods([
+      expect(this.cameraSource).hasMethods([
         'isMute',
         'setMute',
         'getVolume',

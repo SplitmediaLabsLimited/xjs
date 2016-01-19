@@ -1,3 +1,8 @@
+/**
+ *  A CuePoint represents a configurable object for sources that
+ *  support cue points. Check `getCuePoints()` and other related methods of
+ *  {@link #core/MediaSource#getCuePoints Core/MediaSource}.
+ */
 export class CuePoint {
   private _time: number;
   private _action: string;
@@ -11,7 +16,7 @@ export class CuePoint {
     return String(this._time * 10000000) + this._action;
   }
 
-  /*
+  /**
    * param: number
    *
    * Sets this cue point's time in seconds, with precision up to 100ns.

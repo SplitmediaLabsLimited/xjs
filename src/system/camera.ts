@@ -8,8 +8,8 @@ import {App as iApp} from '../internal/app';
 /**
  * The CameraDevice Class is the object returned by
  * {@link #system/System System Class'} getCameraDevices method. It provides
- * you with methods to fetch the Camera Device's id, name, and convert it to
- * an XML object that is compatible with XBC
+ * you with methods to fetch the Camera Device's id, name, and to add it as
+ * a source in the current scene.
  *
  * ### Basic Usage
  *
@@ -87,7 +87,7 @@ export class CameraDevice implements Addable {
   }
 
   /**
-   * param: deviceJSON<JXON>
+   * param: (deviceJSON: JXON)
    * ```
    * return: CameraDevice
    * ```

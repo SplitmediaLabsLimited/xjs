@@ -11,7 +11,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {IItemAudio, ItemAudio} from './iaudio';
-import {Item} from './item';
+import {Source} from './source';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -19,17 +19,41 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The HTMLItem class represents a web page source. This covers both source
+ * The HtmlSource class represents a web page source. This covers both source
  * plugins and non-plugin URLs.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `HTMLItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.HtmlSource) {
+ *         // Manipulate your HTML source here
+ *         items[i].enableBrowserTransparency(true);
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `HtmlSource`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
  * may not be properly reflected in the source unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class HTMLItem extends Item implements IItemLayout, IItemColor,
+export class HtmlSource extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemConfigurable, IItemAudio {
 
   /**
@@ -50,14 +74,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (url: string)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the URL of this webpage source.
    *
    * *Chainable.*
    */
-  setURL(value: string): Promise<HTMLItem> {
+  setURL(value: string): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:item', value, this._id).then(code => {
         if (code) {
@@ -95,7 +119,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (js: string, refresh: boolean = false)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the javascript commands to be executed on source
@@ -104,7 +128,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrowserJS(value: string, refresh = false): Promise<HTMLItem> {
+  setBrowserJS(value: string, refresh = false): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -187,7 +211,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables execution of the set BrowserJs upon load.
@@ -196,7 +220,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  enableBrowserJS(value: boolean): Promise<HTMLItem> {
+  enableBrowserJS(value: boolean): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -290,14 +314,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value: string)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom CSS to be applied to the document upon loading
    *
    * *Chainable.*
    */
-  setCustomCSS(value: string): Promise<HTMLItem> {
+  setCustomCSS(value: string): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -385,14 +409,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables application of custom CSS to the document
    *
    * *Chainable.*
    */
-  enableCustomCSS(value: boolean): Promise<HTMLItem> {
+  enableCustomCSS(value: boolean): Promise<HtmlSource> {
     return new Promise((resolve, reject) => {
       let customObject = {};
 
@@ -480,14 +504,14 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: Promise<boolean>
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enable or disabled transparency of CEF browser
    *
    * *Chainable.*
    */
-  enableBrowserTransparency(value: boolean): Promise<HTMLItem> {
+  enableBrowserTransparency(value: boolean): Promise<HtmlSource> {
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
         this._id).then(() => {
@@ -526,7 +550,7 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: Promise<Rectangle>
    * ```
-   * return: Promise<HTMLItem>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom browser window size for the source
@@ -536,12 +560,12 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setBrowserCustomSize(value: Rectangle): Promise<HTMLItem> {
+  setBrowserCustomSize(value: Rectangle): Promise<HtmlSource> {
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
       value.setWidth(value.getWidth() * window.devicePixelRatio);
       value.setHeight(value.getHeight() * window.devicePixelRatio);
-      
+
       iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
         .then(() => {
           resolve(this);
@@ -552,521 +576,364 @@ export class HTMLItem extends Item implements IItemLayout, IItemColor,
   // ItemLayout
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Aspect Ratio is set to ON or OFF
+   * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
-  isKeepAspectRatio:        () => Promise<boolean>;
+  isKeepAspectRatio: () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Position Locked is set to ON or OFF
+   * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
    */
-  isPositionLocked:         () => Promise<boolean>;
+  isPositionLocked: () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Enhance Resize is Enabled or Disabled
+   * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
    */
-  isEnhancedResizeEnabled:   () => Promise<boolean>;
+  isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Get the position of the item
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#getPosition getPosition}
    */
-  getPosition:              () => Promise<Rectangle>;
+  getPosition: () => Promise<Rectangle>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Y value of the item
+   * See: {@link #core/IItemLayout#getRotateY getRotateY}
    */
-  getRotateY:              () => Promise<number>;
+  getRotateY: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate X value of the item
+   * See: {@link #core/IItemLayout#getRotateX getRotateX}
    */
-  getRotateX:              () => Promise<number>;
+  getRotateX: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Z value of the item
+   * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
-  getRotateZ:              () => Promise<number>;
+  getRotateZ: () => Promise<number>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Aspect Ratio to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<HTMLItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<HtmlSource>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Position Lock to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked:        (value: boolean) => Promise<HTMLItem>;
+  setPositionLocked:        (value: boolean) => Promise<HtmlSource>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Enhance Resize to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<HTMLItem>;
+  setEnhancedResizeEnabled:  (value: boolean) => Promise<HtmlSource>;
 
   /**
-   * param: (value: Rectangle)
-   *
-   * Set Item Position. Relative coordinates (0-1) are required.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
-   * item.setPosition(rect).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition:              (value: Rectangle) => Promise<HTMLItem>;
+  setPosition:              (value: Rectangle) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate Y value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY:              (value: number) => Promise<HTMLItem>;
+  setRotateY:              (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate X value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX:              (value: number) => Promise<HTMLItem>;
+  setRotateX:              (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate Z value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ:              (value: number) => Promise<HTMLItem>;
+  setRotateZ:              (value: number) => Promise<HtmlSource>;
 
   // ItemColor
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Transparency value
+   * See: {@link #core/IItemColor#getTransparency getTransparency}
    */
   getTransparency: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Brightness value
+   * See: {@link #core/IItemColor#getBrightness getBrightness}
    */
-  getBrightness:   () => Promise<number>;
+  getBrightness: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Contrast value
+   * See: {@link #core/IItemColor#getContrast getContrast}
    */
-  getContrast:     () => Promise<number>;
+  getContrast: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Hue value
+   * See: {@link #core/IItemColor#getHue getHue}
    */
-  getHue:          () => Promise<number>;
+  getHue: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Saturation value
+   * See: {@link #core/IItemColor#getSaturation getSaturation}
    */
-  getSaturation:   () => Promise<number>;
+  getSaturation: () => Promise<number>;
 
   /**
-   * return: Promise<Color>
-   *
-   * Get Border Color
+   * See: {@link #core/IItemColor#getBorderColor getBorderColor}
    */
-  getBorderColor:  () => Promise<Color>;
+  getBorderColor: () => Promise<Color>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Transparency
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
-  setTransparency: (value: number) => Promise<HTMLItem>;
+  setTransparency: (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Brightness
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness:   (value: number) => Promise<HTMLItem>;
+  setBrightness:   (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Contrast
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast:     (value: number) => Promise<HTMLItem>;
+  setContrast:     (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Hue
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue:          (value: number) => Promise<HTMLItem>;
+  setHue:          (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Saturation
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation:   (value: number) => Promise<HTMLItem>;
+  setSaturation:   (value: number) => Promise<HtmlSource>;
 
   /**
-   * param: (value: Color)
-   *
-   * Set Border Color
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor:  (value: Color) => Promise<HTMLItem>;
+  setBorderColor:  (value: Color) => Promise<HtmlSource>;
 
   // ItemChroma
+
   /**
-   * return: Promise<boolean>
+   * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
    */
   isChromaEnabled: () => Promise<boolean>;
+
   /**
-   * param: (value: boolean)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
-  setChromaEnabled: (value: boolean) => Promise<HTMLItem>;
+  setChromaEnabled: (value: boolean) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<KeyingType>
+   * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
+
   /**
-   * param: (value: KeyingType)
-   * *Chainable.*
-   *
+   * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
-  setKeyingType: (value: KeyingType) => Promise<HTMLItem>;
+  setKeyingType: (value: KeyingType) => Promise<HtmlSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
+
   /**
-   * return: Promise<ChromaAntiAliasLevel>
+   * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
+
   /**
-   * param: (value: ChromaAntiAliasLevel)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HTMLItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<HtmlSource>;
 
   // CHROMA LEGACY MODE
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
-  setChromaLegacyBrightness: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
-  setChromaLegacySaturation: (value: number) => Promise<HTMLItem>;
+  setChromaLegacySaturation: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
-  setChromaLegacyHue: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyHue: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
-  setChromaLegacyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<HTMLItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<HtmlSource>;
 
   // CHROMA KEY RGB MODE
+
   /**
-   * return: Promise<ChromaPrimaryColors>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
+
   /**
-   * param: (value: ChromaPrimaryColors)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HTMLItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<HTMLItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<HtmlSource>;
 
   // COLOR KEY MODE
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<HTMLItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
+
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
-  setChromaColorKeyExposure: (value: number) => Promise<HTMLItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<HtmlSource>;
+
   /**
-   * return: Promise<Color>
+   * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
+
   /**
-   * param: (value: Color)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
-  setChromaColorKeyColor: (value: Color) => Promise<HTMLItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<HtmlSource>;
 
   // ItemTransition
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if item is visible on stage
+   * See: {@link #core/IItemTransition#isVisible isVisible}
    */
-  isVisible:         () => Promise<boolean>;
+  isVisible: () => Promise<boolean>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set item to visible or hidden
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible:        (value: boolean) => Promise<HTMLItem>;
+  setVisible:        (value: boolean) => Promise<HtmlSource>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Get item's transition type for when visibility is toggled
+   * See: {@link #core/IItemTransition#getTransition getTransition}
    */
-  getTransition:     () => Promise<Transition>;
+  getTransition: () => Promise<Transition>;
 
   /**
-   * param: (value: Transition)
-   *
-   * Set item's transition type for when visibility is toggled
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition:     (value: Transition) => Promise<HTMLItem>;
+  setTransition:     (value: Transition) => Promise<HtmlSource>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get item's transition time in milliseconds
+   * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
 
   /**
-   * param: (value: number)
-   *
-   * Set item's transition time in milliseconds
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
-  setTransitionTime: (value: number) => Promise<HTMLItem>;
+  setTransitionTime: (value: number) => Promise<HtmlSource>;
 
   // ItemConfigurable
 
   /**
-   * return: Promise<any>
-   *
-   * Gets the configuration JSON
+   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * param: config<JSON>
-   *
-   * Persists a JSON object for configuration. Available to sources only.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
-  saveConfig: (configObj: any) => Promise<HTMLItem>;
+  saveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
-  requestSaveConfig: (configObj: any) => Promise<HTMLItem>;
+  requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
-   * param: config<JSON>
-   *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */
-  applyConfig: (configObj: any) => Promise<HTMLItem>;
+  applyConfig: (configObj: any) => Promise<HtmlSource>;
 
   // ItemAudio
 
-  /**
-   * return: Promise<number>
-   *
-   * Get item's volume level expressed as an integer from 0 to 100
-   */
+  /** See: {@link #core/IItemAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item's mute option is active
-   */
-  isMute:   () => Promise<boolean>;
+  /** See: {@link #core/IItemAudio#isMute isMute} */
+  isMute: () => Promise<boolean>;
 
-  /**
-   * param: value<number>
-   *
-   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
-   *
-   * *Chainable.*
-   */
-  setVolume: (value: number) => Promise<HTMLItem>;
+  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<HtmlSource>;
 
-  /**
-   * param: value<boolean>
-   *
-   * Set item's Mute property to ON or OFF
-   *
-   * *Chainable.*
-   */
-  setMute:  (value: boolean) => Promise<HTMLItem>;
+  /** See: {@link #core/IItemAudio#setMute setMute} */
+  setMute: (value: boolean) => Promise<HtmlSource>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is also output to system sound
-   */
+  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /**
-   * param: value<boolean>
-   *
-   * Sets whether audio should also be output to system sound
-   *
-   * *Chainable.*
-   */
-  setStreamOnlyAudio: (value: boolean) => Promise<HTMLItem>;
+  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is available
-   */
+  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(HTMLItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(HtmlSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemConfigurable, ItemAudio]);

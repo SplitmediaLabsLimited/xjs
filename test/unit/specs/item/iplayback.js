@@ -9,7 +9,7 @@ describe('Playback interface', function() {
 
   var local = {};
   var attachedId;
-  var enumeratedItems;
+  var enumeratedSources;
 
   var env = new window.Environment(XJS);
   var environments = {
@@ -42,8 +42,8 @@ describe('Playback interface', function() {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
-      var itemSelected = placement.querySelector(selected);
-      xCallback(asyncId, itemSelected.getAttribute(property));
+      var sourceSelected = placement.querySelector(selected);
+      xCallback(asyncId, sourceSelected.getAttribute(property));
     }
 
     return asyncId;
@@ -69,10 +69,10 @@ describe('Playback interface', function() {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
     // reset attached IDs
-    var item1 = new XJS.Item({id : '{ID}'});
-    var item2 = new XJS.Item({id : '{ID2}'});
-    item1.getType();
-    item2.getType();
+    var source1 = new XJS.Source({id : '{ID}'});
+    var source2 = new XJS.Source({id : '{ID2}'});
+    source1.getType();
+    source2.getType();
 
     local = {};
 
@@ -116,25 +116,25 @@ describe('Playback interface', function() {
 
     Scene.getActiveScene().then(function(newScene) {
       return newScene.getItems();
-    }).then(function(items) {
-      enumeratedItems = items;
+    }).then(function(sources) {
+      enumeratedSources = sources;
       done();
     });
   });
 
   it('can correctly identify video and audio', function(done) {
-    var videoItem = enumeratedItems[0];
-    var audioItem = enumeratedItems[1];
+    var videoSource = enumeratedSources[0];
+    var audioSource = enumeratedSources[1];
 
-    videoItem.isVideo().then(function(result) {
+    videoSource.isVideo().then(function(result) {
       expect(result).toBe(true);
-      return videoItem.isAudio();
+      return videoSource.isAudio();
     }).then(function(result) {
       expect(result).toBe(false);
-      return audioItem.isVideo();
+      return audioSource.isVideo();
     }).then(function(result) {
       expect(result).toBe(false);
-      return audioItem.isAudio();
+      return audioSource.isAudio();
     }).then(function(result) {
       expect(result).toBe(true);
       done();
@@ -173,17 +173,17 @@ describe('Playback interface', function() {
       'isVideo'
       ].join(',');
 
-    expect(enumeratedItems[0]).hasMethods(methods);
-    expect(enumeratedItems[1]).hasMethods(methods);
+    expect(enumeratedSources[0]).hasMethods(methods);
+    expect(enumeratedSources[1]).hasMethods(methods);
   });
 
   it('detects playback start and end positions properly', function(done) {
-    // the audio item in test case has these positions set already
-    var audioItem = enumeratedItems[1];
+    // the audio source in test case has these positions set already
+    var audioSource = enumeratedSources[1];
 
-    audioItem.getPlaybackStartPosition().then(function(pos) {
+    audioSource.getPlaybackStartPosition().then(function(pos) {
       expect(pos > 0).toBe(true);
-      return audioItem.getPlaybackEndPosition();
+      return audioSource.getPlaybackEndPosition();
     }).then(function(pos) {
       expect(pos > 0).toBe(true);
       done();
@@ -193,10 +193,10 @@ describe('Playback interface', function() {
   });
 
   it('detects cue points properly', function(done) {
-    // the video item in test case has cue points declared already
-    var videoItem = enumeratedItems[0];
+    // the video source in test case has cue points declared already
+    var videoSource = enumeratedSources[0];
 
-    videoItem.getCuePoints().then(function(points) {
+    videoSource.getCuePoints().then(function(points) {
       expect(points).not.toBeEmptyArray();
       expect(points[0].getTime()).toBeTypeOf('number');
       expect(points[0].getTime() > 0).toBe(true);

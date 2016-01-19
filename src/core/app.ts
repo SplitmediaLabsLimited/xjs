@@ -985,7 +985,7 @@ export class App{
    * return: Promise<boolean>
    *
    *  Clears all cookies across all browser instances. Not available to
-   *  source plugins (call this from the configuration window instead.)
+   *  source plugins (call this from the source properties window instead.)
    *
    * #### Usage
    *

@@ -5,7 +5,7 @@
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Item = XJS.Item;
+  var Source = XJS.Source;
 
   function randomWord(length) {
     var rand;
@@ -19,34 +19,34 @@
     return str;
   }
 
-  // This is a Item class functional test case, but since it needs to actually
+  // This is a Source class functional test case, but since it needs to actually
   // work on XBC, we should always go through Scene class first
   Scene.getActiveScene().then(function(scene) {
     return scene.getItems();
-  }).then(function(items) {
-    if (items.length === 0) {
+  }).then(function(sources) {
+    if (sources.length === 0) {
       throw new Error('NO ITEMS ON CURRENT SCENE!');
     }
 
-    var itemIndex = 0;
-    var currentItem = items[itemIndex];
+    var sourceIndex = 0;
+    var currentSource = sources[sourceIndex];
 
     Rose.createTab({
-      name: 'Item',
+      name: 'Source',
       buttons: [
         {
-          name: 'toggle attached item',
+          name: 'toggle attached source',
           onClick: function() {
-            itemIndex = (itemIndex >= items.length - 1) ? 0 : itemIndex++;
-            currentItem = items[itemIndex];
-            Rose.output(currentItem);
+            sourceIndex = (sourceIndex >= sources.length - 1) ? 0 : sourceIndex++;
+            currentSource = sources[sourceIndex];
+            Rose.output(currentSource);
           }
         },
 
         {
           name: 'setName',
           onClick: function() {
-            currentItem.setName(randomWord(10));
+            currentSource.setName(randomWord(10));
             Rose.output('Done!');
           }
         },
@@ -54,7 +54,7 @@
         {
           name: 'getName',
           onClick: function() {
-            currentItem.getName().then(function(val) {
+            currentSource.getName().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -64,7 +64,7 @@
         {
           name: 'setCustomName',
           onClick: function() {
-            currentItem.setCustomName(randomWord(10));
+            currentSource.setCustomName(randomWord(10));
             Rose.output('Done!');
           }
         },
@@ -72,7 +72,7 @@
         {
           name: 'getCustomName',
           onClick: function() {
-            currentItem.getCustomName().then(function(val) {
+            currentSource.getCustomName().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -82,7 +82,7 @@
         {
           name: 'setValue',
           onClick: function() {
-            currentItem.setValue(randomWord(10));
+            currentSource.setValue(randomWord(10));
             Rose.output('Done!');
           }
         },
@@ -90,7 +90,7 @@
         {
           name: 'getValue',
           onClick: function() {
-            currentItem.getValue().then(function(val) {
+            currentSource.getValue().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -108,7 +108,7 @@
         {
           name: 'getKeepLoaded',
           onClick: function() {
-            currentItem.getKeepLoaded().then(function(val) {
+            currentSource.getKeepLoaded().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -118,7 +118,7 @@
         {
           name: 'getType',
           onClick: function() {
-            currentItem.getType().then(function(val) {
+            currentSource.getType().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -128,7 +128,7 @@
         {
           name: 'getId',
           onClick: function() {
-            currentItem.getId().then(function(val) {
+            currentSource.getId().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -138,7 +138,7 @@
         {
           name: 'getSceneID',
           onClick: function() {
-            currentItem.getSceneID().then(function(val) {
+            currentSource.getSceneID().then(function(val) {
               console.trace(val);
               Rose.output(val);
             });
@@ -148,17 +148,17 @@
         {
           name: 'toXML',
           onClick: function() {
-            console.trace(currentItem.toXML());
-            Rose.output(currentItem.toXML());
+            console.trace(currentSource.toXML());
+            Rose.output(currentSource.toXML());
           }
         },
 
         {
           name: 'getCurrentSource',
           onClick: function() {
-            Item.getCurrentSource().then(function(items) {
-              console.log(items);
-              Rose.output(items);
+            Source.getCurrentSource().then(function(sources) {
+              console.log(sources);
+              Rose.output(sources);
             });
           }
         }

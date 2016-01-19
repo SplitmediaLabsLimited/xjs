@@ -39,7 +39,7 @@ export class Environment {
 
   /**
    * return: boolean
-   * Determines if this HTML is running within the source configuration window.
+   * Determines if this HTML is running within the source properties window.
    */
   static isSourceConfig(): Boolean {
     return Environment._isSourceConfig;

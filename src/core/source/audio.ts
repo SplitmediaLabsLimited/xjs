@@ -4,19 +4,38 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {IItemAudio, ItemAudio} from './iaudio';
 import {Scene} from '../scene';
-import {Item} from './item';
+import {Source} from './source';
 import {Environment} from '../environment';
 
 /**
- * The AudioItem class represents an audio device that has been added
+ * The AudioSource class represents an audio device that has been added
  * to the stage.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ * Implements: {@link #core/IItemAudio Core/IItemAudio}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.AudioSource) {
+ *         // Manipulate your audio device source here
+ *         items[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `AudioSource`
  *  instance.
  */
-export class AudioItem extends Item implements IItemAudio {
+export class AudioSource extends Source implements IItemAudio {
   /**
    * return: Promise<boolean>
    *
@@ -37,7 +56,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
+  setSilenceDetectionEnabled(value: boolean): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
       .then(res => {
@@ -67,7 +86,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilenceThreshold(value: number): Promise<AudioItem> {
+  setSilenceThreshold(value: number): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
@@ -104,7 +123,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * *Chainable.*
    */
-  setSilencePeriod(value: number): Promise<AudioItem> {
+  setSilencePeriod(value: number): Promise<AudioSource> {
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -123,7 +142,7 @@ export class AudioItem extends Item implements IItemAudio {
   /**
    * return: Promise<number>
    *
-   * Gets audio delay (1 unit = 100ns) 
+   * Gets audio delay (1 unit = 100ns)
    */
   getAudioOffset(): Promise<number> {
     return new Promise(resolve => {
@@ -157,60 +176,26 @@ export class AudioItem extends Item implements IItemAudio {
 
   // ItemAudio
 
-  /**
-   * return: Promise<number>
-   *
-   * Get item's volume level expressed as an integer from 0 to 100
-   */
+  /** See: {@link #core/IItemAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item's mute option is active
-   */
+  /** See: {@link #core/IItemAudio#isMute isMute} */
   isMute:   () => Promise<boolean>;
 
-  /**
-   * param: (value: number)
-   *
-   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
-   *
-   * *Chainable.*
-   */
-  setVolume: (value: number) => Promise<AudioItem>;
+  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<AudioSource>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set item's Mute property to ON or OFF
-   *
-   * *Chainable.*
-   */
-  setMute:  (value: boolean) => Promise<AudioItem>;
+  /** See: {@link #core/IItemAudio#setMute setMute} */
+  setMute:  (value: boolean) => Promise<AudioSource>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is also output to system sound
-   */
+  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether audio should also be output to system sound
-   *
-   * *Chainable.*
-   */
-  setStreamOnlyAudio: (value: boolean) => Promise<AudioItem>;
+  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  setStreamOnlyAudio: (value: boolean) => Promise<AudioSource>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is available
-   */
+  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(Item, [ItemAudio]);
+applyMixins(Source, [ItemAudio]);
