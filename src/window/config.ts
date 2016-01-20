@@ -133,7 +133,7 @@ export class SourcePropsWindow extends EventEmitter {
    *  Resizes the properties window. Currently only works when using full
    *  window mode.
    */
-  resizeConfig(width: number, height: number) {
+  resize(width: number, height: number) {
     this._notify({
       event: 'resize',
       value: JSON.stringify({
@@ -159,7 +159,7 @@ export class SourcePropsWindow extends EventEmitter {
   };
 
   /** Closes the properties window. */
-  closeConfig() {
+  close() {
     exec('Close');
   };
 }

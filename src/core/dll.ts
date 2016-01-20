@@ -39,11 +39,22 @@ export class Dll extends EventEmitter {
 
   static _emitter = new Dll();
 
+  /**
+   *  param: (event: string, ...params: any[])
+   *
+   *  Allows this class to emit an event.
+   */
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
     Dll._emitter.emit.apply(Dll._emitter, params);
   }
 
+  /**
+   *  param: (event: string, handler: Function)
+   *
+   *  Allows listening to events that this class emits. Currently there are two:
+   *  `access-granted` and `access-revoked`.
+   */
   static on(event: string, handler: Function) {
     Dll._emitter.on(event, handler);
   }
