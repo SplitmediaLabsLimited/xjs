@@ -319,7 +319,7 @@ describe('HtmlSource', function() {
       .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
-      newScene.getItems().then(function(sources) {
+      newScene.getSources().then(function(sources) {
         var sourceArray = sources;
         var sourceArrayLength = sourceArray.length;
 
@@ -336,7 +336,7 @@ describe('HtmlSource', function() {
     });
   });
 
-  it('should be detected by getItems() correctly', function(done) {
+  it('should be detected by getSources() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_HTML + '"]';

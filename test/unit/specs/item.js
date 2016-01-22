@@ -83,7 +83,7 @@ describe('Source', function() {
     } else {
       XJS.Environment.initialize();
       XJS.Scene.getActiveScene().then(function(scene) {
-        scene.getItems().then(function(sources) {
+        scene.getSources().then(function(sources) {
           if (sources.length === 0) {
             throw new Error('NO ITEMS ON CURRENT SCENE');
           }

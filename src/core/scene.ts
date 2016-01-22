@@ -112,7 +112,7 @@ export class Scene {
         iApp.get('presetconfig:-1').then(sceneString => {
           let curScene = JXON.parse(sceneString);
           if (curScene.children.length > 0) {
-            resolve(Scene.searchScenesByItemId(curScene.children[0]['id']));
+            resolve(Scene.searchScenesBySourceId(curScene.children[0]['id']));
           } else {
             throw new Error('presetconfig cannot fetch current scene');
           }
@@ -162,23 +162,23 @@ export class Scene {
   /**
    * return: Promise<Source>
    *
-   * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * Searches all scenes for an source item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
    * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
-   *   // item is either an Item or null
+   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
+   *   // source is either an Item or null
    * });
    * ```
    *
    */
-  static searchItemsById(id: string): Promise<Source> {
+  static searchSourcesById(id: string): Promise<Source> {
     let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
     if (!isID) {
-      throw new Error('Not a valid ID format for items');
+      throw new Error('Not a valid ID format for sources');
     } else {
       Scene._initializeScenePool();
 
@@ -188,7 +188,7 @@ export class Scene {
         let found = false;
         Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
-            scene.getItems().then((function(items) {
+            scene.getSources().then((function(items) {
               found = items.some(item => { // unique ID, so get first result
                 if (item['_id'] === id.toUpperCase()) {
                   match = item;
@@ -211,22 +211,22 @@ export class Scene {
   /**
    * return: Promise<Scene>
    *
-   * Searches all scenes for one that contains the given item ID.
+   * Searches all scenes for one that contains the given source item ID.
    *
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
-   *   // scene contains the item
+   * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   *   // scene contains the source
    * });
    * ```
    *
    */
-  static searchScenesByItemId(id: string): Promise<Scene> {
+  static searchScenesBySourceId(id: string): Promise<Scene> {
     let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
     if (!isID) {
-      throw new Error('Not a valid ID format for items');
+      throw new Error('Not a valid ID format for sources');
     } else {
       Scene._initializeScenePool();
 
@@ -236,9 +236,9 @@ export class Scene {
         let found = false;
         Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
-            scene.getItems().then(items => {
-              found = items.some(item => { // unique ID, so get first result
-                if (item['_id'] === id.toUpperCase()) {
+            scene.getSources().then(sources => {
+              found = sources.some(source => { // unique ID, so get first result
+                if (source['_id'] === id.toUpperCase()) {
                   match = Scene.getById(idx + 1);
                   return true;
                 } else {
@@ -259,35 +259,35 @@ export class Scene {
   /**
    * return: Promise<Source[]>
    *
-   * Searches all scenes for an item by name substring. This function compares
-   * against custom name first (recommended) before falling back to the name
-   * property of the source.
+   * Searches all scenes for a source item by name substring. This function
+   * compares against custom name first (recommended) before falling back to the
+   * name property of the source.
    *
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.searchItemsByName('camera').then(function(items) {
-   *   // do something to each item in items array
+   * Scene.searchSourcesByName('camera').then(function(sources) {
+   *   // do something to each source in sources array
    * });
    * ```
    *
    */
-  static searchItemsByName(param: string): Promise<Source[]> {
+  static searchSourcesByName(param: string): Promise<Source[]> {
     return new Promise(resolve => {
-      this.filterItems((item: Source, filterResolve: any) => {
-        item.getCustomName().then(cname => {
+      this.filterSources((source: Source, filterResolve: any) => {
+        source.getCustomName().then(cname => {
           if (cname.match(param)) {
             filterResolve(true);
           } else {
-            return item.getName();
+            return source.getName();
           }
         }).then(name => {
           if (name !== undefined) {
             if (name.match(param)) {
               filterResolve(true);
             } else {
-              return item.getValue();
+              return source.getValue();
             }
           }
         }).then(value => {
@@ -316,17 +316,17 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.filterItems(function(item, resolve) {
-   *   // We'll only fetch Flash Items by resolving 'true' if the item is an
+   * Scene.filterSources(function(source, resolve) {
+   *   // We'll only fetch Flash Items by resolving 'true' if the source is an
    *   // instance of FlashSource
-   *   resolve((item instanceof FlashSource));
-   * }).then(function(items) {
-   *   // items would either be an empty array if no Flash items was found, or
-   *   // an array of FlashSource objects
+   *   resolve((source instanceof FlashSource));
+   * }).then(function(sources) {
+   *   // sources would either be an empty array if no Flash sources was found,
+   *   // or an array of FlashSource objects
    * });
    * ```
    */
-  static filterItems(func: any): Promise<Source[]> {
+  static filterSources(func: any): Promise<Source[]> {
     Scene._initializeScenePool();
     let matches: Source[] = [];
 
@@ -334,17 +334,17 @@ export class Scene {
       if (typeof func === 'function') {
         return Promise.all(Scene._scenePool.map(scene => {
           return new Promise(resolveScene => {
-            scene.getItems().then(items => {
-              if (items.length === 0) {
+            scene.getSources().then(sources => {
+              if (sources.length === 0) {
                 resolveScene();
               } else {
-                return Promise.all(items.map(item => {
-                  return new Promise(resolveItem => {
-                    func(item, (checker: boolean) => {
+                return Promise.all(sources.map(source => {
+                  return new Promise(resolveSource => {
+                    func(source, (checker: boolean) => {
                       if (checker) {
-                        matches.push(item);
+                        matches.push(source);
                       }
-                      resolveItem();
+                      resolveSource();
                     });
                   });
                 })).then(() => {
@@ -363,27 +363,27 @@ export class Scene {
   }
 
   /**
-   * param: function(item, resolve)
+   * param: function(source, resolve)
    * ```
    * return: Promise<Scene[]>
    * ```
    *
-   * Searches all scenes for items that satisfies the provided testing function,
-   * and then return the scene that contains the item.
+   * Searches all scenes for sources that satisfies the provided testing
+   * function, and then return the scene that contains the source.
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.filterScenesByItems(function(item, resolve) {
+   * Scene.filterScenesBySources(function(source, resolve) {
    *   // We'll only fetch the scenes with flash items by resolving 'true' if
-   *   // the item is an instance of FlashSource
-   *   resolve((item instanceof FlashSource));
+   *   // the source is an instance of FlashSource
+   *   resolve((source instanceof FlashSource));
    * }).then(function(scenes) {
    *   // scenes would be an array of all scenes with FlashSources
    * });
    * ```
    */
-  static filterScenesByItems(func: any): Promise<Scene[]> {
+  static filterScenesBySources(func: any): Promise<Scene[]> {
     Scene._initializeScenePool();
     let matches: Scene[] = [];
 
@@ -391,17 +391,17 @@ export class Scene {
       if (typeof func === 'function') {
         return Promise.all(Scene._scenePool.map(scene => {
           return new Promise(resolveScene => {
-            scene.getItems().then(items => {
+            scene.getSources().then(items => {
               if (items.length === 0) {
                 resolveScene();
               } else {
                 return Promise.all(items.map(item => {
-                  return new Promise(resolveItem => {
+                  return new Promise(resolveSource => {
                     func(item, (checker: boolean) => {
                       if (checker) {
                         matches.push(scene);
                       }
-                      resolveItem();
+                      resolveSource();
                     });
                   });
                 })).then(() => {
@@ -526,52 +526,52 @@ export class Scene {
   /**
    * return: Promise<Source[]>
    *
-   * Gets all the items (sources) in a specific scene.
+   * Gets all the item sources in a specific scene.
    * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
    *
    * ```javascript
-   * myScene.getItems().then(function(items) {
-   *  // do something to each item in items array
+   * myScene.getSources().then(function(sources) {
+   *  // do something to each source in sources array
    * });
    * ```
    */
-  getItems(): Promise<Source[]> {
+  getSources(): Promise<Source[]> {
     return new Promise(resolve => {
     iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
       var promiseArray: Promise<Source>[] = [];
 
       // type checking to return correct Item subtype
       let typePromise = index => new Promise(typeResolve => {
-        let item = jsonArr[index];
-        let type = Number(item['type']);
+        let source = jsonArr[index];
+        let type = Number(source['type']);
         if (type === SourceTypes.GAMESOURCE) {
-          typeResolve(new GameSource(item));
+          typeResolve(new GameSource(source));
         } else if (type === SourceTypes.HTML) {
-          typeResolve(new HtmlSource(item));
+          typeResolve(new HtmlSource(source));
         } else if (type === SourceTypes.SCREEN) {
-          typeResolve(new ScreenSource(item));
+          typeResolve(new ScreenSource(source));
         } else if (type === SourceTypes.BITMAP ||
             type === SourceTypes.FILE &&
-            /\.gif$/.test(item['item'])) {
-          typeResolve(new ImageSource(item));
+            /\.gif$/.test(source['item'])) {
+          typeResolve(new ImageSource(source));
         } else if (type === SourceTypes.FILE &&
-            /\.(gif|xbs)$/.test(item['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
-          typeResolve(new MediaSource(item));
-        } else if (Number(item['type']) === SourceTypes.LIVE &&
-          item['item'].indexOf(
+            /\.(gif|xbs)$/.test(source['item']) === false &&
+            /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+          typeResolve(new MediaSource(source));
+        } else if (Number(source['type']) === SourceTypes.LIVE &&
+          source['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-          typeResolve(new CameraSource(item));
-        } else if (Number(item['type']) === SourceTypes.LIVE &&
-          item['item'].indexOf(
+          typeResolve(new CameraSource(source));
+        } else if (Number(source['type']) === SourceTypes.LIVE &&
+          source['item'].indexOf(
             '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-          typeResolve(new AudioSource(item));
-        } else if (Number(item['type']) === SourceTypes.FLASHFILE) {
-          typeResolve(new FlashSource(item));
+          typeResolve(new AudioSource(source));
+        } else if (Number(source['type']) === SourceTypes.FLASHFILE) {
+          typeResolve(new FlashSource(source));
         } else {
-            typeResolve(new Source(item));
+            typeResolve(new Source(source));
         }
       });
 
@@ -611,15 +611,15 @@ export class Scene {
   }
 
   /**
-   * param: Array<Source> | Array<string> (item IDs)
+   * param: Array<Source> | Array<string> (source IDs)
    * ```
    * return: Promise<Scene>
    * ```
    *
-   * Sets the item order of the current scene. The first item in the array will
-   * be on top (will cover items below it).
+   * Sets the source order of the current scene. The first source in the array
+   * will be on top (will cover items below it).
    */
-  setItemOrder(items: Array<any>): Promise<Scene> {
+  setSourceOrder(items: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));

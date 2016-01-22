@@ -79,7 +79,7 @@ export class SourcePropsWindow extends EventEmitter {
   useFullWindow() {
     this._setRenderMode(SourcePropsWindow._MODE_FULL);
     // use default size to avoid layout issues. plugin can resize later
-    this.resizeConfig(354, 390);
+    this.resize(354, 390);
   }
 
   /**

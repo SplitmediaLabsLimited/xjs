@@ -129,7 +129,7 @@ describe('CameraSource', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getItems().then(function(sources) {
+      scene.getSources().then(function(sources) {
         for (var i in sources) {
           if (sources[i] instanceof XJS.CameraSource) {
             _this.cameraSource = sources[i];

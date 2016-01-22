@@ -187,7 +187,7 @@ describe('Scene', function() {
     });
 
     it('should be able to get the sources', function(done) {
-      scene.getItems().then(function(sources) {
+      scene.getSources().then(function(sources) {
         expect(sources).toBeInstanceOf(Array);
         expect(sources).eachToBeInstanceOf(Source);
         sceneSources = sources[0];
@@ -197,7 +197,7 @@ describe('Scene', function() {
 
     it('should be able to search for a source by ID', function(done) {
 
-      Scene.searchItemsById(sceneSources._id)
+      Scene.searchSourcesById(sceneSources._id)
         .then(function(source) {
           expect(source).toBeInstanceOf(Source);
           done();
@@ -206,7 +206,7 @@ describe('Scene', function() {
 
     it('should be able to search by ID in a case-insensitive way', function(done) {
 
-      Scene.searchItemsById(sceneSources._id.toLowerCase())
+      Scene.searchSourcesById(sceneSources._id.toLowerCase())
         .then(function(source) {
           expect(source).toBeInstanceOf(Source);
           done();
@@ -214,7 +214,7 @@ describe('Scene', function() {
     });
 
     it('should be able to get null when searching for nonexistent ID', function(done) {
-      Scene.searchItemsById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
+      Scene.searchSourcesById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
         .then(function(source) {
           expect(source).toBe(null);
           done();
@@ -222,7 +222,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for a source by Name', function(done) {
-      Scene.searchItemsByName(sceneSources.name)
+      Scene.searchSourcesByName(sceneSources.name)
         .then(function(sources) {
           expect(sources).toBeInstanceOf(Array);
           expect(sources).eachToBeInstanceOf(Source);
@@ -231,7 +231,7 @@ describe('Scene', function() {
     });
 
     it('should be able to get empty array when searching for nonexistent name', function(done) {
-      Scene.searchItemsByName('{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+      Scene.searchSourcesByName('{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         .then(function(sources) {
           expect(sources).toBeEmptyArray();
           done();
@@ -239,7 +239,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for a source by a custom function', function(done) {
-      Scene.filterItems(function(source, resolve) {
+      Scene.filterSources(function(source, resolve) {
         source.getType().then(function(type) {
           resolve(type === XJS.SourceTypes.HTML);
         });
@@ -251,7 +251,7 @@ describe('Scene', function() {
     });
 
     it('should be able to search for a scene with a source based on a custom function', function(done) {
-      Scene.filterScenesByItems(function(source, resolve) {
+      Scene.filterScenesBySources(function(source, resolve) {
         source.getType().then(function(type) {
           resolve(type === XJS.SourceTypes.HTML);
         });

@@ -115,7 +115,7 @@ describe('Playback interface', function() {
     .and.callFake(setLocal);
 
     Scene.getActiveScene().then(function(newScene) {
-      return newScene.getItems();
+      return newScene.getSources();
     }).then(function(sources) {
       enumeratedSources = sources;
       done();
