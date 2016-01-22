@@ -4,6 +4,7 @@ import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
+//import * from '../util/io';
 
 /**
  *  Special class for adding a video playlist to the stage.
@@ -25,7 +26,7 @@ export class VideoPlaylist implements Addable {
   private _playlist: string[];
   private _duration: number;
   private _id: number = 0;
-  private _fileplaylist: string;
+  private _fileplaylist: string = '';
 
 
   /**
@@ -36,6 +37,10 @@ export class VideoPlaylist implements Addable {
   constructor(items: string[]){
   this._playlist = items;
   }
+
+  getVideoDuration() {
+    return this._duration;
+   }
 
   /**
    * return: XML
@@ -52,16 +57,11 @@ export class VideoPlaylist implements Addable {
      * Convert the array of items into a single string
      * to be added on the FilePlaylist Property
      *
-     * Rerturns: fileplaylist
      */
-    this._fileplaylist = this._playlist.toString();
-    var replaceMatch = this._fileplaylist.indexOf(',');
 
-    while (replaceMatch != -1){
-
-      this._fileplaylist = this._fileplaylist.replace( ',' , '*'+this._id+'*1*0*100*0*0*0*0*0|');
-      replaceMatch = this._fileplaylist.indexOf(',');
-      this._id++;
+    for (var i = 0 ; i < this._playlist.length ; i++){
+      this._playlist[i] = this._playlist[i] + '*'+i+'*1*0*100*0*0*0*0*0|';
+      this._fileplaylist += this._playlist[i];
     }
 
     fileItems.tag            = 'item';
@@ -72,8 +72,7 @@ export class VideoPlaylist implements Addable {
     fileItems['pos_right']   = '0.750000';
     fileItems['pos_bottom']  = '0.750000';
     fileItems['item']        = this._playlist[0]+'*0';
-    fileItems['FilePlaylist']= this._fileplaylist+'*'+this._id+'*1*0*100*0*0*0*0*0';
-    // playlist['FilePlaylist']= this._playlist+'*'+this._id+'*1*'+this._duration+'*100*0*0*0*0*0|';
+    fileItems['FilePlaylist']= this._fileplaylist;
 
     return XML.parseJSON(fileItems);
   }
