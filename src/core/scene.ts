@@ -162,7 +162,7 @@ export class Scene {
   /**
    * return: Promise<Source>
    *
-   * Searches all scenes for an source item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
    * See also: {@link #core/Source Core/Source}
    *
@@ -211,7 +211,7 @@ export class Scene {
   /**
    * return: Promise<Scene>
    *
-   * Searches all scenes for one that contains the given source item ID.
+   * Searches all scenes for one that contains the given source ID.
    *
    *
    * #### Usage
@@ -259,7 +259,7 @@ export class Scene {
   /**
    * return: Promise<Source[]>
    *
-   * Searches all scenes for a source item by name substring. This function
+   * Searches all scenes for a source by name substring. This function
    * compares against custom name first (recommended) before falling back to the
    * name property of the source.
    *
