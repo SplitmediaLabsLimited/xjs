@@ -21,11 +21,11 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.AudioSource) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.AudioSource) {
  *         // Manipulate your audio device source here
- *         items[i].setSilenceDetectionEnabled(true);
+ *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   });

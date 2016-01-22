@@ -17,10 +17,10 @@ import {SourceTypes} from './source';
 import {Environment} from '../environment';
 
 /**
- * The GameSource Class provides methods specifically used for game items and
- * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * GameSource object if there's a game item on the specified scene.
+ * The GameSource Class provides methods specifically used for game sources and
+ * also methods that is shared between Source Classes. The
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * GameSource object if there's a game source on the specified scene.
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
@@ -35,11 +35,11 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.GameSource) {
- *         // Manipulate your game item here
- *         items[i].setOfflineImage(path); // just an example here
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.GameSource) {
+ *         // Manipulate your game source here
+ *         sources[i].setOfflineImage(path); // just an example here
  *       }
  *     }
  *   });
@@ -118,7 +118,7 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   setOfflineImage(path: string): Promise<GameSource> {
     return new Promise((resolve, reject) => {
       if (this._type !== SourceTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game source'));
+        reject(Error('Current source should be a game source'));
       } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
@@ -151,7 +151,7 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   getOfflineImage(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this._type !== SourceTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game source'));
+        reject(Error('Current source should be a game source'));
       } else {
         this.getValue().then(() => {
           var valueObj = JXON.parse(this._value.toString());

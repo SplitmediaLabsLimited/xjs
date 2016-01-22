@@ -5,7 +5,7 @@
  *
  * Simply use one of the available Transition objects such as Transition.FAN or
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
- * App instance, or a valid Item instance that supports transitions (this
+ * App instance, or a valid Source instance that supports transitions (this
  * includes {@link #core/CameraSource Core/CameraSource},
  * {@link #core/GameSource Core/GameSource}, and
  * {@link #core/HtmlSource Core/HtmlSource}.)

@@ -18,10 +18,10 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {System} from '../../system/system';
 
 /**
- * The CameraSource Class provides methods specifically used for camera items and
+ * The CameraSource Class provides methods specifically used for camera sources and
  * also methods that are shared between Source Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * CameraSource object if there's a camera item on the specified scene.
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * CameraSource object if there's a camera source on the specified scene.
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
@@ -37,11 +37,11 @@ import {System} from '../../system/system';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.CameraSource) {
- *         // Manipulate your camera item here
- *         items[i].getDeviceId().then(function(id) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.CameraSource) {
+ *         // Manipulate your camera sources here
+ *         sources[i].getDeviceId().then(function(id) {
  *           // Do something with the id
  *         });
  *       }

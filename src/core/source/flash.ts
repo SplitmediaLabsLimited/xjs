@@ -18,7 +18,7 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The FlashSource class represents a flash source item, which is any SWF file
+ * The FlashSource class represents a flash source, which is any SWF file
  * loaded to XSplit Broadcaster.
  *
  * Inherits from: {@link #core/Source Core/Source}

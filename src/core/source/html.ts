@@ -37,11 +37,11 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.HtmlSource) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.HtmlSource) {
  *         // Manipulate your HTML source here
- *         items[i].enableBrowserTransparency(true);
+ *         sources[i].enableBrowserTransparency(true);
  *       }
  *     }
  *   });

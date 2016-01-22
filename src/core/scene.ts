@@ -170,7 +170,7 @@ export class Scene {
    *
    * ```javascript
    * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
-   *   // source is either an Source or null
+   *   // result is either a Source or null
    * });
    * ```
    *

@@ -35,7 +35,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setKeepAspectRatio(true).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -70,7 +70,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setPositionLocked(true).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -105,7 +105,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setEnhancedResizeEnabled(true).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -131,7 +131,7 @@ export interface IItemLayout {
   /**
    * param: (value: Rectangle)
    *
-   * Set Item Position. Relative coordinates (0-1) are required.
+   * Set Source Position. Relative coordinates (0-1) are required.
    *
    * *Chainable.*
    *
@@ -140,7 +140,7 @@ export interface IItemLayout {
    * ```javascript
    * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
    * source.setPosition(rect).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    *
@@ -177,7 +177,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setRotateY(30).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -212,7 +212,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setRotateX(30).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -255,7 +255,7 @@ export interface IItemLayout {
    *
    * ```javascript
    * source.setRotateZ(30).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */

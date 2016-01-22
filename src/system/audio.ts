@@ -325,7 +325,7 @@ export class AudioDevice{
   /**
    * return: string
    *
-   * Converts the AudioDevice item to XML-formatted string
+   * Converts the AudioDevice object to XML-formatted string
    *
    * #### Usage
    *
