@@ -170,7 +170,7 @@ export class Scene {
    *
    * ```javascript
    * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
-   *   // source is either an Item or null
+   *   // source is either an Source or null
    * });
    * ```
    *
@@ -188,10 +188,10 @@ export class Scene {
         let found = false;
         Scene._scenePool.forEach((scene, idx, arr) => {
           if (match === null) {
-            scene.getSources().then((function(items) {
-              found = items.some(item => { // unique ID, so get first result
-                if (item['_id'] === id.toUpperCase()) {
-                  match = item;
+            scene.getSources().then((function(sources) {
+              found = sources.some(source => { // unique ID, so get first result
+                if (source['_id'] === id.toUpperCase()) {
+                  match = source;
                   return true;
                 } else {
                   return false;
@@ -299,25 +299,25 @@ export class Scene {
             }
           }
         });
-      }).then(items => {
-        resolve(items);
+      }).then(sources => {
+        resolve(sources);
       });
     });
   };
 
   /**
-   * param: function(item, resolve)
+   * param: function(source, resolve)
    * ```
    * return: Promise<Source[]>
    * ```
    *
-   * Searches all scenes for items that satisfies the provided testing function.
+   * Searches all scenes for sources that satisfies the provided testing function.
    *
    * #### Usage
    *
    * ```javascript
    * Scene.filterSources(function(source, resolve) {
-   *   // We'll only fetch Flash Items by resolving 'true' if the source is an
+   *   // We'll only fetch Flash Sources by resolving 'true' if the source is an
    *   // instance of FlashSource
    *   resolve((source instanceof FlashSource));
    * }).then(function(sources) {
@@ -375,7 +375,7 @@ export class Scene {
    *
    * ```javascript
    * Scene.filterScenesBySources(function(source, resolve) {
-   *   // We'll only fetch the scenes with flash items by resolving 'true' if
+   *   // We'll only fetch the scenes with flash sources by resolving 'true' if
    *   // the source is an instance of FlashSource
    *   resolve((source instanceof FlashSource));
    * }).then(function(scenes) {
@@ -391,13 +391,13 @@ export class Scene {
       if (typeof func === 'function') {
         return Promise.all(Scene._scenePool.map(scene => {
           return new Promise(resolveScene => {
-            scene.getSources().then(items => {
-              if (items.length === 0) {
+            scene.getSources().then(sources => {
+              if (sources.length === 0) {
                 resolveScene();
               } else {
-                return Promise.all(items.map(item => {
+                return Promise.all(sources.map(source => {
                   return new Promise(resolveSource => {
-                    func(item, (checker: boolean) => {
+                    func(source, (checker: boolean) => {
                       if (checker) {
                         matches.push(scene);
                       }
@@ -526,7 +526,7 @@ export class Scene {
   /**
    * return: Promise<Source[]>
    *
-   * Gets all the item sources in a specific scene.
+   * Gets all the sources in a specific scene.
    * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
@@ -542,7 +542,7 @@ export class Scene {
     iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
       var promiseArray: Promise<Source>[] = [];
 
-      // type checking to return correct Item subtype
+      // type checking to return correct Source subtype
       let typePromise = index => new Promise(typeResolve => {
         let source = jsonArr[index];
         let type = Number(source['type']);
@@ -617,23 +617,23 @@ export class Scene {
    * ```
    *
    * Sets the source order of the current scene. The first source in the array
-   * will be on top (will cover items below it).
+   * will be on top (will cover sources below it).
    */
-  setSourceOrder(items: Array<any>): Promise<Scene> {
+  setSourceOrder(sources: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));
       } else {
-        items.reverse();
+        sources.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (items.every(el => { return el instanceof Source })) {
+          if (sources.every(el => { return el instanceof Source })) {
             return new Promise(resolve => {
               let promises = [];
-              for (let i in items) {
+              for (let i in sources) {
                 promises.push((_i => {
                   return new Promise(resolve => {
-                    items[_i].getId().then(id => {
+                    sources[_i].getId().then(id => {
                       ids[_i] = id;
                       resolve(this);
                     });
@@ -648,7 +648,7 @@ export class Scene {
                 });
             });
           } else {
-            ids = items;
+            ids = sources;
             return scene.getSceneNumber();
           }
         }).then(id => {
@@ -684,7 +684,7 @@ export class Scene {
                     resolve(this);
                 });
               } else {
-                reject(Error('Scene does not have any items'));
+                reject(Error('Scene does not have any source'));
               }
             });
           }

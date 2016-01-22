@@ -1493,7 +1493,7 @@ var Scene = (function () {
     /**
      * return: Promise<Source>
      *
-     * Searches all scenes for an source item by ID. ID search will return exactly 1 result (IDs are unique) or null.
+     * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
      *
      * See also: {@link #core/Source Core/Source}
      *
@@ -1501,7 +1501,7 @@ var Scene = (function () {
      *
      * ```javascript
      * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
-     *   // source is either an Item or null
+     *   // source is either an Source or null
      * });
      * ```
      *
@@ -1518,10 +1518,10 @@ var Scene = (function () {
                 var found = false;
                 Scene._scenePool.forEach(function (scene, idx, arr) {
                     if (match === null) {
-                        scene.getSources().then((function (items) {
-                            found = items.some(function (item) {
-                                if (item['_id'] === id.toUpperCase()) {
-                                    match = item;
+                        scene.getSources().then((function (sources) {
+                            found = sources.some(function (source) {
+                                if (source['_id'] === id.toUpperCase()) {
+                                    match = source;
                                     return true;
                                 }
                                 else {
@@ -1542,7 +1542,7 @@ var Scene = (function () {
     /**
      * return: Promise<Scene>
      *
-     * Searches all scenes for one that contains the given source item ID.
+     * Searches all scenes for one that contains the given source ID.
      *
      *
      * #### Usage
@@ -1590,7 +1590,7 @@ var Scene = (function () {
     /**
      * return: Promise<Source[]>
      *
-     * Searches all scenes for a source item by name substring. This function
+     * Searches all scenes for a source by name substring. This function
      * compares against custom name first (recommended) before falling back to the
      * name property of the source.
      *
@@ -1634,25 +1634,25 @@ var Scene = (function () {
                         }
                     }
                 });
-            }).then(function (items) {
-                resolve(items);
+            }).then(function (sources) {
+                resolve(sources);
             });
         });
     };
     ;
     /**
-     * param: function(item, resolve)
+     * param: function(source, resolve)
      * ```
      * return: Promise<Source[]>
      * ```
      *
-     * Searches all scenes for items that satisfies the provided testing function.
+     * Searches all scenes for sources that satisfies the provided testing function.
      *
      * #### Usage
      *
      * ```javascript
      * Scene.filterSources(function(source, resolve) {
-     *   // We'll only fetch Flash Items by resolving 'true' if the source is an
+     *   // We'll only fetch Flash Sources by resolving 'true' if the source is an
      *   // instance of FlashSource
      *   resolve((source instanceof FlashSource));
      * }).then(function(sources) {
@@ -1710,7 +1710,7 @@ var Scene = (function () {
      *
      * ```javascript
      * Scene.filterScenesBySources(function(source, resolve) {
-     *   // We'll only fetch the scenes with flash items by resolving 'true' if
+     *   // We'll only fetch the scenes with flash sources by resolving 'true' if
      *   // the source is an instance of FlashSource
      *   resolve((source instanceof FlashSource));
      * }).then(function(scenes) {
@@ -1725,14 +1725,14 @@ var Scene = (function () {
             if (typeof func === 'function') {
                 return Promise.all(Scene._scenePool.map(function (scene) {
                     return new Promise(function (resolveScene) {
-                        scene.getSources().then(function (items) {
-                            if (items.length === 0) {
+                        scene.getSources().then(function (sources) {
+                            if (sources.length === 0) {
                                 resolveScene();
                             }
                             else {
-                                return Promise.all(items.map(function (item) {
+                                return Promise.all(sources.map(function (source) {
                                     return new Promise(function (resolveSource) {
-                                        func(item, function (checker) {
+                                        func(source, function (checker) {
                                             if (checker) {
                                                 matches.push(scene);
                                             }
@@ -1861,7 +1861,7 @@ var Scene = (function () {
     /**
      * return: Promise<Source[]>
      *
-     * Gets all the item sources in a specific scene.
+     * Gets all the sources in a specific scene.
      * See also: {@link #core/Source Core/Source}
      *
      * #### Usage
@@ -1877,7 +1877,7 @@ var Scene = (function () {
         return new Promise(function (resolve) {
             app_1.App.getAsList('presetconfig:' + _this._id).then(function (jsonArr) {
                 var promiseArray = [];
-                // type checking to return correct Item subtype
+                // type checking to return correct Source subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
                     var source = jsonArr[index];
                     var type = Number(source['type']);
@@ -1955,25 +1955,25 @@ var Scene = (function () {
      * ```
      *
      * Sets the source order of the current scene. The first source in the array
-     * will be on top (will cover items below it).
+     * will be on top (will cover sources below it).
      */
-    Scene.prototype.setSourceOrder = function (items) {
+    Scene.prototype.setSourceOrder = function (sources) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('not available for source plugins'));
             }
             else {
-                items.reverse();
+                sources.reverse();
                 var ids = [];
                 Scene.getActiveScene().then(function (scene) {
-                    if (items.every(function (el) { return el instanceof source_1.Source; })) {
+                    if (sources.every(function (el) { return el instanceof source_1.Source; })) {
                         return new Promise(function (resolve) {
                             var promises = [];
-                            for (var i in items) {
+                            for (var i in sources) {
                                 promises.push((function (_i) {
                                     return new Promise(function (resolve) {
-                                        items[_i].getId().then(function (id) {
+                                        sources[_i].getId().then(function (id) {
                                             ids[_i] = id;
                                             resolve(_this);
                                         });
@@ -1988,7 +1988,7 @@ var Scene = (function () {
                         });
                     }
                     else {
-                        ids = items;
+                        ids = sources;
                         return scene.getSceneNumber();
                     }
                 }).then(function (id) {
@@ -2022,7 +2022,7 @@ var Scene = (function () {
                                 });
                             }
                             else {
-                                reject(Error('Scene does not have any items'));
+                                reject(Error('Scene does not have any source'));
                             }
                         });
                     }
