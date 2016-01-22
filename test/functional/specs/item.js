@@ -22,10 +22,10 @@
   // This is a Source class functional test case, but since it needs to actually
   // work on XBC, we should always go through Scene class first
   Scene.getActiveScene().then(function(scene) {
-    return scene.getItems();
+    return scene.getSource();
   }).then(function(sources) {
     if (sources.length === 0) {
-      throw new Error('NO ITEMS ON CURRENT SCENE!');
+      throw new Error('NO SOURCE ON CURRENT SCENE!');
     }
 
     var sourceIndex = 0;

@@ -85,7 +85,7 @@ describe('Source', function() {
       XJS.Scene.getActiveScene().then(function(scene) {
         scene.getSources().then(function(sources) {
           if (sources.length === 0) {
-            throw new Error('NO ITEMS ON CURRENT SCENE');
+            throw new Error('NO SOURCES ON CURRENT SCENE');
           }
 
           Source = sources[0];

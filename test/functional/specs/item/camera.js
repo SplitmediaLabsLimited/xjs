@@ -7,7 +7,7 @@
 
   var currentSource;
   XJS.Scene.getActiveScene().then(function(scene) {
-    scene.getItems().then(function(sources) {
+    scene.getSources().then(function(sources) {
       for (var i in sources) {
         if (sources[i] instanceof XJS.CameraSource) {
           currentSource = sources[i];
