@@ -1,3 +1,8 @@
+/****************************
+ * XSplit JS Framework
+ * version: 0.10.0
+ * (c) 2015 SplitmediaLabs, inc.
+ ****************************/
 (function() {
 _require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _require=="function"&&_require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _require=="function"&&_require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -1501,7 +1506,7 @@ var Scene = (function () {
      *
      * ```javascript
      * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
-     *   // source is either an Source or null
+     *   // result is either a Source or null
      * });
      * ```
      *
@@ -2061,11 +2066,11 @@ var source_1 = _require('./source');
  * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.AudioSource) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.AudioSource) {
  *         // Manipulate your audio device source here
- *         items[i].setSilenceDetectionEnabled(true);
+ *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   });
@@ -2241,10 +2246,10 @@ var iaudio_1 = _require('./iaudio');
 var source_1 = _require('./source');
 var system_1 = _require('../../system/system');
 /**
- * The CameraSource Class provides methods specifically used for camera items and
+ * The CameraSource Class provides methods specifically used for camera sources and
  * also methods that are shared between Source Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * CameraSource object if there's a camera item on the specified scene.
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * CameraSource object if there's a camera source on the specified scene.
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
@@ -2260,11 +2265,11 @@ var system_1 = _require('../../system/system');
  * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.CameraSource) {
- *         // Manipulate your camera item here
- *         items[i].getDeviceId().then(function(id) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.CameraSource) {
+ *         // Manipulate your camera sources here
+ *         sources[i].getDeviceId().then(function(id) {
  *           // Do something with the id
  *         });
  *       }
@@ -2684,7 +2689,7 @@ var iaudio_1 = _require('./iaudio');
 var source_1 = _require('./source');
 var rectangle_1 = _require('../../util/rectangle');
 /**
- * The FlashSource class represents a flash source item, which is any SWF file
+ * The FlashSource class represents a flash source, which is any SWF file
  * loaded to XSplit Broadcaster.
  *
  * Inherits from: {@link #core/Source Core/Source}
@@ -2776,10 +2781,10 @@ var xml_1 = _require('../../internal/util/xml');
 var source_2 = _require('./source');
 var environment_1 = _require('../environment');
 /**
- * The GameSource Class provides methods specifically used for game items and
- * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * GameSource object if there's a game item on the specified scene.
+ * The GameSource Class provides methods specifically used for game sources and
+ * also methods that is shared between Source Classes. The
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * GameSource object if there's a game source on the specified scene.
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
@@ -2794,11 +2799,11 @@ var environment_1 = _require('../environment');
  * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.GameSource) {
- *         // Manipulate your game item here
- *         items[i].setOfflineImage(path); // just an example here
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.GameSource) {
+ *         // Manipulate your game source here
+ *         sources[i].setOfflineImage(path); // just an example here
  *       }
  *     }
  *   });
@@ -2880,7 +2885,7 @@ var GameSource = (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (_this._type !== source_2.SourceTypes.GAMESOURCE) {
-                reject(Error('Current item should be a game source'));
+                reject(Error('Current source should be a game source'));
             }
             else if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update offline images of other sources'));
@@ -2914,7 +2919,7 @@ var GameSource = (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (_this._type !== source_2.SourceTypes.GAMESOURCE) {
-                reject(Error('Current item should be a game source'));
+                reject(Error('Current source should be a game source'));
             }
             else {
                 _this.getValue().then(function () {
@@ -2967,11 +2972,11 @@ var environment_1 = _require('../environment');
  * var XJS = _require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.HtmlSource) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.HtmlSource) {
  *         // Manipulate your HTML source here
- *         items[i].enableBrowserTransparency(true);
+ *         sources[i].enableBrowserTransparency(true);
  *       }
  *     }
  *   });
@@ -4701,7 +4706,7 @@ var rectangle_1 = _require('../../util/rectangle');
 var json_1 = _require('../../internal/util/json');
 var xml_1 = _require('../../internal/util/xml');
 /**
- * The ScreenSource class represents a screen capture item.
+ * The ScreenSource class represents a screen capture source.
  *
  * Inherits from: {@link #core/Source Core/Source}
  *
@@ -4721,7 +4726,7 @@ var ScreenSource = (function (_super) {
     /**
      * return: Promise<Rectangle>
      *
-     * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
+     * Gets the Capture Area of the Screen Capture Source. Returns a Rectangle
      * object.
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
@@ -4746,7 +4751,7 @@ var ScreenSource = (function (_super) {
      * return: Promise<ScreenSource>
      * ```
      *
-     * Sets the Window Capture Area of the Screen Capture Item.
+     * Sets the Window Capture Area of the Screen Capture Source.
      *
      * *Chainable.*
      *
@@ -4802,7 +4807,7 @@ var ScreenSource = (function (_super) {
     /**
      * return: Promise<boolean>
      *
-     * Checks if the Screen Capture Item only captures the
+     * Checks if the Screen Capture Source only captures the
      * Client area (does not capture the title bar, menu bar, window border, etc.)
      */
     ScreenSource.prototype.isClientArea = function () {
@@ -4857,7 +4862,7 @@ var ScreenSource = (function (_super) {
     /**
      * return: Promise<boolean>
      *
-     * Checks if the Screen Capture Item captures a window based on
+     * Checks if the Screen Capture Source captures a window based on
      * the window's title.
      */
     ScreenSource.prototype.isStickToTitle = function () {
@@ -5364,7 +5369,7 @@ mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
  *
  * Simply use one of the available Transition objects such as Transition.FAN or
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
- * App instance, or a valid Item instance that supports transitions (this
+ * App instance, or a valid Source instance that supports transitions (this
  * includes {@link #core/CameraSource Core/CameraSource},
  * {@link #core/GameSource Core/GameSource}, and
  * {@link #core/HtmlSource Core/HtmlSource}.)
@@ -6174,7 +6179,7 @@ var AudioDevice = (function () {
     /**
      * return: string
      *
-     * Converts the AudioDevice item to XML-formatted string
+     * Converts the AudioDevice object to XML-formatted string
      *
      * #### Usage
      *
