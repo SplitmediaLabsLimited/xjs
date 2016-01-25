@@ -1,6 +1,6 @@
 /****************************
  * XSplit JS Framework
- * version: 0.10.0
+ * version: 1.0.0
  * (c) 2015 SplitmediaLabs, inc.
  ****************************/
 (function() {
