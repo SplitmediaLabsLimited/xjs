@@ -5,6 +5,23 @@ import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 
+/**
+ * The MicrophoneDevice class provides you with methods to add a microphone
+ * device as a source on the stage.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getMicrophones().then(function(microphones) {
+ *  for (var i in microphones) {
+ *    microphones[i].addToScene();
+ *  }
+ * });
+ * ```
+ */
 export class MicrophoneDevice implements Addable {
   private _disp: string;
   private _name: string;
@@ -26,10 +43,10 @@ export class MicrophoneDevice implements Addable {
    * #### Usage
    *
    * ```javascript
-   * var micDisplayID = device.getDisplayID();
+   * var micDisplayId = device.getDisplayId();
    * ```
    */
-  getDisplayID(): string {
+  getDisplayId(): string {
     return this._disp;
   }
 

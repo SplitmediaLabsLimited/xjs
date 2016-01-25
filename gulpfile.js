@@ -82,12 +82,17 @@
    * @return newVersion
    */
   var bumpVersion = function(version, type, mode) {
-    var ver = version.split('.');
-
-    if (mode === 'dec') {
-      ver[type] = Number(ver[type]) <= 0 ? 0 : Number(ver[type]) - 1;
-    } else {
-      ver[type] = Number(ver[type]) + 1;
+    var ver = version.split('.'); // 0.9.1
+    for (var i = 0; i < ver.length; i++) {
+      if (Number(type) === Number(i)) {
+        if (mode === 'dec') {
+          ver[type] = Number(ver[type]) <= 0 ? 0 : Number(ver[type]) - 1;
+        } else {
+          ver[type] = Number(ver[type]) + 1;
+        }
+      } else if (i > type) {
+        ver[i] = 0;
+      }
     }
 
     return ver.join('.');

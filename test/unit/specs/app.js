@@ -393,7 +393,7 @@ describe('App ===', function() {
           ' enable="1" hwlevel="-1.000000" hwenable="255"' +
           ' delay="0" mix="0"/>' +
         '</devices>');
-      
+
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -1452,7 +1452,7 @@ describe('App ===', function() {
           },10);
           return randomNumber;
 
-        // add these below only because each scene has separate getting of items
+        // add these below only because each scene has separate getting of sources
         // this should be addressed to reuse the initial call for presetconfig
         } else if (funcName == 'presetconfig:0') {
           var randomNumber=Math.floor(Math.random()*1000);
@@ -1895,7 +1895,7 @@ describe('App ===', function() {
           },10);
           return randomNumber;
 
-        // add these below only because each scene has separate getting of items,
+        // add these below only because each scene has separate getting of sources,
         // this should be addressed to reuse the initial call for presetconfig
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;

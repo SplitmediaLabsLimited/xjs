@@ -9,7 +9,7 @@ import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
+import {Source} from './source';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
@@ -19,18 +19,23 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 
 /**
- * The ScreenItem class represents a screen capture item.
+ * The ScreenSource class represents a screen capture source.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `ScreenItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition}
+ *
+ *  All methods marked as *Chainable* resolve with the original `ScreenSource`
  *  instance.
  */
-export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ScreenSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
+   * Gets the Capture Area of the Screen Capture Source. Returns a Rectangle
    * object.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
@@ -56,16 +61,16 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: Promise<Rectangle>
    * ```
-   * return: Promise<ScreenItem>
+   * return: Promise<ScreenSource>
    * ```
    *
-   * Sets the Window Capture Area of the Screen Capture Item.
+   * Sets the Window Capture Area of the Screen Capture Source.
    *
    * *Chainable.*
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setCaptureArea(dimension: Rectangle): Promise<ScreenItem> {
+  setCaptureArea(dimension: Rectangle): Promise<ScreenSource> {
     return new Promise(resolve => {
       this.getValue().then(val => {
         return new Promise(iResolve => {
@@ -122,7 +127,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<boolean>
    *
-   * Checks if the Screen Capture Item only captures the
+   * Checks if the Screen Capture Source only captures the
    * Client area (does not capture the title bar, menu bar, window border, etc.)
    */
   isClientArea(): Promise<boolean> {
@@ -141,13 +146,13 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: Promise<boolean>
    * ```
-   * return: Promise<ScreenItem>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Set the Screen Capture to capture the Client area only or include
    * the titlebar, menu bar, window border, etc.
    */
-  setClientArea(value: boolean): Promise<ScreenItem> {
+  setClientArea(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
       this.getValue().then(val => {
         let _config = new JXON();
@@ -178,7 +183,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<boolean>
    *
-   * Checks if the Screen Capture Item captures a window based on
+   * Checks if the Screen Capture Source captures a window based on
    * the window's title.
    */
   isStickToTitle(): Promise<boolean> {
@@ -192,14 +197,14 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * param: Promise<boolean>
    * ```
-   * return: Promise<ScreenItem>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Set the Screen Capture to capture the window based on the window title.
    * Useful when capturing programs with multiple tabs, for you to only
    * capture a particular tab.
    */
-  setStickToTitle(value: boolean): Promise<ScreenItem> {
+  setStickToTitle(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
       iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
         .then(() => {
@@ -211,427 +216,318 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   // ItemLayout
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Aspect Ratio is set to ON or OFF
+   * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
   isKeepAspectRatio: () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Position Locked is set to ON or OFF
+   * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
    */
   isPositionLocked: () => Promise<boolean>;
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Enhance Resize is Enabled or Disabled
+   * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
    */
   isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Get the position of the item
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Y value of the item
+   * See: {@link #core/IItemLayout#getRotateY getRotateY}
    */
   getRotateY: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate X value of the item
+   * See: {@link #core/IItemLayout#getRotateX getRotateX}
    */
   getRotateX: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Rotate Z value of the item
+   * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Aspect Ratio to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio: (value: boolean) => Promise<ScreenItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<ScreenSource>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Position Lock to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked: (value: boolean) => Promise<ScreenItem>;
+  setPositionLocked: (value: boolean) => Promise<ScreenSource>;
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Enhance Resize to ON or OFF
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled: (value: boolean) => Promise<ScreenItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<ScreenSource>;
 
   /**
-   * param: (value: Rectangle)
-   *
-   * Set Item Position. Relative coordinates (0-1) are required.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
-   * item.setPosition(rect).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition: (value: Rectangle) => Promise<ScreenItem>;
+  setPosition: (value: Rectangle) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate Y value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY: (value: number) => Promise<ScreenItem>;
+  setRotateY: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate X value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX: (value: number) => Promise<ScreenItem>;
+  setRotateX: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Rotate Z value of the item
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ: (value: number) => Promise<ScreenItem>;
-
+  setRotateZ: (value: number) => Promise<ScreenSource>;
+  
   // ItemColor
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Transparency value
+   * See: {@link #core/IItemColor#getTransparency getTransparency}
    */
   getTransparency: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Brightness value
+   * See: {@link #core/IItemColor#getBrightness getBrightness}
    */
   getBrightness: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Contrast value
+   * See: {@link #core/IItemColor#getContrast getContrast}
    */
   getContrast: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Hue value
+   * See: {@link #core/IItemColor#getHue getHue}
    */
   getHue: () => Promise<number>;
 
   /**
-   * return: Promise<number>
-   *
-   * Get Item Saturation value
+   * See: {@link #core/IItemColor#getSaturation getSaturation}
    */
   getSaturation: () => Promise<number>;
 
   /**
-   * return: Promise<Color>
-   *
-   * Get Border Color
+   * See: {@link #core/IItemColor#getBorderColor getBorderColor}
    */
   getBorderColor: () => Promise<Color>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Transparency
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
-  setTransparency: (value: number) => Promise<ScreenItem>;
+  setTransparency: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Brightness
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness: (value: number) => Promise<ScreenItem>;
+  setBrightness: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Contrast
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast: (value: number) => Promise<ScreenItem>;
+  setContrast: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Hue
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue: (value: number) => Promise<ScreenItem>;
+  setHue: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: number)
-   *
-   * Set Item Saturation
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation: (value: number) => Promise<ScreenItem>;
+  setSaturation: (value: number) => Promise<ScreenSource>;
 
   /**
-   * param: (value: Color)
-   *
-   * Set Border Color
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor: (value: Color) => Promise<ScreenItem>;
+  setBorderColor: (value: Color) => Promise<ScreenSource>;
 
   // ItemChroma
+
   /**
-   * return: Promise<boolean>
+   * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
    */
   isChromaEnabled: () => Promise<boolean>;
+
   /**
-   * param: (value: boolean)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
-  setChromaEnabled: (value: boolean) => Promise<ScreenItem>;
+  setChromaEnabled: (value: boolean) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<KeyingType>
+   * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
+  
   /**
-   * param: (value: KeyingType)
-   * *Chainable.*
-   *
+   * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
-  setKeyingType: (value: KeyingType) => Promise<ScreenItem>;
+  setKeyingType: (value: KeyingType) => Promise<ScreenSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
+  
   /**
-   * return: Promise<ChromaAntiAliasLevel>
+   * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
+  
   /**
-   * param: (value: ChromaAntiAliasLevel)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
-  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ScreenItem>;
+  setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ScreenSource>;
 
   // CHROMA LEGACY MODE
+   
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
-  setChromaLegacyBrightness: (value: number) => Promise<ScreenItem>;
+  setChromaLegacyBrightness: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
-  setChromaLegacySaturation: (value: number) => Promise<ScreenItem>;
+  setChromaLegacySaturation: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
-  setChromaLegacyHue: (value: number) => Promise<ScreenItem>;
+  setChromaLegacyHue: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
-  setChromaLegacyThreshold: (value: number) => Promise<ScreenItem>;
+  setChromaLegacyThreshold: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
-  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ScreenItem>;
+  setChromaLegacyAlphaSmoothing: (value: number) => Promise<ScreenSource>;
 
   // CHROMA KEY RGB MODE
+  
   /**
-   * return: Promise<ChromaPrimaryColors>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
+  
   /**
-   * param: (value: ChromaPrimaryColors)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
-  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ScreenItem>;
+  setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
-  setChromaRGBKeyThreshold: (value: number) => Promise<ScreenItem>;
+  setChromaRGBKeyThreshold: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
-  setChromaRGBKeyExposure: (value: number) => Promise<ScreenItem>;
+  setChromaRGBKeyExposure: (value: number) => Promise<ScreenSource>;
 
   // COLOR KEY MODE
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
-  setChromaColorKeyThreshold: (value: number) => Promise<ScreenItem>;
+  setChromaColorKeyThreshold: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
+   * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
+  
   /**
-   * param: (value: number)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
-  setChromaColorKeyExposure: (value: number) => Promise<ScreenItem>;
+  setChromaColorKeyExposure: (value: number) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<Color>
+   * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
+  
   /**
-   * param: (value: Color)
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
-  setChromaColorKeyColor: (value: Color) => Promise<ScreenItem>;
+  setChromaColorKeyColor: (value: Color) => Promise<ScreenSource>;
 
   // ItemTransition
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if item is visible on stage
+   * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-
+  
   /**
-   * param: (value: boolean)
-   *
-   * Set item to visible or hidden
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible: (value: boolean) => Promise<ScreenItem>;
-
+  setVisible: (value: boolean) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<boolean>
-   *
-   * Get item's transition type for when visibility is toggled
+   * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-
+  
   /**
-   * param: (value: Transition)
-   *
-   * Set item's transition type for when visibility is toggled
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition: (value: Transition) => Promise<ScreenItem>;
-
+  setTransition: (value: Transition) => Promise<ScreenSource>;
+  
   /**
-   * return: Promise<number>
-   *
-   * Get item's transition time in milliseconds
+   * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-
+  
   /**
-   * param: (value: number)
-   *
-   * Set item's transition time in milliseconds
-   *
-   * *Chainable.*
+   * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
-  setTransitionTime: (value: number) => Promise<ScreenItem>;
+  setTransitionTime: (value: number) => Promise<ScreenSource>;
 }
 
-applyMixins(ScreenItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ScreenSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);

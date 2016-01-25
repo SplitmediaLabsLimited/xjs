@@ -9,8 +9,7 @@ import {App as iApp} from '../internal/app';
 /**
  * The Game Class is the object returned by {@link #system/System System Class'}
  * getGames method. It provides you with methods to fetch the game object's
- * attributes, and also provides methods to convert it back to an XML object
- * that is compatible with XBC
+ * attributes, as well as methods to add any game to the current scene.
  *
  * ### Basic Usage
  *
@@ -20,12 +19,11 @@ import {App as iApp} from '../internal/app';
  * var xml;
  *
  * System.getGames().then(function(games) {
- * 	for (var i in games) {
- * 		if(games[i].isFullscreen()) {
- * 			xml = games[i].toXML();
- * 			// Do something with the xml here. Probably add it to the current scene
- * 		}
- * 	}
+ *  for (var i in games) {
+ *    if(games[i].isFullscreen()) {
+ *      games[i].addToScene();
+ *    }
+ *  }
  * });
  * ```
  */
@@ -174,6 +172,8 @@ export class Game implements Addable {
   }
 
   /**
+   * return: number
+   *
    * Get the FPS Render of the game
    */
   getFpsRender() {
@@ -181,6 +181,8 @@ export class Game implements Addable {
   }
 
   /**
+   * return: number
+   *
    * Get the Captured FPS of the game
    */
   getFpsCapture() {
@@ -188,6 +190,8 @@ export class Game implements Addable {
   }
 
   /**
+   * return: string
+   *
    * Get the image name of the game
    */
   getImageName() {
@@ -195,6 +199,8 @@ export class Game implements Addable {
   }
 
   /**
+   * return: string
+   *
    * Get the replace image value of the game
    */
   getReplace() {

@@ -82,12 +82,12 @@ export class Item {
   }
 
   /** helper function to get current source on init */
-  static setBaseID(id: string): void {
+  static setBaseId(id: string): void {
     Item.baseID = id;
   }
 
-  /** helper function for Item.getCurrentSource() */
-  static getBaseID(): string {
+  /** helper function for Source.getCurrentSource() */
+  static getBaseId(): string {
     return Item.baseID;
   }
 }

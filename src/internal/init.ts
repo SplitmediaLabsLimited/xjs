@@ -4,7 +4,7 @@ import {Environment} from '../core/environment';
 import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
-import {SourceConfigWindow} from '../window/config';
+import {SourcePropsWindow} from '../window/config';
 
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
@@ -82,14 +82,14 @@ function readMetaConfigUrl(): Promise<any> {
   });
 }
 
-function getCurrentSourceID(): Promise<any> {
+function getCurrentSourceId(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
       // initialize Item.getSource() functions
       exec('GetLocalPropertyAsync', 'prop:id',
         result => {
           let id = decodeURIComponent(result);
-          Item.setBaseID(id);
+          Item.setBaseId(id);
 
           if (Environment.isSourcePlugin()) {
             Item.lockSourceSlot(id);
@@ -106,7 +106,7 @@ function informWhenConfigLoaded(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourceConfig()) {
       window.addEventListener('load', () => {
-        SourceConfigWindow.getInstance().emit('config-load');
+        SourcePropsWindow.getInstance().emit('config-load');
         resolve();
       });
     } else {
@@ -117,7 +117,7 @@ function informWhenConfigLoaded(): Promise<any> {
 
 function init(): void {
   Global.addInitializationPromise(readMetaConfigUrl());
-  Global.addInitializationPromise(getCurrentSourceID());
+  Global.addInitializationPromise(getCurrentSourceId());
   Global.addInitializationPromise(informWhenConfigLoaded());
 
   Promise.all(Global.getInitializationPromises()).then(() => {

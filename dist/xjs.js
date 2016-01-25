@@ -1,6 +1,6 @@
 /****************************
  * XSplit JS Framework
- * version: 0.10.0
+ * version: 1.0.0
  * (c) 2015 SplitmediaLabs, inc.
  ****************************/
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -941,7 +941,7 @@ var App = (function () {
      * return: Promise<boolean>
      *
      *  Clears all cookies across all browser instances. Not available to
-     *  source plugins (call this from the configuration window instead.)
+     *  source plugins (call this from the source properties window instead.)
      *
      * #### Usage
      *
@@ -1111,6 +1111,11 @@ var Dll = (function (_super) {
     Dll.load = function (path) {
         internal_1.exec('LoadDll', path.join(','));
     };
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
     Dll.emit = function (event) {
         var params = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -1119,6 +1124,12 @@ var Dll = (function (_super) {
         params.unshift(event);
         Dll._emitter.emit.apply(Dll._emitter, params);
     };
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits. Currently there are two:
+     *  `access-granted` and `access-revoked`.
+     */
     Dll.on = function (event, handler) {
         Dll._emitter.on(event, handler);
     };
@@ -1253,7 +1264,7 @@ var Environment = (function () {
     };
     /**
      * return: boolean
-     * Determines if this HTML is running within the source configuration window.
+     * Determines if this HTML is running within the source properties window.
      */
     Environment.isSourceConfig = function () {
         return Environment._isSourceConfig;
@@ -1330,6 +1341,705 @@ var Extension = (function () {
 })();
 exports.Extension = Extension;
 },{"../core/environment":4,"../internal/internal":28}],6:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var json_1 = require('../internal/util/json');
+var xml_1 = require('../internal/util/xml');
+var app_1 = require('../internal/app');
+var internal_1 = require('../internal/internal');
+var environment_1 = require('./environment');
+var source_1 = require('./source/source');
+var game_1 = require('./source/game');
+var camera_1 = require('./source/camera');
+var audio_1 = require('./source/audio');
+var html_1 = require('./source/html');
+var flash_1 = require('./source/flash');
+var screen_1 = require('./source/screen');
+var image_1 = require('./source/image');
+var media_1 = require('./source/media');
+var Scene = (function () {
+    function Scene(sceneNum) {
+        this._id = sceneNum - 1;
+    }
+    ;
+    Scene._initializeScenePool = function () {
+        if (Scene._scenePool.length === 0) {
+            for (var i = 0; i < Scene._maxScenes; i++) {
+                Scene._scenePool[i] = new Scene(i + 1);
+            }
+        }
+    };
+    /**
+     * return: Scene
+     *
+     * Get a specific scene object given the scene number.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var scene1 = Scene.getById(1);
+     * ```
+     */
+    Scene.getById = function (sceneNum) {
+        // initialize if necessary
+        Scene._initializeScenePool();
+        return Scene._scenePool[sceneNum - 1];
+    };
+    /**
+     * return: Promise<Scene[]>
+     *
+     * Asynchronous functon to get a list of scene objects with a specific name.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var scenes = Scene.getByName('Game').then(function(scenes) {
+     *    // manipulate scenes
+     * });
+     * ```
+     */
+    Scene.getByName = function (sceneName) {
+        // initialize if necessary
+        Scene._initializeScenePool();
+        var namePromise = Promise.all(Scene._scenePool.map(function (scene, index) {
+            return app_1.App.get('presetname:' + index).then(function (name) {
+                if (sceneName === name) {
+                    return Scene._scenePool[index];
+                }
+                else {
+                    return null;
+                }
+            });
+        }));
+        return new Promise(function (resolve) {
+            namePromise.then(function (results) {
+                var returnArray = [];
+                for (var j = 0; j < results.length; ++j) {
+                    if (results[j] !== null) {
+                        returnArray.push(results[j]);
+                    }
+                }
+                ;
+                resolve(returnArray);
+            });
+        });
+    };
+    /**
+     * return: Promise<Scene>
+     *
+     * Get the currently active scene.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var myScene = Scene.getActiveScene();
+     * ```
+     */
+    Scene.getActiveScene = function () {
+        return new Promise(function (resolve) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                app_1.App.get('presetconfig:-1').then(function (sceneString) {
+                    var curScene = json_1.JSON.parse(sceneString);
+                    if (curScene.children.length > 0) {
+                        resolve(Scene.searchScenesBySourceId(curScene.children[0]['id']));
+                    }
+                    else {
+                        throw new Error('presetconfig cannot fetch current scene');
+                    }
+                });
+            }
+            else {
+                app_1.App.get('preset:0').then(function (id) {
+                    resolve(Scene.getById(Number(id) + 1));
+                });
+            }
+        });
+    };
+    /**
+     * param: scene<number|Scene>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Change active scene. Does not work on source plugins.
+     */
+    Scene.setActiveScene = function (scene) {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else {
+                if (scene instanceof Scene) {
+                    scene.getId().then(function (id) {
+                        app_1.App.set('preset', String(id)).then(function (res) {
+                            resolve(res);
+                        });
+                    });
+                }
+                else if (typeof scene === 'number') {
+                    if (scene < 1 || scene > 12) {
+                        reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+                    }
+                    else {
+                        app_1.App.set('preset', String(scene - 1)).then(function (res) {
+                            resolve(res);
+                        });
+                    }
+                }
+                else {
+                    reject(Error('Invalid parameters'));
+                }
+            }
+        });
+    };
+    /**
+     * return: Promise<Source>
+     *
+     * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
+     *
+     * See also: {@link #core/Source Core/Source}
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
+     *   // result is either a Source or null
+     * });
+     * ```
+     *
+     */
+    Scene.searchSourcesById = function (id) {
+        var isID = /^{[A-F0-9\-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for sources');
+        }
+        else {
+            Scene._initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene._scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getSources().then((function (sources) {
+                            found = sources.some(function (source) {
+                                if (source['_id'] === id.toUpperCase()) {
+                                    match = source;
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                Number(this) === arr.length - 1) {
+                                resolve(match);
+                            }
+                        }).bind(idx));
+                    }
+                });
+            });
+        }
+    };
+    ;
+    /**
+     * return: Promise<Scene>
+     *
+     * Searches all scenes for one that contains the given source ID.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+     *   // scene contains the source
+     * });
+     * ```
+     *
+     */
+    Scene.searchScenesBySourceId = function (id) {
+        var isID = /^{[A-F0-9-]*}$/i.test(id);
+        if (!isID) {
+            throw new Error('Not a valid ID format for sources');
+        }
+        else {
+            Scene._initializeScenePool();
+            return new Promise(function (resolve) {
+                var match = null;
+                var found = false;
+                Scene._scenePool.forEach(function (scene, idx, arr) {
+                    if (match === null) {
+                        scene.getSources().then(function (sources) {
+                            found = sources.some(function (source) {
+                                if (source['_id'] === id.toUpperCase()) {
+                                    match = Scene.getById(idx + 1);
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                            if (found ||
+                                idx === arr.length - 1) {
+                                resolve(match);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    };
+    ;
+    /**
+     * return: Promise<Source[]>
+     *
+     * Searches all scenes for a source by name substring. This function
+     * compares against custom name first (recommended) before falling back to the
+     * name property of the source.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.searchSourcesByName('camera').then(function(sources) {
+     *   // do something to each source in sources array
+     * });
+     * ```
+     *
+     */
+    Scene.searchSourcesByName = function (param) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            _this.filterSources(function (source, filterResolve) {
+                source.getCustomName().then(function (cname) {
+                    if (cname.match(param)) {
+                        filterResolve(true);
+                    }
+                    else {
+                        return source.getName();
+                    }
+                }).then(function (name) {
+                    if (name !== undefined) {
+                        if (name.match(param)) {
+                            filterResolve(true);
+                        }
+                        else {
+                            return source.getValue();
+                        }
+                    }
+                }).then(function (value) {
+                    if (value !== undefined) {
+                        if (value.toString().match(param)) {
+                            filterResolve(true);
+                        }
+                        else {
+                            filterResolve(false);
+                        }
+                    }
+                });
+            }).then(function (sources) {
+                resolve(sources);
+            });
+        });
+    };
+    ;
+    /**
+     * param: function(source, resolve)
+     * ```
+     * return: Promise<Source[]>
+     * ```
+     *
+     * Searches all scenes for sources that satisfies the provided testing function.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.filterSources(function(source, resolve) {
+     *   // We'll only fetch Flash Sources by resolving 'true' if the source is an
+     *   // instance of FlashSource
+     *   resolve((source instanceof FlashSource));
+     * }).then(function(sources) {
+     *   // sources would either be an empty array if no Flash sources was found,
+     *   // or an array of FlashSource objects
+     * });
+     * ```
+     */
+    Scene.filterSources = function (func) {
+        Scene._initializeScenePool();
+        var matches = [];
+        return new Promise(function (resolve, reject) {
+            if (typeof func === 'function') {
+                return Promise.all(Scene._scenePool.map(function (scene) {
+                    return new Promise(function (resolveScene) {
+                        scene.getSources().then(function (sources) {
+                            if (sources.length === 0) {
+                                resolveScene();
+                            }
+                            else {
+                                return Promise.all(sources.map(function (source) {
+                                    return new Promise(function (resolveSource) {
+                                        func(source, function (checker) {
+                                            if (checker) {
+                                                matches.push(source);
+                                            }
+                                            resolveSource();
+                                        });
+                                    });
+                                })).then(function () {
+                                    resolveScene();
+                                });
+                            }
+                        });
+                    });
+                })).then(function () {
+                    resolve(matches);
+                });
+            }
+            else {
+                reject(Error('Parameter is not a function'));
+            }
+        });
+    };
+    /**
+     * param: function(source, resolve)
+     * ```
+     * return: Promise<Scene[]>
+     * ```
+     *
+     * Searches all scenes for sources that satisfies the provided testing
+     * function, and then return the scene that contains the source.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.filterScenesBySources(function(source, resolve) {
+     *   // We'll only fetch the scenes with flash sources by resolving 'true' if
+     *   // the source is an instance of FlashSource
+     *   resolve((source instanceof FlashSource));
+     * }).then(function(scenes) {
+     *   // scenes would be an array of all scenes with FlashSources
+     * });
+     * ```
+     */
+    Scene.filterScenesBySources = function (func) {
+        Scene._initializeScenePool();
+        var matches = [];
+        return new Promise(function (resolve, reject) {
+            if (typeof func === 'function') {
+                return Promise.all(Scene._scenePool.map(function (scene) {
+                    return new Promise(function (resolveScene) {
+                        scene.getSources().then(function (sources) {
+                            if (sources.length === 0) {
+                                resolveScene();
+                            }
+                            else {
+                                return Promise.all(sources.map(function (source) {
+                                    return new Promise(function (resolveSource) {
+                                        func(source, function (checker) {
+                                            if (checker) {
+                                                matches.push(scene);
+                                            }
+                                            resolveSource();
+                                        });
+                                    });
+                                })).then(function () {
+                                    resolveScene();
+                                });
+                            }
+                        });
+                    });
+                })).then(function () {
+                    resolve(matches);
+                });
+            }
+            else {
+                reject(Error('Parameter is not a function'));
+            }
+        });
+    };
+    /**
+     * return: Promise<boolean>
+  
+     * Load scenes that are not yet initialized in XSplit Broadcaster.
+     *
+     * Note: For memory saving purposes, this is not called automatically.
+     * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
+     * This function is only available to extensions.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Scene.initializeScenes().then(function(val) {
+     *   if (val === true) {
+     *     // Now you know that all scenes are loaded :)
+     *   }
+     * })
+     * ```
+     */
+    Scene.initializeScenes = function () {
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('function is not available for source'));
+            }
+            app_1.App.get('presetcount').then(function (cnt) {
+                if (Number(cnt) !== 12) {
+                    // Insert an empty scene for scene #12
+                    app_1.App
+                        .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                        .then(function (res) {
+                        resolve(res);
+                    });
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        });
+    };
+    /**
+     * return: number
+     *
+     * Get the 1-indexed scene number of this scene object.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getSceneNumber().then(function(num) {
+     *  console.log('My scene is scene number ' + num);
+     * });
+     * ```
+     */
+    Scene.prototype.getSceneNumber = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this._id + 1);
+        });
+    };
+    /**
+     * return: number
+     *
+     * Get the name of this scene object.
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getSceneName().then(function(name) {
+     *  console.log('My scene is named ' + name);
+     * });
+     * ```
+     */
+    Scene.prototype.getName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('presetname:' + _this._id).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    /**
+     *
+     * Set the name of this scene object. Cannot be set by source plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.setName('Gameplay');
+     * ```
+     */
+    Scene.prototype.setName = function (name) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Scene names are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('presetname:' + _this._id, name).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<Source[]>
+     *
+     * Gets all the sources in a specific scene.
+     * See also: {@link #core/Source Core/Source}
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getSources().then(function(sources) {
+     *  // do something to each source in sources array
+     * });
+     * ```
+     */
+    Scene.prototype.getSources = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('presetconfig:' + _this._id).then(function (jsonArr) {
+                var promiseArray = [];
+                // type checking to return correct Source subtype
+                var typePromise = function (index) { return new Promise(function (typeResolve) {
+                    var source = jsonArr[index];
+                    var type = Number(source['type']);
+                    if (type === source_1.SourceTypes.GAMESOURCE) {
+                        typeResolve(new game_1.GameSource(source));
+                    }
+                    else if (type === source_1.SourceTypes.HTML) {
+                        typeResolve(new html_1.HtmlSource(source));
+                    }
+                    else if (type === source_1.SourceTypes.SCREEN) {
+                        typeResolve(new screen_1.ScreenSource(source));
+                    }
+                    else if (type === source_1.SourceTypes.BITMAP ||
+                        type === source_1.SourceTypes.FILE &&
+                            /\.gif$/.test(source['item'])) {
+                        typeResolve(new image_1.ImageSource(source));
+                    }
+                    else if (type === source_1.SourceTypes.FILE &&
+                        /\.(gif|xbs)$/.test(source['item']) === false &&
+                        /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+                        typeResolve(new media_1.MediaSource(source));
+                    }
+                    else if (Number(source['type']) === source_1.SourceTypes.LIVE &&
+                        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+                        typeResolve(new camera_1.CameraSource(source));
+                    }
+                    else if (Number(source['type']) === source_1.SourceTypes.LIVE &&
+                        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+                        typeResolve(new audio_1.AudioSource(source));
+                    }
+                    else if (Number(source['type']) === source_1.SourceTypes.FLASHFILE) {
+                        typeResolve(new flash_1.FlashSource(source));
+                    }
+                    else {
+                        typeResolve(new source_1.Source(source));
+                    }
+                }); };
+                if (Array.isArray(jsonArr)) {
+                    for (var i = 0; i < jsonArr.length; i++) {
+                        jsonArr[i]['sceneId'] = _this._id;
+                        promiseArray.push(typePromise(i));
+                    }
+                }
+                Promise.all(promiseArray).then(function (results) {
+                    resolve(results);
+                });
+            });
+        });
+    };
+    /**
+     * Checks if a scene is empty.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.isEmpty().then(function(empty) {
+     *   if (empty === true) {
+     *     console.log('My scene is empty.');
+     *   }
+     * });
+     * ```
+     */
+    Scene.prototype.isEmpty = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('presetisempty:' + _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * param: Array<Source> | Array<string> (source IDs)
+     * ```
+     * return: Promise<Scene>
+     * ```
+     *
+     * Sets the source order of the current scene. The first source in the array
+     * will be on top (will cover sources below it).
+     */
+    Scene.prototype.setSourceOrder = function (sources) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('not available for source plugins'));
+            }
+            else {
+                sources.reverse();
+                var ids = [];
+                Scene.getActiveScene().then(function (scene) {
+                    if (sources.every(function (el) { return el instanceof source_1.Source; })) {
+                        return new Promise(function (resolve) {
+                            var promises = [];
+                            for (var i in sources) {
+                                promises.push((function (_i) {
+                                    return new Promise(function (resolve) {
+                                        sources[_i].getId().then(function (id) {
+                                            ids[_i] = id;
+                                            resolve(_this);
+                                        });
+                                    });
+                                })(i));
+                            }
+                            Promise.all(promises).then(function () {
+                                return scene.getSceneNumber();
+                            }).then(function (id) {
+                                resolve(id);
+                            });
+                        });
+                    }
+                    else {
+                        ids = sources;
+                        return scene.getSceneNumber();
+                    }
+                }).then(function (id) {
+                    if ((Number(id) - 1) === _this._id && environment_1.Environment.isSourceConfig()) {
+                        internal_1.exec('SourcesListOrderSave', ids.join(','));
+                        resolve(_this);
+                    }
+                    else {
+                        var sceneName;
+                        _this.getName().then(function (name) {
+                            sceneName = name;
+                            return app_1.App.getAsList('presetconfig:' + _this._id);
+                        }).then(function (jsonArr) {
+                            var newOrder = new json_1.JSON();
+                            newOrder.children = [];
+                            newOrder['tag'] = 'placement';
+                            newOrder['name'] = sceneName;
+                            if (Array.isArray(jsonArr)) {
+                                var attrs = ['name', 'cname', 'item'];
+                                for (var i = 0; i < jsonArr.length; i++) {
+                                    for (var a = 0; a < attrs.length; a++) {
+                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                                            .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                                            .replace(/"/g, '&quot;');
+                                    }
+                                    newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                                }
+                                app_1.App.set('presetconfig:' + _this._id, xml_1.XML.parseJSON(newOrder).toString()).then(function () {
+                                    resolve(_this);
+                                });
+                            }
+                            else {
+                                reject(Error('Scene does not have any source'));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    };
+    Scene._maxScenes = 12;
+    Scene._scenePool = [];
+    return Scene;
+})();
+exports.Scene = Scene;
+},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"./environment":4,"./source/audio":7,"./source/camera":8,"./source/flash":10,"./source/game":11,"./source/html":12,"./source/image":18,"./source/media":21,"./source/screen":22,"./source/source":23}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1340,19 +2050,38 @@ var __extends = (this && this.__extends) || function (d, b) {
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
 var iaudio_1 = require('./iaudio');
-var item_2 = require('./item');
+var source_1 = require('./source');
 /**
- * The AudioItem class represents an audio device that has been added
+ * The AudioSource class represents an audio device that has been added
  * to the stage.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ * Implements: {@link #core/IItemAudio Core/IItemAudio}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.AudioSource) {
+ *         // Manipulate your audio device source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `AudioSource`
  *  instance.
  */
-var AudioItem = (function (_super) {
-    __extends(AudioItem, _super);
-    function AudioItem() {
+var AudioSource = (function (_super) {
+    __extends(AudioSource, _super);
+    function AudioSource() {
         _super.apply(this, arguments);
     }
     /**
@@ -1360,7 +2089,7 @@ var AudioItem = (function (_super) {
      *
      * Check if silence detection is on or off
      */
-    AudioItem.prototype.isSilenceDetectionEnabled = function () {
+    AudioSource.prototype.isSilenceDetectionEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:AudioGainEnable', _this._id).then(function (val) {
@@ -1375,7 +2104,7 @@ var AudioItem = (function (_super) {
      *
      * *Chainable.*
      */
-    AudioItem.prototype.setSilenceDetectionEnabled = function (value) {
+    AudioSource.prototype.setSilenceDetectionEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             item_1.Item.set('prop:AudioGainEnable', (value ? '1' : '0'), _this._id)
@@ -1390,7 +2119,7 @@ var AudioItem = (function (_super) {
      * Gets silenced detection threshold.
      * Amplitude less than threshold will be detected as silence.
      */
-    AudioItem.prototype.getSilenceThreshold = function () {
+    AudioSource.prototype.getSilenceThreshold = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:AudioGain', _this._id).then(function (val) {
@@ -1405,7 +2134,7 @@ var AudioItem = (function (_super) {
      *
      * *Chainable.*
      */
-    AudioItem.prototype.setSilenceThreshold = function (value) {
+    AudioSource.prototype.setSilenceThreshold = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (typeof value !== 'number') {
@@ -1427,7 +2156,7 @@ var AudioItem = (function (_super) {
      * Gets silenced detection period in ms time unit.
      * Reaction time before filter removes noice/sound less than threshold
      */
-    AudioItem.prototype.getSilencePeriod = function () {
+    AudioSource.prototype.getSilencePeriod = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:AudioGainLatency', _this._id).then(function (val) {
@@ -1442,7 +2171,7 @@ var AudioItem = (function (_super) {
      *
      * *Chainable.*
      */
-    AudioItem.prototype.setSilencePeriod = function (value) {
+    AudioSource.prototype.setSilencePeriod = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (typeof value !== 'number') {
@@ -1463,7 +2192,7 @@ var AudioItem = (function (_super) {
      *
      * Gets audio delay (1 unit = 100ns)
      */
-    AudioItem.prototype.getAudioOffset = function () {
+    AudioSource.prototype.getAudioOffset = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:AudioDelay', _this._id).then(function (val) {
@@ -1478,7 +2207,7 @@ var AudioItem = (function (_super) {
      *
      * *Chainable.*
      */
-    AudioItem.prototype.setAudioOffset = function (value) {
+    AudioSource.prototype.setAudioOffset = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (typeof value !== 'number') {
@@ -1494,11 +2223,11 @@ var AudioItem = (function (_super) {
             }
         });
     };
-    return AudioItem;
-})(item_2.Item);
-exports.AudioItem = AudioItem;
-mixin_1.applyMixins(item_2.Item, [iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"./iaudio":12,"./item":19}],7:[function(require,module,exports){
+    return AudioSource;
+})(source_1.Source);
+exports.AudioSource = AudioSource;
+mixin_1.applyMixins(source_1.Source, [iaudio_1.ItemAudio]);
+},{"../../internal/item":29,"../../internal/util/mixin":31,"./iaudio":13,"./source":23}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1513,15 +2242,21 @@ var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
 var iaudio_1 = require('./iaudio');
-var item_2 = require('./item');
+var source_1 = require('./source');
 var system_1 = require('../../system/system');
 /**
- * The CameraItem Class provides methods specifically used for camera items and
- * also methods that are shared between Item Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * CameraItem object if there's a camera item on the specified scene.
+ * The CameraSource Class provides methods specifically used for camera sources and
+ * also methods that are shared between Source Classes. The
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * CameraSource object if there's a camera source on the specified scene.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio}
  *
  * ### Basic Usage
  *
@@ -1529,11 +2264,11 @@ var system_1 = require('../../system/system');
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.CameraItem) {
- *         // Manipulate your camera item here
- *         items[i].getDeviceId().then(function(id) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.CameraSource) {
+ *         // Manipulate your camera sources here
+ *         sources[i].getDeviceId().then(function(id) {
  *           // Do something with the id
  *         });
  *       }
@@ -1542,12 +2277,12 @@ var system_1 = require('../../system/system');
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `CameraItem`
+ *  All methods marked as *Chainable* resolve with the original `CameraSource`
  *  instance.
  */
-var CameraItem = (function (_super) {
-    __extends(CameraItem, _super);
-    function CameraItem() {
+var CameraSource = (function (_super) {
+    __extends(CameraSource, _super);
+    function CameraSource() {
         _super.apply(this, arguments);
         this._delayExclusionObject = {
             roxio: "vid_1b80&pid_e0(01|11|12)",
@@ -1560,7 +2295,7 @@ var CameraItem = (function (_super) {
      *
      * Gets the device ID of the underlying camera device.
      */
-    CameraItem.prototype.getDeviceId = function () {
+    CameraSource.prototype.getDeviceId = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:item', _this._id).then(function (val) {
@@ -1573,7 +2308,7 @@ var CameraItem = (function (_super) {
      *
      * Checks if camera feed is paused
      */
-    CameraItem.prototype.isStreamPaused = function () {
+    CameraSource.prototype.isStreamPaused = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:StreamPause', _this._id).then(function (val) {
@@ -1585,14 +2320,15 @@ var CameraItem = (function (_super) {
      * param: (value: boolean)
      *
      * Sets whether camera feed is paused or not
+     *
+     * *Chainable.*
      */
-    CameraItem.prototype.setStreamPaused = function (value) {
+    CameraSource.prototype.setStreamPaused = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             item_1.Item.set('prop:StreamPause', value ? '1' : '0', _this._id).then(function () {
                 return item_1.Item.get('prop:StreamPause', _this._id);
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 if (value === (val === ('1'))) {
                     resolve(_this);
                 }
@@ -1609,7 +2345,7 @@ var CameraItem = (function (_super) {
      * if camera device is reinitializing or not present (value defaults to false)
      *
      */
-    CameraItem.prototype.isHardwareEncoder = function () {
+    CameraSource.prototype.isHardwareEncoder = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:hwencoder', _this._id).then(function (val) {
@@ -1622,15 +2358,14 @@ var CameraItem = (function (_super) {
      *
      * Gets feed capture delay in milliseconds
      */
-    CameraItem.prototype.getDelay = function () {
+    CameraSource.prototype.getDelay = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var streamDelay, audioDelay;
             item_1.Item.get('prop:StreamDelay', _this._id).then(function (val) {
                 streamDelay = Number(val);
                 return item_1.Item.get('prop:AudioDelay', _this._id);
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 audioDelay = Number(val);
                 if (streamDelay < audioDelay) {
                     resolve(streamDelay / 10000);
@@ -1648,7 +2383,7 @@ var CameraItem = (function (_super) {
      *
      * *Chainable.*
      */
-    CameraItem.prototype.setDelay = function (value) {
+    CameraSource.prototype.setDelay = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var isPositive, audioOffset;
@@ -1659,8 +2394,7 @@ var CameraItem = (function (_super) {
                 else {
                     return _this.getValue();
                 }
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 for (var key in _this._delayExclusionObject) {
                     var regex = new RegExp(_this._delayExclusionObject[key].toLowerCase(), 'g');
                     if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
@@ -1669,8 +2403,7 @@ var CameraItem = (function (_super) {
                     }
                 }
                 return _this.getAudioOffset();
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 audioOffset = val;
                 if (audioOffset >= 0) {
                     isPositive = true;
@@ -1680,8 +2413,7 @@ var CameraItem = (function (_super) {
                     isPositive = false;
                     return item_1.Item.set('prop:StreamDelay', String((value + (audioOffset * -1)) * 10000), _this._id);
                 }
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 if (isPositive) {
                     return item_1.Item.set('prop:AudioDelay', String((value + audioOffset) * 10000), _this._id);
                 }
@@ -1698,15 +2430,14 @@ var CameraItem = (function (_super) {
      *
      * Gets audio delay with respect to video feed in milliseconds
      */
-    CameraItem.prototype.getAudioOffset = function () {
+    CameraSource.prototype.getAudioOffset = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var streamDelay, audioDelay;
             item_1.Item.get('prop:StreamDelay', _this._id).then(function (val) {
                 streamDelay = Number(val);
                 return item_1.Item.get('prop:AudioDelay', _this._id);
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 audioDelay = Number(val);
                 resolve((audioDelay - streamDelay) / 10000);
             });
@@ -1719,23 +2450,21 @@ var CameraItem = (function (_super) {
      *
      * *Chainable.*
      */
-    CameraItem.prototype.setAudioOffset = function (value) {
+    CameraSource.prototype.setAudioOffset = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var itemAudio, delay;
             item_1.Item.get('prop:itemaudio', _this._id).then(function (val) {
                 itemAudio = val;
                 return _this.isAudioAvailable();
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 if (val === false && itemAudio === '') {
                     reject(new Error('Device has no audio'));
                 }
                 else {
                     return _this.getDelay();
                 }
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 delay = val;
                 if (value >= 0) {
                     return item_1.Item.set('prop:StreamDelay', String(delay * 10000), _this._id);
@@ -1743,8 +2472,7 @@ var CameraItem = (function (_super) {
                 else {
                     return item_1.Item.set('prop:StreamDelay', String((delay + (value * -1)) * 10000), _this._id);
                 }
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 if (value >= 0) {
                     return item_1.Item.set('prop:AudioDelay', String((delay + value) * 10000), _this._id);
                 }
@@ -1762,7 +2490,7 @@ var CameraItem = (function (_super) {
      * Gets the microphone device tied as an audio input,
      * rejected if no microphone device is used
      */
-    CameraItem.prototype.getAudioInput = function () {
+    CameraSource.prototype.getAudioInput = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var itemAudioId;
@@ -1774,12 +2502,11 @@ var CameraItem = (function (_super) {
                     itemAudioId = val;
                     return system_1.System.getMicrophones();
                 }
-            })
-                .then(function (val) {
+            }).then(function (val) {
                 var micDevice;
                 if (val !== undefined) {
                     for (var i = 0; i < val.length; ++i) {
-                        if (val[i].getDisplayID() === itemAudioId) {
+                        if (val[i].getDisplayId() === itemAudioId) {
                             micDevice = val[i];
                             break;
                         }
@@ -1801,10 +2528,10 @@ var CameraItem = (function (_super) {
      *
      * *Chainable.*
      */
-    CameraItem.prototype.setAudioInput = function (value) {
+    CameraSource.prototype.setAudioInput = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            item_1.Item.set('prop:itemaudio', value.getDisplayID(), _this._id)
+            item_1.Item.set('prop:itemaudio', value.getDisplayId(), _this._id)
                 .then(function (val) {
                 resolve(_this);
             });
@@ -1819,7 +2546,7 @@ var CameraItem = (function (_super) {
      *
      * *Chainable.*
      */
-    CameraItem.prototype.setColorOptionsPinned = function (value) {
+    CameraSource.prototype.setColorOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('prop:cc_pin', value ? '1' : '0', _this._id).then(function () {
@@ -1833,7 +2560,7 @@ var CameraItem = (function (_super) {
      * Checks whether color settings are shared across all instances of
      * this camera device on the stage.
      */
-    CameraItem.prototype.getColorOptionsPinned = function () {
+    CameraSource.prototype.getColorOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:cc_pin', _this._id).then(function (val) {
@@ -1850,7 +2577,7 @@ var CameraItem = (function (_super) {
      *
      * *Chainable.*
      */
-    CameraItem.prototype.setKeyingOptionsPinned = function (value) {
+    CameraSource.prototype.setKeyingOptionsPinned = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('prop:key_pin', value ? '1' : '0', _this._id).then(function () {
@@ -1864,7 +2591,7 @@ var CameraItem = (function (_super) {
      * Checks whether chroma keying settings are shared across all instances of
      * this camera device on the stage.
      */
-    CameraItem.prototype.getKeyingOptionsPinned = function () {
+    CameraSource.prototype.getKeyingOptionsPinned = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:key_pin', _this._id).then(function (val) {
@@ -1872,12 +2599,17 @@ var CameraItem = (function (_super) {
             });
         });
     };
-    return CameraItem;
-})(item_2.Item);
-exports.CameraItem = CameraItem;
-mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    return CameraSource;
+})(source_1.Source);
+exports.CameraSource = CameraSource;
+mixin_1.applyMixins(CameraSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../system/system":39,"./iaudio":12,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":19,"./itransition":20}],8:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/mixin":31,"../../system/system":39,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],9:[function(require,module,exports){
+/**
+ *  A CuePoint represents a configurable object for sources that
+ *  support cue points. Check `getCuePoints()` and other related methods of
+ *  {@link #core/MediaSource#getCuePoints Core/MediaSource}.
+ */
 var CuePoint = (function () {
     function CuePoint(time, action) {
         this._time = time;
@@ -1886,7 +2618,7 @@ var CuePoint = (function () {
     CuePoint.prototype.toString = function () {
         return String(this._time * 10000000) + this._action;
     };
-    /*
+    /**
      * param: number
      *
      * Sets this cue point's time in seconds, with precision up to 100ns.
@@ -1938,7 +2670,7 @@ var CuePoint = (function () {
     return CuePoint;
 })();
 exports.CuePoint = CuePoint;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1953,22 +2685,28 @@ var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
 var iaudio_1 = require('./iaudio');
-var item_2 = require('./item');
+var source_1 = require('./source');
 var rectangle_1 = require('../../util/rectangle');
 /**
- * The FlashItem class represents a flash source item, which is any SWF file
+ * The FlashSource class represents a flash source, which is any SWF file
  * loaded to XSplit Broadcaster.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `FlashItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio}
+ *
+ *  All methods marked as *Chainable* resolve with the original `FlashSource`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
  * may not be properly reflected in the source unless native flash audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-var FlashItem = (function (_super) {
-    __extends(FlashItem, _super);
-    function FlashItem() {
+var FlashSource = (function (_super) {
+    __extends(FlashSource, _super);
+    function FlashSource() {
         _super.apply(this, arguments);
     }
     /**
@@ -1980,7 +2718,7 @@ var FlashItem = (function (_super) {
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    FlashItem.prototype.getCustomResolution = function () {
+    FlashSource.prototype.getCustomResolution = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var customSize;
@@ -1999,7 +2737,7 @@ var FlashItem = (function (_super) {
     /**
      * param: (value: Rectangle)
      * ```
-     * return: Promise<FlashItem>
+     * return: Promise<FlashSource>
      * ```
      *
      * Sets the custom resolution for the source
@@ -2009,7 +2747,7 @@ var FlashItem = (function (_super) {
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    FlashItem.prototype.setCustomResolution = function (value) {
+    FlashSource.prototype.setCustomResolution = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('prop:BrowserSize', value.toDimensionString(), _this._id).then(function () {
@@ -2017,12 +2755,12 @@ var FlashItem = (function (_super) {
             });
         });
     };
-    return FlashItem;
-})(item_2.Item);
-exports.FlashItem = FlashItem;
-mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    return FlashSource;
+})(source_1.Source);
+exports.FlashSource = FlashSource;
+mixin_1.applyMixins(FlashSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"./iaudio":12,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":19,"./itransition":20}],10:[function(require,module,exports){
+},{"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2036,18 +2774,23 @@ var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
-var item_2 = require('./item');
+var source_1 = require('./source');
 var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
-var item_3 = require('./item');
+var source_2 = require('./source');
 var environment_1 = require('../environment');
 /**
- * The GameItem Class provides methods specifically used for game items and
- * also methods that is shared between Item Classes. The
- * {@link #core/Scene Scene} class' getItems method would automatically return a
- * GameItem object if there's a game item on the specified scene.
+ * The GameSource Class provides methods specifically used for game sources and
+ * also methods that is shared between Source Classes. The
+ * {@link #core/Scene Scene} class' getSources method would automatically return a
+ * GameSource object if there's a game source on the specified scene.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition}
  *
  * ### Basic Usage
  *
@@ -2055,23 +2798,23 @@ var environment_1 = require('../environment');
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getItems().then(function(items) {
- *     for (var i in items) {
- *       if (items[i] instanceof XJS.GameItem) {
- *         // Manipulate your game item here
- *         items[i].setOfflineImage(path); // just an example here
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.GameSource) {
+ *         // Manipulate your game source here
+ *         sources[i].setOfflineImage(path); // just an example here
  *       }
  *     }
  *   });
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `GameItem`
+ *  All methods marked as *Chainable* resolve with the original `GameSource`
  *  instance.
  */
-var GameItem = (function (_super) {
-    __extends(GameItem, _super);
-    function GameItem() {
+var GameSource = (function (_super) {
+    __extends(GameSource, _super);
+    function GameSource() {
         _super.apply(this, arguments);
     }
     /**
@@ -2079,7 +2822,7 @@ var GameItem = (function (_super) {
      *
      * Check if Game Special Optimization is currently enabled or not
      */
-    GameItem.prototype.isSpecialOptimizationEnabled = function () {
+    GameSource.prototype.isSpecialOptimizationEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('GameCapSurfSharing', _this._id).then(function (res) {
@@ -2094,7 +2837,7 @@ var GameItem = (function (_super) {
      *
      * *Chainable.*
      */
-    GameItem.prototype.setSpecialOptimizationEnabled = function (value) {
+    GameSource.prototype.setSpecialOptimizationEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('GameCapSurfSharing', (value ? '1' : '0'), _this._id).then(function () {
@@ -2107,7 +2850,7 @@ var GameItem = (function (_super) {
      *
      * Check if Show Mouse is currently enabled or not
      */
-    GameItem.prototype.isShowMouseEnabled = function () {
+    GameSource.prototype.isShowMouseEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('GameCapShowMouse', _this._id).then(function (res) {
@@ -2122,7 +2865,7 @@ var GameItem = (function (_super) {
      *
      * *Chainable.*
      */
-    GameItem.prototype.setShowMouseEnabled = function (value) {
+    GameSource.prototype.setShowMouseEnabled = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('GameCapShowMouse', (value ? '1' : '0'), _this._id).then(function () {
@@ -2137,11 +2880,11 @@ var GameItem = (function (_super) {
      *
      * *Chainable.*
      */
-    GameItem.prototype.setOfflineImage = function (path) {
+    GameSource.prototype.setOfflineImage = function (path) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (_this._type !== item_3.ItemTypes.GAMESOURCE) {
-                reject(Error('Current item should be a game source'));
+            if (_this._type !== source_2.SourceTypes.GAMESOURCE) {
+                reject(Error('Current source should be a game source'));
             }
             else if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Source plugins cannot update offline images of other sources'));
@@ -2171,11 +2914,11 @@ var GameItem = (function (_super) {
      *
      * Get the offline image of a game source
      */
-    GameItem.prototype.getOfflineImage = function () {
+    GameSource.prototype.getOfflineImage = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (_this._type !== item_3.ItemTypes.GAMESOURCE) {
-                reject(Error('Current item should be a game source'));
+            if (_this._type !== source_2.SourceTypes.GAMESOURCE) {
+                reject(Error('Current source should be a game source'));
             }
             else {
                 _this.getValue().then(function () {
@@ -2185,11 +2928,11 @@ var GameItem = (function (_super) {
             }
         });
     };
-    return GameItem;
-})(item_2.Item);
-exports.GameItem = GameItem;
-mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":19,"./itransition":20}],11:[function(require,module,exports){
+    return GameSource;
+})(source_1.Source);
+exports.GameSource = GameSource;
+mixin_1.applyMixins(GameSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2206,23 +2949,47 @@ var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
 var iconfig_1 = require('./iconfig');
 var iaudio_1 = require('./iaudio');
-var item_2 = require('./item');
+var source_1 = require('./source');
 var rectangle_1 = require('../../util/rectangle');
 var environment_1 = require('../environment');
 /**
- * The HTMLItem class represents a web page source. This covers both source
+ * The HtmlSource class represents a web page source. This covers both source
  * plugins and non-plugin URLs.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `HTMLItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.HtmlSource) {
+ *         // Manipulate your HTML source here
+ *         sources[i].enableBrowserTransparency(true);
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `HtmlSource`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
  * may not be properly reflected in the source unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-var HTMLItem = (function (_super) {
-    __extends(HTMLItem, _super);
-    function HTMLItem() {
+var HtmlSource = (function (_super) {
+    __extends(HtmlSource, _super);
+    function HtmlSource() {
         _super.apply(this, arguments);
     }
     /**
@@ -2230,7 +2997,7 @@ var HTMLItem = (function (_super) {
      *
      * Gets the URL of this webpage source.
      */
-    HTMLItem.prototype.getURL = function () {
+    HtmlSource.prototype.getURL = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:item', _this._id).then(function (url) {
@@ -2243,14 +3010,14 @@ var HTMLItem = (function (_super) {
     /**
      * param: (url: string)
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Sets the URL of this webpage source.
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.setURL = function (value) {
+    HtmlSource.prototype.setURL = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             item_1.Item.set('prop:item', value, _this._id).then(function (code) {
@@ -2268,7 +3035,7 @@ var HTMLItem = (function (_super) {
      *
      * Gets the javascript commands to be executed on source upon load
      */
-    HTMLItem.prototype.getBrowserJS = function () {
+    HtmlSource.prototype.getBrowserJS = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:custom', _this._id).then(function (custom) {
@@ -2288,7 +3055,7 @@ var HTMLItem = (function (_super) {
     /**
      * param: (js: string, refresh: boolean = false)
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Sets the javascript commands to be executed on source
@@ -2297,7 +3064,7 @@ var HTMLItem = (function (_super) {
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.setBrowserJS = function (value, refresh) {
+    HtmlSource.prototype.setBrowserJS = function (value, refresh) {
         var _this = this;
         if (refresh === void 0) { refresh = false; }
         return new Promise(function (resolve, reject) {
@@ -2355,7 +3122,7 @@ var HTMLItem = (function (_super) {
      *
      * Gets if BrowserJS is enabled and executed on load
      */
-    HTMLItem.prototype.isBrowserJSEnabled = function () {
+    HtmlSource.prototype.isBrowserJSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:custom', _this._id).then(function (custom) {
@@ -2375,7 +3142,7 @@ var HTMLItem = (function (_super) {
     /**
      * param: (value: boolean)
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Enables or disables execution of the set BrowserJs upon load.
@@ -2384,7 +3151,7 @@ var HTMLItem = (function (_super) {
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.enableBrowserJS = function (value) {
+    HtmlSource.prototype.enableBrowserJS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var customObject = {};
@@ -2451,7 +3218,7 @@ var HTMLItem = (function (_super) {
      *
      * Gets the custom CSS applied to the document upon loading
      */
-    HTMLItem.prototype.getCustomCSS = function () {
+    HtmlSource.prototype.getCustomCSS = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:custom', _this._id).then(function (custom) {
@@ -2471,14 +3238,14 @@ var HTMLItem = (function (_super) {
     /**
      * param: (value: string)
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Sets the custom CSS to be applied to the document upon loading
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.setCustomCSS = function (value) {
+    HtmlSource.prototype.setCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var customObject = {};
@@ -2538,7 +3305,7 @@ var HTMLItem = (function (_super) {
      *
      * Gets if custom CSS is enabled and applied to the document on load
      */
-    HTMLItem.prototype.isCustomCSSEnabled = function () {
+    HtmlSource.prototype.isCustomCSSEnabled = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:custom', _this._id).then(function (custom) {
@@ -2558,14 +3325,14 @@ var HTMLItem = (function (_super) {
     /**
      * param: (value: boolean)
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Enables or disables application of custom CSS to the document
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.enableCustomCSS = function (value) {
+    HtmlSource.prototype.enableCustomCSS = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var customObject = {};
@@ -2637,7 +3404,7 @@ var HTMLItem = (function (_super) {
      *
      * Check if browser is rendered transparent
      */
-    HTMLItem.prototype.isBrowserTransparent = function () {
+    HtmlSource.prototype.isBrowserTransparent = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:BrowserTransparent', _this._id).then(function (isTransparent) {
@@ -2648,14 +3415,14 @@ var HTMLItem = (function (_super) {
     /**
      * param: Promise<boolean>
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Enable or disabled transparency of CEF browser
      *
      * *Chainable.*
      */
-    HTMLItem.prototype.enableBrowserTransparency = function (value) {
+    HtmlSource.prototype.enableBrowserTransparency = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('prop:BrowserTransparent', (value ? '1' : '0'), _this._id).then(function () {
@@ -2672,7 +3439,7 @@ var HTMLItem = (function (_super) {
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    HTMLItem.prototype.getBrowserCustomSize = function () {
+    HtmlSource.prototype.getBrowserCustomSize = function () {
         var _this = this;
         return new Promise(function (resolve) {
             var customSize;
@@ -2691,7 +3458,7 @@ var HTMLItem = (function (_super) {
     /**
      * param: Promise<Rectangle>
      * ```
-     * return: Promise<HTMLItem>
+     * return: Promise<HtmlSource>
      * ```
      *
      * Sets the custom browser window size for the source
@@ -2701,7 +3468,7 @@ var HTMLItem = (function (_super) {
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    HTMLItem.prototype.setBrowserCustomSize = function (value) {
+    HtmlSource.prototype.setBrowserCustomSize = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             // Set the correct width and height based on the DPI settings
@@ -2713,12 +3480,12 @@ var HTMLItem = (function (_super) {
             });
         });
     };
-    return HTMLItem;
-})(item_2.Item);
-exports.HTMLItem = HTMLItem;
-mixin_1.applyMixins(HTMLItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    return HtmlSource;
+})(source_1.Source);
+exports.HtmlSource = HtmlSource;
+mixin_1.applyMixins(HtmlSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.ItemConfigurable, iaudio_1.ItemAudio]);
-},{"../../internal/internal":28,"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"../environment":4,"./iaudio":12,"./ichroma":13,"./icolor":14,"./iconfig":15,"./ilayout":16,"./item":19,"./itransition":20}],12:[function(require,module,exports){
+},{"../../internal/internal":28,"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":45,"../environment":4,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":17,"./itransition":20,"./source":23}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var ItemAudio = (function () {
@@ -2784,16 +3551,16 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":29}],13:[function(require,module,exports){
+},{"../../internal/item":29}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
 /**
- *  Used by items that implement the Chroma interface.
+ *  Used by sources that implement the Chroma interface.
  *  Check `getKeyingType()`/`setKeyingType()` method of
- *  {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  {@link #core/CameraSource#getKeyingType Core/CameraSource},
+ *  {@link #core/GameSource#getKeyingType Core/GameSource}, and
+ *  {@link #core/HtmlSource#getKeyingType Core/HtmlSource}.
  */
 (function (KeyingType) {
     KeyingType[KeyingType["LEGACY"] = 0] = "LEGACY";
@@ -2802,13 +3569,13 @@ var color_1 = require('../../util/color');
 })(exports.KeyingType || (exports.KeyingType = {}));
 var KeyingType = exports.KeyingType;
 /**
- *  Used by items that implement the Chroma interface, when using RGB mode
+ *  Used by sources that implement the Chroma interface, when using RGB mode
  *  Chroma Key.
  *
  *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor()` method
- *  of {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  of {@link #core/CameraSource#getChromaRGBKeyPrimaryColor Core/CameraSource},
+ *  {@link #core/GameSource#getChromaRGBKeyPrimaryColor Core/GameSource}, and
+ *  {@link #core/HtmlSource#getChromaRGBKeyPrimaryColor Core/HtmlSource}.
  */
 (function (ChromaPrimaryColors) {
     ChromaPrimaryColors[ChromaPrimaryColors["RED"] = 0] = "RED";
@@ -2817,12 +3584,12 @@ var KeyingType = exports.KeyingType;
 })(exports.ChromaPrimaryColors || (exports.ChromaPrimaryColors = {}));
 var ChromaPrimaryColors = exports.ChromaPrimaryColors;
 /**
- *  Used by items that implement the Chroma interface.
+ *  Used by sources that implement the Chroma interface.
  *
  *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel()` method
- *  of {@link #core/CameraItem Core/CameraItem},
- *  {@link #core/GameItem Core/GameItem}, and
- *  {@link #core/HTMLItem Core/HTMLItem}.
+ *  of {@link #core/CameraSource#getChromaAntiAliasLevel Core/CameraSource},
+ *  {@link #core/GameSource#getChromaAntiAliasLevel Core/GameSource}, and
+ *  {@link #core/HtmlSource#getChromaAntiAliasLevel Core/HtmlSource}.
  */
 (function (ChromaAntiAliasLevel) {
     ChromaAntiAliasLevel[ChromaAntiAliasLevel["NONE"] = 0] = "NONE";
@@ -3168,7 +3935,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":29,"../../util/color":41}],14:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/color":41}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -3301,7 +4068,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":29,"../../util/color":41}],15:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/color":41}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -3354,7 +4121,7 @@ var ItemConfigurable = (function () {
                 }
             }
             else {
-                reject(Error('Extensions and source configuration windows are ' +
+                reject(Error('Extensions and source properties windows are ' +
                     'not allowed to directly save configuration objects. ' +
                     'Call requestSaveConfig() instead.'));
             }
@@ -3385,7 +4152,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":26,"../../internal/internal":28,"../../internal/item":29,"../environment":4}],16:[function(require,module,exports){
+},{"../../internal/global":26,"../../internal/internal":28,"../../internal/item":29,"../environment":4}],17:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -3525,7 +4292,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":29,"../../util/rectangle":45}],17:[function(require,module,exports){
+},{"../../internal/item":29,"../../util/rectangle":45}],18:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3538,28 +4305,38 @@ var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
-var item_1 = require('./item');
+var source_1 = require('./source');
 /**
- * The ImageItem class represents an image source (includes GIF files).
+ * The ImageSource class represents an image source (includes GIF files).
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `ImageItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition}
+ *
+ *  All methods marked as *Chainable* resolve with the original `ImageSource`
  *  instance.
  */
-var ImageItem = (function (_super) {
-    __extends(ImageItem, _super);
-    function ImageItem() {
+var ImageSource = (function (_super) {
+    __extends(ImageSource, _super);
+    function ImageSource() {
         _super.apply(this, arguments);
     }
-    return ImageItem;
-})(item_1.Item);
-exports.ImageItem = ImageItem;
-mixin_1.applyMixins(ImageItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":31,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":19,"./itransition":20}],18:[function(require,module,exports){
+    return ImageSource;
+})(source_1.Source);
+exports.ImageSource = ImageSource;
+mixin_1.applyMixins(ImageSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
+},{"../../internal/util/mixin":31,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],19:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var cuepoint_1 = require('./cuepoint');
+/**
+ *  Used by sources that implement the Playback interface.
+ *  Check `getActionAfterPlayback()`/`setActionAfterPlayback()` method of
+ *  {@link #core/MediaSource#getActionAfterPlayback Core/MediaSource}.
+ */
 (function (ActionAfterPlayback) {
     ActionAfterPlayback[ActionAfterPlayback["NONE"] = 0] = "NONE";
     ActionAfterPlayback[ActionAfterPlayback["REWIND"] = 1] = "REWIND";
@@ -3800,469 +4577,7 @@ var ItemPlayback = (function () {
     return ItemPlayback;
 })();
 exports.ItemPlayback = ItemPlayback;
-},{"../../internal/item":29,"./cuepoint":8}],19:[function(require,module,exports){
-/// <reference path="../../../defs/es6-promise.d.ts" />
-var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
-var environment_1 = require('../environment');
-var json_1 = require('../../internal/util/json');
-var xml_1 = require('../../internal/util/xml');
-var scene_1 = require('../scene');
-var ilayout_1 = require('./ilayout');
-(function (ItemTypes) {
-    ItemTypes[ItemTypes["UNDEFINED"] = 0] = "UNDEFINED";
-    ItemTypes[ItemTypes["FILE"] = 1] = "FILE";
-    ItemTypes[ItemTypes["LIVE"] = 2] = "LIVE";
-    ItemTypes[ItemTypes["TEXT"] = 3] = "TEXT";
-    ItemTypes[ItemTypes["BITMAP"] = 4] = "BITMAP";
-    ItemTypes[ItemTypes["SCREEN"] = 5] = "SCREEN";
-    ItemTypes[ItemTypes["FLASHFILE"] = 6] = "FLASHFILE";
-    ItemTypes[ItemTypes["GAMESOURCE"] = 7] = "GAMESOURCE";
-    ItemTypes[ItemTypes["HTML"] = 8] = "HTML";
-})(exports.ItemTypes || (exports.ItemTypes = {}));
-var ItemTypes = exports.ItemTypes;
-/**
- * An `Item` represents an object that is used as a source on the stage.
- * Some possible sources are games, microphones, or a webpage.
- *
- * ### Basic Usage
- *
- * ```javascript
- * var xjs = require('xjs');
- * var Scene = xjs.Scene.getById(0);
- *
- * Scene.getItems().then(function(items) {
- *   if (items.length === 0) return;
- *
- *   // There's a valid item, let's use that
- *   var item = items[items.length - 1];
- *   return item.setCustomName('ItemTesting');
- * }).then(function(item) {
- *   // Do something else here
- * });
- * ```
- * All methods marked as *Chainable* resolve with the original `Item` instance.
- * This allows you to perform sequential operations correctly:
- * ```javascript
- * var xjs = require('xjs');
- * var Item = xjs.Item;
- *
- * // a source that sets its own properties on load
- * xjs.ready()
- *    .then(Item.getCurrentSource)
- *    .then(function(item) {
- *     return item.setCustomName('MyCustomName');
- *  }).then(function(item) {
- *     return item.setKeepLoaded(true);
- *  }).then(function(item) {
- *     // set more properties here
- *  });
- * ```
- */
-var Item = (function () {
-    function Item(props) {
-        props = props ? props : {};
-        this._name = props['name'];
-        this._cname = props['cname'];
-        this._id = props['id'];
-        this._sceneID = props['sceneID'];
-        this._value = props['value'];
-        this._keepLoaded = props['keeploaded'];
-        this._type = Number(props['type']);
-        this._xmlparams = props;
-    }
-    /**
-     * param: (value: string)
-     * ```
-     * return: Promise<Item>
-     * ```
-     *
-     * Sets the name of the item.
-     *
-     * *Chainable.*
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.setName('newNameHere').then(function(item) {
-     *   // Promise resolves with same Item instance when name has been set
-     *   return item.getName();
-     * }).then(function(name) {
-     *   // 'name' should be the updated value by now.
-     * });
-     * ```
-     */
-    Item.prototype.setName = function (value) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            _this._name = value;
-            item_1.Item.set('prop:name', _this._name, _this._id).then(function () {
-                resolve(_this);
-            });
-        });
-    };
-    /**
-     * return: Promise<string>
-     *
-     * Gets the name of the item.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getName().then(function(name) {
-     *   // Do something with the name
-     * });
-     * ```
-     */
-    Item.prototype.getName = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.get('prop:name', _this._id).then(function (val) {
-                _this._name = val;
-                resolve(val);
-            });
-        });
-    };
-    /**
-     * param: (value: string)
-     * ```
-     * return: Promise<Item>
-     * ```
-     *
-     * Sets the custom name of the item.
-     *
-     * The main difference between `setName` and `setCustomName` is that the CustomName
-     * can be edited by users using XBC through the bottom panel. `setName` on
-     * the other hand would update the item's internal name property.
-     *
-     * *Chainable.*
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.setCustomName('newNameHere').then(function(item) {
-     *   // Promise resolves with same Item instance when custom name has been set
-     *   return item.getCustomName();
-     * }).then(function(name) {
-     *   // 'name' should be the updated value by now.
-     * });
-     * ```
-     */
-    Item.prototype.setCustomName = function (value) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            _this._cname = value;
-            item_1.Item.set('prop:cname', _this._cname, _this._id).then(function () {
-                resolve(_this);
-            });
-        });
-    };
-    /**
-     * return: Promise<string>
-     *
-     * Gets the custom name of the item.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getCustomName().then(function(name) {
-     *   // Do something with the name
-     * });
-     * ```
-     */
-    Item.prototype.getCustomName = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.get('prop:cname', _this._id).then(function (val) {
-                _this._cname = val;
-                resolve(val);
-            });
-        });
-    };
-    /**
-     * return: Promise<string|XML>
-     *
-     * Gets the custom name of the item.
-     *
-     * This method can resolve with an XML object, which is an object generated by
-     * the framework. Call `toString()` to transform into an XML String. (See the
-     * documentation for `setValue` for more details.)
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getCustomName().then(function(name) {
-     *   // Do something with the name
-     * });
-     * ```
-     */
-    Item.prototype.getValue = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.get('prop:item', _this._id).then(function (val) {
-                val = (val === 'null') ? '' : val;
-                if (val === '') {
-                    _this._value = '';
-                    resolve(val);
-                }
-                else {
-                    try {
-                        _this._value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
-                        resolve(_this._value);
-                    }
-                    catch (e) {
-                        // value is not valid XML (it is a string instead)
-                        _this._value = val;
-                        resolve(val);
-                    }
-                }
-            });
-        });
-    };
-    /**
-     * param: (value: string)
-     * ```
-     * return: Promise<Item>
-     * ```
-     *
-     * Set the video item's main definition.
-     *
-     * *Chainable.*
-     *
-     * **WARNING:**
-     * Please do note that using this method COULD break the current item, possibly modifying
-     * its type IF you set an invalid string for the current item.
-     *
-     * #### Possible values by item type
-     * - FILE - path/URL
-     * - LIVE - Device ID
-     * - BITMAP - path
-     * - SCREEN - XML string
-     * - FLASHFILE - path
-     * - GAMESOURCE - XML string
-     * - HTML - path/URL or html:<plugin>
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
-     *   .then(function(item) {
-     *   // Promise resolves with same Item instance
-     * });
-     * ```
-     */
-    Item.prototype.setValue = function (value) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            var val = (typeof value === 'string') ?
-                value : value.toString();
-            if (typeof value !== 'string') {
-                _this._value = json_1.JSON.parse(val);
-            }
-            else {
-                _this._value = val;
-            }
-            item_1.Item.set('prop:item', val, _this._id).then(function () {
-                resolve(_this);
-            });
-        });
-    };
-    /**
-     * return: Promise<boolean>
-     *
-     * Check if item is kept loaded in memory
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getKeepLoaded().then(function(isLoaded) {
-     *   // The rest of your code here
-     * });
-     * ```
-     */
-    Item.prototype.getKeepLoaded = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.get('prop:keeploaded', _this._id).then(function (val) {
-                _this._keepLoaded = (val === '1');
-                resolve(_this._keepLoaded);
-            });
-        });
-    };
-    /**
-     * param: (value: boolean)
-     * ```
-     * return: Promise<Item>
-     * ```
-     *
-     * Set Keep loaded option to ON or OFF
-     *
-     * *Chainable.*
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.setKeepLoaded(true).then(function(item) {
-     *   // Promise resolves with same Item instance
-     * });
-     * ```
-     */
-    Item.prototype.setKeepLoaded = function (value) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            _this._keepLoaded = value;
-            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), _this._id)
-                .then(function () {
-                resolve(_this);
-            });
-        });
-    };
-    /**
-     * return: Promise<ItemTypes>
-     *
-     * Get the type of the item
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getType().then(function(type) {
-     *   // The rest of your code here
-     * });
-     * ```
-     */
-    Item.prototype.getType = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.get('prop:type', _this._id).then(function (val) {
-                _this._type = ItemTypes[ItemTypes[Number(val)]];
-                resolve(_this._type);
-            });
-        });
-    };
-    /**
-     * return: Promise<string>
-     *
-     * Get the ID of the item
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getID().then(function(id) {
-     *   // The rest of your code here
-     * });
-     * ```
-     */
-    Item.prototype.getId = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            resolve(_this._id);
-        });
-    };
-    /**
-     * return: Promise<number>
-     *
-     * Get (1-indexed) Scene ID where the item is loaded
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * item.getSceneID().then(function(id) {
-     *   // The rest of your code here
-     * });
-     * ```
-     */
-    Item.prototype.getSceneID = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            resolve(Number(_this._sceneID) + 1);
-        });
-    };
-    /**
-     * return: XML
-     *
-     * Convert the Item object to an XML object. Use `toString()` to
-     * get the string version of the returned object.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var xml = item.toXML();
-     * ```
-     */
-    Item.prototype.toXML = function () {
-        var item = new json_1.JSON();
-        item['tag'] = 'item';
-        item['name'] = this._name;
-        item['item'] = this._value;
-        item['type'] = this._type;
-        item['selfclosing'] = true;
-        if (this._cname) {
-            item['cname'] = this._cname;
-        }
-        return xml_1.XML.parseJSON(item);
-    };
-    /**
-     * return: Promise<Item>
-     *
-     * Get the current source (when function is called by sources), or the source
-     * that was right-clicked to open the config window (when function is called
-     * from the config window)
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * xjs.Item.getCurrentSource().then(function(item) {
-     *   // This will fetch the current item (the plugin)
-     * }).catch(function(err) {
-     *   // Handle the error here. Errors would only occur
-     *   // if we try to execute this method on Extension plugins
-     * });
-     * ```
-     */
-    Item.getCurrentSource = function () {
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isExtension()) {
-                reject(Error('Extensions do not have sources ' +
-                    'associated with them.'));
-            }
-            else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
-                scene_1.Scene.searchItemsById(item_1.Item.getBaseID()).then(function (item) {
-                    resolve(item); // this should always exist
-                });
-            }
-        });
-    };
-    /**
-     *  return: Promise<Item>
-     *
-     *  Refreshes the specified source.
-     *
-     *  #### Usage
-     *  ```javascript
-     *  // Sample 1: let source refresh itself
-     *  xjs.Item.getCurrentSource().then(function(source) {
-     *    source.refresh(); // execution of JavaScript halts because of refresh
-     *  });
-     *
-     *  // Sample 2: refresh some other source 'otherSource'
-     *  otherSource.refresh().then(function(source) {
-     *    // further manipulation of other source goes here
-     *  });
-     *  ```
-     */
-    Item.prototype.refresh = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.set('refresh', '', _this._id).then(function () {
-                resolve(_this);
-            });
-        });
-    };
-    return Item;
-})();
-exports.Item = Item;
-mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":23,"./ilayout":16}],20:[function(require,module,exports){
+},{"../../internal/item":29,"./cuepoint":9}],20:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -4345,26 +4660,33 @@ var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
 var iplayback_1 = require('./iplayback');
 var iaudio_1 = require('./iaudio');
-var item_1 = require('./item');
+var source_1 = require('./source');
 /**
- * The MediaItem class represents a playable media file.
+ * The MediaSource class represents a playable media file.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `MediaItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemPlayback Core/IItemPlayback}
+ *
+ *  All methods marked as *Chainable* resolve with the original `MediaSource`
  *  instance.
  */
-var MediaItem = (function (_super) {
-    __extends(MediaItem, _super);
-    function MediaItem() {
+var MediaSource = (function (_super) {
+    __extends(MediaSource, _super);
+    function MediaSource() {
         _super.apply(this, arguments);
     }
-    return MediaItem;
-})(item_1.Item);
-exports.MediaItem = MediaItem;
-mixin_1.applyMixins(MediaItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
+    return MediaSource;
+})(source_1.Source);
+exports.MediaSource = MediaSource;
+mixin_1.applyMixins(MediaSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.ItemPlayback, iaudio_1.ItemAudio]);
-},{"../../internal/util/mixin":31,"./iaudio":12,"./ichroma":13,"./icolor":14,"./ilayout":16,"./iplayback":18,"./item":19,"./itransition":20}],22:[function(require,module,exports){
+},{"../../internal/util/mixin":31,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./iplayback":19,"./itransition":20,"./source":23}],22:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4378,32 +4700,37 @@ var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
 var itransition_1 = require('./itransition');
-var item_2 = require('./item');
+var source_1 = require('./source');
 var rectangle_1 = require('../../util/rectangle');
 var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
 /**
- * The ScreenItem class represents a screen capture item.
+ * The ScreenSource class represents a screen capture source.
  *
- * Inherits from: {@link #core/Item Core/Item}
+ * Inherits from: {@link #core/Source Core/Source}
  *
- *  All methods marked as *Chainable* resolve with the original `ScreenItem`
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition}
+ *
+ *  All methods marked as *Chainable* resolve with the original `ScreenSource`
  *  instance.
  */
-var ScreenItem = (function (_super) {
-    __extends(ScreenItem, _super);
-    function ScreenItem() {
+var ScreenSource = (function (_super) {
+    __extends(ScreenSource, _super);
+    function ScreenSource() {
         _super.apply(this, arguments);
     }
     /**
      * return: Promise<Rectangle>
      *
-     * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
+     * Gets the Capture Area of the Screen Capture Source. Returns a Rectangle
      * object.
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    ScreenItem.prototype.getCaptureArea = function () {
+    ScreenSource.prototype.getCaptureArea = function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
@@ -4420,16 +4747,16 @@ var ScreenItem = (function (_super) {
     /**
      * param: Promise<Rectangle>
      * ```
-     * return: Promise<ScreenItem>
+     * return: Promise<ScreenSource>
      * ```
      *
-     * Sets the Window Capture Area of the Screen Capture Item.
+     * Sets the Window Capture Area of the Screen Capture Source.
      *
      * *Chainable.*
      *
      * See also: {@link #util/Rectangle Util/Rectangle}
      */
-    ScreenItem.prototype.setCaptureArea = function (dimension) {
+    ScreenSource.prototype.setCaptureArea = function (dimension) {
         var _this = this;
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
@@ -4479,10 +4806,10 @@ var ScreenItem = (function (_super) {
     /**
      * return: Promise<boolean>
      *
-     * Checks if the Screen Capture Item only captures the
+     * Checks if the Screen Capture Source only captures the
      * Client area (does not capture the title bar, menu bar, window border, etc.)
      */
-    ScreenItem.prototype.isClientArea = function () {
+    ScreenSource.prototype.isClientArea = function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
@@ -4499,13 +4826,13 @@ var ScreenItem = (function (_super) {
     /**
      * param: Promise<boolean>
      * ```
-     * return: Promise<ScreenItem>
+     * return: Promise<ScreenSource>
      * ```
      *
      * Set the Screen Capture to capture the Client area only or include
      * the titlebar, menu bar, window border, etc.
      */
-    ScreenItem.prototype.setClientArea = function (value) {
+    ScreenSource.prototype.setClientArea = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             _this.getValue().then(function (val) {
@@ -4534,10 +4861,10 @@ var ScreenItem = (function (_super) {
     /**
      * return: Promise<boolean>
      *
-     * Checks if the Screen Capture Item captures a window based on
+     * Checks if the Screen Capture Source captures a window based on
      * the window's title.
      */
-    ScreenItem.prototype.isStickToTitle = function () {
+    ScreenSource.prototype.isStickToTitle = function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:ScrCapTrackWindowTitle', _this._id).then(function (val) {
@@ -4548,14 +4875,14 @@ var ScreenItem = (function (_super) {
     /**
      * param: Promise<boolean>
      * ```
-     * return: Promise<ScreenItem>
+     * return: Promise<ScreenSource>
      * ```
      *
      * Set the Screen Capture to capture the window based on the window title.
      * Useful when capturing programs with multiple tabs, for you to only
      * capture a particular tab.
      */
-    ScreenItem.prototype.setStickToTitle = function (value) {
+    ScreenSource.prototype.setStickToTitle = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', _this._id)
@@ -4564,710 +4891,476 @@ var ScreenItem = (function (_super) {
             });
         });
     };
-    return ScreenItem;
-})(item_2.Item);
-exports.ScreenItem = ScreenItem;
-mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../../util/rectangle":45,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":19,"./itransition":20}],23:[function(require,module,exports){
-/// <reference path="../../defs/es6-promise.d.ts" />
-var json_1 = require('../internal/util/json');
-var xml_1 = require('../internal/util/xml');
-var app_1 = require('../internal/app');
-var internal_1 = require('../internal/internal');
-var environment_1 = require('./environment');
-var item_1 = require('./item/item');
-var game_1 = require('./item/game');
-var camera_1 = require('./item/camera');
-var audio_1 = require('./item/audio');
-var html_1 = require('./item/html');
-var flash_1 = require('./item/flash');
-var screen_1 = require('./item/screen');
-var image_1 = require('./item/image');
-var media_1 = require('./item/media');
-var Scene = (function () {
-    function Scene(sceneNum) {
-        this._id = sceneNum - 1;
+    return ScreenSource;
+})(source_1.Source);
+exports.ScreenSource = ScreenSource;
+mixin_1.applyMixins(ScreenSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../../util/rectangle":45,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],23:[function(require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var mixin_1 = require('../../internal/util/mixin');
+var item_1 = require('../../internal/item');
+var environment_1 = require('../environment');
+var json_1 = require('../../internal/util/json');
+var xml_1 = require('../../internal/util/xml');
+var scene_1 = require('../scene');
+var ilayout_1 = require('./ilayout');
+(function (SourceTypes) {
+    SourceTypes[SourceTypes["UNDEFINED"] = 0] = "UNDEFINED";
+    SourceTypes[SourceTypes["FILE"] = 1] = "FILE";
+    SourceTypes[SourceTypes["LIVE"] = 2] = "LIVE";
+    SourceTypes[SourceTypes["TEXT"] = 3] = "TEXT";
+    SourceTypes[SourceTypes["BITMAP"] = 4] = "BITMAP";
+    SourceTypes[SourceTypes["SCREEN"] = 5] = "SCREEN";
+    SourceTypes[SourceTypes["FLASHFILE"] = 6] = "FLASHFILE";
+    SourceTypes[SourceTypes["GAMESOURCE"] = 7] = "GAMESOURCE";
+    SourceTypes[SourceTypes["HTML"] = 8] = "HTML";
+})(exports.SourceTypes || (exports.SourceTypes = {}));
+var SourceTypes = exports.SourceTypes;
+/**
+ * A `Source` represents an object that is used as a source on the stage.
+ * Some possible sources are games, microphones, or a webpage.
+ *
+ * Implements: {@link #core/IItemLayout Core/IItemLayout}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Scene = xjs.Scene.getById(0);
+ *
+ * Scene.getSources().then(function(sources) {
+ *   if (sources.length === 0) return;
+ *
+ *   // There's a valid source, let's use that
+ *   var source = sources[sources.length - 1];
+ *   return source.setCustomName('SourceTesting');
+ * }).then(function(source) {
+ *   // Do something else here
+ * });
+ * ```
+ * All methods marked as *Chainable* resolve with the original `Source` instance.
+ * This allows you to perform sequential operations correctly:
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Source = xjs.Source;
+ *
+ * // a source that sets its own properties on load
+ * xjs.ready()
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source) {
+ *     return source.setCustomName('MyCustomName');
+ *  }).then(function(source) {
+ *     return source.setKeepLoaded(true);
+ *  }).then(function(source) {
+ *     // set more properties here
+ *  });
+ * ```
+ */
+var Source = (function () {
+    function Source(props) {
+        props = props ? props : {};
+        this._name = props['name'];
+        this._cname = props['cname'];
+        this._id = props['id'];
+        this._sceneId = props['sceneId'];
+        this._value = props['value'];
+        this._keepLoaded = props['keeploaded'];
+        this._type = Number(props['type']);
+        this._xmlparams = props;
     }
-    ;
-    Scene._initializeScenePool = function () {
-        if (Scene._scenePool.length === 0) {
-            for (var i = 0; i < Scene._maxScenes; i++) {
-                Scene._scenePool[i] = new Scene(i + 1);
-            }
-        }
-    };
     /**
-     * return: Scene
-     *
-     * Get a specific scene object given the scene number.
-     *
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var scene1 = Scene.getById(1);
+     * param: (value: string)
      * ```
-     */
-    Scene.getById = function (sceneNum) {
-        // initialize if necessary
-        Scene._initializeScenePool();
-        return Scene._scenePool[sceneNum - 1];
-    };
-    /**
-     * return: Promise<Scene[]>
+     * return: Promise<Source>
+     * ```
      *
-     * Asynchronous functon to get a list of scene objects with a specific name.
+     * Sets the name of the source.
      *
+     * *Chainable.*
      *
      * #### Usage
      *
      * ```javascript
-     * var scenes = Scene.getByName('Game').then(function(scenes) {
-     *    // manipulate scenes
+     * source.setName('newNameHere').then(function(source) {
+     *   // Promise resolves with same Source instance when name has been set
+     *   return source.getName();
+     * }).then(function(name) {
+     *   // 'name' should be the updated value by now.
      * });
      * ```
      */
-    Scene.getByName = function (sceneName) {
-        // initialize if necessary
-        Scene._initializeScenePool();
-        var namePromise = Promise.all(Scene._scenePool.map(function (scene, index) {
-            return app_1.App.get('presetname:' + index).then(function (name) {
-                if (sceneName === name) {
-                    return Scene._scenePool[index];
-                }
-                else {
-                    return null;
-                }
-            });
-        }));
-        return new Promise(function (resolve) {
-            namePromise.then(function (results) {
-                var returnArray = [];
-                for (var j = 0; j < results.length; ++j) {
-                    if (results[j] !== null) {
-                        returnArray.push(results[j]);
-                    }
-                }
-                ;
-                resolve(returnArray);
-            });
-        });
-    };
-    /**
-     * return: Promise<Scene>
-     *
-     * Get the currently active scene.
-     *
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var myScene = Scene.getActiveScene();
-     * ```
-     */
-    Scene.getActiveScene = function () {
-        return new Promise(function (resolve) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                app_1.App.get('presetconfig:-1').then(function (sceneString) {
-                    var curScene = json_1.JSON.parse(sceneString);
-                    if (curScene.children.length > 0) {
-                        resolve(Scene.searchScenesByItemId(curScene.children[0]['id']));
-                    }
-                    else {
-                        throw new Error('presetconfig cannot fetch current scene');
-                    }
-                });
-            }
-            else {
-                app_1.App.get('preset:0').then(function (id) {
-                    resolve(Scene.getById(Number(id) + 1));
-                });
-            }
-        });
-    };
-    /**
-     * param: scene<number|Scene>
-     * ```
-     * return: Promise<boolean>
-     * ```
-     *
-     * Change active scene. Does not work on source plugins.
-     */
-    Scene.setActiveScene = function (scene) {
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Not supported on source plugins'));
-            }
-            else {
-                if (scene instanceof Scene) {
-                    scene.getId().then(function (id) {
-                        app_1.App.set('preset', String(id)).then(function (res) {
-                            resolve(res);
-                        });
-                    });
-                }
-                else if (typeof scene === 'number') {
-                    if (scene < 1 || scene > 12) {
-                        reject(Error('Invalid parameters. Valid range is 1 to 12.'));
-                    }
-                    else {
-                        app_1.App.set('preset', String(scene - 1)).then(function (res) {
-                            resolve(res);
-                        });
-                    }
-                }
-                else {
-                    reject(Error('Invalid parameters'));
-                }
-            }
-        });
-    };
-    /**
-     * return: Promise<Item>
-     *
-     * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
-     *
-     * See also: {@link #core/Item Core/Item}
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
-     *   // item is either an Item or null
-     * });
-     * ```
-     *
-     */
-    Scene.searchItemsById = function (id) {
-        var isID = /^{[A-F0-9\-]*}$/i.test(id);
-        if (!isID) {
-            throw new Error('Not a valid ID format for items');
-        }
-        else {
-            Scene._initializeScenePool();
-            return new Promise(function (resolve) {
-                var match = null;
-                var found = false;
-                Scene._scenePool.forEach(function (scene, idx, arr) {
-                    if (match === null) {
-                        scene.getItems().then((function (items) {
-                            found = items.some(function (item) {
-                                if (item['_id'] === id.toUpperCase()) {
-                                    match = item;
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            });
-                            if (found ||
-                                Number(this) === arr.length - 1) {
-                                resolve(match);
-                            }
-                        }).bind(idx));
-                    }
-                });
-            });
-        }
-    };
-    ;
-    /**
-     * return: Promise<Scene>
-     *
-     * Searches all scenes for one that contains the given item ID.
-     *
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
-     *   // scene contains the item
-     * });
-     * ```
-     *
-     */
-    Scene.searchScenesByItemId = function (id) {
-        var isID = /^{[A-F0-9-]*}$/i.test(id);
-        if (!isID) {
-            throw new Error('Not a valid ID format for items');
-        }
-        else {
-            Scene._initializeScenePool();
-            return new Promise(function (resolve) {
-                var match = null;
-                var found = false;
-                Scene._scenePool.forEach(function (scene, idx, arr) {
-                    if (match === null) {
-                        scene.getItems().then(function (items) {
-                            found = items.some(function (item) {
-                                if (item['_id'] === id.toUpperCase()) {
-                                    match = Scene.getById(idx + 1);
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            });
-                            if (found ||
-                                idx === arr.length - 1) {
-                                resolve(match);
-                            }
-                        });
-                    }
-                });
-            });
-        }
-    };
-    ;
-    /**
-     * return: Promise<Item[]>
-     *
-     * Searches all scenes for an item by name substring. This function compares
-     * against custom name first (recommended) before falling back to the name
-     * property of the source.
-     *
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.searchItemsByName('camera').then(function(items) {
-     *   // do something to each item in items array
-     * });
-     * ```
-     *
-     */
-    Scene.searchItemsByName = function (param) {
+    Source.prototype.setName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            _this.filterItems(function (item, filterResolve) {
-                item.getCustomName().then(function (cname) {
-                    if (cname.match(param)) {
-                        filterResolve(true);
-                    }
-                    else {
-                        return item.getName();
-                    }
-                }).then(function (name) {
-                    if (name !== undefined) {
-                        if (name.match(param)) {
-                            filterResolve(true);
-                        }
-                        else {
-                            return item.getValue();
-                        }
-                    }
-                }).then(function (value) {
-                    if (value !== undefined) {
-                        if (value.toString().match(param)) {
-                            filterResolve(true);
-                        }
-                        else {
-                            filterResolve(false);
-                        }
-                    }
-                });
-            }).then(function (items) {
-                resolve(items);
-            });
-        });
-    };
-    ;
-    /**
-     * param: function(item, resolve)
-     * ```
-     * return: Promise<Item[]>
-     * ```
-     *
-     * Searches all scenes for items that satisfies the provided testing function.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.filterItems(function(item, resolve) {
-     *   // We'll only fetch Flash Items by resolving 'true' if the item is an
-     *   // instance of FlashItem
-     *   resolve((item instanceof FlashItem));
-     * }).then(function(items) {
-     *   // items would either be an empty array if no Flash items was found, or
-     *   // an array of FlashItem objects
-     * });
-     * ```
-     */
-    Scene.filterItems = function (func) {
-        Scene._initializeScenePool();
-        var matches = [];
-        return new Promise(function (resolve, reject) {
-            if (typeof func === 'function') {
-                return Promise.all(Scene._scenePool.map(function (scene) {
-                    return new Promise(function (resolveScene) {
-                        scene.getItems().then(function (items) {
-                            if (items.length === 0) {
-                                resolveScene();
-                            }
-                            else {
-                                return Promise.all(items.map(function (item) {
-                                    return new Promise(function (resolveItem) {
-                                        func(item, function (checker) {
-                                            if (checker) {
-                                                matches.push(item);
-                                            }
-                                            resolveItem();
-                                        });
-                                    });
-                                })).then(function () {
-                                    resolveScene();
-                                });
-                            }
-                        });
-                    });
-                })).then(function () {
-                    resolve(matches);
-                });
-            }
-            else {
-                reject(Error('Parameter is not a function'));
-            }
-        });
-    };
-    /**
-     * param: function(item, resolve)
-     * ```
-     * return: Promise<Scene[]>
-     * ```
-     *
-     * Searches all scenes for items that satisfies the provided testing function,
-     * and then return the scene that contains the item.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.filterScenesByItems(function(item, resolve) {
-     *   // We'll only fetch the scenes with flash items by resolving 'true' if
-     *   // the item is an instance of FlashItem
-     *   resolve((item instanceof FlashItem));
-     * }).then(function(scenes) {
-     *   // scenes would be an array of all scenes with FlashItems
-     * });
-     * ```
-     */
-    Scene.filterScenesByItems = function (func) {
-        Scene._initializeScenePool();
-        var matches = [];
-        return new Promise(function (resolve, reject) {
-            if (typeof func === 'function') {
-                return Promise.all(Scene._scenePool.map(function (scene) {
-                    return new Promise(function (resolveScene) {
-                        scene.getItems().then(function (items) {
-                            if (items.length === 0) {
-                                resolveScene();
-                            }
-                            else {
-                                return Promise.all(items.map(function (item) {
-                                    return new Promise(function (resolveItem) {
-                                        func(item, function (checker) {
-                                            if (checker) {
-                                                matches.push(scene);
-                                            }
-                                            resolveItem();
-                                        });
-                                    });
-                                })).then(function () {
-                                    resolveScene();
-                                });
-                            }
-                        });
-                    });
-                })).then(function () {
-                    resolve(matches);
-                });
-            }
-            else {
-                reject(Error('Parameter is not a function'));
-            }
-        });
-    };
-    /**
-     * return: Promise<boolean>
-  
-     * Load scenes that are not yet initialized in XSplit Broadcaster.
-     *
-     * Note: For memory saving purposes, this is not called automatically.
-     * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
-     * This function is only available to extensions.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * Scene.initializeScenes().then(function(val) {
-     *   if (val === true) {
-     *     // Now you know that all scenes are loaded :)
-     *   }
-     * })
-     * ```
-     */
-    Scene.initializeScenes = function () {
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('function is not available for source'));
-            }
-            app_1.App.get('presetcount').then(function (cnt) {
-                if (Number(cnt) !== 12) {
-                    // Insert an empty scene for scene #12
-                    app_1.App
-                        .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
-                        .then(function (res) {
-                        resolve(res);
-                    });
-                }
-                else {
-                    resolve(true);
-                }
+            _this._name = value;
+            item_1.Item.set('prop:name', _this._name, _this._id).then(function () {
+                resolve(_this);
             });
         });
     };
     /**
-     * return: number
+     * return: Promise<string>
      *
-     * Get the 1-indexed scene number of this scene object.
-     *
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * myScene.getSceneNumber().then(function(num) {
-     *  console.log('My scene is scene number ' + num);
-     * });
-     * ```
-     */
-    Scene.prototype.getSceneNumber = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            resolve(_this._id + 1);
-        });
-    };
-    /**
-     * return: number
-     *
-     * Get the name of this scene object.
-     *
+     * Gets the name of the source.
      *
      * #### Usage
      *
      * ```javascript
-     * myScene.getSceneName().then(function(name) {
-     *  console.log('My scene is named ' + name);
+     * source.getName().then(function(name) {
+     *   // Do something with the name
      * });
      * ```
      */
-    Scene.prototype.getName = function () {
+    Source.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('presetname:' + _this._id).then(function (val) {
+            item_1.Item.get('prop:name', _this._id).then(function (val) {
+                _this._name = val;
                 resolve(val);
             });
         });
     };
     /**
-     *
-     * Set the name of this scene object. Cannot be set by source plugins.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * myScene.setName('Gameplay');
+     * param: (value: string)
      * ```
-     */
-    Scene.prototype.setName = function (name) {
-        var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Scene names are readonly for source plugins.'));
-            }
-            else {
-                app_1.App.set('presetname:' + _this._id, name).then(function (value) {
-                    resolve(value);
-                });
-            }
-        });
-    };
-    /**
-     * return: Promise<Item[]>
+     * return: Promise<Source>
+     * ```
      *
-     * Gets all the items (sources) in a specific scene.
-     * See also: {@link #core/Item Core/Item}
+     * Sets the custom name of the source.
+     *
+     * The main difference between `setName` and `setCustomName` is that the CustomName
+     * can be edited by users using XBC through the bottom panel. `setName` on
+     * the other hand would update the source's internal name property.
+     *
+     * *Chainable.*
      *
      * #### Usage
      *
      * ```javascript
-     * myScene.getItems().then(function(items) {
-     *  // do something to each item in items array
+     * source.setCustomName('newNameHere').then(function(source) {
+     *   // Promise resolves with same Source instance when custom name has been set
+     *   return source.getCustomName();
+     * }).then(function(name) {
+     *   // 'name' should be the updated value by now.
      * });
      * ```
      */
-    Scene.prototype.getItems = function () {
+    Source.prototype.setCustomName = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.getAsList('presetconfig:' + _this._id).then(function (jsonArr) {
-                var promiseArray = [];
-                // type checking to return correct Item subtype
-                var typePromise = function (index) { return new Promise(function (typeResolve) {
-                    var item = jsonArr[index];
-                    var type = Number(item['type']);
-                    if (type === item_1.ItemTypes.GAMESOURCE) {
-                        typeResolve(new game_1.GameItem(item));
+            _this._cname = value;
+            item_1.Item.set('prop:cname', _this._cname, _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Gets the custom name of the source.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getCustomName().then(function(name) {
+     *   // Do something with the name
+     * });
+     * ```
+     */
+    Source.prototype.getCustomName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:cname', _this._id).then(function (val) {
+                _this._cname = val;
+                resolve(val);
+            });
+        });
+    };
+    /**
+     * return: Promise<string|XML>
+     *
+     * Gets a special string that refers to the source's main definition.
+     *
+     * This method can resolve with an XML object, which is an object generated by
+     * the framework. Call `toString()` to transform into an XML String. (See the
+     * documentation for `setValue` for more details.)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getValue().then(function(value) {
+     *   // Do something with the value
+     * });
+     * ```
+     */
+    Source.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:item', _this._id).then(function (val) {
+                val = (val === 'null') ? '' : val;
+                if (val === '') {
+                    _this._value = '';
+                    resolve(val);
+                }
+                else {
+                    try {
+                        _this._value = xml_1.XML.parseJSON(json_1.JSON.parse(val));
+                        resolve(_this._value);
                     }
-                    else if (type === item_1.ItemTypes.HTML) {
-                        typeResolve(new html_1.HTMLItem(item));
-                    }
-                    else if (type === item_1.ItemTypes.SCREEN) {
-                        typeResolve(new screen_1.ScreenItem(item));
-                    }
-                    else if (type === item_1.ItemTypes.BITMAP ||
-                        type === item_1.ItemTypes.FILE &&
-                            /\.gif$/.test(item['item'])) {
-                        typeResolve(new image_1.ImageItem(item));
-                    }
-                    else if (type === item_1.ItemTypes.FILE &&
-                        /\.(gif|xbs)$/.test(item['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
-                        typeResolve(new media_1.MediaItem(item));
-                    }
-                    else if (Number(item['type']) === item_1.ItemTypes.LIVE &&
-                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-                        typeResolve(new camera_1.CameraItem(item));
-                    }
-                    else if (Number(item['type']) === item_1.ItemTypes.LIVE &&
-                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-                        typeResolve(new audio_1.AudioItem(item));
-                    }
-                    else if (Number(item['type']) === item_1.ItemTypes.FLASHFILE) {
-                        typeResolve(new flash_1.FlashItem(item));
-                    }
-                    else {
-                        typeResolve(new item_1.Item(item));
-                    }
-                }); };
-                if (Array.isArray(jsonArr)) {
-                    for (var i = 0; i < jsonArr.length; i++) {
-                        jsonArr[i]['sceneID'] = _this._id;
-                        promiseArray.push(typePromise(i));
+                    catch (e) {
+                        // value is not valid XML (it is a string instead)
+                        _this._value = val;
+                        resolve(val);
                     }
                 }
-                Promise.all(promiseArray).then(function (results) {
-                    resolve(results);
-                });
             });
         });
     };
     /**
-     * Checks if a scene is empty.
+     * param: (value: string)
+     * ```
+     * return: Promise<Source>
+     * ```
+     *
+     * Set the source's main definition; this special string defines the source's
+     * "identity". Each type of source requires a different format for this value.
+     *
+     * *Chainable.*
+     *
+     * **WARNING:**
+     * Please do note that using this method COULD break the current source, possibly modifying
+     * its type IF you set an invalid string for the current source.
+     *
+     * #### Possible values by source type
+     * - FILE - path/URL
+     * - LIVE - Device ID
+     * - BITMAP - path
+     * - SCREEN - XML string
+     * - FLASHFILE - path
+     * - GAMESOURCE - XML string
+     * - HTML - path/URL or html:<plugin>
      *
      * #### Usage
      *
      * ```javascript
-     * myScene.isEmpty().then(function(empty) {
-     *   if (empty === true) {
-     *     console.log('My scene is empty.');
-     *   }
+     * source.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
+     *   .then(function(source) {
+     *   // Promise resolves with same Source instance
      * });
      * ```
      */
-    Scene.prototype.isEmpty = function () {
+    Source.prototype.setValue = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            app_1.App.get('presetisempty:' + _this._id).then(function (val) {
-                resolve(val === '1');
+            var val = (typeof value === 'string') ?
+                value : value.toString();
+            if (typeof value !== 'string') {
+                _this._value = json_1.JSON.parse(val);
+            }
+            else {
+                _this._value = val;
+            }
+            item_1.Item.set('prop:item', val, _this._id).then(function () {
+                resolve(_this);
             });
         });
     };
     /**
-     * param: Array<Item> | Array<string> (item IDs)
+     * return: Promise<boolean>
+     *
+     * Check if source is kept loaded in memory
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getKeepLoaded().then(function(isLoaded) {
+     *   // The rest of your code here
+     * });
      * ```
-     * return: Promise<Scene>
+     */
+    Source.prototype.getKeepLoaded = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:keeploaded', _this._id).then(function (val) {
+                _this._keepLoaded = (val === '1');
+                resolve(_this._keepLoaded);
+            });
+        });
+    };
+    /**
+     * param: (value: boolean)
+     * ```
+     * return: Promise<Source>
      * ```
      *
-     * Sets the item order of the current scene. The first item in the array will
-     * be on top (will cover items below it).
+     * Set Keep loaded option to ON or OFF
+     *
+     * *Chainable.*
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.setKeepLoaded(true).then(function(source) {
+     *   // Promise resolves with same Source instance
+     * });
+     * ```
      */
-    Scene.prototype.setItemOrder = function (items) {
+    Source.prototype.setKeepLoaded = function (value) {
         var _this = this;
+        return new Promise(function (resolve) {
+            _this._keepLoaded = value;
+            item_1.Item.set('prop:keeploaded', (_this._keepLoaded ? '1' : '0'), _this._id)
+                .then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    /**
+     * return: Promise<SourceTypes>
+     *
+     * Get the type of the source
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getType().then(function(type) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
+    Source.prototype.getType = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:type', _this._id).then(function (val) {
+                _this._type = SourceTypes[SourceTypes[Number(val)]];
+                resolve(_this._type);
+            });
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Get the ID of the source
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getId().then(function(id) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
+    Source.prototype.getId = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this._id);
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Get (1-indexed) Scene ID where the source is loaded
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * source.getSceneId().then(function(id) {
+     *   // The rest of your code here
+     * });
+     * ```
+     */
+    Source.prototype.getSceneId = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(Number(_this._sceneId) + 1);
+        });
+    };
+    /**
+     * return: XML
+     *
+     * Convert the Source object to an XML object. Use `toString()` to
+     * get the string version of the returned object.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var xml = source.toXML();
+     * ```
+     */
+    Source.prototype.toXML = function () {
+        var item = new json_1.JSON();
+        item['tag'] = 'item';
+        item['name'] = this._name;
+        item['item'] = this._value;
+        item['type'] = this._type;
+        item['selfclosing'] = true;
+        if (this._cname) {
+            item['cname'] = this._cname;
+        }
+        return xml_1.XML.parseJSON(item);
+    };
+    /**
+     * return: Promise<Source>
+     *
+     * Get the current source (when function is called by sources), or the source
+     * that was right-clicked to open the source properties window (when function is called
+     * from the source properties window)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * xjs.Source.getCurrentSource().then(function(source) {
+     *   // This will fetch the current source (the plugin)
+     * }).catch(function(err) {
+     *   // Handle the error here. Errors would only occur
+     *   // if we try to execute this method on Extension plugins
+     * });
+     * ```
+     */
+    Source.getCurrentSource = function () {
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('not available for source plugins'));
+            if (environment_1.Environment.isExtension()) {
+                reject(Error('Extensions do not have sources ' +
+                    'associated with them.'));
             }
-            else {
-                items.reverse();
-                var ids = [];
-                Scene.getActiveScene().then(function (scene) {
-                    if (items.every(function (el) { return el instanceof item_1.Item; })) {
-                        return new Promise(function (resolve) {
-                            var promises = [];
-                            for (var i in items) {
-                                promises.push((function (_i) {
-                                    return new Promise(function (resolve) {
-                                        items[_i].getID().then(function (id) {
-                                            ids[_i] = id;
-                                            resolve(_this);
-                                        });
-                                    });
-                                })(i));
-                            }
-                            Promise.all(promises).then(function () {
-                                return scene.getSceneNumber();
-                            }).then(function (id) {
-                                resolve(id);
-                            });
-                        });
-                    }
-                    else {
-                        ids = items;
-                        return scene.getSceneNumber();
-                    }
-                }).then(function (id) {
-                    if ((Number(id) - 1) === _this._id && environment_1.Environment.isSourceConfig()) {
-                        internal_1.exec('SourcesListOrderSave', ids.join(','));
-                        resolve(_this);
-                    }
-                    else {
-                        var sceneName;
-                        _this.getName().then(function (name) {
-                            sceneName = name;
-                            return app_1.App.getAsList('presetconfig:' + _this._id);
-                        }).then(function (jsonArr) {
-                            var newOrder = new json_1.JSON();
-                            newOrder.children = [];
-                            newOrder['tag'] = 'placement';
-                            newOrder['name'] = sceneName;
-                            if (Array.isArray(jsonArr)) {
-                                var attrs = ['name', 'cname', 'item'];
-                                for (var i = 0; i < jsonArr.length; i++) {
-                                    for (var a = 0; a < attrs.length; a++) {
-                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                                            .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
-                                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                                            .replace(/"/g, '&quot;');
-                                    }
-                                    newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
-                                }
-                                app_1.App.set('presetconfig:' + _this._id, xml_1.XML.parseJSON(newOrder).toString()).then(function () {
-                                    resolve(_this);
-                                });
-                            }
-                            else {
-                                reject(Error('Scene does not have any items'));
-                            }
-                        });
-                    }
+            else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
+                scene_1.Scene.searchSourcesById(item_1.Item.getBaseId()).then(function (item) {
+                    resolve(item); // this should always exist
                 });
             }
         });
     };
-    Scene._maxScenes = 12;
-    Scene._scenePool = [];
-    return Scene;
+    /**
+     *  return: Promise<Source>
+     *
+     *  Refreshes the specified source.
+     *
+     *  #### Usage
+     *  ```javascript
+     *  // Sample 1: let source refresh itself
+     *  xjs.Source.getCurrentSource().then(function(source) {
+     *    source.refresh(); // execution of JavaScript halts because of refresh
+     *  });
+     *
+     *  // Sample 2: refresh some other source 'otherSource'
+     *  otherSource.refresh().then(function(source) {
+     *    // further manipulation of other source goes here
+     *  });
+     *  ```
+     */
+    Source.prototype.refresh = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('refresh', '', _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    return Source;
 })();
-exports.Scene = Scene;
-},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"./environment":4,"./item/audio":6,"./item/camera":7,"./item/flash":9,"./item/game":10,"./item/html":11,"./item/image":17,"./item/item":19,"./item/media":21,"./item/screen":22}],24:[function(require,module,exports){
+exports.Source = Source;
+mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
+},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":6,"./ilayout":17}],24:[function(require,module,exports){
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -5275,10 +5368,10 @@ exports.Scene = Scene;
  *
  * Simply use one of the available Transition objects such as Transition.FAN or
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
- * App instance, or a valid Item instance that supports transitions (this
- * includes {@link #core/CameraItem Core/CameraItem},
- * {@link #core/GameItem Core/GameItem}, and
- * {@link #core/HTMLItem Core/HTMLItem}.)
+ * App instance, or a valid Source instance that supports transitions (this
+ * includes {@link #core/CameraSource Core/CameraSource},
+ * {@link #core/GameSource Core/GameSource}, and
+ * {@link #core/HtmlSource Core/HtmlSource}.)
  */
 var Transition = (function () {
     function Transition(key) {
@@ -5506,13 +5599,13 @@ function readMetaConfigUrl() {
         }
     });
 }
-function getCurrentSourceID() {
+function getCurrentSourceId() {
     return new Promise(function (resolve) {
         if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
             // initialize Item.getSource() functions
             internal_1.exec('GetLocalPropertyAsync', 'prop:id', function (result) {
                 var id = decodeURIComponent(result);
-                item_1.Item.setBaseID(id);
+                item_1.Item.setBaseId(id);
                 if (environment_1.Environment.isSourcePlugin()) {
                     item_1.Item.lockSourceSlot(id);
                 }
@@ -5528,7 +5621,7 @@ function informWhenConfigLoaded() {
     return new Promise(function (resolve) {
         if (environment_1.Environment.isSourceConfig()) {
             window.addEventListener('load', function () {
-                config_1.SourceConfigWindow.getInstance().emit('config-load');
+                config_1.SourcePropsWindow.getInstance().emit('config-load');
                 resolve();
             });
         }
@@ -5539,7 +5632,7 @@ function informWhenConfigLoaded() {
 }
 function init() {
     global_1.Global.addInitializationPromise(readMetaConfigUrl());
-    global_1.Global.addInitializationPromise(getCurrentSourceID());
+    global_1.Global.addInitializationPromise(getCurrentSourceId());
     global_1.Global.addInitializationPromise(informWhenConfigLoaded());
     Promise.all(global_1.Global.getInitializationPromises()).then(function () {
         document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
@@ -5657,11 +5750,11 @@ var Item = (function () {
         internal_1.exec('CallInner', func, arg);
     };
     /** helper function to get current source on init */
-    Item.setBaseID = function (id) {
+    Item.setBaseId = function (id) {
         Item.baseID = id;
     };
-    /** helper function for Item.getCurrentSource() */
-    Item.getBaseID = function () {
+    /** helper function for Source.getCurrentSource() */
+    Item.getBaseId = function () {
         return Item.baseID;
     };
     Item.MAX_SLOTS = 2;
@@ -5816,7 +5909,10 @@ var xml_1 = require('../internal/util/xml');
  * The AudioDevice Class is the object returned by
  * {@link #system/System System Class'} getAudioDevices method. It provides you
  * with methods to fetch the audio device object's attributes, and also provides
- * methods to convert it back to an XML object that is compatible with XBC
+ * methods to convert it back to an XML object that is compatible with XBC.
+ *
+ * If you are looking to add a microphone device to the stage, please see
+ * {@link #system/MicrophoneDevice System/MicrophoneDevice} instead.
  *
  * ### Basic Usage
  *
@@ -6082,7 +6178,7 @@ var AudioDevice = (function () {
     /**
      * return: string
      *
-     * Converts the AudioDevice item to XML-formatted string
+     * Converts the AudioDevice object to XML-formatted string
      *
      * #### Usage
      *
@@ -6154,8 +6250,8 @@ var app_1 = require('../internal/app');
 /**
  * The CameraDevice Class is the object returned by
  * {@link #system/System System Class'} getCameraDevices method. It provides
- * you with methods to fetch the Camera Device's id, name, and convert it to
- * an XML object that is compatible with XBC
+ * you with methods to fetch the Camera Device's id, name, and to add it as
+ * a source in the current scene.
  *
  * ### Basic Usage
  *
@@ -6226,7 +6322,7 @@ var CameraDevice = (function () {
         return xml_1.XML.parseJSON(json);
     };
     /**
-     * param: deviceJSON<JXON>
+     * param: (deviceJSON: JXON)
      * ```
      * return: CameraDevice
      * ```
@@ -6316,8 +6412,7 @@ var app_1 = require('../internal/app');
 /**
  * The Game Class is the object returned by {@link #system/System System Class'}
  * getGames method. It provides you with methods to fetch the game object's
- * attributes, and also provides methods to convert it back to an XML object
- * that is compatible with XBC
+ * attributes, as well as methods to add any game to the current scene.
  *
  * ### Basic Usage
  *
@@ -6327,12 +6422,11 @@ var app_1 = require('../internal/app');
  * var xml;
  *
  * System.getGames().then(function(games) {
- * 	for (var i in games) {
- * 		if(games[i].isFullscreen()) {
- * 			xml = games[i].toXML();
- * 			// Do something with the xml here. Probably add it to the current scene
- * 		}
- * 	}
+ *  for (var i in games) {
+ *    if(games[i].isFullscreen()) {
+ *      games[i].addToScene();
+ *    }
+ *  }
  * });
  * ```
  */
@@ -6459,24 +6553,32 @@ var Game = (function () {
         return this._lastframets;
     };
     /**
+     * return: number
+     *
      * Get the FPS Render of the game
      */
     Game.prototype.getFpsRender = function () {
         return this._fpsRender;
     };
     /**
+     * return: number
+     *
      * Get the Captured FPS of the game
      */
     Game.prototype.getFpsCapture = function () {
         return this._fpsCapture;
     };
     /**
+     * return: string
+     *
      * Get the image name of the game
      */
     Game.prototype.getImageName = function () {
         return this._imagename;
     };
     /**
+     * return: string
+     *
      * Get the replace image value of the game
      */
     Game.prototype.getReplace = function () {
@@ -6607,6 +6709,23 @@ exports.Game = Game;
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
 var app_1 = require('../internal/app');
+/**
+ * The MicrophoneDevice class provides you with methods to add a microphone
+ * device as a source on the stage.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ * var System = XJS.System;
+ *
+ * System.getMicrophones().then(function(microphones) {
+ *  for (var i in microphones) {
+ *    microphones[i].addToScene();
+ *  }
+ * });
+ * ```
+ */
 var MicrophoneDevice = (function () {
     function MicrophoneDevice() {
     }
@@ -6624,10 +6743,10 @@ var MicrophoneDevice = (function () {
      * #### Usage
      *
      * ```javascript
-     * var micDisplayID = device.getDisplayID();
+     * var micDisplayId = device.getDisplayId();
      * ```
      */
-    MicrophoneDevice.prototype.getDisplayID = function () {
+    MicrophoneDevice.prototype.getDisplayId = function () {
         return this._disp;
     };
     /**
@@ -7521,7 +7640,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var eventemitter_1 = require('../util/eventemitter');
 var internal_1 = require('../internal/internal');
 /** This utility class exposes functionality for source plugin developers to
- *  handle the configuration window for their source plugins. The framework also
+ *  handle the properties window for their source plugins. The framework also
  *  uses this class for its own internal purposes.
  *
  *  Developers can use this class to specify how their configuration HTML
@@ -7531,16 +7650,16 @@ var internal_1 = require('../internal/internal');
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
  *  At the moment, the only relevant event for developers is:
- *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so configuration window can update itself accordingly.
+ *    - `set-selected-tab`: used when using Tabbed mode. Passes the name of the selected tab so properties window can update itself accordingly.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
-var SourceConfigWindow = (function (_super) {
-    __extends(SourceConfigWindow, _super);
+var SourcePropsWindow = (function (_super) {
+    __extends(SourcePropsWindow, _super);
     /**
      *  Use getInstance() instead.
      */
-    function SourceConfigWindow() {
+    function SourcePropsWindow() {
         var _this = this;
         _super.call(this);
         window.addEventListener('message', function (event) {
@@ -7567,34 +7686,34 @@ var SourceConfigWindow = (function (_super) {
         this.on('config-load', function () {
             _this._informConfigLoaded();
         });
-        SourceConfigWindow._instance = this;
+        SourcePropsWindow._instance = this;
     }
     /**
      *  Gets the instance of the window utility. Use this instead of the constructor.
      */
-    SourceConfigWindow.getInstance = function () {
-        if (SourceConfigWindow._instance === undefined) {
-            SourceConfigWindow._instance = new SourceConfigWindow();
+    SourcePropsWindow.getInstance = function () {
+        if (SourcePropsWindow._instance === undefined) {
+            SourcePropsWindow._instance = new SourcePropsWindow();
         }
-        return SourceConfigWindow._instance;
+        return SourcePropsWindow._instance;
     };
     // helper function to communicate with built-in container
-    SourceConfigWindow.prototype._notify = function (obj) {
+    SourcePropsWindow.prototype._notify = function (obj) {
         window.parent.postMessage(JSON.stringify(obj), '*');
     };
     /**
      *  Informs the application that the plugin intends to use the entire window for rendering its configuration.
      */
-    SourceConfigWindow.prototype.useFullWindow = function () {
-        this._setRenderMode(SourceConfigWindow._MODE_FULL);
+    SourcePropsWindow.prototype.useFullWindow = function () {
+        this._setRenderMode(SourcePropsWindow._MODE_FULL);
         // use default size to avoid layout issues. plugin can resize later
-        this.resizeConfig(354, 390);
+        this.resize(354, 390);
     };
     /**
      *  param: ({customTabs: string[], tabOrder: string[]})
      *
      *  Informs the application that the plugin intends to use the existing tab
-     *  system to render its configuration window.
+     *  system to render its properties window.
      *
      *  The `customTabs` node should contain a list of tab titles that the plugin
      *  will create for itself.
@@ -7603,12 +7722,12 @@ var SourceConfigWindow = (function (_super) {
      *  from the specified custom tabs, and the set of reusable XSplit tabs:
      *  'Color', 'Layout' and 'Transition'.
      */
-    SourceConfigWindow.prototype.useTabbedWindow = function (config) {
-        this._setRenderMode(SourceConfigWindow._MODE_TABBED);
+    SourcePropsWindow.prototype.useTabbedWindow = function (config) {
+        this._setRenderMode(SourcePropsWindow._MODE_TABBED);
         this._declareCustomTabs(config.customTabs);
         this._setTabOrder(config.tabOrder);
     };
-    SourceConfigWindow.prototype._setRenderMode = function (renderMode) {
+    SourcePropsWindow.prototype._setRenderMode = function (renderMode) {
         this._mode = renderMode;
         this._notify({
             event: 'set-mode',
@@ -7616,30 +7735,30 @@ var SourceConfigWindow = (function (_super) {
         });
     };
     ;
-    SourceConfigWindow.prototype._setTabOrder = function (tabArray) {
+    SourcePropsWindow.prototype._setTabOrder = function (tabArray) {
         this._notify({
             event: 'set-tab-order',
             value: JSON.stringify(tabArray)
         });
     };
     ;
-    SourceConfigWindow.prototype._declareCustomTabs = function (tabArray) {
+    SourcePropsWindow.prototype._declareCustomTabs = function (tabArray) {
         this._notify({
             event: 'set-custom-tabs',
             value: JSON.stringify(tabArray)
         });
     };
     ;
-    SourceConfigWindow.prototype._informConfigLoaded = function () {
+    SourcePropsWindow.prototype._informConfigLoaded = function () {
         this._notify({ event: 'load' });
     };
     /**
      *  param: width<number>, height<number>
      *
-     *  Resizes the configuration window. Currently only works when using full
+     *  Resizes the properties window. Currently only works when using full
      *  window mode.
      */
-    SourceConfigWindow.prototype.resizeConfig = function (width, height) {
+    SourcePropsWindow.prototype.resize = function (width, height) {
         this._notify({
             event: 'resize',
             value: JSON.stringify({
@@ -7657,23 +7776,23 @@ var SourceConfigWindow = (function (_super) {
      *  resets the title to the display name of the source
      *  (custom name takes precedence over name)
      */
-    SourceConfigWindow.prototype.requestDialogTitleChange = function (name) {
+    SourcePropsWindow.prototype.requestDialogTitleChange = function (name) {
         this._notify({
             event: 'change-dialog-title',
             value: name
         });
     };
     ;
-    /** Closes the configuration window. */
-    SourceConfigWindow.prototype.closeConfig = function () {
+    /** Closes the properties window. */
+    SourcePropsWindow.prototype.close = function () {
         internal_1.exec('Close');
     };
     ;
-    SourceConfigWindow._MODE_FULL = 'full';
-    SourceConfigWindow._MODE_TABBED = 'embedded';
-    return SourceConfigWindow;
+    SourcePropsWindow._MODE_FULL = 'full';
+    SourcePropsWindow._MODE_TABBED = 'embedded';
+    return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
-exports.SourceConfigWindow = SourceConfigWindow;
+exports.SourcePropsWindow = SourcePropsWindow;
 },{"../internal/internal":28,"../util/eventemitter":42}],47:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
@@ -7683,7 +7802,7 @@ var internal_1 = require('../internal/internal');
 /**
  *  This class is used to spawn new browser processes that can be used to open
  *  other URLs. Source plugins do not have this functionality (but their
- *  configuration windows may use this.)
+ *  properties windows may use this.)
  *
  *  Note that opening a new dialog replaces the old one. Also, dialogs are
  *  considered to be the same type of window as their parent windows: e.g.,
@@ -8126,22 +8245,22 @@ __export(require('./core/scene'));
 __export(require('./core/transition'));
 __export(require('./core/dll'));
 __export(require('./core/extension'));
-__export(require('./core/item/item'));
-__export(require('./core/item/camera'));
-__export(require('./core/item/game'));
-__export(require('./core/item/audio'));
-__export(require('./core/item/html'));
-__export(require('./core/item/flash'));
-__export(require('./core/item/screen'));
-__export(require('./core/item/image'));
-__export(require('./core/item/media'));
-var ichroma_1 = require('./core/item/ichroma');
+__export(require('./core/source/source'));
+__export(require('./core/source/camera'));
+__export(require('./core/source/game'));
+__export(require('./core/source/audio'));
+__export(require('./core/source/html'));
+__export(require('./core/source/flash'));
+__export(require('./core/source/screen'));
+__export(require('./core/source/image'));
+__export(require('./core/source/media'));
+var ichroma_1 = require('./core/source/ichroma');
 exports.KeyingType = ichroma_1.KeyingType;
 exports.ChromaPrimaryColors = ichroma_1.ChromaPrimaryColors;
 exports.ChromaAntiAliasLevel = ichroma_1.ChromaAntiAliasLevel;
-var iplayback_1 = require('./core/item/iplayback');
+var iplayback_1 = require('./core/source/iplayback');
 exports.ActionAfterPlayback = iplayback_1.ActionAfterPlayback;
-var cuepoint_1 = require('./core/item/cuepoint');
+var cuepoint_1 = require('./core/source/cuepoint');
 exports.CuePoint = cuepoint_1.CuePoint;
 __export(require('./system/system'));
 __export(require('./system/audio'));
@@ -8157,4 +8276,4 @@ __export(require('./window/extension'));
 __export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/item/audio":6,"./core/item/camera":7,"./core/item/cuepoint":8,"./core/item/flash":9,"./core/item/game":10,"./core/item/html":11,"./core/item/ichroma":13,"./core/item/image":17,"./core/item/iplayback":18,"./core/item/item":19,"./core/item/media":21,"./core/item/screen":22,"./core/scene":23,"./core/transition":24,"./internal/init":27,"./system/audio":33,"./system/camera":34,"./system/file":35,"./system/game":36,"./system/microphone":37,"./system/screen":38,"./system/system":39,"./system/url":40,"./util/color":41,"./util/io":43,"./util/ready":44,"./util/rectangle":45,"./window/config":46,"./window/dialog":47,"./window/extension":48,"./window/source":49}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/scene":6,"./core/source/audio":7,"./core/source/camera":8,"./core/source/cuepoint":9,"./core/source/flash":10,"./core/source/game":11,"./core/source/html":12,"./core/source/ichroma":14,"./core/source/image":18,"./core/source/iplayback":19,"./core/source/media":21,"./core/source/screen":22,"./core/source/source":23,"./core/transition":24,"./internal/init":27,"./system/audio":33,"./system/camera":34,"./system/file":35,"./system/game":36,"./system/microphone":37,"./system/screen":38,"./system/system":39,"./system/url":40,"./util/color":41,"./util/io":43,"./util/ready":44,"./util/rectangle":45,"./window/config":46,"./window/dialog":47,"./window/extension":48,"./window/source":49}]},{},["xjs"]);

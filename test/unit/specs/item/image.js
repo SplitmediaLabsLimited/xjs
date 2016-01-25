@@ -1,12 +1,12 @@
 
 /* globals describe, it, expect, require, beforeEach, beforeAll, spyOn */
 
-describe('ImageItem', function() {
+describe('ImageSource', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var ImageItem = XJS.ImageItem;
+  var ImageSource = XJS.ImageSource;
   var env = new window.Environment(XJS);
   var enumerated = [];
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -17,7 +17,7 @@ describe('ImageItem', function() {
   var TYPE_BITMAP = 4;
   var TYPE_FILE = 1;
 
-  var currentImageItem;
+  var currentImageSource;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -31,11 +31,11 @@ describe('ImageItem', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedID + '"]';
-        var itemSelected = placement.querySelector(selected);
+        var sourceSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
+          window.OnAsyncCallback(irand, sourceSelected.getAttribute('type'));
         },10);
       break;
 
@@ -50,11 +50,11 @@ describe('ImageItem', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var itemSelected = placement.querySelector(selected);
+          var sourceSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -66,10 +66,10 @@ describe('ImageItem', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{SCREENID}' });
-      var item2 = new XJS.Item({id : '{SCREENID2}'});
-      item1.getType();
-      item2.getType();
+      var source1 = new XJS.Source({id : '{SCREENID}' });
+      var source2 = new XJS.Source({id : '{SCREENID2}'});
+      source1.getType();
+      source2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -113,14 +113,14 @@ describe('ImageItem', function() {
       done();
     } else {
       Scene.getActiveScene().then(function(newScene) {
-        newScene.getItems().then(function(items) {
-          var itemArray = items;
-          var itemArrayLength = itemArray.length;
+        newScene.getSources().then(function(sources) {
+          var sourceArray = sources;
+          var sourceArrayLength = sourceArray.length;
 
-          if (itemArrayLength > 0) {
-            for (var i = 0; i < itemArrayLength; i++) {
-              if (itemArray[i] instanceof ImageItem) {
-                enumerated.push(itemArray[i]);
+          if (sourceArrayLength > 0) {
+            for (var i = 0; i < sourceArrayLength; i++) {
+              if (sourceArray[i] instanceof ImageSource) {
+                enumerated.push(sourceArray[i]);
               }
             }
           }
@@ -132,34 +132,34 @@ describe('ImageItem', function() {
   });
 
 
-  it('should be detected by getItems() correctly', function(done) {
+  it('should be detected by getSources() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     // regular images
     var bitmapSelector = '[type="' + TYPE_BITMAP + '"]';
-    var bitmapItems = placement.querySelectorAll(bitmapSelector);
+    var bitmapSources = placement.querySelectorAll(bitmapSelector);
     // gifs
     var gifSelector = '[type="' + TYPE_FILE + '"]';
-    var fileTypeItems = placement.querySelectorAll(gifSelector);
-    var gifItems = [].filter.call(fileTypeItems, function(node) {
+    var fileTypeSources = placement.querySelectorAll(gifSelector);
+    var gifSources = [].filter.call(fileTypeSources, function(node) {
       return /\.gif$/.test(node.getAttribute('item'));
     });
 
-    expect(bitmapItems.length + gifItems.length).toBe(enumerated.length);
+    expect(bitmapSources.length + gifSources.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeAll(function(done) {
       if (enumerated.length > 0) {
-        currentImageItem = enumerated[0];
+        currentImageSource = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-      if (currentImageItem !== null) {
-        expect(currentImageItem).hasMethods([
+      if (currentImageSource !== null) {
+        expect(currentImageSource).hasMethods([
           'isKeepAspectRatio',
           'setKeepAspectRatio',
           'isPositionLocked',
@@ -173,8 +173,8 @@ describe('ImageItem', function() {
     });
 
     it('should implement the color interface', function() {
-      if (currentImageItem !== null) {
-        expect(currentImageItem).hasMethods([
+      if (currentImageSource !== null) {
+        expect(currentImageSource).hasMethods([
           'getTransparency',
           'setTransparency',
           'getBrightness',
@@ -192,8 +192,8 @@ describe('ImageItem', function() {
     });
 
     it('should implement the chroma interface', function() {
-      if (currentImageItem !== null) {
-        expect(currentImageItem).hasMethods([
+      if (currentImageSource !== null) {
+        expect(currentImageSource).hasMethods([
           'isChromaEnabled',
           'setChromaEnabled',
           'getKeyingType',
@@ -227,8 +227,8 @@ describe('ImageItem', function() {
     });
 
     it('should implement the transition interface', function() {
-      if (currentImageItem !== null) {
-        expect(currentImageItem).hasMethods([
+      if (currentImageSource !== null) {
+        expect(currentImageSource).hasMethods([
           'isVisible',
           'setVisible',
           'getTransition',
