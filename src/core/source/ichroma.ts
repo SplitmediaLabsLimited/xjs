@@ -122,7 +122,7 @@ export interface IItemChroma {
    *
    * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
-  getChromaLegacySaturation(): Promise<number>;
+  getChromaLegacySaturation(): Promise<number>; 
 
   /**
    * param: (value: number)
@@ -154,7 +154,7 @@ export interface IItemChroma {
    *
    * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
-  getChromaLegacyThreshold(): Promise<number>;
+  getChromaLegacyThreshold(): Promise<number>; 
 
   /**
    * param: (value: number)

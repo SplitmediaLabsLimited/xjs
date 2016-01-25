@@ -863,49 +863,49 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-
+  
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<HtmlSource>;
-
+  
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-
+  
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<HtmlSource>;
-
+  
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-
+  
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<HtmlSource>;
 
   // ItemConfigurable
-
+  
   /**
    * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
-
+  
   /**
    * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlSource>;
-
+  
   /**
    * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
-
+  
   /**
    * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */
