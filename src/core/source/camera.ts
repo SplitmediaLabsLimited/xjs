@@ -713,11 +713,3 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
 
 applyMixins(CameraSource, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
   ItemAudio]);
-  setStreamOnlyEnabled: (value: boolean) => Promise<CameraSource>;
-
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
-  isAudioAvailable: () => Promise<boolean>;
-}
-
-applyMixins(CameraSource, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
-  ItemAudio]);
