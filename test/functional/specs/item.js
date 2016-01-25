@@ -6,6 +6,7 @@
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Source = XJS.Source;
+  var App = new XJS.App();
 
   function randomWord(length) {
     var rand;
@@ -22,7 +23,7 @@
   // This is a Source class functional test case, but since it needs to actually
   // work on XBC, we should always go through Scene class first
   Scene.getActiveScene().then(function(scene) {
-    return scene.getSource();
+    return scene.getSources();
   }).then(function(sources) {
     if (sources.length === 0) {
       throw new Error('NO SOURCE ON CURRENT SCENE!');
