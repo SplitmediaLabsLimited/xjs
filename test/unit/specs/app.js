@@ -133,6 +133,7 @@ describe('App ===', function() {
     it('through a promise', function() {
       var promise = App.getVersion();
       expect(promise).toBeInstanceOf(Promise);
+      promise.then(function(version) {}).catch(function(err) {});
     });
 
     it('that always return as string', function(done) {
