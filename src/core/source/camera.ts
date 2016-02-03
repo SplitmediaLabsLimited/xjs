@@ -117,9 +117,35 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    *
    */
   isHardwareEncoder(): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iItem.get('prop:hwencoder', this._id).then(val => {
+        if (val === '1') {
+          resolve(true);
+        } else {
+          this.isActive().then(isActive => {
+            if (isActive) {
+              resolve(false);
+            } else {
+              reject(new Error
+                ('Cannot check hardware encoding. Device not present'));
+            }
+          })
+        }
         resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is active and present.
+   *
+   */
+  isActive(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:activestate', this._id).then(val => {
+        resolve(val === 'active');
       });
     });
   }
@@ -173,7 +199,7 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
          }
        }
        return this.getAudioOffset();
-     }).then(val => {
+      }).then(val => {
         audioOffset = val;
         if (audioOffset >= 0) {
           isPositive = true;
