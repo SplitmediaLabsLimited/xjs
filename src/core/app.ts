@@ -900,7 +900,12 @@ export class App{
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
-          resolve(Transition[val.toUpperCase()]);
+          var transitionObj = Transition[val.toUpperCase()];
+          if (typeof transitionObj !== 'undefined') {
+            resolve(transitionObj);
+          } else {
+            resolve(new Transition(val));
+          }
         }
       });
     });
