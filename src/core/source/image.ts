@@ -46,25 +46,35 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
      */
     isEnhancedResizeEnabled: () => Promise<boolean>;
 
-    /**
-     * See: {@link #core/IItemLayout#getPosition getPosition}
-     */
-    getPosition: () => Promise<Rectangle>;
+  /**
+   * See: {@link #core/IItemLayout#getCropping getCropping}
+   */
+  getCropping: () => Promise<Rectangle>;
 
-    /**
-     * See: {@link #core/IItemLayout#getRotateY getRotateY}
-     */
-    getRotateY: () => Promise<number>;
+  /**
+   * See: {@link #core/IItemLayout#getPosition getPosition}
+   */
+  getPosition: () => Promise<Rectangle>;
 
-    /**
-     * See: {@link #core/IItemLayout#getRotateX getRotateX}
-     */
-    getRotateX: () => Promise<number>;
+  /**
+   * See: {@link #core/IItemLayout#getRotateY getRotateY}
+   */
+  getRotateY: () => Promise<number>;
 
-    /**
-     * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
-     */
-    getRotateZ: () => Promise<number>;
+  /**
+   * See: {@link #core/IItemLayout#getRotateX getRotateX}
+   */
+  getRotateX: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
+   */
+  getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCropping setCropping}
+   */
+  setCropping: (value: Rectangle) => Promise<CameraSource>;
 
     /**
      * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

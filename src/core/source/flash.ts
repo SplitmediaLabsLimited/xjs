@@ -101,6 +101,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
+   * See: {@link #core/IItemLayout#getCropping getCropping}
+   */
+  getCropping: () => Promise<Rectangle>;
+
+  /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
@@ -119,6 +124,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCropping setCropping}
+   */
+  setCropping: (value: Rectangle) => Promise<CameraSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

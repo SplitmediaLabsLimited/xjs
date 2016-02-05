@@ -231,6 +231,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
+   * See: {@link #core/IItemLayout#getCropping getCropping}
+   */
+  getCropping: () => Promise<Rectangle>;
+
+  /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
@@ -249,6 +254,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCropping setCropping}
+   */
+  setCropping: (value: Rectangle) => Promise<CameraSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

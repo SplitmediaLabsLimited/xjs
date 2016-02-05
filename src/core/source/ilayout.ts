@@ -260,6 +260,50 @@ export interface IItemLayout {
    * ```
    */
   setRotateZ(value: number): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Get the cropping of the source
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getCropping().then(function(crop) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getCropping(): Promise<Rectangle>;
+
+  /**
+   * param: (value: Rectangle)
+   *
+   * Set Source cropping. Relative coordinates (0-1) are required.
+   *
+   * *Chainable.*
+   *
+   * Please do note that this method will NOT automatically modify/calculate
+   * the height and width of the source whenever you modify cropping,
+   * unlike the behavior of XBC when modifying it through the properties window.
+   *
+   * You will need to manually modify the height and width of the source each time
+   * you modify this value to get the best results. If not, it might result to
+   * the stretching and/or shrinking of the source.
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0.1, 0.1, 0.2, 0.01);
+   * source.setCropping(rect).then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  setCropping(value: Rectangle): Promise<IItemLayout>;  
 }
 
 export class ItemLayout implements IItemLayout {
@@ -393,4 +437,22 @@ export class ItemLayout implements IItemLayout {
       }
     });
   }
+
+  getCropping():Promise<Rectangle> {
+    return new Promise(resolve => {
+      iItem.get('prop:crop', this._id).then(val => {
+        var [left, top, right, bottom] = decodeURIComponent(val).split(',');
+        resolve(Rectangle.fromCoordinates(Number(left), Number(top),
+          Number(right), Number(bottom)));
+      });
+    });
+  }
+
+  setCropping(value: Rectangle): Promise<ItemLayout> {
+    return new Promise(resolve => {
+        iItem.set('prop:crop', value.toCoordinateString(), this._id).then(() => {
+          resolve(this);
+      });
+    });
+  }  
 }
