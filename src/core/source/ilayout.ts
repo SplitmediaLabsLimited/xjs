@@ -303,7 +303,42 @@ export interface IItemLayout {
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setCropping(value: Rectangle): Promise<IItemLayout>;  
+  setCropping(value: Rectangle): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get canvas rotation of the source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getCanvasRotate().then(function(deg) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getCanvasRotate(): Promise<number>;
+
+  /**
+   * param: (value: number)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Set canvas rotation of the source (possible values - 0, 90, 180, 270)
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setCanvasRotate(90).then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
+  setCanvasRotate(value: number): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {
@@ -453,6 +488,32 @@ export class ItemLayout implements IItemLayout {
         iItem.set('prop:crop', value.toCoordinateString(), this._id).then(() => {
           resolve(this);
       });
+    });
+  }
+
+  getCanvasRotate(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:rotate_canvas', this._id).then(val => {
+        var value = Number(val);
+        if ([0, 90, 180, 270].indexOf(value) < 0) {
+          resolve(0);
+        } else {
+          resolve(value);
+        }
+      });
+    });
+  }
+
+  setCanvasRotate(value: number): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if ([0, 90, 180, 270].indexOf(value) < 0) {
+        reject(
+          Error('Invalid value. Only possible values are 0, 90, 180 and 270'));
+      } else {
+        iItem.set('prop:rotate_canvas', String(value), this._id).then(() => {
+          resolve(this);
+        });
+      }
     });
   }  
 }
