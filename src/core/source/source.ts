@@ -520,7 +520,7 @@ export class Source implements IItemLayout {
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<CameraSource>;
+  setCropping: (value: Rectangle) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

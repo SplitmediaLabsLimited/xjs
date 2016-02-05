@@ -618,7 +618,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<CameraSource>;
+  setCropping: (value: Rectangle) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

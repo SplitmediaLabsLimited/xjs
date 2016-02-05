@@ -206,7 +206,7 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<CameraSource>;
+  setCropping: (value: Rectangle) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

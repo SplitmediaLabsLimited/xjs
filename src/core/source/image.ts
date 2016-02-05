@@ -74,7 +74,7 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<CameraSource>;
+  setCropping: (value: Rectangle) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
