@@ -351,6 +351,8 @@ export class Scene {
                   resolveScene();
                 });
               }
+            }).catch(() => {
+              resolveScene();
             });
           });
         })).then(() => {
@@ -538,54 +540,56 @@ export class Scene {
    * ```
    */
   getSources(): Promise<Source[]> {
-    return new Promise(resolve => {
-    iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
-      var promiseArray: Promise<Source>[] = [];
+    return new Promise((resolve, reject) => {
+      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
+        var promiseArray: Promise<Source>[] = [];
 
-      // type checking to return correct Source subtype
-      let typePromise = index => new Promise(typeResolve => {
-        let source = jsonArr[index];
-        let type = Number(source['type']);
-        if (type === SourceTypes.GAMESOURCE) {
-          typeResolve(new GameSource(source));
-        } else if (type === SourceTypes.HTML) {
-          typeResolve(new HtmlSource(source));
-        } else if (type === SourceTypes.SCREEN) {
-          typeResolve(new ScreenSource(source));
-        } else if (type === SourceTypes.BITMAP ||
-            type === SourceTypes.FILE &&
-            /\.gif$/.test(source['item'])) {
-          typeResolve(new ImageSource(source));
-        } else if (type === SourceTypes.FILE &&
-            /\.(gif|xbs)$/.test(source['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-          typeResolve(new MediaSource(source));
-        } else if (Number(source['type']) === SourceTypes.LIVE &&
-          source['item'].indexOf(
-            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-          typeResolve(new CameraSource(source));
-        } else if (Number(source['type']) === SourceTypes.LIVE &&
-          source['item'].indexOf(
-            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-          typeResolve(new AudioSource(source));
-        } else if (Number(source['type']) === SourceTypes.FLASHFILE) {
-          typeResolve(new FlashSource(source));
-        } else {
-            typeResolve(new Source(source));
+        // type checking to return correct Source subtype
+        let typePromise = index => new Promise(typeResolve => {
+          let source = jsonArr[index];
+          let type = Number(source['type']);
+          if (type === SourceTypes.GAMESOURCE) {
+            typeResolve(new GameSource(source));
+          } else if (type === SourceTypes.HTML) {
+            typeResolve(new HtmlSource(source));
+          } else if (type === SourceTypes.SCREEN) {
+            typeResolve(new ScreenSource(source));
+          } else if (type === SourceTypes.BITMAP ||
+              type === SourceTypes.FILE &&
+              /\.gif$/.test(source['item'])) {
+            typeResolve(new ImageSource(source));
+          } else if (type === SourceTypes.FILE &&
+              /\.(gif|xbs)$/.test(source['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+            typeResolve(new MediaSource(source));
+          } else if (Number(source['type']) === SourceTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+            typeResolve(new CameraSource(source));
+          } else if (Number(source['type']) === SourceTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioSource(source));
+          } else if (Number(source['type']) === SourceTypes.FLASHFILE) {
+            typeResolve(new FlashSource(source));
+          } else {
+              typeResolve(new Source(source));
+          }
+        });
+
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneId'] = this._id;
+            promiseArray.push(typePromise(i));
+          }
         }
-      });
 
-      if (Array.isArray(jsonArr)) {
-        for (var i = 0; i < jsonArr.length; i++) {
-          jsonArr[i]['sceneId'] = this._id;
-          promiseArray.push(typePromise(i));
-        }
-      }
-
-      Promise.all(promiseArray).then(results => {
-        resolve(results);
+        Promise.all(promiseArray).then(results => {
+          resolve(results);
+        });
+      }).catch(err => {
+        reject(err)
       });
-    });
     });
   }
 
