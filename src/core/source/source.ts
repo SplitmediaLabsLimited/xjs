@@ -493,6 +493,11 @@ export class Source implements IItemLayout {
   isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
+   * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
+   */
+  getCanvasRotate: () => Promise<number>;
+  
+  /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
   getCropping: () => Promise<Rectangle>;
@@ -516,6 +521,11 @@ export class Source implements IItemLayout {
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
+   */
+  setCanvasRotate: (value: number) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
