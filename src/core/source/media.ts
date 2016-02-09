@@ -64,6 +64,11 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
   getCropping: () => Promise<Rectangle>;
 
   /**
+   * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
+   */
+  getEnhancedRotate: () => Promise<number>;
+
+  /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
@@ -92,6 +97,11 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
   setCropping: (value: Rectangle) => Promise<MediaSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
+   */
+  setEnhancedRotate:        (value: number) => Promise<MediaSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

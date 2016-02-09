@@ -57,6 +57,11 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
   getCropping: () => Promise<Rectangle>;
 
   /**
+   * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
+   */
+  getEnhancedRotate: () => Promise<number>;
+
+  /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
@@ -85,6 +90,11 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
   setCropping: (value: Rectangle) => Promise<ImageSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
+   */
+  setEnhancedRotate:        (value: number) => Promise<ImageSource>;
 
     /**
      * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

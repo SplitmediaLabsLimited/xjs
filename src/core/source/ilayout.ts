@@ -339,11 +339,120 @@ export interface IItemLayout {
    * ```
    */
   setCanvasRotate(value: number): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the z-rotation value as can be seen in the source properties window.
+   * This value takes into account rotateZ along with canvas rotation.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getEnhancedRotate().then(function(deg) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getEnhancedRotate(): Promise<number>;
+
+  /**
+   * param: (value: number)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Set Rotate Z value of the source, also taking into account canvas rotation.
+   *
+   * *Chainable.*
+   *
+   * This method automatically modifies/calculates
+   * the height and width of the source whenever you modify the z-rotation value,
+   * changing its orientation (vertical / horizontal) at certain angles.
+   * This behavior is what is exhibited in the source properties window.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setEnhancedRotate(30).then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
+  setEnhancedRotate(value: number): Promise<IItemLayout>;
+
+  /**
+   * param: (value: Rectangle)
+   *
+   * Set source cropping while automatically calculating
+   * and modifying width and height to account for the cropped value.
+   *
+   * *Chainable.*
+   *
+   * This behaves the same as in the source properties window
+   * and is done to prevent source stretching.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var rect = xjs.Rectangle.fromCoordinates(0.1, 0.1, 0.2, 0.01);
+   * source.setEnhancedCropping(rect).then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  // setEnhancedCropping(value: Rectangle): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {
   private _id: string;
   private position: Rectangle;
+
+  private _getCanvasAndZRotate(value: number): Object {
+    var rotationObject = {};
+    if (value >= -180 && value <= -135)
+    {
+      rotationObject['canvasRotate'] = 180;
+      rotationObject['zRotate'] = value + 180;
+      rotationObject['orientation'] = "landscape";
+    }
+    else if (value > -135 && value < -45)
+    {
+      rotationObject['canvasRotate'] = 270;
+      rotationObject['zRotate'] = value + 90;
+      rotationObject['orientation'] = "portrait";
+    }
+    else if (value >= -45 && value <= 45)
+    {
+      rotationObject['canvasRotate'] = 0;
+      rotationObject['zRotate'] = value;
+      rotationObject['orientation'] = "landscape";
+    }
+    else if (value > 45 && value < 135)
+    {
+      rotationObject['canvasRotate'] = 90
+      rotationObject['zRotate'] = value - 90;
+      rotationObject['orientation'] = "portrait";
+    }
+    else if (value >= 135 && value <= 180)
+    {
+      rotationObject['canvasRotate'] = 180
+      rotationObject['zRotate'] = value - 180;
+      rotationObject['orientation'] = "landscape";
+    }
+    return rotationObject;
+  }
+
+  private _adjustRotation(value: number): number {
+    if (value > 180) {
+      value -= 360;
+    } else if (value < -180) {
+      value += 360;  
+    }
+    return value;
+  }
 
   isKeepAspectRatio(): Promise<boolean> {
     return new Promise(resolve => {
@@ -512,6 +621,90 @@ export class ItemLayout implements IItemLayout {
       } else {
         iItem.set('prop:rotate_canvas', String(value), this._id).then(() => {
           resolve(this);
+        });
+      }
+    });
+  }
+
+  getEnhancedRotate(): Promise<number> {
+    return new Promise(resolve => {
+      var rotateZ, rotateCanvas, rotateValue;
+      iItem.get('prop:rotate_z', this._id).then(val => {
+        rotateZ = Number(val);
+        return iItem.get('prop:rotate_canvas', this._id);
+      }).then(val => {
+        rotateCanvas = Number(val);
+        rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
+        resolve(rotateValue);
+      });
+    });
+  }
+
+  setEnhancedRotate(value: number): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if (value < -180 || value > 180) {
+        reject(Error('Invalid value. Min: -180, Max: 180'));
+      } else {
+        var formerObject;
+        var valueObject = this._getCanvasAndZRotate(Number(value));
+        this.getEnhancedRotate().then(val => {
+          formerObject = this._getCanvasAndZRotate(Number(val));
+          return iItem.set('prop:rotate_z', String(valueObject['zRotate']), this._id)
+        }).then(() => {
+          return iItem.set('prop:rotate_canvas', String(valueObject['canvasRotate']), this._id)
+        }).then(() => {
+          if (formerObject['orientation'] !== valueObject['orientation'])
+          {
+            // interChangeHeightAndWidth();
+            var outputResolution, widthMax, heightMax;
+            iItem.get('mixerresolution', this._id).then(val => {
+              outputResolution = val.split(',');
+              widthMax = Number(outputResolution[0]);
+              heightMax = Number(outputResolution[1]);
+              return iItem.get('prop:pos', this._id);
+            }).then(val => {
+              var position = val.split(',');
+              var leftPosition = parseFloat(position[0]) * widthMax;
+              var topPosition = parseFloat(position[1]) * heightMax;
+              var rightPosition = parseFloat(position[2]) * widthMax;
+              var bottomPosition = parseFloat(position[3]) * heightMax;
+
+              var newLeft, newRight, newTop, newBottom;
+              var widthValue = Math.round(rightPosition - leftPosition);
+              var heightValue = Math.round(bottomPosition - topPosition);
+
+              if (heightValue > widthMax) {
+                newLeft = 0;
+                newRight = widthMax;
+              } else {
+                var xCenter = leftPosition + ((rightPosition - leftPosition)/2);
+                newLeft = xCenter - (heightValue/2);
+                newRight = xCenter + (heightValue/2);
+              }
+
+              if (widthValue > heightMax) {
+                newTop = 0;
+                newBottom = heightMax;
+              } else {
+                var yCenter = topPosition + ((bottomPosition - topPosition)/2);
+                newTop = yCenter - (widthValue/2);
+                newBottom = yCenter + (widthValue/2);
+              }
+
+              var leftPos = newLeft/widthMax;
+              var topPos = newTop/heightMax;
+              var rightPos = newRight/widthMax;
+              var bottomPos = newBottom/heightMax;
+
+              return iItem.set('prop:pos', leftPos.toFixed(6) + "," +
+                topPos.toFixed(6) + "," + rightPos.toFixed(6) + "," +
+                bottomPos.toFixed(6), this._id);
+            }).then(() => {
+              return iItem.get('prop:posaspect', this._id);
+            }).then(val => {
+              return iItem.set('prop:pos', val, this._id)
+            });
+          }
         });
       }
     });
