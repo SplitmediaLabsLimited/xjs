@@ -514,11 +514,14 @@ export class ItemLayout implements IItemLayout {
   }
 
   setPosition(value: Rectangle): Promise<ItemLayout> {
-    return new Promise(resolve => {
-      this.position = value;
+    return new Promise((resolve, reject) => {
+      try {
         iItem.set('prop:pos', value.toCoordinateString(), this._id).then(() => {
           resolve(this);
-      });
+        });
+      } catch(err) {
+        reject(err);
+      }
     });
   }
 
