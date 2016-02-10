@@ -290,7 +290,7 @@ export interface IItemLayout {
    * param: (value: Object)
    *
    * Set Source cropping.
-   *   
+   *
    * This accepts an object with properties left, top, right, and bottom
    * whose values are between 0 - 1. This object is not a coordinate system.
    * Top value indicates the portion of the source removed(cropped) from the top,
@@ -408,7 +408,7 @@ export interface IItemLayout {
    * Top value indicates the portion of the source removed(cropped) from the top,
    * left value indicates the portion of the source removed from the left,
    * and so on.
-   *   
+   *
    * *Chainable.*
    *
    * This behaves the same as in the source properties window
@@ -440,31 +440,31 @@ export class ItemLayout implements IItemLayout {
     {
       rotationObject['canvasRotate'] = 180;
       rotationObject['zRotate'] = value + 180;
-      rotationObject['orientation'] = "landscape";
+      rotationObject['orientation'] = 'landscape';
     }
     else if (value > -135 && value < -45)
     {
       rotationObject['canvasRotate'] = 270;
       rotationObject['zRotate'] = value + 90;
-      rotationObject['orientation'] = "portrait";
+      rotationObject['orientation'] = 'portrait';
     }
     else if (value >= -45 && value <= 45)
     {
       rotationObject['canvasRotate'] = 0;
       rotationObject['zRotate'] = value;
-      rotationObject['orientation'] = "landscape";
+      rotationObject['orientation'] = 'landscape';
     }
     else if (value > 45 && value < 135)
     {
       rotationObject['canvasRotate'] = 90
       rotationObject['zRotate'] = value - 90;
-      rotationObject['orientation'] = "portrait";
+      rotationObject['orientation'] = 'portrait';
     }
     else if (value >= 135 && value <= 180)
     {
       rotationObject['canvasRotate'] = 180
       rotationObject['zRotate'] = value - 180;
-      rotationObject['orientation'] = "landscape";
+      rotationObject['orientation'] = 'landscape';
     }
     return rotationObject;
   }
@@ -473,7 +473,7 @@ export class ItemLayout implements IItemLayout {
     if (value > 180) {
       value -= 360;
     } else if (value < -180) {
-      value += 360;  
+      value += 360;
     }
     return value;
   }
@@ -627,8 +627,8 @@ export class ItemLayout implements IItemLayout {
     return new Promise((resolve, reject) => {
       if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
         value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
-        iItem.set('prop:crop', value['left'].toFixed(6) + "," +
-              value['top'].toFixed(6) + "," + value['right'].toFixed(6) + "," +
+        iItem.set('prop:crop', value['left'].toFixed(6) + ',' +
+              value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
               value['bottom'].toFixed(6), this._id).then(() => {
           resolve(this);
         });
@@ -745,8 +745,8 @@ export class ItemLayout implements IItemLayout {
               var rightPos = newRight / widthMax;
               var bottomPos = newBottom / heightMax;
 
-              return iItem.set('prop:pos', leftPos.toFixed(6) + "," +
-                topPos.toFixed(6) + "," + rightPos.toFixed(6) + "," +
+              return iItem.set('prop:pos', leftPos.toFixed(6) + ',' +
+                topPos.toFixed(6) + ',' + rightPos.toFixed(6) + ',' +
                 bottomPos.toFixed(6), this._id);
             }).then(() => {
               return iItem.get('prop:posaspect', this._id);
@@ -922,7 +922,7 @@ export class ItemLayout implements IItemLayout {
 
               if (leftCropRaw == 0)
               {
-                preCropPosition[2] = position[2];  
+                preCropPosition[2] = position[2];
               }
 
               if (topCropRaw == 0)
@@ -1069,7 +1069,7 @@ export class ItemLayout implements IItemLayout {
 
               if (rightCropRaw == 0)
               {
-                preCropPosition[2] = position[2]; 
+                preCropPosition[2] = position[2];
               }
 
               if (bottomCropRaw == 0)
@@ -1127,11 +1127,11 @@ export class ItemLayout implements IItemLayout {
               ((bottomCrop * sourceHeight) / mixerHeight);
           }
 
-          iItem.set('prop:crop', value['left'].toFixed(6) + "," +
-            value['top'].toFixed(6) + "," + value['right'].toFixed(6) + "," +
+          iItem.set('prop:crop', value['left'].toFixed(6) + ',' +
+            value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
             value['bottom'].toFixed(6), this._id).then(() => {
-              return iItem.set('prop:pos', newLeft.toFixed(6) + "," +
-                newTop.toFixed(6) + "," + newRight.toFixed(6) + "," +
+              return iItem.set('prop:pos', newLeft.toFixed(6) + ',' +
+                newTop.toFixed(6) + ',' + newRight.toFixed(6) + ',' +
                 newBottom.toFixed(6), this._id);
           }).then(() => {
             resolve(this);
@@ -1142,5 +1142,5 @@ export class ItemLayout implements IItemLayout {
           ' insufficient properties (left, top, right, bottom)');
       }
     });
-  }  
+  }
 }
