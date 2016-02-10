@@ -598,7 +598,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
-  getCropping: () => Promise<Rectangle>;
+  getCropping: () => Promise<Object>;
 
   /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
@@ -633,7 +633,12 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<HtmlSource>;
+  setCropping: (value: Object) => Promise<HtmlSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}

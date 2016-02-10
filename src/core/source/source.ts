@@ -500,7 +500,7 @@ export class Source implements IItemLayout {
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
-  getCropping: () => Promise<Rectangle>;
+  getCropping: () => Promise<Object>;
 
   /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
@@ -535,7 +535,12 @@ export class Source implements IItemLayout {
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<Source>;
+  setCropping: (value: Object) => Promise<Source>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<Source>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}

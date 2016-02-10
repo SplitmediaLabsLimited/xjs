@@ -186,9 +186,9 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
-  getCropping: () => Promise<Rectangle>;
+  getCropping: () => Promise<Object>;
 
-    /**
+  /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
    */
   getEnhancedRotate: () => Promise<number>;
@@ -221,7 +221,12 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<GameSource>;
+  setCropping: (value: Object) => Promise<GameSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<GameSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}

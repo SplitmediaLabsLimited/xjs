@@ -262,26 +262,40 @@ export interface IItemLayout {
   setRotateZ(value: number): Promise<IItemLayout>;
 
   /**
-   * return: Promise<Rectangle>
+   * return: Promise<Object>
    *
    * Get the cropping of the source
    *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * This returns an object with properties of left, top, right, and bottom
+   * whose values are between 0 - 1. This object is not a coordinate system.
+   * Top value indicates the portion of the source removed(cropped) from the top,
+   * left value indicates the portion of the source removed from the left,
+   * and so on.
    *
    * #### Usage
    *
    * ```javascript
    * source.getCropping().then(function(crop) {
    *   // The rest of your code here
+   *   var left = crop.left;
+   *   var top = crop.top;
+   *   var right = crop.right;
+   *   var bottom = crop.bottom;
    * });
    * ```
    */
-  getCropping(): Promise<Rectangle>;
+  getCropping(): Promise<Object>;
 
   /**
-   * param: (value: Rectangle)
+   * param: (value: Object)
    *
-   * Set Source cropping. Relative coordinates (0-1) are required.
+   * Set Source cropping.
+   *   
+   * This accepts an object with properties left, top, right, and bottom
+   * whose values are between 0 - 1. This object is not a coordinate system.
+   * Top value indicates the portion of the source removed(cropped) from the top,
+   * left value indicates the portion of the source removed from the left,
+   * and so on.
    *
    * *Chainable.*
    *
@@ -295,15 +309,17 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * var rect = xjs.Rectangle.fromCoordinates(0.1, 0.1, 0.2, 0.01);
-   * source.setCropping(rect).then(function(source) {
+   * var obj = {};
+   * obj.left = 0.1;
+   * obj.top = 0.2;
+   * obj.right = 0;
+   * obj.bottom = 0.1;
+   * source.setCropping(obj).then(function(source) {
    *   // Promise resolves with same Source instance
    * });
    * ```
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setCropping(value: Rectangle): Promise<IItemLayout>;
+  setCropping(value: Object): Promise<IItemLayout>;
 
   /**
    * return: Promise<number>
@@ -382,11 +398,17 @@ export interface IItemLayout {
   setEnhancedRotate(value: number): Promise<IItemLayout>;
 
   /**
-   * param: (value: Rectangle)
+   * param: (value: Object)
    *
    * Set source cropping while automatically calculating
    * and modifying width and height to account for the cropped value.
    *
+   * This accepts an object with properties left, top, right, and bottom
+   * whose values are between 0 - 1. This object is not a coordinate system.
+   * Top value indicates the portion of the source removed(cropped) from the top,
+   * left value indicates the portion of the source removed from the left,
+   * and so on.
+   *   
    * *Chainable.*
    *
    * This behaves the same as in the source properties window
@@ -395,15 +417,17 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * var rect = xjs.Rectangle.fromCoordinates(0.1, 0.1, 0.2, 0.01);
-   * source.setEnhancedCropping(rect).then(function(source) {
+   * var obj = {};
+   * obj.left = 0.1;
+   * obj.top = 0.2;
+   * obj.right = 0;
+   * obj.bottom = 0.1;
+   * source.setCroppingEnhanced(obj).then(function(source) {
    *   // Promise resolves with same Source instance
    * });
    * ```
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  // setEnhancedCropping(value: Rectangle): Promise<IItemLayout>;
+  setCroppingEnhanced(value: Object): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {
@@ -411,7 +435,7 @@ export class ItemLayout implements IItemLayout {
   private position: Rectangle;
 
   private _getCanvasAndZRotate(value: number): Object {
-    var rotationObject = {};
+    var rotationObject: Object = {};
     if (value >= -180 && value <= -135)
     {
       rotationObject['canvasRotate'] = 180;
@@ -585,21 +609,33 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  getCropping():Promise<Rectangle> {
+  getCropping():Promise<Object> {
     return new Promise(resolve => {
+      var cropObject: Object = {};
       iItem.get('prop:crop', this._id).then(val => {
         var [left, top, right, bottom] = decodeURIComponent(val).split(',');
-        resolve(Rectangle.fromCoordinates(Number(left), Number(top),
-          Number(right), Number(bottom)));
+        cropObject['left'] = Number(left);
+        cropObject['top'] = Number(top);
+        cropObject['right'] = Number(right);
+        cropObject['bottom'] = Number(bottom);
+        resolve(cropObject);
       });
     });
   }
 
-  setCropping(value: Rectangle): Promise<ItemLayout> {
-    return new Promise(resolve => {
-        iItem.set('prop:crop', value.toCoordinateString(), this._id).then(() => {
+  setCropping(value: Object): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+      if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
+        value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
+        iItem.set('prop:crop', value['left'].toFixed(6) + "," +
+              value['top'].toFixed(6) + "," + value['right'].toFixed(6) + "," +
+              value['bottom'].toFixed(6), this._id).then(() => {
           resolve(this);
-      });
+        });
+      } else {
+        reject('Error setting cropping,' +
+          ' insufficient properties (left, top, right, bottom)');
+      }
     });
   }
 
@@ -631,7 +667,9 @@ export class ItemLayout implements IItemLayout {
 
   getEnhancedRotate(): Promise<number> {
     return new Promise(resolve => {
-      var rotateZ, rotateCanvas, rotateValue;
+      var rotateZ;
+      var rotateCanvas;
+      var rotateValue;
       iItem.get('prop:rotate_z', this._id).then(val => {
         rotateZ = Number(val);
         return iItem.get('prop:rotate_canvas', this._id);
@@ -652,14 +690,18 @@ export class ItemLayout implements IItemLayout {
         var valueObject = this._getCanvasAndZRotate(Number(value));
         this.getEnhancedRotate().then(val => {
           formerObject = this._getCanvasAndZRotate(Number(val));
-          return iItem.set('prop:rotate_z', String(valueObject['zRotate']), this._id)
+          return iItem.set('prop:rotate_z',
+            String(valueObject['zRotate']), this._id)
         }).then(() => {
-          return iItem.set('prop:rotate_canvas', String(valueObject['canvasRotate']), this._id)
+          return iItem.set('prop:rotate_canvas',
+            String(valueObject['canvasRotate']), this._id)
         }).then(() => {
           if (formerObject['orientation'] !== valueObject['orientation'])
           {
             // interChangeHeightAndWidth();
-            var outputResolution, widthMax, heightMax;
+            var outputResolution;
+            var widthMax;
+            var heightMax;
             iItem.get('mixerresolution', this._id).then(val => {
               outputResolution = val.split(',');
               widthMax = Number(outputResolution[0]);
@@ -672,7 +714,10 @@ export class ItemLayout implements IItemLayout {
               var rightPosition = parseFloat(position[2]) * widthMax;
               var bottomPosition = parseFloat(position[3]) * heightMax;
 
-              var newLeft, newRight, newTop, newBottom;
+              var newLeft;
+              var newRight;
+              var newTop;
+              var newBottom;
               var widthValue = Math.round(rightPosition - leftPosition);
               var heightValue = Math.round(bottomPosition - topPosition);
 
@@ -680,24 +725,25 @@ export class ItemLayout implements IItemLayout {
                 newLeft = 0;
                 newRight = widthMax;
               } else {
-                var xCenter = leftPosition + ((rightPosition - leftPosition)/2);
-                newLeft = xCenter - (heightValue/2);
-                newRight = xCenter + (heightValue/2);
+                var xCenter = leftPosition +
+                  ((rightPosition - leftPosition) / 2);
+                newLeft = xCenter - (heightValue / 2);
+                newRight = xCenter + (heightValue / 2);
               }
 
               if (widthValue > heightMax) {
                 newTop = 0;
                 newBottom = heightMax;
               } else {
-                var yCenter = topPosition + ((bottomPosition - topPosition)/2);
+                var yCenter = topPosition + ((bottomPosition - topPosition) / 2);
                 newTop = yCenter - (widthValue/2);
                 newBottom = yCenter + (widthValue/2);
               }
 
-              var leftPos = newLeft/widthMax;
-              var topPos = newTop/heightMax;
-              var rightPos = newRight/widthMax;
-              var bottomPos = newBottom/heightMax;
+              var leftPos = newLeft / widthMax;
+              var topPos = newTop / heightMax;
+              var rightPos = newRight / widthMax;
+              var bottomPos = newBottom / heightMax;
 
               return iItem.set('prop:pos', leftPos.toFixed(6) + "," +
                 topPos.toFixed(6) + "," + rightPos.toFixed(6) + "," +
@@ -709,6 +755,391 @@ export class ItemLayout implements IItemLayout {
             });
           }
         });
+      }
+    });
+  }
+
+  setCroppingEnhanced(value: Object): Promise<ItemLayout> {
+    return new Promise((resolve, reject) => {
+
+      if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
+        value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
+
+        var originalWidth;
+        var originalHeight;
+        var outputResolution;
+        var position;
+        var canvasRotate;
+        var preCropPosition: Object = {};
+
+        iItem.get('mixerresolution', this._id).then(val => {
+          outputResolution = val.split(',');
+          return iItem.get('prop:pos', this._id);
+        }).then(val => {
+          position = val.split(',');
+          return iItem.get('prop:rotate_canvas', this._id);
+        }).then(val => {
+          canvasRotate = val;
+          return iItem.get('prop:crop', this._id);
+        }).then(val => {
+          var mixerWidth = parseInt(outputResolution[0]);
+          var mixerHeight = parseInt(outputResolution[1]);
+
+          var leftPositionInit = parseFloat(position[0]) * mixerWidth;
+          var topPositionInit = parseFloat(position[1]) * mixerHeight;
+          var rightPositionInit = parseFloat(position[2]) * mixerWidth;
+          var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
+
+          var widthValue = rightPositionInit - leftPositionInit;
+          var heightValue = bottomPositionInit - topPositionInit;
+
+          var crop = val.split(',');
+
+          var leftCropRaw = parseFloat(crop[0]);
+          var topCropRaw = parseFloat(crop[1]);
+          var rightCropRaw = parseFloat(crop[2]);
+          var bottomCropRaw = parseFloat(crop[3]);
+
+          var leftValue = Math.round(leftCropRaw * 100);
+          var topValue = Math.round(topCropRaw * 100);
+          var rightValue = Math.round(rightCropRaw * 100);
+          var bottomValue = Math.round(bottomCropRaw * 100);
+
+          var isNoCropping = ((leftValue == 0) && (topValue == 0) &&
+            (rightValue == 0) && (bottomValue == 0));
+
+          if (canvasRotate == 270)
+          {
+            if (isNoCropping)
+            {
+              preCropPosition = position;
+              originalHeight = widthValue;
+              originalWidth = heightValue;
+            }
+            else
+            {
+              var leftPosition = parseFloat(position[3]);
+              var topPosition = parseFloat(position[0]);
+              var rightPosition = parseFloat(position[1]);
+              var bottomPosition = parseFloat(position[2]);
+
+              if (leftCropRaw != 0 || rightCropRaw != 0)
+              {
+                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+
+                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                preCropPosition[3] = leftPosition + leftDifference;
+
+                var rightDifference = (originalWidth * rightCropRaw) /
+                  mixerHeight;
+                preCropPosition[1] = rightPosition - rightDifference;
+              }
+              else
+              {
+                originalWidth = heightValue;
+              }
+              if (topCropRaw != 0 || bottomCropRaw != 0)
+              {
+                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+
+                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                preCropPosition[0] = topPosition - topDifference;
+
+                var bottomDifference = (originalHeight * bottomCropRaw) /
+                  mixerWidth;
+                preCropPosition[2] = bottomPosition + bottomDifference;
+              }
+              else
+              {
+                originalHeight = widthValue;
+              }
+
+              if (leftCropRaw == 0)
+              {
+                preCropPosition[3] = position[3];
+              }
+
+              if (topCropRaw == 0)
+              {
+                preCropPosition[0] = position[0];
+              }
+
+              if (rightCropRaw == 0)
+              {
+                preCropPosition[1] = position[1];
+              }
+
+              if (bottomCropRaw == 0)
+              {
+                preCropPosition[2] = position[2];
+              }
+            }
+          }
+          else if (canvasRotate == 180)
+          {
+            if (isNoCropping)
+            {
+              preCropPosition = position;
+              originalWidth = widthValue;
+              originalHeight = heightValue;
+            }
+            else
+            {
+              var leftPosition = parseFloat(position[2]);
+              var topPosition = parseFloat(position[3]);
+              var rightPosition = parseFloat(position[0]);
+              var bottomPosition = parseFloat(position[1]);
+
+              if (leftCropRaw != 0 || rightCropRaw != 0)
+              {
+                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+
+                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                preCropPosition[2] = leftPosition + leftDifference;
+
+                var rightDifference = (originalWidth * rightCropRaw) / mixerWidth;
+                preCropPosition[0] = rightPosition - rightDifference;
+              }
+              else
+              {
+                originalWidth = widthValue;
+              }
+              if (topCropRaw != 0 || bottomCropRaw != 0)
+              {
+                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+
+                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                preCropPosition[3] = topPosition + topDifference;
+
+                var bottomDifference = (originalHeight * bottomCropRaw) /
+                  mixerHeight;
+                preCropPosition[1] = bottomPosition - bottomDifference;
+              }
+              else
+              {
+                originalHeight = heightValue;
+              }
+
+              if (leftCropRaw == 0)
+              {
+                preCropPosition[2] = position[2];  
+              }
+
+              if (topCropRaw == 0)
+              {
+                preCropPosition[3] = position[3];
+              }
+
+              if (rightCropRaw == 0)
+              {
+                preCropPosition[0] = position[0];
+              }
+
+              if (bottomCropRaw == 0)
+              {
+                preCropPosition[1] = position[1];
+              }
+            }
+          }
+          else if (canvasRotate == 90)
+          {
+            if (isNoCropping)
+            {
+              preCropPosition = position;
+              originalHeight = widthValue;
+              originalWidth = heightValue;
+            }
+            else
+            {
+              var leftPosition = parseFloat(position[1]);
+              var topPosition = parseFloat(position[2]);
+              var rightPosition = parseFloat(position[3]);
+              var bottomPosition = parseFloat(position[0]);
+
+              if (leftCropRaw != 0 || rightCropRaw != 0)
+              {
+                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+
+                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                preCropPosition[1] = leftPosition - leftDifference;
+
+                var rightDifference = (originalWidth * rightCropRaw) /
+                  mixerHeight;
+                preCropPosition[3] = rightPosition + rightDifference;
+              }
+              else
+              {
+                originalWidth = heightValue;
+              }
+              if (topCropRaw != 0 || bottomCropRaw != 0)
+              {
+                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+
+                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                preCropPosition[2] = topPosition + topDifference;
+
+                var bottomDifference = (originalHeight * bottomCropRaw) /
+                  mixerWidth;
+                preCropPosition[0] = bottomPosition - bottomDifference;
+
+              }
+              else
+              {
+                originalHeight = widthValue;
+              }
+
+              if (leftCropRaw == 0)
+              {
+                preCropPosition[1] = position[1];
+              }
+
+              if (topCropRaw == 0)
+              {
+                preCropPosition[2] = position[2];
+              }
+
+              if (rightCropRaw == 0)
+              {
+                preCropPosition[3] = position[3];
+              }
+
+              if (bottomCropRaw == 0)
+              {
+                preCropPosition[0] = position[0];
+              }
+            }
+          }
+          // canvasRotate is zero
+          else
+          {
+            if (isNoCropping)
+            {
+              preCropPosition = position;
+              originalHeight = heightValue;
+              originalWidth = widthValue;
+            }
+            else
+            {
+              var leftPosition = parseFloat(position[0]);
+              var topPosition = parseFloat(position[1]);
+              var rightPosition = parseFloat(position[2]);
+              var bottomPosition = parseFloat(position[3]);
+
+              if (leftCropRaw != 0 || rightCropRaw != 0)
+              {
+                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+
+                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                preCropPosition[0] = leftPosition - leftDifference;
+
+                var rightDifference = (originalWidth * rightCropRaw) /
+                  mixerWidth;
+                preCropPosition[2] = rightPosition + rightDifference;
+              }
+              else
+              {
+                originalWidth = widthValue;
+              }
+
+              if (topCropRaw != 0 || bottomCropRaw != 0)
+              {
+                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+
+                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                preCropPosition[1] = topPosition - topDifference;
+
+                var bottomDifference = (originalHeight * bottomCropRaw) /
+                  mixerHeight;
+                preCropPosition[3] = bottomPosition + bottomDifference;
+              }
+              else
+              {
+                originalHeight = heightValue;
+              }
+
+              if (leftCropRaw == 0)
+              {
+                preCropPosition[0] = position[0];
+              }
+
+              if (topCropRaw == 0)
+              {
+                preCropPosition[1] = position[1];
+              }
+
+              if (rightCropRaw == 0)
+              {
+                preCropPosition[2] = position[2]; 
+              }
+
+              if (bottomCropRaw == 0)
+              {
+                preCropPosition[3] = position[3];
+              }
+            }
+          }
+
+          var leftCrop = value['left'];
+          var topCrop = value['top'];
+          var rightCrop = value['right'];
+          var bottomCrop = value['bottom'];
+
+          var leftPosition = parseFloat(preCropPosition[0]);
+          var topPosition = parseFloat(preCropPosition[1]);
+          var rightPosition = parseFloat(preCropPosition[2]);
+          var bottomPosition = parseFloat(preCropPosition[3]);
+
+          var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
+          var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
+
+          var newLeft, newTop, newRight, newBottom;
+
+          if (canvasRotate == 270)
+          {
+            newLeft = ((topCrop * sourceWidth) / mixerWidth) + leftPosition;
+            newTop = ((rightCrop * sourceHeight) / mixerHeight) + topPosition;
+            newRight = rightPosition - ((bottomCrop * sourceWidth) / mixerWidth);
+            newBottom = bottomPosition -
+              ((leftCrop * sourceHeight) / mixerHeight);
+          }
+          else if (canvasRotate == 180)
+          {
+            newLeft = ((rightCrop * sourceWidth) / mixerWidth) + leftPosition;
+            newTop = ((bottomCrop * sourceHeight) / mixerHeight) + topPosition;
+            newRight = rightPosition - ((leftCrop * sourceWidth) / mixerWidth);
+            newBottom = bottomPosition -
+              ((topCrop * sourceHeight) / mixerHeight);
+          }
+          else if (canvasRotate == 90)
+          {
+            newLeft = ((bottomCrop * sourceWidth) / mixerWidth) + leftPosition;
+            newTop = ((leftCrop * sourceHeight) / mixerHeight) + topPosition;
+            newRight = rightPosition - ((topCrop * sourceWidth) / mixerWidth);
+            newBottom = bottomPosition -
+              ((rightCrop * sourceHeight) / mixerHeight);
+          }
+          else
+          {
+            newLeft = ((leftCrop * sourceWidth) / mixerWidth) + leftPosition;
+            newTop = ((topCrop * sourceHeight) / mixerHeight) + topPosition;
+            newRight = rightPosition - ((rightCrop * sourceWidth) / mixerWidth);
+            newBottom = bottomPosition -
+              ((bottomCrop * sourceHeight) / mixerHeight);
+          }
+
+          iItem.set('prop:crop', value['left'].toFixed(6) + "," +
+            value['top'].toFixed(6) + "," + value['right'].toFixed(6) + "," +
+            value['bottom'].toFixed(6), this._id).then(() => {
+              return iItem.set('prop:pos', newLeft.toFixed(6) + "," +
+                newTop.toFixed(6) + "," + newRight.toFixed(6) + "," +
+                newBottom.toFixed(6), this._id);
+          }).then(() => {
+            resolve(this);
+          });
+        });
+      } else {
+        reject('Error setting cropping,' +
+          ' insufficient properties (left, top, right, bottom)');
       }
     });
   }  

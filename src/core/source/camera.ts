@@ -329,6 +329,11 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
   getCanvasRotate: () => Promise<number>;
   
   /**
+   * See: {@link #core/IItemLayout#getCropping getCropping}
+   */
+  getCropping: () => Promise<Object>;
+
+  /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
    */
   getEnhancedRotate: () => Promise<number>;
@@ -361,7 +366,12 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<CameraSource>;
+  setCropping: (value: Object) => Promise<CameraSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<CameraSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}

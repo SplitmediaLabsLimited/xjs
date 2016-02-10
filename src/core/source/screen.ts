@@ -238,7 +238,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
-  getCropping: () => Promise<Rectangle>;
+  getCropping: () => Promise<Object>;
 
   /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
@@ -273,8 +273,13 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<ScreenSource>;
+  setCropping: (value: Object) => Promise<ScreenSource>;
 
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<ScreenSource>;
+  
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */

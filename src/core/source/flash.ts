@@ -108,7 +108,7 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
-  getCropping: () => Promise<Rectangle>;
+  getCropping: () => Promise<Object>;
 
   /**
    * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
@@ -143,11 +143,17 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setCropping setCropping}
    */
-  setCropping: (value: Rectangle) => Promise<FlashSource>;
+  setCropping: (value: Object) => Promise<FlashSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<FlashSource>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
+
   setEnhancedRotate:        (value: number) => Promise<FlashSource>;
 
   /**
