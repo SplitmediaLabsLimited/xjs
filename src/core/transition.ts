@@ -45,8 +45,28 @@ export class Transition {
   static WAVE: Transition =  new Transition('WAVE');
 
   constructor(key: string) {
-    this._key = key; // retain key so that NONE is readable
-    this._value = Transition._transitionMap[key];
+    var value = Transition._transitionMap[key];
+
+    if (typeof value !== 'undefined') {
+      this._key = key; // retain key so that NONE is readable
+      this._value = value;
+    } else if (key.substring(0,8) === 'stinger:') {
+      var fileName = key.split(',')[0].split('\\').pop().split('/').pop();
+      var m = fileName.lastIndexOf('.webm');
+      if (m >= 0 && m + fileName.length >= fileName.length) {
+          fileName = fileName.substring(0, m);
+      }
+      var n = fileName.lastIndexOf('_');
+      if (n >= 0 && n + fileName.length >= fileName.length) {
+        fileName = fileName.substring(0, n) + ': ' +
+          fileName.substring(n+1) + 'ms';
+      }
+      this._key = fileName;
+      this._value = key;
+    } else {
+      this._key = key; // retain key so that NONE is readable
+      this._value = key.toLowerCase();
+    }
   }
 
   /**
