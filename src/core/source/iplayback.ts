@@ -365,14 +365,14 @@ export class ItemPlayback implements IItemPlayback {
   isForceDeinterlace(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:fdeinterlace', this._id).then(val => {
-        resolve(val === '1');
+        resolve(val === '3');
       });
     });
   }
 
   setForceDeinterlace(value: boolean): Promise<ItemPlayback> {
     return new Promise(resolve => {
-      iItem.set('prop:fdeinterlace', (value ? '1' : '0'), this._id).then(() => {
+      iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
         resolve(this);
       });
     })
