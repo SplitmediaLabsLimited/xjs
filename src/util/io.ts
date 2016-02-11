@@ -1,8 +1,10 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {exec} from '../internal/internal';
+import {App as iApp} from '../internal/app';
 
-export class IO {
+
+export class IO{
 
   /**
    * param: (path: string)
@@ -121,4 +123,30 @@ export class IO {
       });
     });
   }
-}
+
+  /**
+   * Receive the array of video file
+   * Check if GetVideo Duration = true
+   * 
+   * Return duration
+   */
+  static _resolves = {}
+  static _rejects = {}
+  
+  static getVideoDuration(file: string) {
+   
+    return new Promise((resolve, reject) => {
+        IO._resolves[file] = resolve;
+        IO._rejects[file] = reject;
+        exec('GetVideoDuration', file);
+      })    
+  };
+}//Class
+
+window.OnGetVideoDuration = function(file: string, duration: number) {
+      IO._resolves[decodeURIComponent(file)](duration);
+    };
+window.OnGetVideoDurationFailed = function(file: string) {
+      IO._rejects[decodeURIComponent(file)](Error('Invalid file path.'));
+    };
+

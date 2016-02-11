@@ -10,4 +10,6 @@ interface Window {
   Setdlldogrant: Function;
   SourcesListHighlight: Function;
   SourcesListSelect: Function;
+  OnGetVideoDuration: Function;
+  OnGetVideoDurationFailed: Function;
 }
