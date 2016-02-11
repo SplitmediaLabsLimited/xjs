@@ -17,6 +17,9 @@ import {App as iApp} from '../internal/app';
  * {@link #core/CameraSource Core/ImageSource},
  * {@link #core/GameSource Core/MediaSource}, and
  * {@link #core/HtmlSource Core/ScreenSource}.)
+ * 
+ * For scene transitions, you can also use custom stinger transitions,
+ * which are exposed through the static method Transition.getSceneTransitions
  */
 export class Transition {
   private _value: string;
@@ -100,6 +103,8 @@ export class Transition {
    *
    * Get all available transitions for use in scene change
    *
+   * requires XBC v.2.7.1602.0502 and above
+   *   
    * #### Usage
    *
    * ```javascript
