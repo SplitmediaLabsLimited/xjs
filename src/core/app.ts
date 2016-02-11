@@ -904,7 +904,26 @@ export class App{
           if (typeof transitionObj !== 'undefined') {
             resolve(transitionObj);
           } else {
-            resolve(new Transition(val));
+            Transition.getSceneTransitions().then(transitions => {
+              var inTransition = false;
+              var transitionObj
+              var i;
+
+              for (i = 0; i < transitions.length; i++) {
+                transitionObj = transitions[i];
+                if (transitionObj.toString() === val) {
+                  inTransition = true;
+                  break;
+                }
+              }
+              if (inTransition) {
+                resolve(transitionObj);
+              } else {
+                resolve(new Transition(val));  
+              }
+            }).catch(err => {
+              resolve(new Transition(val));
+            });
           }
         }
       });
