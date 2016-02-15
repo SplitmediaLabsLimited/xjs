@@ -1,6 +1,6 @@
 /****************************
  * XSplit JS Framework
- * version: 1.0.0
+ * version: 1.1.0
  * (c) 2015 SplitmediaLabs, inc.
  ****************************/
 (function() {
@@ -861,7 +861,32 @@ var App = (function () {
                     resolve(transition_1.Transition.NONE);
                 }
                 else {
-                    resolve(transition_1.Transition[val.toUpperCase()]);
+                    var currTransition = transition_1.Transition[val.toUpperCase()];
+                    if (typeof currTransition !== 'undefined') {
+                        resolve(currTransition);
+                    }
+                    else {
+                        transition_1.Transition.getSceneTransitions().then(function (transitions) {
+                            var inTransition = false;
+                            var transitionObj;
+                            var i;
+                            for (i = 0; i < transitions.length; i++) {
+                                transitionObj = transitions[i];
+                                if (transitionObj.toString() === val) {
+                                    inTransition = true;
+                                    break;
+                                }
+                            }
+                            if (inTransition) {
+                                resolve(transitionObj);
+                            }
+                            else {
+                                resolve(new transition_1.Transition(val));
+                            }
+                        }).catch(function (err) {
+                            resolve(new transition_1.Transition(val));
+                        });
+                    }
                 }
             });
         });
@@ -1691,6 +1716,8 @@ var Scene = (function () {
                                     resolveScene();
                                 });
                             }
+                        }).catch(function () {
+                            resolveScene();
                         });
                     });
                 })).then(function () {
@@ -1879,7 +1906,7 @@ var Scene = (function () {
      */
     Scene.prototype.getSources = function () {
         var _this = this;
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             app_1.App.getAsList('presetconfig:' + _this._id).then(function (jsonArr) {
                 var promiseArray = [];
                 // type checking to return correct Source subtype
@@ -1929,6 +1956,8 @@ var Scene = (function () {
                 Promise.all(promiseArray).then(function (results) {
                     resolve(results);
                 });
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
@@ -4160,6 +4189,44 @@ var rectangle_1 = _require('../../util/rectangle');
 var ItemLayout = (function () {
     function ItemLayout() {
     }
+    ItemLayout.prototype._getCanvasAndZRotate = function (value) {
+        var rotationObject = {};
+        if (value >= -180 && value <= -135) {
+            rotationObject['canvasRotate'] = 180;
+            rotationObject['zRotate'] = value + 180;
+            rotationObject['orientation'] = 'landscape';
+        }
+        else if (value > -135 && value < -45) {
+            rotationObject['canvasRotate'] = 270;
+            rotationObject['zRotate'] = value + 90;
+            rotationObject['orientation'] = 'portrait';
+        }
+        else if (value >= -45 && value <= 45) {
+            rotationObject['canvasRotate'] = 0;
+            rotationObject['zRotate'] = value;
+            rotationObject['orientation'] = 'landscape';
+        }
+        else if (value > 45 && value < 135) {
+            rotationObject['canvasRotate'] = 90;
+            rotationObject['zRotate'] = value - 90;
+            rotationObject['orientation'] = 'portrait';
+        }
+        else if (value >= 135 && value <= 180) {
+            rotationObject['canvasRotate'] = 180;
+            rotationObject['zRotate'] = value - 180;
+            rotationObject['orientation'] = 'landscape';
+        }
+        return rotationObject;
+    };
+    ItemLayout.prototype._adjustRotation = function (value) {
+        if (value > 180) {
+            value -= 360;
+        }
+        else if (value < -180) {
+            value += 360;
+        }
+        return value;
+    };
     ItemLayout.prototype.isKeepAspectRatio = function () {
         var _this = this;
         return new Promise(function (resolve) {
@@ -4220,11 +4287,15 @@ var ItemLayout = (function () {
     };
     ItemLayout.prototype.setPosition = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            _this.position = value;
-            item_1.Item.set('prop:pos', value.toCoordinateString(), _this._id).then(function () {
-                resolve(_this);
-            });
+        return new Promise(function (resolve, reject) {
+            try {
+                item_1.Item.set('prop:pos', value.toCoordinateString(), _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
+            catch (err) {
+                reject(err);
+            }
         });
     };
     ItemLayout.prototype.getRotateY = function () {
@@ -4287,6 +4358,436 @@ var ItemLayout = (function () {
                 item_1.Item.set('prop:rotate_z', String(value), _this._id).then(function () {
                     resolve(_this);
                 });
+            }
+        });
+    };
+    ItemLayout.prototype.getCropping = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var cropObject = {};
+            item_1.Item.get('prop:crop', _this._id).then(function (val) {
+                var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
+                cropObject['left'] = Number(left);
+                cropObject['top'] = Number(top);
+                cropObject['right'] = Number(right);
+                cropObject['bottom'] = Number(bottom);
+                resolve(cropObject);
+            });
+        });
+    };
+    ItemLayout.prototype.setCropping = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
+                value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
+                item_1.Item.set('prop:crop', value['left'].toFixed(6) + ',' +
+                    value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
+                    value['bottom'].toFixed(6), _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
+            else {
+                reject('Error setting cropping,' +
+                    ' insufficient properties (left, top, right, bottom)');
+            }
+        });
+    };
+    ItemLayout.prototype.getCanvasRotate = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:rotate_canvas', _this._id).then(function (val) {
+                var value = Number(val);
+                if ([0, 90, 180, 270].indexOf(value) < 0) {
+                    resolve(0);
+                }
+                else {
+                    resolve(value);
+                }
+            });
+        });
+    };
+    ItemLayout.prototype.setCanvasRotate = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if ([0, 90, 180, 270].indexOf(value) < 0) {
+                reject(Error('Invalid value. Only possible values are 0, 90, 180 and 270'));
+            }
+            else {
+                item_1.Item.set('prop:rotate_canvas', String(value), _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemLayout.prototype.getEnhancedRotate = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var rotateZ;
+            var rotateCanvas;
+            var rotateValue;
+            item_1.Item.get('prop:rotate_z', _this._id).then(function (val) {
+                rotateZ = Number(val);
+                return item_1.Item.get('prop:rotate_canvas', _this._id);
+            }).then(function (val) {
+                rotateCanvas = Number(val);
+                rotateValue = _this._adjustRotation(rotateCanvas + rotateZ);
+                resolve(rotateValue);
+            });
+        });
+    };
+    ItemLayout.prototype.setEnhancedRotate = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value < -180 || value > 180) {
+                reject(Error('Invalid value. Min: -180, Max: 180'));
+            }
+            else {
+                var formerObject;
+                var valueObject = _this._getCanvasAndZRotate(Number(value));
+                _this.getEnhancedRotate().then(function (val) {
+                    formerObject = _this._getCanvasAndZRotate(Number(val));
+                    return item_1.Item.set('prop:rotate_z', String(valueObject['zRotate']), _this._id);
+                }).then(function () {
+                    return item_1.Item.set('prop:rotate_canvas', String(valueObject['canvasRotate']), _this._id);
+                }).then(function () {
+                    if (formerObject['orientation'] !== valueObject['orientation']) {
+                        // interChangeHeightAndWidth();
+                        var outputResolution;
+                        var widthMax;
+                        var heightMax;
+                        item_1.Item.get('mixerresolution', _this._id).then(function (val) {
+                            outputResolution = val.split(',');
+                            widthMax = Number(outputResolution[0]);
+                            heightMax = Number(outputResolution[1]);
+                            return item_1.Item.get('prop:pos', _this._id);
+                        }).then(function (val) {
+                            var position = val.split(',');
+                            var leftPosition = parseFloat(position[0]) * widthMax;
+                            var topPosition = parseFloat(position[1]) * heightMax;
+                            var rightPosition = parseFloat(position[2]) * widthMax;
+                            var bottomPosition = parseFloat(position[3]) * heightMax;
+                            var newLeft;
+                            var newRight;
+                            var newTop;
+                            var newBottom;
+                            var widthValue = Math.round(rightPosition - leftPosition);
+                            var heightValue = Math.round(bottomPosition - topPosition);
+                            if (heightValue > widthMax) {
+                                newLeft = 0;
+                                newRight = widthMax;
+                            }
+                            else {
+                                var xCenter = leftPosition +
+                                    ((rightPosition - leftPosition) / 2);
+                                newLeft = xCenter - (heightValue / 2);
+                                newRight = xCenter + (heightValue / 2);
+                            }
+                            if (widthValue > heightMax) {
+                                newTop = 0;
+                                newBottom = heightMax;
+                            }
+                            else {
+                                var yCenter = topPosition + ((bottomPosition - topPosition) / 2);
+                                newTop = yCenter - (widthValue / 2);
+                                newBottom = yCenter + (widthValue / 2);
+                            }
+                            var leftPos = newLeft / widthMax;
+                            var topPos = newTop / heightMax;
+                            var rightPos = newRight / widthMax;
+                            var bottomPos = newBottom / heightMax;
+                            return item_1.Item.set('prop:pos', leftPos.toFixed(6) + ',' +
+                                topPos.toFixed(6) + ',' + rightPos.toFixed(6) + ',' +
+                                bottomPos.toFixed(6), _this._id);
+                        }).then(function () {
+                            return item_1.Item.get('prop:posaspect', _this._id);
+                        }).then(function (val) {
+                            return item_1.Item.set('prop:pos', val, _this._id);
+                        });
+                    }
+                });
+            }
+        });
+    };
+    ItemLayout.prototype.setCroppingEnhanced = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
+                value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
+                var originalWidth;
+                var originalHeight;
+                var outputResolution;
+                var position;
+                var canvasRotate;
+                var preCropPosition = {};
+                item_1.Item.get('mixerresolution', _this._id).then(function (val) {
+                    outputResolution = val.split(',');
+                    return item_1.Item.get('prop:pos', _this._id);
+                }).then(function (val) {
+                    position = val.split(',');
+                    return item_1.Item.get('prop:rotate_canvas', _this._id);
+                }).then(function (val) {
+                    canvasRotate = val;
+                    return item_1.Item.get('prop:crop', _this._id);
+                }).then(function (val) {
+                    var mixerWidth = parseInt(outputResolution[0]);
+                    var mixerHeight = parseInt(outputResolution[1]);
+                    var leftPositionInit = parseFloat(position[0]) * mixerWidth;
+                    var topPositionInit = parseFloat(position[1]) * mixerHeight;
+                    var rightPositionInit = parseFloat(position[2]) * mixerWidth;
+                    var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
+                    var widthValue = rightPositionInit - leftPositionInit;
+                    var heightValue = bottomPositionInit - topPositionInit;
+                    var crop = val.split(',');
+                    var leftCropRaw = parseFloat(crop[0]);
+                    var topCropRaw = parseFloat(crop[1]);
+                    var rightCropRaw = parseFloat(crop[2]);
+                    var bottomCropRaw = parseFloat(crop[3]);
+                    var leftValue = Math.round(leftCropRaw * 100);
+                    var topValue = Math.round(topCropRaw * 100);
+                    var rightValue = Math.round(rightCropRaw * 100);
+                    var bottomValue = Math.round(bottomCropRaw * 100);
+                    var isNoCropping = ((leftValue == 0) && (topValue == 0) &&
+                        (rightValue == 0) && (bottomValue == 0));
+                    if (canvasRotate == 270) {
+                        if (isNoCropping) {
+                            preCropPosition = position;
+                            originalHeight = widthValue;
+                            originalWidth = heightValue;
+                        }
+                        else {
+                            var leftPosition = parseFloat(position[3]);
+                            var topPosition = parseFloat(position[0]);
+                            var rightPosition = parseFloat(position[1]);
+                            var bottomPosition = parseFloat(position[2]);
+                            if (leftCropRaw != 0 || rightCropRaw != 0) {
+                                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+                                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                                preCropPosition[3] = leftPosition + leftDifference;
+                                var rightDifference = (originalWidth * rightCropRaw) /
+                                    mixerHeight;
+                                preCropPosition[1] = rightPosition - rightDifference;
+                            }
+                            else {
+                                originalWidth = heightValue;
+                            }
+                            if (topCropRaw != 0 || bottomCropRaw != 0) {
+                                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+                                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                                preCropPosition[0] = topPosition - topDifference;
+                                var bottomDifference = (originalHeight * bottomCropRaw) /
+                                    mixerWidth;
+                                preCropPosition[2] = bottomPosition + bottomDifference;
+                            }
+                            else {
+                                originalHeight = widthValue;
+                            }
+                            if (leftCropRaw == 0) {
+                                preCropPosition[3] = position[3];
+                            }
+                            if (topCropRaw == 0) {
+                                preCropPosition[0] = position[0];
+                            }
+                            if (rightCropRaw == 0) {
+                                preCropPosition[1] = position[1];
+                            }
+                            if (bottomCropRaw == 0) {
+                                preCropPosition[2] = position[2];
+                            }
+                        }
+                    }
+                    else if (canvasRotate == 180) {
+                        if (isNoCropping) {
+                            preCropPosition = position;
+                            originalWidth = widthValue;
+                            originalHeight = heightValue;
+                        }
+                        else {
+                            var leftPosition = parseFloat(position[2]);
+                            var topPosition = parseFloat(position[3]);
+                            var rightPosition = parseFloat(position[0]);
+                            var bottomPosition = parseFloat(position[1]);
+                            if (leftCropRaw != 0 || rightCropRaw != 0) {
+                                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+                                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                                preCropPosition[2] = leftPosition + leftDifference;
+                                var rightDifference = (originalWidth * rightCropRaw) / mixerWidth;
+                                preCropPosition[0] = rightPosition - rightDifference;
+                            }
+                            else {
+                                originalWidth = widthValue;
+                            }
+                            if (topCropRaw != 0 || bottomCropRaw != 0) {
+                                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+                                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                                preCropPosition[3] = topPosition + topDifference;
+                                var bottomDifference = (originalHeight * bottomCropRaw) /
+                                    mixerHeight;
+                                preCropPosition[1] = bottomPosition - bottomDifference;
+                            }
+                            else {
+                                originalHeight = heightValue;
+                            }
+                            if (leftCropRaw == 0) {
+                                preCropPosition[2] = position[2];
+                            }
+                            if (topCropRaw == 0) {
+                                preCropPosition[3] = position[3];
+                            }
+                            if (rightCropRaw == 0) {
+                                preCropPosition[0] = position[0];
+                            }
+                            if (bottomCropRaw == 0) {
+                                preCropPosition[1] = position[1];
+                            }
+                        }
+                    }
+                    else if (canvasRotate == 90) {
+                        if (isNoCropping) {
+                            preCropPosition = position;
+                            originalHeight = widthValue;
+                            originalWidth = heightValue;
+                        }
+                        else {
+                            var leftPosition = parseFloat(position[1]);
+                            var topPosition = parseFloat(position[2]);
+                            var rightPosition = parseFloat(position[3]);
+                            var bottomPosition = parseFloat(position[0]);
+                            if (leftCropRaw != 0 || rightCropRaw != 0) {
+                                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+                                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                                preCropPosition[1] = leftPosition - leftDifference;
+                                var rightDifference = (originalWidth * rightCropRaw) /
+                                    mixerHeight;
+                                preCropPosition[3] = rightPosition + rightDifference;
+                            }
+                            else {
+                                originalWidth = heightValue;
+                            }
+                            if (topCropRaw != 0 || bottomCropRaw != 0) {
+                                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+                                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                                preCropPosition[2] = topPosition + topDifference;
+                                var bottomDifference = (originalHeight * bottomCropRaw) /
+                                    mixerWidth;
+                                preCropPosition[0] = bottomPosition - bottomDifference;
+                            }
+                            else {
+                                originalHeight = widthValue;
+                            }
+                            if (leftCropRaw == 0) {
+                                preCropPosition[1] = position[1];
+                            }
+                            if (topCropRaw == 0) {
+                                preCropPosition[2] = position[2];
+                            }
+                            if (rightCropRaw == 0) {
+                                preCropPosition[3] = position[3];
+                            }
+                            if (bottomCropRaw == 0) {
+                                preCropPosition[0] = position[0];
+                            }
+                        }
+                    }
+                    else {
+                        if (isNoCropping) {
+                            preCropPosition = position;
+                            originalHeight = heightValue;
+                            originalWidth = widthValue;
+                        }
+                        else {
+                            var leftPosition = parseFloat(position[0]);
+                            var topPosition = parseFloat(position[1]);
+                            var rightPosition = parseFloat(position[2]);
+                            var bottomPosition = parseFloat(position[3]);
+                            if (leftCropRaw != 0 || rightCropRaw != 0) {
+                                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+                                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                                preCropPosition[0] = leftPosition - leftDifference;
+                                var rightDifference = (originalWidth * rightCropRaw) /
+                                    mixerWidth;
+                                preCropPosition[2] = rightPosition + rightDifference;
+                            }
+                            else {
+                                originalWidth = widthValue;
+                            }
+                            if (topCropRaw != 0 || bottomCropRaw != 0) {
+                                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+                                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                                preCropPosition[1] = topPosition - topDifference;
+                                var bottomDifference = (originalHeight * bottomCropRaw) /
+                                    mixerHeight;
+                                preCropPosition[3] = bottomPosition + bottomDifference;
+                            }
+                            else {
+                                originalHeight = heightValue;
+                            }
+                            if (leftCropRaw == 0) {
+                                preCropPosition[0] = position[0];
+                            }
+                            if (topCropRaw == 0) {
+                                preCropPosition[1] = position[1];
+                            }
+                            if (rightCropRaw == 0) {
+                                preCropPosition[2] = position[2];
+                            }
+                            if (bottomCropRaw == 0) {
+                                preCropPosition[3] = position[3];
+                            }
+                        }
+                    }
+                    var leftCrop = value['left'];
+                    var topCrop = value['top'];
+                    var rightCrop = value['right'];
+                    var bottomCrop = value['bottom'];
+                    var leftPosition = parseFloat(preCropPosition[0]);
+                    var topPosition = parseFloat(preCropPosition[1]);
+                    var rightPosition = parseFloat(preCropPosition[2]);
+                    var bottomPosition = parseFloat(preCropPosition[3]);
+                    var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
+                    var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
+                    var newLeft, newTop, newRight, newBottom;
+                    if (canvasRotate == 270) {
+                        newLeft = ((topCrop * sourceWidth) / mixerWidth) + leftPosition;
+                        newTop = ((rightCrop * sourceHeight) / mixerHeight) + topPosition;
+                        newRight = rightPosition - ((bottomCrop * sourceWidth) / mixerWidth);
+                        newBottom = bottomPosition -
+                            ((leftCrop * sourceHeight) / mixerHeight);
+                    }
+                    else if (canvasRotate == 180) {
+                        newLeft = ((rightCrop * sourceWidth) / mixerWidth) + leftPosition;
+                        newTop = ((bottomCrop * sourceHeight) / mixerHeight) + topPosition;
+                        newRight = rightPosition - ((leftCrop * sourceWidth) / mixerWidth);
+                        newBottom = bottomPosition -
+                            ((topCrop * sourceHeight) / mixerHeight);
+                    }
+                    else if (canvasRotate == 90) {
+                        newLeft = ((bottomCrop * sourceWidth) / mixerWidth) + leftPosition;
+                        newTop = ((leftCrop * sourceHeight) / mixerHeight) + topPosition;
+                        newRight = rightPosition - ((topCrop * sourceWidth) / mixerWidth);
+                        newBottom = bottomPosition -
+                            ((rightCrop * sourceHeight) / mixerHeight);
+                    }
+                    else {
+                        newLeft = ((leftCrop * sourceWidth) / mixerWidth) + leftPosition;
+                        newTop = ((topCrop * sourceHeight) / mixerHeight) + topPosition;
+                        newRight = rightPosition - ((rightCrop * sourceWidth) / mixerWidth);
+                        newBottom = bottomPosition -
+                            ((bottomCrop * sourceHeight) / mixerHeight);
+                    }
+                    item_1.Item.set('prop:crop', value['left'].toFixed(6) + ',' +
+                        value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
+                        value['bottom'].toFixed(6), _this._id).then(function () {
+                        return item_1.Item.set('prop:pos', newLeft.toFixed(6) + ',' +
+                            newTop.toFixed(6) + ',' + newRight.toFixed(6) + ',' +
+                            newBottom.toFixed(6), _this._id);
+                    }).then(function () {
+                        resolve(_this);
+                    });
+                });
+            }
+            else {
+                reject('Error setting cropping,' +
+                    ' insufficient properties (left, top, right, bottom)');
             }
         });
     };
@@ -4467,14 +4968,14 @@ var ItemPlayback = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:fdeinterlace', _this._id).then(function (val) {
-                resolve(val === '1');
+                resolve(val === '3');
             });
         });
     };
     ItemPlayback.prototype.setForceDeinterlace = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:fdeinterlace', (value ? '1' : '0'), _this._id).then(function () {
+            item_1.Item.set('prop:fdeinterlace', (value ? '3' : '0'), _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -5362,6 +5863,8 @@ var Source = (function () {
 exports.Source = Source;
 mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
 },{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":6,"./ilayout":17}],24:[function(_require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var app_1 = _require('../internal/app');
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -5371,13 +5874,47 @@ mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
  * App instance, or a valid Source instance that supports transitions (this
  * includes {@link #core/CameraSource Core/CameraSource},
- * {@link #core/GameSource Core/GameSource}, and
- * {@link #core/HtmlSource Core/HtmlSource}.)
+ * {@link #core/CameraSource Core/FlashSource},
+ * {@link #core/CameraSource Core/GameSource},
+ * {@link #core/GameSource Core/HtmlSource},
+ * {@link #core/CameraSource Core/ImageSource},
+ * {@link #core/GameSource Core/MediaSource}, and
+ * {@link #core/HtmlSource Core/ScreenSource}.)
+ *
+ * For scene transitions, you can also use custom stinger transitions,
+ * which are exposed through the static method Transition.getSceneTransitions
  */
 var Transition = (function () {
-    function Transition(key) {
-        this._key = key; // retain key so that NONE is readable
-        this._value = Transition._transitionMap[key];
+    function Transition(key, setValue) {
+        if (setValue === void 0) { setValue = null; }
+        var value = Transition._transitionMap[key];
+        if (typeof value !== 'undefined') {
+            this._key = key; // retain key so that NONE is readable
+            this._value = value;
+        }
+        else if (key.substring(0, 8) === 'stinger:') {
+            if (typeof setValue !== 'undefined' && setValue !== null) {
+                this._key = setValue;
+            }
+            else {
+                var fileName = key.split(',')[0].split('\\').pop().split('/').pop();
+                var m = fileName.lastIndexOf('.webm');
+                if (m >= 0 && m + fileName.length >= fileName.length) {
+                    fileName = fileName.substring(0, m);
+                }
+                var n = fileName.lastIndexOf('_');
+                if (n >= 0 && n + fileName.length >= fileName.length) {
+                    fileName = fileName.substring(0, n) + ': ' +
+                        fileName.substring(n + 1) + 'ms';
+                }
+                this._key = fileName;
+            }
+            this._value = key;
+        }
+        else {
+            this._key = key; // retain key so that NONE is readable
+            this._value = key.toLowerCase();
+        }
     }
     /**
      * Converts this transition object to the underlying string representation to be read by XSplit Broadcaster.
@@ -5390,6 +5927,50 @@ var Transition = (function () {
      */
     Transition.prototype.toTransitionKey = function () {
         return this._key;
+    };
+    /**
+     * return: Promise<Transition[]>
+     *
+     * Get all available transitions for use in scene change
+     *
+     * ** MINIMUM XBC _requireMENT **
+     * _requires XBC v.2.7.1602.0502 and above
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Transtition.getSceneTransitions().then(function(transitions) {
+     *   for (var i = 0; i < transitions.length; i++) {
+     *     transitions.toString(); // Returns the value of the transition
+     *     transitions.toTransitionKey(); // Returns the key of the transition
+     *   }
+     * })
+     * ```
+     */
+    Transition.getSceneTransitions = function () {
+        return new Promise(function (resolve) {
+            var transitions = [];
+            var transitionString = app_1.App.getGlobalProperty('transitions');
+            try {
+                if (transitionString !== '') {
+                    var transitionArray = JSON.parse(transitionString);
+                    for (var i = transitionArray.length - 1; i >= 0; i--) {
+                        var transitionObject = transitionArray[i];
+                        if (transitionObject.hasOwnProperty('Id') &&
+                            transitionObject.hasOwnProperty('Name')) {
+                            transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']));
+                        }
+                    }
+                    resolve(transitions);
+                }
+                else {
+                    resolve(transitions);
+                }
+            }
+            catch (e) {
+                throw new Error('Error retrieving available transitions');
+            }
+        });
     };
     Transition._transitionMap = {
         NONE: '',
@@ -5422,7 +6003,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{}],25:[function(_require,module,exports){
+},{"../internal/app":25}],25:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -5447,13 +6028,18 @@ var App = (function () {
     };
     /** Gets the value of the given property as list */
     App.getAsList = function (name) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             App.get(name).then(function (xml) {
-                var propsJSON = json_1.JSON.parse(xml), propsArr = [];
-                if (propsJSON.children && propsJSON.children.length > 0) {
-                    propsArr = propsJSON.children;
+                try {
+                    var propsJSON = json_1.JSON.parse(xml), propsArr = [];
+                    if (propsJSON.children && propsJSON.children.length > 0) {
+                        propsArr = propsJSON.children;
+                    }
+                    resolve(propsArr);
                 }
-                resolve(propsArr);
+                catch (e) {
+                    reject(e);
+                }
             });
         });
     };
@@ -5704,7 +6290,7 @@ var Item = (function () {
             }
             Item.lastSlot = slot;
             Item.itemSlotMap[slot] = itemID;
-            if (environment_1.Environment.isExtension()) {
+            if (!environment_1.Environment.isSourcePlugin()) {
                 internal_1.exec('SearchVideoItem' +
                     (String(slot) === '0' ? '' : (slot + 1)), itemID);
             }
