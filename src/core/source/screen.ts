@@ -231,6 +231,21 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
+   * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
+   */
+  getCanvasRotate: () => Promise<number>;
+  
+  /**
+   * See: {@link #core/IItemLayout#getCropping getCropping}
+   */
+  getCropping: () => Promise<Object>;
+
+  /**
+   * See: {@link #core/IItemLayout#getEnhancedRotate getEnhancedRotate}
+   */
+  getEnhancedRotate: () => Promise<number>;
+
+  /**
    * See: {@link #core/IItemLayout#getPosition getPosition}
    */
   getPosition: () => Promise<Rectangle>;
@@ -249,6 +264,26 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
+   */
+  setCanvasRotate: (value: number) => Promise<ScreenSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCropping setCropping}
+   */
+  setCropping: (value: Object) => Promise<ScreenSource>;
+
+  /**
+   * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
+   */
+  setCroppingEnhanced: (value: Object) => Promise<ScreenSource>;
+  
+  /**
+   * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
+   */
+  setEnhancedRotate:        (value: number) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}

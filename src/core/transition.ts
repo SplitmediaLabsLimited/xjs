@@ -1,3 +1,7 @@
+/// <reference path="../../defs/es6-promise.d.ts" />
+
+import {App as iApp} from '../internal/app';
+
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
@@ -7,8 +11,15 @@
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
  * App instance, or a valid Source instance that supports transitions (this
  * includes {@link #core/CameraSource Core/CameraSource},
- * {@link #core/GameSource Core/GameSource}, and
- * {@link #core/HtmlSource Core/HtmlSource}.)
+ * {@link #core/CameraSource Core/FlashSource},
+ * {@link #core/CameraSource Core/GameSource},
+ * {@link #core/GameSource Core/HtmlSource},
+ * {@link #core/CameraSource Core/ImageSource},
+ * {@link #core/GameSource Core/MediaSource}, and
+ * {@link #core/HtmlSource Core/ScreenSource}.)
+ *
+ * For scene transitions, you can also use custom stinger transitions,
+ * which are exposed through the static method Transition.getSceneTransitions
  */
 export class Transition {
   private _value: string;
@@ -44,9 +55,33 @@ export class Transition {
   static MOVE_TOP_BOTTOM: Transition =  new Transition('MOVE_TOP_BOTTOM');
   static WAVE: Transition =  new Transition('WAVE');
 
-  constructor(key: string) {
-    this._key = key; // retain key so that NONE is readable
-    this._value = Transition._transitionMap[key];
+  constructor(key: string, setValue = null) {
+    var value = Transition._transitionMap[key];
+
+    if (typeof value !== 'undefined') {
+      this._key = key; // retain key so that NONE is readable
+      this._value = value;
+    } else if (key.substring(0,8) === 'stinger:') {
+      if (typeof setValue !== 'undefined' && setValue !== null ) {
+        this._key = setValue;
+      } else {
+        var fileName = key.split(',')[0].split('\\').pop().split('/').pop();
+        var m = fileName.lastIndexOf('.webm');
+        if (m >= 0 && m + fileName.length >= fileName.length) {
+            fileName = fileName.substring(0, m);
+        }
+        var n = fileName.lastIndexOf('_');
+        if (n >= 0 && n + fileName.length >= fileName.length) {
+          fileName = fileName.substring(0, n) + ': ' +
+            fileName.substring(n+1) + 'ms';
+        }
+        this._key = fileName;
+      }
+      this._value = key;
+    } else {
+      this._key = key; // retain key so that NONE is readable
+      this._value = key.toLowerCase();
+    }
   }
 
   /**
@@ -61,5 +96,48 @@ export class Transition {
    */
   toTransitionKey(): string {
     return this._key;
+  }
+
+  /**
+   * return: Promise<Transition[]>
+   *
+   * Get all available transitions for use in scene change
+   *
+   * ** MINIMUM XBC REQUIREMENT **
+   * requires XBC v.2.7.1602.0502 and above
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Transtition.getSceneTransitions().then(function(transitions) {
+   *   for (var i = 0; i < transitions.length; i++) {
+   *     transitions.toString(); // Returns the value of the transition
+   *     transitions.toTransitionKey(); // Returns the key of the transition
+   *   }
+   * })
+   * ```
+   */
+  static getSceneTransitions(): Promise<Transition[]> {
+    return new Promise(resolve => {
+      var transitions: Transition[] = [];
+      var transitionString = iApp.getGlobalProperty('transitions');
+      try {
+        if (transitionString !== '') {
+          var transitionArray = JSON.parse(transitionString);
+          for (var i = transitionArray.length - 1; i >= 0; i--) {
+            var transitionObject = transitionArray[i];
+            if (transitionObject.hasOwnProperty('Id') &&
+              transitionObject.hasOwnProperty('Name')) {
+                transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']))
+            }
+          }
+          resolve(transitions);
+        } else {
+          resolve(transitions);
+        }
+      } catch(e) {
+        throw new Error('Error retrieving available transitions');
+      }
+    });
   }
 }
