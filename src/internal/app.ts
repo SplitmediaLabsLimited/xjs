@@ -25,16 +25,20 @@ export class App {
 
   /** Gets the value of the given property as list */
   static getAsList(name: string): Promise<JXON[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       App.get(name).then((xml: string) => {
-        let propsJSON: JXON = JXON.parse(xml),
-          propsArr: JXON[] = [];
+        try {
+          let propsJSON: JXON = JXON.parse(xml),
+            propsArr: JXON[] = [];
 
-        if (propsJSON.children && propsJSON.children.length > 0) {
-          propsArr = propsJSON.children;
+          if (propsJSON.children && propsJSON.children.length > 0) {
+            propsArr = propsJSON.children;
+          }
+
+          resolve(propsArr);
+        } catch (e) {
+          reject(e);
         }
-
-        resolve(propsArr);
       });
     });
   }

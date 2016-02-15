@@ -900,7 +900,31 @@ export class App{
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
-          resolve(Transition[val.toUpperCase()]);
+          let currTransition = Transition[val.toUpperCase()];
+          if (typeof currTransition !== 'undefined') {
+            resolve(currTransition);
+          } else {
+            Transition.getSceneTransitions().then(transitions => {
+              let inTransition = false;
+              let transitionObj;
+              let i;
+
+              for (i = 0; i < transitions.length; i++) {
+                transitionObj = transitions[i];
+                if (transitionObj.toString() === val) {
+                  inTransition = true;
+                  break;
+                }
+              }
+              if (inTransition) {
+                resolve(transitionObj);
+              } else {
+                resolve(new Transition(val));
+              }
+            }).catch(err => {
+              resolve(new Transition(val));
+            });
+          }
         }
       });
     });
