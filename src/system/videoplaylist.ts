@@ -39,14 +39,13 @@ export class VideoPlaylist implements Addable {
    * return: XML
    *
    * Creates an XML object with the playlist properties
+   *
+   * Process includes sending the file to IO.getVideoDuration calss
+   * to get the video duration.
    */
 
   toXML(): Promise<string> {
-    /*
-     * Sends individual files to get the duration
-     * 
-     * Receives duration[i]: ~~ playlist[i]. 
-     */
+
     return new Promise(resolve => {
       let filePromises = this._playlist.map((filename) => {
         return IO.getVideoDuration(filename)
@@ -58,11 +57,7 @@ export class VideoPlaylist implements Addable {
         for (var i = 0; i < this._playlist.length; i++) {
           this._fileplaylist += this._playlist[i] + '*' + i + '*1*' + duration[i] + '*100*0*0*0*0*0|';
         }
-        /**
-         * Convert the array of items into a single string
-         * to be added on the FilePlaylist Property
-         *
-         */
+
         fileItems.tag = 'item';
         fileItems['type'] = '1';
         fileItems['name'] = 'Video Playlist';
@@ -72,6 +67,7 @@ export class VideoPlaylist implements Addable {
         fileItems['pos_bottom'] = '0.750000';
         fileItems['item']           = this._playlist[0] + '*0';
         fileItems['FilePlaylist']   = this._fileplaylist;
+
         resolve(XML.parseJSON(fileItems));
       });
     });
