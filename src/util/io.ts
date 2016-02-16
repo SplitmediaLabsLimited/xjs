@@ -125,28 +125,29 @@ export class IO{
   }
 
   /**
-   * Receive the array of video file
+   * Receives the video file
    * Check if GetVideo Duration = true
    * 
-   * Return duration
+   * Return _resolves/_rejects
    */
-  static _resolves = {}
-  static _rejects = {}
-  
+  static _callback = {}
+
   static getVideoDuration(file: string) {
    
     return new Promise((resolve, reject) => {
-        IO._resolves[file] = resolve;
-        IO._rejects[file] = reject;
-        exec('GetVideoDuration', file);
-      })    
+      if (IO._callback[file] === undefined){
+        IO._callback[file] = [];
+      }
+      IO._callback[file].push({resolve,reject});
+      exec('GetVideoDuration', file)
+    });
   };
 }//Class
 
 window.OnGetVideoDuration = function(file: string, duration: number) {
-      IO._resolves[decodeURIComponent(file)](duration);
+    IO._callback[decodeURIComponent(file)].shift().resolve(duration);
     };
 window.OnGetVideoDurationFailed = function(file: string) {
-      IO._rejects[decodeURIComponent(file)](Error('Invalid file path.'));
+    IO._callback[decodeURIComponent(file)].shift().reject(Error('Invalid file path.'));
     };
 

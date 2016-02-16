@@ -42,18 +42,21 @@ export class VideoPlaylist implements Addable {
    */
 
   toXML(): Promise<string> {
+    /*
+     * Sends individual files to get the duration
+     * 
+     * Receives duration[i]: ~~ playlist[i]. 
+     */
     return new Promise(resolve => {
       let filePromises = this._playlist.map((filename) => {
         return IO.getVideoDuration(filename)
       });
 
-      Promise.all(filePromises).then(values => {
-        // this._playlist[0] ~~ values[0]
-        console.log(values);
+      Promise.all(filePromises).then(duration => {
         var fileItems = new JXON();
 
-        for (var i = 0; i < values.length; i++) {
-          this._fileplaylist += this._playlist[i] + '*' + i + '*1*' + values[i] + '*100*0*0*0*0*0|';
+        for (var i = 0; i < this._playlist.length; i++) {
+          this._fileplaylist += this._playlist[i] + '*' + i + '*1*' + duration[i] + '*100*0*0*0*0*0|';
         }
         /**
          * Convert the array of items into a single string
@@ -79,8 +82,8 @@ export class VideoPlaylist implements Addable {
       if (Environment.isSourcePlugin()) {
         reject(Error('File selection cancelled.'));
       } else {
-        this.toXML().then(value => {
-          iApp.callFunc('additem', ' ' + value)
+        this.toXML().then(fileitem => {
+          iApp.callFunc('additem', ' ' + fileitem)
           .then(() => { resolve(true) });
         })
       }
