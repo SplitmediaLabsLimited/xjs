@@ -224,6 +224,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<FlashSource>;
@@ -253,6 +258,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    */
   setBorderColor: (value: Color) => Promise<FlashSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<FlashSource>;
+  
   // ItemChroma
 
   /**

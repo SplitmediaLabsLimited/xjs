@@ -353,6 +353,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<ScreenSource>;
@@ -382,6 +387,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    */
   setBorderColor: (value: Color) => Promise<ScreenSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<ScreenSource>;
+  
   // ItemChroma
 
   /**

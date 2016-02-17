@@ -176,6 +176,11 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<MediaSource>;
@@ -205,6 +210,11 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
    */
   setBorderColor: (value: Color) => Promise<MediaSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<MediaSource>;
+  
   // ItemChroma
 
   /**
