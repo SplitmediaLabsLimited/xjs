@@ -17,7 +17,7 @@ import {App as iApp} from '../internal/app';
  * {@link #core/CameraSource Core/ImageSource},
  * {@link #core/GameSource Core/MediaSource}, and
  * {@link #core/HtmlSource Core/ScreenSource}.)
- * 
+ *
  * For scene transitions, you can also use custom stinger transitions,
  * which are exposed through the static method Transition.getSceneTransitions
  */
@@ -99,16 +99,22 @@ export class Transition {
   }
 
   /**
-   * return: Scene
+   * return: Promise<Transition[]>
    *
    * Get all available transitions for use in scene change
    *
+   * ** MINIMUM XBC REQUIREMENT **
    * requires XBC v.2.7.1602.0502 and above
-   *   
+   *
    * #### Usage
    *
    * ```javascript
-   * var scene1 = Scene.getById(1);
+   * Transtition.getSceneTransitions().then(function(transitions) {
+   *   for (var i = 0; i < transitions.length; i++) {
+   *     transitions.toString(); // Returns the value of the transition
+   *     transitions.toTransitionKey(); // Returns the key of the transition
+   *   }
+   * })
    * ```
    */
   static getSceneTransitions(): Promise<Transition[]> {

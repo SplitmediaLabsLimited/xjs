@@ -900,14 +900,14 @@ export class App{
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
-          var transitionObj = Transition[val.toUpperCase()];
-          if (typeof transitionObj !== 'undefined') {
-            resolve(transitionObj);
+          let currTransition = Transition[val.toUpperCase()];
+          if (typeof currTransition !== 'undefined') {
+            resolve(currTransition);
           } else {
             Transition.getSceneTransitions().then(transitions => {
-              var inTransition = false;
-              var transitionObj
-              var i;
+              let inTransition = false;
+              let transitionObj;
+              let i;
 
               for (i = 0; i < transitions.length; i++) {
                 transitionObj = transitions[i];
@@ -919,7 +919,7 @@ export class App{
               if (inTransition) {
                 resolve(transitionObj);
               } else {
-                resolve(new Transition(val));  
+                resolve(new Transition(val));
               }
             }).catch(err => {
               resolve(new Transition(val));
