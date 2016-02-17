@@ -38,7 +38,7 @@ export class VideoPlaylist implements Addable {
   /**
    * return: XML
    *
-   * Creates an XML object with the playlist properties
+   * Creates an XML object with the playlist properties.
    *
    * Process includes sending the file to IO.getVideoDuration calss
    * to get the video duration.

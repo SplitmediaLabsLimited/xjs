@@ -151,14 +151,14 @@ export class IO{
 
 window.OnGetVideoDuration = function(file: string, duration: number) {
   IO._callback[decodeURIComponent(file)].shift().resolve(duration);
-  if(IO._callback[decodeURIComponent(file)] === null) {
+  if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }
   
 };
 window.OnGetVideoDurationFailed = function(file: string) {
   IO._callback[decodeURIComponent(file)].shift().reject(Error('Invalid file path.'));
-  if(IO._callback[decodeURIComponent(file)] === null) {
+  if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }
 };
