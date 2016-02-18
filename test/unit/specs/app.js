@@ -130,9 +130,15 @@ describe('App ===', function() {
       });
     });
 
-    it('through a promise', function() {
+    it('through a promise', function(done) {
       var promise = App.getVersion();
       expect(promise).toBeInstanceOf(Promise);
+      promise.then(function() {
+
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      });
     });
 
     it('that always return as string', function(done) {

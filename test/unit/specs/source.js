@@ -113,7 +113,7 @@ describe('Source', function() {
     });
   });
 
-  xit('should be able to set and get the value', function() {
+  it('should be able to set and get the value', function(done) {
     var word = randomWord(5);
     Source.setValue(word);
     Source.getValue().then(function(val) {

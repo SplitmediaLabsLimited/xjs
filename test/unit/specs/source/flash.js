@@ -180,6 +180,13 @@ describe('FlashSource', function() {
               window.OnAsyncCallback(irand, '0');
             },10);
           break;
+
+          case 'presetcount':
+            var irand = rand;
+            setTimeout(function() {
+              window.OnAsyncCallback(irand, '12');
+            },10);
+          break;
         }
         return rand;
       });

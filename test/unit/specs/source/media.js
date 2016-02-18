@@ -82,6 +82,13 @@ describe('MediaSource', function() {
             },10);
           break;
 
+          case 'presetcount':
+            var irand = rand;
+            setTimeout(function() {
+              window.OnAsyncCallback(irand, '12');
+            },10);
+            break;
+
           case 'preset:0':
             var irand = rand;
             setTimeout(function() {
