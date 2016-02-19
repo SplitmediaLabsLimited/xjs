@@ -131,7 +131,6 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
             }
           })
         }
-        resolve(val === '1');
       });
     });
   }
@@ -190,15 +189,15 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
           return this.getValue();
         }
       }).then(val => {
-       for (var key in this._delayExclusionObject) {
-         var regex = new RegExp(
-           this._delayExclusionObject[key].toLowerCase(), 'g');
-         if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-           reject(new Error('Cannot set delay to specific device'));
-           break;
-         }
-       }
-       return this.getAudioOffset();
+        for (var key in this._delayExclusionObject) {
+          var regex = new RegExp(
+            this._delayExclusionObject[key].toLowerCase(), 'g');
+          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
+            reject(new Error('Cannot set delay to specific device'));
+            break;
+          }
+        }
+        return this.getAudioOffset();
       }).then(val => {
         audioOffset = val;
         if (audioOffset >= 0) {
