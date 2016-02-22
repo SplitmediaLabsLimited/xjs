@@ -38,10 +38,8 @@ export class VideoPlaylist implements Addable {
   /**
    * return: XML
    *
-   * Creates an XML object with the playlist properties.
-   *
-   * Process includes sending the file to IO.getVideoDuration calss
-   * to get the video duration.
+   * Creates an XML object with the playlist properties. This method is used
+   * internally for the `addToScene` method.
    */
 
   toXML(): Promise<string> {
@@ -55,7 +53,8 @@ export class VideoPlaylist implements Addable {
         var fileItems = new JXON();
 
         for (var i = 0; i < this._playlist.length; i++) {
-          this._fileplaylist += this._playlist[i] + '*' + i + '*1*' + duration[i] + '*100*0*0*0*0*0|';
+          this._fileplaylist += this._playlist[i] + '*' + i + '*1*' +
+            duration[i] + '*100*0*0*0*0*0|';
         }
 
         fileItems.tag = 'item';
@@ -73,10 +72,15 @@ export class VideoPlaylist implements Addable {
     });
   }
 
+  /**
+   *  Adds the prepared video playlist to the current scene.
+   *
+   *  This function is not available to sources.
+   */
   addToScene(): Promise <boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
-        reject(Error('File selection cancelled.'));
+        reject(Error('This function is not available to sources.'));
       } else {
         this.toXML().then(fileitem => {
           iApp.callFunc('additem', ' ' + fileitem)

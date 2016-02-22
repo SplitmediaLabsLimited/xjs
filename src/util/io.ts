@@ -4,7 +4,7 @@ import {exec} from '../internal/internal';
 import {App as iApp} from '../internal/app';
 
 
-export class IO{
+export class IO {
 
   /**
    * param: (path: string)
@@ -125,18 +125,17 @@ export class IO{
   }
 
   /**
-   * param (file:string)
+   * param: (file: string)
    *
-   * return: resolve/reject on the Video duration of the file received
+   * return: Promise<number>
    *
-   * Calls GetVideoDuration that would either have a callback that would either
-   * resolve and return a video duration of the file or
-   * reject the file due to invalid file/file path
+   * Returns the duration of a video file on the local system, specified in
+   * units of 10^-7 seconds.
    */
 
   static _callback = {};
   static getVideoDuration(file: string) {
-   
+
     return new Promise((resolve, reject) => {
 
       if (IO._callback[file] === undefined){
@@ -154,10 +153,11 @@ window.OnGetVideoDuration = function(file: string, duration: number) {
   if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }
-  
 };
+
 window.OnGetVideoDurationFailed = function(file: string) {
-  IO._callback[decodeURIComponent(file)].shift().reject(Error('Invalid file path.'));
+  IO._callback[decodeURIComponent(file)].shift().reject(
+    Error('Invalid file path.'));
   if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }
