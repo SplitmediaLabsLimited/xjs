@@ -475,6 +475,54 @@ export class Source implements IItemLayout {
     });
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if right click events are sent to the source or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getAllowRightClick(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:BrowserRightClick', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value:boolean)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow or disallow right click events to be sent to the source.
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setAllowRightClick(true).then(function(source) {
+   *   // Promise resolves with the same Source instance
+   * });
+   * ```
+   */
+  setAllowRightClick(value: boolean): Promise<Source> {
+    return new Promise(resolve => {
+      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+    });
+  }
+
    // SourceLayout
 
   /**
@@ -496,7 +544,7 @@ export class Source implements IItemLayout {
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
