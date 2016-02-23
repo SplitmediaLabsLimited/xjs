@@ -3,7 +3,7 @@
  */
 export class Environment {
   private static _isSourcePlugin: Boolean;
-  private static _isSourceConfig: Boolean;
+  private static _isSourceProps: Boolean;
   private static _isExtension: Boolean;
   private static _initialized: Boolean;
 
@@ -17,7 +17,7 @@ export class Environment {
 
     Environment._isSourcePlugin = (window.external &&
       window.external['GetConfiguration'] !== undefined);
-    Environment._isSourceConfig = (window.external &&
+    Environment._isSourceProps = (window.external &&
       window.external['GetConfiguration'] === undefined &&
       window.external['GetViewId'] !== undefined &&
       window.external['GetViewId']() !== undefined);
@@ -39,10 +39,24 @@ export class Environment {
 
   /**
    * return: boolean
+   *
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon. Please use
+   * {@link #core/Environment#isSourceProps isSourceProps} instead.
+   *
    * Determines if this HTML is running within the source properties window.
    */
   static isSourceConfig(): Boolean {
-    return Environment._isSourceConfig;
+    return Environment._isSourceProps;
+  }
+
+  /**
+   * return: boolean
+   *
+   * Determines if this HTML is running within the source properties window.
+   */
+  static isSourceProps(): Boolean {
+    return Environment._isSourceProps;
   }
 
   /**
