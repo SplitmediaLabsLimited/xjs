@@ -15,6 +15,7 @@
     data        = require('gulp-data'),
     path        = require('path'),
     rename      = require('gulp-rename'),
+    uglify      = require('gulp-uglify'),
     argv        = require('yargs').argv;
 
   gulp.task('browserify', function() {
@@ -43,6 +44,13 @@
       }))
       .pipe(rename('xjs-es2015.js'))
       .pipe(gulp.dest('dist'));
+  });
+
+  gulp.task('uglify', ['es2015'], function() {
+    return gulp.src('./dist/*.js')
+      .pipe(uglify())
+      .pipe(rename({ suffix: '.min', extname: '.js'}))
+      .pipe(gulp.dest('./dist/'));
   });
 
   gulp.task('test/unit', function(done) {
