@@ -32,6 +32,14 @@ describe('Scene', function() {
             },10);
 
             return rand;
+          } else if (funcName === 'presetcount') {
+            var rand = Math.floor(Math.random() * 1000);
+
+            setTimeout(function() {
+              window.OnAsyncCallback(rand, '12');
+            },10);
+
+            return rand;
           }
         });
       }

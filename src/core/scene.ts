@@ -18,7 +18,7 @@ import {MediaSource} from './source/media';
 export class Scene {
   private _id: number;
 
-  private static _maxScenes = 12;
+  private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
 
   constructor(sceneNum: number) {
@@ -33,12 +33,28 @@ export class Scene {
     }
   }
 
+  private static _initializeScenePoolAsync(): Promise<number> {
+    return new Promise(resolve => {
+      iApp.get('presetcount').then(cnt => {
+        var count = Number(cnt);
+        (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
+        for (var i = 0; i < Scene._maxScenes; i++) {
+          Scene._scenePool[i] = new Scene(i + 1);
+        }
+        resolve(Scene._maxScenes);
+      });
+    });
+  }
 
   /**
    * return: Scene
    *
    * Get a specific scene object given the scene number.
    *
+   * ** FOR DEPRECATION **
+   * This method doesn't account for scenes greater than 12,
+   * which is needed to support for the scene in the XBC preview editor.
+   * 
    *
    * #### Usage
    *
@@ -54,6 +70,29 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Scene>
+   *
+   * Get a specific scene object given the scene number.
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var scene1;
+   * Scene.getByIdAsync(1).then(function(scene) {
+   *   scene1 = scene;  
+   * });
+   * ```
+   */
+  static getByIdAsync(sceneNum: number): Promise<Scene> {
+    return new Promise(resolve => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        resolve(Scene._scenePool[sceneNum - 1]);
+      });
+    });    
+  }
+
+  /**
    * return: Promise<Scene[]>
    *
    * Asynchronous functon to get a list of scene objects with a specific name.
@@ -62,36 +101,35 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * var scenes = Scene.getByName('Game').then(function(scenes) {
-   *    // manipulate scenes
+   * Scene.getByName('Game').then(function(scenes) {
+   *   // manipulate scenes
    * });
    * ```
    */
   static getByName(sceneName: string): Promise<Scene[]> {
-    // initialize if necessary
-    Scene._initializeScenePool();
-
-    let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
-      return iApp.get('presetname:' + index).then(name => {
-        if (sceneName === name) {
-          return Scene._scenePool[index];
-        } else {
-          return null;
-        }
-      });
-    }));
-
     return new Promise(resolve => {
-      namePromise.then(results => {
-        let returnArray = [];
-        for (var j = 0; j < results.length; ++j) {
-          if (results[j] !== null) {
-            returnArray.push(results[j]);
-          }
-        };
-        resolve(returnArray);
+      Scene._initializeScenePoolAsync().then(cnt => {
+        let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
+          return iApp.get('presetname:' + index).then(name => {
+            if (sceneName === name) {
+              return Scene._scenePool[index];
+            } else {
+              return null;
+            }
+          });
+        }));
+
+        namePromise.then(results => {
+          let returnArray = [];
+          for (var j = 0; j < results.length; ++j) {
+            if (results[j] !== null) {
+              returnArray.push(results[j]);
+            }
+          };
+          resolve(returnArray);
+        });
       });
-    });
+    }); 
   }
 
   /**
@@ -103,7 +141,10 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * var myScene = Scene.getActiveScene();
+   * var myScene;
+   * Scene.getActiveScene().then(function(scene) {
+   *   myScene = scene;
+   * });
    * ```
    */
   static getActiveScene(): Promise<Scene> {
@@ -119,7 +160,9 @@ export class Scene {
         });
       } else {
         iApp.get('preset:0').then(id => {
-          resolve(Scene.getById(Number(id) + 1));
+          return Scene.getByIdAsync(Number(id) + 1);
+        }).then(scene => {
+          resolve(scene);
         });
       }
     });
@@ -176,36 +219,35 @@ export class Scene {
    *
    */
   static searchSourcesById(id: string): Promise<Source> {
-    let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
-    if (!isID) {
-      throw new Error('Not a valid ID format for sources');
-    } else {
-      Scene._initializeScenePool();
-
-      return new Promise(resolve => {
-
-        let match = null;
-        let found = false;
-        Scene._scenePool.forEach((scene, idx, arr) => {
-          if (match === null) {
-            scene.getSources().then((function(sources) {
-              found = sources.some(source => { // unique ID, so get first result
-                if (source['_id'] === id.toUpperCase()) {
-                  match = source;
-                  return true;
-                } else {
-                  return false;
+    return new Promise((resolve, reject) => {
+      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
+      if (!isID) {
+        reject(Error('Not a valid ID format for sources'));
+      } else {
+        Scene._initializeScenePoolAsync().then(cnt => {
+          let match = null;
+          let found = false;
+          Scene._scenePool.forEach((scene, idx, arr) => {
+            if (match === null) {
+              scene.getSources().then((function(sources) {
+                found = sources.some(source => { // unique ID, so get first result
+                  if (source['_id'] === id.toUpperCase()) {
+                    match = source;
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+                if (found ||
+                  Number(this) === arr.length - 1) { // last scene, no match
+                  resolve(match);
                 }
-              });
-              if (found ||
-                Number(this) === arr.length - 1) { // last scene, no match
-                resolve(match);
-              }
-            }).bind(idx));
-          }
+              }).bind(idx));
+            }
+          });
         });
-      });
-    }
+      }
+    });
   };
 
   /**
@@ -224,36 +266,41 @@ export class Scene {
    *
    */
   static searchScenesBySourceId(id: string): Promise<Scene> {
-    let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
-    if (!isID) {
-      throw new Error('Not a valid ID format for sources');
-    } else {
-      Scene._initializeScenePool();
+    return new Promise((resolve, reject) => {
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      if (!isID) {
+        reject(Error('Not a valid ID format for sources'));
 
-      return new Promise(resolve => {
+      } else {
+        Scene._initializeScenePoolAsync().then(cnt => {
+          let match = null;
+          let found = false;
+          Scene._scenePool.forEach((scene, idx, arr) => {
+            if (match === null) {
+              scene.getSources().then(sources => {
+                found = sources.some(source => { // unique ID, so get first result
+                  if (source['_id'] === id.toUpperCase()) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+                if (found) {
+                  resolve(scene);
+                  // Scene.getByIdAsync(idx + 1).then(sceneMatch => {
 
-        let match = null;
-        let found = false;
-        Scene._scenePool.forEach((scene, idx, arr) => {
-          if (match === null) {
-            scene.getSources().then(sources => {
-              found = sources.some(source => { // unique ID, so get first result
-                if (source['_id'] === id.toUpperCase()) {
-                  match = Scene.getById(idx + 1);
-                  return true;
-                } else {
-                  return false;
+                  //   resolve(sceneMatch);
+                  // });
+                } else if (idx === arr.length - 1) {
+                  // last scene, no match
+                  resolve(match);
                 }
               });
-              if (found ||
-                idx === arr.length - 1) { // last scene, no match
-                resolve(match);
-              }
-            });
-          }
+            }
+          });
         });
-      });
-    }
+      }
+    });
   };
 
   /**
@@ -327,40 +374,41 @@ export class Scene {
    * ```
    */
   static filterSources(func: any): Promise<Source[]> {
-    Scene._initializeScenePool();
-    let matches: Source[] = [];
-
     return new Promise((resolve, reject) => {
-      if (typeof func === 'function') {
-        return Promise.all(Scene._scenePool.map(scene => {
-          return new Promise(resolveScene => {
-            scene.getSources().then(sources => {
-              if (sources.length === 0) {
-                resolveScene();
-              } else {
-                return Promise.all(sources.map(source => {
-                  return new Promise(resolveSource => {
-                    func(source, (checker: boolean) => {
-                      if (checker) {
-                        matches.push(source);
-                      }
-                      resolveSource();
-                    });
-                  });
-                })).then(() => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        let matches: Source[] = [];
+
+        if (typeof func === 'function') {
+          return Promise.all(Scene._scenePool.map(scene => {
+            return new Promise(resolveScene => {
+              scene.getSources().then(sources => {
+                if (sources.length === 0) {
                   resolveScene();
-                });
-              }
+                } else {
+                  return Promise.all(sources.map(source => {
+                    return new Promise(resolveSource => {
+                      func(source, (checker: boolean) => {
+                        if (checker) {
+                          matches.push(source);
+                        }
+                        resolveSource();
+                      });
+                    });
+                  })).then(() => {
+                    resolveScene();
+                  });
+                }
             }).catch(() => {
               resolveScene();
+              });
             });
+          })).then(() => {
+            resolve(matches);
           });
-        })).then(() => {
-          resolve(matches);
-        });
-      } else {
-        reject(Error('Parameter is not a function'));
-      }
+        } else {
+          reject(Error('Parameter is not a function'));
+        }
+      });
     });
   }
 
@@ -386,39 +434,39 @@ export class Scene {
    * ```
    */
   static filterScenesBySources(func: any): Promise<Scene[]> {
-    Scene._initializeScenePool();
-    let matches: Scene[] = [];
-
     return new Promise((resolve, reject) => {
-      if (typeof func === 'function') {
-        return Promise.all(Scene._scenePool.map(scene => {
-          return new Promise(resolveScene => {
-            scene.getSources().then(sources => {
-              if (sources.length === 0) {
-                resolveScene();
-              } else {
-                return Promise.all(sources.map(source => {
-                  return new Promise(resolveSource => {
-                    func(source, (checker: boolean) => {
-                      if (checker) {
-                        matches.push(scene);
-                      }
-                      resolveSource();
-                    });
-                  });
-                })).then(() => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        let matches: Scene[] = [];
+        if (typeof func === 'function') {
+          return Promise.all(Scene._scenePool.map(scene => {
+            return new Promise(resolveScene => {
+              scene.getSources().then(sources => {
+                if (sources.length === 0) {
                   resolveScene();
-                });
-              }
+                } else {
+                  return Promise.all(sources.map(source => {
+                    return new Promise(resolveSource => {
+                      func(source, (checker: boolean) => {
+                        if (checker) {
+                          matches.push(scene);
+                        }
+                        resolveSource();
+                      });
+                    });
+                  })).then(() => {
+                    resolveScene();
+                  });
+                }
+              });
             });
+          })).then(() => {
+            resolve(matches);
           });
-        })).then(() => {
-          resolve(matches);
-        });
-      } else {
-        reject(Error('Parameter is not a function'));
-      }
-    })
+        } else {
+          reject(Error('Parameter is not a function'));
+        }
+      });
+    });
   }
 
   /**
