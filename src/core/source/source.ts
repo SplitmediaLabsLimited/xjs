@@ -8,6 +8,7 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
+import {EventEmitter} from '../../util/eventemitter';
 
 export enum SourceTypes {
   UNDEFINED,
@@ -61,7 +62,7 @@ export enum SourceTypes {
  *  });
  * ```
  */
-export class Source implements IItemLayout {
+export class Source extends EventEmitter implements IItemLayout {
   protected _id: string;
   protected _type: SourceTypes;
   protected _value: any;
@@ -72,7 +73,17 @@ export class Source implements IItemLayout {
 
   private _xmlparams: {};
 
+  private _initEventEmitter() {
+    if (!Environment.isSourcePlugin()) return;
+
+    window.OnSceneLoad = () => {
+      this.emit('scene-load');
+    }
+  }
+
   constructor(props?: {}) {
+    super();
+
     props = props ? props : {};
 
     this._name = props['name'];
@@ -84,6 +95,8 @@ export class Source implements IItemLayout {
     this._type = Number(props['type']);
 
     this._xmlparams = props;
+
+     this._initEventEmitter();
   }
 
   /**
@@ -310,6 +323,9 @@ export class Source implements IItemLayout {
    *
    * Set Keep loaded option to ON or OFF
    *
+   * Sources with Keep loaded set to ON would emit `scene-load` event each time
+   * the active scene switches to the source's current scene.
+   *
    * *Chainable.*
    *
    * #### Usage
@@ -317,6 +333,9 @@ export class Source implements IItemLayout {
    * ```javascript
    * source.setKeepLoaded(true).then(function(source) {
    *   // Promise resolves with same Source instance
+   *   source.on('scene-load', function() {
+   *     // Do something each time user switches to current scene
+   *   })
    * });
    * ```
    */
@@ -496,7 +515,7 @@ export class Source implements IItemLayout {
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
