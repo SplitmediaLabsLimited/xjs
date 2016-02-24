@@ -3,6 +3,7 @@
 import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
+import {App as iApp} from '../../internal/app';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
@@ -20,6 +21,12 @@ export enum SourceTypes {
   FLASHFILE,
   GAMESOURCE,
   HTML
+}
+
+export enum ViewTypes {
+  MAIN,
+  PREVIEW,
+  THUMBNAIL
 }
 
 /**
@@ -77,7 +84,15 @@ export class Source extends EventEmitter implements IItemLayout {
     if (!Environment.isSourcePlugin()) return;
 
     window.OnSceneLoad = () => {
-      this.emit('scene-load');
+      iItem.get('prop:viewid', this._id).then(viewId => {
+        let view = ViewTypes.MAIN;
+        if (viewId === '1') {
+          const preview = iApp.getGlobalProperty('preview_editor_opened')
+          view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
+        }
+
+        this.emit('scene-load', view);
+      });
     }
   }
 
@@ -333,8 +348,11 @@ export class Source extends EventEmitter implements IItemLayout {
    * ```javascript
    * source.setKeepLoaded(true).then(function(source) {
    *   // Promise resolves with same Source instance
-   *   source.on('scene-load', function() {
-   *     // Do something each time user switches to current scene
+   *   source.on('scene-load', function(view) {
+   *     // view values:
+   *     // 0 = main view
+   *     // 1 = preview editor
+   *     // 2 = thumbnail preview
    *   })
    * });
    * ```
