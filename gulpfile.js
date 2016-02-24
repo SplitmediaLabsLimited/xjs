@@ -46,7 +46,7 @@
       .pipe(gulp.dest('dist'));
   });
 
-  gulp.task('uglify', ['es2015'], function() {
+  gulp.task('uglify', function() {
     return gulp.src('./dist/xjs.js')
       .pipe(uglify())
       .pipe(rename({ suffix: '.min', extname: '.js'}))
