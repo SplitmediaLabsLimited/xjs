@@ -84,15 +84,9 @@ export class Source extends EventEmitter implements IItemLayout {
     if (!Environment.isSourcePlugin()) return;
 
     window.OnSceneLoad = () => {
-      iItem.get('prop:viewid', this._id).then(viewId => {
-        let view = ViewTypes.MAIN;
-        if (viewId === '1') {
-          const preview = iApp.getGlobalProperty('preview_editor_opened')
-          view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
-        }
-
-        this.emit('scene-load', view);
-      });
+      this.getView().then(viewId => {
+        this.emit('scene-load', viewId);
+      })
     }
   }
 
@@ -425,6 +419,35 @@ export class Source extends EventEmitter implements IItemLayout {
     return new Promise(resolve => {
       resolve(Number(this._sceneId) + 1);
     });
+  }
+
+  /**
+   * return: Promise<ViewTypes>
+   *
+   * Get the view type of the source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getView().then(function(view) {
+   *   // view values:
+   *   // 0 = main view
+   *   // 1 = preview editor
+   *   // 2 = thumbnail preview
+   * })
+   * ```
+   */
+  getView() {
+    return new Promise(resolve => {
+      iItem.get('prop:viewid', this._id).then(viewId => {
+        let view = ViewTypes.MAIN;
+        if (viewId === '1') {
+          const preview = iApp.getGlobalProperty('preview_editor_opened')
+          view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
+        }
+        resolve(view);
+      });
+    })
   }
 
   /**
