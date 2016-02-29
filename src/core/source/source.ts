@@ -9,7 +9,6 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
-import {EventEmitter} from '../../util/eventemitter';
 
 export enum SourceTypes {
   UNDEFINED,
@@ -69,7 +68,7 @@ export enum ViewTypes {
  *  });
  * ```
  */
-export class Source extends EventEmitter implements IItemLayout {
+export class Source implements IItemLayout {
   protected _id: string;
   protected _type: SourceTypes;
   protected _value: any;
@@ -80,19 +79,8 @@ export class Source extends EventEmitter implements IItemLayout {
 
   private _xmlparams: {};
 
-  private _initEventEmitter() {
-    if (!Environment.isSourcePlugin()) return;
-
-    window.OnSceneLoad = () => {
-      this.getView().then(viewId => {
-        this.emit('scene-load', viewId);
-      })
-    }
-  }
 
   constructor(props?: {}) {
-    super();
-
     props = props ? props : {};
 
     this._name = props['name'];
@@ -104,8 +92,6 @@ export class Source extends EventEmitter implements IItemLayout {
     this._type = Number(props['type']);
 
     this._xmlparams = props;
-
-     this._initEventEmitter();
   }
 
   /**
@@ -342,12 +328,6 @@ export class Source extends EventEmitter implements IItemLayout {
    * ```javascript
    * source.setKeepLoaded(true).then(function(source) {
    *   // Promise resolves with same Source instance
-   *   source.on('scene-load', function(view) {
-   *     // view values:
-   *     // 0 = main view
-   *     // 1 = preview editor
-   *     // 2 = thumbnail preview
-   *   })
    * });
    * ```
    */
