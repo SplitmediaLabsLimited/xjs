@@ -97,8 +97,7 @@ export class Scene {
   /**
    * return: Promise<Scene>
    *
-   * Get the currently active scene.
-   *
+   * Get the currently active scene. Does not work on source plugins.
    *
    * #### Usage
    *
@@ -107,16 +106,9 @@ export class Scene {
    * ```
    */
   static getActiveScene(): Promise<Scene> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
-        iApp.get('presetconfig:-1').then(sceneString => {
-          let curScene = JXON.parse(sceneString);
-          if (curScene.children.length > 0) {
-            resolve(Scene.searchScenesBySourceId(curScene.children[0]['id']));
-          } else {
-            throw new Error('presetconfig cannot fetch current scene');
-          }
-        });
+        reject(Error('Not supported on source plugins'));
       } else {
         iApp.get('preset:0').then(id => {
           resolve(Scene.getById(Number(id) + 1));
