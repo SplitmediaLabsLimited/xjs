@@ -3,7 +3,6 @@
         "declaration": true,
         "target": "es5",
         "outDir": "dist/",
-        "out": "out.js",
         "module": "commonjs"
     },
     "files": [
