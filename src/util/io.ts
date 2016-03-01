@@ -1,6 +1,8 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {exec} from '../internal/internal';
+import {App as iApp} from '../internal/app';
+
 
 export class IO {
 
@@ -121,4 +123,43 @@ export class IO {
       });
     });
   }
+
+  /**
+   * param: (file: string)
+   *
+   * return: Promise<number>
+   *
+   * Returns the duration of a video file on the local system, specified in
+   * units of 10^-7 seconds.
+   */
+
+  static _callback = {};
+  static getVideoDuration(file: string) {
+
+    return new Promise((resolve, reject) => {
+
+      if (IO._callback[file] === undefined){
+        IO._callback[file] = [];
+      }
+
+      IO._callback[file].push({resolve,reject});
+      exec('GetVideoDuration', file);
+    });
+  };
 }
+
+window.OnGetVideoDuration = function(file: string, duration: number) {
+  IO._callback[decodeURIComponent(file)].shift().resolve(duration);
+  if(IO._callback[decodeURIComponent(file)].length === 0) {
+    delete IO._callback[decodeURIComponent(file)];
+  }
+};
+
+window.OnGetVideoDurationFailed = function(file: string) {
+  IO._callback[decodeURIComponent(file)].shift().reject(
+    Error('Invalid file path.'));
+  if(IO._callback[decodeURIComponent(file)].length === 0) {
+    delete IO._callback[decodeURIComponent(file)];
+  }
+};
+
