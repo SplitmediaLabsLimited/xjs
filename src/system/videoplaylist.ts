@@ -51,7 +51,7 @@ export class VideoPlaylist implements Addable {
             ioResolve(duration);
           }).catch(err => {
             ioResolve(err);
-          })  
+          })
         })
       });
 
@@ -81,7 +81,7 @@ export class VideoPlaylist implements Addable {
 
           resolve(XML.parseJSON(fileItems));
         } else {
-          reject('One or more files included are invalid.');
+          reject(new Error('One or more files included are invalid.'));
         }
       });
     });
