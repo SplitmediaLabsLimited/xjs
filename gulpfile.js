@@ -16,6 +16,7 @@
     path        = require('path'),
     rename      = require('gulp-rename'),
     uglify      = require('gulp-uglify'),
+    runSequence = require('run-sequence'),
     argv        = require('yargs').argv;
 
   gulp.task('browserify', function() {
@@ -123,7 +124,8 @@
         './package.json',
         './bower.json',
         './dist/xjs.js',
-        './dist/xjs-es2015.js'
+        './dist/xjs-es2015.js',
+        './dist/xjs.min.js'
       ], {base: './'})
       .pipe(data(function(file) {
         var updatedContents = '';
@@ -211,5 +213,7 @@
 
   gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 
-  gulp.task('default', ['es2015']);
+  gulp.task('default', ['es2015'], function(cb) {
+    runSequence(['uglify'], cb);
+  });
 }());
