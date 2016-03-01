@@ -44,30 +44,45 @@ export class VideoPlaylist implements Addable {
 
   toXML(): Promise<string> {
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       let filePromises = this._playlist.map((filename) => {
-        return IO.getVideoDuration(filename)
+        return new Promise(ioResolve => {
+          IO.getVideoDuration(filename).then(duration => {
+            ioResolve(duration);
+          }).catch(err => {
+            ioResolve(err);
+          })  
+        })
       });
 
       Promise.all(filePromises).then(duration => {
         var fileItems = new JXON();
 
+        let isError = false;
         for (var i = 0; i < this._playlist.length; i++) {
+          if (typeof duration === 'object') {
+            isError = true;
+            break;
+          }
           this._fileplaylist += this._playlist[i] + '*' + i + '*1*' +
             duration[i] + '*100*0*0*0*0*0|';
         }
 
-        fileItems.tag = 'item';
-        fileItems['type'] = '1';
-        fileItems['name'] = 'Video Playlist';
-        fileItems['pos_left'] = '0.250000';
-        fileItems['pos_top'] = '0.250000';
-        fileItems['pos_right'] = '0.750000';
-        fileItems['pos_bottom'] = '0.750000';
-        fileItems['item']           = this._playlist[0] + '*0';
-        fileItems['FilePlaylist']   = this._fileplaylist;
+        if (!isError) {
+          fileItems.tag = 'item';
+          fileItems['type'] = '1';
+          fileItems['name'] = 'Video Playlist';
+          fileItems['pos_left'] = '0.250000';
+          fileItems['pos_top'] = '0.250000';
+          fileItems['pos_right'] = '0.750000';
+          fileItems['pos_bottom'] = '0.750000';
+          fileItems['item']           = this._playlist[0] + '*0';
+          fileItems['FilePlaylist']   = this._fileplaylist;
 
-        resolve(XML.parseJSON(fileItems));
+          resolve(XML.parseJSON(fileItems));
+        } else {
+          reject('One or more files included are invalid.');
+        }
       });
     });
   }
@@ -85,11 +100,10 @@ export class VideoPlaylist implements Addable {
         this.toXML().then(fileitem => {
           iApp.callFunc('additem', ' ' + fileitem)
           .then(() => { resolve(true) });
-        })
+        }).catch(err => {
+          reject(err);
+        });
       }
     });
   }
 }
-
-
-
