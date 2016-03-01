@@ -37,7 +37,7 @@ import {IO} from '../../util/io';
  *   scene.getSources().then(function(sources) {
  *     for (var i in sources) {
  *       if (sources[i] instanceof XJS.VideoPlaylistSource) {
- *         // Manipulate your HTML source here
+ *         // Manipulate your VideoPlaylist Source here
  *       }
  *     }
  *   });
@@ -66,7 +66,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
   }
 
   /**
-   * param: (file: string|number)
+   * param: (value: string|number)
    *
    * return: Promise<VideoPlaylistSource>
    *
@@ -78,7 +78,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * 
    */
 
-  setVideoNowPlaying(fileType:string|number): Promise<VideoPlaylistSource> {
+  setVideoNowPlaying(value:string|number): Promise<VideoPlaylistSource> {
     let file: string;
     let _playlist: string[];    
 
@@ -90,28 +90,28 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
         };
         return _playlist;
       }).then(list => {
-       if (typeof fileType === 'string') {
-        if(_playlist.indexOf(fileType) === -1){
-          reject(Error('File not found on Playlist.'))
-        } else {
-          let index = _playlist.indexOf(fileType);
-          file = _playlist[index] + '*' + index;
-          iItem.set('prop:item', file, this._id)
-          .then(fileplaylist => {
-            resolve(this);
-          });
-        }
-      } else if (typeof fileType === 'number' && fileType <= _playlist.length) {
-        file = (_playlist[fileType] + '*' + fileType);
-          iItem.set('prop:item', file, this._id)
-              .then(function (fileplaylist) {
+        if (typeof value === 'string') {
+          if(_playlist.indexOf(value) === -1){
+            reject(Error('File not found on Playlist.'))
+          } else {
+            let index = _playlist.indexOf(value);
+            file = _playlist[index] + '*' + index;
+            iItem.set('prop:item', file, this._id)
+            .then(fileplaylist => {
               resolve(this);
-          });
-      } else {
-        reject(Error('Invalid value.'));
-      };
-    })
-  });
+            });
+          }
+        } else if (typeof value === 'number' && value <= _playlist.length) {
+          file = (_playlist[value] + '*' + value);
+            iItem.set('prop:item', file, this._id)
+              .then(function (fileplaylist) {
+                resolve(this);
+              });
+        } else {
+          reject(Error('Invalid value.'));
+        };
+      })
+    });
 
   };
 
@@ -142,7 +142,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * Sets the [prop:FilePlaylist] of this VideoPlaylist source.
    *
    * This call would replace all the items on the playlist.
-   * [prop:item] is also set to the first of the FilePlaylist.
+   * [prop:item] is also set to the first item of the new FilePlaylist.
    *
    */
 
@@ -162,11 +162,10 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
           } else {
             fileString += fileItems[i] + '*' + i + '*1*'
             + duration[i] + '*100*0*0*0*0*0';
-
             if (i+1 < fileItems.length) {
               fileString += '|';
             };
-          }          
+          };          
         };
         iItem.set('prop:item', fileItems[0] + '*0', this._id);
         return fileString;
