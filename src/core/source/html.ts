@@ -573,6 +573,55 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
     });
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if right click events are sent to the source or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getAllowRightClick(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:BrowserRightClick', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value:boolean)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow or disallow right click events to be sent to the source. Note that
+   * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setAllowRightClick(true).then(function(source) {
+   *   // Promise resolves with the same Source instance
+   * });
+   * ```
+   */
+  setAllowRightClick(value: boolean): Promise<Source> {
+    return new Promise(resolve => {
+      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+    });
+  }
+
   // ItemLayout
 
   /**
@@ -594,7 +643,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -898,49 +947,49 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<HtmlSource>;
 
   // ItemConfigurable
-  
+
   /**
    * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */

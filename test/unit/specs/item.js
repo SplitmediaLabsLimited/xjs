@@ -43,10 +43,6 @@ describe('Source', function() {
           case 'prop:keeploaded':
             local.keeploaded = val;
           break;
-
-          case 'prop:BrowserRightClick':
-            local.rightclick = val;
-          break;
         }
       });
 
@@ -76,12 +72,6 @@ describe('Source', function() {
           case 'prop:keeploaded':
             setTimeout(function() {
               window.OnAsyncCallback(rand, local.keeploaded);
-            }, 10);
-          break;
-
-          case 'prop:BrowserRightClick':
-            setTimeout(function() {
-              window.OnAsyncCallback(rand, local.rightclick);
             }, 10);
           break;
         }
@@ -152,15 +142,6 @@ describe('Source', function() {
     Source.getSceneId().then(function(val) {
       expect(val).toBeTypeOf('number');
       expect(val).not.toBeNaN();
-      done();
-    });
-  });
-
-  it('should be able to set and get allow right click', function(done) {
-    Source.setAllowRightClick(!local.rightclick);
-    Source.getAllowRightClick().then(function(val) {
-      expect(val).toBeTypeOf('boolean');
-      local.keeploaded = val;
       done();
     });
   });
