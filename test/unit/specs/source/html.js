@@ -140,6 +140,12 @@ describe('HtmlSource', function() {
           },10);
         }
       break;
+
+      case 'prop:BrowserRightClick':
+        setTimeout(function() {
+          window.OnAsyncCallback(rand, local.rightclick);
+        }, 10);
+      break;
     }
     return rand;
   };
@@ -259,6 +265,10 @@ describe('HtmlSource', function() {
         }, 10);
       break;
 
+      case 'prop:BrowserRightClick':
+        local.rightclick = val;
+      break;
+
     }
 
     return rand;
@@ -283,6 +293,13 @@ describe('HtmlSource', function() {
             setTimeout(function() {
               window.OnAsyncCallback(irand,
                 encodeURIComponent(mockPresetConfig));
+            },10);
+          break;
+
+          case 'presetcount':
+            var irand = rand;
+            setTimeout(function() {
+              window.OnAsyncCallback(irand, '12');
             },10);
           break;
 
@@ -675,6 +692,15 @@ describe('HtmlSource', function() {
           }
           done();
         })
+    });
+
+    it('should be able to set and get allow right click', function(done) {
+      currentHtmlSource.setAllowRightClick(!local.rightclick);
+      currentHtmlSource.getAllowRightClick().then(function(val) {
+        expect(val).toBeTypeOf('boolean');
+        local.keeploaded = val;
+        done();
+      });
     });
   });
 });

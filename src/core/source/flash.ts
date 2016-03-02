@@ -83,6 +83,55 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
     });
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if right click events are sent to the source or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getAllowRightClick(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:BrowserRightClick', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value:boolean)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow or disallow right click events to be sent to the source. Note that
+   * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setAllowRightClick(true).then(function(source) {
+   *   // Promise resolves with the same Source instance
+   * });
+   * ```
+   */
+  setAllowRightClick(value: boolean): Promise<Source> {
+    return new Promise(resolve => {
+      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+    });
+  }
+
   // ItemLayout
 
   /**
@@ -104,7 +153,7 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -224,6 +273,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<FlashSource>;
@@ -253,6 +307,11 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    */
   setBorderColor: (value: Color) => Promise<FlashSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<FlashSource>;
+  
   // ItemChroma
 
   /**

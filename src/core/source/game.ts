@@ -301,6 +301,11 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<GameSource>;
@@ -330,6 +335,11 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
    */
   setBorderColor:  (value: Color) => Promise<GameSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<GameSource>;
+  
 // ItemChroma
 
   /**

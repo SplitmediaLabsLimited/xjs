@@ -62,6 +62,7 @@ export interface IItemChroma {
    * *Chainable.*
    */
   setChromaEnabled(value: boolean): Promise<IItemChroma>;
+  
   /**
    * return: Promise<KeyingType>
    *

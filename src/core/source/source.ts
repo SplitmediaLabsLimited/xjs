@@ -3,6 +3,7 @@
 import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
+import {App as iApp} from '../../internal/app';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
@@ -19,6 +20,12 @@ export enum SourceTypes {
   FLASHFILE,
   GAMESOURCE,
   HTML
+}
+
+export enum ViewTypes {
+  MAIN,
+  PREVIEW,
+  THUMBNAIL
 }
 
 /**
@@ -71,6 +78,7 @@ export class Source implements IItemLayout {
   private _keepLoaded: boolean;
 
   private _xmlparams: {};
+
 
   constructor(props?: {}) {
     props = props ? props : {};
@@ -310,6 +318,9 @@ export class Source implements IItemLayout {
    *
    * Set Keep loaded option to ON or OFF
    *
+   * Sources with Keep loaded set to ON would emit `scene-load` event each time
+   * the active scene switches to the source's current scene.
+   *
    * *Chainable.*
    *
    * #### Usage
@@ -388,6 +399,35 @@ export class Source implements IItemLayout {
     return new Promise(resolve => {
       resolve(Number(this._sceneId) + 1);
     });
+  }
+
+  /**
+   * return: Promise<ViewTypes>
+   *
+   * Get the view type of the source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getView().then(function(view) {
+   *   // view values:
+   *   // 0 = main view
+   *   // 1 = preview editor
+   *   // 2 = thumbnail preview
+   * })
+   * ```
+   */
+  getView() {
+    return new Promise(resolve => {
+      iItem.get('prop:viewid', this._id).then(viewId => {
+        let view = ViewTypes.MAIN;
+        if (viewId === '1') {
+          const preview = iApp.getGlobalProperty('preview_editor_opened')
+          view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
+        }
+        resolve(view);
+      });
+    })
   }
 
   /**
@@ -496,7 +536,7 @@ export class Source implements IItemLayout {
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */

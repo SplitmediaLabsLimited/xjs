@@ -29,12 +29,6 @@ export class File implements Addable {
     this._path = file;
   }
 
-  private _getPath(): Promise<string> {
-    return new Promise(resolve => {
-      resolve(this._path);
-    });
-  }
-
   /**
    *  return: Promise<boolean>
    *

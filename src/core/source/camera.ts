@@ -117,9 +117,34 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    *
    */
   isHardwareEncoder(): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iItem.get('prop:hwencoder', this._id).then(val => {
-        resolve(val === '1');
+        if (val === '1') {
+          resolve(true);
+        } else {
+          this.isActive().then(isActive => {
+            if (isActive) {
+              resolve(false);
+            } else {
+              reject(new Error
+                ('Cannot check hardware encoding. Device not present'));
+            }
+          })
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is active and present.
+   *
+   */
+  isActive(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:activestate', this._id).then(val => {
+        resolve(val === 'active');
       });
     });
   }
@@ -164,16 +189,16 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
           return this.getValue();
         }
       }).then(val => {
-       for (var key in this._delayExclusionObject) {
-         var regex = new RegExp(
-           this._delayExclusionObject[key].toLowerCase(), 'g');
-         if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-           reject(new Error('Cannot set delay to specific device'));
-           break;
-         }
-       }
-       return this.getAudioOffset();
-     }).then(val => {
+        for (var key in this._delayExclusionObject) {
+          var regex = new RegExp(
+            this._delayExclusionObject[key].toLowerCase(), 'g');
+          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
+            reject(new Error('Cannot set delay to specific device'));
+            break;
+          }
+        }
+        return this.getAudioOffset();
+      }).then(val => {
         audioOffset = val;
         if (audioOffset >= 0) {
           isPositive = true;
@@ -304,6 +329,34 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
           resolve(this);
         });
     });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether deinterlacing is enforced
+   */
+  isForceDeinterlace(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:fdeinterlace', this._id).then(val => {
+        resolve(val === '3');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   *
+   * Enables or disables forcing of deinterlacing
+   *
+   * *Chainable.*
+   */
+  setForceDeinterlace(value: boolean): Promise<CameraSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
   }
 
   // ItemLayout
@@ -446,6 +499,11 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<CameraSource>;
@@ -474,6 +532,11 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
   setBorderColor: (value: Color) => Promise<CameraSource>;
+
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<CameraSource>;
 
   // special color options pinning
 

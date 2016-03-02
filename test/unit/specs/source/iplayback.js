@@ -84,6 +84,10 @@ describe('Playback interface', function() {
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
+        case 'presetcount':
+          xCallback(asyncId, '12');
+          break;
+
         case 'preset:0':
           xCallback(asyncId, '0');
           break;

@@ -100,6 +100,22 @@ export interface IItemColor {
    * *Chainable.*
    */
   setBorderColor(value: Color): Promise<any>;
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Determines whether source uses the full dynamic color range of 0-255 as opposed to the limited 16-235 range
+   */
+  isFullDynamicColorRange(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Enables or disables use of 0-255 full dynamic color range
+   *
+   * *Chainable.*
+   */
+  setFullDynamicColorRange(value: boolean): Promise<IItemColor>;  
 }
 
 export class ItemColor implements IItemColor {
@@ -223,6 +239,27 @@ export class ItemColor implements IItemColor {
         String(value.getIbgr() - 0x80000000), this._id).then(() => {
           resolve(this);
         });
+    });
+  }
+
+  isFullDynamicColorRange(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:cc_dynamicrange', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setFullDynamicColorRange(value: boolean): Promise<ItemColor> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'boolean') {
+        reject(TypeError('Parameter should be boolean.'));
+      } else {
+        iItem.set('prop:cc_dynamicrange', (value ? '1' : '0'),
+          this._id).then(() => {
+            resolve(this);
+        });
+      }
     });
   }
 }
