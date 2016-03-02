@@ -117,9 +117,34 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    *
    */
   isHardwareEncoder(): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iItem.get('prop:hwencoder', this._id).then(val => {
-        resolve(val === '1');
+        if (val === '1') {
+          resolve(true);
+        } else {
+          this.isActive().then(isActive => {
+            if (isActive) {
+              resolve(false);
+            } else {
+              reject(new Error
+                ('Cannot check hardware encoding. Device not present'));
+            }
+          })
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is active and present.
+   *
+   */
+  isActive(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:activestate', this._id).then(val => {
+        resolve(val === 'active');
       });
     });
   }
@@ -164,16 +189,16 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
           return this.getValue();
         }
       }).then(val => {
-       for (var key in this._delayExclusionObject) {
-         var regex = new RegExp(
-           this._delayExclusionObject[key].toLowerCase(), 'g');
-         if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-           reject(new Error('Cannot set delay to specific device'));
-           break;
-         }
-       }
-       return this.getAudioOffset();
-     }).then(val => {
+        for (var key in this._delayExclusionObject) {
+          var regex = new RegExp(
+            this._delayExclusionObject[key].toLowerCase(), 'g');
+          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
+            reject(new Error('Cannot set delay to specific device'));
+            break;
+          }
+        }
+        return this.getAudioOffset();
+      }).then(val => {
         audioOffset = val;
         if (audioOffset >= 0) {
           isPositive = true;

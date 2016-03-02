@@ -36,6 +36,18 @@ describe('CameraSource', function() {
     } else {
       if (property === 'StreamPause') {
         xCallback(asyncId, '0');
+      } else if (property === 'hwencoder') {
+        if (shouldFail) {
+          xCallback(asyncId, '0');
+        } else {
+          xCallback(asyncId, '1');
+        }
+      } else if (property === 'activestate') {
+        if (shouldFail2) {
+          xCallback(asyncId, 'not_present');
+        } else {
+          xCallback(asyncId, 'active');
+        }
       } else {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
@@ -219,7 +231,42 @@ describe('CameraSource', function() {
         expect(err).toEqual(jasmine.any(Error));
         shouldFail2 = false;
         done();
-      });;
+      });
+    });
+
+    it('should be able to check if hardware encoder or not', function(done) {
+      var _this = this;
+      shouldFail = false;
+      shouldFail2 = false;
+      var promise = _this.cameraSource.isHardwareEncoder();
+
+      promise.then(function(isHardwareEncoder) {
+        expect(isHardwareEncoder).toBeTypeOf('boolean');
+        expect(isHardwareEncoder).toBe(true);
+        shouldFail = true;
+        return _this.cameraSource.isHardwareEncoder();
+      }).then(function(isHardwareEncoder2) {
+        expect(isHardwareEncoder2).toBe(false);
+        shouldfail2 = true;
+        return _this.cameraSource.isHardwareEncoder();
+      }).then(function() {
+        done.fail('Camera Device not present');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        shouldFail = false;
+        shouldFail2 = false;
+        done();
+      });
+    });
+
+    it('should be able to check if active or not', function(done) {
+      var _this = this;
+      var promise = _this.cameraSource.isActive();
+
+      promise.then(function(isActive) {
+        expect(isActive).toBeTypeOf('boolean');
+        done();
+      });
     });
 
   });
