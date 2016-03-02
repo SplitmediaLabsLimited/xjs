@@ -306,6 +306,34 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
     });
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether deinterlacing is enforced
+   */
+  isForceDeinterlace(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:fdeinterlace', this._id).then(val => {
+        resolve(val === '3');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   *
+   * Enables or disables forcing of deinterlacing
+   *
+   * *Chainable.*
+   */
+  setForceDeinterlace(value: boolean): Promise<CameraSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
+  }
+
   // ItemLayout
 
   /**
