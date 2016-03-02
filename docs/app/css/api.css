@@ -228,3 +228,19 @@ h1.id {
   font-style: italic;
   font-size: 0.9em;
 }
+
+blockquote {
+  background-color: #eee;
+  font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 1em;
+  font-weight: 300;
+  line-height: 1.2em;
+  font-style: italic;
+  border-left: 0.4em solid #4a4a4a;
+  margin-left: 1em;
+  padding: 0.05em 1em;
+}
+
+blockquote h4 {
+  margin-bottom: 0;
+}
