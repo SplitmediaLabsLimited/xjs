@@ -100,6 +100,12 @@ describe('FlashSource', function() {
           },10);
         }
       break;
+
+      case 'prop:BrowserRightClick':
+        setTimeout(function() {
+          window.OnAsyncCallback(rand, local.rightclick);
+        }, 10);
+      break;
     }
     return rand;
   };
@@ -145,6 +151,10 @@ describe('FlashSource', function() {
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
+      break;
+
+      case 'prop:BrowserRightClick':
+        local.rightclick = val;
       break;
 
     }
@@ -397,6 +407,15 @@ describe('FlashSource', function() {
           }
           done();
         });
+    });
+
+    it('should be able to set and get allow right click', function(done) {
+      currentFlashSource.setAllowRightClick(!local.rightclick);
+      currentFlashSource.getAllowRightClick().then(function(val) {
+        expect(val).toBeTypeOf('boolean');
+        local.keeploaded = val;
+        done();
+      });
     });
   });
 });
