@@ -6,3 +6,4 @@ export * from '../src/system/microphone';
 export * from '../src/system/url';
 export * from '../src/system/screen';
 export * from '../src/system/file';
+export * from '../src/system/videoplaylist';
