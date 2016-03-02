@@ -169,6 +169,11 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<ImageSource>;
@@ -198,6 +203,11 @@ export class ImageSource extends Source implements IItemLayout, IItemColor, IIte
    */
   setBorderColor: (value: Color) => Promise<ImageSource>;
 
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<ImageSource>;
+  
   // ItemChroma
 
   /**

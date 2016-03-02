@@ -474,6 +474,11 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<CameraSource>;
@@ -502,6 +507,11 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
   setBorderColor: (value: Color) => Promise<CameraSource>;
+
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<CameraSource>;
 
   // special color options pinning
 
