@@ -96,6 +96,10 @@ describe('CameraSource', function() {
           xCallback(asyncId, '0');
         break;
 
+        case 'presetcount':
+          xCallback(asyncId, '12');
+        break;
+
         default:
           if (funcName.indexOf('presetconfig:') !== -1) {
             xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -111,6 +115,16 @@ describe('CameraSource', function() {
     });
 
     spyOn(window.external, 'SearchVideoItem2')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem2')
     .and.callFake(function(id) {
       attachedId = id;
     });

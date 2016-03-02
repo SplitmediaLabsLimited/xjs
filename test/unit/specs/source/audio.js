@@ -40,6 +40,12 @@ describe('AudioSource', function() {
               }, 10);
             break;
 
+            case 'presetcount':
+              setTimeout(function() {
+                window.OnAsyncCallback(_ctr, '12');
+              }, 10);
+            break;
+
             default:
               if (funcName.indexOf('presetconfig:') !== -1) {
                 setTimeout(function() {
