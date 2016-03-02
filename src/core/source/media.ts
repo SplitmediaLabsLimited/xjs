@@ -17,6 +17,7 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {JSON as JXON} from '../../internal/util/json';
 
 /**
  * The MediaSource class represents a playable media file.
@@ -35,6 +36,73 @@ import {Environment} from '../environment';
  */
 export class MediaSource extends Source implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemPlayback, IItemAudio {
+
+  /**
+   * return: Promise<object>
+   *
+   * Gets file information such as codecs, bitrate, resolution, etc.
+   *
+   * sample file info object format:
+   *
+   * {
+   *  "audio": {
+   *    "duration":"1436734690",
+   *    "samplerate":"44100",
+   *    "bitrate":"128000",
+   *    "codec":"mp3"},
+   *  "video":{
+   *    "frameduration":"333670",
+   *    "bitrate":"1132227",
+   *    "duration":"1436436440",
+   *    "height":"240",
+   *    "width":"320",
+   *    "codec":"mpeg4"}
+   * }
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * mediaSource.getFileInfo().then(function(value) {
+   *   // Do something with the value
+   *   var audioCodec;
+   *   if (typeof value['audio'] !== 'undefined' && typeof value['audio']['codec']) {
+   *     audioCodec = value['audio']['codec'];
+   *   }
+   * });
+   * ```
+   */
+  getFileInfo(): Promise<Object> {
+    return new Promise((resolve, reject) => {
+      iItem.get('FileInfo', this._id).then(val => {
+        try {
+          let fileInfoObj: Object = {};
+          let fileInfoJXON = JXON.parse(val);
+          if (typeof fileInfoJXON['children'] !== 'undefined'
+            && fileInfoJXON['children'].length > 0) {
+            let fileInfoChildren = fileInfoJXON['children'];
+            for (var i = fileInfoChildren.length - 1; i >= 0; i--) {
+              var child = fileInfoChildren[i];
+              var childObj: Object = {};
+              var childObjKeys = Object.keys(child);
+              for (var j = childObjKeys.length - 1; j >= 0; j--) {
+                var key = childObjKeys[j];
+                if (key !== 'value' &&  key !== 'tag') {
+                  childObj[key] = child[key];
+                }
+              }
+              var tag = child['tag'];
+              fileInfoObj[tag] = childObj;
+            }
+            resolve(fileInfoObj);
+          } else {
+            resolve(fileInfoObj);
+          }
+        } catch (e) {
+          reject(Error('Error retrieving file information'));
+        }
+      });
+    });
+  }
 
   // ItemLayout
 
