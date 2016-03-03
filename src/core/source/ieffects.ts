@@ -37,6 +37,8 @@ const _DEFAULT_EFFECT_VALUES: Object = {
   'FILE_MASK_GUIDE' : false
 };
 
+const _DEFAULT_EDGE_EFFECT_CONFIG: string = '0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1';
+
 export interface IItemEffect {
 
   /**
@@ -78,7 +80,7 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  // setBorderEffectRadius(value: number): Promise<IItemEffect>;
+  setBorderEffectRadius(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -100,7 +102,7 @@ export interface IItemEffect {
    * it is specifically made that the edge effects are still within the boundaries of the source,
    * such that increasing border thickness adds the layer inwards instead of outwards.
    */
-  // setBorderEffectThickness(value: number): Promise<IItemEffect>;
+  setBorderEffectThickness(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -116,7 +118,7 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  // setBorderEffectOpacity(value: number): Promise<IItemEffect>;
+  setBorderEffectOpacity(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<Color>
@@ -132,7 +134,7 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  // setBorderEffectColor(value: Color): Promise<IItemEffect>;
+  setBorderEffectColor(value: Color): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -154,7 +156,7 @@ export interface IItemEffect {
    * it is specifically made that the edge effects are still within the boundaries of the source,
    * such that increasing thickness adds the layer inwards instead of outwards.
    */
-  // setShadowEffectThickness(value: number): Promise<IItemEffect>;
+  setShadowEffectThickness(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -170,7 +172,7 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  // setShadowEffectBlur(value: number): Promise<IItemEffect>;
+  setShadowEffectBlur(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -186,7 +188,7 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  // setShadowEffectOpacity(value: number): Promise<IItemEffect>;
+  setShadowEffectOpacity(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -209,7 +211,7 @@ export interface IItemEffect {
    * A negative horizontal offset in turn shifts the shadow to the left,
    * visually decreasing the right portion of the shadow.
    */
-  // setShadowEffectOffsetX(value: number): Promise<IItemEffect>;
+  setShadowEffectOffsetX(value: number): Promise<IItemEffect>;
 
   /**
    * return: Promise<number>
@@ -232,7 +234,7 @@ export interface IItemEffect {
    * A negative vertical offset in turn shifts the shadow above,
    * visually decreasing the bottom portion of the shadow.
    */
-  // setShadowEffectOffsetY(value: number): Promise<IItemEffect>;
+  setShadowEffectOffsetY(value: number): Promise<IItemEffect>;
 
   // FILE MASKING
 
@@ -251,7 +253,7 @@ export interface IItemEffect {
    * *Chainable.*
    *
    */
-  // setFileMask(value: string): Promise<IItemEffect>;
+  setFileMask(value: string): Promise<IItemEffect>;
 
   /**
    * return: Promise<boolean>
@@ -270,7 +272,7 @@ export interface IItemEffect {
    * The file masking guide highlights the area of the source that is currently being masked.
    * Please note that resetting mask effect also resets this to false
    */
-  // showFileMaskingGuide(value: boolean): Promise<IItemEffect>;
+  showFileMaskingGuide(value: boolean): Promise<IItemEffect>;
 }
 
 export class ItemEffect implements IItemEffect {
@@ -315,16 +317,61 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
-  private _setEdgeEffectValue(value: Object): Promise<number> {
+  private _setEdgeEffectValue(value: Object): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
       iItem.get('prop:edgeeffectcfg', this._id).then(val => {
+        var edgeConfig = [];
+        var edgeEffectString;
         if (val !== '' && val !== null) {
-
+          edgeEffectString = val;
         } else {
+          edgeEffectString = _DEFAULT_EDGE_EFFECT_CONFIG;
+        }
+        var edgeArray = edgeEffectString.split("|");
+        var edgeArrayLength = edgeArray.length;
+        for (var i = 0; i < edgeArrayLength; ++i) {
+          edgeConfig.push(edgeArray[i].split(','));
+        }
+        var arrayIndex = value['arrayIndex'];
+        var individualIndex = value['indIndex'];
+        var setValue = value['value'];
 
+        if (typeof edgeConfig[arrayIndex] !== 'undefined') {
+          var oldArray = edgeConfig[arrayIndex];
+          if (Array.isArray(individualIndex)) {
+            for (var j = 0; j < individualIndex.length; ++j) {
+              var tempIndex = individualIndex[j];
+              oldArray[tempIndex] = setValue[j];
+            }
+          } else {
+            oldArray[individualIndex] = setValue;
+          }
+
+          edgeConfig[arrayIndex] = oldArray;
+          var edgeEffectStringValue = '';
+          for (var k = 0; k < edgeConfig.length; ++k) {
+            edgeEffectStringValue = edgeEffectStringValue + edgeConfig[k].toString();
+            if (k !== edgeConfig.length - 1) {
+              edgeEffectStringValue = edgeEffectStringValue + '|';
+            }
+          }
+          iItem.set('prop:edgeeffectcfg', edgeEffectStringValue, this._id)
+          .then(() => {
+            resolve(this);
+          });
+        } else {
+          reject(RangeError('Invalid parameter. Array index given not included.'));  
         }
       });
     });
+  }
+
+  private _getRGBArray(value: Color): Array<number> {
+    var hex = value.getRgb();
+    var r = parseInt(hex.substring(0,2), 16)/255;
+    var g = parseInt(hex.substring(2,4), 16)/255;
+    var b = parseInt(hex.substring(4), 16)/255;
+    return [r, g, b];
   }
 
   getMaskEffect(): Promise<MaskEffect> {
@@ -389,6 +436,24 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setBorderEffectRadius(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 1;
+        parameterObject['indIndex'] = 1;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
   getBorderEffectThickness(): Promise<number> {
     return new Promise(resolve => {
       var parameterObject = {};
@@ -399,6 +464,24 @@ export class ItemEffect implements IItemEffect {
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['BORDER_THICKNESS']);
       });
+    });
+  }
+
+  setBorderEffectThickness(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 1;
+        parameterObject['indIndex'] = 2;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -415,6 +498,24 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setBorderEffectOpacity(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 0;
+        parameterObject['indIndex'] = 4;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
   getBorderEffectColor(): Promise<Color> {
     return new Promise(resolve => {
       var parameterObject = {};
@@ -424,6 +525,18 @@ export class ItemEffect implements IItemEffect {
         resolve(Color.fromRGBString('#' + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])));
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
+      });
+    });
+  }
+
+  setBorderEffectColor(value: Color): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      var parameterObject = {};
+      parameterObject['arrayIndex'] = 0;
+      parameterObject['indIndex'] = [1, 2, 3];
+      parameterObject['value'] = this._getRGBArray(value);
+      this._setEdgeEffectValue(parameterObject).then(() => {
+        resolve(this);
       });
     });
   }
@@ -441,6 +554,18 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setShadowEffectColor(value: Color): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      var parameterObject = {};
+      parameterObject['arrayIndex'] = 3;
+      parameterObject['indIndex'] = [1, 2, 3];
+      parameterObject['value'] = this._getRGBArray(value);
+      this._setEdgeEffectValue(parameterObject).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
   getShadowEffectThickness(): Promise<number> {
     return new Promise(resolve => {
       var parameterObject = {};
@@ -451,6 +576,24 @@ export class ItemEffect implements IItemEffect {
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['SHADOW_THICKNESS']);
       });
+    });
+  }
+
+  setShadowEffectThickness(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 1;
+        parameterObject['indIndex'] = 3;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -467,6 +610,24 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setShadowEffectBlur(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 2;
+        parameterObject['indIndex'] = 3;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
   getShadowEffectOpacity(): Promise<number> {
     return new Promise(resolve => {
       var parameterObject = {};
@@ -477,6 +638,24 @@ export class ItemEffect implements IItemEffect {
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OPACITY']);
       });
+    });
+  }
+
+  setShadowEffectOpacity(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < 0 || value > 100) {
+        reject(RangeError('Valid value is a number from 0-100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 3;
+        parameterObject['indIndex'] = 4;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -493,6 +672,24 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setShadowEffectOffsetX(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < -100 || value > 100) {
+        reject(RangeError('Valid value is a number from -100 to 100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 2;
+        parameterObject['indIndex'] = 1;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
   getShadowEffectOffsetY(): Promise<number> {
     return new Promise(resolve => {
       var parameterObject = {};
@@ -506,10 +703,36 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  setShadowEffectOffsetY(value: number): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use a number as the parameter.'));
+      } else if (value < -100 || value > 100) {
+        reject(RangeError('Valid value is a number from -100 to 100.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 2;
+        parameterObject['indIndex'] = 2;
+        parameterObject['value'] = value/100;
+        this._setEdgeEffectValue(parameterObject).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
   getFileMask(): Promise<string> {
     return new Promise(resolve => {
       iItem.get('prop:edgeeffectmask', this._id).then(val => {
         resolve(val);
+      });
+    });
+  }
+
+  setFileMask(value: string): Promise<ItemEffect> {
+    return new Promise(resolve => {
+      iItem.set('prop:edgeeffectmask', value, this._id).then(() => {
+        resolve(this);
       });
     });
   }
@@ -528,4 +751,17 @@ export class ItemEffect implements IItemEffect {
     });
   }
 
+  showFileMaskingGuide(value: boolean): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
+        if (val === '1' || val === '3') {
+          iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id);
+        } else if (val === '2' || val === '4') {
+          iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id);
+        } else {
+          reject(new Error('This method is not available if filemasking is not enabled.'));
+        }
+      })
+    });
+  }
 }
