@@ -529,7 +529,7 @@ export class ItemLayout implements IItemLayout {
   getPosition():Promise<Rectangle> {
     return new Promise(resolve => {
       iItem.get('prop:pos', this._id).then(val => {
-        var [left, top, right, bottom] = decodeURIComponent(val).split(',');
+        var [left, top, right, bottom] = String(val).split(',');
         this.position = Rectangle.fromCoordinates(Number(left), Number(top),
           Number(right), Number(bottom));
         resolve(this.position);
@@ -613,7 +613,7 @@ export class ItemLayout implements IItemLayout {
     return new Promise(resolve => {
       var cropObject: Object = {};
       iItem.get('prop:crop', this._id).then(val => {
-        var [left, top, right, bottom] = decodeURIComponent(val).split(',');
+        var [left, top, right, bottom] = String(val).split(',');
         cropObject['left'] = Number(left);
         cropObject['top'] = Number(top);
         cropObject['right'] = Number(right);

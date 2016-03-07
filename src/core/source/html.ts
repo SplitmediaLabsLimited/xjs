@@ -534,7 +534,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
       let customSize;
       iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
+          var [width, height] = String(val).split(',');
           customSize = Rectangle.fromDimensions(
             Number(width) / window.devicePixelRatio,
             Number(height) / window.devicePixelRatio
@@ -800,7 +800,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<HtmlSource>;
-  
+
   // ItemChroma
 
   /**

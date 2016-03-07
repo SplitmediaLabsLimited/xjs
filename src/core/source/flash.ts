@@ -51,7 +51,7 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
       let customSize;
       iItem.get('prop:BrowserSize', this._id).then(val => {
         if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
+          var [width, height] = String(val).split(',');
           customSize = Rectangle.fromDimensions(Number(width), Number(height));
         } else {
           customSize = Rectangle.fromDimensions(0, 0);
@@ -311,7 +311,7 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<FlashSource>;
-  
+
   // ItemChroma
 
   /**
