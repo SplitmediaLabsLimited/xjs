@@ -213,6 +213,133 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
     });
   }
 
+  /**
+   * return Promise<ScreenSource>
+   *
+   * Checks if the Screen Capture layered window is selected.
+   * 
+   */
+  getCaptureLayered(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapLayered', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * 
+   * return Promise<ScreenSource>
+   *
+   * Sets the Screen Capture Layered window 
+   * 
+   */
+  setCaptureLayered(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return Promise<ScreenSource>
+   *
+   * Checks if the Exclusive Window capture is selected.
+   * 
+   */
+  getOptimizedCapture(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * 
+   * return Promise<ScreenSource>
+   *
+   * Sets the Exclusive Window capture.
+   * 
+   */
+  setOptimizedCapture(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+
+  /**
+   * return Promise<ScreenSource>
+   *
+   * Checks if the Show mouse clicks is selected.
+   * 
+   */
+  getShowMouseClicks(): Promise<boolean> {
+    return new Promise(resolve => {
+    iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * 
+   * return Promise<ScreenSource>
+   *
+   * Sets the Show mouse clicks.
+   * 
+   */
+  setShowMouseClicks(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+    iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id).then(val => {
+        resolve(this)
+      });
+    });
+  }
+
+  /**
+   * return Promise<ScreenSource>
+   *
+   * Checks if the Show mouse is selected.
+   * 
+   */
+  getShowMouse(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * 
+   * return Promise<ScreenSource>
+   *
+   * Sets the Show Mouse.
+   * 
+   */
+  setShowMouse(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id).then(val => {
+        if (val === true) {
+          iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id);
+        }
+        resolve(this);
+      });
+    });
+  }
+
+  ScrCapShowMouse
+
+
   // ItemLayout
 
   /**
