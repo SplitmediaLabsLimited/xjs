@@ -73,12 +73,20 @@ export class Item {
           resolve(!(Number(val) < 0));
         });
     });
-
   }
 
   /** Calls a function defined in an item/source */
-  static callFunc(func: string, arg: string): void {
-    exec('CallInner', func, arg);
+  static call(func: string, arg:string, id:string): Promise<boolean> {
+    return new Promise(resolve => {
+    let slot = Item.attach(id);
+      exec('CallInner' +
+        (String(slot) === '0' ? '' : slot + 1),
+        func,
+        arg,
+        val => {
+          resolve(!(Number(val) < 0));
+        })
+    });    
   }
 
   /** helper function to get current source on init */
