@@ -48,6 +48,41 @@ export class ExtensionWindow extends EventEmitter {
   resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
+  
+  /**
+   * param (flag: number)
+   * 
+   * Flags can be:
+   *     (bit 0 - enable border)
+   *     (bit 1 - enable caption)
+   *     (bit 2 - enable sizing)
+   *     (bit 3 - enable minimize btn)
+   *     (bit 4 - enable maximize btn)
+   */
+  setBorder(flag: number){
+    App.postMessage("4", String(flag));
+  }
+
+  /**
+   * Close Extension Window
+   */
+  close() {
+    App.postMessage("1");
+  }
+
+  /**
+   * Disable Close Button on Extension Window
+   */
+  disableClose() {
+    App.postMessage("5","0")
+  }
+
+  /**
+   * Enable Close Button on Extension Window
+   */
+  enableClose() {
+    App.postMessage("5", "1")
+  }
 }
 
 if (Environment.isExtension()) {
