@@ -51,6 +51,8 @@ export class ExtensionWindow extends EventEmitter {
   
   /**
    * param (flag: number)
+   *
+   * Modifies extension's window border
    * 
    * Flags can be:
    *     (bit 0 - enable border)
