@@ -48,9 +48,28 @@ export class ExtensionWindow extends EventEmitter {
   resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
+
+  
+  /**
+   * param: (value: string)
+   *
+   * Renames the extension window.
+   */
+  static _value: string;
+  
+  setExtensionWindowTitle(value: string) {
+     ExtensionWindow._value = value;
+     App.postMessage("8");
+  };
+
 }
 
 if (Environment.isExtension()) {
+
+  window.Setid = function(id) {
+    exec("CallHost", "setExtensionWindowTitle:" + id, ExtensionWindow._value);
+  }
+
   window.OnSceneLoad = function(view: number, scene: number) {
     if (Number(view) === 0) { // only emit events when main view is changing
       ExtensionWindow.getInstance().emit('scene-load', Number(scene));
