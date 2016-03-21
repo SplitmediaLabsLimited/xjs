@@ -52,7 +52,9 @@ export class ExtensionWindow extends EventEmitter {
   /**
    * param (flag: number)
    *
-   * Modifies extension's window border
+   * Modifies this extension's window border.
+   *
+   * "4" is th e base command on setting border flags.
    * 
    * Flags can be:
    *     (bit 0 - enable border)
@@ -66,21 +68,21 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   /**
-   * Close Extension Window
+   * Closes this extension window
    */
   close() {
     App.postMessage("1");
   }
 
   /**
-   * Disable Close Button on Extension Window
+   * Disable Close Button on this extension's window
    */
   disableClose() {
     App.postMessage("5","0")
   }
 
   /**
-   * Enable Close Button on Extension Window
+   * Enable Close Button on this extension's window
    */
   enableClose() {
     App.postMessage("5", "1")
