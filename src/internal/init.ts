@@ -84,7 +84,7 @@ function readMetaConfigUrl(): Promise<any> {
 
 function getCurrentSourceId(): Promise<any> {
   return new Promise(resolve => {
-    if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+    if (Environment.isSourceConfig()) {
       // initialize Item.getSource() functions
       exec('GetLocalPropertyAsync', 'prop:id',
         result => {
