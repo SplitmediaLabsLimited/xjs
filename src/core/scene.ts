@@ -15,6 +15,17 @@ import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
 import {MediaSource} from './source/media';
 
+import {Item, ItemTypes} from './items/item';
+import {GameItem} from './items/game';
+import {CameraItem} from './items/camera';
+import {AudioItem} from './items/audio';
+import {HtmlItem} from './items/html';
+import {FlashItem} from './items/flash';
+import {ScreenItem} from './items/screen';
+import {ImageItem} from './items/image';
+import {MediaItem} from './items/media';
+
+
 export class Scene {
   private _id: number;
 
@@ -614,6 +625,74 @@ export class Scene {
             typeResolve(new FlashSource(source));
           } else {
               typeResolve(new Source(source));
+          }
+        });
+
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneId'] = this._id;
+            promiseArray.push(typePromise(i));
+          }
+        }
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results);
+        });
+      }).catch(err => {
+        reject(err)
+      });
+    });
+  }
+
+  /**
+ * return: Promise<Source[]>
+ *
+ * Gets all the sources in a specific scene.
+ * See also: {@link #core/Source Core/Source}
+ *
+ * #### Usage
+ *
+ * ```javascript
+ * myScene.getSources().then(function(sources) {
+ *  // do something to each source in sources array
+ * });
+ * ```
+ */
+  getItems(): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
+        var promiseArray: Promise<Source>[] = [];
+
+        // type checking to return correct Source subtype
+        let typePromise = index => new Promise(typeResolve => {
+          let item = jsonArr[index];
+          let type = Number(item['type']);
+          if (type === ItemTypes.GAMESOURCE) {
+            typeResolve(new GameItem(item));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HtmlItem(item));
+          } else if (type === ItemTypes.SCREEN) {
+            typeResolve(new ScreenItem(item));
+          } else if (type === ItemTypes.BITMAP ||
+            type === ItemTypes.FILE &&
+            /\.gif$/.test(item['item'])) {
+            typeResolve(new ImageItem(item));
+          } else if (type === ItemTypes.FILE &&
+            /\.(gif|xbs)$/.test(item['item']) === false &&
+            /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
+            typeResolve(new MediaItem(item));
+          } else if (Number(item['type']) === ItemTypes.LIVE &&
+            item['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+            typeResolve(new CameraItem(item));
+          } else if (Number(item['type']) === ItemTypes.LIVE &&
+            item['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioItem(item));
+          } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
+            typeResolve(new FlashItem(item));
+          } else {
+            typeResolve(new Item(item));
           }
         });
 
