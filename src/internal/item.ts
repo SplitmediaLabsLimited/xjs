@@ -49,11 +49,12 @@ export class Item {
   }
 
   /** Get an item's local property asynchronously */
-  static get(name: string, id: string): Promise<string> {
+  static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-    let slot = Item.attach(id);
+      const slot = id !== undefined && id !== null ? - 1 : Item.attach(id);
+
       exec('GetLocalPropertyAsync' +
-        (String(slot) === '0' ? '' : slot + 1),
+        (String(slot) === '-1' ? '' : slot + 1),
         name,
         val => {
           resolve(val);
@@ -62,18 +63,18 @@ export class Item {
   }
 
   /** Sets an item's local property */
-  static set(name: string, value: string, id: string): Promise<boolean> {
+  static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-    let slot = Item.attach(id);
+      const slot = id !== undefined && id !== null ? - 1 : Item.attach(id);
+
       exec('SetLocalPropertyAsync' +
-        (String(slot) === '0' ? '' : slot + 1),
+        (String(slot) === '-1' ? '' : slot + 1),
         name,
         value,
         val => {
           resolve(!(Number(val) < 0));
         });
     });
-
   }
 
   /** Calls a function defined in an item/source */

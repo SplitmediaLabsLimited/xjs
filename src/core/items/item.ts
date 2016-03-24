@@ -482,14 +482,40 @@ export class Item implements IItemLayout {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        Scene.searchSourcesById(iItem.getBaseId()).then(item => {
-          resolve(item); // this should always exist
+        Item.getItemList().then(items => {
+          if (items.length > 0) {
+            resolve(items[0]);
+          } else {
+            reject(Error('Cannot get item list'))
+          }
         });
       }
     });
   }
 
-  /**
+  static getItemList(): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isExtension()) {
+        reject(Error('Extensions do not have sources associated with them.'));
+      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+        iItem.get('itemlist').then(itemlist => {
+          const promiseArray: Promise<Item>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              itemResolve(new Item({ id: itemId }));
+            }));
+          });
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
+        });
+      }
+    });
+  }
+        /**
    *  return: Promise<Source>
    *
    *  Refreshes the specified source.
