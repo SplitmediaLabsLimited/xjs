@@ -397,7 +397,26 @@ export class Item implements IItemLayout {
    */
   getSceneId(): Promise<number> {
     return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
+      if (typeof this._sceneId === 'number') {
+        resolve(Number(this._sceneId) + 1);
+      } else {
+        this.getScene().then(scene => {
+          scene.getSceneNumber().then(sceneId => {
+            this._sceneId = sceneId - 1;
+            resolve(sceneId);
+          });
+        });
+      }
+    });
+  }
+
+  getScene(): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      Scene.searchScenesBySourceId(this._id).then(scene => {
+        resolve(scene);
+      }).catch(error => {
+        reject(error);
+      });
     });
   }
 
@@ -515,7 +534,8 @@ export class Item implements IItemLayout {
       }
     });
   }
-        /**
+
+  /**
    *  return: Promise<Source>
    *
    *  Refreshes the specified source.
