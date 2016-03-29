@@ -18,12 +18,12 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {System} from '../../system/system';
 
 /**
- * The CameraSource Class provides methods specifically used for camera sources and
- * also methods that are shared between Source Classes. The
- * {@link #core/Scene Scene} class' getSources method would automatically return a
- * CameraSource object if there's a camera source on the specified scene.
+ * The CameraItem Class provides methods specifically used for camera items and
+ * also methods that are shared between Item Classes. The
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
+ * CameraItem object if there's a camera item on the specified scene.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -37,11 +37,11 @@ import {System} from '../../system/system';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getSources().then(function(sources) {
- *     for (var i in sources) {
- *       if (sources[i] instanceof XJS.CameraSource) {
- *         // Manipulate your camera sources here
- *         sources[i].getDeviceId().then(function(id) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.CameraItem) {
+ *         // Manipulate your camera item here
+ *         items[i].getDeviceId().then(function(id) {
  *           // Do something with the id
  *         });
  *       }
@@ -50,7 +50,7 @@ import {System} from '../../system/system';
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `CameraSource`
+ *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
 export class CameraItem extends Item implements IItemLayout, IItemColor,

@@ -17,12 +17,12 @@ import {ItemTypes} from './item';
 import {Environment} from '../environment';
 
 /**
- * The GameSource Class provides methods specifically used for game sources and
- * also methods that is shared between Source Classes. The
- * {@link #core/Scene Scene} class' getSources method would automatically return a
- * GameSource object if there's a game source on the specified scene.
+ * The GameItem Class provides methods specifically used for game items and
+ * also methods that is shared between Item Classes. The
+ * {@link #core/Scene Scene} class' getItems method would automatically return a
+ * GameItem object if there's a game item on the specified scene.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -35,18 +35,18 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getSources().then(function(sources) {
- *     for (var i in sources) {
- *       if (sources[i] instanceof XJS.GameSource) {
- *         // Manipulate your game source here
- *         sources[i].setOfflineImage(path); // just an example here
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.GameItem) {
+ *         // Manipulate your game item here
+ *         items[i].setOfflineImage(path); // just an example here
  *       }
  *     }
  *   });
  * });
  * ```
  *
- *  All methods marked as *Chainable* resolve with the original `GameSource`
+ *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
 export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
@@ -111,14 +111,14 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * param: path<string>
    *
-   * Set the offline image of a game source
+   * Set the offline image of a game item
    *
    * *Chainable.*
    */
   setOfflineImage(path: string): Promise<GameItem> {
     return new Promise((resolve, reject) => {
       if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current source should be a game source'));
+        reject(Error('Current item should be a game item'));
       } else if (Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other sources')
@@ -146,12 +146,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * return: Promise<string>
    *
-   * Get the offline image of a game source
+   * Get the offline image of a game item
    */
   getOfflineImage(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current source should be a game source'));
+        reject(Error('Current item should be a game item'));
       } else {
         this.getValue().then(() => {
           var valueObj = JXON.parse(this._value.toString());

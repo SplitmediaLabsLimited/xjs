@@ -577,6 +577,10 @@ export class Scene {
   }
 
   /**
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#getItems getItems} instead.
+   * 
    * return: Promise<Source[]>
    *
    * Gets all the sources in a specific scene.
@@ -645,7 +649,7 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Source[]>
+   * return: Promise<Item[]>
    *
    * Gets all the sources in a specific scene.
    * See also: {@link #core/Source Core/Source}

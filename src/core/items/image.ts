@@ -15,16 +15,16 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The ImageSource class represents an image source (includes GIF files).
+ * The ImageItem class represents an image item (includes GIF files).
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Source Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition}
  *
- *  All methods marked as *Chainable* resolve with the original `ImageSource`
+ *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
 export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {

@@ -3,17 +3,9 @@ import {ImageItem} from '../items/image';
 
 
 /**
- * The ImageSource class represents an image source (includes GIF files).
- *
- * Inherits from: {@link #core/Source Core/Source}
- *
- * Implements: {@link #core/IItemChroma Core/IItemChroma},
- * {@link #core/IItemColor Core/IItemColor},
- * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
- *
- *  All methods marked as *Chainable* resolve with the original `ImageSource`
- *  instance.
+ * > #### For Deprecation
+ * This method is deprecated and will be removed soon. Please use
+ * {@link #core/ImageItem ImageItem} instead.
  */
 export class ImageSource extends ImageItem{
   

@@ -19,13 +19,13 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {ScreenSource} from '../source/screen';
 /**
- * The ScreenItem class represents a screen capture source.
+ * The ScreenItem class represents a screen capture item.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Source Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
- * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemLayout Core/IItemLayout}
  * {@link #core/IItemTransition Core/IItemTransition}
  *
  *  All methods marked as *Chainable* resolve with the original `ScreenItem`
@@ -35,7 +35,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the Capture Area of the Screen Capture Source. Returns a Rectangle
+   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
    * object.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
@@ -64,7 +64,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
    * return: Promise<ScreenItem>
    * ```
    *
-   * Sets the Window Capture Area of the Screen Capture Source.
+   * Sets the Window Capture Area of the Screen Capture Item.
    *
    * *Chainable.*
    *
@@ -127,7 +127,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<boolean>
    *
-   * Checks if the Screen Capture Source only captures the
+   * Checks if the Screen Capture Item only captures the
    * Client area (does not capture the title bar, menu bar, window border, etc.)
    */
   isClientArea(): Promise<boolean> {
@@ -183,7 +183,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemCh
   /**
    * return: Promise<boolean>
    *
-   * Checks if the Screen Capture Source captures a window based on
+   * Checks if the Screen Capture Item captures a window based on
    * the window's title.
    */
   isStickToTitle(): Promise<boolean> {

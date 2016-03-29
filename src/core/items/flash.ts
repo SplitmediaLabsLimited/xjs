@@ -18,10 +18,10 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The FlashSource class represents a flash source, which is any SWF file
+ * The FlashItem class represents a flash item, which is any SWF file
  * loaded to XSplit Broadcaster.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -29,9 +29,9 @@ import {Environment} from '../environment';
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/IItemAudio Core/IItemAudio}
  *
- *  All methods marked as *Chainable* resolve with the original `FlashSource`
+ *  All methods marked as *Chainable* resolve with the original `FlashItem`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
- * may not be properly reflected in the source unless native flash audio support
+ * may not be properly reflected in the item unless native flash audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class FlashItem extends Item implements IItemLayout, IItemColor,
@@ -40,7 +40,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the custom resolution (in pixels) for the source, if set,
+   * Gets the custom resolution (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom resolution has been set.
    *
@@ -64,10 +64,10 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value: Rectangle)
    * ```
-   * return: Promise<FlashSource>
+   * return: Promise<FlashItem>
    * ```
    *
-   * Sets the custom resolution for the source
+   * Sets the custom resolution for the item
    * regardless of its layout on the mixer
    *
    * *Chainable.*
@@ -86,12 +86,12 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<boolean>
    *
-   * Check if right click events are sent to the source or not.
+   * Check if right click events are sent to the item or not.
    *
    * #### Usage
    *
    * ```javascript
-   * source.getAllowRightClick().then(function(isRightClickAllowed) {
+   * item.getAllowRightClick().then(function(isRightClickAllowed) {
    *   // The rest of your code here
    * });
    * ```
@@ -107,10 +107,10 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value:boolean)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Allow or disallow right click events to be sent to the source. Note that
+   * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`
    *
    * *Chainable*
@@ -118,8 +118,8 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    * #### Usage
    *
    * ```javascript
-   * source.setAllowRightClick(true).then(function(source) {
-   *   // Promise resolves with the same Source instance
+   * item.setAllowRightClick(true).then(function(item) {
+   *   // Promise resolves with the same Item instance
    * });
    * ```
    */

@@ -11,7 +11,7 @@ import {Environment} from '../environment';
  * The AudioItem class represents an audio device that has been added
  * to the stage.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemAudio Core/IItemAudio}
  *
@@ -21,11 +21,11 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getSources().then(function(sources) {
- *     for (var i in sources) {
- *       if (sources[i] instanceof XJS.AudioItem) {
- *         // Manipulate your audio device source here
- *         sources[i].setSilenceDetectionEnabled(true);
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.AudioItem) {
+ *         // Manipulate your audio device item here
+ *         items[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   });

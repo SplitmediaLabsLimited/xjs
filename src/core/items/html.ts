@@ -19,10 +19,10 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 
 /**
- * The HtmlItem class represents a web page source. This covers both source
+ * The HtmlItem class represents a web page item. This covers both item
  * plugins and non-plugin URLs.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -37,11 +37,11 @@ import {Environment} from '../environment';
  * var XJS = require('xjs');
  *
  * XJS.Scene.getActiveScene().then(function(scene) {
- *   scene.getSources().then(function(sources) {
- *     for (var i in sources) {
- *       if (sources[i] instanceof XJS.HtmlItem) {
- *         // Manipulate your HTML source here
- *         sources[i].enableBrowserTransparency(true);
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.HtmlItem) {
+ *         // Manipulate your HTML item here
+ *         items[i].enableBrowserTransparency(true);
  *       }
  *     }
  *   });
@@ -50,7 +50,7 @@ import {Environment} from '../environment';
  *
  *  All methods marked as *Chainable* resolve with the original `HtmlItem`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
- * may not be properly reflected in the source unless native browser audio support
+ * may not be properly reflected in the item unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
@@ -59,7 +59,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<string>
    *
-   * Gets the URL of this webpage source.
+   * Gets the URL of this webpage item.
    */
   getURL(): Promise<string> {
     return new Promise(resolve => {
@@ -74,10 +74,10 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (url: string)
    * ```
-   * return: Promise<HtmlSource>
+   * return: Promise<HtmlItem>
    * ```
    *
-   * Sets the URL of this webpage source.
+   * Sets the URL of this webpage item.
    *
    * *Chainable.*
    */
@@ -96,7 +96,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<string>
    *
-   * Gets the javascript commands to be executed on source upon load
+   * Gets the javascript commands to be executed on item upon load
    */
   getBrowserJS(): Promise<string> {
     return new Promise(resolve => {
@@ -122,9 +122,9 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * return: Promise<HtmlItem>
    * ```
    *
-   * Sets the javascript commands to be executed on source
+   * Sets the javascript commands to be executed on item
    * right upon setting and on load. Optionally set second parameter
-   * to true to refresh source (needed to clean previously executed JS code.)
+   * to true to refresh item (needed to clean previously executed JS code.)
    *
    * *Chainable.*
    */
@@ -215,7 +215,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * ```
    *
    * Enables or disables execution of the set BrowserJs upon load.
-   * Note that disabling this will require source to be refreshed
+   * Note that disabling this will require item to be refreshed
    * in order to remove any BrowserJS previously executed.
    *
    * *Chainable.*
@@ -523,7 +523,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the custom browser window size (in pixels) for the source, if set,
+   * Gets the custom browser window size (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom size has been set.
    *
@@ -553,7 +553,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * return: Promise<HtmlItem>
    * ```
    *
-   * Sets the custom browser window size for the source
+   * Sets the custom browser window size for the item
    * regardless of its layout on the mixer
    *
    * *Chainable.*
@@ -576,12 +576,12 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<boolean>
    *
-   * Check if right click events are sent to the source or not.
+   * Check if right click events are sent to the item or not.
    *
    * #### Usage
    *
    * ```javascript
-   * source.getAllowRightClick().then(function(isRightClickAllowed) {
+   * item.getAllowRightClick().then(function(isRightClickAllowed) {
    *   // The rest of your code here
    * });
    * ```
@@ -597,10 +597,10 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value:boolean)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Allow or disallow right click events to be sent to the source. Note that
+   * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`
    *
    * *Chainable*
@@ -608,8 +608,8 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * #### Usage
    *
    * ```javascript
-   * source.setAllowRightClick(true).then(function(source) {
-   *   // Promise resolves with the same Source instance
+   * item.setAllowRightClick(true).then(function(item) {
+   *   // Promise resolves with the same Item instance
    * });
    * ```
    */

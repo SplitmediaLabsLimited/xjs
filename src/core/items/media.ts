@@ -20,9 +20,9 @@ import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 
 /**
- * The MediaSource class represents a playable media file.
+ * The MediaItem class represents a playable media file.
  *
- * Inherits from: {@link #core/Source Core/Source}
+ * Inherits from: {@link #core/Source Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -31,7 +31,7 @@ import {JSON as JXON} from '../../internal/util/json';
  * {@link #core/IItemAudio Core/IItemAudio},
  * {@link #core/IItemPlayback Core/IItemPlayback}
  *
- *  All methods marked as *Chainable* resolve with the original `MediaSource`
+ *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
 export class MediaItem extends Item implements IItemLayout, IItemColor,
@@ -62,7 +62,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * #### Usage
    *
    * ```javascript
-   * mediaSource.getFileInfo().then(function(value) {
+   * mediaItem.getFileInfo().then(function(value) {
    *   // Do something with the value
    *   var audioCodec;
    *   if (typeof value['audio'] !== 'undefined' && typeof value['audio']['codec']) {

@@ -21,6 +21,16 @@ export * from './core/source/screen';
 export * from './core/source/image';
 export * from './core/source/media';
 
+export * from './core/items/item';
+export * from './core/items/camera';
+export * from './core/items/game';
+export * from './core/items/audio';
+export * from './core/items/html';
+export * from './core/items/flash';
+export * from './core/items/screen';
+export * from './core/items/image';
+export * from './core/items/media';
+
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/items/ichroma';
 export {ActionAfterPlayback} from './core/items/iplayback';
 export {CuePoint} from './core/items/cuepoint';
