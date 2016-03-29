@@ -40,7 +40,7 @@ export class Item {
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-      const slot = id !== undefined && id !== null ? - 1 : Item.attach(id);
+      const slot = id !== undefined && id !== null ? Item.attach(id) : -1;
 
       exec('GetLocalPropertyAsync' +
         (String(slot) === '-1' ? '' : slot + 1),
@@ -54,7 +54,7 @@ export class Item {
   /** Sets an item's local property */
   static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-      const slot = id !== undefined && id !== null ? - 1 : Item.attach(id);
+      const slot = id !== undefined && id !== null ? Item.attach(id) : -1;
 
       exec('SetLocalPropertyAsync' +
         (String(slot) === '-1' ? '' : slot + 1),
