@@ -28,8 +28,7 @@ export class Item {
           itemID
         );
       } else {
-        exec('AttachVideoItem' +
-          (String(slot) === '0' ? '' : (slot + 1)),
+        exec('AttachVideoItem' + (slot + 1),
           itemID
         );
       }
@@ -40,7 +39,11 @@ export class Item {
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-      const slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+
+      if (!Environment.isSourcePlugin() && String(slot) === '0') {
+        slot = -1;
+      }
 
       exec('GetLocalPropertyAsync' +
         (String(slot) === '-1' ? '' : slot + 1),
