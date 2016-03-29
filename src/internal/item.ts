@@ -37,17 +37,6 @@ export class Item {
     return slot;
   }
 
-  /** used for source plugins. lock an id to slot 0 */
-  static lockSourceSlot(itemID: string) {
-    if (itemID !== undefined) {
-      Item.islockedSourceSlot = true;
-      Item.itemSlotMap[0] = itemID;
-    } else {
-      Item.islockedSourceSlot = false;
-      Item.itemSlotMap[0] = '';
-    }
-  }
-
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
