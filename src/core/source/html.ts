@@ -8,7 +8,7 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';  
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {IItemAudio, ItemAudio} from './iaudio';
@@ -595,7 +595,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -899,49 +899,49 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<HtmlSource>;
 
   // ItemConfigurable
-  
+
   /**
    * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */
@@ -1048,8 +1048,8 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   isFileMaskingGuideVisible: () => Promise<boolean>;
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
-  showFileMaskingGuide: (value: boolean) => Promise<HtmlSource>;   
+  showFileMaskingGuide: (value: boolean) => Promise<HtmlSource>;
 }
 
 applyMixins(HtmlSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, ItemAudio]);
+  ItemConfigurable, ItemAudio, ItemEffect]);

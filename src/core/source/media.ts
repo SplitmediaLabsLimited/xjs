@@ -58,7 +58,7 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -103,7 +103,7 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
    */
   setCroppingEnhanced: (value: Object) => Promise<MediaSource>;
-  
+
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
@@ -615,8 +615,8 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
   isFileMaskingGuideVisible: () => Promise<boolean>;
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
-  showFileMaskingGuide: (value: boolean) => Promise<MediaSource>; 
+  showFileMaskingGuide: (value: boolean) => Promise<MediaSource>;
 }
 
 applyMixins(MediaSource, [ItemLayout, ItemColor, ItemChroma,
-  ItemTransition, ItemPlayback, ItemAudio]);
+  ItemTransition, ItemPlayback, ItemAudio, ItemEffect]);

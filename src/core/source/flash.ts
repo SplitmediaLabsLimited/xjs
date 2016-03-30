@@ -105,7 +105,7 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -537,8 +537,8 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
   isFileMaskingGuideVisible: () => Promise<boolean>;
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
-  showFileMaskingGuide: (value: boolean) => Promise<FlashSource>;   
+  showFileMaskingGuide: (value: boolean) => Promise<FlashSource>;
 }
 
 applyMixins(FlashSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemAudio]);
+  ItemAudio, ItemEffect]);
