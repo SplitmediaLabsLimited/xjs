@@ -62,6 +62,45 @@ export class ExtensionWindow extends EventEmitter {
      App.postMessage("8");
   };
 
+  
+  /**
+   * param (flag: number)
+   *
+   * Modifies this extension's window border.
+   *
+   * "4" is th e base command on setting border flags.
+   * 
+   * Flags can be:
+   *     (bit 0 - enable border)
+   *     (bit 1 - enable caption)
+   *     (bit 2 - enable sizing)
+   *     (bit 3 - enable minimize btn)
+   *     (bit 4 - enable maximize btn)
+   */
+  setBorder(flag: number){
+    App.postMessage("4", String(flag));
+  }
+
+  /**
+   * Closes this extension window
+   */
+  close() {
+    App.postMessage("1");
+  }
+
+  /**
+   * Disable Close Button on this extension's window
+   */
+  disableClose() {
+    App.postMessage("5","0")
+  }
+
+  /**
+   * Enable Close Button on this extension's window
+   */
+  enableClose() {
+    App.postMessage("5", "1")
+  }
 }
 
 if (Environment.isExtension()) {
