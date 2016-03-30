@@ -12,20 +12,20 @@ function randomWord(length) {
   return str;
 }
 
-describe('Source', function() {
-  var Source;
+describe('Item', function() {
+  var Item;
   var local = {};
   var XJS = require('xjs');
   if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-    Source = new XJS.Source({
-      id: '{D0FF055A-57BF-43BB-8F25-907DA028A2CC}',
+    Item = new XJS.Item({
+      id: '{1B4B6EDA-1ECC-4C8B-8CCF-A05C15EA3F85}',
       sceneId : 1
     });
   }
 
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-      spyOn(window.external, 'SetLocalPropertyAsync')
+      spyOn(window.external, 'SetLocalPropertyAsync1')
         .and.callFake(function(prop, val) {
         switch (prop) {
           case 'prop:name':
@@ -46,7 +46,7 @@ describe('Source', function() {
         }
       });
 
-      spyOn(window.external, 'GetLocalPropertyAsync')
+      spyOn(window.external, 'GetLocalPropertyAsync1')
         .and.callFake(function(prop) {
         var rand = Math.floor(Math.random()*1000);
 
@@ -83,12 +83,12 @@ describe('Source', function() {
     } else {
       XJS.Environment.initialize();
       XJS.Scene.getActiveScene().then(function(scene) {
-        scene.getSources().then(function(sources) {
-          if (sources.length === 0) {
-            throw new Error('NO SOURCES ON CURRENT SCENE');
+        scene.getItems().then(function(items) {
+          if (items.length === 0) {
+            throw new Error('NO ITEMS ON CURRENT SCENE');
           }
 
-          Source = sources[0];
+          Item = items[0];
           done();
         });
       });
@@ -97,8 +97,8 @@ describe('Source', function() {
 
   it('should be able to set and get the name', function(done) {
     var word = randomWord(5);
-    Source.setName(word);
-    Source.getName().then(function(val) {
+    Item.setName(word);
+    Item.getName().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
@@ -106,8 +106,8 @@ describe('Source', function() {
 
   it('should be able to set and get the custom name', function(done) {
     var word = randomWord(5);
-    Source.setCustomName(word);
-    Source.getCustomName().then(function(val) {
+    Item.setCustomName(word);
+    Item.getCustomName().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
@@ -115,16 +115,16 @@ describe('Source', function() {
 
   it('should be able to set and get the value', function(done) {
     var word = randomWord(5);
-    Source.setValue(word);
-    Source.getValue().then(function(val) {
+    Item.setValue(word);
+    Item.getValue().then(function(val) {
       expect(val).toEqual(word);
       done();
     });
   });
 
   it('should be able to set and get keep loaded property', function(done) {
-    Source.setKeepLoaded(!local.keeploaded);
-    Source.getKeepLoaded().then(function(val) {
+    Item.setKeepLoaded(!local.keeploaded);
+    Item.getKeepLoaded().then(function(val) {
       expect(val).toBeTypeOf('boolean');
       local.keeploaded = val;
       done();
@@ -132,14 +132,14 @@ describe('Source', function() {
   });
 
   it('should be able to get the id', function(done) {
-    Source.getId().then(function(val) {
+    Item.getId().then(function(val) {
       expect(val).toBeDefined();
       done();
     });
   });
 
   it('should be able to get the scene id', function(done) {
-    Source.getSceneId().then(function(val) {
+    Item.getSceneId().then(function(val) {
       expect(val).toBeTypeOf('number');
       expect(val).not.toBeNaN();
       done();
@@ -147,10 +147,10 @@ describe('Source', function() {
   });
 
   it('should have toXML method', function() {
-    expect(Source).hasMethods('toXML');
+    expect(Item).hasMethods('toXML');
   });
 
-  it('should have static getCurrentSource method', function() {
-    expect(XJS.Source).hasMethods('getCurrentSource');
+  it('should have static getCurrentItem method', function() {
+    expect(XJS.Item).hasMethods('getCurrentSource');
   });
 });

@@ -221,7 +221,7 @@ export class Scene {
    * ```
    *
    */
-  static searchSourcesById(id: string): Promise<Source> {
+  static searchSourcesById(id: string): Promise<Item> {
     return new Promise((resolve, reject) => {
       let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
       if (!isID) {
@@ -232,10 +232,10 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getSources().then((function(sources) {
-                found = sources.some(source => { // unique ID, so get first result
-                  if (source['_id'] === id.toUpperCase()) {
-                    match = source;
+              scene.getItems().then((function(items) {
+                found = items.some(item => { // unique ID, so get first result
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = item;
                     return true;
                   } else {
                     return false;

@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, spyOn */
 
-describe('CameraSource', function() {
+describe('CameraItem', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -52,8 +52,8 @@ describe('CameraSource', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedId + '"]';
-        var sourceSelected = placement.querySelector(selected);
-        xCallback(asyncId, sourceSelected.getAttribute(property));
+        var itemSelected = placement.querySelector(selected);
+        xCallback(asyncId, itemSelected.getAttribute(property));
       }
     }
 
@@ -82,10 +82,10 @@ describe('CameraSource', function() {
 
     env.set('extension');
     // Reset the attached IDS
-    var source1 = new XJS.Source({id : '{CAMERAID}' });
-    var source2 = new XJS.Source({id : '{CAMERAID2}'});
-    source1.getType();
-    source2.getType();
+    var item1 = new XJS.Item({id : '{CAMERAID}' });
+    var item2 = new XJS.Item({id : '{CAMERAID2}'});
+    item1.getType();
+    item2.getType();
 
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
@@ -155,10 +155,10 @@ describe('CameraSource', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getSources().then(function(sources) {
-        for (var i in sources) {
-          if (sources[i] instanceof XJS.CameraSource) {
-            _this.cameraSource = sources[i];
+      scene.getItems().then(function(items) {
+        for (var i in items) {
+          if (items[i] instanceof XJS.CameraItem) {
+            _this.cameraItem = items[i];
             break;
           }
         }
@@ -167,10 +167,10 @@ describe('CameraSource', function() {
     });
   });
 
-  describe('CameraSource-specific methods checking, ', function() {
+  describe('cameraItem-specific methods checking, ', function() {
 
     it('should be able to get its own device ID', function(done) {
-      var promise = this.cameraSource.getDeviceId();
+      var promise = this.cameraItem.getDeviceId();
       expect(promise).toBeInstanceOf(Promise);
       promise.then(function(id) {
         expect(id).toBeTypeOf('string');
@@ -179,7 +179,7 @@ describe('CameraSource', function() {
     });
 
     it('should be able to get and set if stream is paused', function(done) {
-      var promise = this.cameraSource.isStreamPaused();
+      var promise = this.cameraItem.isStreamPaused();
       var pauseValue;
       var _this = this;
       expect(promise).toBeInstanceOf(Promise);
@@ -187,15 +187,15 @@ describe('CameraSource', function() {
         expect(isPaused).toBeTypeOf('boolean');
         pauseValue = !isPaused;
         shouldFail = true;
-        return _this.cameraSource.setStreamPaused(pauseValue);
+        return _this.cameraItem.setStreamPaused(pauseValue);
       }).then(function() {
         done.fail('Set failure was not detected');
       }).catch(function(err) {
         expect(err).toEqual(jasmine.any(Error));
         shouldFail = false;
-        return _this.cameraSource.setStreamPaused(pauseValue);
+        return _this.cameraItem.setStreamPaused(pauseValue);
       }).then(function() {
-        return _this.cameraSource.isStreamPaused();
+        return _this.cameraItem.isStreamPaused();
       }).then(function(val) {
         expect(val).toEqual(pauseValue);
         done();
@@ -204,27 +204,27 @@ describe('CameraSource', function() {
 
     it('should be able to get and set audio input', function(done) {
       var _this = this;
-      var promise = _this.cameraSource.getAudioInput();
+      var promise = _this.cameraItem.getAudioInput();
       var micDevice;
       promise.then(function(audioInput) {
         expect(audioInput).toBeInstanceOf(XJS.MicrophoneDevice);
         return System.getMicrophones();
       }).then(function(micDevices) {
         micDevice = micDevices[0];
-        return _this.cameraSource.setAudioInput(micDevice);
+        return _this.cameraItem.setAudioInput(micDevice);
       }).then(function() {
-        return _this.cameraSource.getAudioInput();
+        return _this.cameraItem.getAudioInput();
       }).then(function(newDevice) {
         expect(newDevice).toEqual(micDevice);
         shouldFail = true;
-        return _this.cameraSource.getAudioInput();
+        return _this.cameraItem.getAudioInput();
       }).then(function() {
         done.fail('No audio input not detected');
       }).catch(function(err) {
         expect(err).toEqual(jasmine.any(Error));
         shouldFail = false;
         shouldFail2 = true;
-        return _this.cameraSource.getAudioInput();
+        return _this.cameraItem.getAudioInput();
       }).then(function(value) {
         done.fail('Audio input not in dshowenum not detected');
       }).catch(function(err) {
@@ -238,17 +238,17 @@ describe('CameraSource', function() {
       var _this = this;
       shouldFail = false;
       shouldFail2 = false;
-      var promise = _this.cameraSource.isHardwareEncoder();
+      var promise = _this.cameraItem.isHardwareEncoder();
 
       promise.then(function(isHardwareEncoder) {
         expect(isHardwareEncoder).toBeTypeOf('boolean');
         expect(isHardwareEncoder).toBe(true);
         shouldFail = true;
-        return _this.cameraSource.isHardwareEncoder();
+        return _this.cameraItem.isHardwareEncoder();
       }).then(function(isHardwareEncoder2) {
         expect(isHardwareEncoder2).toBe(false);
         shouldfail2 = true;
-        return _this.cameraSource.isHardwareEncoder();
+        return _this.cameraItem.isHardwareEncoder();
       }).then(function() {
         done.fail('Camera Device not present');
       }).catch(function(err) {
@@ -261,7 +261,7 @@ describe('CameraSource', function() {
 
     it('should be able to check if active or not', function(done) {
       var _this = this;
-      var promise = _this.cameraSource.isActive();
+      var promise = _this.cameraItem.isActive();
 
       promise.then(function(isActive) {
         expect(isActive).toBeTypeOf('boolean');
@@ -274,7 +274,7 @@ describe('CameraSource', function() {
   describe('interface method checking', function() {
 
     it('should implement the layout interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'isKeepAspectRatio',
         'setKeepAspectRatio',
         'isPositionLocked',
@@ -287,7 +287,7 @@ describe('CameraSource', function() {
     });
 
     it('should implement the color interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'getTransparency',
         'setTransparency',
         'getBrightness',
@@ -304,7 +304,7 @@ describe('CameraSource', function() {
     });
 
     it('should implement the chroma interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'isChromaEnabled',
         'setChromaEnabled',
         'getKeyingType',
@@ -337,7 +337,7 @@ describe('CameraSource', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -348,7 +348,7 @@ describe('CameraSource', function() {
     });
 
     it('should have color and chroma key options pinning', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'setColorOptionsPinned',
         'getColorOptionsPinned',
         'setKeyingOptionsPinned',
@@ -357,7 +357,7 @@ describe('CameraSource', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -368,7 +368,7 @@ describe('CameraSource', function() {
     });
 
     it('should implement audio interface', function() {
-      expect(this.cameraSource).hasMethods([
+      expect(this.cameraItem).hasMethods([
         'isMute',
         'setMute',
         'getVolume',

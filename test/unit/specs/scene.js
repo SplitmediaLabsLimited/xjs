@@ -5,7 +5,7 @@ describe('Scene', function() {
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Source = XJS.Source;
+  var Item = XJS.Item;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
 
@@ -60,7 +60,7 @@ describe('Scene', function() {
 
   describe('object instance', function() {
     var scene;
-    var sceneSources;
+    var sceneItems;
 
     beforeAll(function(done) {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
@@ -194,29 +194,29 @@ describe('Scene', function() {
       });
     });
 
-    it('should be able to get the sources', function(done) {
-      scene.getSources().then(function(sources) {
-        expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Source);
-        sceneSources = sources[0];
+    it('should be able to get the items', function(done) {
+      scene.getItems().then(function(items) {
+        expect(items).toBeInstanceOf(Array);
+        expect(items).eachToBeInstanceOf(Item);
+        sceneItems = items[0];
         done();
       });
     });
 
-    it('should be able to search for a source by ID', function(done) {
+    it('should be able to search for an item by ID', function(done) {
 
-      Scene.searchSourcesById(sceneSources._id)
-        .then(function(source) {
-          expect(source).toBeInstanceOf(Source);
+      Scene.searchSourcesById(sceneItems._id)
+        .then(function(item) {
+          expect(item).toBeInstanceOf(Item);
           done();
         });
     });
 
     it('should be able to search by ID in a case-insensitive way', function(done) {
 
-      Scene.searchSourcesById(sceneSources._id.toLowerCase())
+      Scene.searchSourcesById(sceneItems._id.toLowerCase())
         .then(function(source) {
-          expect(source).toBeInstanceOf(Source);
+          expect(source).toBeInstanceOf(Item);
           done();
         });
     });
@@ -230,10 +230,10 @@ describe('Scene', function() {
     });
 
     it('should be able to search for a source by Name', function(done) {
-      Scene.searchSourcesByName(sceneSources.name)
+      Scene.searchSourcesByName(sceneItems.name)
         .then(function(sources) {
           expect(sources).toBeInstanceOf(Array);
-          expect(sources).eachToBeInstanceOf(Source);
+          expect(sources).eachToBeInstanceOf(Item);
           done();
         });
     });
@@ -249,11 +249,11 @@ describe('Scene', function() {
     it('should be able to search for a source by a custom function', function(done) {
       Scene.filterSources(function(source, resolve) {
         source.getType().then(function(type) {
-          resolve(type === XJS.SourceTypes.HTML);
+          resolve(type === XJS.ItemTypes.HTML);
         });
       }).then(function(sources) {
         expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Source);
+        expect(sources).eachToBeInstanceOf(Item);
         done();
       });
     });
@@ -261,7 +261,7 @@ describe('Scene', function() {
     it('should be able to search for a scene with a source based on a custom function', function(done) {
       Scene.filterScenesBySources(function(source, resolve) {
         source.getType().then(function(type) {
-          resolve(type === XJS.SourceTypes.HTML);
+          resolve(type === XJS.ItemTypes.HTML);
         });
       }).then(function(scene) {
         expect(scene).toBeInstanceOf(Array);
