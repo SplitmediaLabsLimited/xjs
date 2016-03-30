@@ -17,6 +17,8 @@
     rename      = require('gulp-rename'),
     uglify      = require('gulp-uglify'),
     runSequence = require('run-sequence'),
+    fs          = require('fs'),
+    s2c         = require('string-to-comments'),
     argv        = require('yargs').argv;
 
   gulp.task('browserify', function() {
@@ -128,33 +130,39 @@
         './dist/xjs.min.js'
       ], {base: './'})
       .pipe(data(function(file) {
-        var updatedContents = '';
+        return new Promise(function(resolve) {
+          var updatedContents = '';
 
-        if (/xjs/.test(path.basename(file.path))) {
-          updatedContents = String(file.contents);
+          if (/xjs/.test(path.basename(file.path))) {
+            fs.readFile('./LICENSE', 'utf8', function(err, data) {
+              var comment =
+                'XSplit JS Framework\n' +
+                'version: ' + version + '\n\n';
 
-          updatedContents =
-            '/****************************\n' +
-            ' * XSplit JS Framework\n' +
-            ' * version: ' + version + '\n' +
-            ' * (c) 2015 SplitmediaLabs, inc.\n' +
-            ' ****************************/\n' + updatedContents;
-        } else {
-          var jsonObj = JSON.parse(file.contents);
+              comment += data;
+              comment = s2c.convert(comment);
 
-          jsonObj.version = bumpVersion(
-            jsonObj.version,
-            type,
-            argv.down ? 'dec' : 'inc'
-          );
+              updatedContents = comment + '\n\n' + String(file.contents);
 
-          version = jsonObj.version;
+              file.contents = new Buffer(updatedContents);
+              resolve(file);
+            });
+          } else {
+            var jsonObj = JSON.parse(file.contents);
 
-          updatedContents = JSON.stringify(jsonObj, null, 2);
-        }
+            jsonObj.version = bumpVersion(
+              jsonObj.version,
+              type,
+              argv.down ? 'dec' : 'inc'
+            );
 
-        file.contents = new Buffer(updatedContents);
-        return file;
+            version = jsonObj.version;
+            updatedContents = JSON.stringify(jsonObj, null, 2);
+
+            file.contents = new Buffer(updatedContents);
+            resolve(file);
+          }
+        });
       }))
       .pipe(gulp.dest('.'));
   });
