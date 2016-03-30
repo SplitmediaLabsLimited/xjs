@@ -57,7 +57,11 @@ export class Item {
   /** Sets an item's local property */
   static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-      const slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+
+      if (!Environment.isSourcePlugin() && String(slot) === '0') {
+        slot = -1;
+      }
 
       exec('SetLocalPropertyAsync' +
         (String(slot) === '-1' ? '' : slot + 1),
