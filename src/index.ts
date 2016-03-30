@@ -23,6 +23,7 @@ export * from './core/source/media';
 
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/source/ichroma';
 export {ActionAfterPlayback} from './core/source/iplayback';
+export {MaskEffect} from './core/source/ieffects';
 export {CuePoint} from './core/source/cuepoint';
 
 export * from './system/system';
