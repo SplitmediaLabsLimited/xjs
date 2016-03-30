@@ -580,7 +580,7 @@ export class Scene {
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#getItems getItems} instead.
-   * 
+   *
    * return: Promise<Source[]>
    *
    * Gets all the sources in a specific scene.
@@ -657,8 +657,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * myScene.getSources().then(function(sources) {
-   *  // do something to each source in sources array
+   * myScene.getItems().then(function(items) {
+   *  // do something to each source in items array
    * });
    * ```
    */
