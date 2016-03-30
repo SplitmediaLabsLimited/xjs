@@ -183,7 +183,7 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -268,7 +268,7 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
   setRotateZ:              (value: number) => Promise<GameSource>;
-  
+
   // ItemColor
 
   /**
@@ -352,140 +352,140 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
   setChromaEnabled: (value: boolean) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
   setKeyingType: (value: KeyingType) => Promise<GameSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<GameSource>;
 
   // CHROMA LEGACY MODE
-   
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
   setChromaLegacyBrightness: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
   setChromaLegacySaturation: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
   setChromaLegacyHue: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
   setChromaLegacyThreshold: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<GameSource>;
 
   // CHROMA KEY RGB MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
   setChromaRGBKeyExposure: (value: number) => Promise<GameSource>;
 
   // COLOR KEY MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
   setChromaColorKeyThreshold: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
   setChromaColorKeyExposure: (value: number) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
@@ -497,27 +497,27 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<GameSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
@@ -601,7 +601,8 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
   isFileMaskingGuideVisible: () => Promise<boolean>;
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
-  showFileMaskingGuide: (value: boolean) => Promise<GameSource>; 
+  showFileMaskingGuide: (value: boolean) => Promise<GameSource>;
 }
 
-applyMixins(GameSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(GameSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemEffect]);

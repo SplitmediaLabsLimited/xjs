@@ -8,7 +8,7 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';  
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {IItemAudio, ItemAudio} from './iaudio';
@@ -1107,8 +1107,8 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   isFileMaskingGuideVisible: () => Promise<boolean>;
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
-  showFileMaskingGuide: (value: boolean) => Promise<HtmlSource>;   
+  showFileMaskingGuide: (value: boolean) => Promise<HtmlSource>;
 }
 
 applyMixins(HtmlSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, ItemAudio]);
+  ItemConfigurable, ItemAudio, ItemEffect]);
