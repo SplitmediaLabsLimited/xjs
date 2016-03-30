@@ -5,9 +5,12 @@ import {HtmlItem} from '../items/html';
 
 /**
  * > #### For Deprecation
- * This method is deprecated and will be removed soon. Please use
+ * This Class is deprecated and will be removed soon. Please use
  * {@link #core/HtmlItem HtmlItem} instead.
+ *
+ * *This Class extends {@link #core/HtmlItem HtmlItem} Class. Please check
+ * HtmlItem Class for the available methods.*
  */
 export class HtmlSource extends HtmlItem{
-  
+
 }

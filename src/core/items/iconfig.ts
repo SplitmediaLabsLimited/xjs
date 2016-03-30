@@ -17,7 +17,7 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Persists a JSON object for configuration. Available to sources only.
+   * Persists a JSON object for configuration. Available to items only.
    *
    * *Chainable.*
    */
@@ -26,16 +26,16 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
+   * Requests the item to save a configuration. This makes the item emit the save-config event.
    *
    * *Chainable.*
    */
   requestSaveConfig(configObj: any);
-  
+
   /**
    * param: config<JSON>
    *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   * Requests the item to save a configuration. This makes the item emit the apply-config event.
    *
    * *Chainable.*
    */
@@ -81,8 +81,8 @@ export class ItemConfigurable {
                 'in JSON format.'));
             }
           } else {
-            reject(Error('Sources may only request other ' +
-              'sources to save a configuration. Consider ' +
+            reject(Error('Items may only request other ' +
+              'Items to save a configuration. Consider ' +
               'calling requestSaveConfig() on this Item ' +
               'instance instead.'));
           }

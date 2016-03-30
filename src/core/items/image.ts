@@ -17,7 +17,7 @@ import {Environment} from '../environment';
 /**
  * The ImageItem class represents an image item (includes GIF files).
  *
- * Inherits from: {@link #core/Source Core/Item}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -207,7 +207,7 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<ImageItem>;
-  
+
   // ItemChroma
 
   /**
@@ -219,140 +219,140 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
   setChromaEnabled: (value: boolean) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
   setKeyingType: (value: KeyingType) => Promise<ImageItem>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ImageItem>;
 
   // CHROMA LEGACY MODE
-   
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
   setChromaLegacyBrightness: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
   setChromaLegacySaturation: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
   setChromaLegacyHue: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
   setChromaLegacyThreshold: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<ImageItem>;
 
   // CHROMA KEY RGB MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
   setChromaRGBKeyExposure: (value: number) => Promise<ImageItem>;
 
   // COLOR KEY MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
   setChromaColorKeyThreshold: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
   setChromaColorKeyExposure: (value: number) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
@@ -364,27 +364,27 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible: (value: boolean) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition: (value: Transition) => Promise<ImageItem>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */

@@ -21,8 +21,11 @@ export enum ViewTypes {
 
 /**
  * > #### For Deprecation
- * This method is deprecated and will be removed soon. Please use
+ * This Class is deprecated and will be removed soon. Please use
  * {@link #core/Item Item} instead.
+ *
+ * *This Class extends {@link #core/Item Item} Class. Please check Item Class for
+ * the available methods.*
  */
 export class Source extends Item {
 

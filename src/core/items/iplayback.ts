@@ -4,9 +4,9 @@ import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
 
 /**
- *  Used by sources that implement the Playback interface.
+ *  Used by items that implement the Playback interface.
  *  Check `getActionAfterPlayback()`/`setActionAfterPlayback()` method of
- *  {@link #core/MediaSource#getActionAfterPlayback Core/MediaSource}.
+ *  {@link #core/Mediaitem#getActionAfterPlayback Core/Mediaitem}.
  */
 export enum ActionAfterPlayback {
   NONE,
@@ -27,7 +27,7 @@ export interface IItemPlayback {
    * return: Promise<boolean>
    *
    * Determines if it is possible to move the playback position of this media
-   * source. It is possible for some video formats to not allow seeking of the
+   * item. It is possible for some video formats to not allow seeking of the
    * playback position.
    */
   isSeekable(): Promise<boolean>;
@@ -35,7 +35,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Gets the playback position of this source in seconds. The system can
+   * Gets the playback position of this item in seconds. The system can
    * store precision up to 100ns.
    */
   getPlaybackPosition(): Promise<number>;
@@ -43,7 +43,7 @@ export interface IItemPlayback {
   /**
    * param: (value: number)
    *
-   * Sets the playback position of this source. Parameter is in seconds, up to
+   * Sets the playback position of this item. Parameter is in seconds, up to
    * a precision level of 100ns.
    *
    * *Chainable.*
@@ -53,7 +53,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Gets the total playback duration of this source in seconds. Precision is up
+   * Gets the total playback duration of this item in seconds. Precision is up
    * to 100ns units.
    */
   getPlaybackDuration(): Promise<number>;
@@ -61,14 +61,14 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks if current source is playing.
+   * Checks if current item is playing.
    */
   isPlaying(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Plays (or pauses playback for) this source.
+   * Plays (or pauses playback for) this item.
    *
    * *Chainable.*
    */
@@ -77,8 +77,8 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Gets the specified start position in seconds for this source, with precision
-   * up to 100ns. If this source loops or is set to rewind, the playback position
+   * Gets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
    * will return to the start position.
    */
   getPlaybackStartPosition(): Promise<number>;
@@ -86,8 +86,8 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Sets the specified start position in seconds for this source, with precision
-   * up to 100ns. If this source loops or is set to rewind, the playback position
+   * Sets the specified start position in seconds for this item, with precision
+   * up to 100ns. If this item loops or is set to rewind, the playback position
    * will return to the start position.
    *
    * *Chainable.*
@@ -97,8 +97,8 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Gets the specified end position in seconds for this source, with precision
-   * up to 100ns. If playback reaches the end position, this source will then
+   * Gets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
    * execute the specified action after playback (rewind, loop, etc.)
    */
   getPlaybackEndPosition(): Promise<number>;
@@ -106,8 +106,8 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Sets the specified end position in seconds for this source, with precision
-   * up to 100ns. If playback reaches the end position, this source will then
+   * Sets the specified end position in seconds for this item, with precision
+   * up to 100ns. If playback reaches the end position, this item will then
    * execute the specified action after playback (rewind, loop, etc.)
    *
    * *Chainable.*
@@ -117,7 +117,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<ActionAfterPlayback>
    *
-   * Gets the specified action after playback for this source is done (either
+   * Gets the specified action after playback for this item is done (either
    * playback reaches the end of the video, or the specified playback end
    * position.)
    *
@@ -128,7 +128,7 @@ export interface IItemPlayback {
   /**
    * param: (value: ActionAfterPlayback)
    *
-   * Sets the action to be executed on this source once playback is done (either
+   * Sets the action to be executed on this item once playback is done (either
    * playback reaches the end of the video, or the specified playback end
    * position.)
    *
@@ -141,16 +141,16 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks whether this source is set to start playback when the application
-   * switches to this source's scene.
+   * Checks whether this item is set to start playback when the application
+   * switches to this item's scene.
    */
   isAutostartOnSceneLoad(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Specifies whether this source is set to start playback when the application
-   * switches to this source's scene.
+   * Specifies whether this item is set to start playback when the application
+   * switches to this item's scene.
    *
    * *Chainable.*
    */
@@ -175,7 +175,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Check whether this source should retain its playback position when switching
+   * Check whether this item should retain its playback position when switching
    * scenes.
    */
   isRememberingPlaybackPosition(): Promise<boolean>;
@@ -183,7 +183,7 @@ export interface IItemPlayback {
   /**
    * param: (value: boolean)
    *
-   * Sets whether this source should retain its playback position when switching
+   * Sets whether this item should retain its playback position when switching
    * scenes.
    *
    * *Chainable.*
@@ -193,14 +193,14 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks if this source is set to display its playback position.
+   * Checks if this item is set to display its playback position.
    */
   isShowingPlaybackPosition(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Sets whether this source should display its playback position.
+   * Sets whether this item should display its playback position.
    *
    * *Chainable.*
    */
@@ -209,7 +209,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<CuePoint[]>
    *
-   * Gets the set of Cue Points created for this source.
+   * Gets the set of Cue Points created for this item.
    *
    * See also: {@link #core/CuePoint Core/CuePoint}
    */
@@ -218,7 +218,7 @@ export interface IItemPlayback {
   /**
    * param: (value: CuePoint[])
    *
-   * Assign the specified array of Cue Points for this source.
+   * Assign the specified array of Cue Points for this item.
    *
    * *Chainable.*
    *
@@ -232,14 +232,14 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks if this source's file type is an audio file type.
+   * Checks if this item's file type is an audio file type.
    */
   isAudio(): Promise<boolean>;
 
   /**
    * return: Promise<boolean>
    *
-   * Checks if this source's file type is a video file type.
+   * Checks if this item's file type is a video file type.
    */
   isVideo(): Promise<boolean>;
 }

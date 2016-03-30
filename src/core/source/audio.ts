@@ -4,8 +4,11 @@ import {AudioItem} from '../items/audio';
 
 /**
  * > #### For Deprecation
- * This method is deprecated and will be removed soon. Please use
+ * This Class is deprecated and will be removed soon. Please use
  * {@link #core/AudioItem AudioItem} instead.
+ *
+ * *This Class extends {@link #core/AudioItem AudioItem} Class. Please check
+ * AudioItem Class for the available methods.*
  */
 export class AudioSource extends AudioItem{
 }

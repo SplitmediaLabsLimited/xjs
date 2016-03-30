@@ -22,7 +22,7 @@ import {JSON as JXON} from '../../internal/util/json';
 /**
  * The MediaItem class represents a playable media file.
  *
- * Inherits from: {@link #core/Source Core/Item}
+ * Inherits from: {@link #core/Item Core/Item}
  *
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
@@ -125,7 +125,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -170,7 +170,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
    */
   setCroppingEnhanced: (value: Object) => Promise<MediaItem>;
-  
+
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
@@ -282,7 +282,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<MediaItem>;
-  
+
   // ItemChroma
 
   /**

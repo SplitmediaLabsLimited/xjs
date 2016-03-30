@@ -14,7 +14,7 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.isKeepAspectRatio().then(function(bool) {
+   * item.isKeepAspectRatio().then(function(bool) {
    *   // The rest of your code here
    * });
    * ```
@@ -24,7 +24,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
    * Set Aspect Ratio to ON or OFF
@@ -34,8 +34,8 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.setKeepAspectRatio(true).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setKeepAspectRatio(true).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -49,7 +49,7 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.isPositionLocked().then(function(bool) {
+   * item.isPositionLocked().then(function(bool) {
    *   // The rest of your code here
    * });
    * ```
@@ -59,7 +59,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
    * Set Position Lock to ON or OFF
@@ -69,8 +69,8 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.setPositionLocked(true).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setPositionLocked(true).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -84,7 +84,7 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.isEnhancedResizeEnabled().then(function(bool) {
+   * item.isEnhancedResizeEnabled().then(function(bool) {
    *   // The rest of your code here
    * });
    * ```
@@ -94,7 +94,7 @@ export interface IItemLayout {
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
    * Set Enhance Resize to ON or OFF
@@ -104,8 +104,8 @@ export interface IItemLayout {
    * #### Usage
    *
    * ```javascript
-   * source.setEnhancedResizeEnabled(true).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setEnhancedResizeEnabled(true).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -114,14 +114,14 @@ export interface IItemLayout {
   /**
    * return: Promise<Rectangle>
    *
-   * Get the position of the source
+   * Get the position of the item
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    *
    * #### Usage
    *
    * ```javascript
-   * source.getPosition().then(function(pos) {
+   * item.getPosition().then(function(pos) {
    *   // The rest of your code here
    * });
    * ```
@@ -131,7 +131,7 @@ export interface IItemLayout {
   /**
    * param: (value: Rectangle)
    *
-   * Set Source Position. Relative coordinates (0-1) are required.
+   * Set Item Position. Relative coordinates (0-1) are required.
    *
    * *Chainable.*
    *
@@ -139,8 +139,8 @@ export interface IItemLayout {
    *
    * ```javascript
    * var rect = xjs.Rectangle.fromCoordinates(0, 0, 1, 1);
-   * source.setPosition(rect).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setPosition(rect).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    *
@@ -151,12 +151,12 @@ export interface IItemLayout {
   /**
    * return: Promise<number>
    *
-   * Get Rotate Y value of the source
+   * Get Rotate Y value of the item
    *
    * #### Usage
    *
    * ```javascript
-   * source.getRotateY().then(function(deg) {
+   * item.getRotateY().then(function(deg) {
    *   // The rest of your code here
    * });
    * ```
@@ -166,18 +166,18 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Set Rotate Y value of the source
+   * Set Rotate Y value of the item
    *
    * *Chainable.*
    *
    * #### Usage
    *
    * ```javascript
-   * source.setRotateY(30).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setRotateY(30).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -186,12 +186,12 @@ export interface IItemLayout {
   /**
    * return: Promise<number>
    *
-   * Get Rotate X value of the source
+   * Get Rotate X value of the item
    *
    * #### Usage
    *
    * ```javascript
-   * source.getRotateX().then(function(deg) {
+   * item.getRotateX().then(function(deg) {
    *   // The rest of your code here
    * });
    * ```
@@ -201,18 +201,18 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Set Rotate X value of the source
+   * Set Rotate X value of the item
    *
    * *Chainable.*
    *
    * #### Usage
    *
    * ```javascript
-   * source.setRotateX(30).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setRotateX(30).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -221,12 +221,12 @@ export interface IItemLayout {
   /**
    * return: Promise<number>
    *
-   * Get Rotate Z value of the source.
+   * Get Rotate Z value of the item.
    *
    * #### Usage
    *
    * ```javascript
-   * source.getRotateX().then(function(deg) {
+   * item.getRotateX().then(function(deg) {
    *   // The rest of your code here
    * });
    * ```
@@ -236,26 +236,26 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Set Rotate Z value of the source.
+   * Set Rotate Z value of the item.
    *
    * *Chainable.*
    *
    * Please do note that this method will NOT automatically modify/calculate
-   * the height and width of the source whenever you modify the rotate Z value,
+   * the height and width of the item whenever you modify the rotate Z value,
    * unlike the behavior of XBC when modifying it through the properties window.
    *
-   * You will need to manually modify the height and width of the source each time
+   * You will need to manually modify the height and width of the item each time
    * you modify this value to get the best results. If not, it might result to
-   * the stretching and/or shrinking of the source.
+   * the stretching and/or shrinking of the item.
    *
    * #### Usage
    *
    * ```javascript
-   * source.setRotateZ(30).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setRotateZ(30).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -264,18 +264,18 @@ export interface IItemLayout {
   /**
    * return: Promise<Object>
    *
-   * Get the cropping of the source
+   * Get the cropping of the item
    *
    * This returns an object with properties of left, top, right, and bottom
    * whose values are between 0 - 1. This object is not a coordinate system.
-   * Top value indicates the portion of the source removed(cropped) from the top,
-   * left value indicates the portion of the source removed from the left,
+   * Top value indicates the portion of the item removed(cropped) from the top,
+   * left value indicates the portion of the item removed from the left,
    * and so on.
    *
    * #### Usage
    *
    * ```javascript
-   * source.getCropping().then(function(crop) {
+   * item.getCropping().then(function(crop) {
    *   // The rest of your code here
    *   var left = crop.left;
    *   var top = crop.top;
@@ -289,23 +289,23 @@ export interface IItemLayout {
   /**
    * param: (value: Object)
    *
-   * Set Source cropping.
+   * Set Item cropping.
    *
    * This accepts an object with properties left, top, right, and bottom
    * whose values are between 0 - 1. This object is not a coordinate system.
-   * Top value indicates the portion of the source removed(cropped) from the top,
-   * left value indicates the portion of the source removed from the left,
+   * Top value indicates the portion of the item removed(cropped) from the top,
+   * left value indicates the portion of the item removed from the left,
    * and so on.
    *
    * *Chainable.*
    *
    * Please do note that this method will NOT automatically modify/calculate
-   * the height and width of the source whenever you modify cropping,
+   * the height and width of the item whenever you modify cropping,
    * unlike the behavior of XBC when modifying it through the properties window.
    *
-   * You will need to manually modify the height and width of the source each time
+   * You will need to manually modify the height and width of the item each time
    * you modify this value to get the best results. If not, it might result to
-   * the stretching and/or shrinking of the source.
+   * the stretching and/or shrinking of the item.
    * #### Usage
    *
    * ```javascript
@@ -314,8 +314,8 @@ export interface IItemLayout {
    * obj.top = 0.2;
    * obj.right = 0;
    * obj.bottom = 0.1;
-   * source.setCropping(obj).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setCropping(obj).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -324,12 +324,12 @@ export interface IItemLayout {
   /**
    * return: Promise<number>
    *
-   * Get canvas rotation of the source
+   * Get canvas rotation of the item
    *
    * #### Usage
    *
    * ```javascript
-   * source.getCanvasRotate().then(function(deg) {
+   * item.getCanvasRotate().then(function(deg) {
    *   // The rest of your code here
    * });
    * ```
@@ -339,18 +339,18 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Set canvas rotation of the source (possible values - 0, 90, 180, 270)
+   * Set canvas rotation of the item (possible values - 0, 90, 180, 270)
    *
    * *Chainable.*
    *
    * #### Usage
    *
    * ```javascript
-   * source.setCanvasRotate(90).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setCanvasRotate(90).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -359,13 +359,13 @@ export interface IItemLayout {
   /**
    * return: Promise<number>
    *
-   * Get the z-rotation value as can be seen in the source properties window.
+   * Get the z-rotation value as can be seen in the item properties window.
    * This value takes into account rotateZ along with canvas rotation.
    *
    * #### Usage
    *
    * ```javascript
-   * source.getEnhancedRotate().then(function(deg) {
+   * item.getEnhancedRotate().then(function(deg) {
    *   // The rest of your code here
    * });
    * ```
@@ -375,23 +375,23 @@ export interface IItemLayout {
   /**
    * param: (value: number)
    * ```
-   * return: Promise<Source>
+   * return: Promise<Item>
    * ```
    *
-   * Set Rotate Z value of the source, also taking into account canvas rotation.
+   * Set Rotate Z value of the item, also taking into account canvas rotation.
    *
    * *Chainable.*
    *
    * This method automatically modifies/calculates
-   * the height and width of the source whenever you modify the z-rotation value,
+   * the height and width of the item whenever you modify the z-rotation value,
    * changing its orientation (vertical / horizontal) at certain angles.
-   * This behavior is what is exhibited in the source properties window.
+   * This behavior is what is exhibited in the item properties window.
    *
    * #### Usage
    *
    * ```javascript
-   * source.setEnhancedRotate(30).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setEnhancedRotate(30).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */
@@ -400,19 +400,19 @@ export interface IItemLayout {
   /**
    * param: (value: Object)
    *
-   * Set source cropping while automatically calculating
+   * Set item cropping while automatically calculating
    * and modifying width and height to account for the cropped value.
    *
    * This accepts an object with properties left, top, right, and bottom
    * whose values are between 0 - 1. This object is not a coordinate system.
-   * Top value indicates the portion of the source removed(cropped) from the top,
-   * left value indicates the portion of the source removed from the left,
+   * Top value indicates the portion of the item removed(cropped) from the top,
+   * left value indicates the portion of the item removed from the left,
    * and so on.
    *
    * *Chainable.*
    *
-   * This behaves the same as in the source properties window
-   * and is done to prevent source stretching.
+   * This behaves the same as in the item properties window
+   * and is done to prevent item stretching.
    *
    * #### Usage
    *
@@ -422,8 +422,8 @@ export interface IItemLayout {
    * obj.top = 0.2;
    * obj.right = 0;
    * obj.bottom = 0.1;
-   * source.setCroppingEnhanced(obj).then(function(source) {
-   *   // Promise resolves with same Source instance
+   * item.setCroppingEnhanced(obj).then(function(item) {
+   *   // Promise resolves with same Item instance
    * });
    * ```
    */

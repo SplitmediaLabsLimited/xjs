@@ -5,9 +5,12 @@ import {GameItem} from '../items/game';
 
 /**
  * > #### For Deprecation
- * This method is deprecated and will be removed soon. Please use
+ * This Class is deprecated and will be removed soon. Please use
  * {@link #core/GameItem GameItem} instead.
+ *
+ * *This Class extends {@link #core/GameItem GameItem} Class. Please check
+ * GameItem Class for the available methods.*
  */
 export class GameSource extends GameItem{
-  
+
 }
