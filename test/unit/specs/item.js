@@ -25,7 +25,7 @@ describe('Item', function() {
 
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-      spyOn(window.external, 'SetLocalPropertyAsync1')
+      spyOn(window.external, 'SetLocalPropertyAsync')
         .and.callFake(function(prop, val) {
         switch (prop) {
           case 'prop:name':
@@ -46,7 +46,7 @@ describe('Item', function() {
         }
       });
 
-      spyOn(window.external, 'GetLocalPropertyAsync1')
+      spyOn(window.external, 'GetLocalPropertyAsync')
         .and.callFake(function(prop) {
         var rand = Math.floor(Math.random()*1000);
 
