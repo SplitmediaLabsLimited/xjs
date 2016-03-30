@@ -52,7 +52,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
   /**
    * return: Promise<string>
    *
-   * Gets the [prop:item] of this VideoPlaylist source.
+   * Gets the now playing video of this VideoPlaylist source.
    *
    */
 
@@ -70,7 +70,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    *
    * return: Promise<VideoPlaylistSource>
    *
-   * Sets the [prop:item] of this VideoPlaylist source.
+   * Sets the now playing video of this VideoPlaylist source.
    *
    * ## Possible Values
    * - STRING - file path
@@ -118,7 +118,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
   /**
    * return: Promise<string[]>
    *
-   * Gets the [prop:FilePlaylist] of this VideoPlaylist source.
+   * Gets the file paths of the playlist of this VideoPlaylist source.
    *
    */
 
@@ -139,10 +139,11 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    *
    * return: Promise<string>
    *
-   * Sets the [prop:FilePlaylist] of this VideoPlaylist source.
+   * Sets the playlist of this VideoPlaylist source according to the specified
+   * file paths.
    *
    * This call would replace all the items on the playlist.
-   * [prop:item] is also set to the first item of the new FilePlaylist.
+   * The now playing item is also set to the first item of the new FilePlaylist.
    *
    */
 
