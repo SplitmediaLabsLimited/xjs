@@ -71,16 +71,16 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * return: Promise<VideoPlaylistSource>
    *
    * Sets the [prop:item] of this VideoPlaylist source.
-   * 
+   *
    * ## Possible Values
    * - STRING - file path
    * - NUMBER - number|within the range of fileplaylist array length
-   * 
+   *
    */
 
   setVideoNowPlaying(value:string|number): Promise<VideoPlaylistSource> {
     let file: string;
-    let _playlist: string[];    
+    let _playlist: string[];
 
     return new Promise((resolve, reject) => {
       iItem.get('prop:FilePlaylist', this._id).then(playlist => {
@@ -137,7 +137,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
   /**
    * param: (file: string[])
    *
-   * return: Promise<string>  
+   * return: Promise<string>
    *
    * Sets the [prop:FilePlaylist] of this VideoPlaylist source.
    *
@@ -165,7 +165,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
             if (i+1 < fileItems.length) {
               fileString += '|';
             };
-          };          
+          };
         };
         iItem.set('prop:item', fileItems[0] + '*0', this._id);
         return fileString;
@@ -199,7 +199,7 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -318,6 +318,11 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
   getBorderColor: () => Promise<Color>;
 
   /**
+   * See: {@link #core/IItemColor#isFullDynamicColorRange isFullDynamicColorRange}
+   */
+  isFullDynamicColorRange: () => Promise<boolean>;
+
+  /**
    * See: {@link #core/IItemColor#setTransparency setTransparency}
    */
   setTransparency: (value: number) => Promise<VideoPlaylistSource>;
@@ -346,6 +351,12 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
   setBorderColor:  (value: Color) => Promise<VideoPlaylistSource>;
+
+  /**
+   * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
+   */
+  setFullDynamicColorRange: (value: boolean) => Promise<VideoPlaylistSource>;
+
 
   // ItemChroma
 
@@ -503,49 +514,49 @@ export class VideoPlaylistSource extends Source implements IItemLayout,
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible:        (value: boolean) => Promise<VideoPlaylistSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition:     (value: Transition) => Promise<VideoPlaylistSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<VideoPlaylistSource>;
 
   // ItemConfigurable
-  
+
   /**
    * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
-  
+
   /**
    * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
    */
