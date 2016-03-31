@@ -15,7 +15,9 @@ export class IO {
    * Returns a base-64 encoded string of the target file's contents.
    * UTF-8 encoded files may be decoded through:
    * ```javascript
-   * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+   * IO.getFileContent('C:\\text.txt').then(function(base64Content) {
+   *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+   * });
    * ```
    */
   static getFileContent(path: string): Promise<string> {
@@ -35,7 +37,9 @@ export class IO {
    *
    * UTF-8 encoded content may be decoded through:
    * ```javascript
-   * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+   * IO.getWebContent('http://example.com').then(function(base64Content) {
+   *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+   * });
    * ```
    */
   static getWebContent(url: string): Promise<string> {

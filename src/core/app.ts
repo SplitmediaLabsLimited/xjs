@@ -746,7 +746,7 @@ export class App{
   enableSilenceDetection(enabled: boolean): Promise<boolean> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
-        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        var silenceDetectionObj = JXON.parse(val);
         silenceDetectionObj['enable'] = (enabled ? '1' : '0');
         iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
         .then(setVal => {
@@ -808,7 +808,7 @@ export class App{
       }
 
       iApp.get('microphonegain').then(val => {
-        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        var silenceDetectionObj = JXON.parse(val);
         silenceDetectionObj['latency'] = (sdPeriod.toString());
         iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
         .then(setVal => {
@@ -867,7 +867,7 @@ export class App{
         reject(Error('Silence detection threshold must be in the range 0-128.'));
       }
       iApp.get('microphonegain').then(val => {
-        var silenceDetectionObj = JXON.parse(decodeURIComponent(val));
+        var silenceDetectionObj = JXON.parse(val);
         silenceDetectionObj['gain'] = (sdThreshold.toString());
         iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
         .then(setVal => {
