@@ -222,7 +222,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   getCaptureLayered(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:ScrCapLayered', this._id).then(val => {
-        resolve(this);
+        resolve(val === '1');
       });
     });
   }
@@ -244,7 +244,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   }
 
   /**
-   * return Promise<ScreenSource>
+   * return Promise<boolean>
    *
    * Checks if the Exclusive Window capture is selected.
    * 
@@ -252,7 +252,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   getOptimizedCapture(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
-        resolve(this);
+        resolve(val === '1');
       });
     });
   }
@@ -275,7 +275,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
 
 
   /**
-   * return Promise<ScreenSource>
+   * return Promise<boolean>
    *
    * Checks if the Show mouse clicks is selected.
    * 
@@ -283,7 +283,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   getShowMouseClicks(): Promise<boolean> {
     return new Promise(resolve => {
     iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
-        resolve(this);
+        resolve(val === '1');
       });
     });
   }
@@ -305,7 +305,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   }
 
   /**
-   * return Promise<ScreenSource>
+   * return Promise<boolean>
    *
    * Checks if the Show mouse is selected.
    * 
@@ -313,7 +313,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
   getShowMouse(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
-        resolve(this);
+        resolve(val === '1');
       });
     });
   }
@@ -336,9 +336,6 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
       });
     });
   }
-
-  ScrCapShowMouse
-
 
   // ItemLayout
 
