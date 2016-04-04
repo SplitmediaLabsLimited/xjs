@@ -219,7 +219,6 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * return Promise<ScreenSource>
    *
    * Checks if the Screen Capture layered window is selected.
-   * 
    */
   getCaptureLayered(): Promise<boolean> {
     return new Promise(resolve => {
@@ -231,11 +230,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
 
   /**
    * param: (value: boolean)
-   * 
+   * ```
    * return Promise<ScreenSource>
+   * ```
    *
-   * Sets the Screen Capture Layered window 
-   * 
+   * Sets the Screen Capture Layered window
    */
   setCaptureLayered(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
@@ -249,7 +248,6 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * return Promise<boolean>
    *
    * Checks if the Exclusive Window capture is selected.
-   * 
    */
   getOptimizedCapture(): Promise<boolean> {
     return new Promise(resolve => {
@@ -261,11 +259,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
 
   /**
    * param: (value: boolean)
-   * 
+   * ```
    * return Promise<ScreenSource>
+   * ```
    *
    * Sets the Exclusive Window capture.
-   * 
    */
   setOptimizedCapture(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
@@ -280,7 +278,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * return Promise<boolean>
    *
    * Checks if the Show mouse clicks is selected.
-   * 
+   *
    */
   getShowMouseClicks(): Promise<boolean> {
     return new Promise(resolve => {
@@ -292,11 +290,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
 
   /**
    * param: (value: boolean)
-   * 
+   * ```
    * return Promise<ScreenSource>
+   * ```
    *
    * Sets the Show mouse clicks.
-   * 
    */
   setShowMouseClicks(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
@@ -310,7 +308,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * return Promise<boolean>
    *
    * Checks if the Show mouse is selected.
-   * 
+   *
    */
   getShowMouse(): Promise<boolean> {
     return new Promise(resolve => {
@@ -322,11 +320,11 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
 
   /**
    * param: (value: boolean)
-   * 
+   * ```
    * return Promise<ScreenSource>
+   * ```
    *
    * Sets the Show Mouse.
-   * 
    */
   setShowMouse(value: boolean): Promise<ScreenSource> {
     return new Promise(resolve => {
@@ -517,7 +515,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<ScreenSource>;
-  
+
   // ItemChroma
 
   /**
