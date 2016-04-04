@@ -49,14 +49,13 @@ export class ExtensionWindow extends EventEmitter {
     App.postMessage(_RESIZE, String(width), String(height));
   }
 
+  static _value: string;
 
   /**
    * param: (value: string)
    *
    * Renames the extension window.
    */
-  static _value: string;
-
   setTitle(value: string) {
      ExtensionWindow._value = value;
      App.postMessage("8");
