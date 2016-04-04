@@ -24,3 +24,4 @@ export {IItemTransition} from '../src/core/source/itransition';
 export {IItemAudio} from '../src/core/source/iaudio';
 export {IItemConfigurable} from '../src/core/source/iconfig';
 export {IItemPlayback} from '../src/core/source/iplayback';
+export {IItemEffect} from '../src/core/source/ieffects';
