@@ -591,7 +591,7 @@ export class Scene {
           let type = Number(source['type']);
           if (type === SourceTypes.GAMESOURCE) {
             typeResolve(new GameSource(source));
-          } else if (type === SourceTypes.HTML || type === SourceTypes.FILE &&
+          } else if ((type === SourceTypes.HTML || type === SourceTypes.FILE) &&
             source['name'].indexOf('Video Playlist') === 0 &&
             source['FilePlaylist'] !== ''){
             typeResolve(new VideoPlaylistSource(source));
