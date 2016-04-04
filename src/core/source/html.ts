@@ -589,6 +589,7 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
   getAllowRightClick(): Promise<boolean> {
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
+        console.log('test');
         resolve(val === '1');
       });
     });
@@ -619,6 +620,22 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
         .then(() => {
           resolve(this);
         });
+    });
+  }
+
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow this source to communicate with another source.
+   */
+  call(func: string, arg: string): Promise<HtmlSource> {
+    return new Promise(resolve => {
+      iItem.call(func, arg, this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 

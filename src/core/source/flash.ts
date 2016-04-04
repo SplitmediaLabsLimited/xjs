@@ -123,12 +123,28 @@ export class FlashSource extends Source implements IItemLayout, IItemColor,
    * });
    * ```
    */
-  setAllowRightClick(value: boolean): Promise<Source> {
+  setAllowRightClick(value: boolean): Promise<FlashSource> {
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
         });
+    });
+  }
+
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow this source to communicate with another source.
+   */
+  call(func: string, arg: string): Promise<FlashSource> {
+    return new Promise(resolve => {
+      iItem.call(func, arg, this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 

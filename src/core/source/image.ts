@@ -29,6 +29,22 @@ import {Environment} from '../environment';
  */
 export class ImageSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
 
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow this source to communicate with another source.
+   */
+  call(func: string, arg: string): Promise<ImageSource> {
+    return new Promise(resolve => {
+      iItem.call(func, arg, this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
   // ItemLayout
 
     /**
