@@ -30,7 +30,8 @@ import {System} from '../../system/system';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio}
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -381,7 +382,7 @@ export class CameraSource extends Source implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */

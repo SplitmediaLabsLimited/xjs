@@ -30,7 +30,8 @@ import {JSON as JXON} from '../../internal/util/json';
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemPlayback Core/IItemPlayback}
+ * {@link #core/IItemPlayback Core/IItemPlayback},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `MediaSource`
  *  instance.

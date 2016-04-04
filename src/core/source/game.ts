@@ -28,7 +28,8 @@ import {Environment} from '../environment';
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
