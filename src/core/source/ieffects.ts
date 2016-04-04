@@ -67,7 +67,7 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the border effect radius (0-100), relative to the size of the source.
+   * Gets the border effect radius (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    */
   getBorderEffectRadius(): Promise<number>;
@@ -75,7 +75,7 @@ export interface IItemEffect {
   /**
    * param: (value: number)
    *
-   * Sets the border effect radius (0-100), relative to the size of the source.
+   * Sets the border effect radius (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    *
    * *Chainable.*
@@ -85,7 +85,7 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the border effect thickness (0-100), relative to the size of the source.
+   * Gets the border effect thickness (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    */
   getBorderEffectThickness(): Promise<number>;
@@ -93,7 +93,7 @@ export interface IItemEffect {
   /**
    * param: (value: number)
    *
-   * Sets the border effect thickness (0-100), relative to the size of the source.
+   * Sets the border effect thickness (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    *
    * *Chainable.*
@@ -107,14 +107,14 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the border effect opacity (0-100). Only relevant when mask effect is set to shape
+   * Gets the border effect opacity (0 - 100). Only relevant when mask effect is set to shape
    */
   getBorderEffectOpacity(): Promise<number>;
 
   /**
    * param: (value: number)
    *
-   * Sets the border effect opacity (0-100). Only relevant when mask effect is set to shape
+   * Sets the border effect opacity (0 - 100). Only relevant when mask effect is set to shape
    *
    * *Chainable.*
    */
@@ -139,7 +139,7 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the shadow effect thickness (0-100), relative to the size of the source.
+   * Gets the shadow effect thickness (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    */
   getShadowEffectThickness(): Promise<number>;
@@ -147,7 +147,7 @@ export interface IItemEffect {
   /**
    * param: (value: number)
    *
-   * Sets the shadow effect thickness (0-100), relative to the size of the source.
+   * Sets the shadow effect thickness (0 - 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    *
    * *Chainable.*
@@ -161,14 +161,14 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the shadow effect blur (0-100). Only relevant when mask effect is set to shape
+   * Gets the shadow effect blur (0 - 100). Only relevant when mask effect is set to shape
    */
   getShadowEffectBlur(): Promise<number>;
 
   /**
    * param: (value: number)
    *
-   * Sets the shadow effect blur (0-100). Only relevant when mask effect is set to shape
+   * Sets the shadow effect blur (0 - 100). Only relevant when mask effect is set to shape
    *
    * *Chainable.*
    */
@@ -177,14 +177,14 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the shadow effect opacity (0-100). Only relevant when mask effect is set to shape
+   * Gets the shadow effect opacity (0 - 100). Only relevant when mask effect is set to shape
    */
   getShadowEffectOpacity(): Promise<number>;
 
   /**
    * param: (value: number)
    *
-   * Sets the shadow effect opacity (0-100). Only relevant when mask effect is set to shape
+   * Sets the shadow effect opacity (0 - 100). Only relevant when mask effect is set to shape
    *
    * *Chainable.*
    */
@@ -216,7 +216,7 @@ export interface IItemEffect {
   /**
    * return: Promise<number>
    *
-   * Gets the vertical shadow effect offset (-100 to -100), relative to the size of the source.
+   * Gets the vertical shadow effect offset (-100 to 100), relative to the size of the source.
    * Only relevant when mask effect is set to shape
    */
   getShadowEffectOffsetY(): Promise<number>;
@@ -308,7 +308,7 @@ export class ItemEffect implements IItemEffect {
               resolve(cfgArray[individualIndex]);
             }
           } else {
-            reject(RangeError('Invalid parameter. Array index given not included.'));  
+            reject(RangeError('Invalid parameter. Array index given not included.'));
           }
         } else {
           reject(ReferenceError('Edge effect configuration not set.'));
@@ -360,7 +360,7 @@ export class ItemEffect implements IItemEffect {
             resolve(this);
           });
         } else {
-          reject(RangeError('Invalid parameter. Array index given not included.'));  
+          reject(RangeError('Invalid parameter. Array index given not included.'));
         }
       });
     });
@@ -378,7 +378,7 @@ export class ItemEffect implements IItemEffect {
     return new Promise(resolve => {
       iItem.get('prop:edgeeffectid', this._id).then(val => {
         if (val === 'border') {
-          resolve(MaskEffect.SHAPE);  
+          resolve(MaskEffect.SHAPE);
         } else {
           iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
             if (val === '1' || val === '3') {
@@ -441,7 +441,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
@@ -472,7 +472,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
@@ -503,7 +503,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 0;
@@ -584,7 +584,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
@@ -615,7 +615,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 2;
@@ -646,7 +646,7 @@ export class ItemEffect implements IItemEffect {
       if (typeof value !== 'number') {
         reject(TypeError('Use a number as the parameter.'));
       } else if (value < 0 || value > 100) {
-        reject(RangeError('Valid value is a number from 0-100.'));
+        reject(RangeError('Valid value is a number from 0 - 100.'));
       } else {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 3;
