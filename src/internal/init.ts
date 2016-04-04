@@ -91,7 +91,7 @@ function getCurrentSourceId(): Promise<any> {
           let id = result;
           Item.setBaseId(id);
 
-          if (Environment.isSourcePlugin()) {
+          if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
             Item.lockSourceSlot(id);
           }
           resolve();
