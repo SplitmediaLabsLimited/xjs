@@ -10112,6 +10112,11 @@ var ExtensionWindow = (function (_super) {
     ExtensionWindow.prototype.resize = function (width, height) {
         app_1.App.postMessage(_RESIZE, String(width), String(height));
     };
+    /**
+     * param: (value: string)
+     *
+     * Renames the extension window.
+     */
     ExtensionWindow.prototype.setTitle = function (value) {
         ExtensionWindow._value = value;
         app_1.App.postMessage("8");
