@@ -30,7 +30,8 @@ import {Environment} from '../environment';
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/IItemConfigurable Core/IItemConfigurable},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
