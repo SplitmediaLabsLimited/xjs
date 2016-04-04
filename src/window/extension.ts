@@ -48,9 +48,66 @@ export class ExtensionWindow extends EventEmitter {
   resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
+
+  static _value: string;
+
+  /**
+   * param: (value: string)
+   *
+   * Renames the extension window.
+   */
+  setTitle(value: string) {
+     ExtensionWindow._value = value;
+     App.postMessage("8");
+  };
+
+  
+  /**
+   * param (flag: number)
+   *
+   * Modifies this extension's window border.
+   *
+   * "4" is th e base command on setting border flags.
+   * 
+   * Flags can be:
+   *     (bit 0 - enable border)
+   *     (bit 1 - enable caption)
+   *     (bit 2 - enable sizing)
+   *     (bit 3 - enable minimize btn)
+   *     (bit 4 - enable maximize btn)
+   */
+  setBorder(flag: number){
+    App.postMessage("4", String(flag));
+  }
+
+  /**
+   * Closes this extension window
+   */
+  close() {
+    App.postMessage("1");
+  }
+
+  /**
+   * Disable Close Button on this extension's window
+   */
+  disableClose() {
+    App.postMessage("5","0")
+  }
+
+  /**
+   * Enable Close Button on this extension's window
+   */
+  enableClose() {
+    App.postMessage("5", "1")
+  }
 }
 
 if (Environment.isExtension()) {
+
+  window.Setid = function(id) {
+    exec("CallHost", "setExtensionWindowTitle:" + id, ExtensionWindow._value);
+  }
+
   window.OnSceneLoad = function(view: number, scene: number) {
     if (Number(view) === 0) { // only emit events when main view is changing
       ExtensionWindow.getInstance().emit('scene-load', Number(scene));

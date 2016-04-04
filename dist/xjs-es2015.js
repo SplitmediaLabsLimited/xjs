@@ -1,8 +1,45 @@
-/****************************
+/**
  * XSplit JS Framework
- * version: 1.2.0
- * (c) 2015 SplitmediaLabs, inc.
- ****************************/
+ * version: 1.3.0
+ *
+ * XSplit Extensibility Framework and Plugin License
+ *
+ * Copyright (c) 2015, SplitmediaLabs Limited
+ * All rights reserved.
+ *
+ * Redistribution and use in source, minified or binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in minified or binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. This software, in source, minified and binary forms, and any derivatives
+ *    hereof, may be used only with the purpose to extend the functionality of the
+ *    XSplit products, developed and published by SplitmediaLabs Limited. It may
+ *    specifically not be used for extending the functionality of any other software
+ *    products which enables live streaming and/or recording functions.
+ *
+ * 4. This software may not be used to circumvent paid feature restrictions for
+ *    free and personal licensees of the XSplit products.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SPLITMEDIALABS LIMITED ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL SPLITMEDIALABS LIMITED BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ */
+
+
 (function() {
 _require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _require=="function"&&_require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _require=="function"&&_require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -709,7 +746,7 @@ var App = (function () {
     App.prototype.enableSilenceDetection = function (enabled) {
         return new Promise(function (resolve) {
             app_1.App.get('microphonegain').then(function (val) {
-                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                var silenceDetectionObj = json_1.JSON.parse(val);
                 silenceDetectionObj['enable'] = (enabled ? '1' : '0');
                 app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
                     .then(function (setVal) {
@@ -770,7 +807,7 @@ var App = (function () {
                 reject(Error('Silence detection must be in the range 0-60000.'));
             }
             app_1.App.get('microphonegain').then(function (val) {
-                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                var silenceDetectionObj = json_1.JSON.parse(val);
                 silenceDetectionObj['latency'] = (sdPeriod.toString());
                 app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
                     .then(function (setVal) {
@@ -829,7 +866,7 @@ var App = (function () {
                 reject(Error('Silence detection threshold must be in the range 0-128.'));
             }
             app_1.App.get('microphonegain').then(function (val) {
-                var silenceDetectionObj = json_1.JSON.parse(decodeURIComponent(val));
+                var silenceDetectionObj = json_1.JSON.parse(val);
                 silenceDetectionObj['gain'] = (sdThreshold.toString());
                 app_1.App.set('microphonegain', xml_1.XML.parseJSON(silenceDetectionObj).toString())
                     .then(function (setVal) {
@@ -1003,7 +1040,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"../system/audio":33,"../util/rectangle":46,"./environment":4,"./transition":24}],2:[function(_require,module,exports){
+},{"../internal/app":27,"../internal/internal":30,"../internal/util/json":32,"../internal/util/xml":34,"../system/audio":35,"../util/rectangle":48,"./environment":4,"./transition":26}],2:[function(_require,module,exports){
 var app_1 = _require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
@@ -1090,7 +1127,7 @@ var Channel = (function () {
     return Channel;
 })();
 exports.Channel = Channel;
-},{"../internal/app":25}],3:[function(_require,module,exports){
+},{"../internal/app":27}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1254,7 +1291,7 @@ window.Setdlldogrant = function (value) {
         Dll.emit('access-revoked');
     }
 };
-},{"../internal/internal":28,"../util/eventemitter":43}],4:[function(_require,module,exports){
+},{"../internal/internal":30,"../util/eventemitter":45}],4:[function(_require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -1379,7 +1416,7 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
-},{"../core/environment":4,"../internal/internal":28}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":30}],6:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -1390,6 +1427,7 @@ var source_1 = _require('./source/source');
 var game_1 = _require('./source/game');
 var camera_1 = _require('./source/camera');
 var audio_1 = _require('./source/audio');
+var videoplaylist_1 = _require('./source/videoplaylist');
 var html_1 = _require('./source/html');
 var flash_1 = _require('./source/flash');
 var screen_1 = _require('./source/screen');
@@ -1969,6 +2007,11 @@ var Scene = (function () {
                     if (type === source_1.SourceTypes.GAMESOURCE) {
                         typeResolve(new game_1.GameSource(source));
                     }
+                    else if ((type === source_1.SourceTypes.HTML || type === source_1.SourceTypes.FILE) &&
+                        source['name'].indexOf('Video Playlist') === 0 &&
+                        source['FilePlaylist'] !== '') {
+                        typeResolve(new videoplaylist_1.VideoPlaylistSource(source));
+                    }
                     else if (type === source_1.SourceTypes.HTML) {
                         typeResolve(new html_1.HtmlSource(source));
                     }
@@ -2122,7 +2165,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":25,"../internal/internal":28,"../internal/util/json":30,"../internal/util/xml":32,"./environment":4,"./source/audio":7,"./source/camera":8,"./source/flash":10,"./source/game":11,"./source/html":12,"./source/image":18,"./source/media":21,"./source/screen":22,"./source/source":23}],7:[function(_require,module,exports){
+},{"../internal/app":27,"../internal/internal":30,"../internal/util/json":32,"../internal/util/xml":34,"./environment":4,"./source/audio":7,"./source/camera":8,"./source/flash":10,"./source/game":11,"./source/html":12,"./source/image":19,"./source/media":22,"./source/screen":23,"./source/source":24,"./source/videoplaylist":25}],7:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2310,7 +2353,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(source_1.Source, [iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"./iaudio":13,"./source":23}],8:[function(_require,module,exports){
+},{"../../internal/item":31,"../../internal/util/mixin":33,"./iaudio":13,"./source":24}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2323,6 +2366,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var iaudio_1 = _require('./iaudio');
 var source_1 = _require('./source');
@@ -2339,7 +2383,8 @@ var system_1 = _require('../../system/system');
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio}
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -2740,8 +2785,8 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
-    iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../system/system":39,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],9:[function(_require,module,exports){
+    iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
+},{"../../internal/item":31,"../../internal/util/mixin":33,"../../system/system":41,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./itransition":21,"./source":24}],9:[function(_require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -2820,6 +2865,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var iaudio_1 = _require('./iaudio');
 var source_1 = _require('./source');
@@ -2834,7 +2880,8 @@ var rectangle_1 = _require('../../util/rectangle');
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio}
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `FlashSource`
  * instance. Also, any audio setting, i.e. volume, mute, stream only
@@ -2861,7 +2908,7 @@ var FlashSource = (function (_super) {
             var customSize;
             item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
-                    var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
+                    var _a = String(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width), Number(height));
                 }
                 else {
@@ -2945,8 +2992,8 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
-    iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":46,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],11:[function(_require,module,exports){
+    iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
+},{"../../internal/item":31,"../../internal/util/mixin":33,"../../util/rectangle":48,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./itransition":21,"./source":24}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2959,6 +3006,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var source_1 = _require('./source');
 var json_1 = _require('../../internal/util/json');
@@ -2976,7 +3024,8 @@ var environment_1 = _require('../environment');
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -3117,8 +3166,9 @@ var GameSource = (function (_super) {
     return GameSource;
 })(source_1.Source);
 exports.GameSource = GameSource;
-mixin_1.applyMixins(GameSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],12:[function(_require,module,exports){
+mixin_1.applyMixins(GameSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    ieffects_1.ItemEffect]);
+},{"../../internal/item":31,"../../internal/util/json":32,"../../internal/util/mixin":33,"../../internal/util/xml":34,"../environment":4,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./itransition":21,"./source":24}],12:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3132,6 +3182,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var iconfig_1 = _require('./iconfig');
 var iaudio_1 = _require('./iaudio');
@@ -3149,7 +3200,8 @@ var environment_1 = _require('../environment');
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/IItemConfigurable Core/IItemConfigurable},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -3631,7 +3683,7 @@ var HtmlSource = (function (_super) {
             var customSize;
             item_1.Item.get('prop:BrowserSize', _this._id).then(function (val) {
                 if (val !== '') {
-                    var _a = decodeURIComponent(val).split(','), width = _a[0], height = _a[1];
+                    var _a = String(val).split(','), width = _a[0], height = _a[1];
                     customSize = rectangle_1.Rectangle.fromDimensions(Number(width) / window.devicePixelRatio, Number(height) / window.devicePixelRatio);
                 }
                 else {
@@ -3715,12 +3767,29 @@ var HtmlSource = (function (_super) {
             });
         });
     };
+    /**
+     * param: (func: string, arg: string)
+     * ```
+     * return: Promise<HtmlSource>
+     * ```
+     *
+     * Allow this source to communicate with another source.
+     */
+    HtmlSource.prototype.call = function (func, arg) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot = item_1.Item.attach(_this._id);
+            internal_1.exec('CallInner' +
+                (String(slot) === '0' ? '' : slot + 1), func, arg);
+            resolve(_this);
+        });
+    };
     return HtmlSource;
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
-    iconfig_1.ItemConfigurable, iaudio_1.ItemAudio]);
-},{"../../internal/internal":28,"../../internal/item":29,"../../internal/util/mixin":31,"../../util/rectangle":46,"../environment":4,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":17,"./itransition":20,"./source":23}],13:[function(_require,module,exports){
+    iconfig_1.ItemConfigurable, iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
+},{"../../internal/internal":30,"../../internal/item":31,"../../internal/util/mixin":33,"../../util/rectangle":48,"../environment":4,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ieffects":17,"./ilayout":18,"./itransition":21,"./source":24}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var ItemAudio = (function () {
@@ -3786,7 +3855,7 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":29}],14:[function(_require,module,exports){
+},{"../../internal/item":31}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -4170,7 +4239,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":29,"../../util/color":42}],15:[function(_require,module,exports){
+},{"../../internal/item":31,"../../util/color":44}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -4324,7 +4393,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":29,"../../util/color":42}],16:[function(_require,module,exports){
+},{"../../internal/item":31,"../../util/color":44}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -4408,7 +4477,565 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":26,"../../internal/internal":28,"../../internal/item":29,"../environment":4}],17:[function(_require,module,exports){
+},{"../../internal/global":28,"../../internal/internal":30,"../../internal/item":31,"../environment":4}],17:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = _require('../../internal/item');
+var color_1 = _require('../../util/color');
+/**
+ *  Used by sources that implement the Effect interface.
+ *  Check `getMaskEffect()`/`setMaskEffect()` method of
+ *  {@link #core/CameraSource#getMaskEffect Core/CameraSource},
+ *  {@link #core/FlashSource#getMaskEffect Core/FlashSource},
+ *  {@link #core/GameSource#getMaskEffect Core/GameSource},
+ *  {@link #core/HtmlSource#getMaskEffect Core/HtmlSource},
+ *  {@link #core/ImageSource#getMaskEffect Core/ImageSource},
+ *  {@link #core/MediaSource#getMaskEffect Core/MediaSource}, and
+ *  {@link #core/ScreenSource#getMaskEffect Core/ScreenSource}.
+ */
+(function (MaskEffect) {
+    MaskEffect[MaskEffect["NONE"] = 0] = "NONE";
+    MaskEffect[MaskEffect["SHAPE"] = 1] = "SHAPE";
+    MaskEffect[MaskEffect["FILE_BIND_TO_SOURCE"] = 2] = "FILE_BIND_TO_SOURCE";
+    MaskEffect[MaskEffect["FILE_BIND_TO_STAGE"] = 3] = "FILE_BIND_TO_STAGE";
+})(exports.MaskEffect || (exports.MaskEffect = {}));
+var MaskEffect = exports.MaskEffect;
+var _DEFAULT_EFFECT_VALUES = {
+    'MASK_EFFECT': MaskEffect.NONE,
+    'BORDER_RADIUS': 0,
+    'BORDER_THICKNESS': 0,
+    'BORDER_OPACITY': 100,
+    'BORDER_COLOR': color_1.Color.fromRGBString('#FFFFFF'),
+    'SHADOW_COLOR': color_1.Color.fromRGBString('#FFFFFF'),
+    'SHADOW_THICKNESS': 0,
+    'SHADOW_BLUR': 0,
+    'SHADOW_OPACITY': 100,
+    'SHADOW_OFFSET_X': 0,
+    'SHADOW_OFFSET_Y': 0,
+    'FILE_MASK': '',
+    'FILE_MASK_GUIDE': false
+};
+var _DEFAULT_EDGE_EFFECT_CONFIG = '0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1';
+var ItemEffect = (function () {
+    function ItemEffect() {
+    }
+    ItemEffect.prototype._convertToHex = function (value) {
+        var hex = (parseInt(String(Number(value) * 255))).toString(16);
+        if (hex.length < 2) {
+            hex = '0' + hex;
+        }
+        return hex;
+    };
+    ItemEffect.prototype._getEdgeEffectValue = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:edgeeffectcfg', _this._id).then(function (val) {
+                if (val !== '' && val !== null) {
+                    var edgeConfig = val.split("|");
+                    var arrayIndex = value['arrayIndex'];
+                    var individualIndex = value['indIndex'];
+                    if (typeof edgeConfig[arrayIndex] !== 'undefined') {
+                        var cfgArray = edgeConfig[arrayIndex].split(',');
+                        if (Array.isArray(individualIndex)) {
+                            var newArray = [];
+                            for (var i = 0; i < individualIndex.length; ++i) {
+                                var config = individualIndex[i];
+                                newArray.push(cfgArray[config]);
+                            }
+                            resolve(newArray);
+                        }
+                        else {
+                            resolve(cfgArray[individualIndex]);
+                        }
+                    }
+                    else {
+                        reject(RangeError('Invalid parameter. Array index given not included.'));
+                    }
+                }
+                else {
+                    reject(ReferenceError('Edge effect configuration not set.'));
+                }
+            });
+        });
+    };
+    ItemEffect.prototype._setEdgeEffectValue = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:edgeeffectcfg', _this._id).then(function (val) {
+                var edgeConfig = [];
+                var edgeEffectString;
+                if (val !== '' && val !== null) {
+                    edgeEffectString = val;
+                }
+                else {
+                    edgeEffectString = _DEFAULT_EDGE_EFFECT_CONFIG;
+                }
+                var edgeArray = edgeEffectString.split("|");
+                var edgeArrayLength = edgeArray.length;
+                for (var i = 0; i < edgeArrayLength; ++i) {
+                    edgeConfig.push(edgeArray[i].split(','));
+                }
+                var arrayIndex = value['arrayIndex'];
+                var individualIndex = value['indIndex'];
+                var setValue = value['value'];
+                if (typeof edgeConfig[arrayIndex] !== 'undefined') {
+                    var oldArray = edgeConfig[arrayIndex];
+                    if (Array.isArray(individualIndex)) {
+                        for (var j = 0; j < individualIndex.length; ++j) {
+                            var tempIndex = individualIndex[j];
+                            oldArray[tempIndex] = setValue[j];
+                        }
+                    }
+                    else {
+                        oldArray[individualIndex] = setValue;
+                    }
+                    edgeConfig[arrayIndex] = oldArray;
+                    var edgeEffectStringValue = '';
+                    for (var k = 0; k < edgeConfig.length; ++k) {
+                        edgeEffectStringValue = edgeEffectStringValue + edgeConfig[k].toString();
+                        if (k !== edgeConfig.length - 1) {
+                            edgeEffectStringValue = edgeEffectStringValue + '|';
+                        }
+                    }
+                    item_1.Item.set('prop:edgeeffectcfg', edgeEffectStringValue, _this._id)
+                        .then(function () {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    reject(RangeError('Invalid parameter. Array index given not included.'));
+                }
+            });
+        });
+    };
+    ItemEffect.prototype._getRGBArray = function (value) {
+        var hex = value.getRgb();
+        var r = parseInt(hex.substring(0, 2), 16) / 255;
+        var g = parseInt(hex.substring(2, 4), 16) / 255;
+        var b = parseInt(hex.substring(4), 16) / 255;
+        return [r, g, b];
+    };
+    ItemEffect.prototype.getMaskEffect = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:edgeeffectid', _this._id).then(function (val) {
+                if (val === 'border') {
+                    resolve(MaskEffect.SHAPE);
+                }
+                else {
+                    item_1.Item.get('prop:edgeeffectmaskmode', _this._id).then(function (val) {
+                        if (val === '1' || val === '3') {
+                            resolve(MaskEffect.FILE_BIND_TO_SOURCE);
+                        }
+                        else if (val === '2' || val === '4') {
+                            resolve(MaskEffect.FILE_BIND_TO_STAGE);
+                        }
+                        else {
+                            resolve(_DEFAULT_EFFECT_VALUES['MASK_EFFECT']);
+                        }
+                    });
+                }
+            });
+        });
+    };
+    ItemEffect.prototype.setMaskEffect = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a MaskEffect value as the parameter.'));
+            }
+            else if (value < 0 || value > 3) {
+                reject(RangeError('Use a MaskEffect value as the parameter.'));
+            }
+            else {
+                if (value === 1) {
+                    item_1.Item.set('prop:edgeeffectmaskmode', '0', _this._id).then(function () {
+                        return item_1.Item.set('prop:edgeeffectid', 'border', _this._id);
+                    }).then(function () {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.set('prop:edgeeffectid', '', _this._id).then(function () {
+                        if (value === 2 || value === 3) {
+                            value = value - 1;
+                        }
+                        else {
+                            value = 0;
+                        }
+                        return item_1.Item.set('prop:edgeeffectmaskmode', String(value), _this._id);
+                    }).then(function () {
+                        resolve(_this);
+                    });
+                }
+            }
+        });
+    };
+    ItemEffect.prototype.getBorderEffectRadius = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 1;
+            parameterObject['indIndex'] = 1;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['BORDER_RADIUS']);
+            });
+        });
+    };
+    ItemEffect.prototype.setBorderEffectRadius = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 1;
+                parameterObject['indIndex'] = 1;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getBorderEffectThickness = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 1;
+            parameterObject['indIndex'] = 2;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['BORDER_THICKNESS']);
+            });
+        });
+    };
+    ItemEffect.prototype.setBorderEffectThickness = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 1;
+                parameterObject['indIndex'] = 2;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getBorderEffectOpacity = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 0;
+            parameterObject['indIndex'] = 4;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['BORDER_OPACITY']);
+            });
+        });
+    };
+    ItemEffect.prototype.setBorderEffectOpacity = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 0;
+                parameterObject['indIndex'] = 4;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getBorderEffectColor = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 0;
+            parameterObject['indIndex'] = [1, 2, 3];
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(color_1.Color.fromRGBString('#' + _this._convertToHex(val[0]) + _this._convertToHex(val[1]) + _this._convertToHex(val[2])));
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
+            });
+        });
+    };
+    ItemEffect.prototype.setBorderEffectColor = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 0;
+            parameterObject['indIndex'] = [1, 2, 3];
+            parameterObject['value'] = _this._getRGBArray(value);
+            _this._setEdgeEffectValue(parameterObject).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemEffect.prototype.getShadowEffectColor = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 3;
+            parameterObject['indIndex'] = [1, 2, 3];
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(color_1.Color.fromRGBString('#' + _this._convertToHex(val[0]) + _this._convertToHex(val[1]) + _this._convertToHex(val[2])));
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_COLOR']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectColor = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 3;
+            parameterObject['indIndex'] = [1, 2, 3];
+            parameterObject['value'] = _this._getRGBArray(value);
+            _this._setEdgeEffectValue(parameterObject).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemEffect.prototype.getShadowEffectThickness = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 1;
+            parameterObject['indIndex'] = 3;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_THICKNESS']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectThickness = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 1;
+                parameterObject['indIndex'] = 3;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getShadowEffectBlur = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 2;
+            parameterObject['indIndex'] = 3;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_BLUR']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectBlur = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 2;
+                parameterObject['indIndex'] = 3;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getShadowEffectOpacity = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 3;
+            parameterObject['indIndex'] = 4;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OPACITY']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectOpacity = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < 0 || value > 100) {
+                reject(RangeError('Valid value is a number from 0 - 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 3;
+                parameterObject['indIndex'] = 4;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getShadowEffectOffsetX = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 2;
+            parameterObject['indIndex'] = 1;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_X']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectOffsetX = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < -100 || value > 100) {
+                reject(RangeError('Valid value is a number from -100 to 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 2;
+                parameterObject['indIndex'] = 1;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getShadowEffectOffsetY = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var parameterObject = {};
+            parameterObject['arrayIndex'] = 2;
+            parameterObject['indIndex'] = 2;
+            _this._getEdgeEffectValue(parameterObject).then(function (val) {
+                resolve(Number(val) * 100);
+            }).catch(function (err) {
+                resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_Y']);
+            });
+        });
+    };
+    ItemEffect.prototype.setShadowEffectOffsetY = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use a number as the parameter.'));
+            }
+            else if (value < -100 || value > 100) {
+                reject(RangeError('Valid value is a number from -100 to 100.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 2;
+                parameterObject['indIndex'] = 2;
+                parameterObject['value'] = value / 100;
+                _this._setEdgeEffectValue(parameterObject).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.getFileMask = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:edgeeffectmask', _this._id).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    ItemEffect.prototype.setFileMask = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:edgeeffectmask', value, _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemEffect.prototype.isFileMaskingGuideVisible = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:edgeeffectmaskmode', _this._id).then(function (val) {
+                if (val === '4' || val === '3') {
+                    resolve(true);
+                }
+                else if (val === '2' || val === '1') {
+                    resolve(false);
+                }
+                else {
+                    reject(new Error('This method is not available if filemasking is not enabled.'));
+                }
+            });
+        });
+    };
+    ItemEffect.prototype.showFileMaskingGuide = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:edgeeffectmaskmode', _this._id).then(function (val) {
+                if (val === '1' || val === '3') {
+                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '3' : '1', _this._id);
+                }
+                else if (val === '2' || val === '4') {
+                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '4' : '2', _this._id);
+                }
+                else {
+                    reject(new Error('This method is not available if filemasking is not enabled.'));
+                }
+            });
+        });
+    };
+    return ItemEffect;
+})();
+exports.ItemEffect = ItemEffect;
+},{"../../internal/item":31,"../../util/color":44}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
@@ -4505,7 +5132,7 @@ var ItemLayout = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:pos', _this._id).then(function (val) {
-                var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
+                var _a = String(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
             });
@@ -4592,7 +5219,7 @@ var ItemLayout = (function () {
         return new Promise(function (resolve) {
             var cropObject = {};
             item_1.Item.get('prop:crop', _this._id).then(function (val) {
-                var _a = decodeURIComponent(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
+                var _a = String(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 cropObject['left'] = Number(left);
                 cropObject['top'] = Number(top);
                 cropObject['right'] = Number(right);
@@ -5020,7 +5647,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":29,"../../util/rectangle":46}],18:[function(_require,module,exports){
+},{"../../internal/item":31,"../../util/rectangle":48}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5042,7 +5669,8 @@ var source_1 = _require('./source');
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `ImageSource`
  *  instance.
@@ -5056,7 +5684,7 @@ var ImageSource = (function (_super) {
 })(source_1.Source);
 exports.ImageSource = ImageSource;
 mixin_1.applyMixins(ImageSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/util/mixin":31,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],19:[function(_require,module,exports){
+},{"../../internal/util/mixin":33,"./ichroma":14,"./icolor":15,"./ilayout":18,"./itransition":21,"./source":24}],20:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var cuepoint_1 = _require('./cuepoint');
@@ -5305,7 +5933,7 @@ var ItemPlayback = (function () {
     return ItemPlayback;
 })();
 exports.ItemPlayback = ItemPlayback;
-},{"../../internal/item":29,"./cuepoint":9}],20:[function(_require,module,exports){
+},{"../../internal/item":31,"./cuepoint":9}],21:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -5373,7 +6001,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":29,"../transition":24}],21:[function(_require,module,exports){
+},{"../../internal/item":31,"../transition":26}],22:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5386,6 +6014,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var iplayback_1 = _require('./iplayback');
 var iaudio_1 = _require('./iaudio');
@@ -5401,7 +6030,8 @@ var json_1 = _require('../../internal/util/json');
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemPlayback Core/IItemPlayback}
+ * {@link #core/IItemPlayback Core/IItemPlayback},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `MediaSource`
  *  instance.
@@ -5484,8 +6114,8 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
-    itransition_1.ItemTransition, iplayback_1.ItemPlayback, iaudio_1.ItemAudio]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ilayout":17,"./iplayback":19,"./itransition":20,"./source":23}],22:[function(_require,module,exports){
+    itransition_1.ItemTransition, iplayback_1.ItemPlayback, iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
+},{"../../internal/item":31,"../../internal/util/json":32,"../../internal/util/mixin":33,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./iplayback":20,"./itransition":21,"./source":24}],23:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5498,6 +6128,7 @@ var item_1 = _require('../../internal/item');
 var ilayout_1 = _require('./ilayout');
 var icolor_1 = _require('./icolor');
 var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var source_1 = _require('./source');
 var rectangle_1 = _require('../../util/rectangle');
@@ -5511,7 +6142,8 @@ var xml_1 = _require('../../internal/util/xml');
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `ScreenSource`
  *  instance.
@@ -5690,11 +6322,133 @@ var ScreenSource = (function (_super) {
             });
         });
     };
+    /**
+     * return Promise<ScreenSource>
+     *
+     * Checks if the Screen Capture layered window is selected.
+     */
+    ScreenSource.prototype.getCaptureLayered = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:ScrCapLayered', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * param: (value: boolean)
+     * ```
+     * return Promise<ScreenSource>
+     * ```
+     *
+     * Sets the Screen Capture Layered window
+     */
+    ScreenSource.prototype.setCaptureLayered = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:ScrCapLayered', value ? '1' : '0', _this._id).then(function (val) {
+                resolve(_this);
+            });
+        });
+    };
+    /**
+     * return Promise<boolean>
+     *
+     * Checks if the Exclusive Window capture is selected.
+     */
+    ScreenSource.prototype.getOptimizedCapture = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:ScrCapOptCapture1', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * param: (value: boolean)
+     * ```
+     * return Promise<ScreenSource>
+     * ```
+     *
+     * Sets the Exclusive Window capture.
+     */
+    ScreenSource.prototype.setOptimizedCapture = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:ScrCapOptCapture1', value ? '1' : '0', _this._id).then(function (val) {
+                resolve(_this);
+            });
+        });
+    };
+    /**
+     * return Promise<boolean>
+     *
+     * Checks if the Show mouse clicks is selected.
+     *
+     */
+    ScreenSource.prototype.getShowMouseClicks = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:ScrCapShowClicks', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * param: (value: boolean)
+     * ```
+     * return Promise<ScreenSource>
+     * ```
+     *
+     * Sets the Show mouse clicks.
+     */
+    ScreenSource.prototype.setShowMouseClicks = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:ScrCapShowClicks', value ? '1' : '0', _this._id).then(function (val) {
+                resolve(_this);
+            });
+        });
+    };
+    /**
+     * return Promise<boolean>
+     *
+     * Checks if the Show mouse is selected.
+     *
+     */
+    ScreenSource.prototype.getShowMouse = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:ScrCapShowMouse', _this._id).then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    /**
+     * param: (value: boolean)
+     * ```
+     * return Promise<ScreenSource>
+     * ```
+     *
+     * Sets the Show Mouse.
+     */
+    ScreenSource.prototype.setShowMouse = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:ScrCapShowMouse', value ? '1' : '0', _this._id).then(function (val) {
+                if (val === true) {
+                    item_1.Item.set('prop:ScrCapShowClicks', value ? '1' : '0', _this._id);
+                }
+                resolve(_this);
+            });
+        });
+    };
     return ScreenSource;
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
-mixin_1.applyMixins(ScreenSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition]);
-},{"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../../util/rectangle":46,"./ichroma":14,"./icolor":15,"./ilayout":17,"./itransition":20,"./source":23}],23:[function(_require,module,exports){
+mixin_1.applyMixins(ScreenSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    ieffects_1.ItemEffect]);
+},{"../../internal/item":31,"../../internal/util/json":32,"../../internal/util/mixin":33,"../../internal/util/xml":34,"../../util/rectangle":48,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./itransition":21,"./source":24}],24:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = _require('../../internal/util/mixin');
 var item_1 = _require('../../internal/item');
@@ -6198,7 +6952,197 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [ilayout_1.ItemLayout]);
-},{"../../internal/app":25,"../../internal/item":29,"../../internal/util/json":30,"../../internal/util/mixin":31,"../../internal/util/xml":32,"../environment":4,"../scene":6,"./ilayout":17}],24:[function(_require,module,exports){
+},{"../../internal/app":27,"../../internal/item":31,"../../internal/util/json":32,"../../internal/util/mixin":33,"../../internal/util/xml":34,"../environment":4,"../scene":6,"./ilayout":18}],25:[function(_require,module,exports){
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var item_1 = _require('../../internal/item');
+var ichroma_1 = _require('./ichroma');
+var itransition_1 = _require('./itransition');
+var iconfig_1 = _require('./iconfig');
+var source_1 = _require('./source');
+var io_1 = _require('../../util/io');
+/**
+ * The VideoPlaylistSource class represents the VideoPlaylist item that has been
+ * added to the stage.
+ *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = _require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *     for (var i in sources) {
+ *       if (sources[i] instanceof XJS.VideoPlaylistSource) {
+ *         // Manipulate your VideoPlaylist Source here
+ *       }
+ *     }
+ *   });
+ * });
+ *
+ */
+var VideoPlaylistSource = (function (_super) {
+    __extends(VideoPlaylistSource, _super);
+    function VideoPlaylistSource() {
+        _super.apply(this, arguments);
+    }
+    /**
+     * return: Promise<string>
+     *
+     * Gets the now playing video of this VideoPlaylist source.
+     *
+     */
+    VideoPlaylistSource.prototype.getVideoNowPlaying = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:item', _this._id).then(function (playlist) {
+                var _playlist = String(playlist).slice(0, playlist.indexOf('*'));
+                resolve(_playlist);
+            });
+        });
+    };
+    /**
+     * param: (value: string|number)
+     *
+     * return: Promise<VideoPlaylistSource>
+     *
+     * Sets the now playing video of this VideoPlaylist source.
+     *
+     * ## Possible Values
+     * - STRING - file path
+     * - NUMBER - number|within the range of fileplaylist array length
+     *
+     */
+    VideoPlaylistSource.prototype.setVideoNowPlaying = function (value) {
+        var _this = this;
+        var file;
+        var _playlist;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:FilePlaylist', _this._id).then(function (playlist) {
+                _playlist = String(playlist).split('|');
+                for (var i = 0; i < _playlist.length; i++) {
+                    _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
+                }
+                ;
+                return _playlist;
+            }).then(function (list) {
+                if (typeof value === 'string') {
+                    if (_playlist.indexOf(value) === -1) {
+                        reject(Error('File not found on Playlist.'));
+                    }
+                    else {
+                        var index = _playlist.indexOf(value);
+                        file = _playlist[index] + '*' + index;
+                        item_1.Item.set('prop:item', file, _this._id)
+                            .then(function (fileplaylist) {
+                            resolve(_this);
+                        });
+                    }
+                }
+                else if (typeof value === 'number' && value <= _playlist.length) {
+                    file = (_playlist[value] + '*' + value);
+                    item_1.Item.set('prop:item', file, _this._id)
+                        .then(function (fileplaylist) {
+                        resolve(this);
+                    });
+                }
+                else {
+                    reject(Error('Invalid value.'));
+                }
+                ;
+            });
+        });
+    };
+    ;
+    /**
+     * return: Promise<string[]>
+     *
+     * Gets the file paths of the playlist of this VideoPlaylist source.
+     *
+     */
+    VideoPlaylistSource.prototype.getVideoPlaylistItems = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:FilePlaylist', _this._id).then(function (playlist) {
+                var _playlist = String(playlist).split('|');
+                for (var i = 0; i < _playlist.length; i++) {
+                    _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
+                }
+                ;
+                resolve(_playlist);
+            });
+        });
+    };
+    ;
+    /**
+     * param: (file: string[])
+     *
+     * return: Promise<string>
+     *
+     * Sets the playlist of this VideoPlaylist source according to the specified
+     * file paths.
+     *
+     * This call would replace all the items on the playlist.
+     * The now playing item is also set to the first item of the new FilePlaylist.
+     *
+     */
+    VideoPlaylistSource.prototype.setVideoPlaylistItems = function (fileItems) {
+        var _this = this;
+        var fileString;
+        var filePromises = fileItems.map(function (filename) {
+            return io_1.IO.getVideoDuration(filename);
+        });
+        return new Promise(function (resolve, reject) {
+            Promise.all(filePromises).then(function (duration) {
+                for (var i = 0; i < fileItems.length; i++) {
+                    if (fileString === undefined) {
+                        fileString = fileItems[i] + '*' + i + '*1*'
+                            + duration[i] + '*100*0*0*0*0*0|';
+                    }
+                    else {
+                        fileString += fileItems[i] + '*' + i + '*1*'
+                            + duration[i] + '*100*0*0*0*0*0';
+                        if (i + 1 < fileItems.length) {
+                            fileString += '|';
+                        }
+                        ;
+                    }
+                    ;
+                }
+                ;
+                item_1.Item.set('prop:item', fileItems[0] + '*0', _this._id);
+                return fileString;
+            }).then(function (fileString) {
+                item_1.Item.set('prop:FilePlaylist', fileString, _this._id)
+                    .then(function (fileplaylist) {
+                    resolve(_this);
+                });
+            });
+        });
+    };
+    ;
+    return VideoPlaylistSource;
+})(source_1.Source);
+exports.VideoPlaylistSource = VideoPlaylistSource;
+mixin_1.applyMixins(VideoPlaylistSource, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    iconfig_1.ItemConfigurable]);
+},{"../../internal/item":31,"../../internal/util/mixin":33,"../../util/io":46,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":18,"./itransition":21,"./source":24}],26:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -6339,7 +7283,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":25}],25:[function(_require,module,exports){
+},{"../internal/app":27}],27:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -6419,7 +7363,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":28,"./util/json":30}],26:[function(_require,module,exports){
+},{"./internal":30,"./util/json":32}],28:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -6441,7 +7385,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],27:[function(_require,module,exports){
+},{}],29:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var item_1 = _require('./item');
@@ -6487,7 +7431,7 @@ function readMetaConfigUrl() {
             // initialize config URL if necessary
             var promise = new Promise(function (resolveInner) {
                 internal_1.exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', function (result) {
-                    resolveInner(decodeURIComponent(result));
+                    resolveInner(result);
                 });
             });
             promise.then(function (browserConfig) {
@@ -6527,9 +7471,9 @@ function getCurrentSourceId() {
         if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
             // initialize Item.getSource() functions
             internal_1.exec('GetLocalPropertyAsync', 'prop:id', function (result) {
-                var id = decodeURIComponent(result);
+                var id = result;
                 item_1.Item.setBaseId(id);
-                if (environment_1.Environment.isSourcePlugin()) {
+                if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceConfig()) {
                     item_1.Item.lockSourceSlot(id);
                 }
                 resolve();
@@ -6564,7 +7508,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":4,"../window/config":47,"./global":26,"./internal":28,"./item":29}],28:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":49,"./global":28,"./internal":30,"./item":31}],30:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -6609,7 +7553,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],29:[function(_require,module,exports){
+},{}],31:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -6668,10 +7612,6 @@ var Item = (function () {
             });
         });
     };
-    /** Calls a function defined in an item/source */
-    Item.callFunc = function (func, arg) {
-        internal_1.exec('CallInner', func, arg);
-    };
     /** helper function to get current source on init */
     Item.setBaseId = function (id) {
         Item.baseID = id;
@@ -6687,7 +7627,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"./internal":28}],30:[function(_require,module,exports){
+},{"../core/environment":4,"./internal":30}],32:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -6757,7 +7697,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":32}],31:[function(_require,module,exports){
+},{"./xml":34}],33:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -6769,7 +7709,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],32:[function(_require,module,exports){
+},{}],34:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -6824,7 +7764,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],33:[function(_require,module,exports){
+},{}],35:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -7165,7 +8105,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":30,"../internal/util/xml":32}],34:[function(_require,module,exports){
+},{"../internal/util/json":32,"../internal/util/xml":34}],36:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -7279,7 +8219,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],35:[function(_require,module,exports){
+},{"../internal/app":27,"../internal/util/json":32,"../internal/util/xml":34}],37:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -7320,7 +8260,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/app":25}],36:[function(_require,module,exports){
+},{"../internal/app":27}],38:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
@@ -7621,7 +8561,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32,"../util/rectangle":46}],37:[function(_require,module,exports){
+},{"../internal/app":27,"../internal/util/json":32,"../internal/util/xml":34,"../util/rectangle":48}],39:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -7700,7 +8640,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32}],38:[function(_require,module,exports){
+},{"../internal/app":27,"../internal/util/json":32,"../internal/util/xml":34}],40:[function(_require,module,exports){
 var internal_1 = _require('../internal/internal');
 /**
  *  This class servers to allow developers to add new screen regions or window
@@ -7722,7 +8662,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../internal/internal":28}],39:[function(_require,module,exports){
+},{"../internal/internal":30}],41:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -8028,7 +8968,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":4,"../internal/app":25,"../internal/internal":28,"./audio":33,"./camera":34,"./game":36,"./microphone":37}],40:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":27,"../internal/internal":30,"./audio":35,"./camera":36,"./game":38,"./microphone":39}],42:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -8091,7 +9031,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":25}],41:[function(_require,module,exports){
+},{"../internal/app":27}],43:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
@@ -8193,7 +9133,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../internal/app":25,"../internal/util/json":30,"../internal/util/xml":32,"../util/io":44}],42:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":27,"../internal/util/json":32,"../internal/util/xml":34,"../util/io":46}],44:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -8269,7 +9209,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],43:[function(_require,module,exports){
+},{}],45:[function(_require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -8299,7 +9239,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],44:[function(_require,module,exports){
+},{}],46:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var IO = (function () {
@@ -8314,7 +9254,9 @@ var IO = (function () {
      * Returns a base-64 encoded string of the target file's contents.
      * UTF-8 encoded files may be decoded through:
      * ```javascript
-     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * IO.getFileContent('C:\\text.txt').then(function(base64Content) {
+     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+     * });
      * ```
      */
     IO.getFileContent = function (path) {
@@ -8333,7 +9275,9 @@ var IO = (function () {
      *
      * UTF-8 encoded content may be decoded through:
      * ```javascript
-     * var decodedContent = decodeURIComponent(escape(window.atob(base64Content));
+     * IO.getWebContent('http://example.com').then(function(base64Content) {
+     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+     * });
      * ```
      */
     IO.getWebContent = function (url) {
@@ -8443,7 +9387,7 @@ window.OnGetVideoDurationFailed = function (file) {
         delete IO._callback[decodeURIComponent(file)];
     }
 };
-},{"../internal/internal":28}],45:[function(_require,module,exports){
+},{"../internal/internal":30}],47:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -8462,7 +9406,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],46:[function(_require,module,exports){
+},{}],48:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -8679,7 +9623,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],47:[function(_require,module,exports){
+},{}],49:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8843,7 +9787,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../internal/internal":28,"../util/eventemitter":43}],48:[function(_require,module,exports){
+},{"../internal/internal":30,"../util/eventemitter":45}],50:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
@@ -9118,7 +10062,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
             detail: result }));
     };
 }
-},{"../core/environment":4,"../internal/internal":28,"../util/rectangle":46}],49:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":30,"../util/rectangle":48}],51:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9128,6 +10072,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var environment_1 = _require('../core/environment');
 var eventemitter_1 = _require('../util/eventemitter');
+var internal_1 = _require('../internal/internal');
 var app_1 = _require('../internal/app');
 var _RESIZE = '2';
 /** This utility class represents the extension window. It allows manipulation
@@ -9167,10 +10112,58 @@ var ExtensionWindow = (function (_super) {
     ExtensionWindow.prototype.resize = function (width, height) {
         app_1.App.postMessage(_RESIZE, String(width), String(height));
     };
+    /**
+     * param: (value: string)
+     *
+     * Renames the extension window.
+     */
+    ExtensionWindow.prototype.setTitle = function (value) {
+        ExtensionWindow._value = value;
+        app_1.App.postMessage("8");
+    };
+    ;
+    /**
+     * param (flag: number)
+     *
+     * Modifies this extension's window border.
+     *
+     * "4" is th e base command on setting border flags.
+     *
+     * Flags can be:
+     *     (bit 0 - enable border)
+     *     (bit 1 - enable caption)
+     *     (bit 2 - enable sizing)
+     *     (bit 3 - enable minimize btn)
+     *     (bit 4 - enable maximize btn)
+     */
+    ExtensionWindow.prototype.setBorder = function (flag) {
+        app_1.App.postMessage("4", String(flag));
+    };
+    /**
+     * Closes this extension window
+     */
+    ExtensionWindow.prototype.close = function () {
+        app_1.App.postMessage("1");
+    };
+    /**
+     * Disable Close Button on this extension's window
+     */
+    ExtensionWindow.prototype.disableClose = function () {
+        app_1.App.postMessage("5", "0");
+    };
+    /**
+     * Enable Close Button on this extension's window
+     */
+    ExtensionWindow.prototype.enableClose = function () {
+        app_1.App.postMessage("5", "1");
+    };
     return ExtensionWindow;
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;
 if (environment_1.Environment.isExtension()) {
+    window.Setid = function (id) {
+        internal_1.exec("CallHost", "setExtensionWindowTitle:" + id, ExtensionWindow._value);
+    };
     window.OnSceneLoad = function (view, scene) {
         if (Number(view) === 0) {
             ExtensionWindow.getInstance().emit('scene-load', Number(scene));
@@ -9189,7 +10182,7 @@ if (environment_1.Environment.isExtension()) {
         }
     };
 }
-},{"../core/environment":4,"../internal/app":25,"../util/eventemitter":43}],50:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":27,"../internal/internal":30,"../util/eventemitter":45}],52:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9284,7 +10277,7 @@ if (environment_1.Environment.isSourcePlugin()) {
         SourcePluginWindow.getInstance().emit('scene-load');
     };
 }
-},{"../core/environment":4,"../internal/global":26,"../util/eventemitter":43}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/global":28,"../util/eventemitter":45}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -9314,6 +10307,8 @@ exports.ChromaPrimaryColors = ichroma_1.ChromaPrimaryColors;
 exports.ChromaAntiAliasLevel = ichroma_1.ChromaAntiAliasLevel;
 var iplayback_1 = _require('./core/source/iplayback');
 exports.ActionAfterPlayback = iplayback_1.ActionAfterPlayback;
+var ieffects_1 = _require('./core/source/ieffects');
+exports.MaskEffect = ieffects_1.MaskEffect;
 var cuepoint_1 = _require('./core/source/cuepoint');
 exports.CuePoint = cuepoint_1.CuePoint;
 __export(_require('./system/system'));
@@ -9331,7 +10326,7 @@ __export(_require('./window/extension'));
 __export(_require('./window/dialog'));
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/scene":6,"./core/source/audio":7,"./core/source/camera":8,"./core/source/cuepoint":9,"./core/source/flash":10,"./core/source/game":11,"./core/source/html":12,"./core/source/ichroma":14,"./core/source/image":18,"./core/source/iplayback":19,"./core/source/media":21,"./core/source/screen":22,"./core/source/source":23,"./core/transition":24,"./internal/init":27,"./system/audio":33,"./system/camera":34,"./system/file":35,"./system/game":36,"./system/microphone":37,"./system/screen":38,"./system/system":39,"./system/url":40,"./system/videoplaylist":41,"./util/color":42,"./util/io":44,"./util/ready":45,"./util/rectangle":46,"./window/config":47,"./window/dialog":48,"./window/extension":49,"./window/source":50}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/scene":6,"./core/source/audio":7,"./core/source/camera":8,"./core/source/cuepoint":9,"./core/source/flash":10,"./core/source/game":11,"./core/source/html":12,"./core/source/ichroma":14,"./core/source/ieffects":17,"./core/source/image":19,"./core/source/iplayback":20,"./core/source/media":22,"./core/source/screen":23,"./core/source/source":24,"./core/transition":26,"./internal/init":29,"./system/audio":35,"./system/camera":36,"./system/file":37,"./system/game":38,"./system/microphone":39,"./system/screen":40,"./system/system":41,"./system/url":42,"./system/videoplaylist":43,"./util/color":44,"./util/io":46,"./util/ready":47,"./util/rectangle":48,"./window/config":49,"./window/dialog":50,"./window/extension":51,"./window/source":52}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();

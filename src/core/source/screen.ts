@@ -8,6 +8,7 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 ChromaAntiAliasLevel} from './ichroma';
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Source} from './source';
 import {Scene} from '../scene';
@@ -26,12 +27,13 @@ import {XML} from '../../internal/util/xml';
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `ScreenSource`
  *  instance.
  */
-export class ScreenSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ScreenSource extends Source implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
   /**
    * return: Promise<Rectangle>
    *
@@ -213,6 +215,128 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
     });
   }
 
+  /**
+   * return Promise<ScreenSource>
+   *
+   * Checks if the Screen Capture layered window is selected.
+   */
+  getCaptureLayered(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapLayered', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return Promise<ScreenSource>
+   * ```
+   *
+   * Sets the Screen Capture Layered window
+   */
+  setCaptureLayered(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return Promise<boolean>
+   *
+   * Checks if the Exclusive Window capture is selected.
+   */
+  getOptimizedCapture(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return Promise<ScreenSource>
+   * ```
+   *
+   * Sets the Exclusive Window capture.
+   */
+  setOptimizedCapture(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+
+  /**
+   * return Promise<boolean>
+   *
+   * Checks if the Show mouse clicks is selected.
+   *
+   */
+  getShowMouseClicks(): Promise<boolean> {
+    return new Promise(resolve => {
+    iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return Promise<ScreenSource>
+   * ```
+   *
+   * Sets the Show mouse clicks.
+   */
+  setShowMouseClicks(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+    iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id).then(val => {
+        resolve(this)
+      });
+    });
+  }
+
+  /**
+   * return Promise<boolean>
+   *
+   * Checks if the Show mouse is selected.
+   *
+   */
+  getShowMouse(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return Promise<ScreenSource>
+   * ```
+   *
+   * Sets the Show Mouse.
+   */
+  setShowMouse(value: boolean): Promise<ScreenSource> {
+    return new Promise(resolve => {
+      iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id).then(val => {
+        if (val === true) {
+          iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id);
+        }
+        resolve(this);
+      });
+    });
+  }
+
   // ItemLayout
 
   /**
@@ -234,7 +358,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -279,7 +403,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemLayout#setCroppingEnhanced setCroppingEnhanced}
    */
   setCroppingEnhanced: (value: Object) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
@@ -319,7 +443,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
   setRotateZ: (value: number) => Promise<ScreenSource>;
-  
+
   // ItemColor
 
   /**
@@ -391,7 +515,7 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<ScreenSource>;
-  
+
   // ItemChroma
 
   /**
@@ -403,140 +527,140 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemChroma#setChromaEnabled setChromaEnabled}
    */
   setChromaEnabled: (value: boolean) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getKeyingType getKeyingType}
    */
   getKeyingType: () => Promise<KeyingType>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setKeyingType setKeyingType}
    */
   setKeyingType: (value: KeyingType) => Promise<ScreenSource>;
 
   // BOTH CHROMA LEGACY AND CHROMA RGB
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaAntiAliasLevel getChromaAntiAliasLevel}
    */
   getChromaAntiAliasLevel: () => Promise<ChromaAntiAliasLevel>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaAntiAliasLevel setChromaAntiAliasLevel}
    */
   setChromaAntiAliasLevel: (value: ChromaAntiAliasLevel) => Promise<ScreenSource>;
 
   // CHROMA LEGACY MODE
-   
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyBrightness getChromaLegacyBrightness}
    */
   getChromaLegacyBrightness: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyBrightness setChromaLegacyBrightness}
    */
   setChromaLegacyBrightness: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacySaturation getChromaLegacySaturation}
    */
   getChromaLegacySaturation: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacySaturation setChromaLegacySaturation}
    */
   setChromaLegacySaturation: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyHue getChromaLegacyHue}
    */
   getChromaLegacyHue: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyHue setChromaLegacyHue}
    */
   setChromaLegacyHue: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyThreshold getChromaLegacyThreshold}
    */
   getChromaLegacyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyThreshold setChromaLegacyThreshold}
    */
   setChromaLegacyThreshold: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaLegacyAlphaSmoothing getChromaLegacyAlphaSmoothing}
    */
   getChromaLegacyAlphaSmoothing: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaLegacyAlphaSmoothing setChromaLegacyAlphaSmoothing}
    */
   setChromaLegacyAlphaSmoothing: (value: number) => Promise<ScreenSource>;
 
   // CHROMA KEY RGB MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyPrimaryColor getChromaRGBKeyPrimaryColor}
    */
   getChromaRGBKeyPrimaryColor: () => Promise<ChromaPrimaryColors>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyPrimaryColor setChromaRGBKeyPrimaryColor}
    */
   setChromaRGBKeyPrimaryColor: (value: ChromaPrimaryColors) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyThreshold getChromaRGBKeyThreshold}
    */
   getChromaRGBKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyThreshold setChromaRGBKeyThreshold}
    */
   setChromaRGBKeyThreshold: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaRGBKeyExposure getChromaRGBKeyExposure}
    */
   getChromaRGBKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaRGBKeyExposure setChromaRGBKeyExposure}
    */
   setChromaRGBKeyExposure: (value: number) => Promise<ScreenSource>;
 
   // COLOR KEY MODE
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyThreshold getChromaColorKeyThreshold}
    */
   getChromaColorKeyThreshold: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyThreshold setChromaColorKeyThreshold}
    */
   setChromaColorKeyThreshold: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyExposure getChromaColorKeyExposure}
    */
   getChromaColorKeyExposure: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyExposure setChromaColorKeyExposure}
    */
   setChromaColorKeyExposure: (value: number) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemChroma#getChromaColorKeyColor getChromaColorKeyColor}
    */
   getChromaColorKeyColor: () => Promise<Color>;
-  
+
   /**
    * See: {@link #core/IItemChroma#setChromaColorKeyColor setChromaColorKeyColor}
    */
@@ -548,31 +672,112 @@ export class ScreenSource extends Source implements IItemLayout, IItemColor, IIt
    * See: {@link #core/IItemTransition#isVisible isVisible}
    */
   isVisible: () => Promise<boolean>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
   setVisible: (value: boolean) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
    */
   getTransition: () => Promise<Transition>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
   setTransition: (value: Transition) => Promise<ScreenSource>;
-  
+
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
    */
   getTransitionTime: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<ScreenSource>;
+
+  // ItemEffect
+
+  /** See: {@link #core/IItemEffect#getMaskEffect getMaskEffect} */
+  getMaskEffect: () => Promise<MaskEffect>;
+
+  /** See: {@link #core/IItemEffect#setMaskEffect setMaskEffect} */
+  setMaskEffect: (value: MaskEffect) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectRadius getBorderEffectRadius} */
+  getBorderEffectRadius: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectRadius setBorderEffectRadius} */
+  setBorderEffectRadius: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectThickness getBorderEffectThickness} */
+  getBorderEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectThickness setBorderEffectThickness} */
+  setBorderEffectThickness: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectOpacity getBorderEffectOpacity} */
+  getBorderEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectOpacity setBorderEffectOpacity} */
+  setBorderEffectOpacity: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectColor getBorderEffectColor} */
+  getBorderEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
+  setBorderEffectColor: (value: Color) => Promise<ScreenSource>;
+
+   /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  getShadowEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
+  setShadowEffectColor: (value: Color) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectThickness getShadowEffectThickness} */
+  getShadowEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectThickness setShadowEffectThickness} */
+  setShadowEffectThickness: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectBlur getShadowEffectBlur} */
+  getShadowEffectBlur: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectBlur setShadowEffectBlur} */
+  setShadowEffectBlur: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOpacity getShadowEffectOpacity} */
+  getShadowEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOpacity setShadowEffectOpacity} */
+  setShadowEffectOpacity: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetX getShadowEffectOffsetX} */
+  getShadowEffectOffsetX: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetX setShadowEffectOffsetX} */
+  setShadowEffectOffsetX: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetY getShadowEffectOffsetY} */
+  getShadowEffectOffsetY: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetY setShadowEffectOffsetY} */
+  setShadowEffectOffsetY: (value: number) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#getFileMask getFileMask} */
+  getFileMask: () => Promise<string>;
+
+  /** See: {@link #core/IItemEffect#setFileMask setFileMask} */
+  setFileMask: (value: string) => Promise<ScreenSource>;
+
+  /** See: {@link #core/IItemEffect#isFileMaskingGuideVisible isFileMaskingGuideVisible} */
+  isFileMaskingGuideVisible: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
+  showFileMaskingGuide: (value: boolean) => Promise<ScreenSource>;
 }
 
-applyMixins(ScreenSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ScreenSource, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemEffect]);

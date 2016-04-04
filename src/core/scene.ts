@@ -9,6 +9,7 @@ import {Source, SourceTypes} from './source/source';
 import {GameSource} from './source/game';
 import {CameraSource} from './source/camera';
 import {AudioSource} from './source/audio';
+import {VideoPlaylistSource} from './source/videoplaylist'
 import {HtmlSource} from './source/html';
 import {FlashSource} from './source/flash';
 import {ScreenSource} from './source/screen';
@@ -590,6 +591,10 @@ export class Scene {
           let type = Number(source['type']);
           if (type === SourceTypes.GAMESOURCE) {
             typeResolve(new GameSource(source));
+          } else if ((type === SourceTypes.HTML || type === SourceTypes.FILE) &&
+            source['name'].indexOf('Video Playlist') === 0 &&
+            source['FilePlaylist'] !== ''){
+            typeResolve(new VideoPlaylistSource(source));
           } else if (type === SourceTypes.HTML) {
             typeResolve(new HtmlSource(source));
           } else if (type === SourceTypes.SCREEN) {
