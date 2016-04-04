@@ -174,22 +174,6 @@ export class AudioSource extends Source implements IItemAudio {
     });
   }
 
-  /**
-   * param: (func: string, arg: string)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow this source to communicate with another source.
-   */
-  call(func: string, arg: string): Promise<AudioSource> {
-    return new Promise(resolve => {
-      iItem.call(func, arg, this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
   // ItemAudio
 
   /** See: {@link #core/IItemAudio#getVolume getVolume} */

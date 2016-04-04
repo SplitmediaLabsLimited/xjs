@@ -161,22 +161,6 @@ export class GameSource extends Source implements IItemLayout, IItemColor, IItem
     });
   }
 
-  /**
-   * param: (func: string, arg: string)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow this source to communicate with another source.
-   */
-  call(func: string, arg: string): Promise<GameSource> {
-    return new Promise(resolve => {
-      iItem.call(func, arg, this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
   // ItemLayout
 
   /**

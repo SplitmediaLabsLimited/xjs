@@ -75,20 +75,6 @@ export class Item {
     });
   }
 
-  /** Calls a function defined in an item/source */
-  static call(func: string, arg:string, id:string): Promise<boolean> {
-    return new Promise(resolve => {
-    let slot = Item.attach(id);
-      exec('CallInner' +
-        (String(slot) === '0' ? '' : slot + 1),
-        func,
-        arg,
-        val => {
-          resolve(!(Number(val) < 0));
-        })
-    });    
-  }
-
   /** helper function to get current source on init */
   static setBaseId(id: string): void {
     Item.baseID = id;

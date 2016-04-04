@@ -104,22 +104,6 @@ export class MediaSource extends Source implements IItemLayout, IItemColor,
     });
   }
 
-/**
- * param: (func: string, arg: string)
- * ```
- * return: Promise<Source>
- * ```
- *
- * Allow this source to communicate with another source.
- */
-  call(func: string, arg: string): Promise<MediaSource> {
-    return new Promise(resolve => {
-      iItem.call(func, arg, this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
   // ItemLayout
 
   /**

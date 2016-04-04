@@ -631,11 +631,16 @@ export class HtmlSource extends Source implements IItemLayout, IItemColor,
    *
    * Allow this source to communicate with another source.
    */
-  call(func: string, arg: string): Promise<HtmlSource> {
+  call(func: string, arg: string): Promise<boolean> {
     return new Promise(resolve => {
-      iItem.call(func, arg, this._id).then(() => {
-        resolve(this);
-      });
+      let slot = iItem.attach(this._id);
+      exec('CallInner' +
+        (String(slot) === '0' ? '' : slot + 1),
+        func,
+        arg,
+        val => {
+          resolve(!(Number(val) < 0));
+        })
     });
   }
 
