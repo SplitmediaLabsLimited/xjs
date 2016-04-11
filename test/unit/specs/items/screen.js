@@ -108,6 +108,9 @@ describe('ScreenItem', function() {
   };
 
   beforeEach(function(done) {
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS

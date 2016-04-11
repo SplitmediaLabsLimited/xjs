@@ -28,5 +28,9 @@ export enum ViewTypes {
  * the available methods.*
  */
 export class Source extends Item {
-
+  constructor(props?: {}) {
+    console.warn('Warning! This Class is deprecated and will be removed soon.' +
+      ' Please use Item Class instead');
+    super(props)
+  }
 }

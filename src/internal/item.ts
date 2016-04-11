@@ -12,6 +12,38 @@ export class Item {
   private static itemSlotMap: string[] = [];
   private static islockedSourceSlot: boolean = false;
 
+  private static minVersion = '2.8.1603.0401';
+
+  private static versionCompare(version: string): any {
+    const parts = version.split('.');
+    const comp = (prev, curr, idx) => {
+      if ((parts[idx] < curr && prev !== -1) || prev === 1) {
+        return 1;
+      } else if (parts[idx] > curr || prev === -1) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+
+    return {
+      is: {
+        lessThan: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === 1;
+        },
+        greaterThan: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === -1;
+        },
+        equalsTo: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === 0;
+        }
+      }
+    };
+  }
+
   /** Prepare an item for manipulation */
   static attach(itemID: string): number {
     let slot = Item.itemSlotMap.indexOf(itemID);
@@ -28,9 +60,21 @@ export class Item {
           itemID
         );
       } else {
-        exec('AttachVideoItem' + (slot + 1),
-          itemID
-        );
+        let hasGlobalSources = Item
+          .versionCompare(Environment.getVersion())
+          .is
+          .greaterThan(Item.minVersion);
+
+        if (hasGlobalSources) {
+          exec('AttachVideoItem' + (slot + 1),
+            itemID
+          );
+        } else {
+          exec('AttachVideoItem' +
+            (String(slot) === '0' ? '' : (slot + 1)),
+            itemID
+          );
+        }
       }
     }
     return slot;
@@ -40,8 +84,19 @@ export class Item {
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
       let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let hasGlobalSources = Item
+        .versionCompare(Environment.getVersion())
+        .is
+        .greaterThan(Item.minVersion);
 
-      if (!Environment.isSourcePlugin() && String(slot) === '0') {
+      if (
+        (!Environment.isSourcePlugin() && String(slot) === '0') ||
+        (
+          Environment.isSourcePlugin() &&
+          String(slot) === '0' &&
+          !hasGlobalSources
+        )
+      ) {
         slot = -1;
       }
 
@@ -58,8 +113,19 @@ export class Item {
   static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
       let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let hasGlobalSources = Item
+        .versionCompare(Environment.getVersion())
+        .is
+        .greaterThan(Item.minVersion);
 
-      if (!Environment.isSourcePlugin() && String(slot) === '0') {
+      if (
+        (!Environment.isSourcePlugin() && String(slot) === '0') ||
+        (
+          Environment.isSourcePlugin() &&
+          String(slot) === '0' &&
+          !hasGlobalSources
+        )
+      ) {
         slot = -1;
       }
 

@@ -275,6 +275,9 @@ describe('HtmlItem', function() {
   };
 
   beforeEach(function(done) {
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
     enumerated = [];
     env.set('extension');
     if (!isXSplit) {

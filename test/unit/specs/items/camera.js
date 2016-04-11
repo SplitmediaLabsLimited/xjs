@@ -79,7 +79,9 @@ describe('CameraItem', function() {
   };
 
   beforeEach(function(done) {
-
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
     env.set('extension');
     // Reset the attached IDS
     var item1 = new XJS.Item({id : '{CAMERAID}' });

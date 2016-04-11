@@ -11,5 +11,9 @@ import {ScreenItem} from '../items/screen';
  * ScreenItem Class for the available methods.*
  */
 export class ScreenSource extends ScreenItem{
-
+  constructor(props: {}) {
+    console.warn('Warning! This Class is deprecated and will be removed soon.' +
+      ' Please use ScreenItem Class instead');
+    super(props);
+  }
 }

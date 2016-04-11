@@ -61,9 +61,13 @@ describe('Scene', function() {
   describe('object instance', function() {
     var scene;
     var sceneItems;
+    var appVersion = navigator.appVersion;
 
     beforeAll(function(done) {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
         var ctr = 0;
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
@@ -176,6 +180,12 @@ describe('Scene', function() {
       Scene.getActiveScene().then(function(result) {
         scene = result;
         done();
+      });
+    });
+
+    afterAll(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
       });
     });
 

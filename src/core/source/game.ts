@@ -11,6 +11,10 @@ import {GameItem} from '../items/game';
  * *This Class extends {@link #core/GameItem GameItem} Class. Please check
  * GameItem Class for the available methods.*
  */
-export class GameSource extends GameItem{
-
+export class GameSource extends GameItem {
+  constructor(props: {}) {
+    console.warn('Warning! This Class is deprecated and will be removed soon.' +
+      ' Please use GameItem Class instead');
+    super(props);
+  }
 }

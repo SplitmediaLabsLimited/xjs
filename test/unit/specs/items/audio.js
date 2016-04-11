@@ -19,9 +19,13 @@ describe('AudioItem', function() {
   };
 
   var env = new window.Environment(XJS);
+  var appVersion = navigator.appVersion;
 
   beforeAll(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
       env.set('script');
       // Reset the attached IDS
       var item1 = new XJS.Item({id : '{AUDIOID}' });
@@ -213,6 +217,10 @@ describe('AudioItem', function() {
           }
         }
       });
+    });
+
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
     });
   });
 

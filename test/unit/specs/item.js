@@ -16,6 +16,7 @@ describe('Item', function() {
   var Item;
   var local = {};
   var XJS = require('xjs');
+  var appVersion = navigator.appVersion;
   if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
     Item = new XJS.Item({
       id: '{1B4B6EDA-1ECC-4C8B-8CCF-A05C15EA3F85}',
@@ -25,6 +26,9 @@ describe('Item', function() {
 
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
       spyOn(window.external, 'SetLocalPropertyAsync')
         .and.callFake(function(prop, val) {
         switch (prop) {
@@ -95,6 +99,12 @@ describe('Item', function() {
     }
   });
 
+  afterEach(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  });
+
   it('should be able to set and get the name', function(done) {
     var word = randomWord(5);
     Item.setName(word);
@@ -150,7 +160,7 @@ describe('Item', function() {
     expect(Item).hasMethods('toXML');
   });
 
-  it('should have static getCurrentItem method', function() {
+  it('should have static getCurrentSource method', function() {
     expect(XJS.Item).hasMethods('getCurrentSource');
   });
 });

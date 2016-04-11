@@ -10,6 +10,10 @@ import {MediaItem} from '../items/media';
  * *This Class extends {@link #core/MediaItem MediaItem} Class. Please check
  * MediaItem Class for the available methods.*
  */
-export class MediaSource extends MediaItem{
-
+export class MediaSource extends MediaItem {
+  constructor(props: {}) {
+    console.warn('Warning! This Class is deprecated and will be removed soon.' +
+      ' Please use MediaItem Class instead');
+    super(props);
+  }
 }

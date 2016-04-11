@@ -79,6 +79,37 @@ export class Item implements IItemLayout {
 
   private _xmlparams: {};
 
+  private static minVersion = '2.8.1603.0401';
+
+  private static versionCompare(version: string): any {
+    const parts = version.split('.');
+    const comp = (prev, curr, idx) => {
+      if ((parts[idx] < curr && prev !== -1) || prev === 1) {
+        return 1;
+      } else if (parts[idx] > curr || prev === -1) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+
+    return {
+      is: {
+        lessThan: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === 1;
+        },
+        greaterThan: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === -1;
+        },
+        equalsTo: (compare: string) => {
+          let cParts = compare.split('.');
+          return cParts.reduce(comp, parts[0]) === 0;
+        }
+      }
+    };
+  }
 
   constructor(props?: {}) {
     props = props ? props : {};
@@ -485,13 +516,25 @@ export class Item implements IItemLayout {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+      } else if (
+        (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
+        Item
+          .versionCompare(Environment.getVersion())
+          .is
+          .greaterThan(Item.minVersion)
+      ) {
         Item.getItemList().then(items => {
           if (items.length > 0) {
-            resolve(items[0]);
+            Scene.searchSourcesById(items[0]._id).then(item => {
+              resolve(item);
+            });
           } else {
             reject(Error('Cannot get item list'))
           }
+        });
+      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+        Scene.searchSourcesById(iItem.getBaseId()).then(item => {
+          resolve(item);
         });
       }
     });
@@ -519,6 +562,13 @@ export class Item implements IItemLayout {
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources associated with them.'));
+      } else if (
+        Item
+          .versionCompare(Environment.getVersion())
+          .is
+          .lessThan(Item.minVersion)
+      ) {
+        reject(Error('Only available on versions above ' + Item.minVersion));
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];

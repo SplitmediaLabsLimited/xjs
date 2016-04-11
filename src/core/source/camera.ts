@@ -12,6 +12,11 @@ import {CameraItem} from '../items/camera';
  * *This Class extends {@link #core/CameraItem CameraItem} Class. Please check
  * CameraItem Class for the available methods.*
  */
-export class CameraSource extends CameraItem{
+export class CameraSource extends CameraItem {
+  constructor(props: {}) {
+    console.warn('Warning! This Class is deprecated and will be removed soon.' +
+      ' Please use CameraItem Class instead');
+    super(props);
+  }
 }
 
