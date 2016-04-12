@@ -12,9 +12,4 @@ import {GameItem} from '../items/game';
  * GameItem Class for the available methods.*
  */
 export class GameSource extends GameItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use GameItem Class instead');
-    super(props);
-  }
 }

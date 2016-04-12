@@ -81,7 +81,7 @@ export class Item implements IItemLayout {
 
   private static minVersion = '2.8.1603.0401';
 
-  private static versionCompare(version: string): any {
+  private static _versionCompare(version: string): any {
     const parts = version.split('.');
     const comp = (prev, curr, idx) => {
       if ((parts[idx] < curr && prev !== -1) || prev === 1) {
@@ -513,13 +513,16 @@ export class Item implements IItemLayout {
    */
   static getCurrentSource(): Promise<Item> {
     return new Promise((resolve, reject) => {
+      console.warn('Warning! This method is deprecated and will be removed ' +
+        'soon. Please use getItemList instead. (Only works for XSplit ' +
+        'Broadcaster versions above 2.8.xxxx.xxxx');
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (
         (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
         Item
-          .versionCompare(Environment.getVersion())
+          ._versionCompare(Environment.getVersion())
           .is
           .greaterThan(Item.minVersion)
       ) {
@@ -564,7 +567,7 @@ export class Item implements IItemLayout {
         reject(Error('Extensions do not have sources associated with them.'));
       } else if (
         Item
-          .versionCompare(Environment.getVersion())
+          ._versionCompare(Environment.getVersion())
           .is
           .lessThan(Item.minVersion)
       ) {

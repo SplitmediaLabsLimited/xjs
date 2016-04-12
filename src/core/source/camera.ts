@@ -13,10 +13,5 @@ import {CameraItem} from '../items/camera';
  * CameraItem Class for the available methods.*
  */
 export class CameraSource extends CameraItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use CameraItem Class instead');
-    super(props);
-  }
 }
 

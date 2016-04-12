@@ -12,9 +12,4 @@ import {FlashItem} from '../items/flash';
  * FlashItem Class for the available methods.*
  */
 export class FlashSource extends FlashItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use FlashItem Class instead');
-    super(props);
-  }
 }

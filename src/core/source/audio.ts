@@ -11,10 +11,5 @@ import {AudioItem} from '../items/audio';
  * AudioItem Class for the available methods.*
  */
 export class AudioSource extends AudioItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use AudioItem Class instead');
-    super(props);
-  }
 }
 

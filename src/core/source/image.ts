@@ -11,9 +11,4 @@ import {ImageItem} from '../items/image';
  * ImageItem Class for the available methods.*
  */
 export class ImageSource extends ImageItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use ImageItem Class instead');
-    super(props);
-  }
 }

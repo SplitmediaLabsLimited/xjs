@@ -12,9 +12,4 @@ import {HtmlItem} from '../items/html';
  * HtmlItem Class for the available methods.*
  */
 export class HtmlSource extends HtmlItem {
-  constructor(props: {}) {
-    console.warn('Warning! This Class is deprecated and will be removed soon.' +
-      ' Please use HtmlItem Class instead');
-    super(props);
-  }
 }
