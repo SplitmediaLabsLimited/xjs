@@ -139,11 +139,6 @@ export class Item {
     });
   }
 
-  /** Calls a function defined in an item/source */
-  static callFunc(func: string, arg: string): void {
-    exec('CallInner', func, arg);
-  }
-
   /** helper function to get current source on init */
   static setBaseId(id: string): void {
     Item.baseID = id;

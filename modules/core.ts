@@ -33,3 +33,5 @@ export {IItemTransition} from '../src/core/items/itransition';
 export {IItemAudio} from '../src/core/items/iaudio';
 export {IItemConfigurable} from '../src/core/items/iconfig';
 export {IItemPlayback} from '../src/core/items/iplayback';
+export {IItemEffect} from '../src/core/source/ieffects';
+

@@ -31,6 +31,7 @@ export * from './core/items/screen';
 export * from './core/items/image';
 export * from './core/items/media';
 
+export {MaskEffect} from './core/source/ieffects';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/items/ichroma';
 export {ActionAfterPlayback} from './core/items/iplayback';
 export {CuePoint} from './core/items/cuepoint';

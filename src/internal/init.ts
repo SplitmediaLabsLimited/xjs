@@ -73,7 +73,7 @@ function readMetaConfigUrl(): Promise<any> {
       // initialize config URL if necessary
       var promise = new Promise(resolveInner => {
         exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', result => {
-          resolveInner(decodeURIComponent(result));
+          resolveInner(result);
         });
       });
 
@@ -126,8 +126,11 @@ function getCurrentSourceId(): Promise<any> {
       // initialize Item.getSource() functions
       exec('GetLocalPropertyAsync', 'prop:id',
         result => {
-          let id = decodeURIComponent(result);
+          let id = result;
           Item.setBaseId(id);
+          if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+            Item.lockSourceSlot(id);
+          }
           resolve();
         });
     } else {

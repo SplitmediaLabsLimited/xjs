@@ -12,4 +12,5 @@ interface Window {
   SourcesListSelect: Function;
   OnGetVideoDuration: Function;
   OnGetVideoDurationFailed: Function;
+  Setid: Function;
 }
