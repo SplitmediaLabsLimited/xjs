@@ -20,6 +20,7 @@ import {Item, ItemTypes} from './items/item';
 import {GameItem} from './items/game';
 import {CameraItem} from './items/camera';
 import {AudioItem} from './items/audio';
+import {VideoPlaylistItem} from './items/videoplaylist'
 import {HtmlItem} from './items/html';
 import {FlashItem} from './items/flash';
 import {ScreenItem} from './items/screen';
@@ -207,26 +208,26 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Source>
+   * return: Promise<Item>
    *
-   * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * Searches all scenes for an item by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
-   * See also: {@link #core/Source Core/Source}
+   * See also: {@link #core/Item Core/Item}
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
-   *   // result is either a Source or null
+   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+   *   // result is either an Item or null
    * });
    * ```
    *
    */
-  static searchSourcesById(id: string): Promise<Item> {
+  static searchItemsById(id: string): Promise<Item> {
     return new Promise((resolve, reject) => {
       let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
       if (!isID) {
-        reject(Error('Not a valid ID format for sources'));
+        reject(Error('Not a valid ID format for items'));
       } else {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
@@ -246,7 +247,58 @@ export class Scene {
                   Number(this) === arr.length - 1) { // last scene, no match
                   resolve(match);
                 }
-              }).bind(idx));
+              }).bind(idx))
+              .catch(err => {
+                // Do nothing
+              });
+            }
+          });
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<Scene>
+   *
+   * Searches all scenes for one that contains the given item ID.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   *   // scene contains the item
+   * });
+   * ```
+   *
+   */
+  static searchScenesByItemId(id: string): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      if (!isID) {
+        reject(Error('Not a valid ID format for items'));
+
+      } else {
+        Scene._initializeScenePoolAsync().then(cnt => {
+          let match = null;
+          let found = false;
+          Scene._scenePool.forEach((scene, idx, arr) => {
+            if (match === null) {
+              scene.getItems().then(items => {
+                found = items.some(item => { // unique ID, so get first result
+                  if (item['_id'] === id.toUpperCase()) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+                if (found) {
+                  resolve(scene);
+                } else if (idx === arr.length - 1) {
+                  // last scene, no match
+                  resolve(match);
+                }
+              });
             }
           });
         });
@@ -255,10 +307,237 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Items[]>
+   *
+   * Searches all items for a item by name substring. This function
+   * compares against custom name first (recommended) before falling back to the
+   * name property of the item.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.searchItemsByName('camera').then(function(items) {
+   *   // do something to each item in items array
+   * });
+   * ```
+   *
+   */
+  static searchItemsByName(param: string): Promise<Item[]> {
+    return new Promise(resolve => {
+      this.filterItems((item: Item, filterResolve: any) => {
+        item.getCustomName().then(cname => {
+          if (cname.match(param)) {
+            filterResolve(true);
+          } else {
+            return item.getName();
+          }
+        }).then(name => {
+          if (name !== undefined) {
+            if (name.match(param)) {
+              filterResolve(true);
+            } else {
+              return item.getValue();
+            }
+          }
+        }).then(value => {
+          if (value !== undefined) {
+            if (value.toString().match(param)) {
+              filterResolve(true);
+            } else {
+              filterResolve(false);
+            }
+          }
+        });
+      }).then(items => {
+        resolve(items);
+      });
+    });
+  };
+
+  /**
+   * param: function(item, resolve)
+   * ```
+   * return: Promise<Item[]>
+   * ```
+   *
+   * Searches all scenes for items that satisfies the provided testing function.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.filterItems(function(item, resolve) {
+   *   // We'll only fetch Flash Items by resolving 'true' if the item is an
+   *   // instance of FlashItem
+   *   resolve((item instanceof FlashItem));
+   * }).then(function(items) {
+   *   // items would either be an empty array if no Flash items was found,
+   *   // or an array of FlashItem objects
+   * });
+   * ```
+   */
+  static filterItems(func: any): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        let matches: Item[] = [];
+
+        if (typeof func === 'function') {
+          return Promise.all(Scene._scenePool.map(scene => {
+            return new Promise(resolveScene => {
+              scene.getItems().then(items => {
+                if (items.length === 0) {
+                  resolveScene();
+                } else {
+                  return Promise.all(items.map(item => {
+                    return new Promise(resolveItem => {
+                      func(item, (checker: boolean) => {
+                        if (checker) {
+                          matches.push(item);
+                        }
+                        resolveItem();
+                      });
+                    });
+                  })).then(() => {
+                    resolveScene();
+                  });
+                }
+              }).catch(() => {
+                resolveScene();
+              });
+            });
+          })).then(() => {
+            resolve(matches);
+          });
+        } else {
+          reject(Error('Parameter is not a function'));
+        }
+      });
+    });
+  }
+
+  /**
+   * param: function(item, resolve)
+   * ```
+   * return: Promise<Scene[]>
+   * ```
+   *
+   * Searches all scenes for items that satisfies the provided testing
+   * function, and then return the scene that contains the item.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.filterScenesByItems(function(item, resolve) {
+   *   // We'll only fetch the scenes with flash items by resolving 'true' if
+   *   // the item is an instance of FlashItem
+   *   resolve((item instanceof FlashItem));
+   * }).then(function(scenes) {
+   *   // scenes would be an array of all scenes with FlashItem
+   * });
+   * ```
+   */
+  static filterScenesByItems(func: any): Promise<Scene[]> {
+    return new Promise((resolve, reject) => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        let matches: Scene[] = [];
+        if (typeof func === 'function') {
+          return Promise.all(Scene._scenePool.map(scene => {
+            return new Promise(resolveScene => {
+              scene.getItems().then(items => {
+                if (items.length === 0) {
+                  resolveScene();
+                } else {
+                  return Promise.all(items.map(item => {
+                    return new Promise(resolveItem => {
+                      func(item, (checker: boolean) => {
+                        if (checker) {
+                          matches.push(scene);
+                        }
+                        resolveItem();
+                      });
+                    });
+                  })).then(() => {
+                    resolveScene();
+                  });
+                }
+              });
+            });
+          })).then(() => {
+            resolve(matches);
+          });
+        } else {
+          reject(Error('Parameter is not a function'));
+        }
+      });
+    });
+  }
+
+  /**
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#searchItemsById searchItemsById} instead.
+   *
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   *
+   * See also: {@link #core/Source Core/Source}
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
+   *   // result is either a Source or null
+   * });
+   * ```
+   *
+   */
+  static searchSourcesById(id: string): Promise<Source> {
+    return new Promise((resolve, reject) => {
+      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
+      if (!isID) {
+        reject(Error('Not a valid ID format for sources'));
+      } else {
+        Scene._initializeScenePoolAsync().then(cnt => {
+          let match = null;
+          let found = false;
+          Scene._scenePool.forEach((scene, idx, arr) => {
+            if (match === null) {
+              scene.getSources().then((function(items) {
+                found = items.some(item => { // unique ID, so get first result
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = item;
+                    return true;
+                  } else {
+                    return false;
+                  }
+                });
+                if (found ||
+                  Number(this) === arr.length - 1) { // last scene, no match
+                  resolve(match);
+                }
+              }).bind(idx))
+              .catch(err => {
+                // Do nothing
+              });
+            }
+          });
+        });
+      }
+    });
+  };
+
+  /**
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#searchScenesByItemId searchScenesByItemId} instead.
+   *
+   * ```
    * return: Promise<Scene>
+   * ```
    *
    * Searches all scenes for one that contains the given source ID.
-   *
    *
    * #### Usage
    *
@@ -291,10 +570,6 @@ export class Scene {
                 });
                 if (found) {
                   resolve(scene);
-                  // Scene.getByIdAsync(idx + 1).then(sceneMatch => {
-
-                  //   resolve(sceneMatch);
-                  // });
                 } else if (idx === arr.length - 1) {
                   // last scene, no match
                   resolve(match);
@@ -308,7 +583,13 @@ export class Scene {
   };
 
   /**
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#searchItemsByName searchItemsByName} instead.
+   *
+   * ```
    * return: Promise<Source[]>
+   * ```
    *
    * Searches all scenes for a source by name substring. This function
    * compares against custom name first (recommended) before falling back to the
@@ -357,8 +638,12 @@ export class Scene {
   };
 
   /**
-   * param: function(source, resolve)
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#filterItems filterItems} instead.
+   *
    * ```
+   * param: function(source, resolve)
    * return: Promise<Source[]>
    * ```
    *
@@ -417,8 +702,12 @@ export class Scene {
   }
 
   /**
-   * param: function(source, resolve)
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#filterScenesByItems filterScenesByItems} instead.
+   *
    * ```
+   * param: function(source, resolve)
    * return: Promise<Scene[]>
    * ```
    *
@@ -582,7 +871,9 @@ export class Scene {
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#getItems getItems} instead.
    *
+   * ```
    * return: Promise<Source[]>
+   * ```
    *
    * Gets all the sources in a specific scene.
    * See also: {@link #core/Source Core/Source}
@@ -680,6 +971,10 @@ export class Scene {
           let type = Number(item['type']);
           if (type === ItemTypes.GAMESOURCE) {
             typeResolve(new GameItem(item));
+          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+            item['name'].indexOf('Video Playlist') === 0 &&
+            item['FilePlaylist'] !== '') {
+            typeResolve(new VideoPlaylistItem(item));
           } else if (type === ItemTypes.HTML) {
             typeResolve(new HtmlItem(item));
           } else if (type === ItemTypes.SCREEN) {
