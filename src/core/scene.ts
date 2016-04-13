@@ -5,7 +5,7 @@ import {XML} from '../internal/util/xml';
 import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
-import {Source, SourceTypes} from './source/source';
+import {Source} from './source/source';
 import {GameSource} from './source/game';
 import {CameraSource} from './source/camera';
 import {AudioSource} from './source/audio';
@@ -606,33 +606,33 @@ export class Scene {
         let typePromise = index => new Promise(typeResolve => {
           let source = jsonArr[index];
           let type = Number(source['type']);
-          if (type === SourceTypes.GAMESOURCE) {
+          if (type === ItemTypes.GAMESOURCE) {
             typeResolve(new GameSource(source));
-          } else if ((type === SourceTypes.HTML || type === SourceTypes.FILE) &&
+          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
             source['name'].indexOf('Video Playlist') === 0 &&
             source['FilePlaylist'] !== ''){
             typeResolve(new VideoPlaylistSource(source));
-          } else if (type === SourceTypes.HTML) {
+          } else if (type === ItemTypes.HTML) {
             typeResolve(new HtmlSource(source));
-          } else if (type === SourceTypes.SCREEN) {
+          } else if (type === ItemTypes.SCREEN) {
             typeResolve(new ScreenSource(source));
-          } else if (type === SourceTypes.BITMAP ||
-              type === SourceTypes.FILE &&
+          } else if (type === ItemTypes.BITMAP ||
+              type === ItemTypes.FILE &&
               /\.gif$/.test(source['item'])) {
             typeResolve(new ImageSource(source));
-          } else if (type === SourceTypes.FILE &&
+          } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
               /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
             typeResolve(new MediaSource(source));
-          } else if (Number(source['type']) === SourceTypes.LIVE &&
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
               '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
             typeResolve(new CameraSource(source));
-          } else if (Number(source['type']) === SourceTypes.LIVE &&
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
               '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
             typeResolve(new AudioSource(source));
-          } else if (Number(source['type']) === SourceTypes.FLASHFILE) {
+          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
             typeResolve(new FlashSource(source));
           } else {
               typeResolve(new Source(source));

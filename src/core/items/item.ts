@@ -9,6 +9,11 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
+import {
+  minVersion,
+  versionCompare,
+  getVersion
+} from '../../internal/util/version';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -78,38 +83,6 @@ export class Item implements IItemLayout {
   private _keepLoaded: boolean;
 
   private _xmlparams: {};
-
-  private static minVersion = '2.8.1603.0401';
-
-  private static _versionCompare(version: string): any {
-    const parts = version.split('.');
-    const comp = (prev, curr, idx) => {
-      if ((parts[idx] < curr && prev !== -1) || prev === 1) {
-        return 1;
-      } else if (parts[idx] > curr || prev === -1) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-
-    return {
-      is: {
-        lessThan: (compare: string) => {
-          let cParts = compare.split('.');
-          return cParts.reduce(comp, parts[0]) === 1;
-        },
-        greaterThan: (compare: string) => {
-          let cParts = compare.split('.');
-          return cParts.reduce(comp, parts[0]) === -1;
-        },
-        equalsTo: (compare: string) => {
-          let cParts = compare.split('.');
-          return cParts.reduce(comp, parts[0]) === 0;
-        }
-      }
-    };
-  }
 
   constructor(props?: {}) {
     props = props ? props : {};
@@ -521,10 +494,9 @@ export class Item implements IItemLayout {
           'associated with them.'));
       } else if (
         (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
-        Item
-          ._versionCompare(Environment.getVersion())
+        versionCompare(getVersion())
           .is
-          .greaterThan(Item.minVersion)
+          .greaterThan(minVersion)
       ) {
         Item.getItemList().then(items => {
           if (items.length > 0) {
@@ -566,12 +538,11 @@ export class Item implements IItemLayout {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources associated with them.'));
       } else if (
-        Item
-          ._versionCompare(Environment.getVersion())
+        versionCompare(getVersion())
           .is
-          .lessThan(Item.minVersion)
+          .lessThan(minVersion)
       ) {
-        reject(Error('Only available on versions above ' + Item.minVersion));
+        reject(Error('Only available on versions above ' + minVersion));
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];

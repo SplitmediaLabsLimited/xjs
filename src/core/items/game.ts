@@ -6,6 +6,7 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Transition} from '../transition';
 import {Item} from './item';
@@ -27,7 +28,8 @@ import {Environment} from '../environment';
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -49,7 +51,7 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
 
   /**
    * return: Promise<boolean>
@@ -231,42 +233,42 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<GameItem>;
+  setEnhancedRotate: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
    */
-  setKeepAspectRatio:       (value: boolean) => Promise<GameItem>;
+  setKeepAspectRatio: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked:        (value: boolean) => Promise<GameItem>;
+  setPositionLocked: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<GameItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition:              (value: Rectangle) => Promise<GameItem>;
+  setPosition: (value: Rectangle) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY:              (value: number) => Promise<GameItem>;
+  setRotateY: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX:              (value: number) => Promise<GameItem>;
+  setRotateX: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ:              (value: number) => Promise<GameItem>;
+  setRotateZ: (value: number) => Promise<GameItem>;
 
   // ItemColor
 
@@ -313,34 +315,34 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness:   (value: number) => Promise<GameItem>;
+  setBrightness: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast:     (value: number) => Promise<GameItem>;
+  setContrast: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue:          (value: number) => Promise<GameItem>;
+  setHue: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation:   (value: number) => Promise<GameItem>;
+  setSaturation: (value: number) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor:  (value: Color) => Promise<GameItem>;
+  setBorderColor: (value: Color) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<GameItem>;
 
-// ItemChroma
+  // ItemChroma
 
   /**
    * See: {@link #core/IItemChroma#isChromaEnabled isChromaEnabled}
@@ -500,7 +502,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible:        (value: boolean) => Promise<GameItem>;
+  setVisible: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
@@ -510,7 +512,7 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition:     (value: Transition) => Promise<GameItem>;
+  setTransition: (value: Transition) => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -521,6 +523,87 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<GameItem>;
+
+  // ItemEffect
+
+  /** See: {@link #core/IItemEffect#getMaskEffect getMaskEffect} */
+  getMaskEffect: () => Promise<MaskEffect>;
+
+  /** See: {@link #core/IItemEffect#setMaskEffect setMaskEffect} */
+  setMaskEffect: (value: MaskEffect) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectRadius getBorderEffectRadius} */
+  getBorderEffectRadius: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectRadius setBorderEffectRadius} */
+  setBorderEffectRadius: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectThickness getBorderEffectThickness} */
+  getBorderEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectThickness setBorderEffectThickness} */
+  setBorderEffectThickness: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectOpacity getBorderEffectOpacity} */
+  getBorderEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectOpacity setBorderEffectOpacity} */
+  setBorderEffectOpacity: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectColor getBorderEffectColor} */
+  getBorderEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
+  setBorderEffectColor: (value: Color) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  getShadowEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
+  setShadowEffectColor: (value: Color) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectThickness getShadowEffectThickness} */
+  getShadowEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectThickness setShadowEffectThickness} */
+  setShadowEffectThickness: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectBlur getShadowEffectBlur} */
+  getShadowEffectBlur: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectBlur setShadowEffectBlur} */
+  setShadowEffectBlur: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOpacity getShadowEffectOpacity} */
+  getShadowEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOpacity setShadowEffectOpacity} */
+  setShadowEffectOpacity: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetX getShadowEffectOffsetX} */
+  getShadowEffectOffsetX: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetX setShadowEffectOffsetX} */
+  setShadowEffectOffsetX: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetY getShadowEffectOffsetY} */
+  getShadowEffectOffsetY: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetY setShadowEffectOffsetY} */
+  setShadowEffectOffsetY: (value: number) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getFileMask getFileMask} */
+  getFileMask: () => Promise<string>;
+
+  /** See: {@link #core/IItemEffect#setFileMask setFileMask} */
+  setFileMask: (value: string) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#isFileMaskingGuideVisible isFileMaskingGuideVisible} */
+  isFileMaskingGuideVisible: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
+  showFileMaskingGuide: (value: boolean) => Promise<GameItem>;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemEffect]);

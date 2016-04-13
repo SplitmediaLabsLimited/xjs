@@ -6,7 +6,8 @@ import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-ChromaAntiAliasLevel} from './ichroma';
+  ChromaAntiAliasLevel} from './ichroma';
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {IItemAudio, ItemAudio} from './iaudio';
 import {Item} from './item';
@@ -29,7 +30,8 @@ import {System} from '../../system/system';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio}
+ * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
  *
@@ -54,7 +56,7 @@ import {System} from '../../system/system';
  *  instance.
  */
 export class CameraItem extends Item implements IItemLayout, IItemColor,
-    IItemChroma, IItemTransition, IItemAudio {
+  IItemChroma, IItemTransition, IItemAudio, IItemEffect {
   private _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",
     hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
@@ -254,9 +256,9 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
         return this.isAudioAvailable();
       }).then(val => {
         if (val === false && itemAudio === '') {
-            reject(new Error('Device has no audio'));
+          reject(new Error('Device has no audio'));
         } else {
-            return this.getDelay();
+          return this.getDelay();
         }
       }).then(val => {
         delay = val;
@@ -264,7 +266,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
           return iItem.set('prop:StreamDelay', String(delay * 10000), this._id);
         } else {
           return iItem.set('prop:StreamDelay',
-              String((delay + (value * -1)) * 10000), this._id);
+            String((delay + (value * -1)) * 10000), this._id);
         }
       }).then(val => {
         if (value >= 0) {
@@ -380,7 +382,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
    */
   getCanvasRotate: () => Promise<number>;
-  
+
   /**
    * See: {@link #core/IItemLayout#getCropping getCropping}
    */
@@ -429,7 +431,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<CameraItem>;
+  setEnhancedRotate: (value: number) => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
@@ -785,7 +787,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<CameraItem>;
 
- // ItemAudio
+  // ItemAudio
 
   /** See: {@link #core/IItemAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
@@ -807,7 +809,87 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
+
+  // ItemEffect
+
+  /** See: {@link #core/IItemEffect#getMaskEffect getMaskEffect} */
+  getMaskEffect: () => Promise<MaskEffect>;
+
+  /** See: {@link #core/IItemEffect#setMaskEffect setMaskEffect} */
+  setMaskEffect: (value: MaskEffect) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectRadius getBorderEffectRadius} */
+  getBorderEffectRadius: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectRadius setBorderEffectRadius} */
+  setBorderEffectRadius: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectThickness getBorderEffectThickness} */
+  getBorderEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectThickness setBorderEffectThickness} */
+  setBorderEffectThickness: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectOpacity getBorderEffectOpacity} */
+  getBorderEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectOpacity setBorderEffectOpacity} */
+  setBorderEffectOpacity: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectColor getBorderEffectColor} */
+  getBorderEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
+  setBorderEffectColor: (value: Color) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  getShadowEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
+  setShadowEffectColor: (value: Color) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectThickness getShadowEffectThickness} */
+  getShadowEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectThickness setShadowEffectThickness} */
+  setShadowEffectThickness: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectBlur getShadowEffectBlur} */
+  getShadowEffectBlur: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectBlur setShadowEffectBlur} */
+  setShadowEffectBlur: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOpacity getShadowEffectOpacity} */
+  getShadowEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOpacity setShadowEffectOpacity} */
+  setShadowEffectOpacity: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetX getShadowEffectOffsetX} */
+  getShadowEffectOffsetX: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetX setShadowEffectOffsetX} */
+  setShadowEffectOffsetX: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetY getShadowEffectOffsetY} */
+  getShadowEffectOffsetY: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetY setShadowEffectOffsetY} */
+  setShadowEffectOffsetY: (value: number) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getFileMask getFileMask} */
+  getFileMask: () => Promise<string>;
+
+  /** See: {@link #core/IItemEffect#setFileMask setFileMask} */
+  setFileMask: (value: string) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#isFileMaskingGuideVisible isFileMaskingGuideVisible} */
+  isFileMaskingGuideVisible: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
+  showFileMaskingGuide: (value: boolean) => Promise<CameraItem>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor,ItemChroma, ItemTransition,
-  ItemAudio]);
+applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemAudio, ItemEffect]);

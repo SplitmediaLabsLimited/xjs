@@ -67,16 +67,6 @@ export class Environment {
   static isExtension(): Boolean {
     return Environment._isExtension;
   }
-
-  static getVersion(): string {
-    let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
-    let xbcMatch = navigator.appVersion.match(xbcPattern);
-    if (xbcMatch !== null) {
-      return xbcMatch[1];
-    } else {
-      throw new Error('not loaded in XSplit Broadcaster');
-    }
-  }
 }
 
 Environment.initialize();

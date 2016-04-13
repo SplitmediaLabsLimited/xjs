@@ -8,6 +8,7 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {ItemConfigurable, IItemConfigurable} from './iconfig';
 import {IItemAudio, ItemAudio} from './iaudio';
@@ -54,7 +55,7 @@ import {Environment} from '../environment';
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio {
+  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio, IItemEffect {
 
   /**
    * return: Promise<string>
@@ -152,7 +153,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
             customCSS = customObject['customCSS'];
           }
         }
-        catch (e) {
+        catch(e) {
 
         }
 
@@ -175,7 +176,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
       })
       .then(() => {
         if (refresh) {
-          iItem.set('refresh', '', this._id).then(() =>  {
+          iItem.set('refresh', '', this._id).then(() => {
             resolve(this);
           });
         } else {
@@ -255,17 +256,17 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
         if (cssEnabled === true) {
           let cssScript =
-          'var xjsCSSOverwrite = document.createElement("style");' +
-          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-          'xjsCSSOverwrite.type = "text/css";' +
-          'var h = document.querySelector("head");' +
-          'var existing = document' +
+            'var xjsCSSOverwrite = document.createElement("style");' +
+            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+            'xjsCSSOverwrite.type = "text/css";' +
+            'var h = document.querySelector("head");' +
+            'var existing = document' +
             '.querySelector("head #splitmedialabsCSSOverwrite");' +
-          'if (existing != null)h.removeChild(existing);' +
-          'xjsCSSOverwrite.innerHTML = "' +
-          customCSS.replace(/(\r\n|\n|\r)/gm,'')
-            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') + '";"' +
-          'h.appendChild(xjsCSSOverwrite);';
+            'if (existing != null)h.removeChild(existing);' +
+            'xjsCSSOverwrite.innerHTML = "' +
+            customCSS.replace(/(\r\n|\n|\r)/gm, '')
+              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + '";"' +
+            'h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === true) {
@@ -356,17 +357,17 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
         if (cssEnabled === true) {
           let cssScript =
-          'var xjsCSSOverwrite = document.createElement("style");' +
-          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-          'xjsCSSOverwrite.type = "text/css";' +
-          'var h = document.querySelector("head");' +
-          'var existing = document' +
+            'var xjsCSSOverwrite = document.createElement("style");' +
+            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+            'xjsCSSOverwrite.type = "text/css";' +
+            'var h = document.querySelector("head");' +
+            'var existing = document' +
             '.querySelector("head #splitmedialabsCSSOverwrite");' +
-          'if (existing != null)h.removeChild(existing);' +
-          'xjsCSSOverwrite.innerHTML = "' +
-          value.replace(/(\r\n|\n|\r)/gm,'')
-            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'')+
-          '";h.appendChild(xjsCSSOverwrite);';
+            'if (existing != null)h.removeChild(existing);' +
+            'xjsCSSOverwrite.innerHTML = "' +
+            value.replace(/(\r\n|\n|\r)/gm, '')
+              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
+            '";h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && scriptEnabled === true) {
@@ -451,17 +452,17 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
         if (value === true) {
           let cssScript =
-          'var xjsCSSOverwrite = document.createElement("style");' +
-          'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-          'xjsCSSOverwrite.type = "text/css";' +
-          'var h = document.querySelector("head");' +
-          'var existing = document' +
+            'var xjsCSSOverwrite = document.createElement("style");' +
+            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
+            'xjsCSSOverwrite.type = "text/css";' +
+            'var h = document.querySelector("head");' +
+            'var existing = document' +
             '.querySelector("head #splitmedialabsCSSOverwrite");' +
-          'if (existing != null)h.removeChild(existing);' +
-          'xjsCSSOverwrite.innerHTML = "' +
-          customCSS.replace(/(\r\n|\n|\r)/gm,'')
-            .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm,'') +
-          '";h.appendChild(xjsCSSOverwrite);';
+            'if (existing != null)h.removeChild(existing);' +
+            'xjsCSSOverwrite.innerHTML = "' +
+            customCSS.replace(/(\r\n|\n|\r)/gm, '')
+              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
+            '";h.appendChild(xjsCSSOverwrite);';
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === scriptEnabled) {
@@ -529,7 +530,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  getBrowserCustomSize():Promise<Rectangle> {
+  getBrowserCustomSize(): Promise<Rectangle> {
     return new Promise(resolve => {
       let customSize;
       iItem.get('prop:BrowserSize', this._id).then(val => {
@@ -622,6 +623,25 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
     });
   }
 
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Allow this source to communicate with another source.
+   */
+  call(func: string, arg: string): Promise<HtmlItem> {
+    return new Promise(resolve => {
+      let slot = iItem.attach(this._id);
+      exec('CallInner' +
+        (String(slot) === '0' ? '' : slot + 1),
+        func,
+        arg);
+      resolve(this);
+    });
+  }
+
   // ItemLayout
 
   /**
@@ -692,7 +712,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<HtmlItem>;
+  setEnhancedRotate: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
@@ -702,32 +722,32 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked:        (value: boolean) => Promise<HtmlItem>;
+  setPositionLocked: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<HtmlItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition:              (value: Rectangle) => Promise<HtmlItem>;
+  setPosition: (value: Rectangle) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY:              (value: number) => Promise<HtmlItem>;
+  setRotateY: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX:              (value: number) => Promise<HtmlItem>;
+  setRotateX: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ:              (value: number) => Promise<HtmlItem>;
+  setRotateZ: (value: number) => Promise<HtmlItem>;
 
   // ItemColor
 
@@ -774,33 +794,33 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness:   (value: number) => Promise<HtmlItem>;
+  setBrightness: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast:     (value: number) => Promise<HtmlItem>;
+  setContrast: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue:          (value: number) => Promise<HtmlItem>;
+  setHue: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation:   (value: number) => Promise<HtmlItem>;
+  setSaturation: (value: number) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor:  (value: Color) => Promise<HtmlItem>;
+  setBorderColor: (value: Color) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<HtmlItem>;
-  
+
   // ItemChroma
 
   /**
@@ -961,7 +981,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible:        (value: boolean) => Promise<HtmlItem>;
+  setVisible: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
@@ -971,7 +991,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition:     (value: Transition) => Promise<HtmlItem>;
+  setTransition: (value: Transition) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -1027,7 +1047,87 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
+
+  // ItemEffect
+
+  /** See: {@link #core/IItemEffect#getMaskEffect getMaskEffect} */
+  getMaskEffect: () => Promise<MaskEffect>;
+
+  /** See: {@link #core/IItemEffect#setMaskEffect setMaskEffect} */
+  setMaskEffect: (value: MaskEffect) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectRadius getBorderEffectRadius} */
+  getBorderEffectRadius: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectRadius setBorderEffectRadius} */
+  setBorderEffectRadius: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectThickness getBorderEffectThickness} */
+  getBorderEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectThickness setBorderEffectThickness} */
+  setBorderEffectThickness: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectOpacity getBorderEffectOpacity} */
+  getBorderEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectOpacity setBorderEffectOpacity} */
+  setBorderEffectOpacity: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectColor getBorderEffectColor} */
+  getBorderEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
+  setBorderEffectColor: (value: Color) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  getShadowEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
+  setShadowEffectColor: (value: Color) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectThickness getShadowEffectThickness} */
+  getShadowEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectThickness setShadowEffectThickness} */
+  setShadowEffectThickness: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectBlur getShadowEffectBlur} */
+  getShadowEffectBlur: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectBlur setShadowEffectBlur} */
+  setShadowEffectBlur: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOpacity getShadowEffectOpacity} */
+  getShadowEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOpacity setShadowEffectOpacity} */
+  setShadowEffectOpacity: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetX getShadowEffectOffsetX} */
+  getShadowEffectOffsetX: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetX setShadowEffectOffsetX} */
+  setShadowEffectOffsetX: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetY getShadowEffectOffsetY} */
+  getShadowEffectOffsetY: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetY setShadowEffectOffsetY} */
+  setShadowEffectOffsetY: (value: number) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getFileMask getFileMask} */
+  getFileMask: () => Promise<string>;
+
+  /** See: {@link #core/IItemEffect#setFileMask setFileMask} */
+  setFileMask: (value: string) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#isFileMaskingGuideVisible isFileMaskingGuideVisible} */
+  isFileMaskingGuideVisible: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
+  showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
 }
 
 applyMixins(HtmlItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, ItemAudio]);
+  ItemConfigurable, ItemAudio, ItemEffect]);

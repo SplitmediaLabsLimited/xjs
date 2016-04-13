@@ -2,14 +2,11 @@
 
 import {FlashItem} from '../items/flash';
 
-
 /**
  * > #### For Deprecation
  * This Class is deprecated and will be removed soon. Please use
- * {@link #core/FlashItem FlashItem} instead.
- *
- * *This Class extends {@link #core/FlashItem FlashItem} Class. Please check
- * FlashItem Class for the available methods.*
+ * {@link #core/FlashItem FlashItem} instead. This Class shares the same
+ * methods with FlashItem.
  */
 export class FlashSource extends FlashItem {
 }
