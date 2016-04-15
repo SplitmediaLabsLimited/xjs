@@ -888,8 +888,8 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      console.warn('Warning! This method is deprecated and will be removed ' +
-        'soon. Please use getItems instead.');
+      console.warn('Warning! getSources is deprecated and will be ' +
+        'removed soon. Please use getItems instead.');
       iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 

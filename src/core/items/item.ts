@@ -486,9 +486,9 @@ export class Item implements IItemLayout {
    */
   static getCurrentSource(): Promise<Item> {
     return new Promise((resolve, reject) => {
-      console.warn('Warning! This method is deprecated and will be removed ' +
-        'soon. Please use getItemList instead. (Only works for XSplit ' +
-        'Broadcaster versions above 2.8.xxxx.xxxx');
+      console.warn('Warning! getCurrentSource is deprecated and will be ' +
+        'removed soon. Please use getItemList instead. (Only works for ' +
+        'XSplit Broadcaster versions above 2.8.xxxx.xxxx');
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
