@@ -435,6 +435,32 @@ export class Item implements IItemLayout {
   }
 
   /**
+   * return: Promise<string>
+   *
+   * Get the Source ID of the item.
+   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getSourceId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSourceId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        reject(new Error('Only available on versions above ' + minVersion));
+      } else {
+        iItem.get('prop:srcid', this._id).then(srcid => {
+          resolve(srcid);
+        });
+      }
+    });
+  }
+
+  /**
    * return: XML
    *
    * Convert the Item object to an XML object. Use `toString()` to

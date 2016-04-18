@@ -89,6 +89,15 @@ describe('Item', function() {
               window.OnAsyncCallback(rand, local.keeploaded);
             }, 10);
           break;
+
+          case 'prop:srcid':
+            setTimeout(function() {
+              window.OnAsyncCallback(
+                rand,
+                '{CB4EB352-D86F-4478-8BFD-55FF53216697}'
+              );
+            }, 10);
+          break;
         }
 
         return rand;
@@ -166,6 +175,23 @@ describe('Item', function() {
         expect(val).toBeDefined();
         next();
       });
+    }).then(done);
+  });
+
+  it('should be able to get the source id', function(done) {
+    exec(function(next) {
+      var promise = Item.getSourceId();
+      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401') {
+        promise.then(function(val) {
+          expect(val).toBeDefined();
+          next();
+        });
+      } else {
+        promise.catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }
     }).then(done);
   });
 
