@@ -30,7 +30,9 @@ Mixin.prototype.exec = function(cond) {
     Mixin.eachPromise(self.fcs.map(function(fc) {
       return function() {
         fc();
-        return new Promise(function(done) { cond(done); });
+        return new Promise(function(next) {
+          cond(next);
+        });
       };
     }), done);
   });
