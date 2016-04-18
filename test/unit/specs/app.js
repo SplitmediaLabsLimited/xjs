@@ -12,6 +12,20 @@ describe('App ===', function() {
   var Transition = XJS.Transition;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
 
   describe('should get frametime', function() {
     beforeEach(function() {
@@ -95,23 +109,35 @@ describe('App ===', function() {
       });
     });
 
-    it('through a promise', function() {
-      var promise = App.getViewport();
-      expect(promise).toBeInstanceOf(Promise);
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
+    });
+
+    it('through a promise', function(done) {
+      exec(function(next) {
+        var promise = App.getViewport();
+        expect(promise).toBeInstanceOf(Promise);
+        next();
+      }).then(done);
     });
 
     it('that always return as an object that has height and width',
       function(done) {
-      var promise = App.getViewport();
-      promise.then(function(viewPort) {
-        expect(viewPort).toBeTypeOf('object');
-        expect(viewPort._width).toBeTypeOf('number');
-        expect(viewPort._width).not.toBeNaN();
-        expect(viewPort._height).toBeTypeOf('number');
-        expect(viewPort._height).not.toBeNaN();
-        done();
-      });
-    });
+        exec(function(next) {
+          var promise = App.getViewport();
+          promise.then(function(viewPort) {
+            expect(viewPort).toBeTypeOf('object');
+            expect(viewPort._width).toBeTypeOf('number');
+            expect(viewPort._width).not.toBeNaN();
+            expect(viewPort._height).toBeTypeOf('number');
+            expect(viewPort._height).not.toBeNaN();
+            next();
+          });
+        }).then(done);
+      }
+    );
   });
 
   describe('should get version', function() {
@@ -130,31 +156,36 @@ describe('App ===', function() {
       });
     });
 
-    it('through a promise', function(done) {
-      var promise = App.getVersion();
-      expect(promise).toBeInstanceOf(Promise);
-      promise.then(function() {
-
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
       });
     });
 
+    it('through a promise', function(done) {
+      exec(function(next) {
+        var promise = App.getVersion();
+        expect(promise).toBeInstanceOf(Promise);
+        next();
+      }).then(done);
+    });
+
     it('that always return as string', function(done) {
-      var promise = App.getVersion();
-      promise.then(function(version) {
-        if (/xsplit broadcaster/ig.test(navigator.appVersion)) {
-          expect(version).toBeDefined();
-          expect(version).toBeTypeOf('string');
-          done();
-        } else {
-          done.fail('Should reject if browser is not XBC');
-        }
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      exec(function(next) {
+        var promise = App.getVersion();
+        promise.then(function(version) {
+          if (/xsplit broadcaster/ig.test(navigator.appVersion)) {
+            expect(version).toBeDefined();
+            expect(version).toBeTypeOf('string');
+            next();
+          } else {
+            done.fail('Should reject if browser is not XBC');
+          }
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
   });
 

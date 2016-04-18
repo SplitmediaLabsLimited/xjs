@@ -62,16 +62,11 @@ describe('MediaItem', function() {
   };
 
   beforeEach(function(done) {
-    navigator.__defineGetter__('appVersion', function() {
-      return 'XSplit Broadcaster 2.7.1702.2231 ';
-    });
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
       var item1 = new XJS.Item({id : '{SCREENID}' });
       var item2 = new XJS.Item({id : '{SCREENID2}'});
-      item1.getType();
-      item2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {

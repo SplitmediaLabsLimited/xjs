@@ -16,6 +16,21 @@ describe('ScreenItem', function() {
   var local = {};
   var TYPE_SCREEN = 5;
 
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
+
   var currentScreenItem;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
@@ -108,16 +123,11 @@ describe('ScreenItem', function() {
   };
 
   beforeEach(function(done) {
-    navigator.__defineGetter__('appVersion', function() {
-      return 'XSplit Broadcaster 2.7.1702.2231 ';
-    });
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
       var item1 = new XJS.Item({id : '{SCREENID}' });
       var item2 = new XJS.Item({id : '{SCREENID2}'});
-      item1.getType();
-      item2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -300,74 +310,92 @@ describe('ScreenItem', function() {
       }
     });
 
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
+    });
+
     it('should be able to get the capture area',
       function(done) {
-        var promise = currentScreenItem.getCaptureArea();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(captureArea) {
-          expect(captureArea).hasMethods([
-            'getTop',
-            'setTop',
-            'getLeft',
-            'setLeft',
-            'getRight',
-            'setRight',
-            'getBottom',
-            'setBottom',
-            'getWidth',
-            'setWidth',
-            'getHeight',
-            'setHeight',
-            'toDimensionString',
-            'toCoordinateString',
-            'toString'
-          ].join(','));
-          done();
-        });
+        exec(function(next) {
+          var promise = currentScreenItem.getCaptureArea();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(captureArea) {
+            expect(captureArea).hasMethods([
+              'getTop',
+              'setTop',
+              'getLeft',
+              'setLeft',
+              'getRight',
+              'setRight',
+              'getBottom',
+              'setBottom',
+              'getWidth',
+              'setWidth',
+              'getHeight',
+              'setHeight',
+              'toDimensionString',
+              'toCoordinateString',
+              'toString'
+            ].join(','));
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set the capture area',
       function(done) {
-        var rect = XJS.Rectangle.fromCoordinates(0, 0, 1920, 1080);
-        local.item = undefined;
-        currentScreenItem.setCaptureArea(rect).then(function() {
-          expect(local.item).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var rect = XJS.Rectangle.fromCoordinates(0, 0, 1920, 1080);
+          local.item = undefined;
+          currentScreenItem.setCaptureArea(rect).then(function() {
+            expect(local.item).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to get the client area value',
       function(done) {
-        currentScreenItem.isClientArea().then(function(val) {
-          expect(val).toBeTypeOf('boolean');
-          done();
-        });
+        exec(function(next) {
+          currentScreenItem.isClientArea().then(function(val) {
+            expect(val).toBeTypeOf('boolean');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set the client area value',
       function(done) {
-        local.item = undefined;
-        currentScreenItem.setClientArea(true).then(function() {
-          expect(local.item).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          local.item = undefined;
+          currentScreenItem.setClientArea(true).then(function() {
+            expect(local.item).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to get the stick to title value',
       function(done) {
-        currentScreenItem.isStickToTitle().then(function(val) {
-          expect(val).toBeTypeOf('boolean');
-          done();
-        });
+        exec(function(next) {
+          currentScreenItem.isStickToTitle().then(function(val) {
+            expect(val).toBeTypeOf('boolean');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set the stick to title value',
       function(done) {
-        local.item = undefined;
-        currentScreenItem.setStickToTitle(true).then(function() {
-          expect(local.stickTitle).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          local.item = undefined;
+          currentScreenItem.setStickToTitle(true).then(function() {
+            expect(local.stickTitle).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
   });
 });

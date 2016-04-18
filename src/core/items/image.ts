@@ -6,7 +6,8 @@ import {Item as iItem} from '../../internal/item';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-ChromaAntiAliasLevel} from './ichroma';
+  ChromaAntiAliasLevel} from './ichroma';
+import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
 import {Transition} from '../transition';
@@ -22,29 +23,30 @@ import {Environment} from '../environment';
  * Implements: {@link #core/IItemChroma Core/IItemChroma},
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
- * {@link #core/IItemTransition Core/IItemTransition}
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition {
+export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
 
   // ItemLayout
 
-    /**
-     * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
-     */
-    isKeepAspectRatio: () => Promise<boolean>;
+  /**
+   * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
+   */
+  isKeepAspectRatio: () => Promise<boolean>;
 
-    /**
-     * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
-     */
-    isPositionLocked: () => Promise<boolean>;
+  /**
+   * See: {@link #core/IItemLayout#isPositionLocked isPositionLocked}
+   */
+  isPositionLocked: () => Promise<boolean>;
 
-    /**
-     * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
-     */
-    isEnhancedResizeEnabled: () => Promise<boolean>;
+  /**
+   * See: {@link #core/IItemLayout#isEnhancedResizeEnabled isEnhancedResizeEnabled}
+   */
+  isEnhancedResizeEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/IItemLayout#getCanvasRotate getCanvasRotate}
@@ -99,41 +101,41 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<ImageItem>;
+  setEnhancedRotate: (value: number) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
+   */
   setKeepAspectRatio: (value: boolean) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
+   */
   setPositionLocked: (value: boolean) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
+   */
   setEnhancedResizeEnabled: (value: boolean) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setPosition setPosition}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setPosition setPosition}
+   */
   setPosition: (value: Rectangle) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setRotateY setRotateY}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setRotateY setRotateY}
+   */
   setRotateY: (value: number) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setRotateX setRotateX}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setRotateX setRotateX}
+   */
   setRotateX: (value: number) => Promise<ImageItem>;
 
-    /**
-     * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
-     */
+  /**
+   * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
+   */
   setRotateZ: (value: number) => Promise<ImageItem>;
 
   // ItemColor
@@ -389,6 +391,86 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
    * See: {@link #core/IItemTransition#setTransitionTime setTransitionTime}
    */
   setTransitionTime: (value: number) => Promise<ImageItem>;
+
+  // ItemEffect
+
+  /** See: {@link #core/IItemEffect#getMaskEffect getMaskEffect} */
+  getMaskEffect: () => Promise<MaskEffect>;
+
+  /** See: {@link #core/IItemEffect#setMaskEffect setMaskEffect} */
+  setMaskEffect: (value: MaskEffect) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectRadius getBorderEffectRadius} */
+  getBorderEffectRadius: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectRadius setBorderEffectRadius} */
+  setBorderEffectRadius: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectThickness getBorderEffectThickness} */
+  getBorderEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectThickness setBorderEffectThickness} */
+  setBorderEffectThickness: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectOpacity getBorderEffectOpacity} */
+  getBorderEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectOpacity setBorderEffectOpacity} */
+  setBorderEffectOpacity: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getBorderEffectColor getBorderEffectColor} */
+  getBorderEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
+  setBorderEffectColor: (value: Color) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  getShadowEffectColor: () => Promise<Color>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
+  setShadowEffectColor: (value: Color) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectThickness getShadowEffectThickness} */
+  getShadowEffectThickness: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectThickness setShadowEffectThickness} */
+  setShadowEffectThickness: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectBlur getShadowEffectBlur} */
+  getShadowEffectBlur: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectBlur setShadowEffectBlur} */
+  setShadowEffectBlur: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOpacity getShadowEffectOpacity} */
+  getShadowEffectOpacity: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOpacity setShadowEffectOpacity} */
+  setShadowEffectOpacity: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetX getShadowEffectOffsetX} */
+  getShadowEffectOffsetX: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetX setShadowEffectOffsetX} */
+  setShadowEffectOffsetX: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getShadowEffectOffsetY getShadowEffectOffsetY} */
+  getShadowEffectOffsetY: () => Promise<number>;
+
+  /** See: {@link #core/IItemEffect#setShadowEffectOffsetY setShadowEffectOffsetY} */
+  setShadowEffectOffsetY: (value: number) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#getFileMask getFileMask} */
+  getFileMask: () => Promise<string>;
+
+  /** See: {@link #core/IItemEffect#setFileMask setFileMask} */
+  setFileMask: (value: string) => Promise<ImageItem>;
+
+  /** See: {@link #core/IItemEffect#isFileMaskingGuideVisible isFileMaskingGuideVisible} */
+  isFileMaskingGuideVisible: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
+  showFileMaskingGuide: (value: boolean) => Promise<ImageItem>;
 }
 
-applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition]);
+applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);

@@ -25,6 +25,21 @@ describe('GameItem', function() {
   };
   var TYPE_GAME = 7;
 
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
+
   var getLocal = function(funcName) {
     rand += 1;
 
@@ -149,9 +164,6 @@ describe('GameItem', function() {
   };
 
   beforeEach(function(done) {
-    navigator.__defineGetter__('appVersion', function() {
-      return 'XSplit Broadcaster 2.7.1702.2231 ';
-    });
     enumerated = [];
     env.set(environments[1]);
     propTypeCount = 0;
@@ -159,8 +171,7 @@ describe('GameItem', function() {
       // Reset the attached IDS
       var item1 = new XJS.Item({id : '{GAMEID}' });
       var item2 = new XJS.Item({id : '{GAMEID2}'});
-      item1.getType();
-      item2.getType();
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
@@ -347,86 +358,104 @@ describe('GameItem', function() {
       }
     });
 
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
+    });
+
     it('should be able to check whether special optimization is enabled or not',
       function(done) {
-        var promise = currentGameItem.isSpecialOptimizationEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeBoolean();
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.isSpecialOptimizationEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeBoolean();
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to enable or disable special optimization',
       function(done) {
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
-        if (!isXSplit) {
-          expect(specialOptimizationSet).toBe(true);
-        }
-        currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
-          expect(firstEnabled).toBe(randomBoolean);
-          currentGameItem.setSpecialOptimizationEnabled(!randomBoolean);
-          return currentGameItem.isSpecialOptimizationEnabled();
-        })
-        .then(function(secondEnabled) {
-          expect(secondEnabled).toBe(!randomBoolean);
-          done();
-        });
+        exec(function(next) {
+          currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
+          if (!isXSplit) {
+            expect(specialOptimizationSet).toBe(true);
+          }
+          currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
+            expect(firstEnabled).toBe(randomBoolean);
+            currentGameItem.setSpecialOptimizationEnabled(!randomBoolean);
+            return currentGameItem.isSpecialOptimizationEnabled();
+          })
+          .then(function(secondEnabled) {
+            expect(secondEnabled).toBe(!randomBoolean);
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to check whether mouse is shown or not in game capture',
       function(done) {
-        var promise = currentGameItem.isShowMouseEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeBoolean();
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.isShowMouseEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeBoolean();
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to show or hide mouse in game capture', function(done) {
       var randomBoolean = !!Math.floor(Math.random() * 2);
-      currentGameItem.setShowMouseEnabled(randomBoolean);
-      if (!isXSplit) {
-        expect(showMouseSet).toBe(true);
-      }
-      currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
-        expect(firstEnabled).toBe(randomBoolean);
-        currentGameItem.setShowMouseEnabled(!randomBoolean);
-        return currentGameItem.isShowMouseEnabled();
-      })
-      .then(function(secondEnabled) {
-        expect(secondEnabled).toBe(!randomBoolean);
-        done();
-      });
+      exec(function(next) {
+        currentGameItem.setShowMouseEnabled(randomBoolean);
+        if (!isXSplit) {
+          expect(showMouseSet).toBe(true);
+        }
+        currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
+          expect(firstEnabled).toBe(randomBoolean);
+          currentGameItem.setShowMouseEnabled(!randomBoolean);
+          return currentGameItem.isShowMouseEnabled();
+        })
+        .then(function(secondEnabled) {
+          expect(secondEnabled).toBe(!randomBoolean);
+          next();
+        });
+      }).then(done);
     });
 
     it('should be able to get offline image',
       function(done) {
-        var promise = currentGameItem.getOfflineImage();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(offlineImage) {
-          expect(offlineImage).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.getOfflineImage();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(offlineImage) {
+            expect(offlineImage).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set offline image', function(done) {
       var firstPath = 'C:\\someFolder\\someFile.jpg';
       var secondPath = 'C:\\anotherFolder\\anotherFile.jpg';
 
-      currentGameItem.setOfflineImage(firstPath).then(function(item) {
-        item.getOfflineImage().then(function(offlineImage) {
-          expect(offlineImage).toEqual(firstPath);
-          currentGameItem.setOfflineImage(secondPath);
-          return currentGameItem.getOfflineImage();
-        })
-        .then(function(offlineImage2) {
-          expect(offlineImage2).toEqual(secondPath);
-          done();
+      exec(function(next) {
+        currentGameItem.setOfflineImage(firstPath).then(function(item) {
+          item.getOfflineImage().then(function(offlineImage) {
+            expect(offlineImage).toEqual(firstPath);
+            currentGameItem.setOfflineImage(secondPath);
+            return currentGameItem.getOfflineImage();
+          })
+          .then(function(offlineImage2) {
+            expect(offlineImage2).toEqual(secondPath);
+            next();
+          });
         });
-      });
+      }).then(done);
     });
 
   });

@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
       'test/unit/external.js',
       'test/unit/environment.js',
+      'test/unit/mixin.js',
       'test/unit/specs/matchers.js',
       'dist/xjs.js',
       'test/unit/specs/*.js',

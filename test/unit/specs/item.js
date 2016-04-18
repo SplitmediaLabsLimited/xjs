@@ -17,6 +17,20 @@ describe('Item', function() {
   var local = {};
   var XJS = require('xjs');
   var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
+
   if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
     Item = new XJS.Item({
       id: '{1B4B6EDA-1ECC-4C8B-8CCF-A05C15EA3F85}',
@@ -26,9 +40,6 @@ describe('Item', function() {
 
   beforeEach(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-      navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.7.1702.2231 ';
-      });
       spyOn(window.external, 'SetLocalPropertyAsync')
         .and.callFake(function(prop, val) {
         switch (prop) {
@@ -107,53 +118,65 @@ describe('Item', function() {
 
   it('should be able to set and get the name', function(done) {
     var word = randomWord(5);
-    Item.setName(word);
-    Item.getName().then(function(val) {
-      expect(val).toEqual(word);
-      done();
-    });
+    exec(function(next) {
+      Item.setName(word);
+      Item.getName().then(function(val) {
+        expect(val).toEqual(word);
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to set and get the custom name', function(done) {
     var word = randomWord(5);
-    Item.setCustomName(word);
-    Item.getCustomName().then(function(val) {
-      expect(val).toEqual(word);
-      done();
-    });
+    exec(function(next) {
+      Item.setCustomName(word);
+      Item.getCustomName().then(function(val) {
+        expect(val).toEqual(word);
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to set and get the value', function(done) {
     var word = randomWord(5);
-    Item.setValue(word);
-    Item.getValue().then(function(val) {
-      expect(val).toEqual(word);
-      done();
-    });
+    exec(function(next) {
+      Item.setValue(word);
+      Item.getValue().then(function(val) {
+        expect(val).toEqual(word);
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to set and get keep loaded property', function(done) {
-    Item.setKeepLoaded(!local.keeploaded);
-    Item.getKeepLoaded().then(function(val) {
-      expect(val).toBeTypeOf('boolean');
-      local.keeploaded = val;
-      done();
-    });
+    exec(function(next) {
+      Item.setKeepLoaded(!local.keeploaded);
+      Item.getKeepLoaded().then(function(val) {
+        expect(val).toBeTypeOf('boolean');
+        local.keeploaded = val;
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to get the id', function(done) {
-    Item.getId().then(function(val) {
-      expect(val).toBeDefined();
-      done();
-    });
+    exec(function(next) {
+      Item.getId().then(function(val) {
+        expect(val).toBeDefined();
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to get the scene id', function(done) {
-    Item.getSceneId().then(function(val) {
-      expect(val).toBeTypeOf('number');
-      expect(val).not.toBeNaN();
-      done();
-    });
+    exec(function(next) {
+      Item.getSceneId().then(function(val) {
+        expect(val).toBeTypeOf('number');
+        expect(val).not.toBeNaN();
+        next();
+      });
+    }).then(done);
   });
 
   it('should have toXML method', function() {

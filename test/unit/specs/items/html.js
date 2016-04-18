@@ -17,6 +17,21 @@ describe('HtmlItem', function() {
   var urlSet = false;
   var TYPE_HTML = 8;
 
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
+
   var currentHtmlItem;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
@@ -275,17 +290,12 @@ describe('HtmlItem', function() {
   };
 
   beforeEach(function(done) {
-    navigator.__defineGetter__('appVersion', function() {
-      return 'XSplit Broadcaster 2.7.1702.2231 ';
-    });
     enumerated = [];
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
       var item1 = new XJS.Item({id : '{HTMLID}' });
       var item2 = new XJS.Item({id : '{HTMLID2}'});
-      item1.getType();
-      item2.getType();
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -487,223 +497,259 @@ describe('HtmlItem', function() {
       }
     });
 
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
+    });
+
     it('should be able to get its own URL',
       function(done) {
-        var promise = currentHtmlItem.getURL();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.getURL();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set its own URL',
       function(done) {
-        urlSet = false;
-        var promise = currentHtmlItem.setURL('https://www.xsplit.com/');
-        promise.then(function() {
-        	if (!isXSplit) {
-        		expect(urlSet).toBe(true);
-        	}
-        	done();
-        })
+        exec(function(next) {
+          urlSet = false;
+          var promise = currentHtmlItem.setURL('https://www.xsplit.com/');
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            next();
+          })
+        }).then(done);
     });
 
     it('should be able to get custom browser JS',
       function(done) {
-        var promise = currentHtmlItem.getBrowserJS();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(browserJS) {
-          expect(browserJS).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.getBrowserJS();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(browserJS) {
+            expect(browserJS).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set custom browser JS',
       function(done) {
-        urlSet = false;
-        var promise = currentHtmlItem.setBrowserJS('console.log("XJS");');
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          done();
-        })
+        exec(function(next) {
+          urlSet = false;
+          var promise = currentHtmlItem.setBrowserJS('console.log("XJS");');
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            next();
+          })
+        }).then(done);
     });
 
     it('should be able to get if browserJS is enabled',
       function(done) {
-        var promise = currentHtmlItem.isBrowserJSEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeTypeOf('boolean');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.isBrowserJSEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeTypeOf('boolean');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to enable or disable custom browser JS',
       function(done) {
-        urlSet = false;
-        var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHtmlItem.enableBrowserJS(randomBoolean);
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          return currentHtmlItem.isBrowserJSEnabled();
-        })
-        .then(function(firstEnabled) {
-          expect(firstEnabled).toBe(randomBoolean);
-          return currentHtmlItem.enableBrowserJS(!randomBoolean);
-        })
-        .then(function() {
-          return currentHtmlItem.isBrowserJSEnabled();
-        })
-        .then(function(secondEnabled) {
-          expect(secondEnabled).toBe(!randomBoolean);
-          done();
-        });
+        exec(function(next) {
+          urlSet = false;
+          var randomBoolean = !!Math.floor(Math.random() * 2);
+          var promise = currentHtmlItem.enableBrowserJS(randomBoolean);
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            return currentHtmlItem.isBrowserJSEnabled();
+          })
+          .then(function(firstEnabled) {
+            expect(firstEnabled).toBe(randomBoolean);
+            return currentHtmlItem.enableBrowserJS(!randomBoolean);
+          })
+          .then(function() {
+            return currentHtmlItem.isBrowserJSEnabled();
+          })
+          .then(function(secondEnabled) {
+            expect(secondEnabled).toBe(!randomBoolean);
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to get custom CSS',
       function(done) {
-        var promise = currentHtmlItem.getCustomCSS('');
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(customCSS) {
-          expect(customCSS).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.getCustomCSS('');
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(customCSS) {
+            expect(customCSS).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set custom CSS',
       function(done) {
-        urlSet = false;
-        var promise = currentHtmlItem.setCustomCSS('*{background : red;}');
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          done();
-        })
+        exec(function(next) {
+          urlSet = false;
+          var promise = currentHtmlItem.setCustomCSS('*{background : red;}');
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            next();
+          })
+        }).then(done);
     });
 
     it('should be able to get if custom CSS is enabled',
       function(done) {
-        var promise = currentHtmlItem.isCustomCSSEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeTypeOf('boolean');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.isCustomCSSEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeTypeOf('boolean');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to enable or disable custom CSS',
       function(done) {
-        urlSet = false;
-        var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHtmlItem.enableCustomCSS(randomBoolean);
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          return currentHtmlItem.isCustomCSSEnabled();
-        })
-        .then(function(firstEnabled) {
-          expect(firstEnabled).toBe(randomBoolean);
-          return currentHtmlItem.enableCustomCSS(!randomBoolean);
-        })
-        .then(function() {
-          return currentHtmlItem.isCustomCSSEnabled();
-        })
-        .then(function(secondEnabled) {
-          expect(secondEnabled).toBe(!randomBoolean);
-          done();
-        });
+        exec(function(next) {
+          urlSet = false;
+          var randomBoolean = !!Math.floor(Math.random() * 2);
+          var promise = currentHtmlItem.enableCustomCSS(randomBoolean);
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            return currentHtmlItem.isCustomCSSEnabled();
+          })
+          .then(function(firstEnabled) {
+            expect(firstEnabled).toBe(randomBoolean);
+            return currentHtmlItem.enableCustomCSS(!randomBoolean);
+          })
+          .then(function() {
+            return currentHtmlItem.isCustomCSSEnabled();
+          })
+          .then(function(secondEnabled) {
+            expect(secondEnabled).toBe(!randomBoolean);
+            next();
+          });
+        }).then(done);
     });
 
 
     it('should be able to get if browser is transparent',
       function(done) {
-        var promise = currentHtmlItem.isBrowserTransparent();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeTypeOf('boolean');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.isBrowserTransparent();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeTypeOf('boolean');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to enable or disable browser transparency',
       function(done) {
-        urlSet = false;
-        var randomBoolean = !!Math.floor(Math.random() * 2);
-        var promise = currentHtmlItem.enableBrowserTransparency(randomBoolean);
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          return currentHtmlItem.isBrowserTransparent();
-        })
-        .then(function(firstEnabled) {
-          expect(firstEnabled).toBe(randomBoolean);
-          return currentHtmlItem.enableBrowserTransparency(!randomBoolean);
-        })
-        .then(function() {
-          return currentHtmlItem.isBrowserTransparent();
-        })
-        .then(function(secondEnabled) {
-          expect(secondEnabled).toBe(!randomBoolean);
-          done();
-        });
+        exec(function(next) {
+          urlSet = false;
+          var randomBoolean = !!Math.floor(Math.random() * 2);
+          var promise = currentHtmlItem.enableBrowserTransparency(randomBoolean);
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            return currentHtmlItem.isBrowserTransparent();
+          })
+          .then(function(firstEnabled) {
+            expect(firstEnabled).toBe(randomBoolean);
+            return currentHtmlItem.enableBrowserTransparency(!randomBoolean);
+          })
+          .then(function() {
+            return currentHtmlItem.isBrowserTransparent();
+          })
+          .then(function(secondEnabled) {
+            expect(secondEnabled).toBe(!randomBoolean);
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to get its custom browser window size',
       function(done) {
-        var promise = currentHtmlItem.getBrowserCustomSize();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(browserSize) {
-          expect(browserSize).hasMethods([
-            'getTop',
-            'setTop',
-            'getLeft',
-            'setLeft',
-            'getRight',
-            'setRight',
-            'getBottom',
-            'setBottom',
-            'getWidth',
-            'setWidth',
-            'getHeight',
-            'setHeight',
-            'toDimensionString',
-            'toCoordinateString',
-            'toString'
-          ].join(','));
-          done();
-        });
+        exec(function(next) {
+          var promise = currentHtmlItem.getBrowserCustomSize();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(browserSize) {
+            expect(browserSize).hasMethods([
+              'getTop',
+              'setTop',
+              'getLeft',
+              'setLeft',
+              'getRight',
+              'setRight',
+              'getBottom',
+              'setBottom',
+              'getWidth',
+              'setWidth',
+              'getHeight',
+              'setHeight',
+              'toDimensionString',
+              'toCoordinateString',
+              'toString'
+            ].join(','));
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set its custom browser window size',
       function(done) {
-        urlSet = false;
+        exec(function(next) {
+          urlSet = false;
 
-        var rect = XJS.Rectangle.fromDimensions(1280, 600);
+          var rect = XJS.Rectangle.fromDimensions(1280, 600);
 
-        var promise = currentHtmlItem.setBrowserCustomSize(rect);
-        promise.then(function() {
-          if (!isXSplit) {
-            expect(urlSet).toBe(true);
-          }
-          done();
-        })
+          var promise = currentHtmlItem.setBrowserCustomSize(rect);
+          promise.then(function() {
+            if (!isXSplit) {
+              expect(urlSet).toBe(true);
+            }
+            next();
+          })
+        }).then(done);
     });
 
     it('should be able to set and get allow right click', function(done) {
-      currentHtmlItem.setAllowRightClick(!local.rightclick);
-      currentHtmlItem.getAllowRightClick().then(function(val) {
-        expect(val).toBeTypeOf('boolean');
-        local.keeploaded = val;
-        done();
-      });
+      exec(function(next) {
+        currentHtmlItem.setAllowRightClick(!local.rightclick);
+        currentHtmlItem.getAllowRightClick().then(function(val) {
+          expect(val).toBeTypeOf('boolean');
+          local.keeploaded = val;
+          next();
+        });
+      }).then(done);
     });
   });
 });

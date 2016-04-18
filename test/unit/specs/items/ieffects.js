@@ -66,16 +66,11 @@ describe('Effects interface', function() {
   };
 
   beforeEach(function(done) {
-    navigator.__defineGetter__('appVersion', function() {
-      return 'XSplit Broadcaster 2.7.1702.2231 ';
-    });
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
     // reset attached IDs
     var item1 = new XJS.Item({id : '{ID}'});
     var item2 = new XJS.Item({id : '{ID2}'});
-    item1.getType();
-    item2.getType();
 
     local = {};
 
