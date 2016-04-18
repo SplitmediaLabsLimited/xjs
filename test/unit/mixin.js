@@ -3,19 +3,6 @@ window.Mixin = function(fc) {
   if (fc !== undefined) this.register(fc);
 };
 
-Mixin.eachPromise = function(promises, done) {
-  if (!promises instanceof Array || promises.length === 0) {
-    done();
-    return;
-  }
-
-  var promise = promises.shift();
-
-  promise().then(function() {
-    Mixin.eachPromise(promises, done);
-  });
-};
-
 Mixin.prototype.register = function(fc) {
   if (typeof fc === 'function') {
     this.fcs.push(fc);
@@ -27,13 +14,15 @@ Mixin.prototype.register = function(fc) {
 Mixin.prototype.exec = function(cond) {
   var self = this;
   return new Promise(function(done) {
-    Mixin.eachPromise(self.fcs.map(function(fc) {
+    self.fcs.map(function(fc) {
       return function() {
         fc();
         return new Promise(function(next) {
           cond(next);
         });
       };
-    }), done);
+    }).reduce(function(current, next) {
+      return current().then(next);
+    }).then(done);
   });
 };
