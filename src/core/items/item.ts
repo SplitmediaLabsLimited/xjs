@@ -81,6 +81,7 @@ export class Item implements IItemLayout {
   private _cname: string;
   private _sceneId: number;
   private _keepLoaded: boolean;
+  private _globalsrc: boolean;
 
   private _xmlparams: {};
 
@@ -94,6 +95,7 @@ export class Item implements IItemLayout {
     this._value = props['value'];
     this._keepLoaded = props['keeploaded'];
     this._type = Number(props['type']);
+    this._globalsrc = props['globalsrc'];
 
     this._xmlparams = props;
   }
@@ -460,6 +462,68 @@ export class Item implements IItemLayout {
     });
   }
 
+  /** 
+   * return: Promise<boolean>
+   *
+   * Get the Global property of an item.
+   * 
+   * Determines if an Item is set to Global or not.
+   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getGlobalPropert(true).then(function(item){
+   *   //The rest of your code here.
+   * })
+   * ```
+   */
+  getGlobalProperty(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        reject(new Error('Only available on versions above ' + minVersion));
+      } else {
+        iItem.get('prop:globalsrc', this._id).then(val => {
+          this._globalsrc = (val === '1');
+          resolve(this._globalsrc);
+        });
+      }
+    });
+  }
+
+  /**
+   * param: value(boolean)
+   * 
+   * return: Promise<Item>
+   *
+   * Set the Global property of an item.
+   * 
+   * Determines if an Item is set to Global or not.
+   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.setGlobalPropert(true).then(function(item){
+   *   //The rest of your code here.
+   * })
+   * ```
+   */
+  setGlobalProperty(value: boolean): Promise<Item> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)){
+        reject(new Error('Only available on versions above ' + minVersion));
+      } else {
+        this._globalsrc = value;
+        iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+          .then(() => {
+            resolve(this);
+          });
+      }
+    });
+  }
+
+
   /**
    * return: XML
    *
@@ -587,24 +651,25 @@ export class Item implements IItemLayout {
       }
     });
   }
+
   /**
-*  return: Promise<Item>
-*
-*  Refreshes the specified item.
-*
-*  #### Usage
-*  ```javascript
-*  // Sample 1: let item refresh itself
-*  xjs.Item.getItemList().then(function(item) {
-*    item.refresh(); // execution of JavaScript halts because of refresh
-*  });
-*
-*  // Sample 2: refresh some other item 'otherItem'
-*  otherItem.refresh().then(function(item) {
-*    // further manipulation of other item goes here
-*  });
-*  ```
-*/
+   *  return: Promise<Item>
+   *
+   *  Refreshes the specified item.
+   *
+   *  #### Usage
+   *  ```javascript
+   *  // Sample 1: let item refresh itself
+   *  xjs.Item.getItemList().then(function(item) {
+   *    item.refresh(); // execution of JavaScript halts because of refresh
+   *  });
+   *
+   *  // Sample 2: refresh some other item 'otherItem'
+   *  otherItem.refresh().then(function(item) {
+   *    // further manipulation of other item goes here
+   *  });
+   *  ```
+   */
   refresh(): Promise<Item> {
     return new Promise(resolve => {
       iItem.set('refresh', '', this._id).then(() => {
