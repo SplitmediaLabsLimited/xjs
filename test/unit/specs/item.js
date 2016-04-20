@@ -58,6 +58,10 @@ describe('Item', function() {
           case 'prop:keeploaded':
             local.keeploaded = val;
           break;
+
+          case 'prop:globalsrc':
+            local.isGlobal = val;
+          break;
         }
       });
 
@@ -95,6 +99,15 @@ describe('Item', function() {
               window.OnAsyncCallback(
                 rand,
                 '{CB4EB352-D86F-4478-8BFD-55FF53216697}'
+              );
+            }, 10);
+          break;
+
+          case 'prop:globalsrc':
+            setTimeout(function() {
+              window.OnAsyncCallback(
+                rand,
+                '1'
               );
             }, 10);
           break;
@@ -202,6 +215,24 @@ describe('Item', function() {
         expect(val).not.toBeNaN();
         next();
       });
+    }).then(done);
+  });
+
+  it('should be able to set and get global property', function(done) {
+    exec(function(next) {
+      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401') {
+        Item.setGlobalProperty(!local.isGlobal);
+        Item.getGlobalProperty().then(function(val) {
+          expect(val).toBeTypeOf('boolean');
+          local.isGlobal = val;
+          next();
+        });
+      } else {
+        Item.setGlobalProperty(!local.isGlobal).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }
     }).then(done);
   });
 
