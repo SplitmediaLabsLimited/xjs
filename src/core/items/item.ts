@@ -462,18 +462,18 @@ export class Item implements IItemLayout {
     });
   }
 
-  /** 
+  /**
    * return: Promise<boolean>
    *
    * Get the Global property of an item.
-   * 
+   *
    * Determines if an Item is set to Global or not.
    * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
    *
    * #### Usage
    *
    * ```javascript
-   * item.getGlobalPropert(true).then(function(item){
+   * item.getGlobalProperty().then(function(isGlobal){
    *   //The rest of your code here.
    * })
    * ```
@@ -493,18 +493,18 @@ export class Item implements IItemLayout {
 
   /**
    * param: value(boolean)
-   * 
+   *
    * return: Promise<Item>
    *
    * Set the Global property of an item.
-   * 
+   *
    * Determines if an Item is set to Global or not.
    * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
    *
    * #### Usage
    *
    * ```javascript
-   * item.setGlobalPropert(true).then(function(item){
+   * item.setGlobalProperty(true).then(function(item){
    *   //The rest of your code here.
    * })
    * ```
