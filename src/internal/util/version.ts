@@ -31,7 +31,7 @@ export function versionCompare(version: string): any {
 }
 
 export function getVersion(): string {
-  let xbcPattern = /XSplit Broadcaster\s(.*?)\s?/;
+  let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
   let xbcMatch = navigator.appVersion.match(xbcPattern);
   if (xbcMatch !== null) {
     return xbcMatch[1];

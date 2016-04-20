@@ -23,7 +23,7 @@
   // This is a Source class functional test case, but since it needs to actually
   // work on XBC, we should always go through Scene class first
   Scene.getActiveScene().then(function(scene) {
-    return scene.getSources();
+    return scene.getItems();
   }).then(function(sources) {
     if (sources.length === 0) {
       throw new Error('NO SOURCE ON CURRENT SCENE!');
@@ -33,7 +33,7 @@
     var currentSource = sources[sourceIndex];
 
     Rose.createTab({
-      name: 'Source',
+      name: 'Item',
       buttons: [
         {
           name: 'toggle attached source',

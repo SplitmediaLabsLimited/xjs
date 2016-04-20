@@ -20,12 +20,12 @@ describe('ScreenItem', function() {
   var mix = new window.Mixin([
     function() {
       navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.7.1702.2231';
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
       });
     },
     function() {
       navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.8.1603.0401';
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
       });
     }
   ]);

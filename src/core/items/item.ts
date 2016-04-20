@@ -539,15 +539,14 @@ export class Item implements IItemLayout {
   toXML(): XML {
     var item: JXON = new JXON();
 
-    item['tag'] = 'item';
-    item['name'] = this._name;
-    item['item'] = this._value;
-    item['type'] = this._type;
-    item['selfclosing'] = true;
+    for (let prop in this._xmlparams) {
+      if (!{}.hasOwnProperty.call(this._xmlparams, prop)) continue;
 
-    if (this._cname) {
-      item['cname'] = this._cname;
+      item[prop === 'value' ? 'item' : prop] = this._xmlparams[prop];
     }
+
+    item['tag'] = 'item';
+    item['selfclosing'] = true;
 
     return XML.parseJSON(item);
   }
@@ -590,7 +589,7 @@ export class Item implements IItemLayout {
       ) {
         Item.getItemList().then(items => {
           if (items.length > 0) {
-            Scene.searchSourcesById(items[0]._id).then(item => {
+            Scene.searchItemsById(items[0]._id).then(item => {
               resolve(item);
             });
           } else {
@@ -598,7 +597,7 @@ export class Item implements IItemLayout {
           }
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        Scene.searchSourcesById(iItem.getBaseId()).then(item => {
+        Scene.searchItemsById(iItem.getBaseId()).then(item => {
           resolve(item);
         });
       }
