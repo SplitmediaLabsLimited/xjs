@@ -55,7 +55,7 @@ export class Scene {
    * ** FOR DEPRECATION **
    * This method doesn't account for scenes greater than 12,
    * which is needed to support for the scene in the XBC preview editor.
-   * 
+   *
    *
    * #### Usage
    *
@@ -81,7 +81,7 @@ export class Scene {
    * ```javascript
    * var scene1;
    * Scene.getByIdAsync(1).then(function(scene) {
-   *   scene1 = scene;  
+   *   scene1 = scene;
    * });
    * ```
    */
@@ -90,7 +90,7 @@ export class Scene {
       Scene._initializeScenePoolAsync().then(cnt => {
         resolve(Scene._scenePool[sceneNum - 1]);
       });
-    });    
+    });
   }
 
   /**
@@ -130,7 +130,7 @@ export class Scene {
           resolve(returnArray);
         });
       });
-    }); 
+    });
   }
 
   /**

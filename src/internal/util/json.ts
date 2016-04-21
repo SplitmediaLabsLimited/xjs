@@ -23,6 +23,8 @@ export class JSON {
     var openResult = openingRegex.exec(sxml);
     var selfCloseResult = selfCloseRegex.exec(sxml);
 
+    sxml = sxml.replace(/&/g, '&amp;');
+
     var xmlDocument = (new DOMParser()).parseFromString(sxml,
       'application/xml');
 

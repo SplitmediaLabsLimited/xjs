@@ -445,15 +445,13 @@ export class Source implements IItemLayout {
   toXML(): XML {
     var item: JXON = new JXON();
 
-    item['tag'] = 'item';
-    item['name'] = this._name;
-    item['item'] = this._value;
-    item['type'] = this._type;
-    item['selfclosing'] = true;
-
-    if (this._cname) {
-      item['cname'] = this._cname;
+    for (let prop in this._xmlparams) {
+      if (!{}.hasOwnProperty.call(this._xmlparams, prop)) continue;
+      item[prop] = this._xmlparams[prop];
     }
+
+    item['tag'] = 'item';
+    item['selfclosing'] = true;
 
     return XML.parseJSON(item);
   }
@@ -513,6 +511,10 @@ export class Source implements IItemLayout {
         resolve(this);
       });
     });
+  }
+
+  duplicate() {
+    iApp.callFunc('additem', this.toXML().toString());
   }
 
    // SourceLayout
