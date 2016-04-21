@@ -542,7 +542,7 @@ export class Item implements IItemLayout {
     for (let prop in this._xmlparams) {
       if (!{}.hasOwnProperty.call(this._xmlparams, prop)) continue;
 
-      item[prop === 'value' ? 'item' : prop] = this._xmlparams[prop];
+      item[prop] = this._xmlparams[prop];
     }
 
     item['tag'] = 'item';
@@ -673,6 +673,17 @@ export class Item implements IItemLayout {
     return new Promise(resolve => {
       iItem.set('refresh', '', this._id).then(() => {
         resolve(this);
+      });
+    });
+  }
+
+  /**
+   * Duplicate current item. Will duplicate item into the current scene
+   */
+  duplicate(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.callFunc('additem', this.toXML().toString()).then(() => {
+        resolve(true);
       });
     });
   }
