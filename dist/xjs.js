@@ -6946,8 +6946,16 @@ var Source = (function () {
             });
         });
     };
+    /**
+     * Duplicate current source. Will duplicate source into the current scene
+     */
     Source.prototype.duplicate = function () {
-        app_1.App.callFunc('additem', this.toXML().toString());
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
+                resolve(true);
+            });
+        });
     };
     return Source;
 })();

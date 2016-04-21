@@ -513,8 +513,15 @@ export class Source implements IItemLayout {
     });
   }
 
-  duplicate() {
-    iApp.callFunc('additem', this.toXML().toString());
+  /**
+   * Duplicate current source. Will duplicate source into the current scene
+   */
+  duplicate(): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.callFunc('additem', this.toXML().toString()).then(() => {
+        resolve(true);
+      });
+    })
   }
 
    // SourceLayout
