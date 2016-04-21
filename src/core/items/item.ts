@@ -589,9 +589,7 @@ export class Item implements IItemLayout {
       ) {
         Item.getItemList().then(items => {
           if (items.length > 0) {
-            Scene.searchItemsById(items[0]._id).then(item => {
-              resolve(item);
-            });
+            resolve(items[0]);
           } else {
             reject(Error('Cannot get item list'))
           }
@@ -639,7 +637,9 @@ export class Item implements IItemLayout {
 
           itemsArray.forEach(itemId => {
             promiseArray.push(new Promise(itemResolve => {
-              itemResolve(new Item({ id: itemId }));
+              Scene.searchItemsById(itemId).then(item => {
+                itemResolve(item);
+              });
             }));
           });
 
