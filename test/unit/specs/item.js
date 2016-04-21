@@ -194,7 +194,7 @@ describe('Item', function() {
   it('should be able to get the source id', function(done) {
     exec(function(next) {
       var promise = Item.getSourceId();
-      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401') {
+      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401 ') {
         promise.then(function(val) {
           expect(val).toBeDefined();
           next();
@@ -220,7 +220,7 @@ describe('Item', function() {
 
   it('should be able to set and get global property', function(done) {
     exec(function(next) {
-      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401') {
+      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401 ') {
         Item.setGlobalProperty(!local.isGlobal);
         Item.getGlobalProperty().then(function(val) {
           expect(val).toBeTypeOf('boolean');
