@@ -605,15 +605,13 @@ export class Item implements IItemLayout {
   /**
    * return: Promise<Item[]>
    *
-   * Get the current item (when function is called by items), or the item
-   * that was right-clicked to open the source properties window (when function is called
-   * from the source properties window)
+   * Get the Item List of the current source
    *
    * #### Usage
    *
    * ```javascript
    * xjs.Item.getItemList().then(function(item) {
-   *   // This will fetch the current item (the plugin)
+   *   // This will fetch the item list of the current source
    * }).catch(function(err) {
    *   // Handle the error here. Errors would only occur
    *   // if we try to execute this method on Extension plugins
@@ -649,6 +647,54 @@ export class Item implements IItemLayout {
         });
       }
     });
+  }
+
+  /**
+   * return: Promise<Item[]>
+   *
+   * Get the item list of the attached item. This is useful when an item is
+   * an instance of a global source, with multiple other items having the same
+   * source as the current item.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * // item pertains to an actual item instance
+   * item.getItemList().then(function(item) {
+   *   // This will fetch the item list of the current item
+   * }).catch(function(err) {
+   *   // Handle the error here. Errors would only occur
+   *   // if we try to execute this method on Extension plugins
+   * });
+   * ```
+   */
+  getItemList(): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      if (
+        versionCompare(getVersion())
+          .is
+          .lessThan(minVersion)
+      ) {
+        reject(Error('Only available on versions above ' + minVersion));
+      } else {
+        iItem.get('itemlist', this._id).then(itemlist => {
+          const promiseArray: Promise<Item>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              Scene.searchItemsById(itemId).then(item => {
+                itemResolve(item);
+              });
+            }));
+          });
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
+        });
+      }
+    })
   }
 
   /**
