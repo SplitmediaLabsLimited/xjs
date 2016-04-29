@@ -340,6 +340,8 @@ export class Item implements IItemLayout {
   setKeepLoaded(value: boolean): Promise<Item> {
     return new Promise(resolve => {
       this._keepLoaded = value;
+      this._globalsrc = value;
+      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
       iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
@@ -461,68 +463,6 @@ export class Item implements IItemLayout {
       }
     });
   }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Get the Global property of an item.
-   *
-   * Determines if an Item is set to Global or not.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getGlobalProperty().then(function(isGlobal){
-   *   //The rest of your code here.
-   * })
-   * ```
-   */
-  getGlobalProperty(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-        reject(new Error('Only available on versions above ' + minVersion));
-      } else {
-        iItem.get('prop:globalsrc', this._id).then(val => {
-          this._globalsrc = (val === '1');
-          resolve(this._globalsrc);
-        });
-      }
-    });
-  }
-
-  /**
-   * param: value(boolean)
-   *
-   * return: Promise<Item>
-   *
-   * Set the Global property of an item.
-   *
-   * Determines if an Item is set to Global or not.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setGlobalProperty(true).then(function(item){
-   *   //The rest of your code here.
-   * })
-   * ```
-   */
-  setGlobalProperty(value: boolean): Promise<Item> {
-    return new Promise((resolve, reject) => {
-      if (versionCompare(getVersion()).is.lessThan(minVersion)){
-        reject(new Error('Only available on versions above ' + minVersion));
-      } else {
-        this._globalsrc = value;
-        iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
-          .then(() => {
-            resolve(this);
-          });
-      }
-    });
-  }
-
 
   /**
    * return: XML

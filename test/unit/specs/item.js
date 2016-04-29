@@ -218,24 +218,6 @@ describe('Item', function() {
     }).then(done);
   });
 
-  it('should be able to set and get global property', function(done) {
-    exec(function(next) {
-      if (navigator.appVersion === 'XSplit Broadcaster 2.8.1603.0401 ') {
-        Item.setGlobalProperty(!local.isGlobal);
-        Item.getGlobalProperty().then(function(val) {
-          expect(val).toBeTypeOf('boolean');
-          local.isGlobal = val;
-          next();
-        });
-      } else {
-        Item.setGlobalProperty(!local.isGlobal).catch(function(err) {
-          expect(err).toEqual(jasmine.any(Error));
-          next();
-        });
-      }
-    }).then(done);
-  });
-
   it('should have toXML method', function() {
     expect(Item).hasMethods('toXML');
   });
