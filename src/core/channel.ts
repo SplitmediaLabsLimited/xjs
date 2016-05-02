@@ -28,8 +28,12 @@ export class Channel {
           for (var i = 0; i < activeStreams.length; ++i) {
             channels.push(new Channel({
               name: activeStreams[i]['name'],
-              stat: activeStreams[i].children[0],
-              channel: activeStreams[i].children[1]
+              stat: activeStreams[i].children.filter(child => {
+                return child.tag.toLowerCase() === 'stat';
+              })[0],
+              channel: activeStreams[i].children.filter(child => {
+                return child.tag.toLowerCase() === 'channel';
+              })[0]
             }));
           }
           resolve(channels);
