@@ -29,13 +29,17 @@ import {MediaItem} from './items/media';
 
 
 export class Scene {
-  private _id: number;
+  private _id: number | string;
 
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
 
-  constructor(sceneNum: number) {
-    this._id = sceneNum - 1;
+  constructor(sceneId: number | string) {
+    if (typeof sceneId === 'number') {
+      this._id = sceneId - 1;
+    } else if (typeof sceneId === 'string') {
+      this._id = sceneId;
+    }
   };
 
   private static _initializeScenePool() {
@@ -54,6 +58,10 @@ export class Scene {
         for (var i = 0; i < Scene._maxScenes; i++) {
           Scene._scenePool[i] = new Scene(i + 1);
         }
+
+        // Add special scene for preview editor (i12)
+        Scene._scenePool.push(new Scene('i12'));
+
         resolve(Scene._maxScenes);
       });
     });
@@ -818,7 +826,11 @@ export class Scene {
    */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
-      resolve(this._id + 1);
+      if (typeof this._id === 'number') {
+        resolve(Number(this._id) + 1);
+      } else {
+        resolve(this._id)
+      }
     });
   }
 
