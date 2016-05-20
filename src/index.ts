@@ -20,11 +20,23 @@ export * from './core/source/flash';
 export * from './core/source/screen';
 export * from './core/source/image';
 export * from './core/source/media';
+export * from './core/source/videoplaylist';
 
-export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/source/ichroma';
-export {ActionAfterPlayback} from './core/source/iplayback';
-export {MaskEffect} from './core/source/ieffects';
-export {CuePoint} from './core/source/cuepoint';
+export * from './core/items/item';
+export * from './core/items/camera';
+export * from './core/items/game';
+export * from './core/items/audio';
+export * from './core/items/html';
+export * from './core/items/flash';
+export * from './core/items/screen';
+export * from './core/items/image';
+export * from './core/items/media';
+export * from './core/items/videoplaylist';
+
+export {MaskEffect} from './core/items/ieffects';
+export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/items/ichroma';
+export {ActionAfterPlayback} from './core/items/iplayback';
+export {CuePoint} from './core/items/cuepoint';
 
 export * from './system/system';
 export * from './system/audio';

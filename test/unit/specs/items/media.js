@@ -1,12 +1,12 @@
 
 /* globals describe, it, expect, require, beforeEach, beforeAll, spyOn */
 
-describe('MediaSource', function() {
+describe('MediaItem', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var MediaSource = XJS.MediaSource;
+  var MediaItem = XJS.MediaItem;
   var env = new window.Environment(XJS);
   var enumerated = [];
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -16,7 +16,7 @@ describe('MediaSource', function() {
   var local = {};
   var TYPE_FILE = 1;
 
-  var currentMediaSource;
+  var currentMediaItem;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -30,11 +30,11 @@ describe('MediaSource', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedID + '"]';
-        var sourceSelected = placement.querySelector(selected);
+        var itemSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, sourceSelected.getAttribute('type'));
+          window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
         },10);
       break;
 
@@ -49,11 +49,11 @@ describe('MediaSource', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var sourceSelected = placement.querySelector(selected);
+          var itemSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -65,10 +65,8 @@ describe('MediaSource', function() {
     env.set('extension');
     if (!isXSplit) {
       // Reset the attached IDS
-      var source1 = new XJS.Source({id : '{SCREENID}' });
-      var source2 = new XJS.Source({id : '{SCREENID2}'});
-      source1.getType();
-      source2.getType();
+      var item1 = new XJS.Item({id : '{SCREENID}' });
+      var item2 = new XJS.Item({id : '{SCREENID2}'});
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -119,14 +117,14 @@ describe('MediaSource', function() {
       done();
     } else {
       Scene.getActiveScene().then(function(newScene) {
-        newScene.getSources().then(function(sources) {
-          var sourceArray = sources;
-          var sourceArrayLength = sourceArray.length;
+        newScene.getItems().then(function(items) {
+          var itemArray = items;
+          var itemArrayLength = itemArray.length;
 
-          if (sourceArrayLength > 0) {
-            for (var i = 0; i < sourceArrayLength; i++) {
-              if (sourceArray[i] instanceof MediaSource) {
-                enumerated.push(sourceArray[i]);
+          if (itemArrayLength > 0) {
+            for (var i = 0; i < itemArrayLength; i++) {
+              if (itemArray[i] instanceof MediaItem) {
+                enumerated.push(itemArray[i]);
               }
             }
           }
@@ -137,31 +135,31 @@ describe('MediaSource', function() {
     }
   });
 
-  it('should be detected by getSources() correctly', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     var fileSelector = '[type="' + TYPE_FILE + '"]';
-    var fileTypeSources = placement.querySelectorAll(fileSelector);
-    var mediaSources = [].filter.call(fileTypeSources, function(node) {
+    var fileTypeItems = placement.querySelectorAll(fileSelector);
+    var mediaItems = [].filter.call(fileTypeItems, function(node) {
       return /\.(gif|xbs)$/.test(node.getAttribute('item')) === false &&
         /^(rtsp|rtmp):\/\//.test(node.getAttribute('item')) === false;
     });
 
-    expect(mediaSources.length).toBe(enumerated.length);
+    expect(mediaItems.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeAll(function(done) {
       if (enumerated.length > 0) {
-        currentMediaSource = enumerated[0];
+        currentMediaItem = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-      if (currentMediaSource !== null) {
-        expect(currentMediaSource).hasMethods([
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
           'isKeepAspectRatio',
           'setKeepAspectRatio',
           'isPositionLocked',
@@ -175,8 +173,8 @@ describe('MediaSource', function() {
     });
 
     it('should implement the color interface', function() {
-      if (currentMediaSource !== null) {
-        expect(currentMediaSource).hasMethods([
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
           'getTransparency',
           'setTransparency',
           'getBrightness',
@@ -194,8 +192,8 @@ describe('MediaSource', function() {
     });
 
     it('should implement the chroma interface', function() {
-      if (currentMediaSource !== null) {
-        expect(currentMediaSource).hasMethods([
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
           'isChromaEnabled',
           'setChromaEnabled',
           'getKeyingType',
@@ -229,8 +227,8 @@ describe('MediaSource', function() {
     });
 
     it('should implement the transition interface', function() {
-      if (currentMediaSource !== null) {
-        expect(currentMediaSource).hasMethods([
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
           'isVisible',
           'setVisible',
           'getTransition',
@@ -242,8 +240,8 @@ describe('MediaSource', function() {
     });
 
     it('should implement the playback interface', function() {
-      if (currentMediaSource !== null) {
-        expect(currentMediaSource).hasMethods([
+      if (currentMediaItem !== null) {
+        expect(currentMediaItem).hasMethods([
           'isSeekable',
           'getPlaybackPosition',
           'setPlaybackPosition',
@@ -275,7 +273,7 @@ describe('MediaSource', function() {
     });
 
     it('should implement audio interface', function() {
-      expect(currentMediaSource).hasMethods([
+      expect(currentMediaItem).hasMethods([
         'isMute',
         'setMute',
         'getVolume',

@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 1.3.0
+ * version: 1.2.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -6880,14 +6880,13 @@ var Source = (function () {
      */
     Source.prototype.toXML = function () {
         var item = new json_1.JSON();
-        item['tag'] = 'item';
-        item['name'] = this._name;
-        item['item'] = this._value;
-        item['type'] = this._type;
-        item['selfclosing'] = true;
-        if (this._cname) {
-            item['cname'] = this._cname;
+        for (var prop in this._xmlparams) {
+            if (!{}.hasOwnProperty.call(this._xmlparams, prop))
+                continue;
+            item[prop] = this._xmlparams[prop];
         }
+        item['tag'] = 'item';
+        item['selfclosing'] = true;
         return xml_1.XML.parseJSON(item);
     };
     /**
@@ -6944,6 +6943,17 @@ var Source = (function () {
         return new Promise(function (resolve) {
             item_1.Item.set('refresh', '', _this._id).then(function () {
                 resolve(_this);
+            });
+        });
+    };
+    /**
+     * Duplicate current source. Will duplicate source into the current scene
+     */
+    Source.prototype.duplicate = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
+                resolve(true);
             });
         });
     };
@@ -7641,6 +7651,7 @@ var JSON = (function () {
         var selfCloseRegex = /(\/>)/g;
         var openResult = openingRegex.exec(sxml);
         var selfCloseResult = selfCloseRegex.exec(sxml);
+        sxml = sxml.replace(/&/g, '&amp;');
         var xmlDocument = (new DOMParser()).parseFromString(sxml, 'application/xml');
         if (xmlDocument.getElementsByTagName('parsererror').length > 0) {
             throw new Error('XML parsing error. Invalid XML string');

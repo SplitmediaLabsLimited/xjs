@@ -9,14 +9,14 @@ export interface IItemTransition {
   /**
    * return: Promise<boolean>
    *
-   * Check if source is visible on stage
+   * Check if item is visible on stage
    */
   isVisible(): Promise<boolean>;
 
   /**
    * param: value<boolean>
    *
-   * Set source to visible or hidden
+   * Set item to visible or hidden
    *
    * *Chainable.*
    */
@@ -25,14 +25,14 @@ export interface IItemTransition {
   /**
    * return: Promise<boolean>
    *
-   * Get source's transition type for when visibility is toggled
+   * Get item's transition type for when visibility is toggled
    */
   getTransition(): Promise<Transition>;
 
   /**
    * param: value<Transition>
    *
-   * Set source's transition type for when visibility is toggled
+   * Set item's transition type for when visibility is toggled
    *
    * *Chainable.*
    */
@@ -41,14 +41,14 @@ export interface IItemTransition {
   /**
    * return: Promise<number>
    *
-   * Get source's transition time in milliseconds
+   * Get item's transition time in milliseconds
    */
   getTransitionTime(): Promise<number>;
-  
+
   /**
    * param: value<number>
    *
-   * Set source's transition time in milliseconds
+   * Set item's transition time in milliseconds
    *
    * *Chainable.*
    */

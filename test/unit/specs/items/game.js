@@ -1,10 +1,10 @@
 /* globals describe, it, expect, require, beforeEach, spyOn, done */
 
-describe('GameSource', function() {
+describe('GameItem', function() {
   'use strict';
 
   var XJS = require('xjs');
-  var GameSource = XJS.GameSource;
+  var GameItem = XJS.GameItem;
   var System = XJS.System;
   var Scene = XJS.Scene;
   var env = new window.Environment(XJS);
@@ -18,12 +18,27 @@ describe('GameSource', function() {
   var specialOptimizationSet = false;
   var showMouseSet = false;
   var offlineImageSet = false;
-  var currentGameSource;
+  var currentGameItem;
   var environments = ['config', 'extension', 'plugin'];
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
   var TYPE_GAME = 7;
+
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
 
   var getLocal = function(funcName) {
     rand += 1;
@@ -34,11 +49,11 @@ describe('GameSource', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName("placement")[0];
         var selected = '[id="' + attachedID + '"]';
-        var sourceSelected = placement.querySelector(selected);
+        var itemSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, sourceSelected.getAttribute("type"));
+          window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
         },10);
       break;
 
@@ -53,12 +68,12 @@ describe('GameSource', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var sourceSelected = placement.querySelector(selected);
+          var itemSelected = placement.querySelector(selected);
           //return GameCapSurfSharing attribute
           setTimeout(function() {
             var irand = rand;
             window.OnAsyncCallback(irand,
-              sourceSelected.getAttribute("GameCapSurfSharing"));
+              itemSelected.getAttribute("GameCapSurfSharing"));
           },10);
         }
       break;
@@ -74,12 +89,12 @@ describe('GameSource', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var sourceSelected = placement.querySelector(selected);
+          var itemSelected = placement.querySelector(selected);
           //return GameCapShowMouse attribute
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
-              sourceSelected.getAttribute("GameCapShowMouse"));
+              itemSelected.getAttribute("GameCapShowMouse"));
           },10);
         }
       break;
@@ -95,11 +110,11 @@ describe('GameSource', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName("placement")[0];
           var selected = '[id="' + attachedID + '"]';
-          var sourceSelected = placement.querySelector(selected);
+          var itemSelected = placement.querySelector(selected);
           //return type attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, sourceSelected.getAttribute("item"));
+            window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
           },10);
         }
       break;
@@ -154,10 +169,9 @@ describe('GameSource', function() {
     propTypeCount = 0;
     if (!isXSplit) {
       // Reset the attached IDS
-      var source1 = new XJS.Source({id : '{GAMEID}' });
-      var source2 = new XJS.Source({id : '{GAMEID2}'});
-      source1.getType();
-      source2.getType();
+      var item1 = new XJS.Item({id : '{GAMEID}' });
+      var item2 = new XJS.Item({id : '{GAMEID2}'});
+
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
@@ -217,14 +231,14 @@ describe('GameSource', function() {
       .and.callFake(setLocal);
     }
     Scene.getActiveScene().then(function(newScene) {
-      newScene.getSources().then(function(sources) {
-        var sourceArray = sources;
-        var sourceArrayLength = sourceArray.length;
+      newScene.getItems().then(function(items) {
+        var itemArray = items;
+        var itemArrayLength = itemArray.length;
 
-        if (sourceArrayLength > 0) {
-          for (var i = 0; i < sourceArrayLength; i++) {
-            if (sourceArray[i] instanceof GameSource) {
-              enumerated.push(sourceArray[i]);
+        if (itemArrayLength > 0) {
+          for (var i = 0; i < itemArrayLength; i++) {
+            if (itemArray[i] instanceof GameItem) {
+              enumerated.push(itemArray[i]);
             }
           }
         }
@@ -234,30 +248,30 @@ describe('GameSource', function() {
     });
   });
 
-  it('should be detected by getSources() correctly', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName("placement")[0];
     var selected = '[type="' + TYPE_GAME + '"]';
-    var gameSources = placement.querySelectorAll(selected);
-    expect(gameSources.length).toBe(enumerated.length);
+    var gameItems = placement.querySelectorAll(selected);
+    expect(gameItems.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentGameSource = enumerated[0];
+        currentGameItem = enumerated[0];
         done();
       } else {
         System.getGames().then(function(games) {
-          currentGameSource = new GameSource(games[games.length-1]);
+          currentGameItem = new GameItem(games[games.length-1]);
           done();
         }.bind(this));
       }
     });
 
     it('should implement the layout interface', function() {
-      expect(currentGameSource).hasMethods([
+      expect(currentGameItem).hasMethods([
         'isKeepAspectRatio',
         'setKeepAspectRatio',
         'isPositionLocked',
@@ -270,7 +284,7 @@ describe('GameSource', function() {
     });
 
     it('should implement the color interface', function() {
-      expect(currentGameSource).hasMethods([
+      expect(currentGameItem).hasMethods([
         'getTransparency',
         'setTransparency',
         'getBrightness',
@@ -287,7 +301,7 @@ describe('GameSource', function() {
     });
 
     it('should implement the chroma interface', function() {
-      expect(currentGameSource).hasMethods([
+      expect(currentGameItem).hasMethods([
         'isChromaEnabled',
         'setChromaEnabled',
         'getKeyingType',
@@ -320,7 +334,7 @@ describe('GameSource', function() {
     });
 
     it('should implement the transition interface', function() {
-      expect(currentGameSource).hasMethods([
+      expect(currentGameItem).hasMethods([
         'isVisible',
         'setVisible',
         'getTransition',
@@ -331,99 +345,117 @@ describe('GameSource', function() {
     });
   });
 
-  describe('gameSource-specific methods checking', function() {
+  describe('gameItem-specific methods checking', function() {
     beforeEach(function(done) {
       if (enumerated.length > 0) {
-        currentGameSource = enumerated[0];
+        currentGameItem = enumerated[0];
         done();
       } else {
         System.getGames().then(function(games) {
-          currentGameSource = new GameSource(games[games.length-1]);
+          currentGameItem = new GameItem(games[games.length-1]);
           done();
         }.bind(this));
       }
     });
 
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
+    });
+
     it('should be able to check whether special optimization is enabled or not',
       function(done) {
-        var promise = currentGameSource.isSpecialOptimizationEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeBoolean();
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.isSpecialOptimizationEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeBoolean();
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to enable or disable special optimization',
       function(done) {
         var randomBoolean = !!Math.floor(Math.random() * 2);
-        currentGameSource.setSpecialOptimizationEnabled(randomBoolean);
-        if (!isXSplit) {
-          expect(specialOptimizationSet).toBe(true);
-        }
-        currentGameSource.isSpecialOptimizationEnabled().then(function(firstEnabled) {
-          expect(firstEnabled).toBe(randomBoolean);
-          currentGameSource.setSpecialOptimizationEnabled(!randomBoolean);
-          return currentGameSource.isSpecialOptimizationEnabled();
-        })
-        .then(function(secondEnabled) {
-          expect(secondEnabled).toBe(!randomBoolean);
-          done();
-        });
+        exec(function(next) {
+          currentGameItem.setSpecialOptimizationEnabled(randomBoolean);
+          if (!isXSplit) {
+            expect(specialOptimizationSet).toBe(true);
+          }
+          currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
+            expect(firstEnabled).toBe(randomBoolean);
+            currentGameItem.setSpecialOptimizationEnabled(!randomBoolean);
+            return currentGameItem.isSpecialOptimizationEnabled();
+          })
+          .then(function(secondEnabled) {
+            expect(secondEnabled).toBe(!randomBoolean);
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to check whether mouse is shown or not in game capture',
       function(done) {
-        var promise = currentGameSource.isShowMouseEnabled();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(isEnabled) {
-          expect(isEnabled).toBeBoolean();
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.isShowMouseEnabled();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(isEnabled) {
+            expect(isEnabled).toBeBoolean();
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to show or hide mouse in game capture', function(done) {
       var randomBoolean = !!Math.floor(Math.random() * 2);
-      currentGameSource.setShowMouseEnabled(randomBoolean);
-      if (!isXSplit) {
-        expect(showMouseSet).toBe(true);
-      }
-      currentGameSource.isShowMouseEnabled().then(function(firstEnabled) {
-        expect(firstEnabled).toBe(randomBoolean);
-        currentGameSource.setShowMouseEnabled(!randomBoolean);
-        return currentGameSource.isShowMouseEnabled();
-      })
-      .then(function(secondEnabled) {
-        expect(secondEnabled).toBe(!randomBoolean);
-        done();
-      });
+      exec(function(next) {
+        currentGameItem.setShowMouseEnabled(randomBoolean);
+        if (!isXSplit) {
+          expect(showMouseSet).toBe(true);
+        }
+        currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
+          expect(firstEnabled).toBe(randomBoolean);
+          currentGameItem.setShowMouseEnabled(!randomBoolean);
+          return currentGameItem.isShowMouseEnabled();
+        })
+        .then(function(secondEnabled) {
+          expect(secondEnabled).toBe(!randomBoolean);
+          next();
+        });
+      }).then(done);
     });
 
     it('should be able to get offline image',
       function(done) {
-        var promise = currentGameSource.getOfflineImage();
-        expect(promise).toBeInstanceOf(Promise);
-        promise.then(function(offlineImage) {
-          expect(offlineImage).toBeTypeOf('string');
-          done();
-        });
+        exec(function(next) {
+          var promise = currentGameItem.getOfflineImage();
+          expect(promise).toBeInstanceOf(Promise);
+          promise.then(function(offlineImage) {
+            expect(offlineImage).toBeTypeOf('string');
+            next();
+          });
+        }).then(done);
     });
 
     it('should be able to set offline image', function(done) {
       var firstPath = 'C:\\someFolder\\someFile.jpg';
       var secondPath = 'C:\\anotherFolder\\anotherFile.jpg';
 
-      currentGameSource.setOfflineImage(firstPath).then(function(source) {
-        source.getOfflineImage().then(function(offlineImage) {
-          expect(offlineImage).toEqual(firstPath);
-          currentGameSource.setOfflineImage(secondPath);
-          return currentGameSource.getOfflineImage();
-        })
-        .then(function(offlineImage2) {
-          expect(offlineImage2).toEqual(secondPath);
-          done();
+      exec(function(next) {
+        currentGameItem.setOfflineImage(firstPath).then(function(item) {
+          item.getOfflineImage().then(function(offlineImage) {
+            expect(offlineImage).toEqual(firstPath);
+            currentGameItem.setOfflineImage(secondPath);
+            return currentGameItem.getOfflineImage();
+          })
+          .then(function(offlineImage2) {
+            expect(offlineImage2).toEqual(secondPath);
+            next();
+          });
         });
-      });
+      }).then(done);
     });
 
   });

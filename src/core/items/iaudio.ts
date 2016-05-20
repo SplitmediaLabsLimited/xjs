@@ -8,14 +8,14 @@ export interface IItemAudio {
   /**
    * return: Promise<number>
    *
-   * Get source's volume level expressed as an integer from 0 to 100
+   * Get item's volume level expressed as an integer from 0 to 100
    */
   getVolume(): Promise<number>;
 
   /**
    * param: (value: number)
    *
-   * Set volume level of source as an integer from 0 (muted) to 100 (maximum)
+   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
    *
    * *Chainable.*
    */
@@ -24,14 +24,14 @@ export interface IItemAudio {
   /**
    * return: Promise<boolean>
    *
-   * Check if source's mute option is active
+   * Check if item's mute option is active
    */
   isMute(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Set source's Mute property to ON or OFF
+   * Set item's Mute property to ON or OFF
    *
    * *Chainable.*
    */

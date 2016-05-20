@@ -2,6 +2,7 @@
 
 import {exec} from './internal';
 import {Environment} from '../core/environment';
+import {minVersion, versionCompare, getVersion} from './util/version';
 
 export class Item {
 
@@ -28,10 +29,20 @@ export class Item {
           itemID
         );
       } else {
-        exec('AttachVideoItem' +
-          (String(slot) === '0' ? '' : (slot + 1)),
-          itemID
-        );
+        let hasGlobalSources = versionCompare(getVersion())
+          .is
+          .greaterThan(minVersion);
+
+        if (hasGlobalSources) {
+          exec('AttachVideoItem' + (slot + 1),
+            itemID
+          );
+        } else {
+          exec('AttachVideoItem' +
+            (String(slot) === '0' ? '' : (slot + 1)),
+            itemID
+          );
+        }
       }
     }
     return slot;
@@ -49,11 +60,26 @@ export class Item {
   }
 
   /** Get an item's local property asynchronously */
-  static get(name: string, id: string): Promise<string> {
+  static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-    let slot = Item.attach(id);
+      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let hasGlobalSources = versionCompare(getVersion())
+        .is
+        .greaterThan(minVersion);
+
+      if (
+        (!Environment.isSourcePlugin() && String(slot) === '0') ||
+        (
+          Environment.isSourcePlugin() &&
+          String(slot) === '0' &&
+          !hasGlobalSources
+        )
+      ) {
+        slot = -1;
+      }
+
       exec('GetLocalPropertyAsync' +
-        (String(slot) === '0' ? '' : slot + 1),
+        (String(slot) === '-1' ? '' : slot + 1),
         name,
         val => {
           resolve(val);
@@ -62,11 +88,26 @@ export class Item {
   }
 
   /** Sets an item's local property */
-  static set(name: string, value: string, id: string): Promise<boolean> {
+  static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-    let slot = Item.attach(id);
+      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let hasGlobalSources = versionCompare(getVersion())
+        .is
+        .greaterThan(minVersion);
+
+      if (
+        (!Environment.isSourcePlugin() && String(slot) === '0') ||
+        (
+          Environment.isSourcePlugin() &&
+          String(slot) === '0' &&
+          !hasGlobalSources
+        )
+      ) {
+        slot = -1;
+      }
+
       exec('SetLocalPropertyAsync' +
-        (String(slot) === '0' ? '' : slot + 1),
+        (String(slot) === '-1' ? '' : slot + 1),
         name,
         value,
         val => {

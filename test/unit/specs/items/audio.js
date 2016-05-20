@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeAll, spyOn, console */
 
-describe('AudioSource', function() {
+describe('AudioItem', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -19,15 +19,27 @@ describe('AudioSource', function() {
   };
 
   var env = new window.Environment(XJS);
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
 
   beforeAll(function(done) {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       env.set('script');
       // Reset the attached IDS
-      var source1 = new XJS.Source({id : '{AUDIOID}' });
-      var source2 = new XJS.Source({id : '{AUDIOID2}'});
-      source1.getType();
-      source2.getType();
+      var item1 = new XJS.Item({id : '{AUDIOID}' });
+      var item2 = new XJS.Item({id : '{AUDIOID2}'});
 
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
@@ -205,10 +217,10 @@ describe('AudioSource', function() {
 
     var _this = this;
     XJS.Scene.getActiveScene().then(function(scene) {
-      scene.getSources().then(function(sources) {
-        for (var i in sources) {
-          if (sources[i] instanceof XJS.AudioSource) {
-            _this.audioSource = sources[i];
+      scene.getItems().then(function(items) {
+        for (var i in items) {
+          if (items[i] instanceof XJS.AudioItem) {
+            _this.audioItem = items[i];
             done();
           }
         }
@@ -216,159 +228,210 @@ describe('AudioSource', function() {
     });
   });
 
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  })
+
   it('should be able to set and get silence detection', function(done) {
     var val = !local.silenceDetection;
-    this.audioSource.setSilenceDetectionEnabled(val);
-    this.audioSource.isSilenceDetectionEnabled().then(function(bool) {
-      expect(bool).toBeBoolean();
-      expect(bool).toEqual(val);
-      done();
-    });
+    var self = this;
+    exec(function(next) {
+      self.audioItem.setSilenceDetectionEnabled(val);
+      self.audioItem.isSilenceDetectionEnabled().then(function(bool) {
+        expect(bool).toBeBoolean();
+        expect(bool).toEqual(val);
+        next();
+      });
+    }).then(done);
   });
 
   it('should be able to get the silence threshold', function(done) {
-    this.audioSource.getSilenceThreshold().then(function(val) {
-      expect(val).toBeTypeOf('number');
-      expect(val).not.toBeNaN();
-      done();
-    });
+    var self = this;
+    exec(function(next) {
+      self.audioItem.getSilenceThreshold().then(function(val) {
+        expect(val).toBeTypeOf('number');
+        expect(val).not.toBeNaN();
+        next();
+      });
+    }).then(done);
   });
 
   describe('should be able to set and get the silence threshold', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 128);
-      this.audioSource.setSilenceThreshold(val).then(function(source) {
-        source.getSilenceThreshold().then(function(num) {
-          expect(num).toBeTypeOf('number');
-          expect(num).toEqual(val);
-          done();
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilenceThreshold(val).then(function(item) {
+          item.getSilenceThreshold().then(function(num) {
+            expect(num).toBeTypeOf('number');
+            expect(num).toEqual(val);
+            next();
+          });
+        }).catch(function(err) {
+          done.fail(err);
         });
-      }).catch(function(err) {
-        done.fail(err);
-      });
+      }).then(done);
     });
 
     it('not lower than 0', function(done) {
-      this.audioSource.setSilenceThreshold(-1).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilenceThreshold(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not higher than 128', function(done) {
-      this.audioSource.setSilenceThreshold(129).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilenceThreshold(129).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not a decimal', function(done) {
-      this.audioSource.setSilenceThreshold(5.5).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilenceThreshold(5.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not a alphanumeric string', function(done) {
-      this.audioSource.setSilenceThreshold('asdf').then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilenceThreshold('asdf').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
   });
 
   describe('should be able to set and get the silence period', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 10000);
-      this.audioSource.setSilencePeriod(val).then(function(source) {
-        source.getSilencePeriod().then(function(num) {
-          expect(num).toBeTypeOf('number');
-          expect(num).toEqual(val);
-          done();
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilencePeriod(val).then(function(item) {
+          item.getSilencePeriod().then(function(num) {
+            expect(num).toBeTypeOf('number');
+            expect(num).toEqual(val);
+            next();
+          });
         });
-      });
+      }).then(done);
     });
 
     it('not lower than 0', function(done) {
-      this.audioSource.setSilencePeriod(-1).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilencePeriod(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not higher than 10000', function(done) {
-      this.audioSource.setSilencePeriod(10001).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilencePeriod(10001).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not a decimal', function(done) {
-      this.audioSource.setSilencePeriod(50.5).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilencePeriod(50.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not a alphanumeric string', function(done) {
-      this.audioSource.setSilencePeriod('asdf').then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setSilencePeriod('asdf').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
   });
 
   describe('should be able to set and get the audio offset', function() {
     it('as a number', function(done) {
       var val = Math.floor(Math.random() * 10000);
-      this.audioSource.setAudioOffset(val).then(function(source) {
-        source.getAudioOffset().then(function(num) {
-          expect(num).toBeTypeOf('number');
-          expect(num).toEqual(val);
-          done();
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setAudioOffset(val).then(function(item) {
+          item.getAudioOffset().then(function(num) {
+            expect(num).toBeTypeOf('number');
+            expect(num).toEqual(val);
+            next();
+          });
         });
-      });
+      }).then(done);
     });
 
     it('not lower than 0', function(done) {
-      this.audioSource.setAudioOffset(-1).then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setAudioOffset(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
 
     it('not a alphanumeric string', function(done) {
-      this.audioSource.setAudioOffset('asdf').then(function() {
-        done.fail('Invalid value was accepted');
-      }).catch(function(err) {
-        expect(err).toEqual(jasmine.any(Error));
-        done();
-      });
+      var self = this;
+      exec(function(next) {
+        self.audioItem.setAudioOffset('asdf').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
+      }).then(done);
     });
   });
 
   describe('interface method checking', function() {
 
     it('should implement audio interface', function() {
-      expect(this.audioSource).hasMethods([
+      expect(this.audioItem).hasMethods([
         'isMute',
         'setMute',
         'getVolume',

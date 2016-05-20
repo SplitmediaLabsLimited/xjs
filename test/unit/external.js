@@ -189,6 +189,13 @@
 		/**
 		 * source|config|window
 		 */
+		GetLocalPropertyAsync1: function(name) {
+
+		},
+
+		/**
+		 * source|config|window
+		 */
 		GetLocalPropertyAsync2: function(name) {
 
 		},
@@ -414,6 +421,13 @@
 		 * source|config|window
 		 */
 		SetLocalPropertyAsync: function(name) {
+
+		},
+
+		/**
+		 * source|config|window
+		 */
+		SetLocalPropertyAsync1: function(name) {
 
 		},
 

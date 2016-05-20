@@ -230,13 +230,13 @@ h1.id {
 }
 
 blockquote {
-  background-color: #eee;
+  background-color: #ffcdd2;
   font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
   font-size: 1em;
   font-weight: 300;
   line-height: 1.2em;
   font-style: italic;
-  border-left: 0.4em solid #4a4a4a;
+  border-left: 0.4em solid #b71c1c;
   margin-left: 1em;
   padding: 0.05em 1em;
 }
