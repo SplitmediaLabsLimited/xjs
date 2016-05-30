@@ -31,7 +31,7 @@ import {MediaItem} from './items/media';
 export class Scene {
   private _id: number | string;
 
-  private static _maxScenes: number = 12;
+  private static _maxScenes: number = 4;
   private static _scenePool: Scene[] = [];
 
   constructor(sceneId: number | string) {
@@ -54,7 +54,7 @@ export class Scene {
     return new Promise(resolve => {
       iApp.get('presetcount').then(cnt => {
         var count = Number(cnt);
-        (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
+        (count > 4) ? Scene._maxScenes = count : Scene._maxScenes = 4;
         for (var i = 0; i < Scene._maxScenes; i++) {
           Scene._scenePool[i] = new Scene(i + 1);
         }
@@ -65,6 +65,20 @@ export class Scene {
         resolve(Scene._maxScenes);
       });
     });
+  }
+
+  /**
+   *
+   *
+   * 
+   */
+
+  static getSceneCount(): Promise<number> {
+    return new Promise(resolve => {
+      Scene._initializeScenePoolAsync().then(count => {
+        resolve(count)
+      })
+    })
   }
 
   /**
@@ -201,8 +215,8 @@ export class Scene {
             });
           });
         } else if (typeof scene === 'number') {
-          if (scene < 1 || scene > 12) {
-            reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+          if (scene < 1) {
+            reject(Error('Invalid parameters. Valid range is greater than 0'));
           } else {
             iApp.set('preset', String(scene - 1)).then(res => {
               resolve(res);
@@ -796,10 +810,10 @@ export class Scene {
       }
 
       iApp.get('presetcount').then(cnt => {
-        if (Number(cnt) !== 12) {
+        if (Number(cnt) !== 4) {
           // Insert an empty scene for scene #12
           iApp
-            .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+            .set('presetconfig:3', '<placement name="Scene 4" defpos="0" />')
             .then(res => {
               resolve(res);
             });
