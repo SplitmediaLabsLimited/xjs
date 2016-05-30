@@ -31,7 +31,7 @@ import {MediaItem} from './items/media';
 export class Scene {
   private _id: number | string;
 
-  private static _maxScenes: number = 4;
+  private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
 
   constructor(sceneId: number | string) {
@@ -53,23 +53,27 @@ export class Scene {
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('presetcount').then(cnt => {
-        var count = Number(cnt);
-        (count > 4) ? Scene._maxScenes = count : Scene._maxScenes = 4;
-        for (var i = 0; i < Scene._maxScenes; i++) {
+        for (var i = 0; i < Number(cnt); i++) {
           Scene._scenePool[i] = new Scene(i + 1);
         }
 
         // Add special scene for preview editor (i12)
         Scene._scenePool.push(new Scene('i12'));
 
-        resolve(Scene._maxScenes);
+        resolve(Number(cnt));
       });
     });
   }
 
   /**
+   * return: Promise<number>
    *
-   *
+   * Get the specific number of scenes loaded.
+   * ```javascript
+   * var sceneCount;
+   * Scene.getSceneCount().then(function(count) {
+   *   sceneCount = count;
+   * });
    * 
    */
 
