@@ -70,12 +70,11 @@ export class Scene {
   /**
    * return: Scene
    *
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#getByIdAsync getByIdAsync} instead.
+   *
    * Get a specific scene object given the scene number.
-   *
-   * ** FOR DEPRECATION **
-   * This method doesn't account for scenes greater than 12,
-   * which is needed to support for the scene in the XBC preview editor.
-   *
    *
    * #### Usage
    *
@@ -94,7 +93,6 @@ export class Scene {
    * return: Promise<Scene>
    *
    * Get a specific scene object given the scene number.
-   *
    *
    * #### Usage
    *
@@ -117,7 +115,6 @@ export class Scene {
    * return: Promise<Scene[]>
    *
    * Asynchronous functon to get a list of scene objects with a specific name.
-   *
    *
    * #### Usage
    *
@@ -480,13 +477,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchItemsById searchItemsById} instead.
-   *
-   * ```
-   * return: Promise<Source>
-   * ```
    *
    * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
@@ -537,13 +532,11 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Scene>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchScenesByItemId searchScenesByItemId} instead.
-   *
-   * ```
-   * return: Promise<Scene>
-   * ```
    *
    * Searches all scenes for one that contains the given source ID.
    *
@@ -591,13 +584,11 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Source[]>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchItemsByName searchItemsByName} instead.
-   *
-   * ```
-   * return: Promise<Source[]>
-   * ```
    *
    * Searches all scenes for a source by name substring. This function
    * compares against custom name first (recommended) before falling back to the
@@ -646,14 +637,14 @@ export class Scene {
   };
 
   /**
+   * param: function(source, resolve)
+   * ```
+   * return: Promise<Source[]>
+   * ```
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#filterItems filterItems} instead.
-   *
-   * ```
-   * param: function(source, resolve)
-   * return: Promise<Source[]>
-   * ```
    *
    * Searches all scenes for sources that satisfies the provided testing function.
    *
@@ -710,14 +701,14 @@ export class Scene {
   }
 
   /**
+   * param: function(source, resolve)
+   * ```
+   * return: Promise<Scene[]>
+   * ```
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#filterScenesByItems filterScenesByItems} instead.
-   *
-   * ```
-   * param: function(source, resolve)
-   * return: Promise<Scene[]>
-   * ```
    *
    * Searches all scenes for sources that satisfies the provided testing
    * function, and then return the scene that contains the source.
@@ -879,13 +870,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source[]>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#getItems getItems} instead.
-   *
-   * ```
-   * return: Promise<Source[]>
-   * ```
    *
    * Gets all the sources in a specific scene.
    * See also: {@link #core/Source Core/Source}
@@ -1056,6 +1045,10 @@ export class Scene {
    * ```
    * return: Promise<Scene>
    * ```
+   *
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#setItemOrder setItemOrder} instead.
    *
    * Sets the source order of the current scene. The first source in the array
    * will be on top (will cover sources below it).
