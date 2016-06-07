@@ -7,6 +7,7 @@ export * from './util/io';
 export * from './core/environment';
 export * from './core/app';
 export * from './core/channel';
+export * from './core/channelmanager';
 export * from './core/scene';
 export * from './core/transition';
 export * from './core/dll';
