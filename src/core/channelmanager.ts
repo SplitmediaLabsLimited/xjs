@@ -2,14 +2,16 @@
 /// <reference path="../../defs/window.d.ts" />
 
 import {EventEmitter} from '../util/eventemitter';
-import {Channel} from '../core/channel';
+import {Channel} from './channel';
 import {JSON as JXON} from '../internal/util/json';
+import {Environment} from './environment';
 
 /**
  *  The ChannelManager class allows limited access to channels (also termed as outputs)
  *  that are being used or set in XSplit Broadcaster.
+ *  This function is not available on Source Properties.
  *
- *  The class also emits events for developers to know when a stream has started 
+ *  The class also emits events for developers to know when a stream has started
  *  or ended.
  *
  *  The following events are emitted.
@@ -52,11 +54,14 @@ export class ChannelManager extends EventEmitter {
    */
   static on(event: string, handler: Function) {
     // ChannelManager._emitter.on(event, handler);
+    if (Environment.isSourceProps()) {
+      console.warn('Channel Manager class cannot be used on Source Properties')
+    }
     ChannelManager._emitter.on(event, (params) => {
       try {
         let channelInfoObj = JSON.parse(decodeURIComponent(params));
         if (channelInfoObj.hasOwnProperty('ChannelName')) {
-          
+
           let channelName = channelInfoObj['ChannelName'];
           let infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
