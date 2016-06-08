@@ -9,11 +9,12 @@ import {JSON as JXON} from '../internal/util/json';
  *  The ChannelManager class allows limited access to channels (also termed as outputs)
  *  that are being used or set in XSplit Broadcaster.
  *
- *  The class also emits events for developers to know when a stream is started or ended.
+ *  The class also emits events for developers to know when a stream has started 
+ *  or ended.
  *
  *  The following events are emitted.
- *    - `stream-started`
- *    - `stream-ended`
+ *    - `stream-start`
+ *    - `stream-end`
  *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
  *
@@ -36,7 +37,18 @@ export class ChannelManager extends EventEmitter {
    *  param: (event: string, handler: Function)
    *
    *  Allows listening to events that this class emits. Currently there are two:
-   *  `stream-started` and `stream-ended`.
+   *  `stream-start` and `stream-end`.
+   *
+   *  Sample usage:
+   *
+   * ```javascript
+   * ChannelManager.on('stream-start', function(res) {
+   *   if (!res.error) { // No error
+   *     var channel = res.channel; // Channel Object
+   *     var streamTime = res.streamTime;
+   *   }
+   * });
+   * ```
    */
   static on(event: string, handler: Function) {
     // ChannelManager._emitter.on(event, handler);
@@ -65,11 +77,14 @@ export class ChannelManager extends EventEmitter {
             channel: infoJSON
           });
 
-          handler.call(this, eventChannel, addedInfo);
-
+          handler.call(this, {
+            error: false,
+            channel: eventChannel,
+            streamTime: addedInfo['streamTime']
+          });
         }
       } catch (e) {
-
+        handler.call(this, { error: true })
       }
     });
   }
