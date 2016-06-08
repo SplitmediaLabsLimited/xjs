@@ -5,6 +5,7 @@ export * from '../src/core/transition';
 export * from '../src/core/channel';
 export * from '../src/core/dll';
 export * from '../src/core/extension';
+export * from '../src/core/channelmanager';
 export {Source} from '../src/core/source/source';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from '../src/core/source/ichroma';
 export {ActionAfterPlayback} from '../src/core/source/iplayback';
