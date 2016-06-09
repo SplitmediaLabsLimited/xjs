@@ -27,6 +27,12 @@ import {ScreenItem} from './items/screen';
 import {ImageItem} from './items/image';
 import {MediaItem} from './items/media';
 
+import {
+  minVersion,
+  versionCompare,
+  getVersion
+} from '../internal/util/version';
+
 
 export class Scene {
   private _id: number | string;
@@ -53,14 +59,26 @@ export class Scene {
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('presetcount').then(cnt => {
-        for (var i = 0; i < Number(cnt); i++) {
-          Scene._scenePool[i] = new Scene(i + 1);
+        Scene._scenePool = [];
+        var count = Number(cnt);
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
+          for (var i = 0; i < Scene._maxScenes; i++) {
+            Scene._scenePool[i] = new Scene(i + 1);
+          }
+          // Add special scene for preview editor (i12)
+          Scene._scenePool.push(new Scene('i12'));
+          resolve(Scene._maxScenes);
+        } else {
+          if ((count + 1) !== Scene._scenePool.length) {
+            for (var i = 0; i < count; i++) {
+              Scene._scenePool[i] = new Scene(i + 1);
+            }
+            // Add special scene for preview editor (i12)
+            Scene._scenePool.push(new Scene('i12'));
+            resolve(count);
+          }
         }
-
-        // Add special scene for preview editor (i12)
-        Scene._scenePool.push(new Scene('i12'));
-
-        resolve(Number(cnt));
       });
     });
   }
@@ -74,7 +92,7 @@ export class Scene {
    * Scene.getSceneCount().then(function(count) {
    *   sceneCount = count;
    * });
-   * 
+   *
    */
 
   static getSceneCount(): Promise<number> {
@@ -124,9 +142,13 @@ export class Scene {
    * ```
    */
   static getByIdAsync(sceneNum: number): Promise<Scene> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       Scene._initializeScenePoolAsync().then(cnt => {
-        resolve(Scene._scenePool[sceneNum - 1]);
+        if (sceneNum > cnt){
+          reject(Error('Invalid parameter'))
+        } else {
+          resolve(Scene._scenePool[sceneNum - 1]);
+        }
       });
     });
   }
