@@ -63,10 +63,19 @@ export class ItemConfigurable {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);
-        // only allow direct saving for self
-        if (slot === 0) {
-          // check for valid object
-          if ({}.toString.call(configObj) === '[object Object]') {
+        let savingAllowed = false;
+        iItem.get('itemlist').then(itemlist => {
+          // for versions lower than 2.8
+          if (itemlist === 'null' ) {
+            savingAllowed = (slot === 0);
+          } else {
+            const itemsArray = itemlist.split(',');
+            savingAllowed = (itemsArray.indexOf(this._id) > -1);
+          }
+          // only allow direct saving for self
+          if (savingAllowed) {
+            // check for valid object
+            if ({}.toString.call(configObj) === '[object Object]') {
               // add persisted configuration if available
               // currently only top level merging is available
               let persist = Global.getPersistentConfig();
@@ -86,12 +95,13 @@ export class ItemConfigurable {
               'calling requestSaveConfig() on this Item ' +
               'instance instead.'));
           }
-        } else {
-          reject(Error(
-            'Extensions and source properties windows are ' +
-            'not allowed to directly save configuration objects. ' +
-            'Call requestSaveConfig() instead.'));
-        }
+        });
+      } else {
+        reject(Error(
+          'Extensions and source properties windows are ' +
+          'not allowed to directly save configuration objects. ' +
+          'Call requestSaveConfig() instead.'));
+      }
     });
   }
 
