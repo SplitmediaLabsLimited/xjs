@@ -833,20 +833,24 @@ export class Scene {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
-      }
-
-      iApp.get('presetcount').then(cnt => {
-        if (Number(cnt) !== 4) {
-          // Insert an empty scene for scene #12
-          iApp
-            .set('presetconfig:3', '<placement name="Scene 4" defpos="0" />')
-            .then(res => {
-              resolve(res);
-            });
+      } else {
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          iApp.get('presetcount').then(cnt => {
+            if (Number(cnt) < 12) {
+              // Insert an empty scene for scene #12
+              iApp
+                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                .then(res => {
+                  resolve(res);
+                });
+            } else {
+              resolve(true);
+            }
+          });
         } else {
           resolve(true);
         }
-      });
+      }
     });
   }
 
