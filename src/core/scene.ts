@@ -27,6 +27,12 @@ import {ScreenItem} from './items/screen';
 import {ImageItem} from './items/image';
 import {MediaItem} from './items/media';
 
+import {
+  minVersion,
+  versionCompare,
+  getVersion
+} from '../internal/util/version';
+
 
 export class Scene {
   private _id: number | string;
@@ -53,18 +59,48 @@ export class Scene {
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('presetcount').then(cnt => {
+        Scene._scenePool = [];
         var count = Number(cnt);
-        (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
-        for (var i = 0; i < Scene._maxScenes; i++) {
-          Scene._scenePool[i] = new Scene(i + 1);
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
+          for (var i = 0; i < Scene._maxScenes; i++) {
+            Scene._scenePool[i] = new Scene(i + 1);
+          }
+          // Add special scene for preview editor (i12)
+          Scene._scenePool.push(new Scene('i12'));
+          resolve(Scene._maxScenes);
+        } else {
+          if ((count + 1) !== Scene._scenePool.length) {
+            for (var i = 0; i < count; i++) {
+              Scene._scenePool[i] = new Scene(i + 1);
+            }
+            // Add special scene for preview editor (i12)
+            Scene._scenePool.push(new Scene('i12'));
+            resolve(count);
+          }
         }
-
-        // Add special scene for preview editor (i12)
-        Scene._scenePool.push(new Scene('i12'));
-
-        resolve(Scene._maxScenes);
       });
     });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the specific number of scenes loaded.
+   * ```javascript
+   * var sceneCount;
+   * Scene.getSceneCount().then(function(count) {
+   *   sceneCount = count;
+   * });
+   *
+   */
+
+  static getSceneCount(): Promise<number> {
+    return new Promise(resolve => {
+      Scene._initializeScenePoolAsync().then(count => {
+        resolve(count)
+      })
+    })
   }
 
   /**
@@ -104,9 +140,13 @@ export class Scene {
    * ```
    */
   static getByIdAsync(sceneNum: number): Promise<Scene> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       Scene._initializeScenePoolAsync().then(cnt => {
-        resolve(Scene._scenePool[sceneNum - 1]);
+        if (sceneNum > cnt){
+          reject(Error('Invalid parameter'))
+        } else {
+          resolve(Scene._scenePool[sceneNum - 1]);
+        }
       });
     });
   }
@@ -198,8 +238,8 @@ export class Scene {
             });
           });
         } else if (typeof scene === 'number') {
-          if (scene < 1 || scene > 12) {
-            reject(Error('Invalid parameters. Valid range is 1 to 12.'));
+          if (scene < 1) {
+            reject(Error('Invalid parameters. Valid range is greater than 0'));
           } else {
             iApp.set('preset', String(scene - 1)).then(res => {
               resolve(res);
@@ -784,20 +824,24 @@ export class Scene {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
-      }
-
-      iApp.get('presetcount').then(cnt => {
-        if (Number(cnt) !== 12) {
-          // Insert an empty scene for scene #12
-          iApp
-            .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
-            .then(res => {
-              resolve(res);
-            });
+      } else {
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          iApp.get('presetcount').then(cnt => {
+            if (Number(cnt) < 12) {
+              // Insert an empty scene for scene #12
+              iApp
+                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                .then(res => {
+                  resolve(res);
+                });
+            } else {
+              resolve(true);
+            }
+          });
         } else {
           resolve(true);
         }
-      });
+      }
     });
   }
 
