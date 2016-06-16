@@ -519,8 +519,8 @@ export class Item implements IItemLayout {
    * return: Promise<Item>
    *
    * > #### For Deprecation
-   * This method is deprecated and will be removed soon. Please use
-   * {@link #core/Item#getItemList getItemList} instead.
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Item#getItemList getItemList} instead.
    *
    * Get the current source (when function is called by sources), or the source
    * that was right-clicked to open the source properties window (when function is called

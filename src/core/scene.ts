@@ -70,12 +70,11 @@ export class Scene {
   /**
    * return: Scene
    *
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#getByIdAsync getByIdAsync} instead.
+   *
    * Get a specific scene object given the scene number.
-   *
-   * ** FOR DEPRECATION **
-   * This method doesn't account for scenes greater than 12,
-   * which is needed to support for the scene in the XBC preview editor.
-   *
    *
    * #### Usage
    *
@@ -94,7 +93,6 @@ export class Scene {
    * return: Promise<Scene>
    *
    * Get a specific scene object given the scene number.
-   *
    *
    * #### Usage
    *
@@ -117,7 +115,6 @@ export class Scene {
    * return: Promise<Scene[]>
    *
    * Asynchronous functon to get a list of scene objects with a specific name.
-   *
    *
    * #### Usage
    *
@@ -480,13 +477,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchItemsById searchItemsById} instead.
-   *
-   * ```
-   * return: Promise<Source>
-   * ```
    *
    * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
    *
@@ -537,13 +532,11 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Scene>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchScenesByItemId searchScenesByItemId} instead.
-   *
-   * ```
-   * return: Promise<Scene>
-   * ```
    *
    * Searches all scenes for one that contains the given source ID.
    *
@@ -591,13 +584,11 @@ export class Scene {
   };
 
   /**
+   * return: Promise<Source[]>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#searchItemsByName searchItemsByName} instead.
-   *
-   * ```
-   * return: Promise<Source[]>
-   * ```
    *
    * Searches all scenes for a source by name substring. This function
    * compares against custom name first (recommended) before falling back to the
@@ -646,14 +637,14 @@ export class Scene {
   };
 
   /**
+   * param: function(source, resolve)
+   * ```
+   * return: Promise<Source[]>
+   * ```
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#filterItems filterItems} instead.
-   *
-   * ```
-   * param: function(source, resolve)
-   * return: Promise<Source[]>
-   * ```
    *
    * Searches all scenes for sources that satisfies the provided testing function.
    *
@@ -710,14 +701,14 @@ export class Scene {
   }
 
   /**
+   * param: function(source, resolve)
+   * ```
+   * return: Promise<Scene[]>
+   * ```
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#filterScenesByItems filterScenesByItems} instead.
-   *
-   * ```
-   * param: function(source, resolve)
-   * return: Promise<Scene[]>
-   * ```
    *
    * Searches all scenes for sources that satisfies the provided testing
    * function, and then return the scene that contains the source.
@@ -879,13 +870,11 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source[]>
+   *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
    * Please use {@link #core/Scene#getItems getItems} instead.
-   *
-   * ```
-   * return: Promise<Source[]>
-   * ```
    *
    * Gets all the sources in a specific scene.
    * See also: {@link #core/Source Core/Source}
@@ -1057,6 +1046,10 @@ export class Scene {
    * return: Promise<Scene>
    * ```
    *
+   * > #### For Deprecation
+   * This method is deprecated and will be removed soon.
+   * Please use {@link #core/Scene#setItemOrder setItemOrder} instead.
+   *
    * Sets the source order of the current scene. The first source in the array
    * will be on top (will cover sources below it).
    */
@@ -1123,6 +1116,89 @@ export class Scene {
                   XML.parseJSON(newOrder).toString()
                 ).then(() => {
                     resolve(this);
+                });
+              } else {
+                reject(Error('Scene does not have any source'));
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  /**
+ * param: Array<Source> | Array<string> (source IDs)
+ * ```
+ * return: Promise<Scene>
+ * ```
+ *
+ * Sets the item order of the current scene. The first item in the array
+ * will be on top (will cover sources below it).
+ */
+  setItemOrder(sources: Array<any>): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('not available for source plugins'));
+      } else {
+        sources.reverse();
+        let ids = [];
+        Scene.getActiveScene().then(scene => {
+          if (sources.every(el => { return el instanceof Source })) {
+            return new Promise(resolve => {
+              let promises = [];
+              for (let i in sources) {
+                promises.push((_i => {
+                  return new Promise(resolve => {
+                    sources[_i].getId().then(id => {
+                      ids[_i] = id;
+                      resolve(this);
+                    });
+                  });
+                })(i));
+              }
+
+              Promise.all(promises).then(() => {
+                return scene.getSceneNumber();
+              }).then(id => {
+                resolve(id);
+              });
+            });
+          } else {
+            ids = sources;
+            return scene.getSceneNumber();
+          }
+        }).then(id => {
+          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
+            exec('SourcesListOrderSave', ids.join(','));
+            resolve(this);
+          } else {
+            let sceneName: string;
+            this.getName().then(name => {
+              sceneName = name;
+              return iApp.getAsList('presetconfig:' + this._id);
+            }).then(jsonArr => {
+              let newOrder = new JXON();
+              newOrder.children = [];
+              newOrder['tag'] = 'placement';
+              newOrder['name'] = sceneName;
+              if (Array.isArray(jsonArr)) {
+                let attrs = ['name', 'cname', 'item'];
+                for (let i = 0; i < jsonArr.length; i++) {
+                  for (let a = 0; a < attrs.length; a++) {
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
+                      .replace(/"/g, '&quot;');
+                  }
+                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                }
+
+                iApp.set(
+                  'presetconfig:' + this._id,
+                  XML.parseJSON(newOrder).toString()
+                ).then(() => {
+                  resolve(this);
                 });
               } else {
                 reject(Error('Scene does not have any source'));
