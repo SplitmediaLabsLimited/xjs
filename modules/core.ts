@@ -3,6 +3,7 @@ export * from '../src/core/app';
 export * from '../src/core/scene';
 export * from '../src/core/transition';
 export * from '../src/core/channel';
+export * from '../src/core/channelmanager';
 export * from '../src/core/dll';
 export * from '../src/core/extension';
 export {Item} from '../src/core/items/item';

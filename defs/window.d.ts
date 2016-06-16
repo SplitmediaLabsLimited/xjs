@@ -13,4 +13,5 @@ interface Window {
   OnGetVideoDuration: Function;
   OnGetVideoDurationFailed: Function;
   Setid: Function;
+  SetEvent: Function;
 }
