@@ -1061,7 +1061,7 @@ export class Scene {
         sources.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (sources.every(el => { return el instanceof Source })) {
+          if (sources.every(el => { return (el instanceof Source || el instanceof Item) })) {
             return new Promise(resolve => {
               let promises = [];
               for (let i in sources) {
