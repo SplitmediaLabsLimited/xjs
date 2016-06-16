@@ -10,11 +10,15 @@ This document describes how to release a new version of XSplit JS Framework
 2. **Prepare the release branch**
 
   Merge all branches to develop and then create the release branch. Execute
-`gulp version --up --major|minor|path` to transpile and bundle the project.
+`gulp version --up --major|minor|patch` to transpile and bundle the project.
 
   This will update the version number in the `package.json` file and also
 creates the bundled `xjs.js` file, along with the minified version and es2015
 version.
+
+  *NOTE:* In case you want to specify the version number, you can simply execute
+  `gulp version --version 1.5.0`, which would set package.json, bower.json, and
+  all the transpiled xjs files' version to 1.5.0.
 
 3. **Prepare the website for release**
 
