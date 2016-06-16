@@ -124,9 +124,33 @@ export class Item implements IItemLayout {
   setName(value: string): Promise<Item> {
     return new Promise(resolve => {
       this._name = value;
-      iItem.set('prop:name', this._name, this._id).then(() => {
-        resolve(this);
-      });
+
+      if (
+        versionCompare(getVersion())
+          .is
+          .lessThan(minVersion)
+      ) {
+        iItem.set('prop:name', this._name, this._id).then(() => {
+          resolve(this);
+        });
+      } else {
+        iItem.get('itemlist', this._id).then(itemlist => {
+          const promiseArray: Promise<boolean>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              iItem.set('prop:name', this._name, itemId).then(() => {
+                itemResolve(true);
+              });
+            }));
+          });
+
+          Promise.all(promiseArray).then(() => {
+            resolve(this);
+          });
+        });
+      }
     });
   }
 
