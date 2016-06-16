@@ -591,7 +591,11 @@ export class Item implements IItemLayout {
           .is
           .lessThan(minVersion)
       ) {
-        reject(Error('Only available on versions above ' + minVersion));
+        Scene.searchItemsById(iItem.getBaseId()).then(item => {
+          const itemArray = [];
+          itemArray.push(item);
+          resolve(itemArray);
+        });
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];
@@ -639,7 +643,11 @@ export class Item implements IItemLayout {
           .is
           .lessThan(minVersion)
       ) {
-        reject(Error('Only available on versions above ' + minVersion));
+        Scene.searchItemsById(this._id).then(item => {
+          const itemArray = [];
+          itemArray.push(item);
+          resolve(itemArray);
+        });
       } else {
         iItem.get('itemlist', this._id).then(itemlist => {
           const promiseArray: Promise<Item>[] = [];
