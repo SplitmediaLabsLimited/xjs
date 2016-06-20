@@ -92,7 +92,7 @@ export class Scene {
    * Scene.getSceneCount().then(function(count) {
    *   sceneCount = count;
    * });
-   *
+   * ```
    */
 
   static getSceneCount(): Promise<number> {
