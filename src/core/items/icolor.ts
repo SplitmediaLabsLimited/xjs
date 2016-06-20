@@ -8,14 +8,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get source transparency value
+   * Get item transparency value
    */
   getTransparency(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set source transparency
+   * Set item transparency
    *
    * *Chainable.*
    */
@@ -24,14 +24,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get source brightness value
+   * Get item brightness value
    */
   getBrightness(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set source brightness
+   * Set item brightness
    *
    * *Chainable.*
    */
@@ -40,14 +40,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get source contrast value
+   * Get item contrast value
    */
   getContrast(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set source contrast
+   * Set item contrast
    *
    * *Chainable.*
    */
@@ -56,14 +56,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get source hue value
+   * Get item hue value
    */
   getHue(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set source hue
+   * Set item hue
    *
    * *Chainable.*
    */
@@ -72,14 +72,14 @@ export interface IItemColor {
   /**
    * return: Promise<number>
    *
-   * Get source saturation value
+   * Get item saturation value
    */
   getSaturation(): Promise<number>;
 
   /**
    * param: value<number>
    *
-   * Set source saturation
+   * Set item saturation
    *
    * *Chainable.*
    */
@@ -104,7 +104,7 @@ export interface IItemColor {
   /**
    * return: Promise<boolean>
    *
-   * Determines whether source uses the full dynamic color range of 0-255 as opposed to the limited 16-235 range
+   * Determines whether item uses the full dynamic color range of 0-255 as opposed to the limited 16-235 range
    */
   isFullDynamicColorRange(): Promise<boolean>;
 
@@ -115,7 +115,7 @@ export interface IItemColor {
    *
    * *Chainable.*
    */
-  setFullDynamicColorRange(value: boolean): Promise<IItemColor>;  
+  setFullDynamicColorRange(value: boolean): Promise<IItemColor>;
 }
 
 export class ItemColor implements IItemColor {

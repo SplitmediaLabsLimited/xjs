@@ -6,13 +6,13 @@ import {Color} from '../../util/color';
 /**
  *  Used by sources that implement the Effect interface.
  *  Check `getMaskEffect()`/`setMaskEffect()` method of
- *  {@link #core/CameraSource#getMaskEffect Core/CameraSource},
- *  {@link #core/FlashSource#getMaskEffect Core/FlashSource},
- *  {@link #core/GameSource#getMaskEffect Core/GameSource},
- *  {@link #core/HtmlSource#getMaskEffect Core/HtmlSource},
- *  {@link #core/ImageSource#getMaskEffect Core/ImageSource},
- *  {@link #core/MediaSource#getMaskEffect Core/MediaSource}, and
- *  {@link #core/ScreenSource#getMaskEffect Core/ScreenSource}.
+ *  {@link #core/CameraItem#getMaskEffect Core/CameraItem},
+ *  {@link #core/FlashItem#getMaskEffect Core/FlashItem},
+ *  {@link #core/GameItem#getMaskEffect Core/GameItem},
+ *  {@link #core/HtmlItem#getMaskEffect Core/HtmlItem},
+ *  {@link #core/ImageItem#getMaskEffect Core/ImageItem},
+ *  {@link #core/MediaItem#getMaskEffect Core/MediaItem}, and
+ *  {@link #core/ScreenItem#getMaskEffect Core/ScreenItem}.
  */
 export enum MaskEffect {
     NONE,

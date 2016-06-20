@@ -17,7 +17,7 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Persists a JSON object for configuration. Available to sources only.
+   * Persists a JSON object for configuration. Available to items only.
    *
    * *Chainable.*
    */
@@ -26,16 +26,16 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Requests the source to save a configuration. This makes the source emit the save-config event.
+   * Requests the item to save a configuration. This makes the item emit the save-config event.
    *
    * *Chainable.*
    */
   requestSaveConfig(configObj: any);
-  
+
   /**
    * param: config<JSON>
    *
-   * Requests the source to save a configuration. This makes the source emit the apply-config event.
+   * Requests the item to save a configuration. This makes the item emit the apply-config event.
    *
    * *Chainable.*
    */
@@ -63,10 +63,19 @@ export class ItemConfigurable {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);
-        // only allow direct saving for self
-        if (slot === 0) {
-          // check for valid object
-          if ({}.toString.call(configObj) === '[object Object]') {
+        let savingAllowed = false;
+        iItem.get('itemlist').then(itemlist => {
+          // for versions lower than 2.8
+          if (itemlist === 'null' ) {
+            savingAllowed = (slot === 0);
+          } else {
+            const itemsArray = itemlist.split(',');
+            savingAllowed = (itemsArray.indexOf(this._id) > -1);
+          }
+          // only allow direct saving for self
+          if (savingAllowed) {
+            // check for valid object
+            if ({}.toString.call(configObj) === '[object Object]') {
               // add persisted configuration if available
               // currently only top level merging is available
               let persist = Global.getPersistentConfig();
@@ -81,17 +90,18 @@ export class ItemConfigurable {
                 'in JSON format.'));
             }
           } else {
-            reject(Error('Sources may only request other ' +
-              'sources to save a configuration. Consider ' +
+            reject(Error('Items may only request other ' +
+              'Items to save a configuration. Consider ' +
               'calling requestSaveConfig() on this Item ' +
               'instance instead.'));
           }
-        } else {
-          reject(Error(
-            'Extensions and source properties windows are ' +
-            'not allowed to directly save configuration objects. ' +
-            'Call requestSaveConfig() instead.'));
-        }
+        });
+      } else {
+        reject(Error(
+          'Extensions and source properties windows are ' +
+          'not allowed to directly save configuration objects. ' +
+          'Call requestSaveConfig() instead.'));
+      }
     });
   }
 

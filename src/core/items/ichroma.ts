@@ -4,11 +4,11 @@ import {Item as iItem} from '../../internal/item';
 import {Color} from '../../util/color';
 
 /**
- *  Used by sources that implement the Chroma interface.
+ *  Used by items that implement the Chroma interface.
  *  Check `getKeyingType()`/`setKeyingType()` method of
- *  {@link #core/CameraSource#getKeyingType Core/CameraSource},
- *  {@link #core/GameSource#getKeyingType Core/GameSource}, and
- *  {@link #core/HtmlSource#getKeyingType Core/HtmlSource}.
+ *  {@link #core/CameraItem#getKeyingType Core/CameraItem},
+ *  {@link #core/GameItem#getKeyingType Core/GameItem}, and
+ *  {@link #core/HtmlItem#getKeyingType Core/HtmlItem}.
  */
 export enum KeyingType {
     LEGACY, // Chroma Key Legacy Mode
@@ -17,13 +17,13 @@ export enum KeyingType {
 }
 
 /**
- *  Used by sources that implement the Chroma interface, when using RGB mode
+ *  Used by items that implement the Chroma interface, when using RGB mode
  *  Chroma Key.
  *
  *  Check `getChromaRGBKeyPrimaryColor()`/`setChromaRGBKeyPrimaryColor()` method
- *  of {@link #core/CameraSource#getChromaRGBKeyPrimaryColor Core/CameraSource},
- *  {@link #core/GameSource#getChromaRGBKeyPrimaryColor Core/GameSource}, and
- *  {@link #core/HtmlSource#getChromaRGBKeyPrimaryColor Core/HtmlSource}.
+ *  of {@link #core/CameraItem#getChromaRGBKeyPrimaryColor Core/CameraItem},
+ *  {@link #core/GameItem#getChromaRGBKeyPrimaryColor Core/GameItem}, and
+ *  {@link #core/HtmlItem#getChromaRGBKeyPrimaryColor Core/HtmlItem}.
  */
 export enum ChromaPrimaryColors {
     RED,
@@ -32,12 +32,12 @@ export enum ChromaPrimaryColors {
 }
 
 /**
- *  Used by sources that implement the Chroma interface.
+ *  Used by items that implement the Chroma interface.
  *
  *  Check `getChromaAntiAliasLevel()`/`setChromaAntiAliasLevel()` method
- *  of {@link #core/CameraSource#getChromaAntiAliasLevel Core/CameraSource},
- *  {@link #core/GameSource#getChromaAntiAliasLevel Core/GameSource}, and
- *  {@link #core/HtmlSource#getChromaAntiAliasLevel Core/HtmlSource}.
+ *  of {@link #core/CameraItem#getChromaAntiAliasLevel Core/CameraItem},
+ *  {@link #core/GameItem#getChromaAntiAliasLevel Core/GameItem}, and
+ *  {@link #core/HtmlItem#getChromaAntiAliasLevel Core/HtmlItem}.
  */
 export enum ChromaAntiAliasLevel {
     NONE,
@@ -62,7 +62,7 @@ export interface IItemChroma {
    * *Chainable.*
    */
   setChromaEnabled(value: boolean): Promise<IItemChroma>;
-  
+
   /**
    * return: Promise<KeyingType>
    *
@@ -123,7 +123,7 @@ export interface IItemChroma {
    *
    * Gets the saturation setting (0-255).  Only relevant when chroma keying is in Legacy mode.
    */
-  getChromaLegacySaturation(): Promise<number>; 
+  getChromaLegacySaturation(): Promise<number>;
 
   /**
    * param: (value: number)
@@ -155,7 +155,7 @@ export interface IItemChroma {
    *
    * Gets the threshold setting (0-255). Only relevant when chroma keying is in Legacy mode.
    */
-  getChromaLegacyThreshold(): Promise<number>; 
+  getChromaLegacyThreshold(): Promise<number>;
 
   /**
    * param: (value: number)

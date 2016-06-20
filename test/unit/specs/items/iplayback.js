@@ -9,7 +9,22 @@ describe('Playback interface', function() {
 
   var local = {};
   var attachedId;
-  var enumeratedSources;
+  var enumeratedItems;
+
+  var appVersion = navigator.appVersion;
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
 
   var env = new window.Environment(XJS);
   var environments = {
@@ -42,8 +57,8 @@ describe('Playback interface', function() {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
-      var sourceSelected = placement.querySelector(selected);
-      xCallback(asyncId, sourceSelected.getAttribute(property));
+      var itemSelected = placement.querySelector(selected);
+      xCallback(asyncId, itemSelected.getAttribute(property));
     }
 
     return asyncId;
@@ -68,11 +83,13 @@ describe('Playback interface', function() {
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+
     // reset attached IDs
-    var source1 = new XJS.Source({id : '{ID}'});
-    var source2 = new XJS.Source({id : '{ID2}'});
-    source1.getType();
-    source2.getType();
+    var item1 = new XJS.Item({id : '{ID}'});
+    var item2 = new XJS.Item({id : '{ID2}'});
 
     local = {};
 
@@ -119,31 +136,42 @@ describe('Playback interface', function() {
     .and.callFake(setLocal);
 
     Scene.getActiveScene().then(function(newScene) {
-      return newScene.getSources();
-    }).then(function(sources) {
-      enumeratedSources = sources;
+      return newScene.getItems();
+    }).then(function(items) {
+      enumeratedItems = items;
       done();
     });
   });
 
-  it('can correctly identify video and audio', function(done) {
-    var videoSource = enumeratedSources[0];
-    var audioSource = enumeratedSources[1];
+  afterEach(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  });
 
-    videoSource.isVideo().then(function(result) {
-      expect(result).toBe(true);
-      return videoSource.isAudio();
-    }).then(function(result) {
-      expect(result).toBe(false);
-      return audioSource.isVideo();
-    }).then(function(result) {
-      expect(result).toBe(false);
-      return audioSource.isAudio();
-    }).then(function(result) {
-      expect(result).toBe(true);
+  it('can correctly identify video and audio', function(done) {
+    exec(function(next) {
+      var videoItem = enumeratedItems[0];
+      var audioItem = enumeratedItems[1];
+      attachedId = videoItem._id;
+      videoItem.isVideo().then(function(result) {
+        expect(result).toBe(true);
+        return videoItem.isAudio();
+      }).then(function(result) {
+        expect(result).toBe(false);
+        attachedId = audioItem._id;
+        return audioItem.isVideo();
+      }).then(function(result) {
+        expect(result).toBe(false);
+        return audioItem.isAudio();
+      }).then(function(result) {
+        expect(result).toBe(true);
+        next();
+      }).catch(function(error) {
+        done.fail(error);
+      });
+    }).then(function() {
       done();
-    }).catch(function(error) {
-      done.fail(error);
     });
   });
 
@@ -177,39 +205,43 @@ describe('Playback interface', function() {
       'isVideo'
       ].join(',');
 
-    expect(enumeratedSources[0]).hasMethods(methods);
-    expect(enumeratedSources[1]).hasMethods(methods);
+    expect(enumeratedItems[0]).hasMethods(methods);
+    expect(enumeratedItems[1]).hasMethods(methods);
   });
 
   it('detects playback start and end positions properly', function(done) {
-    // the audio source in test case has these positions set already
-    var audioSource = enumeratedSources[1];
+    // the audio Item in test case has these positions set already
+    var audioItem = enumeratedItems[1];
 
-    audioSource.getPlaybackStartPosition().then(function(pos) {
-      expect(pos > 0).toBe(true);
-      return audioSource.getPlaybackEndPosition();
-    }).then(function(pos) {
-      expect(pos > 0).toBe(true);
-      done();
-    }).catch(function(err) {
-      done.fail(err);
-    });
+    exec(function(next) {
+      audioItem.getPlaybackStartPosition().then(function(pos) {
+        expect(pos > 0).toBe(true);
+        return audioItem.getPlaybackEndPosition();
+      }).then(function(pos) {
+        expect(pos > 0).toBe(true);
+        next();
+      }).catch(function(err) {
+        done.fail(err);
+      });
+    }).then(done);
   });
 
   it('detects cue points properly', function(done) {
-    // the video source in test case has cue points declared already
-    var videoSource = enumeratedSources[0];
+    // the video Item in test case has cue points declared already
+    exec(function(next) {
+      var videoItem = enumeratedItems[0];
+      attachedId = videoItem._id;
+      videoItem.getCuePoints().then(function(points) {
+        expect(points).not.toBeEmptyArray();
+        expect(points[0].getTime()).toBeTypeOf('number');
+        expect(points[0].getTime() > 0).toBe(true);
+        expect(points[0].getAction()).toBeTypeOf('string');
+        expect(points[0].getAction()).not.toBe('');
 
-    videoSource.getCuePoints().then(function(points) {
-      expect(points).not.toBeEmptyArray();
-      expect(points[0].getTime()).toBeTypeOf('number');
-      expect(points[0].getTime() > 0).toBe(true);
-      expect(points[0].getAction()).toBeTypeOf('string');
-      expect(points[0].getAction()).not.toBe('');
-
-      done();
-    }).catch(function(err) {
-      done.fail(err);
-    });
+        next();
+      }).catch(function(err) {
+        done.fail(err);
+      });
+    }).then(done);
   });
 });

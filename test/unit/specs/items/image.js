@@ -1,12 +1,12 @@
 
 /* globals describe, it, expect, require, beforeEach, beforeAll, spyOn */
 
-describe('ImageSource', function() {
+describe('ImageItem', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var ImageSource = XJS.ImageSource;
+  var ImageItem = XJS.ImageItem;
   var env = new window.Environment(XJS);
   var enumerated = [];
   var isXSplit = /xsplit broadcaster/ig.test(navigator.appVersion);
@@ -17,7 +17,9 @@ describe('ImageSource', function() {
   var TYPE_BITMAP = 4;
   var TYPE_FILE = 1;
 
-  var currentImageSource;
+  var appVersion = navigator.appVersion;
+
+  var currentImageItem;
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -31,11 +33,11 @@ describe('ImageSource', function() {
         var placement = parseXml(mockPresetConfig)
           .getElementsByTagName('placement')[0];
         var selected = '[id="' + attachedID + '"]';
-        var sourceSelected = placement.querySelector(selected);
+        var itemSelected = placement.querySelector(selected);
         //return type attribute
         var irand = rand;
         setTimeout(function() {
-          window.OnAsyncCallback(irand, sourceSelected.getAttribute('type'));
+          window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
         },10);
       break;
 
@@ -50,11 +52,11 @@ describe('ImageSource', function() {
           var placement = parseXml(mockPresetConfig)
             .getElementsByTagName('placement')[0];
           var selected = '[id="' + attachedID + '"]';
-          var sourceSelected = placement.querySelector(selected);
+          var itemSelected = placement.querySelector(selected);
           //return item attribute
           var irand = rand;
           setTimeout(function() {
-            window.OnAsyncCallback(irand, sourceSelected.getAttribute('item'));
+            window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
           },10);
         }
       break;
@@ -64,70 +66,72 @@ describe('ImageSource', function() {
 
   beforeEach(function(done) {
     env.set('extension');
-    if (!isXSplit) {
-      // Reset the attached IDS
-      var source1 = new XJS.Source({id : '{SCREENID}' });
-      var source2 = new XJS.Source({id : '{SCREENID2}'});
-      source1.getType();
-      source2.getType();
 
-      spyOn(window.external, 'AppGetPropertyAsync')
-        .and.callFake(function(funcName) {
-        rand += 1;
-        switch (funcName) {
-          case 'presetconfig:0':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand,
-                encodeURIComponent(mockPresetConfig));
-            },10);
-          break;
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
 
-          case 'presetcount':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand, '12');
-            },10);
-          break;
+    // Reset the attached IDS
+    var item1 = new XJS.Item({id : '{SCREENID}' });
+    var item2 = new XJS.Item({id : '{SCREENID2}'});
 
-          case 'preset:0':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand, '0');
-            },10);
-          break;
-        }
-        return rand;
-      });
+    spyOn(window.external, 'AppGetPropertyAsync')
+      .and.callFake(function(funcName) {
+      rand += 1;
+      switch (funcName) {
+        case 'presetconfig:0':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand,
+              encodeURIComponent(mockPresetConfig));
+          },10);
+        break;
 
-      spyOn(window.external, 'SearchVideoItem')
-      .and.callFake(function(ID) {
-        attachedID = ID;
-      });
+        case 'presetcount':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, '12');
+          },10);
+        break;
 
-      spyOn(window.external, 'SearchVideoItem2')
-      .and.callFake(function(ID) {
-        attachedID = ID;
-      });
+        case 'preset:0':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, '0');
+          },10);
+        break;
+      }
+      return rand;
+    });
 
-      spyOn(window.external, 'GetLocalPropertyAsync')
-      .and.callFake(getLocal);
+    spyOn(window.external, 'SearchVideoItem')
+    .and.callFake(function(ID) {
+      attachedID = ID;
+    });
 
-      spyOn(window.external, 'GetLocalPropertyAsync2')
-      .and.callFake(getLocal);
-    }
+    spyOn(window.external, 'SearchVideoItem2')
+    .and.callFake(function(ID) {
+      attachedID = ID;
+    });
+
+    spyOn(window.external, 'GetLocalPropertyAsync')
+    .and.callFake(getLocal);
+
+    spyOn(window.external, 'GetLocalPropertyAsync2')
+    .and.callFake(getLocal);
+
     if (enumerated.length !== 0) {
       done();
     } else {
       Scene.getActiveScene().then(function(newScene) {
-        newScene.getSources().then(function(sources) {
-          var sourceArray = sources;
-          var sourceArrayLength = sourceArray.length;
+        newScene.getItems().then(function(items) {
+          var itemArray = items;
+          var itemArrayLength = itemArray.length;
 
-          if (sourceArrayLength > 0) {
-            for (var i = 0; i < sourceArrayLength; i++) {
-              if (sourceArray[i] instanceof ImageSource) {
-                enumerated.push(sourceArray[i]);
+          if (itemArrayLength > 0) {
+            for (var i = 0; i < itemArrayLength; i++) {
+              if (itemArray[i] instanceof ImageItem) {
+                enumerated.push(itemArray[i]);
               }
             }
           }
@@ -138,35 +142,40 @@ describe('ImageSource', function() {
     }
   });
 
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  });
 
-  it('should be detected by getSources() correctly', function(done) {
+  it('should be detected by getItems() correctly', function(done) {
     var placement = parseXml(mockPresetConfig)
       .getElementsByTagName('placement')[0];
     // regular images
     var bitmapSelector = '[type="' + TYPE_BITMAP + '"]';
-    var bitmapSources = placement.querySelectorAll(bitmapSelector);
+    var bitmapItems = placement.querySelectorAll(bitmapSelector);
     // gifs
     var gifSelector = '[type="' + TYPE_FILE + '"]';
-    var fileTypeSources = placement.querySelectorAll(gifSelector);
-    var gifSources = [].filter.call(fileTypeSources, function(node) {
+    var fileTypeItems = placement.querySelectorAll(gifSelector);
+    var gifItems = [].filter.call(fileTypeItems, function(node) {
       return /\.gif$/.test(node.getAttribute('item'));
     });
 
-    expect(bitmapSources.length + gifSources.length).toBe(enumerated.length);
+    expect(bitmapItems.length + gifItems.length).toBe(enumerated.length);
     done();
   });
 
   describe('interface method checking', function() {
     beforeAll(function(done) {
       if (enumerated.length > 0) {
-        currentImageSource = enumerated[0];
+        currentImageItem = enumerated[0];
       }
       done();
     });
 
     it('should implement the layout interface', function() {
-      if (currentImageSource !== null) {
-        expect(currentImageSource).hasMethods([
+      if (currentImageItem !== null) {
+        expect(currentImageItem).hasMethods([
           'isKeepAspectRatio',
           'setKeepAspectRatio',
           'isPositionLocked',
@@ -180,8 +189,8 @@ describe('ImageSource', function() {
     });
 
     it('should implement the color interface', function() {
-      if (currentImageSource !== null) {
-        expect(currentImageSource).hasMethods([
+      if (currentImageItem !== null) {
+        expect(currentImageItem).hasMethods([
           'getTransparency',
           'setTransparency',
           'getBrightness',
@@ -199,8 +208,8 @@ describe('ImageSource', function() {
     });
 
     it('should implement the chroma interface', function() {
-      if (currentImageSource !== null) {
-        expect(currentImageSource).hasMethods([
+      if (currentImageItem !== null) {
+        expect(currentImageItem).hasMethods([
           'isChromaEnabled',
           'setChromaEnabled',
           'getKeyingType',
@@ -234,8 +243,8 @@ describe('ImageSource', function() {
     });
 
     it('should implement the transition interface', function() {
-      if (currentImageSource !== null) {
-        expect(currentImageSource).hasMethods([
+      if (currentImageItem !== null) {
+        expect(currentImageItem).hasMethods([
           'isVisible',
           'setVisible',
           'getTransition',

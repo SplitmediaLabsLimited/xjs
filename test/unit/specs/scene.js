@@ -1,15 +1,36 @@
-/* globals describe, it, expect, require, beforeEach, jasmine, spyOn, beforeAll */
+/* globals describe, it, expect, require, beforeEach, jasmine, spyOn, beforeAll, afterEach, afterAll */
 
 describe('Scene', function() {
   'use strict';
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var Source = XJS.Source;
+  var Item = XJS.Item;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
+  var appVersion = navigator.appVersion;
 
   var MAX_SCENES = 12;
+
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
+  ]);
+  var exec = mix.exec.bind(mix);
+
+  afterEach(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  });
 
   describe('should be able to fetch a specific scene by index', function() {
     it('as a Scene object', function() {
@@ -21,49 +42,49 @@ describe('Scene', function() {
 
   describe('should be able to fetch current scene', function() {
     beforeEach(function() {
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-        spyOn(window.external, 'AppGetPropertyAsync')
-          .and.callFake(function(funcName) {
-          if (funcName === 'preset:0') {
-            var rand=Math.floor(Math.random()*1000);
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName === 'preset:0') {
+          var rand=Math.floor(Math.random()*1000);
 
-            setTimeout(function() {
-              window.OnAsyncCallback(rand, '5');
-            },10);
+          setTimeout(function() {
+            window.OnAsyncCallback(rand, '5');
+          },10);
 
-            return rand;
-          } else if (funcName === 'presetcount') {
-            var rand = Math.floor(Math.random() * 1000);
+          return rand;
+        } else if (funcName === 'presetcount') {
+          var rand = Math.floor(Math.random() * 1000);
 
-            setTimeout(function() {
-              window.OnAsyncCallback(rand, '12');
-            },10);
+          setTimeout(function() {
+            window.OnAsyncCallback(rand, '12');
+          },10);
 
-            return rand;
-          }
-        });
-      }
-      this.promise = Scene.getActiveScene();
+          return rand;
+        }
+      });
     });
 
-    it('through a promise', function() {
-      expect(this.promise).toBeInstanceOf(Promise);
+    it('through a promise', function(done) {
+      exec(function(next) {
+        var promise = Scene.getActiveScene();
+        expect(promise).toBeInstanceOf(Promise);
+        next();
+      }).then(done);
     });
 
     it('as a Scene object', function(done) {
-      this.promise.then(function(scene) {
-        expect(scene).toBeInstanceOf(Scene);
-        done();
-      });
+      exec(function(next) {
+        var promise = Scene.getActiveScene();
+        promise.then(function(scene) {
+          expect(scene).toBeInstanceOf(Scene);
+          next();
+        });
+      }).then(done);
     });
   });
 
   describe('object instance', function() {
-    var scene;
-    var sceneSources;
-
     beforeAll(function(done) {
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         var ctr = 0;
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
@@ -86,7 +107,7 @@ describe('Scene', function() {
             }.bind(ctr),10);
           } else if ('presetcount') {
             setTimeout(function() {
-              window.OnAsyncCallback(this, '1');
+              window.OnAsyncCallback(this, '12');
             }.bind(ctr),10);
           }
 
@@ -171,196 +192,295 @@ describe('Scene', function() {
 
           return ctr;
         });
-      }
-
-      Scene.getActiveScene().then(function(result) {
-        scene = result;
+        
         done();
+    });
+
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
       });
     });
 
     it('should be able to get the scene ID', function(done) {
-      scene.getSceneNumber().then(function(id) {
-        expect(id).toBeTypeOf('number');
-        expect(id).not.toBeNaN();
-        done();
-      });
+      exec(function(next) {
+        var scene;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getSceneNumber();
+        }).then(function(id){
+          expect(id).toBeTypeOf('number');
+          expect(id).not.toBeNaN();
+          next();
+        });
+      }).then(done);
     });
 
     it('should be able to get the scene name', function(done) {
-      scene.getName().then(function(name) {
-        expect(name).toBeTypeOf('string');
-        done();
-      });
-    });
-
-    it('should be able to get the sources', function(done) {
-      scene.getSources().then(function(sources) {
-        expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Source);
-        sceneSources = sources[0];
-        done();
-      });
-    });
-
-    it('should be able to search for a source by ID', function(done) {
-
-      Scene.searchSourcesById(sceneSources._id)
-        .then(function(source) {
-          expect(source).toBeInstanceOf(Source);
-          done();
+      exec(function(next) {
+        var scene;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getName();
+        }).then(function(name){
+          expect(name).toBeTypeOf('string');
+          next();
         });
+      }).then(done);
+    });
+
+    it('should be able to get the items', function(done) {
+      exec(function(next) {
+        var scene;
+        var sceneItems;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getItems();
+        }).then(function(items){
+          expect(items).toBeInstanceOf(Array);
+          expect(items).eachToBeInstanceOf(Item);
+          sceneItems = items[0];
+          next();
+        });
+      }).then(done);
+    });
+
+    it('should be able to search for an item by ID', function(done) {
+      exec(function(next) {
+        var scene;
+        var sceneItems;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getItems();
+        }).then(function(items){
+          sceneItems = items[0];
+          return Scene.searchSourcesById(sceneItems._id);
+        }).then(function(item) {
+          expect(item).toBeInstanceOf(Item);
+          next();
+        });
+      }).then(done);
     });
 
     it('should be able to search by ID in a case-insensitive way', function(done) {
-
-      Scene.searchSourcesById(sceneSources._id.toLowerCase())
-        .then(function(source) {
-          expect(source).toBeInstanceOf(Source);
-          done();
+      exec(function(next) {
+        var scene;
+        var sceneItems;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getItems();
+        }).then(function(items){
+          sceneItems = items[0];
+          return Scene.searchSourcesById(sceneItems._id.toLowerCase());
+        }).then(function(item) {
+          expect(item).toBeInstanceOf(Item);
+          next();
         });
+      }).then(done);
     });
 
     it('should be able to get null when searching for nonexistent ID', function(done) {
-      Scene.searchSourcesById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
+      exec(function(next) {
+        Scene.searchSourcesById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
         .then(function(source) {
           expect(source).toBe(null);
-          done();
+          next();
         });
+      }).then(done);
     });
 
     it('should be able to search for a source by Name', function(done) {
-      Scene.searchSourcesByName(sceneSources.name)
-        .then(function(sources) {
-          expect(sources).toBeInstanceOf(Array);
-          expect(sources).eachToBeInstanceOf(Source);
-          done();
+      exec(function(next) {
+        var scene;
+        var sceneItems;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.getItems();
+        }).then(function(items){
+          sceneItems = items[0];
+          return Scene.searchSourcesByName(sceneItems.name);
+        }).then(function(item) {
+          expect(item).toBeInstanceOf(Array);
+          expect(item).eachToBeInstanceOf(Item);
+          next();
         });
+      }).then(done);
     });
 
     it('should be able to get empty array when searching for nonexistent name', function(done) {
-      Scene.searchSourcesByName('{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+      exec(function(next) {
+        Scene.searchSourcesByName('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         .then(function(sources) {
           expect(sources).toBeEmptyArray();
-          done();
+          next();
         });
+      }).then(done);
     });
 
     it('should be able to search for a source by a custom function', function(done) {
-      Scene.filterSources(function(source, resolve) {
-        source.getType().then(function(type) {
-          resolve(type === XJS.SourceTypes.HTML);
+      exec(function(next) {
+        Scene.filterSources(function(source, resolve) {
+          source.getType().then(function(type) {
+            resolve(type === XJS.ItemTypes.HTML);
+          });
+        }).then(function(sources) {
+          expect(sources).toBeInstanceOf(Array);
+          expect(sources).eachToBeInstanceOf(Item);
+          next();
         });
-      }).then(function(sources) {
-        expect(sources).toBeInstanceOf(Array);
-        expect(sources).eachToBeInstanceOf(Source);
-        done();
-      });
+      }).then(done);
     });
 
     it('should be able to search for a scene with a source based on a custom function', function(done) {
-      Scene.filterScenesBySources(function(source, resolve) {
-        source.getType().then(function(type) {
-          resolve(type === XJS.SourceTypes.HTML);
+      exec(function(next) {
+        Scene.filterScenesBySources(function(source, resolve) {
+          source.getType().then(function(type) {
+            resolve(type === XJS.ItemTypes.HTML);
+          });
+        }).then(function(scene) {
+          expect(scene).toBeInstanceOf(Array);
+          expect(scene).eachToBeInstanceOf(Scene);
+          next();
         });
-      }).then(function(scene) {
-        expect(scene).toBeInstanceOf(Array);
-        expect(scene).eachToBeInstanceOf(Scene);
-        done();
-      });
+      }).then(done);
     });
 
     it('should be able to initialize all scenes', function(done) {
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
+      // if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         env.set(environments[0]);
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
         Scene.initializeScenes().then(function(success) {
           expect(success).toBeBoolean();
+          navigator.__defineGetter__('appVersion', function() {
+            return appVersion;
+          });
           env.set(environments[1]);
+          navigator.__defineGetter__('appVersion', function() {
+            return 'XSplit Broadcaster 2.7.1702.2231 ';
+          });
           return Scene.initializeScenes();
         }).then(function(success) {
           expect(success).toBeBoolean();
+          navigator.__defineGetter__('appVersion', function() {
+            return appVersion;
+          });
           env.set(environments[2]);
+          navigator.__defineGetter__('appVersion', function() {
+            return 'XSplit Broadcaster 2.7.1702.2231 ';
+          });
           return Scene.initializeScenes();
         }).then(function() {
+          navigator.__defineGetter__('appVersion', function() {
+            return appVersion;
+          });
           done.fail('initializeScenes should throw an error on source plugin');
         })
         .catch(function(err) {
           if (XJS.Environment.isSourcePlugin()) {
             expect(err).toEqual(jasmine.any(Error));
+            navigator.__defineGetter__('appVersion', function() {
+              return appVersion;
+            });
             done();
           } else {
+            navigator.__defineGetter__('appVersion', function() {
+              return appVersion;
+            });
             done.fail(err);
           }
         });
-      } else {
-        Scene.initializeScenes().then(function(success) {
-          if (XJS.Environment.isSourcePlugin()) {
-            done.fail('initializeScenes should throw an error on source plugin');
-          } else {
-            expect(success).toBeBoolean();
-            done();
-          }
-        }).catch(function(err) {
-          if (XJS.Environment.isSourcePlugin()) {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          } else {
-            done.fail(err);
-          }
-        });
-      }
+      // } else {
+      //   Scene.initializeScenes().then(function(success) {
+      //     if (XJS.Environment.isSourcePlugin()) {
+      //       done.fail('initializeScenes should throw an error on source plugin');
+      //     } else {
+      //       expect(success).toBeBoolean();
+      //       done();
+      //     }
+      //   }).catch(function(err) {
+      //     if (XJS.Environment.isSourcePlugin()) {
+      //       expect(err).toEqual(jasmine.any(Error));
+      //       done();
+      //     } else {
+      //       done.fail(err);
+      //     }
+      //   });
+      // }
     });
 
     it('should be able to check if scene is empty or not', function(done) {
-      scene.isEmpty().then(function(flag) {
-        expect(flag).toBeBoolean();
-        done();
-      });
+      env.set(environments[1]);
+      exec(function(next) {
+        var scene;
+        var sceneItems;
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          return scene.isEmpty();
+        }).then(function(flag) {
+          expect(flag).toBeBoolean();
+          next();
+        });
+      }).then(done);
     });
 
     it('should be able to set the scene name', function(done) {
       var rand;
       var string = '';
+      var scene;
 
       for (var i = 0; i < 5; i++) {
         rand = Math.floor(Math.random() * 25) + 65;
         string += String.fromCharCode(rand);
       }
 
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-        scene.setName(string).then(function(success) {
-          if (XJS.Environment.isSourcePlugin()) {
-            done.fail('setName should throw an error on source plugin');
-          } else {
-            expect(success).toBeBoolean();
-            done();
-          }
-        }).catch(function(err) {
-          if (XJS.Environment.isSourcePlugin()) {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          } else {
-            done.fail(err);
-          }
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
+
+      Scene.getActiveScene().then(function(result) {
+        scene = result;
+        return scene.setName(string);
+      }).then(function(success) {
+        navigator.__defineGetter__('appVersion', function() {
+          return appVersion;
         });
-      } else {
-        env.set(environments[0]);
-        scene.setName(string).then(function(res) {
-          expect(res).toBeBoolean();
-          env.set(environments[1]);
-          return scene.setName(string);
-        }).then(function(res) {
-          expect(res).toBeBoolean();
-          //env.set(environments[2]);
-          return scene.setName(string);
-        }).then(function(res) {
-          expect(res).toBeBoolean();
+        if (XJS.Environment.isSourcePlugin()) {
+          done.fail('setName should throw an error on source plugin');
+        } else {
+          expect(success).toBeBoolean();
           done();
-        }).catch(function(err) {
+        }
+      }).catch(function(err) {
+        navigator.__defineGetter__('appVersion', function() {
+          return appVersion;
+        });
+        if (XJS.Environment.isSourcePlugin()) {
           expect(err).toEqual(jasmine.any(Error));
           done();
-        });
-      }
+        } else {
+          done.fail(err);
+        }
+      });
+      // } else {
+      //   env.set(environments[0]);
+      //   scene.setName(string).then(function(res) {
+      //     expect(res).toBeBoolean();
+      //     env.set(environments[1]);
+      //     return scene.setName(string);
+      //   }).then(function(res) {
+      //     expect(res).toBeBoolean();
+      //     //env.set(environments[2]);
+      //     return scene.setName(string);
+      //   }).then(function(res) {
+      //     expect(res).toBeBoolean();
+      //     done();
+      //   }).catch(function(err) {
+      //     expect(err).toEqual(jasmine.any(Error));
+      //     done();
+      //   });
+      // }
     });
   });
 });
