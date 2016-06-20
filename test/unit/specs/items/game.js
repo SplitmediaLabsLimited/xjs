@@ -166,6 +166,11 @@ describe('GameItem', function() {
   beforeEach(function(done) {
     enumerated = [];
     env.set(environments[1]);
+
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+
     propTypeCount = 0;
     if (!isXSplit) {
       // Reset the attached IDS
@@ -245,6 +250,12 @@ describe('GameItem', function() {
 
         done();
       });
+    });
+  });
+
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
     });
   });
 

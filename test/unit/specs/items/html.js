@@ -292,62 +292,63 @@ describe('HtmlItem', function() {
   beforeEach(function(done) {
     enumerated = [];
     env.set('extension');
-    if (!isXSplit) {
-      // Reset the attached IDS
-      var item1 = new XJS.Item({id : '{HTMLID}' });
-      var item2 = new XJS.Item({id : '{HTMLID2}'});
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+    // Reset the attached IDS
+    var item1 = new XJS.Item({id : '{HTMLID}' });
+    var item2 = new XJS.Item({id : '{HTMLID2}'});
 
-      spyOn(window.external, 'AppGetPropertyAsync')
-        .and.callFake(function(funcName) {
-        rand += 1;
-        switch (funcName) {
-          case 'presetconfig:0':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand,
-                encodeURIComponent(mockPresetConfig));
-            },10);
-          break;
+    spyOn(window.external, 'AppGetPropertyAsync')
+      .and.callFake(function(funcName) {
+      rand += 1;
+      switch (funcName) {
+        case 'presetconfig:0':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand,
+              encodeURIComponent(mockPresetConfig));
+          },10);
+        break;
 
-          case 'presetcount':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand, '12');
-            },10);
-          break;
+        case 'presetcount':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, '12');
+          },10);
+        break;
 
-          case 'preset:0':
-            var irand = rand;
-            setTimeout(function() {
-              window.OnAsyncCallback(irand, '0');
-            },10);
-          break;
-        }
-        return rand;
-      });
+        case 'preset:0':
+          var irand = rand;
+          setTimeout(function() {
+            window.OnAsyncCallback(irand, '0');
+          },10);
+        break;
+      }
+      return rand;
+    });
 
-      spyOn(window.external, 'SearchVideoItem')
-      .and.callFake(function(ID) {
-        attachedID = ID;
-      });
+    spyOn(window.external, 'SearchVideoItem')
+    .and.callFake(function(ID) {
+      attachedID = ID;
+    });
 
-      spyOn(window.external, 'SearchVideoItem2')
-      .and.callFake(function(ID) {
-        attachedID = ID;
-      });
+    spyOn(window.external, 'SearchVideoItem2')
+    .and.callFake(function(ID) {
+      attachedID = ID;
+    });
 
-      spyOn(window.external, 'GetLocalPropertyAsync')
-      .and.callFake(getLocal);
+    spyOn(window.external, 'GetLocalPropertyAsync')
+    .and.callFake(getLocal);
 
-      spyOn(window.external, 'GetLocalPropertyAsync2')
-      .and.callFake(getLocal);
+    spyOn(window.external, 'GetLocalPropertyAsync2')
+    .and.callFake(getLocal);
 
-      spyOn(window.external, 'SetLocalPropertyAsync')
-      .and.callFake(setLocal);
+    spyOn(window.external, 'SetLocalPropertyAsync')
+    .and.callFake(setLocal);
 
-      spyOn(window.external, 'SetLocalPropertyAsync2')
-      .and.callFake(setLocal);
-    }
+    spyOn(window.external, 'SetLocalPropertyAsync2')
+    .and.callFake(setLocal);
     Scene.getActiveScene().then(function(newScene) {
       newScene.getItems().then(function(items) {
         var itemArray = items;
@@ -363,6 +364,12 @@ describe('HtmlItem', function() {
 
         done();
       });
+    });
+  });
+
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
     });
   });
 

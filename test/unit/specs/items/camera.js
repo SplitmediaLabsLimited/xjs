@@ -95,6 +95,11 @@ describe('CameraItem', function() {
 
   beforeEach(function(done) {
     env.set('extension');
+
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+
     // Reset the attached IDS
     var item1 = new XJS.Item({id : '{CAMERAID}' });
     var item2 = new XJS.Item({id : '{CAMERAID2}'});
@@ -111,7 +116,7 @@ describe('CameraItem', function() {
           if (!shouldFail2) {
             xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Line 1 (Virtual Audio Cable)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           } else {
-            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (VIA High Definition" name="Microphone (VIA High Definition" WaveInId="0"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
+            xCallback(asyncId, encodeURIComponent('<list><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{AAA22F7E-5AA0-49D9-8C8D-B52B1AA92EB7}" name="Decklink Audio Capture"/><dev disp="@device:cm:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\Microphone (HD Pro Webcam C920)" name="Line 1 (Virtual Audio Cable)" WaveInId="1"/><dev disp="@device:sw:{33D9A762-90C8-11D0-BD43-00A0C911CE86}\{VHSplitProc}_XSplitBroadcaster_1_staticsource_AUDIO" name="XSplitBroadcaster"/></list>'));
           }
 
         break;
@@ -178,6 +183,12 @@ describe('CameraItem', function() {
       });
     });
   });
+
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
+    });
+  })
 
   describe('cameraItem-specific methods checking, ', function() {
     afterEach(function() {

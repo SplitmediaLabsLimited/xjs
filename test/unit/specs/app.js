@@ -1,4 +1,4 @@
-/* globals describe, it, expect, xdescribe, require, beforeEach, spyOn, jasmine */
+/* globals describe, it, expect, xdescribe, require, beforeEach, spyOn, jasmine, afterEach, afterAll */
 
 describe('App ===', function() {
   'use strict';

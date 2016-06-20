@@ -83,6 +83,10 @@ describe('Playback interface', function() {
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+
     // reset attached IDs
     var item1 = new XJS.Item({id : '{ID}'});
     var item2 = new XJS.Item({id : '{ID2}'});

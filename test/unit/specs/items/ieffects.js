@@ -10,6 +10,7 @@ describe('Effects interface', function() {
   var local = {};
   var attachedId;
   var enumeratedItems;
+  var appVersion = navigator.appVersion;
 
   var env = new window.Environment(XJS);
   var environments = {
@@ -68,6 +69,10 @@ describe('Effects interface', function() {
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
 
+    navigator.__defineGetter__('appVersion', function() {
+      return 'XSplit Broadcaster 2.7.1702.2231 ';
+    });
+
     // reset attached IDs
     var item1 = new XJS.Item({id : '{ID}'});
     var item2 = new XJS.Item({id : '{ID2}'});
@@ -121,6 +126,12 @@ describe('Effects interface', function() {
     }).then(function(items) {
       enumeratedItems = items;
       done();
+    });
+  });
+
+  afterAll(function() {
+    navigator.__defineGetter__('appVersion', function() {
+      return appVersion;
     });
   });
 
