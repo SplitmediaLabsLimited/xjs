@@ -89,14 +89,14 @@
    *
    * @param  version Current version (format: n.n.n)
    * @param  type    Version up type (major = 0, minor = 1, patch = 2)
-   * @param  mode    inc/dec
+   * @param  mode    up/down
    * @return newVersion
    */
   var bumpVersion = function(version, type, mode) {
     var ver = version.split('.'); // 0.9.1
     for (var i = 0; i < ver.length; i++) {
       if (Number(type) === Number(i)) {
-        if (mode === 'dec') {
+        if (mode === 'down') {
           ver[type] = Number(ver[type]) <= 0 ? 0 : Number(ver[type]) - 1;
         } else {
           ver[type] = Number(ver[type]) + 1;
@@ -109,6 +109,20 @@
     return ver.join('.');
   };
 
+  /**
+   * Gulp task to version up/down or append the version indicated in package.json
+   * 
+   * usage: gulp version --down --minor
+   * flags:
+   *   --down
+   *   --up
+   *   --major
+   *   --minor
+   *   --patch
+   *
+   * Do not add --down or --up to simply append the package.json version to
+   * the generated files
+   */
   gulp.task('version', ['default'], function() {
     var argTypes = ['major', 'minor', 'patch'];
     var type = 1;
@@ -150,11 +164,15 @@
           } else {
             var jsonObj = JSON.parse(file.contents);
 
-            jsonObj.version = bumpVersion(
-              jsonObj.version,
-              type,
-              argv.down ? 'dec' : 'inc'
-            );
+            if (argv.version) {
+              jsonObj.version = argv.version
+            } else if (argv.down || argv.up) {
+              jsonObj.version = bumpVersion(
+                jsonObj.version,
+                type,
+                argv.down ? 'down' : 'up'
+              );
+            } 
 
             version = jsonObj.version;
             updatedContents = JSON.stringify(jsonObj, null, 2);
