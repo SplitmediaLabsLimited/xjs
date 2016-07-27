@@ -279,23 +279,25 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getItems().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true;
-                  } else {
-                    return false;
+              (_idx => {
+                scene.getItems().then(function(items) {
+                  found = items.some(item => { // unique ID, so get first result
+                    if (item['_id'] === id.toUpperCase()) {
+                      match = item;
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (found ||
+                    Number(_idx) === arr.length - 1) { // last scene, no match
+                    resolve(match);
                   }
+                })
+                .catch(err => {
+                  reject(err);
                 });
-                if (found ||
-                  Number(this) === arr.length - 1) { // last scene, no match
-                  resolve(match);
-                }
-              }).bind(idx))
-              .catch(err => {
-                // Do nothing
-              });
+              })(idx)
             }
           });
         });
