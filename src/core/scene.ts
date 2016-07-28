@@ -139,14 +139,21 @@ export class Scene {
    * });
    * ```
    */
-  static getByIdAsync(sceneNum: number): Promise<Scene> {
+  static getByIdAsync(sceneNum: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
       Scene._initializeScenePoolAsync().then(cnt => {
-        if (sceneNum > cnt){
-          reject(Error('Invalid parameter'))
+        if (sceneNum === 'i12') {
+           resolve(Scene._scenePool['i12']);
         } else {
-          resolve(Scene._scenePool[sceneNum - 1]);
-        }
+          try {
+            if (sceneNum > cnt){
+              reject(Error('Invalid parameter'))
+            } else {
+              resolve(Scene._scenePool[sceneNum - 1]);
+            }
+          } catch(e) {
+            reject(Error('Parameter must be a number'));
+          }
       });
     });
   }
