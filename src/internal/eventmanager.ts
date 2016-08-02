@@ -25,7 +25,7 @@ export class EventManager {
         }
 
         if (_event === 'OnSceneAddByUser') {
-          exec('AppSubsribeEvents');
+          exec('AppSubscribeEvents');
         }
 
         EventManager.callbacks[_event].push(_cb);

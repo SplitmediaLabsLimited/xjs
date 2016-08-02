@@ -2,6 +2,8 @@
 
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
+import {EventManager} from '../internal/eventmanager';
+import {Scene} from '../core/scene';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 
@@ -40,6 +42,45 @@ export class ExtensionWindow extends EventEmitter {
 
     ExtensionWindow._instance = this;
   }
+
+   /**
+   *  param: (event: string, ...params: any[])
+   *
+   *  Allows this class to emit an event.
+   */
+  static emit(event: string, ...params: any[]) {
+    params.unshift(event);
+    ExtensionWindow
+      .getInstance()
+      .emit
+      .apply(ExtensionWindow._instance, params);
+  }
+
+  /**
+   *  param: (event: string, handler: Function)
+   *
+   *  Allows listening to events that this class emits. Currently there are two:
+   *  `access-granted` and `access-revoked`.
+   */
+  static on(event: string, handler: Function) {
+    ExtensionWindow.getInstance().on(event, handler);
+
+    if(event === 'scene-deleted') {
+      EventManager.subscribe("SceneDeleted", function(settingsObj) {
+        ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+      });
+    }
+
+    if(event === 'scene-added') {
+      EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
+        Scene.getSceneCount().then(function(count){
+          ExtensionWindow.emit(event, count - 1 );
+        })        
+      });
+    }
+
+  }
+
 
   /** param: (width: number, height: number)
    *

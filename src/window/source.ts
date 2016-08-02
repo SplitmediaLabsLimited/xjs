@@ -3,6 +3,8 @@
 import {Global} from '../internal/global';
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
+import {EventManager} from '../internal/eventmanager';
+import {Scene} from '../core/scene';
 import {exec} from '../internal/internal';
 
 /** This utility class is used internally by the framework for certain important
@@ -72,6 +74,21 @@ export class SourcePluginWindow extends EventEmitter {
    */
   static on(event: string, handler: Function) {
     SourcePluginWindow.getInstance().on(event, handler);
+
+    if(event === 'scene-deleted') {
+      EventManager.subscribe("SceneDeleted", function(settingsObj) {
+        SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+      });
+    }
+
+    if(event === 'scene-added') {
+      EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
+        Scene.getSceneCount().then(function(count){
+          SourcePluginWindow.emit(event, count - 1 );
+        })        
+      });
+    }
+
   }
 
   // We modify the configuration sent from the source properties window
