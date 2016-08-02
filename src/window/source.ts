@@ -18,6 +18,7 @@ import {exec} from '../internal/internal';
  *    - `apply-config`: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
  *    - `set-background-color`: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *    - `scene-load`: signals the source that the active scene is the scene where it is loaded. Only works on sources loaded in memory
+ *    - `scene-deleted` : notifies when a user deletes a scene. Handler is a function f(index: number)
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */

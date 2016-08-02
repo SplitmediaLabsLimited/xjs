@@ -17,6 +17,8 @@ const _RESIZE = '2';
  *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-select`: notifies when a user clicks a source in the stage. Handler is a function f(id: string)
+ *    - `scene-deleted` : notifies when a user deletes a scene. Handler is a function f(index: number)
+ *    - `scene-added` : notifies when a user adds a scene. Handler is a function f(index: number)
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
