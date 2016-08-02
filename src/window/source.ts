@@ -51,6 +51,29 @@ export class SourcePluginWindow extends EventEmitter {
     SourcePluginWindow._instance = this;
   }
 
+  /**
+   *  param: (event: string, ...params: any[])
+   *
+   *  Allows this class to emit an event.
+   */
+  static emit(event: string, ...params: any[]) {
+    params.unshift(event);
+    SourcePluginWindow
+      .getInstance()
+      .emit
+      .apply(SourcePluginWindow._instance, params);
+  }
+
+  /**
+   *  param: (event: string, handler: Function)
+   *
+   *  Allows listening to events that this class emits. Currently there are two:
+   *  `access-granted` and `access-revoked`.
+   */
+  static on(event: string, handler: Function) {
+    SourcePluginWindow.getInstance().on(event, handler);
+  }
+
   // We modify the configuration sent from the source properties window
   // so that we do not see 'persistent' configuration such as config-url.
   // When saving, this is restored back to the config object through
@@ -73,16 +96,15 @@ export class SourcePluginWindow extends EventEmitter {
 
 if (Environment.isSourcePlugin()) {
   window.MessageSource = function(message: string) {
-    SourcePluginWindow.getInstance().emit('message-source',
+    SourcePluginWindow.emit('message-source',
       JSON.parse(message));
   };
 
   window.SetConfiguration = function(configObj: string) {
     try {
       var data = JSON.parse(configObj);
-      var source = SourcePluginWindow.getInstance();
-      source.emit('apply-config', data);
-      source.emit('save-config', data);
+      SourcePluginWindow.emit('apply-config', data);
+      SourcePluginWindow.emit('save-config', data);
     } catch (e) {
       // syntax error probably happened, exit gracefully
       return;
@@ -90,10 +112,10 @@ if (Environment.isSourcePlugin()) {
   };
 
   window.setBackGroundColor = function(color: string) {
-    SourcePluginWindow.getInstance().emit('set-background-color', color);
+    SourcePluginWindow.emit('set-background-color', color);
   };
 
   window.OnSceneLoad = function() {
-    SourcePluginWindow.getInstance().emit('scene-load');
+    SourcePluginWindow.emit('scene-load');
   };
 }
