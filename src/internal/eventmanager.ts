@@ -44,9 +44,9 @@ window.SetEvent = (args: string) => {
     settingsObj[_split[0]] = _split[1];
   });
 
-  if (EventManager.callbacks[settingsObj.event] === undefined) return;
+  if (EventManager.callbacks[settingsObj['event']] === undefined) return;
 
-  EventManager.callbacks[settingsObj.event].map(_cb => {
+  EventManager.callbacks[settingsObj['event']].map(_cb => {
     _cb(settingsObj);
   });
 }
