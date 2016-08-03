@@ -137,6 +137,16 @@
         },
 
         {
+          name: 'remove',
+          onClick: function() {
+            currentSource.remove().then(function(val) {
+              console.trace(val);
+              Rose.output(val);
+            });
+          }
+        },
+
+        {
           name: 'getSceneID',
           onClick: function() {
             currentSource.getSceneID().then(function(val) {
