@@ -4,6 +4,7 @@ import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
 import {Scene} from '../core/scene';
+import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 
@@ -17,8 +18,8 @@ const _RESIZE = '2';
  *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-select`: notifies when a user clicks a source in the stage. Handler is a function f(id: string)
- *    - `scene-deleted` : notifies when a user deletes a scene. Handler is a function f(index: number)
- *    - `scene-added` : notifies when a user adds a scene. Handler is a function f(index: number)
+ *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
+ *    - `scene-add` : notifies when a user adds a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -61,24 +62,27 @@ export class ExtensionWindow extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. Currently there are two:
-   *  `access-granted` and `access-revoked`.
+   *  Allows listening to events that this class emits. 
+   *
    */
   static on(event: string, handler: Function) {
     ExtensionWindow.getInstance().on(event, handler);
 
-    if(event === 'scene-deleted') {
+    let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
+    let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
+
+    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
       EventManager.subscribe("SceneDeleted", function(settingsObj) {
         ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
       });
-    }
-
-    if(event === 'scene-added') {
+    } else if(event === 'scene-add' && isAddSceneEventFixed) {
       EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
         Scene.getSceneCount().then(function(count){
           ExtensionWindow.emit(event, count - 1 );
         })        
       });
+    } else {
+      console.warn('Warning! The event "' + event + '" is not yet supported.');
     }
 
   }

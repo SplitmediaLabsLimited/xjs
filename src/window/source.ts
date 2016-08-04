@@ -4,6 +4,7 @@ import {Global} from '../internal/global';
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
+import {deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {Scene} from '../core/scene';
 import {exec} from '../internal/internal';
 
@@ -13,12 +14,12 @@ import {exec} from '../internal/internal';
  *
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
- *  Currently there are only four events:
+ *  Currently, the following events are available:
  *    - `save-config`: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
  *    - `apply-config`: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
  *    - `set-background-color`: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *    - `scene-load`: signals the source that the active scene is the scene where it is loaded. Only works on sources loaded in memory
- *    - `scene-deleted` : notifies when a user deletes a scene. Handler is a function f(index: number)
+ *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
@@ -70,25 +71,21 @@ export class SourcePluginWindow extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. Currently there are two:
-   *  `access-granted` and `access-revoked`.
+   *  Allows listening to events that this class emits. 
+   *
    */
   static on(event: string, handler: Function) {
     SourcePluginWindow.getInstance().on(event, handler);
+    
+    let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
 
-    if(event === 'scene-deleted') {
+    if(event === 'scene-delete' && isDeleteSceneEventFixed) {      
       EventManager.subscribe("SceneDeleted", function(settingsObj) {
         SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
       });
-    }
-
-    if(event === 'scene-added') {
-      EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
-        Scene.getSceneCount().then(function(count){
-          SourcePluginWindow.emit(event, count - 1 );
-        })        
-      });
-    }
+    } else {
+      console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
+    }  
 
   }
 
