@@ -7,6 +7,8 @@
   var Scene = XJS.Scene;
   var Source = XJS.Source;
   var App = new XJS.App();
+  var subscribeToggle = true;
+  var onWindowTrigger = false;
 
   function randomWord(length) {
     var rand;
@@ -162,7 +164,32 @@
               Rose.output(sources);
             });
           }
+        },
+
+        {
+          name: 'toggle subscribe/unsubscribe source list events',
+          onClick: function() {
+            if(subscribeToggle) {                                
+              if(!onWindowTrigger) {
+                XJS.ExtensionWindow.getInstance().on("sources-list-highlight", function(id) {
+                  console.log("Highlight id: " + id);
+                });
+                XJS.ExtensionWindow.getInstance().on("sources-list-select", function(id) {
+                  console.log("Select id: " + id);
+                });
+                console.log("Subscribed");                                
+                onWindowTrigger = !onWindowTrigger;
+              } else {
+                window.external.SourcesListSubscribeEvents("0");
+              }       
+            } else {
+              window.external.SourcesListUnsubscribeEvents("0");  
+              console.log("Unsubscribe");                         
+            }
+            subscribeToggle = !subscribeToggle;
+          }
         }
+
       ]
     });
   });

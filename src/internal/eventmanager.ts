@@ -1,4 +1,5 @@
 import {exec} from './internal'
+
 /**
  * Usage:
  *
@@ -26,7 +27,7 @@ export class EventManager {
 
         if (_event === 'OnSceneAddByUser') {
           exec('AppSubscribeEvents');
-        }
+        }        
 
         EventManager.callbacks[_event].push(_cb);
       });

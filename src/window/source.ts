@@ -83,6 +83,10 @@ export class SourcePluginWindow extends EventEmitter {
       EventManager.subscribe("SceneDeleted", function(settingsObj) {
         SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
       });
+    } else if(['set-background-color', 'set-background-color', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
+
+      //Just register the events so not to throw warning. Emitter already created.
+
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
     }  

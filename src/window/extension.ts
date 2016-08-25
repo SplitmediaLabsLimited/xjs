@@ -7,6 +7,7 @@ import {Scene} from '../core/scene';
 import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
+import {ViewTypes} from '../core/items/item';
 
 const _RESIZE = '2';
 
@@ -72,17 +73,34 @@ export class ExtensionWindow extends EventEmitter {
     let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
 
     if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+      
       EventManager.subscribe("SceneDeleted", function(settingsObj) {
         ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
       });
+
     } else if(event === 'scene-add' && isAddSceneEventFixed) {
+      
       EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
         Scene.getSceneCount().then(function(count){
           ExtensionWindow.emit(event, count - 1 );
         })        
       });
+    
+    } else if(['sources-list-highlight', 'sources-list-select', 'scene-load'].indexOf(event) >= 0 ) {
+
+      //Just subscribe to the event. Emitter is already handled.
+      if (event === 'sources-list-highlight' || event === 'sources-list-select') {
+        try{          
+          exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() );
+        } catch (ex) {
+          //This exception most probably for older versions which would work without subscribing to source list events.
+        }        
+      }       
+    
     } else {
+
       console.warn('Warning! The event "' + event + '" is not yet supported.');
+
     }
 
   }
@@ -157,21 +175,22 @@ if (Environment.isExtension()) {
 
   window.OnSceneLoad = function(view: number, scene: number) {
     if (Number(view) === 0) { // only emit events when main view is changing
-      ExtensionWindow.getInstance().emit('scene-load', Number(scene));
+      ExtensionWindow.emit('scene-load', Number(scene));
     }
   };
 
   window.SourcesListHighlight = (view, id) => {
     if (view === 0) { // main view {
-      ExtensionWindow.getInstance().emit('sources-list-highlight', id === '' ?
+      ExtensionWindow.emit('sources-list-highlight', id === '' ?
         null : id);
     }
   };
 
   window.SourcesListSelect = (view, id) => {
     if (view === 0) { // main view
-      ExtensionWindow.getInstance().emit('sources-list-select', id === '' ?
+      ExtensionWindow.emit('sources-list-select', id === '' ?
         null : id);
     }
-  };
+  };  
+
 }
