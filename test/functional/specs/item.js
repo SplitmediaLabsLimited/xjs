@@ -171,10 +171,10 @@
           onClick: function() {
             if(subscribeToggle) {                                
               if(!onWindowTrigger) {
-                XJS.ExtensionWindow.getInstance().on("sources-list-highlight", function(id) {
+                XJS.ExtensionWindow.on("sources-list-highlight", function(id) {
                   console.log("Highlight id: " + id);
                 });
-                XJS.ExtensionWindow.getInstance().on("sources-list-select", function(id) {
+                XJS.ExtensionWindow.on("sources-list-select", function(id) {
                   console.log("Select id: " + id);
                 });
                 console.log("Subscribed");                                
