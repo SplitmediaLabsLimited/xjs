@@ -3,6 +3,7 @@
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
+import {JSON as JXON} from '../internal/util/json';
 import {Scene} from '../core/scene';
 import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
@@ -18,7 +19,8 @@ const _RESIZE = '2';
  *  Currently, the following events are available:
  *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
- *    - `sources-list-select`: notifies when a user clicks a source in the stage. Handler is a function f(id: string)
+ *    - `sources-list-select`: notifies when a user clicks a source in the stage. Source id is also returned when source is selected from the bottom panel. Handler is a function f(id: string)
+ *    - `sources-list-update`: notifies when there are changes on list sources whether on stage or bottom panel. Handler is a function(ids: string) where ids are comma separated source ids.
  *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
  *    - `scene-add` : notifies when a user adds a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
  *
@@ -86,10 +88,10 @@ export class ExtensionWindow extends EventEmitter {
         })        
       });
     
-    } else if(['sources-list-highlight', 'sources-list-select', 'scene-load'].indexOf(event) >= 0 ) {
+    } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
 
       //Just subscribe to the event. Emitter is already handled.
-      if (event === 'sources-list-highlight' || event === 'sources-list-select') {
+      if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
         try{          
           exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() );
         } catch (ex) {
@@ -176,6 +178,23 @@ if (Environment.isExtension()) {
   window.OnSceneLoad = function(view: number, scene: number) {
     if (Number(view) === 0) { // only emit events when main view is changing
       ExtensionWindow.emit('scene-load', Number(scene));
+    }
+  };
+
+  window.SourcesListUpdate = (view, sources) => {
+    if (view === 0) { // main view {
+      let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
+            propsArr: JXON[] = [],
+            ids = [];
+
+      if (propsJSON.children && propsJSON.children.length > 0) {
+         propsArr = propsJSON.children;
+         for(var i=0; i < propsArr.length; i++){
+           ids.push(propsArr[i]['id']);
+         }
+      }
+
+      ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
     }
   };
 

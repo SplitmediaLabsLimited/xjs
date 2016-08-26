@@ -16,7 +16,7 @@ import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
 import {MediaSource} from './source/media';
 
-import {Item, ItemTypes} from './items/item';
+import {Item, ItemTypes, ViewTypes} from './items/item';
 import {GameItem} from './items/game';
 import {CameraItem} from './items/camera';
 import {AudioItem} from './items/audio';
@@ -1130,8 +1130,8 @@ export class Scene {
             return scene.getSceneNumber();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
-            exec('SourcesListOrderSave', ids.join(','));
+          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
+            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);
           } else {
             let sceneName: string;
@@ -1188,7 +1188,7 @@ export class Scene {
         sources.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (sources.every(el => { return el instanceof Source })) {
+          if (sources.every(el => { return (el instanceof Source || el instanceof Item) })) {
             return new Promise(resolve => {
               let promises = [];
               for (let i in sources) {
@@ -1213,8 +1213,8 @@ export class Scene {
             return scene.getSceneNumber();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
-            exec('SourcesListOrderSave', ids.join(','));
+          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
+            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);
           } else {
             let sceneName: string;

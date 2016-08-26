@@ -6,9 +6,7 @@
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Source = XJS.Source;
-  var App = new XJS.App();
-  var subscribeToggle = true;
-  var onWindowTrigger = false;
+  var App = new XJS.App(); 
 
   function randomWord(length) {
     var rand;
@@ -20,6 +18,16 @@
     }
 
     return str;
+  }
+
+  function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
   }
 
   // This is a Source class functional test case, but since it needs to actually
@@ -164,29 +172,44 @@
               Rose.output(sources);
             });
           }
-        },
+        },        
 
         {
-          name: 'toggle subscribe/unsubscribe source list events',
+          name: 'sortItemOrder',
           onClick: function() {
-            if(subscribeToggle) {                                
-              if(!onWindowTrigger) {
-                XJS.ExtensionWindow.on("sources-list-highlight", function(id) {
-                  console.log("Highlight id: " + id);
+            var activeScene;
+            let arrayPosition=[];
+           
+            Scene.getActiveScene().then(function(scene){
+              activeScene = scene;
+              return scene.getItems();
+
+            }).then(function(sources){
+                
+                console.log("Item Definition");
+                console.log(sources);                
+
+                return new Promise(function(resolve, reject){
+                  shuffle(sources);
+                  resolve(sources);
                 });
-                XJS.ExtensionWindow.on("sources-list-select", function(id) {
-                  console.log("Select id: " + id);
-                });
-                console.log("Subscribed");                                
-                onWindowTrigger = !onWindowTrigger;
-              } else {
-                window.external.SourcesListSubscribeEvents("0");
-              }       
-            } else {
-              window.external.SourcesListUnsubscribeEvents("0");  
-              console.log("Unsubscribe");                         
-            }
-            subscribeToggle = !subscribeToggle;
+
+                }).then(function(shuffledArray) {
+
+                  console.log("Before Order");
+                  console.log(shuffledArray);
+                  return activeScene.setItemOrder(shuffledArray);
+
+                }).then(function(scene){
+
+                  return scene.getItems();
+
+                }).then(function(resultingSources){
+
+                  console.log("Value of Sources After");
+                  console.log(resultingSources);
+
+                });              
           }
         }
 
