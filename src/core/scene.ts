@@ -1147,17 +1147,19 @@ export class Scene {
                 let attrs = ['name', 'cname', 'item'];
                 for (let i = 0; i < jsonArr.length; i++) {
                   for (let a = 0; a < attrs.length; a++) {
+                    //This formatting is for json
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                      .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');
+                      .replace(/"/g, '&quot;');                   
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
                   'presetconfig:' + this._id,
-                  XML.parseJSON(newOrder).toString()
+                  //Revert back the formatting from json when transforming to xml
+                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
                     resolve(this);
                 });
@@ -1230,17 +1232,19 @@ export class Scene {
                 let attrs = ['name', 'cname', 'item'];
                 for (let i = 0; i < jsonArr.length; i++) {
                   for (let a = 0; a < attrs.length; a++) {
+                    //This formatting is for json
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                      .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');
+                      .replace(/"/g, '&quot;');               
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
                   'presetconfig:' + this._id,
-                  XML.parseJSON(newOrder).toString()
+                  //Revert back the formatting from json when transforming to xml
+                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
                   resolve(this);
                 });
