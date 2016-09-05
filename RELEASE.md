@@ -29,8 +29,9 @@ to `xjsframework.github.io`'s repository and update the tutorials if needed.
 
   - Merge release branch to master and add the version tag.
   - Draft a new release in Github
-  - Upload the latest generated xjs files to CDN
   - Publish to NPM
+  - Upload the latest generated xjs files to CDN
+  - Upload the latest source plugin starter plugin to CDN
 
 5. **Update the Release Notes and/or send the Newsletter**
 

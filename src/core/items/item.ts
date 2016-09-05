@@ -79,7 +79,7 @@ export class Item implements IItemLayout {
   protected _value: any;
   private _name: string;
   private _cname: string;
-  private _sceneId: number;
+  private _sceneId: any;
   private _keepLoaded: boolean;
   private _globalsrc: boolean;
 
@@ -427,9 +427,13 @@ export class Item implements IItemLayout {
    * });
    * ```
    */
-  getSceneId(): Promise<number> {
+  getSceneId(): Promise<any> {
     return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
+      if (this._sceneId === 'i12') {
+        resolve('i12');
+      } else {
+        resolve(Number(this._sceneId) + 1);
+      }
     });
   }
 
