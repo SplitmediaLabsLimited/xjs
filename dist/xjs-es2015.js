@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 1.4.0
+ * version: 1.4.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -5737,7 +5737,12 @@ var Item = (function () {
     Item.prototype.getSceneId = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(Number(_this._sceneId) + 1);
+            if (_this._sceneId === 'i12') {
+                resolve('i12');
+            }
+            else {
+                resolve(Number(_this._sceneId) + 1);
+            }
         });
     };
     /**
@@ -6793,7 +6798,7 @@ var Scene = (function () {
      * Scene.getSceneCount().then(function(count) {
      *   sceneCount = count;
      * });
-     *
+     * ```
      */
     Scene.getSceneCount = function () {
         return new Promise(function (resolve) {
@@ -6839,11 +6844,26 @@ var Scene = (function () {
     Scene.getByIdAsync = function (sceneNum) {
         return new Promise(function (resolve, reject) {
             Scene._initializeScenePoolAsync().then(function (cnt) {
-                if (sceneNum > cnt) {
-                    reject(Error('Invalid parameter'));
+                if (sceneNum === 'i12') {
+                    if (Scene._scenePool[cnt]._id === 'i12') {
+                        resolve(Scene._scenePool[cnt]);
+                    }
+                    else {
+                        reject(Error('Invalid parameter'));
+                    }
                 }
                 else {
-                    resolve(Scene._scenePool[sceneNum - 1]);
+                    try {
+                        if (sceneNum > cnt) {
+                            reject(Error('Invalid parameter'));
+                        }
+                        else {
+                            resolve(Scene._scenePool[sceneNum - 1]);
+                        }
+                    }
+                    catch (e) {
+                        reject(Error('Parameter must be a number'));
+                    }
                 }
             });
         });
@@ -8648,21 +8668,21 @@ var Item = (function () {
             }
             Item.lastSlot = slot;
             Item.itemSlotMap[slot] = itemID;
-            if (!environment_1.Environment.isSourcePlugin()) {
-                internal_1.exec('SearchVideoItem' +
-                    (String(slot) === '0' ? '' : (slot + 1)), itemID);
+        }
+        if (!environment_1.Environment.isSourcePlugin()) {
+            internal_1.exec('SearchVideoItem' +
+                (String(slot) === '0' ? '' : (slot + 1)), itemID);
+        }
+        else {
+            var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
+                .is
+                .greaterThan(version_1.minVersion);
+            if (hasGlobalSources) {
+                internal_1.exec('AttachVideoItem' + (slot + 1), itemID);
             }
             else {
-                var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
-                    .is
-                    .greaterThan(version_1.minVersion);
-                if (hasGlobalSources) {
-                    internal_1.exec('AttachVideoItem' + (slot + 1), itemID);
-                }
-                else {
-                    internal_1.exec('AttachVideoItem' +
-                        (String(slot) === '0' ? '' : (slot + 1)), itemID);
-                }
+                internal_1.exec('AttachVideoItem' +
+                    (String(slot) === '0' ? '' : (slot + 1)), itemID);
             }
         }
         return slot;
