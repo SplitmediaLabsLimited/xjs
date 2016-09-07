@@ -269,16 +269,6 @@ export class Dialog{
             return true;
           }
         });
-
-        // Object.observe(this, changes => {
-        //   // Search for changes with the name as result
-        //   let change = changes.filter(elem => {
-        //     return elem.name === '_result';
-        //   });
-        //   if (change !== undefined && change.length > 0) {
-        //     resolve(change[0].object._result);
-        //   }
-        // });
       }
     });
   }
