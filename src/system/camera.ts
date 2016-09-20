@@ -102,7 +102,7 @@ export class CameraDevice implements Addable {
    */
   static parse(deviceJSON: JXON): CameraDevice {
     var cam = new CameraDevice({
-      id:   deviceJSON['disp'],
+      id:   deviceJSON['disp'].replace(/&amp;/ig, '&'),
       name: deviceJSON['name']
     });
 
