@@ -84,7 +84,12 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   setURL(value: string): Promise<HtmlItem> {
     return new Promise((resolve, reject) => {
-      iItem.set('prop:item', value, this._id).then(code => {
+      iItem.get('prop:item', this._id).then(url => {
+        let _url = String(url).split('*');
+        _url[0] = value;
+
+        return iItem.set('prop:item', _url.join('*'), this._id);
+      }).then(code => {
         if (code) {
           resolve(this);
         } else {
