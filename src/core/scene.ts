@@ -279,23 +279,25 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getItems().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true;
-                  } else {
-                    return false;
+              (_idx => {
+                scene.getItems().then(function(items) {
+                  found = items.some(item => { // unique ID, so get first result
+                    if (item['_id'] === id.toUpperCase()) {
+                      match = item;
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (found ||
+                    Number(_idx) === arr.length - 1) { // last scene, no match
+                    resolve(match);
                   }
+                })
+                .catch(err => {
+                  reject(err);
                 });
-                if (found ||
-                  Number(this) === arr.length - 1) { // last scene, no match
-                  resolve(match);
-                }
-              }).bind(idx))
-              .catch(err => {
-                // Do nothing
-              });
+              })(idx)
             }
           });
         });
@@ -327,25 +329,31 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
+
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getItems().then(items => {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    return true;
-                  } else {
-                    return false;
+              (_idx => {
+                scene.getItems().then(function(items) {
+                  found = items.some(item => { // unique ID, so get first result
+                    if (item['_id'] === id.toUpperCase()) {
+                      match = scene;
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (found ||
+                    Number(_idx) === arr.length - 1) { // last scene, no match
+                    resolve(match);
                   }
+                })
+                .catch(err => {
+                  reject(err);
                 });
-                if (found) {
-                  resolve(scene);
-                } else if (idx === arr.length - 1) {
-                  // last scene, no match
-                  resolve(match);
-                }
-              });
+              })(idx)
             }
           });
+
         });
       }
     });
@@ -504,7 +512,7 @@ export class Scene {
                     resolveScene();
                   });
                 }
-              });
+              }).catch(() => resolveScene());
             });
           })).then(() => {
             resolve(matches);

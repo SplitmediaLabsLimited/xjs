@@ -605,12 +605,12 @@ export class Item implements IItemLayout {
             promiseArray.push(new Promise(itemResolve => {
               Scene.searchItemsById(itemId).then(item => {
                 itemResolve(item);
-              });
+              }).catch(() => itemResolve(null));
             }));
           });
 
           Promise.all(promiseArray).then(results => {
-            resolve(results);
+            resolve(results.filter(res => res !== null));
           });
         });
       }
@@ -657,12 +657,12 @@ export class Item implements IItemLayout {
             promiseArray.push(new Promise(itemResolve => {
               Scene.searchItemsById(itemId).then(item => {
                 itemResolve(item);
-              });
+              }).catch(() => itemResolve(null));
             }));
           });
 
           Promise.all(promiseArray).then(results => {
-            resolve(results);
+            resolve(results.filter(res => res !== null));
           });
         });
       }
