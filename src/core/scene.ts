@@ -16,7 +16,7 @@ import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
 import {MediaSource} from './source/media';
 
-import {Item, ItemTypes} from './items/item';
+import {Item, ItemTypes, ViewTypes} from './items/item';
 import {GameItem} from './items/game';
 import {CameraItem} from './items/camera';
 import {AudioItem} from './items/audio';
@@ -291,23 +291,25 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getItems().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true;
-                  } else {
-                    return false;
+              (_idx => {
+                scene.getItems().then(function(items) {
+                  found = items.some(item => { // unique ID, so get first result
+                    if (item['_id'] === id.toUpperCase()) {
+                      match = item;
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (found ||
+                    Number(_idx) === arr.length - 1) { // last scene, no match
+                    resolve(match);
                   }
+                })
+                .catch(err => {
+                  reject(err);
                 });
-                if (found ||
-                  Number(this) === arr.length - 1) { // last scene, no match
-                  resolve(match);
-                }
-              }).bind(idx))
-              .catch(err => {
-                // Do nothing
-              });
+              })(idx)
             }
           });
         });
@@ -339,25 +341,31 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
+
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getItems().then(items => {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    return true;
-                  } else {
-                    return false;
+              (_idx => {
+                scene.getItems().then(function(items) {
+                  found = items.some(item => { // unique ID, so get first result
+                    if (item['_id'] === id.toUpperCase()) {
+                      match = scene;
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+                  if (found ||
+                    Number(_idx) === arr.length - 1) { // last scene, no match
+                    resolve(match);
                   }
+                })
+                .catch(err => {
+                  reject(err);
                 });
-                if (found) {
-                  resolve(scene);
-                } else if (idx === arr.length - 1) {
-                  // last scene, no match
-                  resolve(match);
-                }
-              });
+              })(idx)
             }
           });
+
         });
       }
     });
@@ -516,7 +524,7 @@ export class Scene {
                     resolveScene();
                   });
                 }
-              });
+              }).catch(() => resolveScene());
             });
           })).then(() => {
             resolve(matches);
@@ -1142,8 +1150,8 @@ export class Scene {
             return scene.getSceneNumber();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
-            exec('SourcesListOrderSave', ids.join(','));
+          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
+            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);
           } else {
             let sceneName: string;
@@ -1159,17 +1167,19 @@ export class Scene {
                 let attrs = ['name', 'cname', 'item'];
                 for (let i = 0; i < jsonArr.length; i++) {
                   for (let a = 0; a < attrs.length; a++) {
+                    //This formatting is for json
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                      .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');
+                      .replace(/"/g, '&quot;');                   
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
                   'presetconfig:' + this._id,
-                  XML.parseJSON(newOrder).toString()
+                  //Revert back the formatting from json when transforming to xml
+                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
                     resolve(this);
                 });
@@ -1200,7 +1210,7 @@ export class Scene {
         sources.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (sources.every(el => { return el instanceof Source })) {
+          if (sources.every(el => { return (el instanceof Source || el instanceof Item) })) {
             return new Promise(resolve => {
               let promises = [];
               for (let i in sources) {
@@ -1225,8 +1235,8 @@ export class Scene {
             return scene.getSceneNumber();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id && Environment.isSourceConfig()) {
-            exec('SourcesListOrderSave', ids.join(','));
+          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
+            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);
           } else {
             let sceneName: string;
@@ -1242,17 +1252,19 @@ export class Scene {
                 let attrs = ['name', 'cname', 'item'];
                 for (let i = 0; i < jsonArr.length; i++) {
                   for (let a = 0; a < attrs.length; a++) {
+                    //This formatting is for json
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                      .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');
+                      .replace(/"/g, '&quot;');               
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
 
                 iApp.set(
                   'presetconfig:' + this._id,
-                  XML.parseJSON(newOrder).toString()
+                  //Revert back the formatting from json when transforming to xml
+                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
                   resolve(this);
                 });

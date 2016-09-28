@@ -6,7 +6,7 @@
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Source = XJS.Source;
-  var App = new XJS.App();
+  var App = new XJS.App(); 
 
   function randomWord(length) {
     var rand;
@@ -18,6 +18,16 @@
     }
 
     return str;
+  }
+
+  function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
   }
 
   // This is a Source class functional test case, but since it needs to actually
@@ -162,7 +172,47 @@
               Rose.output(sources);
             });
           }
+        },        
+
+        {
+          name: 'sortItemOrder',
+          onClick: function() {
+            var activeScene;
+            let arrayPosition=[];
+           
+            Scene.getActiveScene().then(function(scene){
+              activeScene = scene;
+              return scene.getItems();
+
+            }).then(function(sources){
+                
+                console.log("Item Definition");
+                console.log(sources);                
+
+                return new Promise(function(resolve, reject){
+                  shuffle(sources);
+                  resolve(sources);
+                });
+
+                }).then(function(shuffledArray) {
+
+                  console.log("Before Order");
+                  console.log(shuffledArray);
+                  return activeScene.setItemOrder(shuffledArray);
+
+                }).then(function(scene){
+
+                  return scene.getItems();
+
+                }).then(function(resultingSources){
+
+                  console.log("Value of Sources After");
+                  console.log(resultingSources);
+
+                });              
+          }
         }
+        
       ]
     });
   });

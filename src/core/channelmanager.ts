@@ -2,6 +2,7 @@
 /// <reference path="../../defs/window.d.ts" />
 
 import {EventEmitter} from '../util/eventemitter';
+import {EventManager} from '../internal/eventmanager';
 import {Channel} from './channel';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
@@ -95,15 +96,8 @@ export class ChannelManager extends EventEmitter {
   }
 }
 
-window.SetEvent = (args: string) => {
+EventManager.subscribe(['StreamStart', 'StreamEnd'], (settingsObj: string) => {
   let settings = [];
-  settings = args.split('&');
-
-  let settingsObj = {};
-  settings.map(function(el) {
-    let _split = el.split('=');
-    settingsObj[_split[0]] = _split[1];
-  });
 
   if (settingsObj.hasOwnProperty('event') &&
       settingsObj.hasOwnProperty('info')) {
@@ -115,4 +109,4 @@ window.SetEvent = (args: string) => {
     }
     ChannelManager.emit(eventString, settingsObj['info']);
   }
-}
+});

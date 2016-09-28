@@ -1,10 +1,13 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
+/// <reference path="../../defs/proxy.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+
+var dialogProxy: any;
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
@@ -66,7 +69,12 @@ export class Dialog{
       let eventListener = (e) => {
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
-        this._result = e.detail;
+
+        if (typeof dialogProxy !== 'undefined') {
+          dialogProxy._result = e.detail;
+        } else {
+          this._result = e.detail;
+        }
         this._resultListener = null;
       };
 
@@ -252,13 +260,13 @@ export class Dialog{
         document.addEventListener('xsplit-dialog-result', eventListener);
         this._resultListener = eventListener;
       } else { // listener already active
-        Object.observe(this, changes => {
-          // Search for changes with the name as result
-          let change = changes.filter(elem => {
-            return elem.name === '_result';
-          });
-          if (change !== undefined && change.length > 0) {
-            resolve(change[0].object._result);
+        dialogProxy = new Proxy( this, {
+          set: (target, property, value, receiver) => {
+            if (property === '_result') {
+              this._result = value;
+              resolve(value);
+            }
+            return true;
           }
         });
       }
