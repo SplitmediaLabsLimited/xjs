@@ -15,4 +15,5 @@ interface Window {
   Setid: Function;
   SetEvent: Function;
   AppOnEvent: Function;
+  SourcesListUpdate: Function;
 }
