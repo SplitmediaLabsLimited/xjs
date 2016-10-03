@@ -3801,14 +3801,13 @@ var ItemConfigurable = (function () {
             if (environment_1.Environment.isSourcePlugin) {
                 var slot = item_1.Item.attach(_this._id);
                 var savingAllowed = false;
-                item_1.Item.get('itemlist').then(function (itemlist) {
-                    // for versions lower than 2.8
-                    if (itemlist === 'null') {
+                item_1.Item.get('prop:srcid').then(function (srcId) {
+                    if (typeof srcId !== 'string' || srcId === '') {
+                        // version is lower than 2.8
                         savingAllowed = (slot === 0);
                     }
                     else {
-                        var itemsArray = itemlist.split(',');
-                        savingAllowed = (itemsArray.indexOf(_this._id) > -1);
+                        savingAllowed = srcId === _this._srcId;
                     }
                     // only allow direct saving for self
                     if (savingAllowed) {
@@ -5400,6 +5399,7 @@ var Item = (function () {
         this._name = props['name'];
         this._cname = props['cname'];
         this._id = props['id'];
+        this._srcId = props['srcid'];
         this._sceneId = props['sceneId'];
         this._value = props['value'];
         this._keepLoaded = props['keeploaded'];
