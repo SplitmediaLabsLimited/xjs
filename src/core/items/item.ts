@@ -75,6 +75,7 @@ export enum ViewTypes {
  */
 export class Item implements IItemLayout {
   protected _id: string;
+  protected _srcId: string;
   protected _type: ItemTypes;
   protected _value: any;
   private _name: string;
@@ -91,6 +92,7 @@ export class Item implements IItemLayout {
     this._name = props['name'];
     this._cname = props['cname'];
     this._id = props['id'];
+    this._srcId = props['srcid'];
     this._sceneId = props['sceneId'];
     this._value = props['value'];
     this._keepLoaded = props['keeploaded'];
