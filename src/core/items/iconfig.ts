@@ -44,6 +44,7 @@ export interface IItemConfigurable {
 
 export class ItemConfigurable {
   private _id: string;
+  private _srcId: string;
 
   loadConfig(): Promise<any> {
     return new Promise(resolve => {
@@ -64,14 +65,14 @@ export class ItemConfigurable {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);
         let savingAllowed = false;
-        iItem.get('itemlist').then(itemlist => {
-          // for versions lower than 2.8
-          if (itemlist === 'null' ) {
+        iItem.get('prop:srcid').then(srcId => {
+          if (typeof srcId !== 'string' || srcId === '') {
+            // version is lower than 2.8
             savingAllowed = (slot === 0);
           } else {
-            const itemsArray = itemlist.split(',');
-            savingAllowed = (itemsArray.indexOf(this._id) > -1);
+            savingAllowed = srcId === this._srcId;
           }
+
           // only allow direct saving for self
           if (savingAllowed) {
             // check for valid object
