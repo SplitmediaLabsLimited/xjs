@@ -69,14 +69,10 @@ export class Dialog{
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
 
-        if (typeof Proxy === 'undefined') {
-          this._result = e.detail;
+        if (typeof dialogProxy !== 'undefined' && typeof Proxy !== 'undefined') {
+          dialogProxy._result = e.detail;
         } else {
-          if (typeof dialogProxy !== 'undefined') {
-            dialogProxy._result = e.detail;
-          } else {
-            this._result = e.detail;
-          }
+          this._result = e.detail;
         }
 
         this._resultListener = null;
