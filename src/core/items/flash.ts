@@ -17,6 +17,7 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {FlashSource} from '../source/flash';
 
 /**
  * The FlashItem class represents a flash item, which is any SWF file
@@ -36,103 +37,8 @@ import {Environment} from '../environment';
  * may not be properly reflected in the item unless native flash audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor,
+export class FlashItem extends FlashSource implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio, IItemEffect {
-
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom resolution (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom resolution has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  getCustomResolution(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      let customSize;
-      iItem.get('prop:BrowserSize', this._id).then(val => {
-        if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        } else {
-          customSize = Rectangle.fromDimensions(0, 0);
-        }
-        resolve(customSize);
-      });
-    });
-  }
-
-  /**
-   * param: (value: Rectangle)
-   * ```
-   * return: Promise<FlashItem>
-   * ```
-   *
-   * Sets the custom resolution for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setCustomResolution(value: Rectangle): Promise<FlashItem> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserSize', value.toDimensionString(),
-        this._id).then(() => {
-          resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getAllowRightClick(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:BrowserRightClick', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
-
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
-  setAllowRightClick(value: boolean): Promise<Item> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-        .then(() => {
-          resolve(this);
-        });
-    });
-  }
 
   // ItemLayout
 
@@ -600,5 +506,5 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<FlashItem>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(FlashItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemAudio, ItemEffect]);

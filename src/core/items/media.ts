@@ -19,6 +19,7 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
+import {MediaSource}   from '../source/media';
 
 /**
  * The MediaItem class represents a playable media file.
@@ -35,7 +36,7 @@ import {JSON as JXON} from '../../internal/util/json';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor,
+export class MediaItem extends MediaSource implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemPlayback, IItemAudio, IItemEffect {
 
   /**
@@ -696,5 +697,5 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<MediaItem>;
 }
 
-applyMixins(MediaItem, [ItemLayout, ItemColor, ItemChroma,
+applyMixins(MediaItem, [Item, ItemLayout, ItemColor, ItemChroma,
   ItemTransition, ItemPlayback, ItemAudio, ItemEffect]);
