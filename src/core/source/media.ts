@@ -5,6 +5,7 @@ import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from '../items/iplayback';
 import {IItemAudio, ItemAudio} from '../items/iaudio';
+import {CuePoint} from '../items/cuepoint';
 
 export class MediaSource extends Source implements IItemAudio, IItemPlayback{
   // ItemPlayback
