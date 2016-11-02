@@ -18,7 +18,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {HtmlSource} from '../source/html'
+import {IHtmlSource, IIHtmlSource} from '../source/ihtml'
 
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -56,7 +56,8 @@ import {HtmlSource} from '../source/html'
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio, IItemEffect,
+  IIHtmlSource {
   /**
    * param: (func: string, arg: string)
    * ```
@@ -75,6 +76,187 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
       resolve(this);
     });
   }
+
+    // IHtmlSource
+  /**
+   * return: Promise<string>
+   *
+   * Gets the URL of this webpage item.
+   */
+  getURL: () => Promise<string>
+
+  /**
+   * param: (url: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Sets the URL of this webpage item.
+   *
+   * *Chainable.*
+   */
+  setURL: (value: string) => Promise<HtmlItem>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if browser is rendered transparent
+   */
+  isBrowserTransparent: () => Promise<boolean>
+
+  /**
+   * param: Promise<boolean>
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Enable or disabled transparency of CEF browser
+   *
+   * *Chainable.*
+   */
+  enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the custom browser window size (in pixels) for the item, if set,
+   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+   * custom size has been set.
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  getBrowserCustomSize: () => Promise<Rectangle>
+
+  /**
+   * param: Promise<Rectangle>
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Sets the custom browser window size for the item
+   * regardless of its layout on the mixer
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if right click events are sent to the item or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getAllowRightClick: () => Promise<boolean>
+
+  /**
+   * param: (value:boolean)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Allow or disallow right click events to be sent to the item. Note that
+   * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.setAllowRightClick(true).then(function(item) {
+   *   // Promise resolves with the same Item instance
+   * });
+   * ```
+   */
+  setAllowRightClick: (value: boolean) => Promise<Source>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the javascript commands to be executed on item upon load
+   */
+  getBrowserJS: () => Promise<string>
+
+  /**
+   * param: (js: string, refresh: boolean = false)
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Sets the javascript commands to be executed on item
+   * right upon setting and on load. Optionally set second parameter
+   * to true to refresh item (needed to clean previously executed JS code.)
+   *
+   * *Chainable.*
+   */
+  setBrowserJS: () => Promise<HtmlItem>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if BrowserJS is enabled and executed on load
+   */
+  isBrowserJSEnabled: () => Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require item to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable.*
+   */
+  enableBrowserJS: (value: boolean) => Promise<HtmlItem>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the custom CSS applied to the document upon loading
+   */
+  getCustomCSS: () => Promise<string>
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Sets the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable.*
+   */
+  setCustomCSS: (value: string) => Promise<HtmlItem>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if custom CSS is enabled and applied to the document on load
+   */
+  isCustomCSSEnabled: () => Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return: Promise<HtmlItem>
+   * ```
+   *
+   * Enables or disables application of custom CSS to the document
+   *
+   * *Chainable.*
+   */
+  enableCustomCSS: (value: boolean) => Promise<HtmlItem>
 
   // ItemLayout
 
@@ -563,5 +745,5 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
 }
 
-applyMixins(HtmlItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(HtmlItem, [IHtmlSource, ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemConfigurable, ItemAudio, ItemEffect]);

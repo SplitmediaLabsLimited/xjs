@@ -78,7 +78,7 @@ export enum ViewTypes {
 export class Item extends Source implements IItemLayout, IiSource {
   constructor(props?: {}) {
     super(props)
-    this._isItemCall = true
+    this._isItemCall = true;
   }
   /**
    * return: Promise<ItemTypes>

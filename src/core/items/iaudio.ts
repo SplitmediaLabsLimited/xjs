@@ -63,8 +63,12 @@ export interface IItemAudio {
 
 export class ItemAudio implements IItemAudio {
   private _id: string;
+  protected _isItemCall: boolean;
 
   getVolume(): Promise<number> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:volume', this._id).then(val => {
         resolve(Number(val));
@@ -73,6 +77,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   setVolume(value: number): Promise<ItemAudio> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       value = value < 0 ? 0 : value > 100 ? 100 : value;
       iItem.set('prop:volume', String(value),
@@ -83,6 +90,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   isMute(): Promise<boolean> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:mute', this._id).then(val => {
         resolve(val === '1');
@@ -91,6 +101,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   setMute(value: boolean): Promise<ItemAudio> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -99,6 +112,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   isStreamOnlyAudio(): Promise<boolean> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:sounddev', this._id).then(val => {
         resolve(val === '1');
@@ -107,6 +123,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   setStreamOnlyAudio(value: boolean): Promise<ItemAudio> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -115,6 +134,9 @@ export class ItemAudio implements IItemAudio {
   }
 
   isAudioAvailable(): Promise<boolean> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:audioavail', this._id).then(val => {
         resolve(val === '1');

@@ -1,7 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from './source';
-import {HtmlSource} from './html'
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -213,16 +212,11 @@ export interface IiSource {
 
 export class iSource implements IiSource {
   protected _id: string;
-  protected _srcId: string;
-  protected _type: ItemTypes;
   protected _value: any;
   protected _name: string;
   protected _cname: string;
-  protected _sceneId: number;
   protected _keepLoaded: boolean;
   protected _globalsrc: boolean;
-
-  protected _xmlparams: {};
   protected _isItemCall: boolean;
 
   constructor(props?: {}) {
@@ -231,17 +225,14 @@ export class iSource implements IiSource {
     this._name = props['name'];
     this._cname = props['cname'];
     this._id = props['id'];
-    this._srcId = props['srcid'];
-    this._sceneId = props['sceneId'];
     this._value = props['value'];
     this._keepLoaded = props['keeploaded'];
-    this._type = Number(props['type']);
     this._globalsrc = props['globalsrc'];
-
-    this._xmlparams = props;
-
   }
   setName(value: string): Promise<Source> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       this._name = value;
 
@@ -275,7 +266,9 @@ export class iSource implements IiSource {
   }
 
   getName(): Promise<string> {
-    if(!this._isItemCall) console.log('Test::', this._isItemCall)
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
         this._name = val;
@@ -285,6 +278,9 @@ export class iSource implements IiSource {
   }
 
   setCustomName(value: string): Promise<Source> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       this._cname = value;
       iItem.set('prop:cname', this._cname, this._id).then(() => {
@@ -294,6 +290,9 @@ export class iSource implements IiSource {
   }
 
   getCustomName(): Promise<string> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
         this._cname = val;
@@ -303,6 +302,9 @@ export class iSource implements IiSource {
   }
 
   getValue(): Promise<string | XML> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
         val = (val === 'null') ? '' : val;
@@ -324,6 +326,9 @@ export class iSource implements IiSource {
   }
 
   setValue(value: string | XML): Promise<Source> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
         <string>value : (<XML>value).toString();
@@ -339,6 +344,9 @@ export class iSource implements IiSource {
   }
 
   getKeepLoaded(): Promise<boolean> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:keeploaded', this._id).then(val => {
         this._keepLoaded = (val === '1');
@@ -348,6 +356,9 @@ export class iSource implements IiSource {
   }
 
   setKeepLoaded(value: boolean): Promise<Source> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
@@ -360,6 +371,9 @@ export class iSource implements IiSource {
   }
 
   getSourceId(): Promise<string> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise((resolve, reject) => {
       if (versionCompare(getVersion()).is.lessThan(minVersion)) {
         reject(new Error('Only available on versions above ' + minVersion));

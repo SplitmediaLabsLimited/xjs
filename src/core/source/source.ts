@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {applyMixins} from '../../internal/util/mixin';
-import {ItemTypes} from '../items/item'
+import {ItemTypes, Item} from '../items/item'
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -27,7 +27,7 @@ export class Source implements IiSource{
   protected _globalsrc: boolean;
 
   protected _xmlparams: {};
-  protected _isItemCall: boolean = false;
+  protected _isItemCall: boolean;
 
   constructor(props?: {}) {
     props = props ? props : {};
@@ -43,6 +43,7 @@ export class Source implements IiSource{
     this._globalsrc = props['globalsrc'];
 
     this._xmlparams = props;
+    this._isItemCall = false;
   }
   /**
    * return: Promise<Item>
@@ -127,7 +128,7 @@ export class Source implements IiSource{
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
         iItem.get('itemlist').then(itemlist => {
-          const promiseArray: Promise<Source>[] = [];
+          const promiseArray: Promise<Item>[] = [];
           const itemsArray = itemlist.split(',');
 
           itemsArray.forEach(itemId => {
