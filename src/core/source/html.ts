@@ -9,7 +9,7 @@ import {Environment} from '../environment';
 import {Item} from '../items/item';
 import {ItemConfigurable, IItemConfigurable} from '../items/iconfig';
 import {IItemAudio, ItemAudio} from '../items/iaudio';
-import {IHtmlSource, IIHtmlSource} from '../source/ihtml'
+import {IHtmlSource, IIHtmlSource} from '../source/ihtmlsource'
 
 export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   IIHtmlSource {
