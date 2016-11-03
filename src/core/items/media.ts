@@ -36,7 +36,7 @@ import {MediaSource}   from '../source/media';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends MediaSource implements IItemLayout, IItemColor,
+export class MediaItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemPlayback, IItemAudio, IItemEffect {
 
   /**

@@ -46,7 +46,7 @@ import {VideoPlaylistSource} from '../source/videoplaylist'
  */
 
 
-export class VideoPlaylistItem extends VideoPlaylistSource implements IItemLayout,
+export class VideoPlaylistItem extends Item implements IItemLayout,
   IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
   // ItemLayout

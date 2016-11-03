@@ -12,10 +12,9 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {iSource, IiSource} from '../source/isource'
+import {iSource} from '../source/isource'
 
-
-export class Source implements IiSource{
+export class Source{
   protected _id: string;
   protected _srcId: string;
   protected _type: ItemTypes;
@@ -46,7 +45,7 @@ export class Source implements IiSource{
     this._isItemCall = false;
   }
   /**
-   * return: Promise<Item>
+   * return: Promise<Source>
    *
    * > #### For Deprecation
    * This method is deprecated and will be removed soon.
@@ -97,7 +96,7 @@ export class Source implements IiSource{
   }
 
   /**
-   * return: Promise<Item[]>
+   * return: Promise<Source[]>
    *
    * Get the Item List of the current source
    *
@@ -146,6 +145,9 @@ export class Source implements IiSource{
       }
     });
   }
+
+  // Shared with Item
+  //
 
   /**
    * param: (value: string)
@@ -281,59 +283,6 @@ export class Source implements IiSource{
    */
   setValue: (value: string | XML) => Promise<Source>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item is kept loaded in memory
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getKeepLoaded().then(function(isLoaded) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getKeepLoaded: () => Promise<boolean>
-
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Set Keep loaded option to ON or OFF
-   *
-   * Items with Keep loaded set to ON would emit `scene-load` event each time
-   * the active scene switches to the item's current scene.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setKeepLoaded(true).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   */
-  setKeepLoaded: (value: boolean) => Promise<Source>
-
-  /**
-   * return: Promise<string>
-   *
-   * Get the Source ID of the item.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSourceId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getSourceId: () => Promise<string>
 }
 
 applyMixins(Source, [iSource])

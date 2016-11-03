@@ -56,7 +56,7 @@ import {System} from '../../system/system';
  *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
-export class CameraItem extends CameraSource implements IItemLayout, IItemColor,
+export class CameraItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio, IItemEffect {
   protected _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",

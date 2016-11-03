@@ -52,7 +52,7 @@ import {GameSource} from '../source/game'
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends GameSource implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
 
   /**
    * return: Promise<boolean>

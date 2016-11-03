@@ -34,7 +34,7 @@ import {ScreenSource} from '../source/screen'
  *  All methods marked as *Chainable* resolve with the original `ScreenItem`
  *  instance.
  */
-export class ScreenItem extends ScreenSource implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class ScreenItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
   /**
    * return: Promise<Rectangle>
    *

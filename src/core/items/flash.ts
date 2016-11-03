@@ -37,7 +37,7 @@ import {FlashSource} from '../source/flash';
  * may not be properly reflected in the item unless native flash audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class FlashItem extends FlashSource implements IItemLayout, IItemColor,
+export class FlashItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio, IItemEffect {
 
   // ItemLayout

@@ -15,7 +15,7 @@ import {
   versionCompare,
   getVersion
 } from '../../internal/util/version';
-import {iSource, IiSource} from '../source/isource';
+import {iSource} from '../source/isource';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -75,7 +75,7 @@ export enum ViewTypes {
  *  });
  * ```
  */
-export class Item extends Source implements IItemLayout, IiSource {
+export class Item extends Source implements IItemLayout {
   constructor(props?: {}) {
     super(props)
     this._isItemCall = true;
@@ -169,7 +169,86 @@ export class Item extends Source implements IItemLayout, IiSource {
     })
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if item is kept loaded in memory
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getKeepLoaded().then(function(isLoaded) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getKeepLoaded(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:keeploaded', this._id).then(val => {
+        this._keepLoaded = (val === '1');
+        resolve(this._keepLoaded);
+      });
+    });
+  }
 
+  /**
+   * param: (value: boolean)
+   * ```
+   * return: Promise<Source>
+   * ```
+   *
+   * Set Keep loaded option to ON or OFF
+   *
+   * Items with Keep loaded set to ON would emit `scene-load` event each time
+   * the active scene switches to the item's current scene.
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.setKeepLoaded(true).then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   */
+  setKeepLoaded(value: boolean): Promise<Source> {
+    return new Promise(resolve => {
+      this._keepLoaded = value;
+      this._globalsrc = value;
+      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the Source ID of the item.
+   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getSourceId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSourceId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        reject(new Error('Only available on versions above ' + minVersion));
+      } else {
+        iItem.get('prop:srcid', this._id).then(srcid => {
+          resolve(srcid);
+        });
+      }
+    });
+  }
 
   /**
    * return: XML
@@ -528,60 +607,6 @@ export class Item extends Source implements IItemLayout, IiSource {
    * ```
    */
   setValue: (value: string | XML) => Promise<Source>
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item is kept loaded in memory
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getKeepLoaded().then(function(isLoaded) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getKeepLoaded: () => Promise<boolean>
-
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Set Keep loaded option to ON or OFF
-   *
-   * Items with Keep loaded set to ON would emit `scene-load` event each time
-   * the active scene switches to the item's current scene.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setKeepLoaded(true).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   */
-  setKeepLoaded: (value: boolean) => Promise<Source>
-
-  /**
-   * return: Promise<string>
-   *
-   * Get the Source ID of the item.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSourceId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getSourceId: () => Promise<string>
 
 }
 
