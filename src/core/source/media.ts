@@ -4,11 +4,23 @@ import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from '../items/iplayback';
-import {IItemAudio, ItemAudio} from '../items/iaudio';
 import {CuePoint} from '../items/cuepoint';
 
-export class MediaSource extends Source implements IItemAudio, IItemPlayback{
+export class MediaSource extends Source implements IItemPlayback{
   // ItemPlayback
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<MediaItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isAudio isAudio}
+   */
+  isAudio: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isVideo isVideo}
+   */
+  isVideo: () => Promise<boolean>;
 
   /**
    * See: {@link #core/IItemPlayback#isSeekable isSeekable}
@@ -119,42 +131,5 @@ export class MediaSource extends Source implements IItemAudio, IItemPlayback{
    * See: {@link #core/IItemPlayback#setCuePoints setCuePoints}
    */
   setCuePoints: (value: CuePoint[]) => Promise<MediaSource>;
-
-  // Inherited from base class, no need to redefine
-  // getValue: () => Promise<string>;
-  // setValue: (value: string) => Promise<MediaSource>;
-
-  /**
-   * See: {@link #core/IItemPlayback#isAudio isAudio}
-   */
-  isAudio: () => Promise<boolean>;
-
-  /**
-   * See: {@link #core/IItemPlayback#isVideo isVideo}
-   */
-  isVideo: () => Promise<boolean>;
-
-  // ItemAudio
-
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
-
-  /** See: {@link #core/IItemAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
-
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<MediaSource>;
-
-  /** See: {@link #core/IItemAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<MediaSource>;
-
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
-
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<MediaSource>;
-
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
-  isAudioAvailable: () => Promise<boolean>;
 
 }

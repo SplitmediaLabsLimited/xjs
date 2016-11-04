@@ -65,6 +65,19 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   };
 
   /**
+   * return: Promise<string>
+   *
+   * Gets the device ID of the underlying camera device.
+   */
+  getDeviceId(): Promise<string> {
+    return new Promise(resolve => {
+      iItem.get('prop:item', this._id).then(val => {
+        resolve(val);
+      });
+    });
+  }
+
+  /**
    * return: Promise<number>
    *
    * Gets audio delay with respect to video feed in milliseconds
