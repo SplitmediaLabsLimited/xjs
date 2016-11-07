@@ -16,6 +16,7 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {ItemTypes} from './item';
 import {Environment} from '../environment';
+import {GameSource} from '../source/game'
 
 /**
  * The GameItem Class provides methods specifically used for game items and
@@ -51,7 +52,8 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class GameItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemEffect {
 
   /**
    * return: Promise<boolean>
@@ -605,5 +607,5 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   showFileMaskingGuide: (value: boolean) => Promise<GameItem>;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(GameItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemEffect]);

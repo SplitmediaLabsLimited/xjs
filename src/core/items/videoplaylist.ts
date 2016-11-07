@@ -48,7 +48,7 @@ import {IO} from '../../util/io';
 export class VideoPlaylistItem extends Item implements IItemLayout,
   IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
-  /**
+    /**
    * return: Promise<string>
    *
    * Gets the now playing video of this VideoPlaylist item.
@@ -67,7 +67,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * param: (value: string|number)
    *
-   * return: Promise<VideoPlaylistItem>
+   * return: Promise<VideoPlaylistSource>
    *
    * Sets the now playing video of this VideoPlaylist item.
    *
@@ -121,7 +121,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    *
    */
 
-  getVideoPlaylistItems(): Promise<string[]> {
+  getVideoPlaylistSources(): Promise<string[]> {
     return new Promise(resolve => {
       iItem.get('prop:FilePlaylist', this._id).then(playlist => {
         let _playlist = String(playlist).split('|');
@@ -146,7 +146,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    *
    */
 
-  setVideoPlaylistItems(fileItems:string[]): Promise<VideoPlaylistItem> {
+  setVideoPlaylistSources(fileItems:string[]): Promise<VideoPlaylistItem> {
     let fileString: string;
 
     let filePromises = fileItems.map((filename) => {

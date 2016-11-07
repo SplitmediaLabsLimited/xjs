@@ -45,8 +45,12 @@ export interface IItemConfigurable {
 export class ItemConfigurable {
   private _id: string;
   private _srcId: string;
+  protected _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
+    if(this._isItemCall){
+      console.warn('Should only be called on Sources. Improve this message.')
+    }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(
         config => {
