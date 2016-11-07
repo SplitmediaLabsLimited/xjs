@@ -2,11 +2,31 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
 import {IItemAudio, ItemAudio} from '../items/iaudio';
 
-export class FlashSource extends Source{
+export class FlashSource extends Source implements IItemAudio {
+  // ItemAudio
 
+  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  getVolume: () => Promise<number>;
+
+  /** See: {@link #core/IItemAudio#isMute isMute} */
+  isMute: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<FlashSource>;
+
+  /** See: {@link #core/IItemAudio#setMute setMute} */
+  setMute: (value: boolean) => Promise<FlashSource>;
+
+  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  isStreamOnlyAudio: () => Promise<boolean>;
+
+  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  setStreamOnlyAudio: (value: boolean) => Promise<FlashSource>;
+
+  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  isAudioAvailable: () => Promise<boolean>;
 }
+applyMixins(FlashSource, [ItemAudio])
 

@@ -30,7 +30,8 @@ import {ImageSource} from '../source/image'
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class ImageItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemEffect {
 
   // ItemLayout
 

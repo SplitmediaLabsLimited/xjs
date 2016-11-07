@@ -24,6 +24,7 @@ export class iSource {
   protected _name: string;
   protected _cname: string;
   protected _keepLoaded: boolean;
+  protected _globalsrc: boolean;
   protected _isItemCall: boolean;
 
   constructor(props?: {}) {
@@ -33,10 +34,11 @@ export class iSource {
     this._cname = props['cname'];
     this._id = props['id'];
     this._value = props['value'];
+    this._globalsrc = props['globalsrc'];
   }
   setName(value: string): Promise<Source> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       this._name = value;
@@ -72,7 +74,7 @@ export class iSource {
 
   getName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -84,7 +86,7 @@ export class iSource {
 
   setCustomName(value: string): Promise<Source> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -96,7 +98,7 @@ export class iSource {
 
   getCustomName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -108,7 +110,7 @@ export class iSource {
 
   getValue(): Promise<string | XML> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
@@ -132,7 +134,7 @@ export class iSource {
 
   setValue(value: string | XML): Promise<Source> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
@@ -145,6 +147,39 @@ export class iSource {
       iItem.set('prop:item', val, this._id).then(() => {
         resolve(this);
       });
+    });
+  }
+
+  getKeepLoaded(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:keeploaded', this._id).then(val => {
+        this._keepLoaded = (val === '1');
+        resolve(this._keepLoaded);
+      });
+    });
+  }
+
+  setKeepLoaded(value: boolean): Promise<Source> {
+    return new Promise(resolve => {
+      this._keepLoaded = value;
+      this._globalsrc = value;
+      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+    });
+  }
+
+  getSourceId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        reject(new Error('Only available on versions above ' + minVersion));
+      } else {
+        iItem.get('prop:srcid', this._id).then(srcid => {
+          resolve(srcid);
+        });
+      }
     });
   }
 }

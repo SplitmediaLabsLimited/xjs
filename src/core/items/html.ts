@@ -19,6 +19,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {iHtmlSource} from '../source/ihtmlsource'
 
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -118,18 +119,13 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
     });
   }
 
+  //iHtmlSource
   /**
    * return: Promise<boolean>
    *
    * Check if browser is rendered transparent
    */
-  isBrowserTransparent(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
-        resolve(isTransparent === '1');
-      });
-    });
-  }
+  isBrowserTransparent: () => Promise<boolean>
 
   /**
    * param: Promise<boolean>
@@ -141,14 +137,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  enableBrowserTransparency(value: boolean): Promise<HtmlItem> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
-        this._id).then(() => {
-          resolve(this);
-      });
-    });
-  }
+  enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
 
   /**
    * return: Promise<Rectangle>
@@ -159,23 +148,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  getBrowserCustomSize(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      let customSize;
-      iItem.get('prop:BrowserSize', this._id).then(val => {
-        if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(
-            Number(width) / window.devicePixelRatio,
-            Number(height) / window.devicePixelRatio
-          );
-        } else {
-          customSize = Rectangle.fromDimensions(0, 0);
-        }
-        resolve(customSize);
-      });
-    });
-  }
+  getBrowserCustomSize: () => Promise<Rectangle>
 
   /**
    * param: Promise<Rectangle>
@@ -190,18 +163,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setBrowserCustomSize(value: Rectangle): Promise<HtmlItem> {
-    return new Promise(resolve => {
-      // Set the correct width and height based on the DPI settings
-      value.setWidth(value.getWidth() * window.devicePixelRatio);
-      value.setHeight(value.getHeight() * window.devicePixelRatio);
-
-      iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
-        .then(() => {
-          resolve(this);
-      });
-    });
-  }
+  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
 
   /**
    * return: Promise<boolean>
@@ -216,13 +178,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * });
    * ```
    */
-  getAllowRightClick(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:BrowserRightClick', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  getAllowRightClick: () => Promise<boolean>
 
   /**
    * param: (value:boolean)
@@ -243,37 +199,14 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * });
    * ```
    */
-  setAllowRightClick(value: boolean): Promise<Source> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-        .then(() => {
-          resolve(this);
-        });
-    });
-  }
+  setAllowRightClick: (value: boolean) => Promise<HtmlItem>
 
   /**
    * return: Promise<string>
    *
    * Gets the javascript commands to be executed on item upon load
    */
-  getBrowserJS(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
-        let customJS = '';
-        try {
-          let customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('customJS')) {
-            customJS = customObject['customJS'];
-          }
-        }
-        catch(e) {
-
-        }
-        resolve(customJS);
-      });
-    });
-  }
+  getBrowserJS: () => Promise<string>
 
   /**
    * param: (js: string, refresh: boolean = false)
@@ -287,365 +220,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setBrowserJS(value: string, refresh = false): Promise<HtmlItem> {
-    return new Promise((resolve, reject) => {
-      let customObject = {};
-
-      iItem.get('prop:custom', this._id).then(custom => {
-
-        let customJS = '';
-        let customCSS = '';
-        let scriptString = ' ';
-        let scriptEnabled = true;
-        let cssEnabled = true;
-
-        try {
-          customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('cssEnabled')) {
-            cssEnabled = (customObject['cssEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('scriptEnabled')) {
-            scriptEnabled = (customObject['scriptEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('customCSS')) {
-            customCSS = customObject['customCSS'];
-          }
-        }
-        catch(e) {
-
-        }
-
-        customObject['cssEnabled'] = cssEnabled.toString();
-        customObject['scriptEnabled'] = scriptEnabled.toString();
-        customObject['customCSS'] = customCSS;
-        customObject['customJS'] = value;
-
-        if (cssEnabled === true) {
-          let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "';h.appendChild(xjsCSSOverwrite);";
-          scriptString = scriptString + cssScript;
-        }
-        if (value !== '' && scriptEnabled === true) {
-          scriptString = scriptString + value;
-        }
-        return iItem.set('prop:BrowserJs', scriptString, this._id);
-      })
-      .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
-      })
-      .then(() => {
-        if (refresh) {
-          iItem.set('refresh', '', this._id).then(() => {
-            resolve(this);
-          });
-        } else {
-          resolve(this);
-        }
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Gets if BrowserJS is enabled and executed on load
-   */
-  isBrowserJSEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
-        let enabled = true;
-        try {
-          let customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('scriptEnabled')) {
-            enabled = (customObject['scriptEnabled'] == 'true');
-          }
-        }
-        catch(e) {
-
-        }
-        resolve(enabled);
-      });
-    });
-  }
-
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<IHtmlItem>
-   * ```
-   *
-   * Enables or disables execution of the set BrowserJs upon load.
-   * Note that disabling this will require item to be refreshed
-   * in order to remove any BrowserJS previously executed.
-   *
-   * *Chainable.*
-   */
-  enableBrowserJS(value: boolean): Promise<HtmlItem> {
-    return new Promise((resolve, reject) => {
-      let customObject = {};
-
-      iItem.get('prop:custom', this._id).then(custom => {
-
-        let customJS = '';
-        let customCSS = '';
-        let scriptString = ' ';
-        let scriptEnabled = true;
-        let cssEnabled = true;
-
-        try {
-          customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('cssEnabled')) {
-            cssEnabled = (customObject['cssEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('customJS')) {
-            customJS = customObject['customJS'];
-          }
-          if (customObject.hasOwnProperty('customCSS')) {
-            customCSS = customObject['customCSS'];
-          }
-        }
-        catch(e) {
-
-        }
-
-        customObject['cssEnabled'] = cssEnabled.toString();
-        customObject['scriptEnabled'] = value.toString();
-        customObject['customJS'] = customJS;
-        customObject['customCSS'] = customCSS;
-
-        if (cssEnabled === true) {
-          let cssScript =
-            'var xjsCSSOverwrite = document.createElement("style");' +
-            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-            'xjsCSSOverwrite.type = "text/css";' +
-            'var h = document.querySelector("head");' +
-            'var existing = document' +
-            '.querySelector("head #splitmedialabsCSSOverwrite");' +
-            'if (existing != null)h.removeChild(existing);' +
-            'xjsCSSOverwrite.innerHTML = "' +
-            customCSS.replace(/(\r\n|\n|\r)/gm, '')
-              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + '";"' +
-            'h.appendChild(xjsCSSOverwrite);';
-          scriptString = scriptString + cssScript;
-        }
-        if (customJS !== '' && value === true) {
-          scriptString = scriptString + customJS;
-        }
-        return iItem.set('prop:BrowserJs', scriptString, this._id);
-      })
-      .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
-      })
-      .then(() => {
-        if (!value) {
-          iItem.set('refresh', '', this._id).then(() => {
-            resolve(this);
-          });
-        } else {
-          resolve(this);
-        }
-      });
-    });
-  }
-
-  /**
-   * return: Promise<string>
-   *
-   * Gets the custom CSS applied to the document upon loading
-   */
-  getCustomCSS(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
-        let customCSS = '';
-        try {
-          let customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('customCSS')) {
-            customCSS = customObject['customCSS'];
-          }
-        }
-        catch(e) {
-
-        }
-        resolve(customCSS);
-      });
-    });
-  }
-
-  /**
-   * param: (value: string)
-   * ```
-   * return: Promise<IHtmlItem>
-   * ```
-   *
-   * Sets the custom CSS to be applied to the document upon loading
-   *
-   * *Chainable.*
-   */
-  setCustomCSS(value: string): Promise<HtmlItem> {
-    return new Promise((resolve, reject) => {
-      let customObject = {};
-
-      iItem.get('prop:custom', this._id).then(custom => {
-
-        let customJS = '';
-        let customCSS = '';
-        let scriptString = ' ';
-        let scriptEnabled = true;
-        let cssEnabled = true;
-
-        try {
-          customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('cssEnabled')) {
-            cssEnabled = (customObject['cssEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('scriptEnabled')) {
-            scriptEnabled = (customObject['scriptEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('customJS')) {
-            customJS = customObject['customJS'];
-          }
-        }
-        catch(e) {
-
-        }
-
-        customObject['cssEnabled'] = cssEnabled.toString();
-        customObject['scriptEnabled'] = scriptEnabled.toString();
-        customObject['customJS'] = customJS;
-        customObject['customCSS'] = value;
-
-        if (cssEnabled === true) {
-          let cssScript =
-            'var xjsCSSOverwrite = document.createElement("style");' +
-            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-            'xjsCSSOverwrite.type = "text/css";' +
-            'var h = document.querySelector("head");' +
-            'var existing = document' +
-            '.querySelector("head #splitmedialabsCSSOverwrite");' +
-            'if (existing != null)h.removeChild(existing);' +
-            'xjsCSSOverwrite.innerHTML = "' +
-            value.replace(/(\r\n|\n|\r)/gm, '')
-              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
-            '";h.appendChild(xjsCSSOverwrite);';
-          scriptString = scriptString + cssScript;
-        }
-        if (customJS !== '' && scriptEnabled === true) {
-          scriptString = scriptString + customJS;
-        }
-        return iItem.set('prop:BrowserJs', scriptString, this._id);
-      })
-      .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
-      })
-      .then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Gets if custom CSS is enabled and applied to the document on load
-   */
-  isCustomCSSEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
-        let enabled = true;
-        try {
-          let customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('cssEnabled')) {
-            enabled = (customObject['cssEnabled'] == 'true');
-          }
-        }
-        catch(e) {
-
-        }
-        resolve(enabled);
-      });
-    });
-  }
-
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<IHtmlItem>
-   * ```
-   *
-   * Enables or disables application of custom CSS to the document
-   *
-   * *Chainable.*
-   */
-  enableCustomCSS(value: boolean): Promise<HtmlItem> {
-    return new Promise((resolve, reject) => {
-      let customObject = {};
-
-      iItem.get('prop:custom', this._id).then(custom => {
-
-        let customJS = '';
-        let customCSS = '';
-        let scriptString = ' ';
-        let scriptEnabled = true;
-        let cssEnabled = true;
-
-        try {
-          customObject = JSON.parse(custom);
-          if (customObject.hasOwnProperty('scriptEnabled')) {
-            scriptEnabled = (customObject['scriptEnabled'] == 'true');
-          }
-          if (customObject.hasOwnProperty('customJS')) {
-            customJS = customObject['customJS'];
-          }
-          if (customObject.hasOwnProperty('customCSS')) {
-            customCSS = customObject['customCSS'];
-          }
-        }
-        catch(e) {
-
-        }
-
-        customObject['scriptEnabled'] = scriptEnabled.toString();
-        customObject['cssEnabled'] = value.toString();
-        customObject['customJS'] = customJS;
-        customObject['customCSS'] = customCSS;
-
-        if (value === true) {
-          let cssScript =
-            'var xjsCSSOverwrite = document.createElement("style");' +
-            'xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";' +
-            'xjsCSSOverwrite.type = "text/css";' +
-            'var h = document.querySelector("head");' +
-            'var existing = document' +
-            '.querySelector("head #splitmedialabsCSSOverwrite");' +
-            'if (existing != null)h.removeChild(existing);' +
-            'xjsCSSOverwrite.innerHTML = "' +
-            customCSS.replace(/(\r\n|\n|\r)/gm, '')
-              .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
-            '";h.appendChild(xjsCSSOverwrite);';
-          scriptString = scriptString + cssScript;
-        }
-        if (customJS !== '' && value === scriptEnabled) {
-          scriptString = scriptString + customJS;
-        }
-        return iItem.set('prop:BrowserJs', scriptString, this._id);
-      })
-      .then(() => {
-        return iItem.set('prop:custom', JSON.stringify(customObject), this._id);
-      })
-      .then(() => {
-        if (!value) {
-          let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
-          if (Environment.isSourcePlugin()) {
-            eval(cssScript);
-          } else {
-            exec('CallInner', 'eval', cssScript);
-          }
-          resolve(this);
-        } else {
-          resolve(this);
-        }
-      });
-    });
-  }
+  setBrowserJS: () => Promise<HtmlItem>
 
   // ItemLayout
 
@@ -1134,5 +709,5 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
 }
 
-applyMixins(HtmlItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(HtmlItem, [iHtmlSource ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemConfigurable, ItemAudio, ItemEffect]);
