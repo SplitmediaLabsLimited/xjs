@@ -5,6 +5,7 @@
 export const minVersion = '2.8.1603.0401';
 export const deleteSceneEventFixVersion = '2.8.1606.1601';
 export const addSceneEventFixVersion = '2.8.1606.1701';
+export const globalsrcMinVersion = '2.9'
 
 export function versionCompare(version: string): any {
   const parts = version.split('.');

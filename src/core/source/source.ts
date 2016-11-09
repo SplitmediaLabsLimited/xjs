@@ -23,7 +23,6 @@ export class Source{
   protected _cname: string;
   protected _sceneId: number;
   protected _keepLoaded: boolean;
-  protected _globalsrc: boolean;
 
   protected _xmlparams: {};
   protected _isItemCall: boolean;
@@ -39,7 +38,6 @@ export class Source{
     this._value = props['value'];
     this._keepLoaded = props['keeploaded'];
     this._type = Number(props['type']);
-    this._globalsrc = props['globalsrc'];
 
     this._xmlparams = props;
     this._isItemCall = false;
@@ -155,7 +153,9 @@ export class Source{
    * return: Promise<Source>
    * ```
    *
-   * Sets the name of the item.
+   * In XBC 2.8, names can be set individualy even on linked items.
+   * For XBC 2.9 onwards,  name will be the same across all linked Items
+   * to the same Source
    *
    * *Chainable.*
    *
@@ -193,7 +193,9 @@ export class Source{
    * return: Promise<Source>
    * ```
    *
-   * Sets the custom name of the item.
+   * In XBC 2.8, CustomName can be set individualy even on linked items.
+   * For XBC 2.9 onwards, CustomName will be the same across all linked Items
+   * to the same Source
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on

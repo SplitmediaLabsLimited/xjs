@@ -275,15 +275,71 @@ export class Item extends Source implements IItemLayout {
   }
 
   /**
-   * Duplicate current item. Will duplicate item into the current scene
+   * Test duplicate function that allows duplicating an Item to a specified
+   * Scene
    */
-  duplicate(): Promise<boolean> {
+  private duplicateScene(options: { linked: boolean, scene: Object }): Promise<Item> {
     return new Promise(resolve => {
-      iApp.callFunc('additem', this.toXML().toString()).then(() => {
-        resolve(true);
+      if(options){
+        if(options.linked) {
+          iItem.set('prop:keeploaded', '1', this._id)
+        }
+        if(options.scene !== undefined && options.linked !== undefined) {
+            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${options.scene}|additem`,
+            this.toXML().toString())
+              .then(() => {
+              resolve(this);
+            });
+        } else if(options.linked === undefined) {
+          iApp.callFunc(`link:0|s:${options.scene}|additem`,
+            this.toXML().toString())
+            .then(() => {
+            resolve(this);
+          });
+        } else if(options.scene === undefined) {
+          iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
+          this.toXML().toString())
+            .then(() => {
+            resolve(this);
+          });
+        }
+      } else {
+        iApp.callFunc('additem', this.toXML().toString())
+            .then(() => {
+            resolve(this);
+          });
+      }
+    });
+  }
+
+  /**
+   * Unlinks item to linked items by setting globalsrc to 0
+   */
+  unlink(): Promise<Item> {
+    return new Promise(resolve => {
+      iItem.set('prop:globalsrc', '0', this._id)
+        .then(() => {
+        resolve(this)
+      })
+    })
+  }
+
+  /**
+   * Duplicate current item. Will duplicate item into the current scene
+   * or specified scene
+   */
+  duplicate(linked: boolean): Promise<boolean> {
+    return new Promise(resolve => {
+      if(linked) {
+        iItem.set('prop:keeploaded', '1', this._id)
+      }
+      iApp.callFunc(`link:${linked ? 1 : 0}|additem`,
+        this.toXML().toString()).then(() => {
+        resolve(this);
       });
     });
   }
+
 
   // ItemLayout
 
@@ -399,7 +455,9 @@ export class Item extends Source implements IItemLayout {
    * return: Promise<Source>
    * ```
    *
-   * Sets the name of the item.
+   * In XBC 2.8, names can be set individualy even on linked items.
+   * For XBC 2.9 onwards,  name will be the same across all linked Items
+   * to the same Source
    *
    * *Chainable.*
    *
@@ -437,7 +495,9 @@ export class Item extends Source implements IItemLayout {
    * return: Promise<Source>
    * ```
    *
-   * Sets the custom name of the item.
+   * In XBC 2.8, CustomName can be set individualy even on linked items.
+   * For XBC 2.9 onwards, CustomName will be the same across all linked Items
+   * to the same Source
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on

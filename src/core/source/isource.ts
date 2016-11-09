@@ -5,7 +5,8 @@ import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
   versionCompare,
-  getVersion
+  getVersion,
+  globalsrcMinVersion
 } from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
@@ -34,7 +35,6 @@ export class iSource {
     this._cname = props['cname'];
     this._id = props['id'];
     this._value = props['value'];
-    this._globalsrc = props['globalsrc'];
   }
   setName(value: string): Promise<Source> {
     if(this._isItemCall){
@@ -163,7 +163,11 @@ export class iSource {
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
-      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(globalsrcMinVersion)) {
+        iItem.set('prop:globalsrc', '0', this._id)
+      }
       iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
