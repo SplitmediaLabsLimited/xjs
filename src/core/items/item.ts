@@ -200,7 +200,7 @@ export class Item extends Source implements IItemLayout {
    * return: Promise<Item[]>
    *
    * Get the item list of the attached item. This is useful when an item is
-   * an instance of a global source, with multiple other items having the same
+   * an instance of a linked source, with multiple other items having the same
    * source as the current item.
    *
    * #### Usage
@@ -275,10 +275,13 @@ export class Item extends Source implements IItemLayout {
   }
 
   /**
-   * Test duplicate function that allows duplicating an Item to a specified
-   * Scene
+   * return: Promise<Item>
+   *
+   * Duplicate current item. Will duplicate item into the current scene
+   * or specified scene
    */
-  private duplicateScene(options: { linked: boolean, scene: Object }): Promise<Item> {
+
+  duplicate(options: { linked: boolean, scene: Object }): Promise<Item> {
     return new Promise(resolve => {
       if(options){
         if(options.linked) {
@@ -313,6 +316,8 @@ export class Item extends Source implements IItemLayout {
   }
 
   /**
+   * return: Promise<Item>
+   *
    * Unlinks item to linked items by setting globalsrc to 0
    */
   unlink(): Promise<Item> {
@@ -323,23 +328,6 @@ export class Item extends Source implements IItemLayout {
       })
     })
   }
-
-  /**
-   * Duplicate current item. Will duplicate item into the current scene
-   * or specified scene
-   */
-  duplicate(linked: boolean): Promise<boolean> {
-    return new Promise(resolve => {
-      if(linked) {
-        iItem.set('prop:keeploaded', '1', this._id)
-      }
-      iApp.callFunc(`link:${linked ? 1 : 0}|additem`,
-        this.toXML().toString()).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
 
   // ItemLayout
 
