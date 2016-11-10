@@ -701,6 +701,27 @@ export class Item implements IItemLayout {
     });
   }
 
+    /**
+   * return: Promise<boolean>
+   *
+   * Removes the video item from the scene.
+   *
+    *  #### Usage
+   *  ```javascript
+   *  // let item remove itself
+   *  xjs.Item.getItemList().then(function(item) {
+   *    item.remove();
+   *  });
+   */
+
+  remove(): Promise<boolean> {    
+     return new Promise(resolve => {
+      iItem.set('remove', '', this._id).then((val) => {
+        resolve(val);
+      });
+    });
+  }
+
   /**
    * Duplicate current item. Will duplicate item into the current scene
    */
