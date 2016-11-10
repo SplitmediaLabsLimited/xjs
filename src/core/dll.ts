@@ -15,7 +15,12 @@ import {EventEmitter} from '../util/eventemitter';
  *    - `access-granted`
  *    - `access-revoked`
  *
+ *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
+ *
+ *  For more detailed information about using DLLs in XSplit, please see the
+ *  {@link tutorials.html#/dll DLL tutorial}. That link also includes a list of
+ *  methods exposed by the DLLs that ship with XSplit.
  *
  */
 export class Dll extends EventEmitter {
@@ -40,16 +45,6 @@ export class Dll extends EventEmitter {
   static _emitter = new Dll();
 
   /**
-   *  param: (event: string, ...params: any[])
-   *
-   *  Allows this class to emit an event.
-   */
-  static emit(event: string, ...params: any[]) {
-    params.unshift(event);
-    Dll._emitter.emit.apply(Dll._emitter, params);
-  }
-
-  /**
    *  param: (event: string, handler: Function)
    *
    *  Allows listening to events that this class emits. Currently there are two:
@@ -60,9 +55,19 @@ export class Dll extends EventEmitter {
   }
 
   /**
+   *  param: (event: string, ...params: any[])
+   *
+   *  Allows this class to emit an event. Generally only useful for testing.
+   */
+  static emit(event: string, ...params: any[]) {
+    params.unshift(event);
+    Dll._emitter.emit.apply(Dll._emitter, params);
+  }
+
+  /**
    *  param: (funcName: string, ...params: string[])
    *
-   *  return: string (see DLL documentation)
+   *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
    *
    *  Calls a function from a loaded "safe" DLL. The only safe DLL we are
    *  currently exposing is `Xjs.dll`.
@@ -84,14 +89,15 @@ export class Dll extends EventEmitter {
   /**
    *  param: (funcName: string, ...params: string[])
    *
-   *  return: string (see DLL documentation)
+   *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
    *
    *  Calls a function from a loaded "unsafe" DLL. The first DLL containing
    *  the function name will be called, so you need to ensure there are no
    *  function name collisions among DLLs for functions you require.
    *
    *  Some DLLs have callbacks. Assign a handler function to that callback in
-   *  the global namespace, and the DLL will call that function accordingly.
+   *  the global namespace (`window.callbackName = ...`), and the DLL will call
+   *  that function accordingly.
    *
    *  See the documentation of your specific DLL for more details.
    */
@@ -113,8 +119,8 @@ export class Dll extends EventEmitter {
   /**
    *  return: Promise<boolean>
    *
-   *  Determines if user has granted DLL access for this plugin, or whether
-   *  DLL security is disabled altogether.
+   *  Determines if user has granted DLL access for this plugin. This also
+   *  resolves to true if DLL security is disabled altogether.
    */
   static isAccessGranted(): Promise<boolean> {
     return new Promise(resolve => {
