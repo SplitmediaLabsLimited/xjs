@@ -6,6 +6,7 @@ describe('Scene', function() {
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Item = XJS.Item;
+  var Source = XJS.Source;
   var env = new window.Environment(XJS);
   var environments = ['config', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
@@ -192,7 +193,7 @@ describe('Scene', function() {
 
           return ctr;
         });
-        
+
         done();
     });
 
@@ -255,8 +256,8 @@ describe('Scene', function() {
         }).then(function(items){
           sceneItems = items[0];
           return Scene.searchSourcesById(sceneItems._id);
-        }).then(function(item) {
-          expect(item).toBeInstanceOf(Item);
+        }).then(function(source) {
+          expect(source).toBeInstanceOf(Source)
           next();
         });
       }).then(done);
@@ -272,8 +273,8 @@ describe('Scene', function() {
         }).then(function(items){
           sceneItems = items[0];
           return Scene.searchSourcesById(sceneItems._id.toLowerCase());
-        }).then(function(item) {
-          expect(item).toBeInstanceOf(Item);
+        }).then(function(source) {
+          expect(source).toBeInstanceOf(Source);
           next();
         });
       }).then(done);
@@ -299,9 +300,9 @@ describe('Scene', function() {
         }).then(function(items){
           sceneItems = items[0];
           return Scene.searchSourcesByName(sceneItems.name);
-        }).then(function(item) {
-          expect(item).toBeInstanceOf(Array);
-          expect(item).eachToBeInstanceOf(Item);
+        }).then(function(source) {
+          expect(source).toBeInstanceOf(Array);
+          expect(source).eachToBeInstanceOf(Source);
           next();
         });
       }).then(done);
@@ -320,12 +321,10 @@ describe('Scene', function() {
     it('should be able to search for a source by a custom function', function(done) {
       exec(function(next) {
         Scene.filterSources(function(source, resolve) {
-          source.getType().then(function(type) {
-            resolve(type === XJS.ItemTypes.HTML);
-          });
+          resolve(source instanceof XJS.HtmlSource)
         }).then(function(sources) {
           expect(sources).toBeInstanceOf(Array);
-          expect(sources).eachToBeInstanceOf(Item);
+          expect(sources).eachToBeInstanceOf(Source);
           next();
         });
       }).then(done);
@@ -334,9 +333,7 @@ describe('Scene', function() {
     it('should be able to search for a scene with a source based on a custom function', function(done) {
       exec(function(next) {
         Scene.filterScenesBySources(function(source, resolve) {
-          source.getType().then(function(type) {
-            resolve(type === XJS.ItemTypes.HTML);
-          });
+          resolve(source instanceof XJS.HtmlSource)
         }).then(function(scene) {
           expect(scene).toBeInstanceOf(Array);
           expect(scene).eachToBeInstanceOf(Scene);

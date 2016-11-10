@@ -12,8 +12,8 @@ import {IItemAudio, ItemAudio} from '../items/iaudio';
 import {iHtmlSource} from '../source/ihtmlsource'
 
 export class HtmlSource extends Source implements IItemConfigurable, IItemAudio {
-  // ItemConfigurable
 
+  // ItemConfigurable
   /**
    * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
    */
@@ -161,7 +161,65 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio 
    */
   setBrowserJS: () => Promise<HtmlSource>
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if BrowserJS is enabled and executed on load
+   */
+  isBrowserJSEnabled: () => Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return: Promise<IiHtmlSource>
+   * ```
+   *
+   * Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require item to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable.*
+   */
+  enableBrowserJS: (value: boolean) => Promise<HtmlSource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the custom CSS applied to the document upon loading
+   */
+  getCustomCSS: () => Promise<string>
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<IiHtmlSource>
+   * ```
+   *
+   * Sets the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable.*
+   */
+  setCustomCSS: (value: string) => Promise<HtmlSource>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if custom CSS is enabled and applied to the document on load
+   */
+  isCustomCSSEnabled: () => Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   * ```
+   * return: Promise<IiHtmlSource>
+   * ```
+   *
+   * Enables or disables application of custom CSS to the document
+   *
+   * *Chainable.*
+   */
+  enableCustomCSS: (value: boolean) => Promise<HtmlSource>
 
 }
 
-applyMixins(HtmlSource, [ItemConfigurable, ItemAudio, iHtmlSource])
+applyMixins(HtmlSource, [iHtmlSource, ItemConfigurable, ItemAudio, iHtmlSource])

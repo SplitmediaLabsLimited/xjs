@@ -11,7 +11,7 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {ItemTypes} from '../items/item'
+import {Logger} from '../../internal/util/logger';
 
 /**
  * Used by Source and Item to implement methods that are used on both classes
@@ -36,9 +36,10 @@ export class iSource {
     this._value = props['value'];
     this._globalsrc = props['globalsrc'];
   }
-  setName(value: string): Promise<Source> {
+
+  setName(value: string): Promise   <Source> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       this._name = value;
@@ -74,7 +75,7 @@ export class iSource {
 
   getName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -86,7 +87,7 @@ export class iSource {
 
   setCustomName(value: string): Promise<Source> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -98,7 +99,7 @@ export class iSource {
 
   getCustomName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -110,7 +111,7 @@ export class iSource {
 
   getValue(): Promise<string | XML> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
@@ -134,7 +135,7 @@ export class iSource {
 
   setValue(value: string | XML): Promise<Source> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
