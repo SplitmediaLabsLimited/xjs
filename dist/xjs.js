@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 1.4.0
+ * version: 1.4.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1039,7 +1039,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":38,"../internal/internal":41,"../internal/util/json":43,"../internal/util/xml":46,"../system/audio":47,"../util/rectangle":60,"./environment":5,"./transition":37}],2:[function(require,module,exports){
+},{"../internal/app":38,"../internal/internal":42,"../internal/util/json":44,"../internal/util/xml":47,"../system/audio":48,"../util/rectangle":61,"./environment":5,"./transition":37}],2:[function(require,module,exports){
 var app_1 = require('../internal/app');
 var Channel = (function () {
     /** Channel constructor (only used internally) */
@@ -1140,6 +1140,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = new __();
 };
 var eventemitter_1 = require('../util/eventemitter');
+var eventmanager_1 = require('../internal/eventmanager');
 var channel_1 = require('./channel');
 var json_1 = require('../internal/util/json');
 var environment_1 = require('./environment');
@@ -1237,14 +1238,8 @@ var ChannelManager = (function (_super) {
     return ChannelManager;
 })(eventemitter_1.EventEmitter);
 exports.ChannelManager = ChannelManager;
-window.SetEvent = function (args) {
+eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (settingsObj) {
     var settings = [];
-    settings = args.split('&');
-    var settingsObj = {};
-    settings.map(function (el) {
-        var _split = el.split('=');
-        settingsObj[_split[0]] = _split[1];
-    });
     if (settingsObj.hasOwnProperty('event') &&
         settingsObj.hasOwnProperty('info')) {
         var eventString = settingsObj['event'];
@@ -1256,8 +1251,8 @@ window.SetEvent = function (args) {
         }
         ChannelManager.emit(eventString, settingsObj['info']);
     }
-};
-},{"../internal/util/json":43,"../util/eventemitter":57,"./channel":2,"./environment":5}],4:[function(require,module,exports){
+});
+},{"../internal/eventmanager":39,"../internal/util/json":44,"../util/eventemitter":58,"./channel":2,"./environment":5}],4:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1279,7 +1274,12 @@ var eventemitter_1 = require('../util/eventemitter');
  *    - `access-granted`
  *    - `access-revoked`
  *
+ *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
+ *
+ *  For more detailed information about using DLLs in XSplit, please see the
+ *  {@link tutorials.html#/dll DLL tutorial}. That link also includes a list of
+ *  methods exposed by the DLLs that ship with XSplit.
  *
  */
 var Dll = (function (_super) {
@@ -1305,9 +1305,18 @@ var Dll = (function (_super) {
         internal_1.exec('LoadDll', path.join(','));
     };
     /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits. Currently there are two:
+     *  `access-granted` and `access-revoked`.
+     */
+    Dll.on = function (event, handler) {
+        Dll._emitter.on(event, handler);
+    };
+    /**
      *  param: (event: string, ...params: any[])
      *
-     *  Allows this class to emit an event.
+     *  Allows this class to emit an event. Generally only useful for testing.
      */
     Dll.emit = function (event) {
         var params = [];
@@ -1318,18 +1327,9 @@ var Dll = (function (_super) {
         Dll._emitter.emit.apply(Dll._emitter, params);
     };
     /**
-     *  param: (event: string, handler: Function)
-     *
-     *  Allows listening to events that this class emits. Currently there are two:
-     *  `access-granted` and `access-revoked`.
-     */
-    Dll.on = function (event, handler) {
-        Dll._emitter.on(event, handler);
-    };
-    /**
      *  param: (funcName: string, ...params: string[])
      *
-     *  return: string (see DLL documentation)
+     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
      *
      *  Calls a function from a loaded "safe" DLL. The only safe DLL we are
      *  currently exposing is `Xjs.dll`.
@@ -1356,14 +1356,15 @@ var Dll = (function (_super) {
     /**
      *  param: (funcName: string, ...params: string[])
      *
-     *  return: string (see DLL documentation)
+     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
      *
      *  Calls a function from a loaded "unsafe" DLL. The first DLL containing
      *  the function name will be called, so you need to ensure there are no
      *  function name collisions among DLLs for functions you require.
      *
      *  Some DLLs have callbacks. Assign a handler function to that callback in
-     *  the global namespace, and the DLL will call that function accordingly.
+     *  the global namespace (`window.callbackName = ...`), and the DLL will call
+     *  that function accordingly.
      *
      *  See the documentation of your specific DLL for more details.
      */
@@ -1389,8 +1390,8 @@ var Dll = (function (_super) {
     /**
      *  return: Promise<boolean>
      *
-     *  Determines if user has granted DLL access for this plugin, or whether
-     *  DLL security is disabled altogether.
+     *  Determines if user has granted DLL access for this plugin. This also
+     *  resolves to true if DLL security is disabled altogether.
      */
     Dll.isAccessGranted = function () {
         return new Promise(function (resolve) {
@@ -1421,7 +1422,7 @@ window.Setdlldogrant = function (value) {
         Dll.emit('access-revoked');
     }
 };
-},{"../internal/internal":41,"../util/eventemitter":57}],5:[function(require,module,exports){
+},{"../internal/internal":42,"../util/eventemitter":58}],5:[function(require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -1546,7 +1547,7 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
-},{"../core/environment":5,"../internal/internal":41}],7:[function(require,module,exports){
+},{"../core/environment":5,"../internal/internal":42}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1734,7 +1735,7 @@ var AudioItem = (function (_super) {
 })(item_2.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudio_1.ItemAudio]);
-},{"../../internal/item":42,"../../internal/util/mixin":44,"./iaudio":13,"./item":21}],8:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/mixin":45,"./iaudio":13,"./item":21}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2167,7 +2168,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
-},{"../../internal/item":42,"../../internal/util/mixin":44,"../../system/system":53,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],9:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/mixin":45,"../../system/system":54,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],9:[function(require,module,exports){
 /**
  *  A CuePoint represents a configurable object for items that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -2374,7 +2375,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
-},{"../../internal/item":42,"../../internal/util/mixin":44,"../../util/rectangle":60,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],11:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/mixin":45,"../../util/rectangle":61,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2549,7 +2550,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect]);
-},{"../../internal/item":42,"../../internal/util/json":43,"../../internal/util/mixin":44,"../../internal/util/xml":46,"../environment":5,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],12:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/json":44,"../../internal/util/mixin":45,"../../internal/util/xml":47,"../environment":5,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2638,7 +2639,11 @@ var HtmlItem = (function (_super) {
     HtmlItem.prototype.setURL = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            item_1.Item.set('prop:item', value, _this._id).then(function (code) {
+            item_1.Item.get('prop:item', _this._id).then(function (url) {
+                var _url = String(url).split('*');
+                _url[0] = value;
+                return item_1.Item.set('prop:item', _url.join('*'), _this._id);
+            }).then(function (code) {
                 if (code) {
                     resolve(_this);
                 }
@@ -3169,7 +3174,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.ItemConfigurable, iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
-},{"../../internal/internal":41,"../../internal/item":42,"../../internal/util/mixin":44,"../../util/rectangle":60,"../environment":5,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],13:[function(require,module,exports){
+},{"../../internal/internal":42,"../../internal/item":43,"../../internal/util/mixin":45,"../../util/rectangle":61,"../environment":5,"./iaudio":13,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var ItemAudio = (function () {
@@ -3235,7 +3240,7 @@ var ItemAudio = (function () {
     return ItemAudio;
 })();
 exports.ItemAudio = ItemAudio;
-},{"../../internal/item":42}],14:[function(require,module,exports){
+},{"../../internal/item":43}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -3619,7 +3624,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":42,"../../util/color":56}],15:[function(require,module,exports){
+},{"../../internal/item":43,"../../util/color":57}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -3773,7 +3778,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":42,"../../util/color":56}],16:[function(require,module,exports){
+},{"../../internal/item":43,"../../util/color":57}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -3801,14 +3806,13 @@ var ItemConfigurable = (function () {
             if (environment_1.Environment.isSourcePlugin) {
                 var slot = item_1.Item.attach(_this._id);
                 var savingAllowed = false;
-                item_1.Item.get('itemlist').then(function (itemlist) {
-                    // for versions lower than 2.8
-                    if (itemlist === 'null') {
+                item_1.Item.get('prop:srcid').then(function (srcId) {
+                    if (typeof srcId !== 'string' || srcId === '') {
+                        // version is lower than 2.8
                         savingAllowed = (slot === 0);
                     }
                     else {
-                        var itemsArray = itemlist.split(',');
-                        savingAllowed = (itemsArray.indexOf(_this._id) > -1);
+                        savingAllowed = srcId === _this._srcId;
                     }
                     // only allow direct saving for self
                     if (savingAllowed) {
@@ -3868,7 +3872,7 @@ var ItemConfigurable = (function () {
     return ItemConfigurable;
 })();
 exports.ItemConfigurable = ItemConfigurable;
-},{"../../internal/global":39,"../../internal/internal":41,"../../internal/item":42,"../environment":5}],17:[function(require,module,exports){
+},{"../../internal/global":40,"../../internal/internal":42,"../../internal/item":43,"../environment":5}],17:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -4426,7 +4430,7 @@ var ItemEffect = (function () {
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":42,"../../util/color":56}],18:[function(require,module,exports){
+},{"../../internal/item":43,"../../util/color":57}],18:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -5038,7 +5042,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":42,"../../util/rectangle":60}],19:[function(require,module,exports){
+},{"../../internal/item":43,"../../util/rectangle":61}],19:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5076,7 +5080,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":44,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],20:[function(require,module,exports){
+},{"../../internal/util/mixin":45,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],20:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var cuepoint_1 = require('./cuepoint');
@@ -5325,7 +5329,7 @@ var ItemPlayback = (function () {
     return ItemPlayback;
 })();
 exports.ItemPlayback = ItemPlayback;
-},{"../../internal/item":42,"./cuepoint":9}],21:[function(require,module,exports){
+},{"../../internal/item":43,"./cuepoint":9}],21:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = require('../../internal/util/mixin');
 var item_1 = require('../../internal/item');
@@ -5400,6 +5404,7 @@ var Item = (function () {
         this._name = props['name'];
         this._cname = props['cname'];
         this._id = props['id'];
+        this._srcId = props['srcid'];
         this._sceneId = props['sceneId'];
         this._value = props['value'];
         this._keepLoaded = props['keeploaded'];
@@ -5736,7 +5741,12 @@ var Item = (function () {
     Item.prototype.getSceneId = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(Number(_this._sceneId) + 1);
+            if (_this._sceneId === 'i12') {
+                resolve('i12');
+            }
+            else {
+                resolve(Number(_this._sceneId) + 1);
+            }
         });
     };
     /**
@@ -5907,11 +5917,11 @@ var Item = (function () {
                         promiseArray.push(new Promise(function (itemResolve) {
                             scene_1.Scene.searchItemsById(itemId).then(function (item) {
                                 itemResolve(item);
-                            });
+                            }).catch(function () { return itemResolve(null); });
                         }));
                     });
                     Promise.all(promiseArray).then(function (results) {
-                        resolve(results);
+                        resolve(results.filter(function (res) { return res !== null; }));
                     });
                 });
             }
@@ -5956,11 +5966,11 @@ var Item = (function () {
                         promiseArray.push(new Promise(function (itemResolve) {
                             scene_1.Scene.searchItemsById(itemId).then(function (item) {
                                 itemResolve(item);
-                            });
+                            }).catch(function () { return itemResolve(null); });
                         }));
                     });
                     Promise.all(promiseArray).then(function (results) {
-                        resolve(results);
+                        resolve(results.filter(function (res) { return res !== null; }));
                     });
                 });
             }
@@ -5993,6 +6003,26 @@ var Item = (function () {
         });
     };
     /**
+   * return: Promise<boolean>
+   *
+   * Removes the video item from the scene.
+   *
+    *  #### Usage
+   *  ```javascript
+   *  // let item remove itself
+   *  xjs.Item.getItemList().then(function(item) {
+   *    item.remove();
+   *  });
+   */
+    Item.prototype.remove = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('remove', '', _this._id).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    /**
      * Duplicate current item. Will duplicate item into the current scene
      */
     Item.prototype.duplicate = function () {
@@ -6007,7 +6037,7 @@ var Item = (function () {
 })();
 exports.Item = Item;
 mixin_1.applyMixins(Item, [ilayout_1.ItemLayout]);
-},{"../../internal/app":38,"../../internal/item":42,"../../internal/util/json":43,"../../internal/util/mixin":44,"../../internal/util/version":45,"../../internal/util/xml":46,"../environment":5,"../scene":26,"./ilayout":18}],22:[function(require,module,exports){
+},{"../../internal/app":38,"../../internal/item":43,"../../internal/util/json":44,"../../internal/util/mixin":45,"../../internal/util/version":46,"../../internal/util/xml":47,"../environment":5,"../scene":26,"./ilayout":18}],22:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -6075,7 +6105,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":42,"../transition":37}],23:[function(require,module,exports){
+},{"../../internal/item":43,"../transition":37}],23:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6188,7 +6218,7 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.ItemPlayback, iaudio_1.ItemAudio, ieffects_1.ItemEffect]);
-},{"../../internal/item":42,"../../internal/util/json":43,"../../internal/util/mixin":44,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./iplayback":20,"./item":21,"./itransition":22}],24:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/json":44,"../../internal/util/mixin":45,"./iaudio":13,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./iplayback":20,"./item":21,"./itransition":22}],24:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6521,7 +6551,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect]);
-},{"../../internal/item":42,"../../internal/util/json":43,"../../internal/util/mixin":44,"../../internal/util/xml":46,"../../util/rectangle":60,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],25:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/json":44,"../../internal/util/mixin":45,"../../internal/util/xml":47,"../../util/rectangle":61,"./ichroma":14,"./icolor":15,"./ieffects":17,"./ilayout":18,"./item":21,"./itransition":22}],25:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6711,7 +6741,7 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.ItemConfigurable]);
-},{"../../internal/item":42,"../../internal/util/mixin":44,"../../util/io":58,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":18,"./item":21,"./itransition":22}],26:[function(require,module,exports){
+},{"../../internal/item":43,"../../internal/util/mixin":45,"../../util/io":59,"./ichroma":14,"./icolor":15,"./iconfig":16,"./ilayout":18,"./item":21,"./itransition":22}],26:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -6792,7 +6822,7 @@ var Scene = (function () {
      * Scene.getSceneCount().then(function(count) {
      *   sceneCount = count;
      * });
-     *
+     * ```
      */
     Scene.getSceneCount = function () {
         return new Promise(function (resolve) {
@@ -6838,11 +6868,26 @@ var Scene = (function () {
     Scene.getByIdAsync = function (sceneNum) {
         return new Promise(function (resolve, reject) {
             Scene._initializeScenePoolAsync().then(function (cnt) {
-                if (sceneNum > cnt) {
-                    reject(Error('Invalid parameter'));
+                if (sceneNum === 'i12') {
+                    if (Scene._scenePool[cnt]._id === 'i12') {
+                        resolve(Scene._scenePool[cnt]);
+                    }
+                    else {
+                        reject(Error('Invalid parameter'));
+                    }
                 }
                 else {
-                    resolve(Scene._scenePool[sceneNum - 1]);
+                    try {
+                        if (sceneNum > cnt) {
+                            reject(Error('Invalid parameter'));
+                        }
+                        else {
+                            resolve(Scene._scenePool[sceneNum - 1]);
+                        }
+                    }
+                    catch (e) {
+                        reject(Error('Parameter must be a number'));
+                    }
                 }
             });
         });
@@ -6979,24 +7024,26 @@ var Scene = (function () {
                     var found = false;
                     Scene._scenePool.forEach(function (scene, idx, arr) {
                         if (match === null) {
-                            scene.getItems().then((function (items) {
-                                found = items.some(function (item) {
-                                    if (item['_id'] === id.toUpperCase()) {
-                                        match = item;
-                                        return true;
+                            (function (_idx) {
+                                scene.getItems().then(function (items) {
+                                    found = items.some(function (item) {
+                                        if (item['_id'] === id.toUpperCase()) {
+                                            match = item;
+                                            return true;
+                                        }
+                                        else {
+                                            return false;
+                                        }
+                                    });
+                                    if (found ||
+                                        Number(_idx) === arr.length - 1) {
+                                        resolve(match);
                                     }
-                                    else {
-                                        return false;
-                                    }
+                                })
+                                    .catch(function (err) {
+                                    reject(err);
                                 });
-                                if (found ||
-                                    Number(this) === arr.length - 1) {
-                                    resolve(match);
-                                }
-                            }).bind(idx))
-                                .catch(function (err) {
-                                // Do nothing
-                            });
+                            })(idx);
                         }
                     });
                 });
@@ -7029,23 +7076,26 @@ var Scene = (function () {
                     var found = false;
                     Scene._scenePool.forEach(function (scene, idx, arr) {
                         if (match === null) {
-                            scene.getItems().then(function (items) {
-                                found = items.some(function (item) {
-                                    if (item['_id'] === id.toUpperCase()) {
-                                        return true;
+                            (function (_idx) {
+                                scene.getItems().then(function (items) {
+                                    found = items.some(function (item) {
+                                        if (item['_id'] === id.toUpperCase()) {
+                                            match = scene;
+                                            return true;
+                                        }
+                                        else {
+                                            return false;
+                                        }
+                                    });
+                                    if (found ||
+                                        Number(_idx) === arr.length - 1) {
+                                        resolve(match);
                                     }
-                                    else {
-                                        return false;
-                                    }
+                                })
+                                    .catch(function (err) {
+                                    reject(err);
                                 });
-                                if (found) {
-                                    resolve(scene);
-                                }
-                                else if (idx === arr.length - 1) {
-                                    // last scene, no match
-                                    resolve(match);
-                                }
-                            });
+                            })(idx);
                         }
                     });
                 });
@@ -7211,7 +7261,7 @@ var Scene = (function () {
                                         resolveScene();
                                     });
                                 }
-                            });
+                            }).catch(function () { return resolveScene(); });
                         });
                     })).then(function () {
                         resolve(matches);
@@ -7860,8 +7910,8 @@ var Scene = (function () {
                         return scene.getSceneNumber();
                     }
                 }).then(function (id) {
-                    if ((Number(id) - 1) === _this._id && environment_1.Environment.isSourceConfig()) {
-                        internal_1.exec('SourcesListOrderSave', ids.join(','));
+                    if ((Number(id) - 1) === _this._id && (environment_1.Environment.isSourceConfig() || environment_1.Environment.isExtension)) {
+                        internal_1.exec('SourcesListOrderSave', String(item_1.ViewTypes.MAIN), ids.join(','));
                         resolve(_this);
                     }
                     else {
@@ -7878,14 +7928,17 @@ var Scene = (function () {
                                 var attrs = ['name', 'cname', 'item'];
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     for (var a = 0; a < attrs.length; a++) {
+                                        //This formatting is for json
                                         jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                                            .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                                            .replace(/\\/g, '\\\\');
                                         jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                                             .replace(/"/g, '&quot;');
                                     }
                                     newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                                 }
-                                app_1.App.set('presetconfig:' + _this._id, xml_1.XML.parseJSON(newOrder).toString()).then(function () {
+                                app_1.App.set('presetconfig:' + _this._id, 
+                                //Revert back the formatting from json when transforming to xml
+                                xml_1.XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')).then(function () {
                                     resolve(_this);
                                 });
                             }
@@ -7917,7 +7970,7 @@ var Scene = (function () {
                 sources.reverse();
                 var ids = [];
                 Scene.getActiveScene().then(function (scene) {
-                    if (sources.every(function (el) { return el instanceof source_1.Source; })) {
+                    if (sources.every(function (el) { return (el instanceof source_1.Source || el instanceof item_1.Item); })) {
                         return new Promise(function (resolve) {
                             var promises = [];
                             for (var i in sources) {
@@ -7942,8 +7995,8 @@ var Scene = (function () {
                         return scene.getSceneNumber();
                     }
                 }).then(function (id) {
-                    if ((Number(id) - 1) === _this._id && environment_1.Environment.isSourceConfig()) {
-                        internal_1.exec('SourcesListOrderSave', ids.join(','));
+                    if ((Number(id) - 1) === _this._id && (environment_1.Environment.isSourceConfig() || environment_1.Environment.isExtension)) {
+                        internal_1.exec('SourcesListOrderSave', String(item_1.ViewTypes.MAIN), ids.join(','));
                         resolve(_this);
                     }
                     else {
@@ -7960,14 +8013,17 @@ var Scene = (function () {
                                 var attrs = ['name', 'cname', 'item'];
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     for (var a = 0; a < attrs.length; a++) {
+                                        //This formatting is for json
                                         jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                                            .replace(/([^\\])(\\)([^\\])/g, '$1\\\\$3');
+                                            .replace(/\\/g, '\\\\');
                                         jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                                             .replace(/"/g, '&quot;');
                                     }
                                     newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                                 }
-                                app_1.App.set('presetconfig:' + _this._id, xml_1.XML.parseJSON(newOrder).toString()).then(function () {
+                                app_1.App.set('presetconfig:' + _this._id, 
+                                //Revert back the formatting from json when transforming to xml
+                                xml_1.XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')).then(function () {
                                     resolve(_this);
                                 });
                             }
@@ -7985,7 +8041,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":38,"../internal/internal":41,"../internal/util/json":43,"../internal/util/version":45,"../internal/util/xml":46,"./environment":5,"./items/audio":7,"./items/camera":8,"./items/flash":10,"./items/game":11,"./items/html":12,"./items/image":19,"./items/item":21,"./items/media":23,"./items/screen":24,"./items/videoplaylist":25,"./source/audio":27,"./source/camera":28,"./source/flash":29,"./source/game":30,"./source/html":31,"./source/image":32,"./source/media":33,"./source/screen":34,"./source/source":35,"./source/videoplaylist":36}],27:[function(require,module,exports){
+},{"../internal/app":38,"../internal/internal":42,"../internal/util/json":44,"../internal/util/version":46,"../internal/util/xml":47,"./environment":5,"./items/audio":7,"./items/camera":8,"./items/flash":10,"./items/game":11,"./items/html":12,"./items/image":19,"./items/item":21,"./items/media":23,"./items/screen":24,"./items/videoplaylist":25,"./source/audio":27,"./source/camera":28,"./source/flash":29,"./source/game":30,"./source/html":31,"./source/image":32,"./source/media":33,"./source/screen":34,"./source/source":35,"./source/videoplaylist":36}],27:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8434,7 +8490,64 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":41,"./util/json":43}],39:[function(require,module,exports){
+},{"./internal":42,"./util/json":44}],39:[function(require,module,exports){
+var internal_1 = require('./internal');
+/**
+ * Usage:
+ *
+ * ```
+ * EventManager.subscribe('StreamStart', callback);
+ * ```
+ *
+ * OR
+ *
+ * ```
+ * EventManager.subscribe(['StreamStart', 'StreamEnd'], callback);
+ * ```
+ */
+var EventManager = (function () {
+    function EventManager() {
+    }
+    EventManager.subscribe = function (event, _cb) {
+        event = event instanceof Array ? event : [event];
+        if (event instanceof Array) {
+            event.forEach(function (_event) {
+                if (EventManager.callbacks[_event] === undefined) {
+                    EventManager.callbacks[_event] = [];
+                }
+                if (_event === 'OnSceneAddByUser') {
+                    internal_1.exec('AppSubscribeEvents');
+                }
+                EventManager.callbacks[_event].push(_cb);
+            });
+        }
+    };
+    EventManager.callbacks = {};
+    return EventManager;
+})();
+exports.EventManager = EventManager;
+window.SetEvent = function (args) {
+    var settings = [];
+    settings = args.split('&');
+    var settingsObj = {};
+    settings.map(function (el) {
+        var _split = el.split('=');
+        settingsObj[_split[0]] = _split[1];
+    });
+    if (EventManager.callbacks[settingsObj['event']] === undefined)
+        return;
+    EventManager.callbacks[settingsObj['event']].map(function (_cb) {
+        _cb(settingsObj);
+    });
+};
+window.AppOnEvent = function (event) {
+    if (EventManager.callbacks[event] === undefined)
+        return;
+    EventManager.callbacks[event].map(function (_cb) {
+        _cb({ event: event });
+    });
+};
+},{"./internal":42}],40:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -8456,7 +8569,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -8584,7 +8697,7 @@ function init() {
     });
 }
 init();
-},{"../core/environment":5,"../window/config":61,"./global":39,"./internal":41,"./item":42,"./util/version":45}],41:[function(require,module,exports){
+},{"../core/environment":5,"../window/config":62,"./global":40,"./internal":42,"./item":43,"./util/version":46}],42:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -8629,7 +8742,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -8647,21 +8760,21 @@ var Item = (function () {
             }
             Item.lastSlot = slot;
             Item.itemSlotMap[slot] = itemID;
-            if (!environment_1.Environment.isSourcePlugin()) {
-                internal_1.exec('SearchVideoItem' +
-                    (String(slot) === '0' ? '' : (slot + 1)), itemID);
+        }
+        if (!environment_1.Environment.isSourcePlugin()) {
+            internal_1.exec('SearchVideoItem' +
+                (String(slot) === '0' ? '' : (slot + 1)), itemID);
+        }
+        else {
+            var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
+                .is
+                .greaterThan(version_1.minVersion);
+            if (hasGlobalSources) {
+                internal_1.exec('AttachVideoItem' + (slot + 1), itemID);
             }
             else {
-                var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
-                    .is
-                    .greaterThan(version_1.minVersion);
-                if (hasGlobalSources) {
-                    internal_1.exec('AttachVideoItem' + (slot + 1), itemID);
-                }
-                else {
-                    internal_1.exec('AttachVideoItem' +
-                        (String(slot) === '0' ? '' : (slot + 1)), itemID);
-                }
+                internal_1.exec('AttachVideoItem' +
+                    (String(slot) === '0' ? '' : (slot + 1)), itemID);
             }
         }
         return slot;
@@ -8730,7 +8843,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":5,"./internal":41,"./util/version":45}],43:[function(require,module,exports){
+},{"../core/environment":5,"./internal":42,"./util/version":46}],44:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -8801,7 +8914,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":46}],44:[function(require,module,exports){
+},{"./xml":47}],45:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -8813,8 +8926,13 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
+/*
+* List here the versions where we would limit a functionality.
+*/
 exports.minVersion = '2.8.1603.0401';
+exports.deleteSceneEventFixVersion = '2.8.1606.1601';
+exports.addSceneEventFixVersion = '2.8.1606.1701';
 function versionCompare(version) {
     var parts = version.split('.');
     var comp = function (prev, curr, idx) {
@@ -8841,6 +8959,10 @@ function versionCompare(version) {
             equalsTo: function (compare) {
                 var cParts = compare.split('.');
                 return cParts.reduce(comp, parts[0]) === 0;
+            },
+            greaterThanOrEqualTo: function (compare) {
+                var cParts = compare.split('.');
+                return cParts.reduce(comp, parts[0]) === -1 || cParts.reduce(comp, parts[0]) === 0;
             }
         }
     };
@@ -8857,7 +8979,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -8912,7 +9034,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -9253,7 +9375,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":43,"../internal/util/xml":46}],48:[function(require,module,exports){
+},{"../internal/util/json":44,"../internal/util/xml":47}],49:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -9348,7 +9470,7 @@ var CameraDevice = (function () {
      */
     CameraDevice.parse = function (deviceJSON) {
         var cam = new CameraDevice({
-            id: deviceJSON['disp'],
+            id: deviceJSON['disp'].replace(/&amp;/ig, '&'),
             name: deviceJSON['name']
         });
         return cam;
@@ -9367,7 +9489,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":38,"../internal/util/json":43,"../internal/util/xml":46}],49:[function(require,module,exports){
+},{"../internal/app":38,"../internal/util/json":44,"../internal/util/xml":47}],50:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -9408,7 +9530,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/app":38}],50:[function(require,module,exports){
+},{"../internal/app":38}],51:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -9709,7 +9831,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../internal/app":38,"../internal/util/json":43,"../internal/util/xml":46,"../util/rectangle":60}],51:[function(require,module,exports){
+},{"../internal/app":38,"../internal/util/json":44,"../internal/util/xml":47,"../util/rectangle":61}],52:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -9788,7 +9910,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":38,"../internal/util/json":43,"../internal/util/xml":46}],52:[function(require,module,exports){
+},{"../internal/app":38,"../internal/util/json":44,"../internal/util/xml":47}],53:[function(require,module,exports){
 var internal_1 = require('../internal/internal');
 /**
  *  This class servers to allow developers to add new screen regions or window
@@ -9810,7 +9932,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../internal/internal":41}],53:[function(require,module,exports){
+},{"../internal/internal":42}],54:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
@@ -10116,7 +10238,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":5,"../internal/app":38,"../internal/internal":41,"./audio":47,"./camera":48,"./game":50,"./microphone":51}],54:[function(require,module,exports){
+},{"../core/environment":5,"../internal/app":38,"../internal/internal":42,"./audio":48,"./camera":49,"./game":51,"./microphone":52}],55:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -10179,7 +10301,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":38}],55:[function(require,module,exports){
+},{"../internal/app":38}],56:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var json_1 = require('../internal/util/json');
@@ -10281,7 +10403,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":5,"../internal/app":38,"../internal/util/json":43,"../internal/util/xml":46,"../util/io":58}],56:[function(require,module,exports){
+},{"../core/environment":5,"../internal/app":38,"../internal/util/json":44,"../internal/util/xml":47,"../util/io":59}],57:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -10357,7 +10479,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -10387,7 +10509,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var IO = (function () {
@@ -10535,7 +10657,7 @@ window.OnGetVideoDurationFailed = function (file) {
         delete IO._callback[decodeURIComponent(file)];
     }
 };
-},{"../internal/internal":41}],59:[function(require,module,exports){
+},{"../internal/internal":42}],60:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var isReady = false;
 var readyPromise = new Promise(function (resolve) {
@@ -10554,7 +10676,7 @@ function setReady() {
     isReady = true;
 }
 exports.setReady = setReady;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -10771,7 +10893,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -10935,12 +11057,14 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../internal/internal":41,"../util/eventemitter":57}],62:[function(require,module,exports){
+},{"../internal/internal":42,"../util/eventemitter":58}],63:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
+/// <reference path="../../defs/proxy.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var environment_1 = require('../core/environment');
 var internal_1 = require('../internal/internal');
+var dialogProxy;
 /**
  *  This class is used to spawn new browser processes that can be used to open
  *  other URLs. Source plugins do not have this functionality (but their
@@ -10990,7 +11114,12 @@ var Dialog = (function () {
             var eventListener = function (e) {
                 // self-deleting event listener
                 e.target.removeEventListener(e.type, eventListener);
-                _this._result = e.detail;
+                if (typeof dialogProxy !== 'undefined') {
+                    dialogProxy._result = e.detail;
+                }
+                else {
+                    _this._result = e.detail;
+                }
                 _this._resultListener = null;
             };
             document.addEventListener('xsplit-dialog-result', eventListener);
@@ -11164,13 +11293,13 @@ var Dialog = (function () {
                 _this._resultListener = eventListener;
             }
             else {
-                Object.observe(_this, function (changes) {
-                    // Search for changes with the name as result
-                    var change = changes.filter(function (elem) {
-                        return elem.name === '_result';
-                    });
-                    if (change !== undefined && change.length > 0) {
-                        resolve(change[0].object._result);
+                dialogProxy = new Proxy(_this, {
+                    set: function (target, property, value, receiver) {
+                        if (property === '_result') {
+                            _this._result = value;
+                            resolve(value);
+                        }
+                        return true;
                     }
                 });
             }
@@ -11210,7 +11339,7 @@ if (environment_1.Environment.isSourceConfig() || environment_1.Environment.isEx
             detail: result }));
     };
 }
-},{"../core/environment":5,"../internal/internal":41,"../util/rectangle":60}],63:[function(require,module,exports){
+},{"../core/environment":5,"../internal/internal":42,"../util/rectangle":61}],64:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11220,8 +11349,13 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
+var eventmanager_1 = require('../internal/eventmanager');
+var json_1 = require('../internal/util/json');
+var scene_1 = require('../core/scene');
+var version_1 = require('../internal/util/version');
 var internal_1 = require('../internal/internal');
 var app_1 = require('../internal/app');
+var item_1 = require('../core/items/item');
 var _RESIZE = '2';
 /** This utility class represents the extension window. It allows manipulation
  *  of the window (e.g., resizing), and also serves as an event emitter
@@ -11230,7 +11364,10 @@ var _RESIZE = '2';
  *  Currently, the following events are available:
  *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
- *    - `sources-list-select`: notifies when a user clicks a source in the stage. Handler is a function f(id: string)
+ *    - `sources-list-select`: notifies when a user clicks a source in the stage. Source id is also returned when source is selected from the bottom panel. Handler is a function f(id: string)
+ *    - `sources-list-update`: notifies when there are changes on list sources whether on stage or bottom panel. Handler is a function(ids: string) where ids are comma separated source ids.
+ *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
+ *    - `scene-add` : notifies when a user adds a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -11252,6 +11389,58 @@ var ExtensionWindow = (function (_super) {
             ExtensionWindow._instance = new ExtensionWindow();
         }
         return ExtensionWindow._instance;
+    };
+    /**
+    *  param: (event: string, ...params: any[])
+    *
+    *  Allows this class to emit an event.
+    */
+    ExtensionWindow.emit = function (event) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        params.unshift(event);
+        ExtensionWindow
+            .getInstance()
+            .emit
+            .apply(ExtensionWindow._instance, params);
+    };
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits.
+     *
+     */
+    ExtensionWindow.on = function (event, handler) {
+        ExtensionWindow.getInstance().on(event, handler);
+        var isDeleteSceneEventFixed = version_1.versionCompare(version_1.getVersion()).is.greaterThanOrEqualTo(version_1.deleteSceneEventFixVersion);
+        var isAddSceneEventFixed = version_1.versionCompare(version_1.getVersion()).is.greaterThanOrEqualTo(version_1.addSceneEventFixVersion);
+        if (event === 'scene-delete' && isDeleteSceneEventFixed) {
+            eventmanager_1.EventManager.subscribe("SceneDeleted", function (settingsObj) {
+                ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+            });
+        }
+        else if (event === 'scene-add' && isAddSceneEventFixed) {
+            eventmanager_1.EventManager.subscribe("OnSceneAddByUser", function (settingsObj) {
+                scene_1.Scene.getSceneCount().then(function (count) {
+                    ExtensionWindow.emit(event, count - 1);
+                });
+            });
+        }
+        else if (['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0) {
+            //Just subscribe to the event. Emitter is already handled.
+            if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
+                try {
+                    internal_1.exec('SourcesListSubscribeEvents', item_1.ViewTypes.MAIN.toString());
+                }
+                catch (ex) {
+                }
+            }
+        }
+        else {
+            console.warn('Warning! The event "' + event + '" is not yet supported.');
+        }
     };
     /** param: (width: number, height: number)
      *
@@ -11314,23 +11503,35 @@ if (environment_1.Environment.isExtension()) {
     };
     window.OnSceneLoad = function (view, scene) {
         if (Number(view) === 0) {
-            ExtensionWindow.getInstance().emit('scene-load', Number(scene));
+            ExtensionWindow.emit('scene-load', Number(scene));
+        }
+    };
+    window.SourcesListUpdate = function (view, sources) {
+        if (view === 0) {
+            var propsJSON = json_1.JSON.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
+            if (propsJSON.children && propsJSON.children.length > 0) {
+                propsArr = propsJSON.children;
+                for (var i = 0; i < propsArr.length; i++) {
+                    ids.push(propsArr[i]['id']);
+                }
+            }
+            ExtensionWindow.emit('sources-list-update', ids.join(','));
         }
     };
     window.SourcesListHighlight = function (view, id) {
         if (view === 0) {
-            ExtensionWindow.getInstance().emit('sources-list-highlight', id === '' ?
+            ExtensionWindow.emit('sources-list-highlight', id === '' ?
                 null : id);
         }
     };
     window.SourcesListSelect = function (view, id) {
         if (view === 0) {
-            ExtensionWindow.getInstance().emit('sources-list-select', id === '' ?
+            ExtensionWindow.emit('sources-list-select', id === '' ?
                 null : id);
         }
     };
 }
-},{"../core/environment":5,"../internal/app":38,"../internal/internal":41,"../util/eventemitter":57}],64:[function(require,module,exports){
+},{"../core/environment":5,"../core/items/item":21,"../core/scene":26,"../internal/app":38,"../internal/eventmanager":39,"../internal/internal":42,"../internal/util/json":44,"../internal/util/version":46,"../util/eventemitter":58}],65:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11341,17 +11542,20 @@ var __extends = (this && this.__extends) || function (d, b) {
 var global_1 = require('../internal/global');
 var environment_1 = require('../core/environment');
 var eventemitter_1 = require('../util/eventemitter');
+var eventmanager_1 = require('../internal/eventmanager');
+var version_1 = require('../internal/util/version');
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
  *  plugin may emit.
  *
  * Inherits from: {@link #util/EventEmitter Util/EventEmitter}
  *
- *  Currently there are only four events:
+ *  Currently, the following events are available:
  *    - `save-config`: signals the source that it should save the configuration object. Handler is a function f(config: JSON)
  *    - `apply-config`: signals the source that it should apply the changes that this configuration object describes. Handler is a function f(config: JSON)
  *    - `set-background-color`: only used when the native Color tab is reused and background color is set. Handler is a function f(colorHexNoNumberSign: string)
  *    - `scene-load`: signals the source that the active scene is the scene where it is loaded. Only works on sources loaded in memory
+ *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  */
@@ -11383,6 +11587,42 @@ var SourcePluginWindow = (function (_super) {
         }
         return SourcePluginWindow._instance;
     };
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
+    SourcePluginWindow.emit = function (event) {
+        var params = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            params[_i - 1] = arguments[_i];
+        }
+        params.unshift(event);
+        SourcePluginWindow
+            .getInstance()
+            .emit
+            .apply(SourcePluginWindow._instance, params);
+    };
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits.
+     *
+     */
+    SourcePluginWindow.on = function (event, handler) {
+        SourcePluginWindow.getInstance().on(event, handler);
+        var isDeleteSceneEventFixed = version_1.versionCompare(version_1.getVersion()).is.greaterThanOrEqualTo(version_1.deleteSceneEventFixVersion);
+        if (event === 'scene-delete' && isDeleteSceneEventFixed) {
+            eventmanager_1.EventManager.subscribe("SceneDeleted", function (settingsObj) {
+                SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+            });
+        }
+        else if (['set-background-color', 'set-background-color', 'apply-config', 'save-config'].indexOf(event) >= 0) {
+        }
+        else {
+            console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
+        }
+    };
     // We modify the configuration sent from the source properties window
     // so that we do not see 'persistent' configuration such as config-url.
     // When saving, this is restored back to the config object through
@@ -11404,14 +11644,13 @@ var SourcePluginWindow = (function (_super) {
 exports.SourcePluginWindow = SourcePluginWindow;
 if (environment_1.Environment.isSourcePlugin()) {
     window.MessageSource = function (message) {
-        SourcePluginWindow.getInstance().emit('message-source', JSON.parse(message));
+        SourcePluginWindow.emit('message-source', JSON.parse(message));
     };
     window.SetConfiguration = function (configObj) {
         try {
             var data = JSON.parse(configObj);
-            var source = SourcePluginWindow.getInstance();
-            source.emit('apply-config', data);
-            source.emit('save-config', data);
+            SourcePluginWindow.emit('apply-config', data);
+            SourcePluginWindow.emit('save-config', data);
         }
         catch (e) {
             // syntax error probably happened, exit gracefully
@@ -11419,13 +11658,13 @@ if (environment_1.Environment.isSourcePlugin()) {
         }
     };
     window.setBackGroundColor = function (color) {
-        SourcePluginWindow.getInstance().emit('set-background-color', color);
+        SourcePluginWindow.emit('set-background-color', color);
     };
     window.OnSceneLoad = function () {
-        SourcePluginWindow.getInstance().emit('scene-load');
+        SourcePluginWindow.emit('scene-load');
     };
 }
-},{"../core/environment":5,"../internal/global":39,"../util/eventemitter":57}],"xjs":[function(require,module,exports){
+},{"../core/environment":5,"../internal/eventmanager":39,"../internal/global":40,"../internal/util/version":46,"../util/eventemitter":58}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -11486,4 +11725,4 @@ __export(require('./window/extension'));
 __export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/channelmanager":3,"./core/dll":4,"./core/environment":5,"./core/extension":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/cuepoint":9,"./core/items/flash":10,"./core/items/game":11,"./core/items/html":12,"./core/items/ichroma":14,"./core/items/ieffects":17,"./core/items/image":19,"./core/items/iplayback":20,"./core/items/item":21,"./core/items/media":23,"./core/items/screen":24,"./core/items/videoplaylist":25,"./core/scene":26,"./core/source/audio":27,"./core/source/camera":28,"./core/source/flash":29,"./core/source/game":30,"./core/source/html":31,"./core/source/image":32,"./core/source/media":33,"./core/source/screen":34,"./core/source/source":35,"./core/source/videoplaylist":36,"./core/transition":37,"./internal/init":40,"./system/audio":47,"./system/camera":48,"./system/file":49,"./system/game":50,"./system/microphone":51,"./system/screen":52,"./system/system":53,"./system/url":54,"./system/videoplaylist":55,"./util/color":56,"./util/io":58,"./util/ready":59,"./util/rectangle":60,"./window/config":61,"./window/dialog":62,"./window/extension":63,"./window/source":64}]},{},["xjs"]);
+},{"./core/app":1,"./core/channel":2,"./core/channelmanager":3,"./core/dll":4,"./core/environment":5,"./core/extension":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/cuepoint":9,"./core/items/flash":10,"./core/items/game":11,"./core/items/html":12,"./core/items/ichroma":14,"./core/items/ieffects":17,"./core/items/image":19,"./core/items/iplayback":20,"./core/items/item":21,"./core/items/media":23,"./core/items/screen":24,"./core/items/videoplaylist":25,"./core/scene":26,"./core/source/audio":27,"./core/source/camera":28,"./core/source/flash":29,"./core/source/game":30,"./core/source/html":31,"./core/source/image":32,"./core/source/media":33,"./core/source/screen":34,"./core/source/source":35,"./core/source/videoplaylist":36,"./core/transition":37,"./internal/init":41,"./system/audio":48,"./system/camera":49,"./system/file":50,"./system/game":51,"./system/microphone":52,"./system/screen":53,"./system/system":54,"./system/url":55,"./system/videoplaylist":56,"./util/color":57,"./util/io":59,"./util/ready":60,"./util/rectangle":61,"./window/config":62,"./window/dialog":63,"./window/extension":64,"./window/source":65}]},{},["xjs"]);

@@ -134,9 +134,13 @@ export class Item extends Source implements IItemLayout {
    * });
    * ```
    */
-  getSceneId(): Promise<number> {
+  getSceneId(): Promise<any> {
     return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
+      if (this._sceneId === 'i12') {
+        resolve('i12');
+      } else {
+        resolve(Number(this._sceneId) + 1);
+      }
     });
   }
 
@@ -270,6 +274,27 @@ export class Item extends Source implements IItemLayout {
     return new Promise(resolve => {
       iItem.set('refresh', '', this._id).then(() => {
         resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Removes the video item from the scene.
+   *
+    *  #### Usage
+   *  ```javascript
+   *  // let item remove itself
+   *  xjs.Item.getItemList().then(function(item) {
+   *    item.remove();
+   *  });
+   */
+
+  remove(): Promise<boolean> {    
+     return new Promise(resolve => {
+      iItem.set('remove', '', this._id).then((val) => {
+        resolve(val);
       });
     });
   }

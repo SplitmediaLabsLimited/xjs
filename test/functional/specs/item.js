@@ -40,7 +40,8 @@
     }
 
     var sourceIndex = 0;
-    var currentSource = sources[sourceIndex];
+    var currentSource = sources[sourceIndex]; 
+    var items = sources;   
 
     Rose.createTab({
       name: 'Item',
@@ -48,8 +49,8 @@
         {
           name: 'toggle attached source',
           onClick: function() {
-            sourceIndex = (sourceIndex >= sources.length - 1) ? 0 : sourceIndex++;
-            currentSource = sources[sourceIndex];
+            sourceIndex = (sourceIndex >= items.length - 1) ? 0 : ++sourceIndex;
+            currentSource = items[sourceIndex];
             Rose.output(currentSource);
           }
         },
@@ -142,6 +143,28 @@
             currentSource.getId().then(function(val) {
               console.trace(val);
               Rose.output(val);
+            });
+          }
+        },
+
+        {
+          name: 'remove',
+          onClick: function() {
+            var rVal;
+            currentSource.remove().then(function(val) {
+              rVal = val;              
+              return Scene.getActiveScene();
+            }).then(function(scene) {
+              return scene.getItems();
+            }).then(function(sources) {
+              console.trace(rVal);
+              Rose.output(rVal);
+              if (sources.length === 0) {
+                throw new Error('NO SOURCE ON CURRENT SCENE!');
+              }              
+              sourceIndex = (sourceIndex <= 0) ? 0 : --sourceIndex;
+              items = sources;
+              currentSource = sources[sourceIndex];
             });
           }
         },

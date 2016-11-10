@@ -23,26 +23,27 @@ export class Item {
       }
       Item.lastSlot = slot;
       Item.itemSlotMap[slot] = itemID;
-      if (!Environment.isSourcePlugin()) {
-        exec('SearchVideoItem' +
-          (String(slot) === '0' ? '' : (slot + 1)),
+    }
+
+    if (!Environment.isSourcePlugin()) {
+      exec('SearchVideoItem' +
+        (String(slot) === '0' ? '' : (slot + 1)),
+        itemID
+      );
+    } else {
+      let hasGlobalSources = versionCompare(getVersion())
+        .is
+        .greaterThan(minVersion);
+
+      if (hasGlobalSources) {
+        exec('AttachVideoItem' + (slot + 1),
           itemID
         );
       } else {
-        let hasGlobalSources = versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion);
-
-        if (hasGlobalSources) {
-          exec('AttachVideoItem' + (slot + 1),
-            itemID
-          );
-        } else {
-          exec('AttachVideoItem' +
-            (String(slot) === '0' ? '' : (slot + 1)),
-            itemID
-          );
-        }
+        exec('AttachVideoItem' +
+          (String(slot) === '0' ? '' : (slot + 1)),
+          itemID
+        );
       }
     }
     return slot;
