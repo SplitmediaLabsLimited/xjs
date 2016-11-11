@@ -49,8 +49,10 @@ export class ItemConfigurable {
   protected _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('loadConfig is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(
@@ -66,6 +68,11 @@ export class ItemConfigurable {
   }
 
   saveConfig(configObj: any): Promise<any> {
+    let called: boolean = false;
+    if(this._isItemCall){
+      Logger.warn('saveConfig is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
+    }
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);

@@ -37,9 +37,11 @@ export class iSource {
     this._value = props['value'];
   }
 
-  setName(value: string): Promise   <Source> {
+  setName(value: string): Promise <Source> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setName is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       this._name = value;
@@ -74,8 +76,10 @@ export class iSource {
   }
 
   getName(): Promise<string> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getName is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -86,8 +90,10 @@ export class iSource {
   }
 
   setCustomName(value: string): Promise<Source> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setCustomName is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -98,8 +104,10 @@ export class iSource {
   }
 
   getCustomName(): Promise<string> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getCustomName is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -110,8 +118,10 @@ export class iSource {
   }
 
   getValue(): Promise<string | XML> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getValue is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
@@ -134,8 +144,10 @@ export class iSource {
   }
 
   setValue(value: string | XML): Promise<Source> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setValue is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
@@ -152,6 +164,11 @@ export class iSource {
   }
 
   getKeepLoaded(): Promise<boolean> {
+    let called: boolean = false;
+    if(this._isItemCall){
+      Logger.warn('getKeepLoaded is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:keeploaded', this._id).then(val => {
         this._keepLoaded = (val === '1');
@@ -161,6 +178,11 @@ export class iSource {
   }
 
   setKeepLoaded(value: boolean): Promise<Source> {
+    let called: boolean = false;
+    if(this._isItemCall){
+      Logger.warn('setKeepLoaded is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
+    }
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
@@ -177,6 +199,11 @@ export class iSource {
   }
 
   getSourceId(): Promise<string> {
+    let called: boolean = false;
+    if(this._isItemCall){
+      Logger.warn('getSourceId is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
+    }
     return new Promise((resolve, reject) => {
       if (versionCompare(getVersion()).is.lessThan(minVersion)) {
         reject(new Error('Only available on versions above ' + minVersion));

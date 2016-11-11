@@ -250,8 +250,10 @@ export class ItemPlayback implements IItemPlayback {
   protected _isItemCall: boolean;
 
   isSeekable(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isSeekable is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('sync:syncable', this._id).then(val => {
@@ -261,8 +263,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackPosition(): Promise<number> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('sync:position', this._id).then(val => {
@@ -272,8 +276,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setPlaybackPosition(value: number): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('sync:position', String(value * 10000000),
@@ -284,8 +290,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackDuration(): Promise<number> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getPlaybackDuration is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('sync:duration', this._id).then(val => {
@@ -295,8 +303,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isPlaying(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isPlaying is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('sync:state', this._id).then(val => {
@@ -306,8 +316,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setPlaying(value: boolean): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setPlaying is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('sync:state', value ? "running" : "stopped",
@@ -318,8 +330,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackStartPosition(): Promise<number> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getPlaybackStartPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:InPoint', this._id).then(val => {
@@ -329,8 +343,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setPlaybackStartPosition(value: number): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setPlaybackStartPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:InPoint', String(value * 10000000), this._id).then(() => {
@@ -340,8 +356,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackEndPosition(): Promise<number> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getPlaybackEndPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:OutPoint', this._id).then(val => {
@@ -351,8 +369,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setPlaybackEndPosition(value: number): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setPlaybackEndPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:OutPoint', String(value * 10000000),
@@ -363,8 +383,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getActionAfterPlayback(): Promise<ActionAfterPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getActionAfterPlayback is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:OpWhenFinished', this._id).then(val => {
@@ -374,8 +396,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setActionAfterPlayback is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
@@ -385,8 +409,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isAutostartOnSceneLoad(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isAutostartOnSceneLoad is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:StartOnLoad', this._id).then(val => {
@@ -396,8 +422,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setAutostartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setAutostartOnSceneLoad is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id).then(() => {
@@ -407,8 +435,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isForceDeinterlace(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isForceDeinterlace is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:fdeinterlace', this._id).then(val => {
@@ -418,8 +448,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setForceDeinterlace(value: boolean): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setForceDeinterlace is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
@@ -429,8 +461,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isRememberingPlaybackPosition(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isRememberingPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:RememberPosition', this._id).then(val => {
@@ -440,8 +474,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setRememberingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setRememberingPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:RememberPosition', (value ? '1' : '0'),
@@ -452,8 +488,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isShowingPlaybackPosition(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isShowingPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:ShowPosition', this._id).then(val => {
@@ -463,8 +501,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setShowingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setShowingPlaybackPosition is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id).then(() => {
@@ -474,8 +514,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getCuePoints(): Promise<CuePoint[]> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getCuePoints is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:CuePoints', this._id).then(cuePointString => {
@@ -492,8 +534,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   setCuePoints(cuePoints: CuePoint[]): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setCuePoints is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       const cuePointString = cuePoints.map(point => point.toString()).join(',');
@@ -502,8 +546,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isAudio(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isAudio is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(filename => {
@@ -513,8 +559,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isVideo(): Promise<boolean> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('isVideo is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(filename => {
@@ -524,8 +572,10 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getValue(): Promise<string> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('getValue is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise(resolve => {
       // we do not do any additional checking since we are assured of the type
@@ -536,8 +586,10 @@ export class ItemPlayback implements IItemPlayback {
   };
 
   setValue(filename: string): Promise<ItemPlayback> {
+    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
+      Logger.warn('setValue is a Source specific method. \
+Use this through Source to avoid this warning.', called ? true : true)
     }
     return new Promise((resolve, reject) => {
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
