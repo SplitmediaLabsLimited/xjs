@@ -294,7 +294,7 @@ export class Item extends Source implements IItemLayout {
               resolve(this);
             });
         } else if(options.linked === undefined) {
-          iApp.callFunc(`link:0|s:${options.scene}|additem`,
+          iApp.callFunc(`link:1|s:${options.scene}|additem`,
             this.toXML().toString())
             .then(() => {
             resolve(this);
@@ -307,7 +307,7 @@ export class Item extends Source implements IItemLayout {
           });
         }
       } else {
-        iApp.callFunc('additem', this.toXML().toString())
+        iApp.callFunc('link:1|additem', this.toXML().toString())
             .then(() => {
             resolve(this);
           });
