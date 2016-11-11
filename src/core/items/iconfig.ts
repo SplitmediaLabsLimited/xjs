@@ -4,6 +4,7 @@ import {Item as iItem} from '../../internal/item';
 import {Global} from '../../internal/global';
 import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger'
 
 export interface IItemConfigurable {
 
@@ -49,7 +50,7 @@ export class ItemConfigurable {
 
   loadConfig(): Promise<any> {
     if(this._isItemCall){
-      console.warn('Should only be called on Sources. Improve this message.')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(

@@ -4,6 +4,7 @@ import {exec} from '../../internal/internal';
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger'
 
 export class iHtmlSource {
   protected _id: string;
@@ -21,7 +22,7 @@ export class iHtmlSource {
    */
   isBrowserTransparent(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
@@ -42,7 +43,7 @@ export class iHtmlSource {
    */
   enableBrowserTransparency(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
@@ -63,7 +64,7 @@ export class iHtmlSource {
    */
   getBrowserCustomSize(): Promise<Rectangle> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       let customSize;
@@ -97,7 +98,7 @@ export class iHtmlSource {
    */
   setBrowserCustomSize(value: Rectangle): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
@@ -126,7 +127,7 @@ export class iHtmlSource {
    */
   getAllowRightClick(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
@@ -156,7 +157,7 @@ export class iHtmlSource {
    */
   setAllowRightClick(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
@@ -173,7 +174,7 @@ export class iHtmlSource {
    */
   getBrowserJS(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -206,7 +207,7 @@ export class iHtmlSource {
    */
   setBrowserJS(value: string, refresh = false): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -271,7 +272,7 @@ export class iHtmlSource {
    */
   isBrowserJSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -304,7 +305,7 @@ export class iHtmlSource {
    */
   enableBrowserJS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -380,7 +381,7 @@ export class iHtmlSource {
    */
   getCustomCSS(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -411,7 +412,7 @@ export class iHtmlSource {
    */
   setCustomCSS(value: string): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -481,7 +482,7 @@ export class iHtmlSource {
    */
   isCustomCSSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -512,7 +513,7 @@ export class iHtmlSource {
    */
   enableCustomCSS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
