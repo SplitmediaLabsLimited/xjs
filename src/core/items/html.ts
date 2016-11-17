@@ -19,7 +19,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {iHtmlSource} from '../source/ihtmlsource'
+import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
 
 /**
  * The HtmlItem class represents a web page item. This covers both item

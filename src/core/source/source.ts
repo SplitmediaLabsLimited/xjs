@@ -12,9 +12,9 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {iSource} from '../source/isource'
+import {iSource, ISource} from '../source/isource'
 
-export class Source{
+export class Source implements ISource{
   protected _id: string;
   protected _srcId: string;
   protected _type: ItemTypes;
@@ -44,10 +44,6 @@ export class Source{
   }
   /**
    * return: Promise<Source>
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Item#getItemList getItemList} instead.
    *
    * Get the current source (when function is called by sources), or the source
    * that was right-clicked to open the source properties window (when function is called

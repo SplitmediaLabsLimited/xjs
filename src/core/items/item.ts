@@ -15,7 +15,7 @@ import {
   versionCompare,
   getVersion
 } from '../../internal/util/version';
-import {iSource} from '../source/isource';
+import {iSource, ISource} from '../source/isource';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -75,11 +75,12 @@ export enum ViewTypes {
  *  });
  * ```
  */
-export class Item extends Source implements IItemLayout {
+export class Item extends Source implements IItemLayout, ISource {
   constructor(props?: {}) {
     super(props)
     this._isItemCall = true;
   }
+
   /**
    * return: Promise<ItemTypes>
    *
@@ -200,8 +201,8 @@ export class Item extends Source implements IItemLayout {
    * return: Promise<Item[]>
    *
    * Get the item list of the attached item. This is useful when an item is
-   * an instance of a linked source, with multiple other items having the same
-   * source as the current item.
+   * an instance of a linked item, with multiple other items having the same
+   * source.
    *
    * #### Usage
    *
@@ -275,30 +276,55 @@ export class Item extends Source implements IItemLayout {
   }
 
   /**
+   * param: (options: {linked:<boolean>, scene<Scene> } | null)
+   * ```
    * return: Promise<Item>
-   *
+   * ```
    * Duplicate current item. Will duplicate item into the current scene
    * or specified scene
+   *
+   *  *Chainable*
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Item.getItemList().then(function(item){
+   *   // get a scene to place duplicate on
+   *   item.duplicate(); // Default is linked: false, scene: current scene
+   * });
+   *
+   * ```
    */
 
-  duplicate(options: { linked: boolean, scene: Object }): Promise<Item> {
-    return new Promise(resolve => {
+  duplicate(options: { linked: boolean, scene: Scene }): Promise<Item> {
+    return new Promise((resolve, reject) => {
       if(options){
         if(options.linked) {
           iItem.set('prop:keeploaded', '1', this._id)
         }
         if(options.scene !== undefined && options.linked !== undefined) {
-            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${options.scene}|additem`,
-            this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
+          if(options.scene instanceof Scene) {
+            options.scene.getSceneNumber().then((id) => {
+              iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
+              this.toXML().toString())
+                .then(() => {
+                resolve(this);
+              });
+            })
+          } else {
+            reject(Error('Invalid parameters'));
+          }
         } else if(options.linked === undefined) {
-          iApp.callFunc(`link:1|s:${options.scene}|additem`,
-            this.toXML().toString())
-            .then(() => {
-            resolve(this);
-          });
+          if(options.scene instanceof Scene) {
+            options.scene.getSceneNumber().then((id) => {
+              iApp.callFunc(`link:0|s:${id}|additem`,
+                this.toXML().toString())
+                .then(() => {
+                resolve(this);
+              });
+            })
+          } else {
+            reject(Error('Invalid parameters'));
+          }
         } else if(options.scene === undefined) {
           iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
           this.toXML().toString())
@@ -307,7 +333,7 @@ export class Item extends Source implements IItemLayout {
           });
         }
       } else {
-        iApp.callFunc('link:1|additem', this.toXML().toString())
+        iApp.callFunc('link:0|additem', this.toXML().toString())
             .then(() => {
             resolve(this);
           });
@@ -318,7 +344,12 @@ export class Item extends Source implements IItemLayout {
   /**
    * return: Promise<Item>
    *
-   * Unlinks item to linked items by setting globalsrc to 0
+   * Unlinks selected item to linked items
+   *
+   * #### Usage
+   * ```javascript
+   * item.unlink()
+   * ```
    */
   unlink(): Promise<Item> {
     return new Promise(resolve => {
@@ -438,178 +469,42 @@ export class Item extends Source implements IItemLayout {
 
   // iSource
   /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * In XBC 2.8, names can be set individualy even on linked items.
-   * For XBC 2.9 onwards,  name will be the same across all linked Items
-   * to the same Source
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when name has been set
-   *   return item.getName();
-   * }).then(function(name) {
-   *   // 'name' should be the updated value by now.
-   * });
-   * ```
+   * See: {@link #core/Source#setName setName}
    */
   setName: (value: string) => Promise<Item>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the name of the item.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getName().then(function(name) {
-   *   // Do something with the name
-   * });
-   * ```
+   * See: {@link #core/Source#getName getName}
    */
   getName: () => Promise<string>
 
   /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * In XBC 2.8, CustomName can be set individualy even on linked items.
-   * For XBC 2.9 onwards, CustomName will be the same across all linked Items
-   * to the same Source
-   *
-   * The main difference between `setName` and `setCustomName` is that the CustomName
-   * can be edited by users using XBC through the bottom panel. `setName` on
-   * the other hand would update the item's internal name property.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setCustomName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when custom name has been set
-   *   return item.getCustomName();
-   * }).then(function(name) {
-   *   // 'name' should be the updated value by now.
-   * });
-   * ```
+   * See: {@link #core/Source#setCustomName setCustomName}
    */
   setCustomName: () => Promise<Item>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the custom name of the item.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getCustomName().then(function(name) {
-   *   // Do something with the name
-   * });
-   * ```
+   * See: {@link #core/Source#getCustomName getCustomName}
    */
   getCustomName: ()  => Promise<string>
 
   /**
-   * return: Promise<string|XML>
-   *
-   * Gets a special string that refers to the item's main definition.
-   *
-   * This method can resolve with an XML object, which is an object generated by
-   * the framework. Call `toString()` to transform into an XML String. (See the
-   * documentation for `setValue` for more details.)
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getValue().then(function(value) {
-   *   // Do something with the value
-   * });
-   * ```
+   * See: {@link #core/Source#getValue getValue}
    */
   getValue: () => Promise<string | XML>
 
   /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Set the item's main definition; this special string defines the item's
-   * "identity". Each type of item requires a different format for this value.
-   *
-   * *Chainable.*
-   *
-   * **WARNING:**
-   * Please do note that using this method COULD break the current item, possibly modifying
-   * its type IF you set an invalid string for the current item.
-   *
-   * #### Possible values by item type
-   * - FILE - path/URL
-   * - LIVE - Device ID
-   * - BITMAP - path
-   * - SCREEN - XML string
-   * - FLASHFILE - path
-   * - GAMESOURCE - XML string
-   * - HTML - path/URL or html:<plugin>
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
-   *   .then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
+   * See: {@link #core/Source#setValue setValue}
    */
   setValue: (value: string | XML) => Promise<Item>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if item is kept loaded in memory
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getKeepLoaded().then(function(isLoaded) {
-   *   // The rest of your code here
-   * });
-   * ```
+   * See: {@link #core/Source#getKeepLoaded getKeepLoaded}
    */
   getKeepLoaded: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Set Keep loaded option to ON or OFF
-   *
-   * Items with Keep loaded set to ON would emit `scene-load` event each time
-   * the active scene switches to the item's current scene.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setKeepLoaded(true).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
+   * See: {@link #core/Source#setKeepLoaded setKeepLoaded}
    */
   setKeepLoaded: (value: boolean) => Promise<Item>
 

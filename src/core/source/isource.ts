@@ -14,12 +14,77 @@ import {Environment} from '../environment';
 import {Scene} from '../scene';
 import {Logger} from '../../internal/util/logger';
 
+export interface ISource {
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets the Source name
+   */
+  setName(value: string): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the Source name
+   */
+  getName(): Promise<string>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets the Source custom name
+   */
+  setCustomName(string): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the Source custom name
+   */
+  getCustomName(): Promise<string>
+
+  /**
+   * return: Promise<string|XML>
+   *
+   * Gets Source main definition
+   */
+  getValue(): Promise<string|XML>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets Source main definition
+   */
+  setValue(string): Promise<ISource>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Source is kept loaded in memory
+   */
+  getKeepLoaded(): Promise<boolean>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Set Keep loaded option to ON or OFF
+   */
+  setKeepLoaded(boolean): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the Source ID
+   */
+  getSourceId(): Promise<string>
+}
+
 /**
  * Used by Source and Item to implement methods that are used on both classes
  * More info to be added soon.
  */
 
-export class iSource {
+export class iSource implements ISource{
   protected _id: string;
   protected _value: any;
   protected _name: string;
@@ -27,6 +92,7 @@ export class iSource {
   protected _keepLoaded: boolean;
   protected _globalsrc: boolean;
   protected _isItemCall: boolean;
+  protected _type: string;
 
   constructor(props?: {}) {
     props = props ? props : {};
@@ -37,11 +103,10 @@ export class iSource {
     this._value = props['value'];
   }
 
-  setName(value: string): Promise <Source> {
-    let called: boolean = false;
-    if(this._isItemCall){
-      Logger.warn('setName is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+  setName(value: string): Promise <iSource> {
+    if(this._isItemCall) {
+      Logger.warn('Warning! setName is a Source specific method.' +
+        'To avoid this warning, ', true)
     }
     return new Promise(resolve => {
       this._name = value;
@@ -76,10 +141,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   getName(): Promise<string> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('getName is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('Warning! getName is a Source specific method.' +
+        'Use this through Source to avoid this warning.',  true)
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -90,10 +154,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   setCustomName(value: string): Promise<Source> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('setCustomName is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('setCustomName is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -104,10 +167,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   getCustomName(): Promise<string> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('getCustomName is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('getCustomName is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -118,10 +180,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   getValue(): Promise<string | XML> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('getValue is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('getValue is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
@@ -144,10 +205,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   setValue(value: string | XML): Promise<Source> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('setValue is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('setValue is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
@@ -164,10 +224,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   getKeepLoaded(): Promise<boolean> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('getKeepLoaded is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('getKeepLoaded is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:keeploaded', this._id).then(val => {
@@ -178,10 +237,9 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   setKeepLoaded(value: boolean): Promise<Source> {
-    let called: boolean = false;
     if(this._isItemCall){
-      Logger.warn('setKeepLoaded is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
+      Logger.warn('setKeepLoaded is a Source specific method.' +
+        'Use this through Source to avoid this warning.', true)
     }
     return new Promise(resolve => {
       this._keepLoaded = value;
@@ -189,7 +247,7 @@ Use this through Source to avoid this warning.', called ? true : true)
       if(versionCompare(getVersion())
         .is
         .lessThan(globalsrcMinVersion)) {
-        iItem.set('prop:globalsrc', '0', this._id)
+        iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
       }
       iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
@@ -199,11 +257,6 @@ Use this through Source to avoid this warning.', called ? true : true)
   }
 
   getSourceId(): Promise<string> {
-    let called: boolean = false;
-    if(this._isItemCall){
-      Logger.warn('getSourceId is a Source specific method. \
-Use this through Source to avoid this warning.', called ? true : true)
-    }
     return new Promise((resolve, reject) => {
       if (versionCompare(getVersion()).is.lessThan(minVersion)) {
         reject(new Error('Only available on versions above ' + minVersion));
