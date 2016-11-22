@@ -136,7 +136,7 @@ export class Item extends Source implements IItemLayout {
    */
   getSceneId(): Promise<any> {
     return new Promise(resolve => {
-      if (this._sceneId === 'i12') {
+      if (String(this._sceneId) === 'i12') {
         resolve('i12');
       } else {
         resolve(Number(this._sceneId) + 1);
@@ -291,7 +291,7 @@ export class Item extends Source implements IItemLayout {
    *  });
    */
 
-  remove(): Promise<boolean> {    
+  remove(): Promise<boolean> {
      return new Promise(resolve => {
       iItem.set('remove', '', this._id).then((val) => {
         resolve(val);

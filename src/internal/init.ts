@@ -123,7 +123,7 @@ function informWhenConfigLoaded(): Promise<any> {
   });
 }
 
-function init(): void {
+export default function init(): void {
   Global.addInitializationPromise(readMetaConfigUrl());
   Global.addInitializationPromise(getCurrentSourceId());
   Global.addInitializationPromise(informWhenConfigLoaded());
@@ -134,5 +134,3 @@ function init(): void {
     }));
   });
 }
-
-init();
