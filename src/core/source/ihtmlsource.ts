@@ -138,8 +138,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isBrowserTransparent(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('Warning! isBrowserTransparent is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('isBrowserTransparent', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
@@ -150,8 +149,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableBrowserTransparency(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! enableBrowserTransparency is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('enableBrowserTransparency', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
@@ -163,8 +161,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getBrowserCustomSize(): Promise<Rectangle> {
     if(this._isItemCall){
-      Logger.warn('Warning! getBrowserCustomSize is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('getBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       let customSize;
@@ -185,8 +182,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setBrowserCustomSize(value: Rectangle): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! setBrowserCustomSize is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('setBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
@@ -202,8 +198,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getAllowRightClick(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('Warning! getAllowRightClick is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('getAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
@@ -214,8 +209,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setAllowRightClick(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! setAllowRightClick is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('setAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
@@ -227,8 +221,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getBrowserJS(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('Warning! getBrowserJS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('getBrowserJS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -249,8 +242,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setBrowserJS(value: string, refresh = false): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! setBrowserJS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('setBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -310,8 +302,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isBrowserJSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('Warning! isBrowserJSEnabled is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('isBrowserJSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -332,8 +323,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableBrowserJS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! enableBrowserJS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('enableBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -404,8 +394,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getCustomCSS(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('Warning! getCustomCSS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('getCustomCSS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -426,8 +415,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setCustomCSS(value: string): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! setCustomCSS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('setCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -492,8 +480,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isCustomCSSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('Warning! isCustomCSSEnabled is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('isCustomCSSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -514,8 +501,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableCustomCSS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('Warning! enableCustomCSS is a Source specific method.' +
-        'Use this through Source to avoid this warning.',  true)
+      Logger.warn('enableCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
