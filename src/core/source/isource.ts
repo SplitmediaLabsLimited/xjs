@@ -105,7 +105,7 @@ export class iSource implements ISource{
 
   setName(value: string): Promise <iSource> {
     if(this._isItemCall) {
-      Logger.warn('setName', true)
+      Logger.warn('sourceWarning', 'setName', true)
     }
     return new Promise(resolve => {
       this._name = value;
@@ -141,7 +141,7 @@ export class iSource implements ISource{
 
   getName(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('getName',  true)
+      Logger.warn('sourceWarning', 'getName',  true)
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -153,7 +153,7 @@ export class iSource implements ISource{
 
   setCustomName(value: string): Promise<Source> {
     if(this._isItemCall){
-      Logger.warn('setCustomName', true)
+      Logger.warn('sourceWarning', 'setCustomName', true)
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -165,7 +165,7 @@ export class iSource implements ISource{
 
   getCustomName(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('getCustomName', true)
+      Logger.warn('sourceWarning', 'getCustomName', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -177,7 +177,7 @@ export class iSource implements ISource{
 
   getValue(): Promise<string | XML> {
     if(this._isItemCall){
-      Logger.warn('getValue', true)
+      Logger.warn('sourceWarning', 'getValue', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
@@ -201,7 +201,7 @@ export class iSource implements ISource{
 
   setValue(value: string | XML): Promise<Source> {
     if(this._isItemCall){
-      Logger.warn('setValue', true)
+      Logger.warn('sourceWarning', 'setValue', true)
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
@@ -219,7 +219,7 @@ export class iSource implements ISource{
 
   getKeepLoaded(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('getKeepLoaded', true)
+      Logger.warn('sourceWarning', 'getKeepLoaded', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:keeploaded', this._id).then(val => {
@@ -231,7 +231,7 @@ export class iSource implements ISource{
 
   setKeepLoaded(value: boolean): Promise<Source> {
     if(this._isItemCall){
-      Logger.warn('setKeepLoaded', true)
+      Logger.warn('sourceWarning', 'setKeepLoaded', true)
     }
     return new Promise(resolve => {
       this._keepLoaded = value;

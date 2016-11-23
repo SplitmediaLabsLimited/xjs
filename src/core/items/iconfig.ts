@@ -51,7 +51,7 @@ export class ItemConfigurable {
   loadConfig(): Promise<any> {
     let called: boolean = false;
     if(this._isItemCall) {
-      Logger.warn('loadConfig', true)
+      Logger.warn('sourceWarning', 'loadConfig', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(
@@ -68,7 +68,7 @@ export class ItemConfigurable {
 
   saveConfig(configObj: any): Promise<any> {
     if(this._isItemCall){
-      Logger.warn('saveConfig', true)
+      Logger.warn('sourceWarning', 'saveConfig', true)
     }
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {

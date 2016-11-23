@@ -138,7 +138,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isBrowserTransparent(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('isBrowserTransparent', true)
+      Logger.warn('sourceWarning', 'isBrowserTransparent', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
@@ -149,7 +149,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableBrowserTransparency(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('enableBrowserTransparency', true)
+      Logger.warn('sourceWarning', 'enableBrowserTransparency', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
@@ -161,7 +161,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getBrowserCustomSize(): Promise<Rectangle> {
     if(this._isItemCall){
-      Logger.warn('getBrowserCustomSize', true)
+      Logger.warn('sourceWarning', 'getBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       let customSize;
@@ -182,7 +182,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setBrowserCustomSize(value: Rectangle): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('setBrowserCustomSize', true)
+      Logger.warn('sourceWarning', 'setBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
@@ -198,7 +198,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getAllowRightClick(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('getAllowRightClick', true)
+      Logger.warn('sourceWarning', 'getAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
@@ -209,7 +209,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setAllowRightClick(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('setAllowRightClick', true)
+      Logger.warn('sourceWarning', 'setAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
@@ -221,7 +221,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getBrowserJS(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('getBrowserJS', true)
+      Logger.warn('sourceWarning', 'getBrowserJS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -242,7 +242,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setBrowserJS(value: string, refresh = false): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('setBrowserJS', true)
+      Logger.warn('sourceWarning', 'setBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -302,7 +302,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isBrowserJSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('isBrowserJSEnabled', true)
+      Logger.warn('sourceWarning', 'isBrowserJSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -323,7 +323,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableBrowserJS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('enableBrowserJS', true)
+      Logger.warn('sourceWarning', 'enableBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -394,7 +394,7 @@ export class iHtmlSource implements IHtmlSource{
 
   getCustomCSS(): Promise<string> {
     if(this._isItemCall){
-      Logger.warn('getCustomCSS', true)
+      Logger.warn('sourceWarning', 'getCustomCSS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -415,7 +415,7 @@ export class iHtmlSource implements IHtmlSource{
 
   setCustomCSS(value: string): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('setCustomCSS', true)
+      Logger.warn('sourceWarning', 'setCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -480,7 +480,7 @@ export class iHtmlSource implements IHtmlSource{
 
   isCustomCSSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      Logger.warn('isCustomCSSEnabled', true)
+      Logger.warn('sourceWarning', 'isCustomCSSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -501,7 +501,7 @@ export class iHtmlSource implements IHtmlSource{
 
   enableCustomCSS(value: boolean): Promise<iHtmlSource> {
     if(this._isItemCall){
-      Logger.warn('enableCustomCSS', true)
+      Logger.warn('sourceWarning', 'enableCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
