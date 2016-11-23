@@ -77,6 +77,13 @@ export interface ISource {
    * Get the Source ID
    */
   getSourceId(): Promise<string>
+
+  /**
+   * return Promise<ISource>
+   *
+   * Refreshes Specified Item
+   */
+  refresh(): Promise<ISource>
 }
 
 /**
@@ -257,6 +264,14 @@ export class iSource implements ISource{
           resolve(srcid);
         });
       }
+    });
+  }
+
+  refresh(): Promise<iSource> {
+    return new Promise(resolve => {
+      iItem.set('refresh', '', this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 }

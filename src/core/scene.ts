@@ -362,7 +362,7 @@ export class Scene {
   /**
    * return: Promise<Items[]>
    *
-   * Searches all items for a item by name substring. This function
+   * Searches all items for an item by name substring. This function
    * compares against custom name first (recommended) before falling back to the
    * name property of the item.
    *
@@ -373,6 +373,10 @@ export class Scene {
    *   // do something to each item in items array
    * });
    * ```
+   *
+   * Note: With the XBC 2.9 change, linked items would have the same
+   * Name and Custom Name. Changes made on an item would reflect on all
+   * linked items.
    *
    */
   static searchItemsByName(param: string): Promise<Item[]> {
@@ -1159,7 +1163,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');                   
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
@@ -1244,7 +1248,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');               
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }

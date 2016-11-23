@@ -334,6 +334,27 @@ export class Source implements ISource{
    * ```
    */
   getSourceId: () => Promise<string>
+
+
+  /**
+   *  return: Promise<Item>
+   *
+   *  Refreshes the specified item.
+   *
+   *  #### Usage
+   *  ```javascript
+   *  // Sample 1: let item refresh itself
+   *  xjs.Item.getItemList().then(function(item) {
+   *    item.refresh(); // execution of JavaScript halts because of refresh
+   *  });
+   *
+   *  // Sample 2: refresh some other item 'otherItem'
+   *  otherItem.refresh().then(function(item) {
+   *    // further manipulation of other item goes here
+   *  });
+   *  ```
+   */
+  refresh: () => Promise<Source>
 }
 
 applyMixins(Source, [iSource])

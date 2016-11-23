@@ -13,7 +13,8 @@ import {Source} from '../source/source'
 import {
   minVersion,
   versionCompare,
-  getVersion
+  getVersion,
+  globalsrcMinVersion
 } from '../../internal/util/version';
 import {iSource, ISource} from '../source/isource';
 
@@ -250,32 +251,6 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   *  return: Promise<Item>
-   *
-   *  Refreshes the specified item.
-   *
-   *  #### Usage
-   *  ```javascript
-   *  // Sample 1: let item refresh itself
-   *  xjs.Item.getItemList().then(function(item) {
-   *    item.refresh(); // execution of JavaScript halts because of refresh
-   *  });
-   *
-   *  // Sample 2: refresh some other item 'otherItem'
-   *  otherItem.refresh().then(function(item) {
-   *    // further manipulation of other item goes here
-   *  });
-   *  ```
-   */
-  refresh(): Promise<Item> {
-    return new Promise(resolve => {
-      iItem.set('refresh', '', this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
    * param: (options: {linked:<boolean>, scene<Scene> } | null)
    * ```
    * return: Promise<Item>
@@ -297,46 +272,54 @@ export class Item extends Source implements IItemLayout, ISource {
 
   duplicate(options: { linked: boolean, scene: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
-      if(options){
-        if(options.linked) {
-          iItem.set('prop:keeploaded', '1', this._id)
-        }
-        if(options.scene !== undefined && options.linked !== undefined) {
-          if(options.scene instanceof Scene) {
-            options.scene.getSceneNumber().then((id) => {
-              iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
-              this.toXML().toString())
-                .then(() => {
-                resolve(this);
-              });
-            })
-          } else {
-            reject(Error('Invalid parameters'));
-          }
-        } else if(options.linked === undefined) {
-          if(options.scene instanceof Scene) {
-            options.scene.getSceneNumber().then((id) => {
-              iApp.callFunc(`link:0|s:${id}|additem`,
-                this.toXML().toString())
-                .then(() => {
-                resolve(this);
-              });
-            })
-          } else {
-            reject(Error('Invalid parameters'));
-          }
-        } else if(options.scene === undefined) {
-          iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
-          this.toXML().toString())
-            .then(() => {
-            resolve(this);
-          });
-        }
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(globalsrcMinVersion)) {
+        iApp.callFunc('additem', this.toXML().toString()).then(() => {
+          resolve(this)
+        })
       } else {
-        iApp.callFunc('link:0|additem', this.toXML().toString())
-            .then(() => {
-            resolve(this);
-          });
+        if(options){
+          if(options.linked) {
+            iItem.set('prop:keeploaded', '1', this._id)
+          }
+          if(options.scene !== undefined && options.linked !== undefined) {
+            if(options.scene instanceof Scene) {
+              options.scene.getSceneNumber().then((id) => {
+                iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
+                this.toXML().toString())
+                  .then(() => {
+                  resolve(this);
+                });
+              })
+            } else {
+              reject(Error('Invalid parameters'));
+            }
+          } else if(options.linked === undefined) {
+            if(options.scene instanceof Scene) {
+              options.scene.getSceneNumber().then((id) => {
+                iApp.callFunc(`link:0|s:${id}|additem`,
+                  this.toXML().toString())
+                  .then(() => {
+                  resolve(this);
+                });
+              })
+            } else {
+              reject(Error('Invalid parameters'));
+            }
+          } else if(options.scene === undefined) {
+            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
+            this.toXML().toString())
+              .then(() => {
+              resolve(this);
+            });
+          }
+        } else {
+          iApp.callFunc('link:0|additem', this.toXML().toString())
+              .then(() => {
+              resolve(this);
+            });
+        }
       }
     });
   }
@@ -350,6 +333,10 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```javascript
    * item.unlink()
    * ```
+   *
+   * Note: Once you unlink an Item, there's still no method to reverses the
+   * process.
+   *
    */
   unlink(): Promise<Item> {
     return new Promise(resolve => {
@@ -509,20 +496,14 @@ export class Item extends Source implements IItemLayout, ISource {
   setKeepLoaded: (value: boolean) => Promise<Item>
 
   /**
-   * return: Promise<string>
-   *
-   * Get the Source ID of the item.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSourceId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
+   * See: {@link #core/Source#getSourceId getSourceId}
    */
   getSourceId: () => Promise<string>
+
+  /**
+   * See: {@link #core/Source#refresh refresh}
+   */
+  refresh: () => Promise<Source>
 
 }
 
