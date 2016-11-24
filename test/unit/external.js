@@ -96,6 +96,13 @@
 		},
 
 		/**
+		 * source|config|window
+		 */
+		CheckDllGrant: function(name) {
+
+		},
+
+		/**
 		 * config|window
 		 */
 		Close: function(name) {
