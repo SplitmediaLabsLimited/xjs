@@ -56,7 +56,8 @@ export class ChannelManager extends EventEmitter {
   static on(event: string, handler: Function) {
     // ChannelManager._emitter.on(event, handler);
     if (Environment.isSourceProps()) {
-      console.warn('Channel Manager class cannot be used on Source Properties')
+      console.warn('Channel Manager: stream-related events are not received' +
+        ' via the Source Properties');
     }
     ChannelManager._emitter.on(event, (params) => {
       try {
@@ -69,6 +70,10 @@ export class ChannelManager extends EventEmitter {
           let addedInfo: Object = {};
 
           if (event === 'stream-end') {
+            channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
+            channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
+            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
+            
             statJSON = JXON.parse('<stat frmdropped="' +
               channelInfoObj['Dropped'] +
               '" frmcoded="' + channelInfoObj['NotDropped'] + '" />');
