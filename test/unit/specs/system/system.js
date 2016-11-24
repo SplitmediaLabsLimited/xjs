@@ -7,7 +7,7 @@ describe('System', function() {
   var System = XJS.System;
   var Environment = XJS.Environment;
   var env = new window.Environment(XJS);
-  var environments = ['config', 'extension', 'plugin'];
+  var environments = ['props', 'extension', 'plugin'];
   var local = {};
 
   beforeAll(function() {

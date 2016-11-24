@@ -29,7 +29,7 @@ describe('Playback interface', function() {
   var env = new window.Environment(XJS);
   var environments = {
     SOURCE : 'plugin',
-    SOURCEPROPS : 'config',
+    SOURCEPROPS : 'props',
     EXTENSION : 'extension'
   };
 

@@ -65,7 +65,7 @@ describe('Extension Class', function() {
         }
 
         done();
-    });
+      });
     } else {
       expect(extension).toBeUndefined();
       done();
