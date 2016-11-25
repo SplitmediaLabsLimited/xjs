@@ -32,7 +32,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'frametime') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
@@ -63,7 +63,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'resolution') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '900, 600');
@@ -98,7 +98,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'viewport') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '900, 600');
@@ -145,7 +145,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1.3.0.429');
@@ -194,7 +194,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'framesrendered') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12683');
@@ -237,7 +237,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonedev2') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, micDev2Mock);
@@ -313,7 +313,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonedev2') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, micDev2);
@@ -329,7 +329,7 @@ describe('App ===', function() {
         if (funcName === 'microphonedev2') {
           micDev2 = encodeURIComponent(value);
 
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1');
           }, 10);
@@ -558,7 +558,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonegain') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -628,7 +628,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonegain') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, audioGainMock);
@@ -653,7 +653,7 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultEnable) {
               silenceDetectionEnabledSet = true;
             }
-            var asyncId = (new Date()).getTime();
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
               window.OnAsyncCallback(asyncId, '1');
             }, 10);
@@ -690,7 +690,7 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultThreshold) {
               silenceDetectionThresholdSet = true;
             }
-            var asyncId = (new Date()).getTime();
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
               window.OnAsyncCallback(asyncId, '1');
             }, 10);
@@ -763,7 +763,7 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultPeriod) {
               silenceDetectionPeriodSet = true;
             }
-            var asyncId = (new Date()).getTime();
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
               window.OnAsyncCallback(asyncId, '1');
             }, 10);
@@ -881,7 +881,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'transitionid') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, 'clock');
@@ -908,7 +908,7 @@ describe('App ===', function() {
 
         if (funcName === 'transitionid' && value == 'clock') {
           transitionSet = true;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1');
           }, 10);
@@ -936,7 +936,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'transitiontime') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '3000');
@@ -971,7 +971,7 @@ describe('App ===', function() {
         .and.callFake(function(funcName, value) {
         if (funcName === 'transitiontime' && typeof value == 'string' && value === '1000') {
           transitionTimeSet = true;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1');
           }, 10);
@@ -999,7 +999,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1.3.0.429');
@@ -1007,7 +1007,7 @@ describe('App ===', function() {
           return asyncId;
 
         } else if (funcName == 'preset:0') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
@@ -1015,7 +1015,7 @@ describe('App ===', function() {
           return asyncId;
 
         } else if (funcName == 'presetconfig') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1370,7 +1370,7 @@ describe('App ===', function() {
         // add these below only because each scene has separate getting of sources
         // this should be addressed to reuse the initial call for presetconfig
         } else if (funcName == 'presetconfig:0') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1470,7 +1470,7 @@ describe('App ===', function() {
           return asyncId;
 
         } else if (funcName == 'presetconfig:1') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1736,7 +1736,7 @@ describe('App ===', function() {
 
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1747,7 +1747,7 @@ describe('App ===', function() {
 
         } else if (startsWith(funcName, 'presetname:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1782,7 +1782,7 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1.3.0.429');
@@ -1790,7 +1790,7 @@ describe('App ===', function() {
           return asyncId;
 
         } else if (funcName == 'preset:0') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
@@ -1798,7 +1798,7 @@ describe('App ===', function() {
           return asyncId;
 
         } else if (funcName == 'presetconfig') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1814,7 +1814,7 @@ describe('App ===', function() {
         // this should be addressed to reuse the initial call for presetconfig
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -1825,7 +1825,7 @@ describe('App ===', function() {
 
         } else if (startsWith(funcName, 'presetname:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent('Scene ' +

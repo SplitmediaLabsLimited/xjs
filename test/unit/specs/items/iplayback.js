@@ -44,7 +44,7 @@ describe('Playback interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime();
+    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -65,7 +65,7 @@ describe('Playback interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime();
+    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -95,7 +95,7 @@ describe('Playback interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime();
+      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
       switch (funcName) {
         case 'presetconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));

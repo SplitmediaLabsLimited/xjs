@@ -20,7 +20,7 @@ describe('Extension Class', function() {
 
     spyOn(window.external, 'GetPresProperty')
       .and.callFake(function(presName) {
-      var asyncId = (new Date()).getTime();
+      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
       setTimeout(function() {
         window.OnAsyncCallback(asyncId, local[presName]);

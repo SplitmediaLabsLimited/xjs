@@ -11,7 +11,7 @@ describe('Channel ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -107,7 +107,7 @@ describe('Channel ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime();
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -136,7 +136,7 @@ describe('Channel ===', function() {
     beforeEach(function(done) {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime();          
+        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);          
         if (funcName == 'recstat') {
 
           setTimeout(function() {
