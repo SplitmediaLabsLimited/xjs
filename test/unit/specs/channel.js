@@ -11,10 +11,10 @@ describe('Channel ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime();
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<stat>' +
                 '<channel name="Local Streaming">' +
                 '<stat video="21800992" audio="1383326" output="29635585"' +
@@ -79,7 +79,7 @@ describe('Channel ===', function() {
               ));
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -107,14 +107,14 @@ describe('Channel ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime();
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<stat></stat>'));
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -136,11 +136,11 @@ describe('Channel ===', function() {
     beforeEach(function(done) {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var randomNumber=Math.floor(Math.random()*1000);          
+        var asyncId = (new Date()).getTime();          
         if (funcName == 'recstat') {
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<stat>' +
                 '<channel name="Local Streaming">' +
                 '<stat video="21800992" audio="1383326" output="29635585"' +
@@ -205,27 +205,27 @@ describe('Channel ===', function() {
               ));
           },10);
 
-          return randomNumber;
+          return asyncId;
         } else if (funcName == 'streamdrops:Local Streaming') {
           setTimeout(function() {
             if (isEmpty)
             {
-              window.OnAsyncCallback(randomNumber, '');  
+              window.OnAsyncCallback(asyncId, '');  
             } else {
-              window.OnAsyncCallback(randomNumber, '10, 813');  
+              window.OnAsyncCallback(asyncId, '10, 813');  
             }
           }, 10);
-          return randomNumber;
+          return asyncId;
         } else if (funcName == 'streamtime:Local Streaming') {
           setTimeout(function() {
             if (isEmpty)
             {
-              window.OnAsyncCallback(randomNumber, '');  
+              window.OnAsyncCallback(asyncId, '');  
             } else {
-              window.OnAsyncCallback(randomNumber, '100000');  
+              window.OnAsyncCallback(asyncId, '100000');  
             }
           }, 10);
-          return randomNumber;
+          return asyncId;
         }
       });
       Channel.getActiveStreamChannels()
