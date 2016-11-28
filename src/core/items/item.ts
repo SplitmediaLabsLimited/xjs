@@ -9,14 +9,24 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
-import {Source} from '../source/source'
 import {
   minVersion,
   versionCompare,
   getVersion,
   globalsrcMinVersion
 } from '../../internal/util/version';
+
 import {iSource, ISource} from '../source/isource';
+import {Source} from '../source/source'
+import {GameSource} from '../source/game';
+import {CameraSource} from '../source/camera';
+import {AudioSource} from '../source/audio';
+import {VideoPlaylistSource} from '../source/videoplaylist'
+import {HtmlSource} from '../source/html';
+import {FlashSource} from '../source/flash';
+import {ScreenSource} from '../source/screen';
+import {ImageSource} from '../source/image';
+import {MediaSource} from '../source/media';
 
 export enum ItemTypes {
   UNDEFINED,
@@ -344,6 +354,89 @@ export class Item extends Source implements IItemLayout, ISource {
         .then(() => {
         resolve(this)
       })
+    })
+  }
+
+  static getSource(): Promise<Source> {
+    let uniqueSource = [];
+    let uniqueObj = {};
+    let _xmlparams;
+    let _type;
+    let _srcId;
+    var promiseArray: Promise<Source>[] = [];
+
+    return new Promise((resolve, reject) => {
+      if (Environment.isExtension()) {
+        //do something or not: temp error
+        reject(Error('Does not work here!'))
+      } else if (
+        (Environment.isSourcePlugin() || Environment.isSourceConfig())) {
+        // do other here
+        Item.getItemList().then((items) => {
+          for(var i=0; i< items.length; i++) {
+            for(var key in items[i]) {
+              if(key === '_srcId') {
+                uniqueObj[items[i][key]] = items[i]
+              }
+            }
+          }
+
+          for(var j in uniqueObj) {
+            if(uniqueObj.hasOwnProperty(j)) {
+              uniqueSource.push(uniqueObj[j])
+            }
+          }
+
+          let typePromise = index => new Promise(typeResolve => {
+            let source = uniqueSource[index];
+            let params = source['_xmlparams']
+            let type = Number(source['_type']);
+            console.log('Param::', source, type)
+            if (type === ItemTypes.GAMESOURCE) {
+              typeResolve(new GameSource(params));
+            } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+              source['_name'].indexOf('Video Playlist') === 0 &&
+              source['FilePlaylist'] !== ''){
+              typeResolve(new VideoPlaylistSource(params));
+            } else if (type === ItemTypes.HTML) {
+              typeResolve(new HtmlSource(params));
+            } else if (type === ItemTypes.SCREEN) {
+              typeResolve(new ScreenSource(params));
+            } else if (type === ItemTypes.BITMAP ||
+                type === ItemTypes.FILE &&
+                /\.gif$/.test(source['item'])) {
+              typeResolve(new ImageSource(params));
+            } else if (type === ItemTypes.FILE &&
+                /\.(gif|xbs)$/.test(source['item']) === false &&
+                /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+              typeResolve(new MediaSource(params));
+            } else if (Number(source['type']) === ItemTypes.LIVE &&
+              source['item'].indexOf(
+                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+              typeResolve(new CameraSource(params));
+            } else if (Number(source['type']) === ItemTypes.LIVE &&
+              source['item'].indexOf(
+                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+              typeResolve(new AudioSource(params));
+            } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+              typeResolve(new FlashSource(params));
+            } else {
+                typeResolve(new Source(params));
+            }
+          });
+
+          if (Array.isArray(uniqueSource)) {
+            for (var i = 0; i < uniqueSource.length; i++) {
+              promiseArray.push(typePromise(i));
+            }
+          }
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
+
+        })
+      }
     })
   }
 

@@ -506,7 +506,7 @@ export class ItemPlayback implements IItemPlayback {
       Logger.warn('sourceWarning', 'isAudio', true)
     }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(filename => {
+      iItem.get('prop:srcitem', this._id).then(filename => {
         resolve(AUDIO_REGEX.test(filename));
       });
     });
@@ -517,7 +517,7 @@ export class ItemPlayback implements IItemPlayback {
       Logger.warn('sourceWarning', 'isVideo', true)
     }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(filename => {
+      iItem.get('prop:srcitem', this._id).then(filename => {
         resolve(VIDEO_REGEX.test(filename));
       });
     });
@@ -529,7 +529,7 @@ export class ItemPlayback implements IItemPlayback {
     }
     return new Promise(resolve => {
       // we do not do any additional checking since we are assured of the type
-      iItem.get('prop:item', this._id).then(val => {
+      iItem.get('prop:srcitem', this._id).then(val => {
         resolve(val);
       });
     });
@@ -541,7 +541,7 @@ export class ItemPlayback implements IItemPlayback {
     }
     return new Promise((resolve, reject) => {
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
-        iItem.set('prop:item', filename, this._id)
+        iItem.set('prop:srcitem', filename, this._id)
         .then(() => iItem.set('prop:name', filename, this._id))
         .then(() => iItem.set('prop:CuePoints', '', this._id))
         .then(() => {

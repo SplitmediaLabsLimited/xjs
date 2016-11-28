@@ -187,7 +187,7 @@ export class iSource implements ISource{
       Logger.warn('sourceWarning', 'getValue', true)
     }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(val => {
+      iItem.get('prop:srcitem', this._id).then(val => {
         val = (val === 'null') ? '' : val;
         if (val === '') { // don't return XML for null values
           this._value = '';
@@ -218,7 +218,7 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
-      iItem.set('prop:item', val, this._id).then(() => {
+      iItem.set('prop:srcitem', val, this._id).then(() => {
         resolve(this);
       });
     });
