@@ -261,7 +261,7 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * param: (options: {linked:<boolean>, scene<Scene> } | null)
+   * param: (options: {linked:<boolean>, scene<Scene> } | empty)
    * ```
    * return: Promise<Item>
    * ```
@@ -357,7 +357,24 @@ export class Item extends Source implements IItemLayout, ISource {
     })
   }
 
-  static getSource(): Promise<Source> {
+  /**
+   * return: Promise<Source[]>
+   *
+   * Gets the Source of linked items.
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Item.getSource.then(function(sources){
+   *   for(var i = 0 ; i < sources.length ; i++) {
+   *     //do something with every Source here
+   *     sources[i].setName('Name')
+   *   }
+   * })
+   */
+
+  static getSource(): Promise<Source[]> {
     let uniqueSource = [];
     let uniqueObj = {};
     let _xmlparams;
@@ -380,7 +397,6 @@ export class Item extends Source implements IItemLayout, ISource {
               }
             }
           }
-
           for(var j in uniqueObj) {
             if(uniqueObj.hasOwnProperty(j)) {
               uniqueSource.push(uniqueObj[j])
@@ -391,7 +407,6 @@ export class Item extends Source implements IItemLayout, ISource {
             let source = uniqueSource[index];
             let params = source['_xmlparams']
             let type = Number(source['_type']);
-            console.log('Param::', source, type)
             if (type === ItemTypes.GAMESOURCE) {
               typeResolve(new GameSource(params));
             } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&

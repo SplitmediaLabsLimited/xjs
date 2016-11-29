@@ -64,7 +64,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * return: Promise<HtmlItem>
    * ```
    *
-   * Allow this source to communicate with another source.
+   * Allow this item to call a pre-exposed function within the HTML Item
    */
   call(func: string, arg: string): Promise<HtmlItem> {
     return new Promise(resolve => {
