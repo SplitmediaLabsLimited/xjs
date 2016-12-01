@@ -54,7 +54,7 @@ describe('HtmlItem', function() {
         },10);
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
@@ -170,7 +170,7 @@ describe('HtmlItem', function() {
 
     switch (funcName) {
 
-      case 'prop:item':
+      case 'prop:srcitem':
       	var isValid;
         if (typeof val === 'string') {
           local.item = val;

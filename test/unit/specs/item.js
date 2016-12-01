@@ -51,7 +51,7 @@ describe('Item', function() {
             local.cname = val;
           break;
 
-          case 'prop:item':
+          case 'prop:srcitem':
             local.item = val;
           break;
 
@@ -67,37 +67,37 @@ describe('Item', function() {
 
       spyOn(window.external, 'GetLocalPropertyAsync')
         .and.callFake(function(prop) {
-        var rand = Math.floor(Math.random()*1000);
+        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
         switch (prop) {
           case 'prop:name':
             setTimeout(function() {
-              window.OnAsyncCallback(rand, local.name);
+              window.OnAsyncCallback(asyncId, local.name);
             }, 10);
           break;
 
           case 'prop:cname':
             setTimeout(function() {
-              window.OnAsyncCallback(rand, local.cname);
+              window.OnAsyncCallback(asyncId, local.cname);
             }, 10);
           break;
 
-          case 'prop:item':
+          case 'prop:srcitem':
             setTimeout(function() {
-              window.OnAsyncCallback(rand, local.item);
+              window.OnAsyncCallback(asyncId, local.item);
             }, 10);
           break;
 
           case 'prop:keeploaded':
             setTimeout(function() {
-              window.OnAsyncCallback(rand, local.keeploaded);
+              window.OnAsyncCallback(asyncId, local.keeploaded);
             }, 10);
           break;
 
           case 'prop:srcid':
             setTimeout(function() {
               window.OnAsyncCallback(
-                rand,
+                asyncId,
                 '{CB4EB352-D86F-4478-8BFD-55FF53216697}'
               );
             }, 10);
@@ -106,14 +106,14 @@ describe('Item', function() {
           case 'prop:globalsrc':
             setTimeout(function() {
               window.OnAsyncCallback(
-                rand,
+                asyncId,
                 '1'
               );
             }, 10);
           break;
         }
 
-        return rand;
+        return asyncId;
       });
 
       done();

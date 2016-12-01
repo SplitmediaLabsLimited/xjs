@@ -41,7 +41,7 @@ describe('ImageItem', function() {
         },10);
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {

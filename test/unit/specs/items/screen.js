@@ -53,7 +53,7 @@ describe('ScreenItem', function() {
         },10);
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
@@ -101,7 +101,7 @@ describe('ScreenItem', function() {
 
     switch (funcName) {
 
-      case 'prop:item':
+      case 'prop:srcitem':
         var irand = rand;
         local.item = val;
         setTimeout(function() {

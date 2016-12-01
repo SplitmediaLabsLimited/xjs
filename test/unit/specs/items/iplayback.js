@@ -49,6 +49,9 @@ describe('Playback interface', function() {
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
+    if (property.substring(0, 3) === 'src') {
+      property = property.substring(3);
+    }
 
     if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
       property)) {

@@ -6,6 +6,7 @@ describe('Scene', function() {
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Item = XJS.Item;
+  var Source = XJS.Source;
   var env = new window.Environment(XJS);
   var environment = XJS.Environment;
   var environments = ['props', 'extension', 'plugin'];
@@ -393,7 +394,7 @@ describe('Scene', function() {
               }.bind(ctr), 10);
             break;
 
-            case 'prop:item':
+            case 'prop:srcitem':
               setTimeout(function() {
                 window.OnAsyncCallback(this, 'html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}');
               }.bind(ctr), 10);
@@ -424,7 +425,7 @@ describe('Scene', function() {
               }.bind(ctr), 10);
             break;
 
-            case 'prop:item':
+            case 'prop:srcitem':
               setTimeout(function() {
                 window.OnAsyncCallback(this, '@DEVICE:PNP:\\\\?\\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\\GLOBAL');
               }.bind(ctr), 10);
