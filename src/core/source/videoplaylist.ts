@@ -1,12 +1,33 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
+///
+import {applyMixins} from '../../internal/util/mixin';
+import {Source} from '../source/source';
+import {Item as iItem} from '../../internal/item';
+import {IO} from '../../util/io';
+import {ItemConfigurable, IItemConfigurable} from '../items/iconfig';
 
-import {VideoPlaylistItem} from '../items/videoplaylist';
+export class VideoPlaylistSource extends Source implements IItemConfigurable{
+  // ItemConfigurable
 
-/**
- * > #### For Deprecation
- * This Class is deprecated and will be removed soon. Please use
- * {@link #core/VideoPlaylistItem VideoPlaylistItem} instead. This Class shares
- * the same methods with VideoPlaylistItem.
- */
-export class VideoPlaylistSource extends VideoPlaylistItem {
+  /**
+   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   */
+  loadConfig: () => Promise<any>;
+
+  /**
+   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   */
+  saveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
+
+  /**
+   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   */
+  requestSaveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
+
+  /**
+   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   */
+  applyConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 }
+
+applyMixins(VideoPlaylistSource, [ItemConfigurable])

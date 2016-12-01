@@ -6,8 +6,7 @@ import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
-
-var dialogProxy: any;
+let dialogProxy: any;
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
@@ -70,11 +69,12 @@ export class Dialog{
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
 
-        if (typeof dialogProxy !== 'undefined') {
+        if (typeof dialogProxy !== 'undefined' && typeof Proxy !== 'undefined') {
           dialogProxy._result = e.detail;
         } else {
           this._result = e.detail;
         }
+
         this._resultListener = null;
       };
 
@@ -259,7 +259,17 @@ export class Dialog{
 
         document.addEventListener('xsplit-dialog-result', eventListener);
         this._resultListener = eventListener;
-      } else { // listener already active
+      } else if(typeof Proxy === 'undefined') {
+        Object.observe(this, changes => {
+          // Search for changes with the name as result
+          let change = changes.filter(elem => {
+            return elem.name === '_result';
+          });
+          if (change !== undefined && change.length > 0) {
+            resolve(change[0].object._result);
+          }
+        })
+      } else {
         dialogProxy = new Proxy( this, {
           set: (target, property, value, receiver) => {
             if (property === '_result') {

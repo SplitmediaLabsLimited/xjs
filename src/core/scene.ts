@@ -372,7 +372,7 @@ export class Scene {
   /**
    * return: Promise<Items[]>
    *
-   * Searches all items for a item by name substring. This function
+   * Searches all items for an item by name substring. This function
    * compares against custom name first (recommended) before falling back to the
    * name property of the item.
    *
@@ -383,6 +383,10 @@ export class Scene {
    *   // do something to each item in items array
    * });
    * ```
+   *
+   * Note: With the XBC 2.9 change, linked items would have the same
+   * Name and Custom Name. Changes made on an item would reflect on all
+   * linked items.
    *
    */
   static searchItemsByName(param: string): Promise<Item[]> {
@@ -864,6 +868,109 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source[]>
+   *
+   * Get all the Sources of the items from all your scenes. Linked items is
+   * represented with one source.
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Scene.getUniqueSources().then(function(sources) {
+   *   for(var i = 0 ; i < sources.length ; i++) {
+   *      if(sources[i] instanceof xjs.HtmlSource) {
+   *        // Manipulate HTML Source here
+   *      }
+   *   }
+   * })
+   *
+   * Still not sure with the method name
+   */
+  static getAllSources(): Promise<Source[]> {
+    return new Promise((resolve,reject)=> {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        let itemList = []
+        let uniqueObj = {}
+        let uniqueSources = []
+        var promiseArray: Promise<Source>[] = [];
+
+        this._initializeScenePoolAsync().then(cnt => {
+          let matches: Item[] = []
+          let scenes = Scene._scenePool.filter(scene => (scene._id !== 'i12'))
+
+          return Promise.all(scenes.map(scene => {
+            return new Promise(resolveScene => {
+              scene.getItems().then(items => {
+                resolveScene(itemList = itemList.concat(items))
+              })
+            })
+          }))
+        }).then(() => {
+          for(var i=0; i< itemList.length; i++) {
+            for(var key in itemList[i]) {
+              if(key === '_srcId') {
+                uniqueObj[itemList[i][key]] = itemList[i]
+              }
+            }
+          }
+          for(var j in uniqueObj) {
+            if(uniqueObj.hasOwnProperty(j)) {
+              uniqueSources.push(uniqueObj[j])
+            }
+          }
+
+          let typePromise = index => new Promise(typeResolve => {
+            let source = uniqueSources[index];
+            let params = source['_xmlparams']
+            let type = Number(source['_type']);
+            if (type === ItemTypes.GAMESOURCE) {
+              typeResolve(new GameSource(params));
+            } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+              source['_name'].indexOf('Video Playlist') === 0 &&
+              source['FilePlaylist'] !== ''){
+              typeResolve(new VideoPlaylistSource(params));
+            } else if (type === ItemTypes.HTML) {
+              typeResolve(new HtmlSource(params));
+            } else if (type === ItemTypes.SCREEN) {
+              typeResolve(new ScreenSource(params));
+            } else if (type === ItemTypes.BITMAP ||
+                type === ItemTypes.FILE &&
+                /\.gif$/.test(source['item'])) {
+              typeResolve(new ImageSource(params));
+            } else if (type === ItemTypes.FILE &&
+                /\.(gif|xbs)$/.test(source['item']) === false &&
+                /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+              typeResolve(new MediaSource(params));
+            } else if (Number(source['type']) === ItemTypes.LIVE &&
+              source['item'].indexOf(
+                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+              typeResolve(new CameraSource(params));
+            } else if (Number(source['type']) === ItemTypes.LIVE &&
+              source['item'].indexOf(
+                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+              typeResolve(new AudioSource(params));
+            } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+              typeResolve(new FlashSource(params));
+            } else {
+                typeResolve(new Source(params));
+            }
+          });
+
+          if (Array.isArray(uniqueSources)) {
+            for (var i = 0; i < uniqueSources.length; i++) {
+              promiseArray.push(typePromise(i));
+            }
+          }
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results);
+          });
+        })
+      }
+    })
+  }
+  /**
    * return: number
    *
    * Get the 1-indexed scene number of this scene object.
@@ -1169,7 +1276,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');                   
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
@@ -1254,7 +1361,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');               
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }

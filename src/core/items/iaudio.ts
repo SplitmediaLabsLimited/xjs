@@ -63,6 +63,7 @@ export interface IItemAudio {
 
 export class ItemAudio implements IItemAudio {
   private _id: string;
+  protected _isItemCall: boolean;
 
   getVolume(): Promise<number> {
     return new Promise(resolve => {

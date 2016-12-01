@@ -15,6 +15,7 @@ import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
+import {CameraSource} from '../source/camera';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {System} from '../../system/system';
 
@@ -57,7 +58,7 @@ import {System} from '../../system/system';
  */
 export class CameraItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemAudio, IItemEffect {
-  private _delayExclusionObject = {
+  protected _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",
     hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
     hauppauge2: "vid_2040&pid_e50[012a4]"
@@ -72,153 +73,6 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
         resolve(val);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera feed is paused
-   */
-  isStreamPaused(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:StreamPause', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
-
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether camera feed is paused or not
-   *
-   * *Chainable.*
-   */
-  setStreamPaused(value: boolean): Promise<CameraItem> {
-    return new Promise((resolve, reject) => {
-      iItem.set('prop:StreamPause', value ? '1' : '0',
-        this._id).then(() => {
-          return iItem.get('prop:StreamPause', this._id);
-        }).then(val => {
-          if (value === (val === ('1'))) {
-            resolve(this);
-          } else {
-            reject(new Error('Camera feed cannot be paused/resumed or is not present'));
-          }
-        });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is a hardware encoder or not. This check may fail
-   * if camera device is reinitializing or not present (value defaults to false)
-   *
-   */
-  isHardwareEncoder(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      iItem.get('prop:hwencoder', this._id).then(val => {
-        if (val === '1') {
-          resolve(true);
-        } else {
-          this.isActive().then(isActive => {
-            if (isActive) {
-              resolve(false);
-            } else {
-              reject(new Error
-                ('Cannot check hardware encoding. Device not present'));
-            }
-          })
-        }
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is active and present.
-   *
-   */
-  isActive(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:activestate', this._id).then(val => {
-        resolve(val === 'active');
-      });
-    });
-  }
-
-  /**
-   * return: Promise<number>
-   *
-   * Gets feed capture delay in milliseconds
-   */
-  getDelay(): Promise<number> {
-    return new Promise(resolve => {
-      var streamDelay, audioDelay;
-      iItem.get('prop:StreamDelay', this._id).then(val => {
-        streamDelay = Number(val);
-        return iItem.get('prop:AudioDelay', this._id);
-      }).then(val => {
-        audioDelay = Number(val);
-
-        if (streamDelay < audioDelay) {
-          resolve(streamDelay / 10000);
-        } else {
-          resolve(audioDelay / 10000);
-        }
-      });
-    });
-  }
-
-  /**
-   * param: (value: number)
-   *
-   * Sets feed capture delay in milliseconds, accepts only positive delay
-   *
-   * *Chainable.*
-   */
-  setDelay(value: number): Promise<CameraItem> {
-    return new Promise((resolve, reject) => {
-      var isPositive, audioOffset;
-      this.isHardwareEncoder().then(val => {
-        if (val === true) {
-          reject(new Error('Cannot set delay to hardware encoder devices'));
-        } else {
-          return this.getValue();
-        }
-      }).then(val => {
-        for (var key in this._delayExclusionObject) {
-          var regex = new RegExp(
-            this._delayExclusionObject[key].toLowerCase(), 'g');
-          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-            reject(new Error('Cannot set delay to specific device'));
-            break;
-          }
-        }
-        return this.getAudioOffset();
-      }).then(val => {
-        audioOffset = val;
-        if (audioOffset >= 0) {
-          isPositive = true;
-          return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
-        } else {
-          isPositive = false;
-          return iItem.set('prop:StreamDelay',
-            String((value + (audioOffset * -1)) * 10000), this._id);
-        }
-      }).then(val => {
-        if (isPositive) {
-          return iItem.set('prop:AudioDelay',
-            String((value + audioOffset) * 10000), this._id);
-        } else {
-          return iItem.set('prop:AudioDelay', String(value * 10000), this._id);
-        }
-      }).then(val => {
-        resolve(this);
       });
     });
   }
@@ -336,6 +190,153 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * return: Promise<boolean>
    *
+   * Checks if camera feed is paused
+   */
+  isStreamPaused(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:StreamPause', this._id).then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  /**
+   * param: (value: boolean)
+   *
+   * Sets whether camera feed is paused or not
+   *
+   * *Chainable.*
+   */
+  setStreamPaused(value: boolean): Promise<CameraSource> {
+    return new Promise((resolve, reject) => {
+      iItem.set('prop:StreamPause', value ? '1' : '0',
+        this._id).then(() => {
+          return iItem.get('prop:StreamPause', this._id);
+        }).then(val => {
+          if (value === (val === ('1'))) {
+            resolve(this);
+          } else {
+            reject(new Error('Camera feed cannot be paused/resumed or is not present'));
+          }
+        });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is a hardware encoder or not. This check may fail
+   * if camera device is reinitializing or not present (value defaults to false)
+   *
+   */
+  isHardwareEncoder(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      iItem.get('prop:hwencoder', this._id).then(val => {
+        if (val === '1') {
+          resolve(true);
+        } else {
+          this.isActive().then(isActive => {
+            if (isActive) {
+              resolve(false);
+            } else {
+              reject(new Error
+                ('Cannot check hardware encoding. Device not present'));
+            }
+          })
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if camera device is active and present.
+   *
+   */
+  isActive(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:activestate', this._id).then(val => {
+        resolve(val === 'active');
+      });
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets feed capture delay in milliseconds
+   */
+  getDelay(): Promise<number> {
+    return new Promise(resolve => {
+      var streamDelay, audioDelay;
+      iItem.get('prop:StreamDelay', this._id).then(val => {
+        streamDelay = Number(val);
+        return iItem.get('prop:AudioDelay', this._id);
+      }).then(val => {
+        audioDelay = Number(val);
+
+        if (streamDelay < audioDelay) {
+          resolve(streamDelay / 10000);
+        } else {
+          resolve(audioDelay / 10000);
+        }
+      });
+    });
+  }
+
+  /**
+   * param: (value: number)
+   *
+   * Sets feed capture delay in milliseconds, accepts only positive delay
+   *
+   * *Chainable.*
+   */
+  setDelay(value: number): Promise<CameraSource> {
+    return new Promise((resolve, reject) => {
+      var isPositive, audioOffset;
+      this.isHardwareEncoder().then(val => {
+        if (val === true) {
+          reject(new Error('Cannot set delay to hardware encoder devices'));
+        } else {
+          return this.getValue();
+        }
+      }).then(val => {
+        for (var key in this._delayExclusionObject) {
+          var regex = new RegExp(
+            this._delayExclusionObject[key].toLowerCase(), 'g');
+          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
+            reject(new Error('Cannot set delay to specific device'));
+            break;
+          }
+        }
+        return this.getAudioOffset();
+      }).then(val => {
+        audioOffset = val;
+        if (audioOffset >= 0) {
+          isPositive = true;
+          return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
+        } else {
+          isPositive = false;
+          return iItem.set('prop:StreamDelay',
+            String((value + (audioOffset * -1)) * 10000), this._id);
+        }
+      }).then(val => {
+        if (isPositive) {
+          return iItem.set('prop:AudioDelay',
+            String((value + audioOffset) * 10000), this._id);
+        } else {
+          return iItem.set('prop:AudioDelay', String(value * 10000), this._id);
+        }
+      }).then(val => {
+        resolve(this);
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
    * Checks whether deinterlacing is enforced
    */
   isForceDeinterlace(): Promise<boolean> {
@@ -353,7 +354,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    *
    * *Chainable.*
    */
-  setForceDeinterlace(value: boolean): Promise<CameraItem> {
+  setForceDeinterlace(value: boolean): Promise<CameraSource> {
     return new Promise(resolve => {
       iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
         resolve(this);
@@ -891,5 +892,5 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<CameraItem>;
 }
 
-applyMixins(CameraItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
+applyMixins(CameraItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
   ItemAudio, ItemEffect]);

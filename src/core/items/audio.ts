@@ -6,6 +6,7 @@ import {IItemAudio, ItemAudio} from './iaudio';
 import {Scene} from '../scene';
 import {Item} from './item';
 import {Environment} from '../environment';
+import {AudioSource} from '../source/audio';
 
 /**
  * The AudioItem class represents an audio device that has been added
@@ -36,6 +37,7 @@ import {Environment} from '../environment';
  *  instance.
  */
 export class AudioItem extends Item implements IItemAudio {
+
   /**
    * return: Promise<boolean>
    *

@@ -48,7 +48,7 @@ import {IO} from '../../util/io';
 export class VideoPlaylistItem extends Item implements IItemLayout,
   IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
 
-  /**
+    /**
    * return: Promise<string>
    *
    * Gets the now playing video of this VideoPlaylist item.
@@ -57,7 +57,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
 
   getVideoNowPlaying(): Promise<string> {
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(playlist => {
+      iItem.get('prop:srcitem', this._id).then(playlist => {
         let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
         resolve(_playlist)
       });
@@ -67,7 +67,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * param: (value: string|number)
    *
-   * return: Promise<VideoPlaylistItem>
+   * return: Promise<VideoPlaylistSource>
    *
    * Sets the now playing video of this VideoPlaylist item.
    *
@@ -95,14 +95,14 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
           } else {
             let index = _playlist.indexOf(value);
             file = _playlist[index] + '*' + index;
-            iItem.set('prop:item', file, this._id)
+            iItem.set('prop:srcitem', file, this._id)
             .then(fileplaylist => {
               resolve(this);
             });
           }
         } else if (typeof value === 'number' && value <= _playlist.length) {
           file = (_playlist[value] + '*' + value);
-            iItem.set('prop:item', file, this._id)
+            iItem.set('prop:srcitem', file, this._id)
               .then(function (fileplaylist) {
                 resolve(this);
               });
@@ -121,7 +121,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    *
    */
 
-  getVideoPlaylistItems(): Promise<string[]> {
+  getVideoPlaylistSources(): Promise<string[]> {
     return new Promise(resolve => {
       iItem.get('prop:FilePlaylist', this._id).then(playlist => {
         let _playlist = String(playlist).split('|');
@@ -146,7 +146,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    *
    */
 
-  setVideoPlaylistItems(fileItems:string[]): Promise<VideoPlaylistItem> {
+  setVideoPlaylistSources(fileItems:string[]): Promise<VideoPlaylistItem> {
     let fileString: string;
 
     let filePromises = fileItems.map((filename) => {
@@ -167,7 +167,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
             };
           };
         };
-        iItem.set('prop:item', fileItems[0] + '*0', this._id);
+        iItem.set('prop:srcitem', fileItems[0] + '*0', this._id);
         return fileString;
       }).then(fileString => {
         iItem.set('prop:FilePlaylist', fileString, this._id)

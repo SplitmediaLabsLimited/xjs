@@ -4,6 +4,7 @@ import {Item as iItem} from '../../internal/item';
 import {Global} from '../../internal/global';
 import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger'
 
 export interface IItemConfigurable {
 
@@ -45,8 +46,13 @@ export interface IItemConfigurable {
 export class ItemConfigurable {
   private _id: string;
   private _srcId: string;
+  protected _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
+    let called: boolean = false;
+    if(this._isItemCall) {
+      Logger.warn('sourceWarning', 'loadConfig', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(
         config => {
@@ -61,6 +67,9 @@ export class ItemConfigurable {
   }
 
   saveConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'saveConfig', true)
+    }
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);

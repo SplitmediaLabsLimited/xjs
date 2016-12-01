@@ -17,6 +17,7 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {FlashSource} from '../source/flash';
 
 /**
  * The FlashItem class represents a flash item, which is any SWF file
@@ -66,7 +67,7 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * param: (value: Rectangle)
    * ```
-   * return: Promise<FlashItem>
+   * return: Promise<FlashSource>
    * ```
    *
    * Sets the custom resolution for the item
@@ -84,7 +85,6 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
       });
     });
   }
-
   /**
    * return: Promise<boolean>
    *
