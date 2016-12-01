@@ -7,8 +7,10 @@ describe('Scene', function() {
   var Scene = XJS.Scene;
   var Item = XJS.Item;
   var env = new window.Environment(XJS);
-  var environments = ['config', 'extension', 'plugin'];
+  var environment = XJS.Environment;
+  var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
+  var global = {};
 
   var MAX_SCENES = 12;
 
@@ -32,11 +34,120 @@ describe('Scene', function() {
     });
   });
 
+  describe('should be able to get current number of scenes', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName === 'presetcount') {
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, '5');
+          },10);
+
+          return asyncId;
+        }
+      });
+    });
+
+    it('as a number', function(done) {
+      exec(function(next) {
+        Scene.getSceneCount().then(function(sceneCount) {
+          expect(sceneCount).toBeTypeOf('number');
+          next();
+        });
+      }).then(done);
+    });
+  });
+
   describe('should be able to fetch a specific scene by index', function() {
-    it('as a Scene object', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName === 'presetcount') {
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, '5');
+          },10);
+
+          return asyncId;
+        }
+      });
+    });
+
+    it('either as sync', function() {
+      Scene._scenePool = [];
       for (var i = 1; i <= MAX_SCENES; i++) {
         expect(Scene.getById(i)).toBeInstanceOf(Scene);
       }
+    });
+
+    it('or as async', function(done) {
+      exec(function(next) {
+        Scene.getByIdAsync(2).then(function(scene) {
+          expect(scene).toBeInstanceOf(Scene);
+          return Scene.getByIdAsync('i12');
+        }).then(function(scene) {
+          expect(scene).toBeInstanceOf(Scene);
+          return Scene.getByIdAsync(100);
+        }).then(function() {
+          done.fail('getByIdAsync should reject if scene id is higher than scene count');
+        }, function(scene) {
+          return Scene.getByIdAsync('Test string');
+        }).then(function() {
+          done.fail('getByIdAsync should reject if scene id is string other than i12');
+        }, function() {
+          next();
+        });
+      }).then(done);
+    });
+  });
+
+  describe('should be able to fetch a specific scene by name', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+        if (funcName === 'presetcount') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, '5');
+          },10);
+
+        } else if (funcName.startsWith('presetname:')) {
+          var sceneIndex = funcName.substring(11);
+          var name;
+          if (sceneIndex === '0' || sceneIndex === '4') {
+            name = 'Test scene';
+          } else {
+            sceneIndex = Number(sceneIndex) + 1;
+            name = 'Scene ' + sceneIndex;
+          }
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, name);
+          },10);
+        }
+
+        return asyncId;
+      });
+    });
+
+    it('and return as an array of Scene objects', function(done) {
+      exec(function(next) {
+        Scene.getByName('Test scene')
+        .then(function(scene) {
+          expect(scene.length).toEqual(2);
+          return Scene.getByName('Random scene name')
+        }).then(function(scene) {
+          expect(scene.length).toEqual(0);
+          return Scene.getByName(true)
+        }).then(function(scene) {
+          expect(scene.length).toEqual(0);
+          next();
+        });
+      }).then(done);
     });
   });
 
@@ -44,24 +155,23 @@ describe('Scene', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
+
+        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
         if (funcName === 'preset:0') {
-          var rand=Math.floor(Math.random()*1000);
-
           setTimeout(function() {
-            window.OnAsyncCallback(rand, '5');
+            window.OnAsyncCallback(asyncId, '5');
           },10);
-
-          return rand;
         } else if (funcName === 'presetcount') {
-          var rand = Math.floor(Math.random() * 1000);
-
           setTimeout(function() {
-            window.OnAsyncCallback(rand, '12');
+            window.OnAsyncCallback(asyncId, '12');
           },10);
-
-          return rand;
         }
+        return asyncId;
       });
+    });
+
+    afterAll(function() {
+      env.set(environments[1]);
     });
 
     it('through a promise', function(done) {
@@ -74,24 +184,161 @@ describe('Scene', function() {
 
     it('as a Scene object', function(done) {
       exec(function(next) {
-        var promise = Scene.getActiveScene();
-        promise.then(function(scene) {
+        Scene.getActiveScene()
+        .then(function(scene) {
           expect(scene).toBeInstanceOf(Scene);
           next();
         });
       }).then(done);
     });
+
+    it('but is rejected when called from source plugin', function(done) {
+      env.set(environments[2]);
+      exec(function(next) {
+        Scene.getActiveScene()
+        .then(function() {
+          done.fail('getActiveScene should reject when used in source plugins');
+        }, function() {
+          next();
+        });
+      }).then(function() {
+        expect(true).toBe(true);
+        done(); 
+      });
+    });
+  });
+
+  describe('should be able to set current scene', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        if (funcName === 'preset:0') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, global['preset']);
+          },10);
+        } else if (funcName === 'presetcount') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, '12');
+          },10);
+        } else if (funcName.startsWith('presetname:')) {
+          var sceneIndex = Number(funcName.substring(11)) + 1;
+          var name = 'Scene ' + sceneIndex;
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, name);
+          },10);
+        }
+        return asyncId;
+      });
+
+      spyOn(window.external, 'AppSetPropertyAsync')
+        .and.callFake(function(funcName, value) {
+        global[funcName] = value;
+        // if (funcName === 'preset' && typeof value == 'string') {
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, '1');
+          }, 10);
+
+          return asyncId;
+        // }
+      });
+    });
+
+    afterAll(function() {
+      env.set(environments[1]);
+    });
+
+    it('through a promise', function(done) {
+      exec(function(next) {
+        var promise = Scene.setActiveScene(1);
+        expect(promise).toBeInstanceOf(Promise);
+        next();
+      }).then(done);
+    });
+
+    it('from an integer', function(done) {
+      exec(function(next) {
+        var index = Math.floor((Math.random() * 5) + 1);
+        Scene.setActiveScene(index)
+        .then(function() {
+          return Scene.getActiveScene();
+        }).then(function(currentScene) {
+          expect(currentScene._id).toEqual(index - 1);
+          return Scene.setActiveScene(-1);
+        }).then(function() {
+          done.fail('setActiveScene should reject when index is lower than 1')
+        }, function() {
+          return Scene.setActiveScene(2.5);
+        }).then(function() {
+          done.fail('setActiveScene should reject when a non-integer number is used')
+        }, function() {
+          next();
+        });
+      }).then(done);
+    });
+
+    it('from a Scene object', function(done) {
+      exec(function(next) {
+        var index = Math.floor((Math.random() * 5) + 1);
+        Scene.getByName('Scene ' + index)
+        .then(function(scene) {
+          return Scene.setActiveScene(scene[0]);
+        })
+        .then(function(scene) {
+          return Scene.getActiveScene();
+        })
+        .then(function(currentScene) {
+          expect(currentScene._id).toEqual(index - 1);
+          next();
+        });
+      }).then(done);
+    });
+
+    describe('but not', function(done) {
+      it('for any other parameter', function(done) {
+        exec(function(next) {
+          Scene.setActiveScene(true)
+          .then(function() {
+            done.fail('setActiveScene should reject when other parameter types are used');
+          }, function() {
+            return Scene.setActiveScene("1");
+          })
+          .then(function() {
+            done.fail('setActiveScene should reject when other parameter types are used');
+          }, function() {
+            expect(true).toBe(true);
+            next();
+          });
+        }).then(done);
+      });
+
+      it('when called from source', function(done) {
+        env.set(environments[2]);
+        exec(function(next) {
+          Scene.setActiveScene(1)
+          .then(function() {
+            done.fail('setActiveScene should reject when used in source plugins');
+          }, function() {
+            expect(true).toBe(true);
+            next();
+          });
+        }).then(done);
+      });
+    });
   });
 
   describe('object instance', function() {
     beforeAll(function(done) {
+      // env.set(environments[1]);
         var ctr = 0;
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
           ctr++;
           if (funcName === 'preset:0') {
             setTimeout(function() {
-              window.OnAsyncCallback(this, '5');
+              window.OnAsyncCallback(this, '0');
             }.bind(ctr),10);
           } else if (/^presetname:/.test(funcName)) {
             setTimeout(function() {
@@ -254,7 +501,7 @@ describe('Scene', function() {
           return scene.getItems();
         }).then(function(items){
           sceneItems = items[0];
-          return Scene.searchSourcesById(sceneItems._id);
+          return Scene.searchItemsById(sceneItems._id);
         }).then(function(item) {
           expect(item).toBeInstanceOf(Item);
           next();
@@ -271,7 +518,7 @@ describe('Scene', function() {
           return scene.getItems();
         }).then(function(items){
           sceneItems = items[0];
-          return Scene.searchSourcesById(sceneItems._id.toLowerCase());
+          return Scene.searchItemsById(sceneItems._id.toLowerCase());
         }).then(function(item) {
           expect(item).toBeInstanceOf(Item);
           next();
@@ -281,15 +528,33 @@ describe('Scene', function() {
 
     it('should be able to get null when searching for nonexistent ID', function(done) {
       exec(function(next) {
-        Scene.searchSourcesById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
-        .then(function(source) {
-          expect(source).toBe(null);
+        Scene.searchItemsById('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}')
+        .then(function(item) {
+          expect(item).toBe(null);
           next();
         });
       }).then(done);
     });
 
-    it('should be able to search for a source by Name', function(done) {
+    it('should be able to search for a scene with an item based on item id', function(done) {
+      exec(function(next) {
+        Scene.getActiveScene().then(function(result) {
+          return result.getItems();
+        }).then(function(items){
+          return items[0].getId();
+        }).then(function(id) {
+          return Scene.searchScenesByItemId(id);
+        }).then(function(searchScene) {
+          expect(searchScene).toBeInstanceOf(Scene);
+          return Scene.searchScenesByItemId('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}');
+        }).then(function(nullScene) {
+          expect(nullScene).toEqual(null);
+          next();
+        });
+      }).then(done);
+    });
+
+    it('should be able to search for an item by Name', function(done) {
       exec(function(next) {
         var scene;
         var sceneItems;
@@ -298,7 +563,7 @@ describe('Scene', function() {
           return scene.getItems();
         }).then(function(items){
           sceneItems = items[0];
-          return Scene.searchSourcesByName(sceneItems.name);
+          return Scene.searchItemsByName(sceneItems.name);
         }).then(function(item) {
           expect(item).toBeInstanceOf(Array);
           expect(item).eachToBeInstanceOf(Item);
@@ -309,32 +574,32 @@ describe('Scene', function() {
 
     it('should be able to get empty array when searching for nonexistent name', function(done) {
       exec(function(next) {
-        Scene.searchSourcesByName('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        .then(function(sources) {
-          expect(sources).toBeEmptyArray();
+        Scene.searchItemsByName('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        .then(function(items) {
+          expect(items).toBeEmptyArray();
           next();
         });
       }).then(done);
     });
 
-    it('should be able to search for a source by a custom function', function(done) {
+    it('should be able to search for an item by a custom function', function(done) {
       exec(function(next) {
-        Scene.filterSources(function(source, resolve) {
-          source.getType().then(function(type) {
+        Scene.filterItems(function(item, resolve) {
+          item.getType().then(function(type) {
             resolve(type === XJS.ItemTypes.HTML);
           });
-        }).then(function(sources) {
-          expect(sources).toBeInstanceOf(Array);
-          expect(sources).eachToBeInstanceOf(Item);
+        }).then(function(items) {
+          expect(items).toBeInstanceOf(Array);
+          expect(items).eachToBeInstanceOf(Item);
           next();
         });
       }).then(done);
     });
 
-    it('should be able to search for a scene with a source based on a custom function', function(done) {
+    it('should be able to search for a scene with an item based on a custom function', function(done) {
       exec(function(next) {
-        Scene.filterScenesBySources(function(source, resolve) {
-          source.getType().then(function(type) {
+        Scene.filterScenesByItems(function(item, resolve) {
+          item.getType().then(function(type) {
             resolve(type === XJS.ItemTypes.HTML);
           });
         }).then(function(scene) {
@@ -482,5 +747,80 @@ describe('Scene', function() {
       //   });
       // }
     });
+
+    xdescribe('should be able to reorder items within it', function(done) {
+      beforeEach(function() {
+        spyOn(window.external, 'SourcesListOrder')
+          .and.callFake(function(view, ids) {
+          ctr++;
+
+
+          return ctr;
+        });
+      });
+          
+      xit('from an array of sources or items', function(done) {
+        // env.set(environments[1]);
+        // exec(function(next) {
+        //   var scene;
+        //   var sceneItems;
+        //   Scene.getActiveScene().then(function(result) {
+        //     scene = result;
+        //     return scene.isEmpty();
+        //   }).then(function(flag) {
+        //     expect(flag).toBeBoolean();
+        //     next();
+        //   });
+        // }).then(done);
+      });
+
+      xit('from an array of item IDs', function(done) {
+        // env.set(environments[1]);
+        // exec(function(next) {
+        //   var scene;
+        //   var sceneItems;
+        //   Scene.getActiveScene().then(function(result) {
+        //     scene = result;
+        //     return scene.isEmpty();
+        //   }).then(function(flag) {
+        //     expect(flag).toBeBoolean();
+        //     next();
+        //   });
+        // }).then(done);
+      });
+
+      xit('even for scenes not loaded in the main view', function(done) {
+        // env.set(environments[1]);
+        // exec(function(next) {
+        //   var scene;
+        //   var sceneItems;
+        //   Scene.getActiveScene().then(function(result) {
+        //     scene = result;
+        //     return scene.isEmpty();
+        //   }).then(function(flag) {
+        //     expect(flag).toBeBoolean();
+        //     next();
+        //   });
+        // }).then(done);
+      });
+
+      xit('but rejects when called from the source', function(done) {
+        // env.set(environments[1]);
+        // exec(function(next) {
+        //   var scene;
+        //   var sceneItems;
+        //   Scene.getActiveScene().then(function(result) {
+        //     scene = result;
+        //     return scene.isEmpty();
+        //   }).then(function(flag) {
+        //     expect(flag).toBeBoolean();
+        //     next();
+        //   });
+        // }).then(done);
+      });
+
+
+    });
+
   });
 });
