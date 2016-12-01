@@ -144,7 +144,7 @@ export class Scene {
       Scene._initializeScenePoolAsync().then(cnt => {
         if (sceneNum === 'i12') {
           if (Scene._scenePool[cnt]._id === 'i12') {
-            resolve(Scene._scenePool[cnt]);  
+            resolve(Scene._scenePool[cnt]);
           } else {
             reject(Error('Invalid parameter'));
           }
@@ -166,7 +166,7 @@ export class Scene {
   /**
    * return: Promise<Scene[]>
    *
-   * Asynchronous functon to get a list of scene objects with a specific name.
+   * Asynchronous function to get a list of scene objects with a specific name.
    *
    * #### Usage
    *
@@ -882,6 +882,7 @@ export class Scene {
    *      }
    *   }
    * })
+   * ```
    *
    * Still not sure with the method name
    */
@@ -1299,13 +1300,13 @@ export class Scene {
   }
 
   /**
- * param: Array<Source> | Array<string> (source IDs)
+ * param: Array<Item> | Array<string> (source IDs)
  * ```
  * return: Promise<Scene>
  * ```
  *
  * Sets the item order of the current scene. The first item in the array
- * will be on top (will cover sources below it).
+ * will be on top (will cover items below it).
  */
   setItemOrder(sources: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {

@@ -11,7 +11,8 @@ import {ItemConfigurable, IItemConfigurable} from '../items/iconfig';
 import {IItemAudio, ItemAudio} from '../items/iaudio';
 import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
 
-export class HtmlSource extends Source implements IItemConfigurable, IItemAudio {
+export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
+  IHtmlSource {
 
   // ItemConfigurable
   /**
@@ -222,4 +223,4 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio 
 
 }
 
-applyMixins(HtmlSource, [iHtmlSource, ItemConfigurable, ItemAudio, iHtmlSource])
+applyMixins(HtmlSource, [iHtmlSource, ItemConfigurable, ItemAudio])

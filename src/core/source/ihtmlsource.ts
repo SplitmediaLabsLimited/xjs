@@ -18,7 +18,7 @@ export interface IHtmlSource {
   /**
    * param: Promise<boolean>
    *
-   * return: Promise<HtmlSource>
+   * return: Promise<IHtmlSource>
    */
   enableBrowserTransparency(value: boolean): Promise<IHtmlSource>
 
@@ -34,7 +34,7 @@ export interface IHtmlSource {
   /**
    * param: Promise<Rectangle>
    *
-   * return: Promise<iHtmlSource>
+   * return: Promise<IHtmlSource>
    *
    * Gets the custom brower window size (in pixels) for the item
    */
@@ -50,7 +50,7 @@ export interface IHtmlSource {
   /**
    * param: (value:boolean)
    *
-   * return: Promise<Source>
+   * return: Promise<IHtmlSource>
    *
    * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`

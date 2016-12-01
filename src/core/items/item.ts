@@ -47,10 +47,11 @@ export enum ViewTypes {
 }
 
 /**
- * An `Item` represents an object that is used as a item on the stage.
+ * An `Item` represents a Source object that is used as an item on the stage.
  * Some possible items are games, microphones, or a webpage.
  *
  * Implements: {@link #core/IItemLayout Core/IItemLayout}
+ * {@link #core/ISource Core/ISource}
  *
  * ### Basic Usage
  *
@@ -96,6 +97,17 @@ export class Item extends Source implements IItemLayout, ISource {
    * return: Promise<ItemTypes>
    *
    * Get the type of the item
+   *
+   * #### Item Types:
+   * UNDEFINED - 0
+   * FILE - 1
+   * LIVE - 2
+   * TEXT - 3
+   * BITMAP - 4
+   * SCREEN - 5
+   * FLASHFILE - 6
+   * GAMESOURCE - 7
+   * HTML - 8
    *
    * #### Usage
    *
@@ -157,6 +169,11 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * Get the view type of the item
    *
+   * #### View types:
+   * Main - 0
+   * Preivew - 1
+   * Thumbnail - 2
+   *
    * #### Usage
    *
    * ```javascript
@@ -211,7 +228,7 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item[]>
    *
-   * Get the item list of the attached item. This is useful when an item is
+   * Get the item list of the current item instance. This is useful when an item is
    * an instance of a linked item, with multiple other items having the same
    * source.
    *
@@ -219,8 +236,12 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```javascript
    * // item pertains to an actual item instance
-   * item.getItemList().then(function(item) {
-   *   // This will fetch the item list of the current item
+   * item.getItemList().then(function(items) {
+   *   // This will fetch the linked items list of the current item
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[0].getSceneId()
+   *   }
    * }).catch(function(err) {
    *   // Handle the error here. Errors would only occur
    *   // if we try to execute this method on Extension plugins
@@ -261,12 +282,15 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * param: (options: {linked:<boolean>, scene<Scene> } | empty)
+   * param: (options: {linked?:<boolean>, scene?:<Scene> })
    * ```
    * return: Promise<Item>
    * ```
    * Duplicate current item. Will duplicate item into the current scene
-   * or specified scene
+   * or specified scene as Linked or Unlinked.
+   *
+   * Linked items would generally have a single source, and any changes in the
+   * property of an item would be applied to all linked items.
    *
    *  *Chainable*
    *
@@ -280,7 +304,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
 
-  duplicate(options: { linked: boolean, scene: Scene }): Promise<Item> {
+  duplicate(options: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       if(versionCompare(getVersion())
         .is
@@ -337,7 +361,7 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item>
    *
-   * Unlinks selected item to linked items
+   * Unlinks selected item from linked items
    *
    * #### Usage
    * ```javascript
@@ -360,21 +384,20 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Source[]>
    *
-   * Gets the Source of linked items.
+   * Gets the Source of an item, linked items would only have 1 source.
    *
    * *Chainable*
    *
    * #### Usage
    * ```javascript
-   * xjs.Item.getSource.then(function(sources){
-   *   for(var i = 0 ; i < sources.length ; i++) {
-   *     //do something with every Source here
-   *     sources[i].setName('Name')
-   *   }
+   * item.getSource().then(function(source) {
+   *   //Manipulate source here
+   *   source.setName('New Name')
    * })
+   * ```
    */
 
-  static getSource(): Promise<Source[]> {
+  getSource(): Promise<Source> {
     let uniqueSource = [];
     let uniqueObj = {};
     let _xmlparams;
@@ -447,7 +470,11 @@ export class Item extends Source implements IItemLayout, ISource {
           }
 
           Promise.all(promiseArray).then(results => {
-            resolve(results);
+            if(results.length > 1) {
+              resolve(results)
+            } else {
+              resolve(results[0]);
+            }
           });
 
         })
