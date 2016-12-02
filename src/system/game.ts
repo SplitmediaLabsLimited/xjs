@@ -5,6 +5,7 @@ import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
 import {App as iApp} from '../internal/app';
+import {Environment} from '../core/environment';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class'}
@@ -326,9 +327,43 @@ export class Game implements Addable {
 
       Game._autoDetect.addToScene = function() {
         return new Promise(resolve => {
-          let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"/>';
-          iApp.callFunc('additem', adstring).then(() => {
-            resolve(true);
+          var defposPromise;
+          if (Environment.isSourcePlugin()) {
+            defposPromise = new Promise(defposResolve => {
+              iApp.get('presetconfig:-1').then(function(presetConfig) {
+                let placementJSON = JXON.parse(presetConfig);
+                defposResolve(placementJSON['defpos']);
+              });
+            });
+          } else {
+            defposPromise = new Promise(defposResolve => {
+              iApp.get('preset:0').then(function(main) {
+                return iApp.get('presetconfig:' + main);
+              }).then(function(presetConfig) {
+                let placementJSON = JXON.parse(presetConfig);
+                defposResolve(placementJSON['defpos']);
+              });
+            });
+          }
+
+          defposPromise.then(function(defpos) {
+            let posString;
+            if (defpos === '0') {
+              posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+            } else if (defpos === '1') {
+              posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+            }  else if (defpos === '2') {
+              posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+            } else if (defpos === '3') {
+              posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+            } else {
+              posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+            }
+
+            let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
+            iApp.callFunc('additem', adstring).then(() => {
+              resolve(true);
+            });
           });
         });
       };
