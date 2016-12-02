@@ -297,7 +297,7 @@ describe('Scene', function() {
       }).then(done);
     });
 
-    describe('but not', function(done) {
+    describe('but not', function() {
       it('for any other parameter', function(done) {
         exec(function(next) {
           Scene.setActiveScene(true)
