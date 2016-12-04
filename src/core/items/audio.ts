@@ -2,11 +2,10 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {ISourceAudio, SourceAudio} from '../source/iaudio';
 import {Scene} from '../scene';
 import {Item} from './item';
 import {Environment} from '../environment';
-import {AudioSource} from '../source/audio';
 
 /**
  * The AudioItem class represents an audio device that has been added
@@ -14,7 +13,7 @@ import {AudioSource} from '../source/audio';
  *
  * Inherits from: {@link #core/Item Core/Item}
  *
- * Implements: {@link #core/IItemAudio Core/IItemAudio}
+ * Implements: {@link #core/ISourceAudio Core/ISourceAudio}
  *
  * ### Basic Usage
  *
@@ -36,7 +35,7 @@ import {AudioSource} from '../source/audio';
  *  All methods marked as *Chainable* resolve with the original `AudioItem`
  *  instance.
  */
-export class AudioItem extends Item implements IItemAudio {
+export class AudioItem extends Item implements ISourceAudio {
 
   /**
    * return: Promise<boolean>
@@ -161,7 +160,7 @@ export class AudioItem extends Item implements IItemAudio {
    *
    * *Chainable.*
    */
-  setAudioOffset(value: number): Promise<ItemAudio> {
+  setAudioOffset(value: number): Promise<SourceAudio> {
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -176,28 +175,28 @@ export class AudioItem extends Item implements IItemAudio {
     });
   }
 
-  // ItemAudio
+  // SourceAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/ISourceAudio#isMute isMute} */
   isMute:   () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/ISourceAudio#setMute setMute} */
   setMute:  (value: boolean) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(AudioItem, [ItemAudio]);
+applyMixins(AudioItem, [SourceAudio]);

@@ -16,16 +16,29 @@ import {iSource, ISource} from '../source/isource'
 
 /**
  * A Source represents an object of an Item that is used on the stage.
+ * Manipulating Source specific properties would render changes to all
+ * items of that source.
  *
  * Implements: @{link #core/ISource Core/ISource}
  *
  * ### Basic Usage
  *
+ * All methods marked as *Chainable* resolve with the original `Source` instance.
+ * This allows you to perform sequential operations correctly:
+ *
  * ```javascript
  * var xjs = require('xjs');
  * var Source = xjs.Source;
  *
- *
+ * xjs.ready()
+ *    .then(Source.getItemList)
+ *    .then(function(items) {
+ *     return items[0].getSource()
+ *  }).then(function(source){
+ *     //Manipulate Source here
+ *     source.setName('New Name')
+ *  })
+ * ```
  */
 
 export class Source implements ISource{
@@ -83,7 +96,7 @@ export class Source implements ISource{
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
+        (Environment.isSourcePlugin() || Environment.isSourceProps()) &&
         versionCompare(getVersion())
           .is
           .greaterThan(minVersion)
@@ -95,7 +108,7 @@ export class Source implements ISource{
             reject(Error('Cannot get item list'))
           }
         });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+      } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
         Scene.searchItemsById(iItem.getBaseId()).then(item => {
           resolve(item);
         });
@@ -136,7 +149,7 @@ export class Source implements ISource{
           itemArray.push(item);
           resolve(itemArray);
         });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+      } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];
           const itemsArray = itemlist.split(',');
@@ -158,8 +171,6 @@ export class Source implements ISource{
   }
 
   // Shared with Item
-  //
-
   /**
    * param: (value: string)
    * ```

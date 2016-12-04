@@ -9,7 +9,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {ISourceAudio, SourceAudio} from '../source/iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -31,7 +31,7 @@ import {System} from '../../system/system';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/ISourceAudio Core/ISourceAudio},
  * {@link #core/IItemEffect Core/IItemEffect}
  *
  * ### Basic Usage
@@ -57,7 +57,7 @@ import {System} from '../../system/system';
  *  instance.
  */
 export class CameraItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, ISourceAudio, IItemEffect {
   protected _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",
     hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
@@ -788,27 +788,27 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<CameraItem>;
 
-  // ItemAudio
+  // SourceAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/ISourceAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<CameraItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/ISourceAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<CameraItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<CameraItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -893,4 +893,4 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(CameraItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemAudio, ItemEffect]);
+  SourceAudio, ItemEffect]);

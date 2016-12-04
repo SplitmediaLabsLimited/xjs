@@ -7,12 +7,12 @@ import {Rectangle} from '../../util/rectangle';
 import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 import {Item} from '../items/item';
-import {ItemConfigurable, IItemConfigurable} from '../items/iconfig';
-import {IItemAudio, ItemAudio} from '../items/iaudio';
-import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
+import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {ISourceAudio, SourceAudio} from './iaudio';
+import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
-export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
-  IHtmlSource {
+export class HtmlSource extends Source implements IItemConfigurable, ISourceAudio,
+  ISourceHtml {
 
   // ItemConfigurable
   /**
@@ -38,28 +38,28 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
 
   // ItemAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/ISourceAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/ISourceAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
-  //iHtmlSource
+  //iSourceHtml
   /**
    * return: Promise<boolean>
    *
@@ -93,7 +93,7 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   /**
    * param: Promise<Rectangle>
    * ```
-   * return: Promise<IHtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Sets the custom browser window size for the item
@@ -151,7 +151,7 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   /**
    * param: (js: string, refresh: boolean = false)
    * ```
-   * return: Promise<IHtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Sets the javascript commands to be executed on item
@@ -172,7 +172,7 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<IiHtmlSource>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables execution of the set BrowserJs upon load.
@@ -193,7 +193,7 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   /**
    * param: (value: string)
    * ```
-   * return: Promise<IiHtmlSource>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom CSS to be applied to the document upon loading
@@ -212,7 +212,7 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
   /**
    * param: (value: boolean)
    * ```
-   * return: Promise<IiHtmlSource>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Enables or disables application of custom CSS to the document
@@ -223,4 +223,4 @@ export class HtmlSource extends Source implements IItemConfigurable, IItemAudio,
 
 }
 
-applyMixins(HtmlSource, [iHtmlSource, ItemConfigurable, ItemAudio])
+applyMixins(HtmlSource, [iSourceHtml, ItemConfigurable, SourceAudio])

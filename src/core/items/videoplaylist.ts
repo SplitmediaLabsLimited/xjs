@@ -6,7 +6,7 @@ import {Item as iItem} from '../../internal/item';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {ItemConfigurable, IItemConfigurable} from '../source/iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';

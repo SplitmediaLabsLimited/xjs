@@ -112,7 +112,7 @@ export class Dialog{
    * *Chainable.*
    */
   static createAutoDialog(url: string): Dialog {
-    if (Environment.isSourceConfig()) {
+    if (Environment.isSourceProps()) {
       throw new Error('Auto dialogs are not available for config windows.');
     } else {
       let dialog = new Dialog();
@@ -305,7 +305,7 @@ export class Dialog{
   }
 }
 
-if (Environment.isSourceConfig() || Environment.isExtension()) {
+if (Environment.isSourceProps() || Environment.isExtension()) {
   window.OnDialogResult = function(result) {
     document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
       detail: result }));

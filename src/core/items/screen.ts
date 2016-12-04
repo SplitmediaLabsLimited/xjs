@@ -18,7 +18,7 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
-import {ScreenSource} from '../source/screen'
+import {ISourceScreen, iSourceScreen} from '../source/iscreen';
 
 /**
  * The ScreenItem class represents a screen capture item.
@@ -35,309 +35,78 @@ import {ScreenSource} from '../source/screen'
  *  instance.
  */
 export class ScreenItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect {
-    /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item captures a window based on
-   * the window's title.
+  IItemChroma, IItemTransition, IItemEffect, ISourceScreen {
+
+  //Screen Source
+  /**
+   * See {@link #core/ScreenSource#isStickToTitle isStickToTitle}
    */
-  isStickToTitle(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
-        resolve(val === '0');
-      });
-    });
-  }
+  isStickToTitle: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Set the Screen Capture to capture the window based on the window title.
-   * Useful when capturing programs with multiple tabs, for you to only
-   * capture a particular tab.
+   * See {@link #core/ScreenSource#setStickToTitle setStickToTitle}
    */
-  setStickToTitle(value: boolean): Promise<ScreenSource> {
-    return new Promise(resolve => {
-      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
-        .then(() => {
-          resolve(this);
-        });
-    });
-  }
+  setStickToTitle: (value: boolean) => Promise<ScreenItem>
 
   /**
-   * return Promise<boolean>
-   *
-   * Checks if the Screen Capture layered window is selected.
+   * See {@link #core/ScreenSource#getCaptureLayered getCaptureLayered}
    */
-  getCaptureLayered(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:ScrCapLayered', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  getCaptureLayered: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Screen Capture Layered window
+   * See {@link #core/ScreenSource#setCaptureLayered setCaptureLayered}
    */
-  setCaptureLayered(value: boolean): Promise<ScreenSource> {
-    return new Promise(resolve => {
-      iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id).then(val => {
-        resolve(this);
-      });
-    });
-  }
+  setCaptureLayered: (value: boolean) => Promise<ScreenItem>
 
   /**
-   * return Promise<boolean>
-   *
-   * Checks if the Exclusive Window capture is selected.
+   * See {@link #core/ScreenSource#getOptimizedCapture getOptimizedCapture}
    */
-  getOptimizedCapture(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  getOptimizedCapture: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Exclusive Window capture.
+   * See {@link #core/ScreenSource#setOptimizedCapture setOptimizedCapture}
    */
-  setOptimizedCapture(value: boolean): Promise<ScreenSource> {
-    return new Promise(resolve => {
-      iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id).then(val => {
-        resolve(this);
-      });
-    });
-  }
-
+  setOptimizedCapture:(value: boolean) => Promise<ScreenItem>
 
   /**
-   * return Promise<boolean>
-   *
-   * Checks if the Show mouse clicks is selected.
-   *
+   * See {@link #core/ScreenSource#getShowMouseClicks getShowMouseClicks}
    */
-  getShowMouseClicks(): Promise<boolean> {
-    return new Promise(resolve => {
-    iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  getShowMouseClicks: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Show mouse clicks.
+   * See {@link #core/ScreenSource#setShowMouseClicks setShowMouseClicks}
    */
-  setShowMouseClicks(value: boolean): Promise<ScreenSource> {
-    return new Promise(resolve => {
-    iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id).then(val => {
-        resolve(this)
-      });
-    });
-  }
+  setShowMouseClicks: (value: boolean) => Promise<ScreenItem>
 
   /**
-   * return Promise<boolean>
-   *
-   * Checks if the Show mouse is selected.
-   *
+   * See {@link #core/ScreenSource#getShowMouse getShowMouse}
    */
-  getShowMouse(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  getShowMouse: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Show Mouse.
+   * See {@link #core/ScreenSource#setShowMouse setShowMouse}
    */
-  setShowMouse(value: boolean): Promise<ScreenSource> {
-    return new Promise(resolve => {
-      iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id).then(val => {
-        if (val === true) {
-          iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id);
-        }
-        resolve(this);
-      });
-    });
-  }
+  setShowMouse: (value: boolean) => Promise<ScreenItem>
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
-   * object.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See {@link #core/ScreenSource#getCaptureArea getCaptureArea}
    */
-   getCaptureArea(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      this.getValue().then(val => {
-        if (!(val instanceof XML)) {
-          resolve(Rectangle.fromCoordinates(0, 0, 0, 0));
-        } else {
-          let _value: JXON = JXON.parse(val);
-          resolve(Rectangle.fromCoordinates(
-            Number(_value['left']),
-            Number(_value['top']),
-            Number(_value['width']) + Number(_value['left']),
-            Number(_value['height']) + Number(_value['top'])
-          ));
-        }
-      });
-    });
-  }
+  getCaptureArea: () => Promise<Rectangle>
 
   /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<ScreenItem>
-   * ```
-   *
-   * Sets the Window Capture Area of the Screen Capture Item.
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See {@link #core/ScreenSource#setCaptureArea setCaptureArea}
    */
-  setCaptureArea(dimension: Rectangle): Promise<ScreenItem> {
-    return new Promise(resolve => {
-      this.getValue().then(val => {
-        return new Promise(iResolve => {
-          iItem.get('screenresolution', this._id).then(res => {
-            let _res = res.split(',');
-            iResolve({
-              value : val,
-              res : Rectangle.fromCoordinates(
-                Number(_res[0]),
-                Number(_res[1]),
-                Number(_res[2]),
-                Number(_res[3])
-              )
-            });
-          });
-        });
-      }).then((obj: { value: any, res: Rectangle }) => {
-        let _config = new JXON();
-
-        if (!(obj.value instanceof XML)) {
-          _config['tag'] = 'screen';
-          _config['module'] = '';
-          _config['window'] = '';
-          _config['hwnd'] = '0';
-          _config['wclient'] = '0';
-          _config['left'] = '0';
-          _config['top'] = '0';
-          _config['width'] = '0';
-          _config['height'] = '0';
-        } else {
-          _config = JXON.parse(obj.value);
-        }
-
-        _config['left'] = dimension.getLeft() >= obj.res.getLeft() ?
-          dimension.getLeft() : Number(_config['left']) >= obj.res.getLeft() ?
-            _config['left'] : obj.res.getLeft();
-        _config['top'] = dimension.getTop() >= obj.res.getTop() ?
-          dimension.getTop() : Number(_config['top']) >= obj.res.getTop() ?
-            _config['top'] : obj.res.getTop();
-        _config['width'] = dimension.getWidth() <= obj.res.getWidth() ?
-          dimension.getWidth() : Number(_config['width']) <=
-            obj.res.getWidth() ? _config['width'] : obj.res.getWidth();
-        _config['height'] = dimension.getHeight() <= obj.res.getHeight() ?
-          dimension.getHeight() : Number(_config['height']) <=
-            obj.res.getHeight() ? _config['height'] : obj.res.getHeight();
-
-        this.setValue(XML.parseJSON(_config)).then(() => {
-          resolve(this);
-        });
-      });
-    });
-  }
+  setCaptureArea: (dimension: Rectangle) => Promise<ScreenItem>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item only captures the
-   * Client area (does not capture the title bar, menu bar, window border, etc.)
+   * See {@link #core/ScreenSource#isClientArea isClientArea}
    */
-  isClientArea(): Promise<boolean> {
-    return new Promise(resolve => {
-      this.getValue().then(val => {
-        if (!(val instanceof XML)) {
-          resolve(false);
-        } else {
-          let _value: JXON = JXON.parse(val);
-          resolve(_value['wclient'] === '1');
-        }
-      });
-    });
-  }
+  isClientArea: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<ScreenItem>
-   * ```
-   *
-   * Set the Screen Capture to capture the Client area only or include
-   * the titlebar, menu bar, window border, etc.
+   * See {@link #core/ScreenSource#setClientArea setClientArea}
    */
-  setClientArea(value: boolean): Promise<ScreenItem> {
-    return new Promise(resolve => {
-      this.getValue().then(val => {
-        let _config = new JXON();
-
-        if (!(val instanceof XML)) {
-          _config['tag'] = 'screen';
-          _config['module'] = '';
-          _config['window'] = '';
-          _config['hwnd'] = '0';
-          _config['wclient'] = '0';
-          _config['left'] = '0';
-          _config['top'] = '0';
-          _config['width'] = '0';
-          _config['height'] = '0';
-        } else {
-          _config = JXON.parse(val);
-        }
-
-        _config['wclient'] = (value ? '1' : '0');
-
-        this.setValue(XML.parseJSON(_config)).then(() => {
-          resolve(this);
-        })
-      });
-    });
-  }
+  setClientArea: (value: boolean) => Promise<ScreenItem>
 
   // ItemLayout
 
@@ -782,4 +551,4 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(ScreenItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemEffect]);
+  ItemEffect, iSourceScreen]);

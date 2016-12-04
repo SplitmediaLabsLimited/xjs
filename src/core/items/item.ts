@@ -28,6 +28,11 @@ import {ScreenSource} from '../source/screen';
 import {ImageSource} from '../source/image';
 import {MediaSource} from '../source/media';
 
+/**
+ * Used by items to define its type.
+ *
+ * Check `getType()` method of {@link #core/Item#getType Core/Item}
+ */
 export enum ItemTypes {
   UNDEFINED,
   FILE,
@@ -40,6 +45,11 @@ export enum ItemTypes {
   HTML
 }
 
+/**
+ * Used by items to define its view type.
+ *
+ * Check `getView()` method of {@link #core/Item#getView Core/Item}
+ */
 export enum ViewTypes {
   MAIN,
   PREVIEW,
@@ -94,20 +104,9 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<ItemTypes>
+   * return: Promise<ItemType>
    *
    * Get the type of the item
-   *
-   * #### Item Types:
-   * UNDEFINED - 0
-   * FILE - 1
-   * LIVE - 2
-   * TEXT - 3
-   * BITMAP - 4
-   * SCREEN - 5
-   * FLASHFILE - 6
-   * GAMESOURCE - 7
-   * HTML - 8
    *
    * #### Usage
    *
@@ -168,11 +167,6 @@ export class Item extends Source implements IItemLayout, ISource {
    * return: Promise<ViewTypes>
    *
    * Get the view type of the item
-   *
-   * #### View types:
-   * Main - 0
-   * Preivew - 1
-   * Thumbnail - 2
    *
    * #### Usage
    *
@@ -361,7 +355,10 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item>
    *
-   * Unlinks selected item from linked items
+   * Unlinks selected item from linked items.
+   *
+   * Unlinking an item would make it independent of the changes made on other
+   * similar items.
    *
    * #### Usage
    * ```javascript
@@ -382,7 +379,7 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<Source[]>
+   * return: Promise<Source>
    *
    * Gets the Source of an item, linked items would only have 1 source.
    *
@@ -410,7 +407,7 @@ export class Item extends Source implements IItemLayout, ISource {
         //do something or not: temp error
         reject(Error('Does not work here!'))
       } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceConfig())) {
+        (Environment.isSourcePlugin() || Environment.isSourceProps())) {
         // do other here
         Item.getItemList().then((items) => {
           for(var i=0; i< items.length; i++) {

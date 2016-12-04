@@ -3,7 +3,7 @@
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 
-export interface IItemAudio {
+export interface ISourceAudio {
 
   /**
    * return: Promise<number>
@@ -19,7 +19,7 @@ export interface IItemAudio {
    *
    * *Chainable.*
    */
-  setVolume(value: number): Promise<IItemAudio>;
+  setVolume(value: number): Promise<ISourceAudio>;
 
   /**
    * return: Promise<boolean>
@@ -35,7 +35,7 @@ export interface IItemAudio {
    *
    * *Chainable.*
    */
-  setMute(value: boolean): Promise<IItemAudio>;
+  setMute(value: boolean): Promise<ISourceAudio>;
 
   /**
    * return: Promise<boolean>
@@ -51,7 +51,7 @@ export interface IItemAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyAudio(value: boolean): Promise<IItemAudio>;
+  setStreamOnlyAudio(value: boolean): Promise<ISourceAudio>;
 
   /**
    * return: Promise<boolean>
@@ -61,7 +61,7 @@ export interface IItemAudio {
   isAudioAvailable(): Promise<boolean>;
 }
 
-export class ItemAudio implements IItemAudio {
+export class SourceAudio implements ISourceAudio {
   private _id: string;
   protected _isItemCall: boolean;
 
@@ -73,7 +73,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setVolume(value: number): Promise<ItemAudio> {
+  setVolume(value: number): Promise<SourceAudio> {
     return new Promise(resolve => {
       value = value < 0 ? 0 : value > 100 ? 100 : value;
       iItem.set('prop:volume', String(value),
@@ -91,7 +91,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setMute(value: boolean): Promise<ItemAudio> {
+  setMute(value: boolean): Promise<SourceAudio> {
     return new Promise(resolve => {
       iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -107,7 +107,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setStreamOnlyAudio(value: boolean): Promise<ItemAudio> {
+  setStreamOnlyAudio(value: boolean): Promise<SourceAudio> {
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);

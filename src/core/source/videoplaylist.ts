@@ -4,7 +4,7 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {IO} from '../../util/io';
-import {ItemConfigurable, IItemConfigurable} from '../items/iconfig';
+import {ItemConfigurable, IItemConfigurable} from './iconfig';
 
 export class VideoPlaylistSource extends Source implements IItemConfigurable{
   // ItemConfigurable
