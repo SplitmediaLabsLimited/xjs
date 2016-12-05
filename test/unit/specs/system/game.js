@@ -174,23 +174,23 @@ describe('System', function() {
     it('position when added depends on default add position', function(done) {
       defpos = 0;
       autoDetectGame.addToScene().then(function() {
-        expect(itemPosition === 'top-left');
+        expect(itemPosition).toEqual('top-left');
         defpos = 1;
         return autoDetectGame.addToScene();
       }).then(function() {
-        expect(itemPosition === 'top-right');
+        expect(itemPosition).toEqual('top-right');
         defpos = 2;
         return autoDetectGame.addToScene();
       }).then(function() {
-        expect(itemPosition === 'bottom-left');
+        expect(itemPosition).toEqual('bottom-left');
         defpos = 3;
         return autoDetectGame.addToScene();
       }).then(function() {
-        expect(itemPosition === 'bottom-right');
+        expect(itemPosition).toEqual('bottom-right');
         defpos = 4;
         return autoDetectGame.addToScene();
       }).then(function() {
-        expect(itemPosition === 'center');
+        expect(itemPosition).toEqual('center');
         done()
       });
     });
