@@ -89,9 +89,6 @@ export class Source implements ISource{
    */
   static getCurrentSource(): Promise<Source> {
     return new Promise((resolve, reject) => {
-      console.warn('Warning! getCurrentSource is deprecated and will be ' +
-        'removed soon. Please use getItemList instead. (Only works for ' +
-        'XSplit Broadcaster versions above 2.8.xxxx.xxxx');
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
@@ -103,14 +100,14 @@ export class Source implements ISource{
       ) {
         Source.getItemList().then(items => {
           if (items.length > 0) {
-            resolve(items[0]);
+            resolve(items[0].getSource());
           } else {
             reject(Error('Cannot get item list'))
           }
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          resolve(item);
+        Scene.searchSourcesById(iItem.getBaseId()).then(source => {
+          resolve(source);
         });
       }
     });
@@ -171,6 +168,7 @@ export class Source implements ISource{
   }
 
   // Shared with Item
+
   /**
    * param: (value: string)
    * ```
@@ -363,6 +361,10 @@ export class Source implements ISource{
    */
   getSourceId: () => Promise<string>
 
+  /**
+   * See {@link #core/Item#getItemList getItemList}
+   */
+  getItemList: () => Promise<Item[]>
 
   /**
    *  return: Promise<Source>

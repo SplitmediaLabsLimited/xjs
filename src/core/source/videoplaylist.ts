@@ -4,30 +4,30 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {IO} from '../../util/io';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {SourceConfigurable, ISourceConfigurable} from './iconfig';
 
-export class VideoPlaylistSource extends Source implements IItemConfigurable{
-  // ItemConfigurable
+export class VideoPlaylistSource extends Source implements ISourceConfigurable{
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 }
 
-applyMixins(VideoPlaylistSource, [ItemConfigurable])
+applyMixins(VideoPlaylistSource, [SourceConfigurable])

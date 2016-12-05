@@ -60,7 +60,7 @@ export interface ISourceGame {
   getOfflineImage(): Promise<string>
 }
 
-export class iSourceGame implements ISourceGame, ISource {
+export class iSourceGame implements ISourceGame {
   protected _id: string;
   protected _type: ItemTypes;
   protected _value: any;
@@ -147,23 +147,8 @@ export class iSourceGame implements ISourceGame, ISource {
     });
   }
 
-  setName: (value: string) => Promise<iSourceGame>
-
-  getName: () => Promise<string>
-
-  setCustomName: () => Promise<iSourceGame>
-
-  getCustomName: ()  => Promise<string>
-
   getValue: () => Promise<string | XML>
 
   setValue: (value: string | XML) => Promise<iSourceGame>
 
-  getKeepLoaded: () => Promise<boolean>
-
-  setKeepLoaded: (value: boolean) => Promise<iSourceGame>
-
-  getSourceId: () => Promise<string>
-
-  refresh: () => Promise<iSourceGame>
 }

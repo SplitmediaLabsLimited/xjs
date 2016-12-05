@@ -6,7 +6,7 @@ import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger'
 
-export interface IItemConfigurable {
+export interface ISourceConfigurable {
 
   /**
    * return: Promise<any>
@@ -43,7 +43,7 @@ export interface IItemConfigurable {
   applyConfig(configObj: any);
 }
 
-export class ItemConfigurable {
+export class SourceConfigurable {
   private _id: string;
   private _srcId: string;
   protected _isItemCall: boolean;

@@ -6,7 +6,7 @@ import {Item as iItem} from '../../internal/item';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from '../source/iconfig';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -25,7 +25,7 @@ import {IO} from '../../util/io';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -46,7 +46,7 @@ import {IO} from '../../util/io';
 
 
 export class VideoPlaylistItem extends Item implements IItemLayout,
-  IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
+  IItemColor, IItemChroma, IItemTransition, ISourceConfigurable {
 
     /**
    * return: Promise<string>
@@ -540,29 +540,29 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   setTransitionTime: (value: number) => Promise<VideoPlaylistItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
 }
 
 applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable])
+  SourceConfigurable])

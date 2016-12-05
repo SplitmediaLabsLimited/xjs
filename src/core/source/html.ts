@@ -7,32 +7,32 @@ import {Rectangle} from '../../util/rectangle';
 import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 import {Item} from '../items/item';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {SourceConfigurable, ISourceConfigurable} from './iconfig';
 import {ISourceAudio, SourceAudio} from './iaudio';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
-export class HtmlSource extends Source implements IItemConfigurable, ISourceAudio,
+export class HtmlSource extends Source implements ISourceConfigurable, ISourceAudio,
   ISourceHtml {
 
-  // ItemConfigurable
+  // SourceConfigurable
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
 
   /**
    *
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<HtmlSource>;
 
@@ -223,4 +223,4 @@ export class HtmlSource extends Source implements IItemConfigurable, ISourceAudi
 
 }
 
-applyMixins(HtmlSource, [iSourceHtml, ItemConfigurable, SourceAudio])
+applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, SourceAudio])

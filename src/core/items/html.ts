@@ -11,7 +11,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from '../source/iconfig';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
 import {ISourceAudio, SourceAudio} from '../source/iaudio';
 import {Item} from './item';
 import {Source} from '../source/source'
@@ -32,7 +32,7 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
  * {@link #core/ISourceAudio Core/ISourceAudio},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -57,7 +57,7 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemConfigurable, ISourceAudio, IItemEffect,
+  IItemChroma, IItemTransition, ISourceConfigurable, ISourceAudio, IItemEffect,
   ISourceHtml {
   /**
    * param: (func: string, arg: string)
@@ -553,25 +553,25 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<HtmlItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<HtmlItem>;
 
@@ -680,4 +680,4 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, SourceAudio, ItemEffect]);
+  SourceConfigurable, SourceAudio, ItemEffect]);

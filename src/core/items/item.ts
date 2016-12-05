@@ -220,62 +220,6 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<Item[]>
-   *
-   * Get the item list of the current item instance. This is useful when an item is
-   * an instance of a linked item, with multiple other items having the same
-   * source.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * // item pertains to an actual item instance
-   * item.getItemList().then(function(items) {
-   *   // This will fetch the linked items list of the current item
-   *   for (var i = 0 ; i < items.length ; i++) {
-   *     // Manipulate each item here
-   *     items[0].getSceneId()
-   *   }
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
-   * ```
-   */
-  getItemList(): Promise<Item[]> {
-    return new Promise((resolve, reject) => {
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(this._id).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
-      } else {
-        iItem.get('itemlist', this._id).then(itemlist => {
-          const promiseArray: Promise<Item>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
-
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
-          });
-        });
-      }
-    })
-  }
-
-  /**
    * param: (options: {linked?:<boolean>, scene?:<Scene> })
    * ```
    * return: Promise<Item>
@@ -377,6 +321,31 @@ export class Item extends Source implements IItemLayout, ISource {
       })
     })
   }
+
+  /**
+   * return: Promise<Item[]>
+   *
+   * Get the item list of the current item instance. This is useful when an item is
+   * an instance of a linked item, with multiple other items having the same
+   * source.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * // item pertains to an actual item instance
+   * item.getItemList().then(function(items) {
+   *   // This will fetch the linked items list of the current item
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[0].getSceneId()
+   *   }
+   * }).catch(function(err) {
+   *   // Handle the error here. Errors would only occur
+   *   // if we try to execute this method on Extension plugins
+   * });
+   * ```
+   */
+  getItemList: () => Promise<Item[]>
 
   /**
    * return: Promise<Source>

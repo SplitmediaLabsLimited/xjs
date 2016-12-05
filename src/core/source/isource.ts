@@ -84,6 +84,15 @@ export interface ISource {
    * Refreshes Specified Item
    */
   refresh(): Promise<ISource>
+
+  /**
+   * return: Promise<ISource[]>
+   *
+   * Get the item list of the current item instance. This is useful when an item is
+   * an instance of a linked item, with multiple other items having the same
+   * source.
+   */
+  getItemList(): Promise<ISource[]>
 }
 
 /**
@@ -274,4 +283,38 @@ export class iSource implements ISource{
       });
     });
   }
+
+  getItemList(): Promise<iSource[]> {
+    return new Promise((resolve, reject) => {
+      if (
+        versionCompare(getVersion())
+          .is
+          .lessThan(minVersion)
+      ) {
+        Scene.searchItemsById(this._id).then(item => {
+          const itemArray = [];
+          itemArray.push(item);
+          resolve(itemArray);
+        });
+      } else {
+        iItem.get('itemlist', this._id).then(itemlist => {
+          const promiseArray: Promise<iSource>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              Scene.searchItemsById(itemId).then(item => {
+                itemResolve(item);
+              }).catch(() => itemResolve(null));
+            }));
+          });
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results.filter(res => res !== null));
+          });
+        });
+      }
+    })
+  }
+
 }

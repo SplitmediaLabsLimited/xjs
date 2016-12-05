@@ -142,7 +142,7 @@ export interface ISourceScreen {
   setClientArea(value: boolean): Promise<ISourceScreen>
 }
 
-export class iSourceScreen implements ISource, ISourceScreen {
+export class iSourceScreen implements ISourceScreen {
   protected _id: string;
   protected _value: any;
 
@@ -456,23 +456,8 @@ export class iSourceScreen implements ISource, ISourceScreen {
     });
   }
 
-  setName: (value: string) => Promise<iSourceScreen>
-
-  getName: () => Promise<string>
-
-  setCustomName: () => Promise<iSourceScreen>
-
-  getCustomName: ()  => Promise<string>
-
   getValue: () => Promise<string | XML>
 
   setValue: (value: string | XML) => Promise<iSourceScreen>
 
-  getKeepLoaded: () => Promise<boolean>
-
-  setKeepLoaded: (value: boolean) => Promise<iSourceScreen>
-
-  getSourceId: () => Promise<string>
-
-  refresh: () => Promise<iSourceScreen>
 }
