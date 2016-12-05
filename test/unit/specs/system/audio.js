@@ -49,12 +49,12 @@ describe('Audio ===', function() {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
             if(funcName === 'wasapienum') {
-              var randomNumber = Math.floor(Math.random()*1000);
+              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, decodeURIComponent(mockWasapi));
+                window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
               }, 10);
-              return randomNumber;
+              return asyncId;
             }
           });
       }
@@ -99,13 +99,13 @@ describe('Audio ===', function() {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
             if(funcName === 'wasapienum') {
-              var randomNumber = Math.floor(Math.random()*1000);
+              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber,
+                window.OnAsyncCallback(asyncId,
                   decodeURIComponent(mockWasapi));
               }, 10);
-              return randomNumber;
+              return asyncId;
             }
           });
       }
@@ -142,13 +142,13 @@ describe('Audio ===', function() {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
             if(funcName === 'wasapienum') {
-              var randomNumber = Math.floor(Math.random()*1000);
+              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber,
+                window.OnAsyncCallback(asyncId,
                   decodeURIComponent(mockWasapi));
               }, 10);
-              return randomNumber;
+              return asyncId;
             }
           });
       }

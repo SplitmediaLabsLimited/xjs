@@ -14,10 +14,10 @@ describe('Camera', function() {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
             if(funcName === 'dshowenum:vsrc') {
-              var randomNumber=Math.floor(Math.random()*1000);
+              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, '<list>' +
+                window.OnAsyncCallback(asyncId, '<list>' +
                   '<dev disp="@device:sw:{860BB310-5D01-11D0-BD3B-00A0C911CE86}' +
                   '\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}"' +
                   ' name="TriDef SmartCam"/>' +
@@ -36,7 +36,7 @@ describe('Camera', function() {
                   ' name="XSplitBroadcaster"/></list>');
               }, 10);
 
-              return randomNumber;
+              return asyncId;
             }
           });
       }
@@ -91,17 +91,17 @@ describe('Camera', function() {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
             if(funcName === 'dshowenum:vsrc') {
-              var randomNumber=Math.floor(Math.random()*1000);
+              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
               setTimeout(function() {
-                window.OnAsyncCallback(randomNumber, '<list>' +
+                window.OnAsyncCallback(asyncId, '<list>' +
                   '<dev disp="@device:pnp:\\\\?\\usb#vid_046d&amp;pid_082c' +
                   '&amp;mi_02#6&amp;37c59c5d&amp;0&amp;0002#' +
                   '{65e8773d-8f56-11d0-a3b9-00a0c9223196}\\global"' +
                   ' name="HD Webcam C615"/></list>');
               }, 10);
 
-              return randomNumber;
+              return asyncId;
             }
           });
       }
