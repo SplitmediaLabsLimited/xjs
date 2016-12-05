@@ -48,14 +48,13 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             if(funcName === 'wasapienum') {
-              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
               }, 10);
-              return asyncId;
             }
+            return asyncId;
           });
       }
       promise = System.getAudioDevices();
@@ -98,15 +97,14 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             if(funcName === 'wasapienum') {
-              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId,
                   decodeURIComponent(mockWasapi));
               }, 10);
-              return asyncId;
             }
+            return asyncId;
           });
       }
     });
@@ -141,15 +139,14 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             if(funcName === 'wasapienum') {
-              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId,
                   decodeURIComponent(mockWasapi));
               }, 10);
-              return asyncId;
             }
+            return asyncId;
           });
       }
       promise = System.getAudioDevices();

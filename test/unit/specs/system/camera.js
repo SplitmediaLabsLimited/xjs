@@ -13,9 +13,8 @@ describe('Camera', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             if(funcName === 'dshowenum:vsrc') {
-              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, '<list>' +
                   '<dev disp="@device:sw:{860BB310-5D01-11D0-BD3B-00A0C911CE86}' +
@@ -35,9 +34,8 @@ describe('Camera', function() {
                   '\\{VHSplitProc}_XSplitBroadcaster_1_staticsource_VIDEO"' +
                   ' name="XSplitBroadcaster"/></list>');
               }, 10);
-
-              return asyncId;
             }
+            return asyncId;
           });
       }
       promise = System.getCameraDevices();
@@ -90,9 +88,8 @@ describe('Camera', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             if(funcName === 'dshowenum:vsrc') {
-              var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, '<list>' +
                   '<dev disp="@device:pnp:\\\\?\\usb#vid_046d&amp;pid_082c' +
@@ -100,9 +97,8 @@ describe('Camera', function() {
                   '{65e8773d-8f56-11d0-a3b9-00a0c9223196}\\global"' +
                   ' name="HD Webcam C615"/></list>');
               }, 10);
-
-              return asyncId;
             }
+            return asyncId;
           });
       }
       promise = System.getCameraDevices();
