@@ -11,12 +11,12 @@ describe('Url', function() {
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName) {
           if(funcName === 'addurl') {
-            var randomNumber = Math.floor(Math.random()*1000);
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
             setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '0');
+              window.OnAsyncCallback(asyncId, '0');
             }, 10);
-            return randomNumber;
+            return asyncId;
           }
         });
     }
@@ -25,6 +25,7 @@ describe('Url', function() {
   describe('should add valid URL sources', function() {
     it('with HTTP', function(done) {
       var url = new Url('http://www.xsplit.com').addToScene().then(function() {
+        expect(true).toBe(true);
         done();
       }).catch(function(error) {
         done.fail('Adding HTTP source failed.');
@@ -33,6 +34,7 @@ describe('Url', function() {
 
     it('with HTTPS', function(done) {
       var url = new Url('https://www.xsplit.com').addToScene().then(function() {
+        expect(true).toBe(true);
         done();
       }).catch(function(error) {
         done.fail('Adding HTTPS source failed.');
@@ -41,6 +43,7 @@ describe('Url', function() {
 
     it('with no protocols specified', function(done) {
       var url = new Url('www.xsplit.com').addToScene().then(function() {
+        expect(true).toBe(true);
         done();
       }).catch(function(error) {
         done.fail('Adding URL source with no specified protocol failed.');
@@ -53,6 +56,7 @@ describe('Url', function() {
       var url = new Url('ftp://xsplit.com').addToScene().then(function() {
         done.fail('Should not add FTP');
       }).catch(function(error) {
+        expect(true).toBe(true);
         done();
       });
     });
@@ -61,6 +65,7 @@ describe('Url', function() {
       var url = new Url('asdfp://xsplit.com').addToScene().then(function() {
         done.fail('Should not add FTP');
       }).catch(function(error) {
+        expect(true).toBe(true);
         done();
       });
     });
