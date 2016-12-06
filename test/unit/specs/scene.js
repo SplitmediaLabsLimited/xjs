@@ -40,7 +40,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'presetcount') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          asyncId_stub++;
+          var asyncId = asyncId_stub;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -66,7 +67,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'presetcount') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          asyncId_stub++;
+          var asyncId = asyncId_stub;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -109,7 +111,8 @@ describe('Scene', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        asyncId_stub++;
+        var asyncId = asyncId_stub;
 
         if (funcName === 'presetcount') {
           setTimeout(function() {
@@ -157,7 +160,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
 
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        asyncId_stub++;
+        var asyncId = asyncId_stub;
         if (funcName === 'preset:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -213,7 +217,8 @@ describe('Scene', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        asyncId_stub++;
+        var asyncId = asyncId_stub;
         if (funcName === 'preset:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, global['preset']);
@@ -237,7 +242,8 @@ describe('Scene', function() {
         .and.callFake(function(funcName, value) {
         global[funcName] = value;
         // if (funcName === 'preset' && typeof value == 'string') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          asyncId_stub++;
+          var asyncId = asyncId_stub;
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1');
           }, 10);
