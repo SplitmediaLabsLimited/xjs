@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {applyMixins} from '../../internal/util/mixin';
-import {ItemTypes, Item} from '../items/item'
+import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -12,7 +12,17 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
+import {Item, ItemTypes, ViewTypes} from '../items/item';
 import {iSource, ISource} from '../source/isource'
+import {GameSource} from './game';
+import {CameraSource} from './camera';
+import {AudioSource} from './audio';
+import {VideoPlaylistSource} from './videoplaylist'
+import {HtmlSource} from './html';
+import {FlashSource} from './flash';
+import {ScreenSource} from './screen';
+import {ImageSource} from './image';
+import {MediaSource} from './media';
 
 /**
  * A Source represents an object of an Item that is used on the stage.
@@ -165,6 +175,63 @@ export class Source implements ISource{
         });
       }
     });
+  }
+
+  /**
+   * return: Promise<Source[]>
+   *
+   * Get all unique Source from every scene.
+   * Total number of Sources returned may be less than total number of Items on
+   * all the scenes due to `Linked` items only having a single Source.
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Source.getAllSources().then(function(sources) {
+   *   for(var i = 0 ; i < sources.length ; i++) {
+   *      if(sources[i] instanceof xjs.HtmlSource) {
+   *        // Manipulate HTML Source here
+   *      }
+   *    }
+   * })
+   */
+  static getAllSources(): Promise<Source[]> {
+    return new Promise((resolve,reject)=> {
+      let sourceArray = [];
+      let allSources = []
+      let allJson = [];
+      let promiseArray = []
+      Scene.getSceneCount().then(count => {
+        let jsonePromise = x => new Promise(jsonResolve => {
+          iApp.getAsList('presetconfig:' + x).then(jsonArr => {
+            jsonResolve(jsonArr)
+          })
+        })
+
+        for (var i = 0 ; i < count ; i++) {
+          promiseArray.push(jsonePromise(i))
+        }
+        Promise.all(promiseArray).then(jsons => {
+          for(var i = 0; i < jsons.length ; i++) {
+            allJson = allJson.concat(jsons[i])
+          }
+          let sourcePromise = index => new Promise(sourceResolve => {
+            Scene.searchSourcesById(allJson[index]['id']).then(source => {
+              allSources.push(source)
+            })
+            sourceResolve()
+          })
+
+          for(var i = 0; i < allJson.length ; i++) {
+            sourceArray.push(sourcePromise(i))
+          }
+          Promise.all(sourceArray).then(args => {
+            resolve(allSources)
+          })
+        })
+      }).catch(err => {
+        reject(err)
+      })
+    })
   }
 
   // Shared with Item

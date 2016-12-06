@@ -38,6 +38,7 @@ export {MaskEffect} from './core/items/ieffects';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/items/ichroma';
 export {ActionAfterPlayback} from './core/source/iplayback';
 export {CuePoint} from './core/source/cuepoint';
+export {ItemTypes, ViewTypes} from './core/items/item';
 
 export * from './system/system';
 export * from './system/audio';
