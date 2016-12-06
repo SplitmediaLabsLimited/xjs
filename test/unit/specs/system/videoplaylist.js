@@ -92,25 +92,20 @@ describe('Video Playlist', function() {
       done.fail('Should reject if called in source');
     }, function() {
       env.set(environments[1]);
-      console.log("1");
       return new VideoPlaylist('').addToScene();
     }).then(function() {
       done.fail('Should reject if blank string is included');
     }, function() {
-      console.log("2");
       return new VideoPlaylist().addToScene();
     }).then(function() {
       done.fail('Should reject if no file parameter is indicated');
     }, function() {
-      console.log("3");
       return new VideoPlaylist('C:\\' + randomWord(10) + '.mov').addToScene();
     }).then(function() {
       done.fail('Should reject if file is invalid/missing');
     }, function() {
-      console.log("4");
       return newPlaylist.addToScene();
     }).then(function() {
-      console.log("5");
       expect(true).toBe(true);
       done();
     });
@@ -120,7 +115,6 @@ describe('Video Playlist', function() {
     defpos = 0;
     var newPlaylist = new VideoPlaylist([newFile]);
     newPlaylist.addToScene().then(function() {
-      console.log("6");
       expect(itemPosition).toEqual('top-left');
       defpos = 1;
       return newPlaylist.addToScene();

@@ -31,7 +31,7 @@ describe('Transition Class', function() {
     });
   });
 
-  describe('should be able to fetch allowed scene transitions', function(done) {
+  describe('should be able to fetch allowed scene transitions', function() {
 
     it('returned as an array of Transition objects', function(done) {
       Transition.getSceneTransitions().then(function(transitions) {
