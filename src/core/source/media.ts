@@ -6,12 +6,73 @@ import {Rectangle} from '../../util/rectangle';
 import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from './iplayback';
 import {ISourceAudio, SourceAudio} from './iaudio';
 import {CuePoint} from './cuepoint';
+import {ISourceMedia, SourceMedia} from './imedia';
 
-export class MediaSource extends Source implements ISourcePlayback, ISourceAudio{
+/**
+ * The MediaSource class represents the sources of the audio device items that
+ * has been added to the stage.
+ *
+ * Each item is represented by the AudioItem class.
+ * See: {@link: #core/MediaItem Core/MediaItem}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.MediaSource) {
+ *         // Manipulate your audio device Source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ */
+export class MediaSource extends Source implements ISourcePlayback, ISourceAudio,
+  ISourceMedia {
   // ItemPlayback
   // Inherited from base class, no need to redefine
   // getValue: () => Promise<string>;
   // setValue: (value: string) => Promise<MediaItem>;
+
+  /**
+   * return: Promise<object>
+   *
+   * Gets file information such as codecs, bitrate, resolution, etc.
+   *
+   * sample file info object format:
+   *
+   * {
+   *  "audio": {
+   *    "duration":"1436734690",
+   *    "samplerate":"44100",
+   *    "bitrate":"128000",
+   *    "codec":"mp3"},
+   *  "video":{
+   *    "frameduration":"333670",
+   *    "bitrate":"1132227",
+   *    "duration":"1436436440",
+   *    "height":"240",
+   *    "width":"320",
+   *    "codec":"mpeg4"}
+   * }
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * mediaItem.getFileInfo().then(function(value) {
+   *   // Do something with the value
+   *   var audioCodec;
+   *   if (typeof value['audio'] !== 'undefined' && typeof value['audio']['codec']) {
+   *     audioCodec = value['audio']['codec'];
+   *   }
+   * });
+   * ```
+   */
+  getFileInfo: () => Promise<Object>
 
   /**
    * See: {@link #core/ISourcePlayback#isAudio isAudio}
@@ -158,4 +219,4 @@ export class MediaSource extends Source implements ISourcePlayback, ISourceAudio
 
 }
 
-applyMixins(MediaSource, [SourcePlayback, SourceAudio])
+applyMixins(MediaSource, [SourcePlayback, SourceAudio, SourceMedia])
