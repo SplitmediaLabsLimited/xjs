@@ -4,6 +4,29 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {ISourceAudio, SourceAudio} from './iaudio';
 
+/**
+ * The FlashSource class represents the sources of the audio device items that
+ * has been added to the stage.
+ *
+ * Each item is represented by the AudioItem class.
+ * See: {@link: #core/FlashItem Core/FlashItem}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.FlashSource) {
+ *         // Manipulate your audio device Source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ */
 export class FlashSource extends Source implements ISourceAudio {
   // ItemAudio
 

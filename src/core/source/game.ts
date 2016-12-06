@@ -7,9 +7,28 @@ import {Rectangle} from '../../util/rectangle';
 import {iSourceGame, ISourceGame} from './igame';
 
 /**
- * An GameSource represents an object of an item on the stage.
+ * The GameSource class represents the sources of the audio device items that
+ * has been added to the stage.
+ *
+ * Each item is represented by the AudioItem class.
+ * See: {@link: #core/GameItem Core/GameItem}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.GameSource) {
+ *         // Manipulate your audio device Source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
  */
-
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame
 

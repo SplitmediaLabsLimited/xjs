@@ -143,15 +143,8 @@ export interface ISourceScreen {
 }
 
 export class iSourceScreen implements ISourceScreen {
-  protected _id: string;
-  protected _value: any;
-
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._id = props['id'];
-    this._value = props['value'];
-  }
+  private _id: string;
+  private _value: any;
 
   /**
    * return: Promise<boolean>

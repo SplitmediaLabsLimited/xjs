@@ -362,7 +362,6 @@ export class Item extends Source implements IItemLayout, ISource {
    * })
    * ```
    */
-
   getSource(): Promise<Source> {
     let uniqueSource = [];
     let uniqueObj = {};

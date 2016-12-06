@@ -61,17 +61,9 @@ export interface ISourceGame {
 }
 
 export class iSourceGame implements ISourceGame {
-  protected _id: string;
-  protected _type: ItemTypes;
-  protected _value: any;
-
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._id = props['id'];
-    this._value = props['value'];
-    this._type = Number(props['type']);
-  }
+  private _id: string;
+  private _type: ItemTypes;
+  private _value: any;
 
   isSpecialOptimizationEnabled(): Promise<boolean> {
     return new Promise(resolve => {

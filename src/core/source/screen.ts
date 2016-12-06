@@ -5,9 +5,28 @@ import {Rectangle} from '../../util/rectangle';
 import {ISourceScreen, iSourceScreen} from './iscreen';
 
 /**
- * A ScreenSource represents an object of an item on the stage.
+ * The ScreenSource class represents the sources of the audio device items that
+ * has been added to the stage.
+ *
+ * Each item is represented by the AudioItem class.
+ * See: {@link: #core/ScreenItem Core/ScreenItem}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.ScreenSource) {
+ *         // Manipulate your audio device Source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
  */
-
 export class ScreenSource extends Source implements ISourceScreen {
   /**
    * return: Promise<boolean>

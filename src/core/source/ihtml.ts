@@ -126,14 +126,9 @@ export interface ISourceHtml {
 }
 
 export class iSourceHtml implements ISourceHtml{
-  protected _id: string;
-  protected _isItemCall: boolean;
+  private _id: string;
+  private _isItemCall: boolean;
 
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._id = props['id'];
-  }
 
   isBrowserTransparent(): Promise<boolean> {
     if(this._isItemCall){

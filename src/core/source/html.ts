@@ -11,53 +11,31 @@ import {SourceConfigurable, ISourceConfigurable} from './iconfig';
 import {ISourceAudio, SourceAudio} from './iaudio';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
+/**
+ * The HtmlSource class represents the sources of the audio device items that
+ * has been added to the stage.
+ *
+ * Each item is represented by the AudioItem class.
+ * See: {@link: #core/HtmlItem Core/HtmlItem}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.HtmlSource) {
+ *         // Manipulate your audio device Source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ */
 export class HtmlSource extends Source implements ISourceConfigurable, ISourceAudio,
   ISourceHtml {
-
-  // SourceConfigurable
-  /**
-   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
-   */
-  loadConfig: () => Promise<any>;
-
-  /**
-   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
-   */
-  saveConfig: (configObj: any) => Promise<HtmlSource>;
-
-  /**
-   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
-   */
-  requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
-
-  /**
-   *
-   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
-   */
-  applyConfig: (configObj: any) => Promise<HtmlSource>;
-
-  // ItemAudio
-
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
-
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
-
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<HtmlSource>;
-
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<HtmlSource>;
-
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
-
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
-
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
-  isAudioAvailable: () => Promise<boolean>;
 
   //iSourceHtml
   /**
@@ -221,6 +199,73 @@ export class HtmlSource extends Source implements ISourceConfigurable, ISourceAu
    */
   enableCustomCSS: (value: boolean) => Promise<HtmlSource>
 
+  // SourceConfigurable
+  /**
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
+   */
+  loadConfig: () => Promise<any>;
+
+  /**
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
+   */
+  saveConfig: (configObj: any) => Promise<HtmlSource>;
+
+  /**
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
+   */
+  requestSaveConfig: (configObj: any) => Promise<HtmlSource>;
+
+  /**
+   *
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
+   */
+  applyConfig: (configObj: any) => Promise<HtmlSource>;
+
+  // ItemAudio
+
+  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  getVolume: () => Promise<number>;
+
+  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  isMute: () => Promise<boolean>;
+
+  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<HtmlSource>;
+
+  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  setMute: (value: boolean) => Promise<HtmlSource>;
+
+  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  isStreamOnlyAudio: () => Promise<boolean>;
+
+  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
+
+  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  isAudioAvailable: () => Promise<boolean>;
+  /** See: {@link #core/AudioSource#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
+  isSilenceDetectionEnabled: () => Promise<boolean>
+
+  /** See: {@link #core/AudioSource#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
+  setSilenceDetectionEnabled: (value: boolean) => Promise<HtmlSource>
+
+  /** See: {@link #core/AudioSource#getSilenceThreshold getSilenceThreshold} */
+  getSilenceThreshold: () => Promise<number>
+
+  /** See: {@link #core/AudioSource#setSilenceThreshold setSilenceThreshold} */
+  setSilenceThreshold: (value: number) => Promise<HtmlSource>
+
+  /** See: {@link #core/AudioSource#getSilencePeriod getSilencePeriod} */
+  getSilencePeriod: () => Promise<number>
+
+  /** See: {@link #core/AudioSource#setSilencePeriod setSilencePeriod} */
+  setSilencePeriod: (value: number) => Promise<HtmlSource>
+
+  /** See: {@link #core/AudioSource#getAudioOffset getAudioOffset} */
+  getAudioOffset: () => Promise<number>
+
+  /** See: {@link #core/AudioSource#setAudioOffset setAudioOffset} */
+  setAudioOffset: (value: number) => Promise<SourceAudio>
 }
 
 applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, SourceAudio])
