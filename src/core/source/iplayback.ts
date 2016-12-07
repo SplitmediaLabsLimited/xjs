@@ -2,7 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
-import {Logger} from '../../internal/util/logger'
+import {Logger} from '../../internal/util/logger';
 
 /**
  *  Used by items that implement the Playback interface.
@@ -247,7 +247,7 @@ export interface ISourcePlayback {
 
 export class SourcePlayback implements ISourcePlayback {
   private _id: string;
-  protected _isItemCall: boolean;
+  private _isItemCall: boolean;
 
   isSeekable(): Promise<boolean> {
     if(this._isItemCall){

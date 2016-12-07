@@ -101,23 +101,14 @@ export interface ISource {
  */
 
 export class iSource implements ISource{
-  protected _id: string;
-  protected _value: any;
-  protected _name: string;
-  protected _cname: string;
-  protected _keepLoaded: boolean;
-  protected _globalsrc: boolean;
-  protected _isItemCall: boolean;
-  protected _type: string;
-
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._name = props['name'];
-    this._cname = props['cname'];
-    this._id = props['id'];
-    this._value = props['value'];
-  }
+  private _id: string;
+  private _value: any;
+  private _name: string;
+  private _cname: string;
+  private _keepLoaded: boolean;
+  private _globalsrc: boolean;
+  private _isItemCall: boolean;
+  private _type: string;
 
   setName(value: string): Promise <iSource> {
     if(this._isItemCall) {

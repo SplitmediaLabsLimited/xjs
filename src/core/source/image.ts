@@ -8,7 +8,7 @@ import {XML} from '../../internal/util/xml';
  * has been added to the stage. A single source could have multiple items linked
  * into it and any changes to the source would affect all items linked to it.
  *
- * Each item is represented by the AudioItem class.
+ * Each item is represented by the ImageItem class.
  * See: {@link: #core/ImageItem Core/ImageItem}
  *
  * ### Basic Usage
@@ -20,7 +20,7 @@ import {XML} from '../../internal/util/xml';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.ImageSource) {
- *         // Manipulate your audio device Source here
+ *         // Manipulate your audio device source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }

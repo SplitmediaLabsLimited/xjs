@@ -5,6 +5,7 @@ import {Environment} from '../environment';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceCamera {
   /**
@@ -104,6 +105,7 @@ export interface ISourceCamera {
 
 export class SourceCamera implements ISourceCamera {
   private _id: string;
+  private _isItemCall: boolean;
 
   protected _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",
@@ -112,6 +114,9 @@ export class SourceCamera implements ISourceCamera {
   };
 
   getDeviceId(): Promise<string> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getDeviceId', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:item', this._id).then(val => {
         resolve(val);
@@ -120,6 +125,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   getAudioOffset(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getAudioOffset', true)
+    }
     return new Promise(resolve => {
       var streamDelay, audioDelay;
       iItem.get('prop:StreamDelay', this._id).then(val => {
@@ -133,6 +141,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   setAudioOffset(value: number): Promise<SourceCamera> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setAudioOffset', true)
+    }
     return new Promise((resolve, reject) => {
       var itemAudio, delay;
       iItem.get('prop:itemaudio', this._id).then(val => {
@@ -166,6 +177,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   getAudioInput(): Promise<MicrophoneDevice> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getAudioInput', true)
+    }
     return new Promise((resolve, reject) => {
       var itemAudioId;
       iItem.get('prop:itemaudio', this._id).then(val => {
@@ -196,6 +210,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   setAudioInput(value: MicrophoneDevice): Promise<SourceCamera> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setAudioInput', true)
+    }
     return new Promise((resolve, reject) => {
       iItem.set('prop:itemaudio', value.getDisplayId(), this._id)
         .then(val => {
@@ -205,6 +222,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   isStreamPaused(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isStreamPaused', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:StreamPause', this._id).then(val => {
         resolve(val === '1');
@@ -213,6 +233,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   setStreamPaused(value: boolean): Promise<CameraSource> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setStreamPaused', true)
+    }
     return new Promise((resolve, reject) => {
       iItem.set('prop:StreamPause', value ? '1' : '0',
         this._id).then(() => {
@@ -228,6 +251,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   isHardwareEncoder(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isHardwareEncoder', true)
+    }
     return new Promise((resolve, reject) => {
       iItem.get('prop:hwencoder', this._id).then(val => {
         if (val === '1') {
@@ -247,6 +273,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   isActive(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isActive', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:activestate', this._id).then(val => {
         resolve(val === 'active');
@@ -255,6 +284,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   getDelay(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getDelay', true)
+    }
     return new Promise(resolve => {
       var streamDelay, audioDelay;
       iItem.get('prop:StreamDelay', this._id).then(val => {
@@ -273,6 +305,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   setDelay(value: number): Promise<CameraSource> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setDelay', true)
+    }
     return new Promise((resolve, reject) => {
       var isPositive, audioOffset;
       this.isHardwareEncoder().then(val => {
@@ -315,6 +350,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   isForceDeinterlace(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isForceDeinterlace', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:fdeinterlace', this._id).then(val => {
         resolve(val === '3');
@@ -323,6 +361,9 @@ export class SourceCamera implements ISourceCamera {
   }
 
   setForceDeinterlace(value: boolean): Promise<CameraSource> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setForceDeinterlace', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
         resolve(this);

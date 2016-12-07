@@ -5,6 +5,7 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Rectangle} from '../../util/rectangle';
 import {iSource, ISource} from './isource';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceScreen {
   /**
@@ -145,14 +146,12 @@ export interface ISourceScreen {
 export class iSourceScreen implements ISourceScreen {
   private _id: string;
   private _value: any;
+  private _isItemCall: boolean;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item captures a window based on
-   * the window's title.
-   */
   isStickToTitle(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isStickToTitle', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
         resolve(val === '0');
@@ -160,17 +159,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<iSourceScreen>
-   * ```
-   *
-   * Set the Screen Capture to capture the window based on the window title.
-   * Useful when capturing programs with multiple tabs, for you to only
-   * capture a particular tab.
-   */
   setStickToTitle(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setStickToTitle', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
         .then(() => {
@@ -179,12 +171,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * return Promise<boolean>
-   *
-   * Checks if the Screen Capture layered window is selected.
-   */
   getCaptureLayered(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getCaptureLayered', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:ScrCapLayered', this._id).then(val => {
         resolve(val === '1');
@@ -192,15 +182,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<iSourceScreen>
-   * ```
-   *
-   * Sets the Screen Capture Layered window
-   */
   setCaptureLayered(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setCaptureLayered', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id).then(val => {
         resolve(this);
@@ -208,12 +193,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * return Promise<boolean>
-   *
-   * Checks if the Exclusive Window capture is selected.
-   */
   getOptimizedCapture(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getOptimizedCapture', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
         resolve(val === '1');
@@ -221,15 +204,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<iSourceScreen>
-   * ```
-   *
-   * Sets the Exclusive Window capture.
-   */
   setOptimizedCapture(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setOptimizedCapture', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id).then(val => {
         resolve(this);
@@ -237,14 +215,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-
-  /**
-   * return Promise<boolean>
-   *
-   * Checks if the Show mouse clicks is selected.
-   *
-   */
   getShowMouseClicks(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getShowMouseClicks', true)
+    }
     return new Promise(resolve => {
     iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
         resolve(val === '1');
@@ -252,15 +226,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<iSourceScreen>
-   * ```
-   *
-   * Sets the Show mouse clicks.
-   */
   setShowMouseClicks(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setShowMouseClicks', true)
+    }
     return new Promise(resolve => {
     iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id).then(val => {
         resolve(this)
@@ -268,13 +237,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * return Promise<boolean>
-   *
-   * Checks if the Show mouse is selected.
-   *
-   */
   getShowMouse(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getShowMouse', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
         resolve(val === '1');
@@ -282,15 +248,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return Promise<iSourceScreen>
-   * ```
-   *
-   * Sets the Show Mouse.
-   */
   setShowMouse(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setShowMouse', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id).then(val => {
         if (val === true) {
@@ -301,15 +262,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
-   * object.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-   getCaptureArea(): Promise<Rectangle> {
+  getCaptureArea(): Promise<Rectangle> {
+     if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getCaptureArea', true)
+    }
     return new Promise(resolve => {
       this.getValue().then(val => {
         if (!(val instanceof XML)) {
@@ -327,19 +283,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<iSourceScreen>
-   * ```
-   *
-   * Sets the Window Capture Area of the Screen Capture Item.
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
   setCaptureArea(dimension: Rectangle): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setCaptureArea', true)
+    }
     return new Promise(resolve => {
       this.getValue().then(val => {
         return new Promise(iResolve => {
@@ -393,13 +340,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item only captures the
-   * Client area (does not capture the title bar, menu bar, window border, etc.)
-   */
   isClientArea(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isClientArea', true)
+    }
     return new Promise(resolve => {
       this.getValue().then(val => {
         if (!(val instanceof XML)) {
@@ -412,16 +356,10 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<iSourceScreen>
-   * ```
-   *
-   * Set the Screen Capture to capture the Client area only or include
-   * the titlebar, menu bar, window border, etc.
-   */
   setClientArea(value: boolean): Promise<iSourceScreen> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setClientArea', true)
+    }
     return new Promise(resolve => {
       this.getValue().then(val => {
         let _config = new JXON();

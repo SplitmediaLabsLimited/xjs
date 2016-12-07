@@ -2,6 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceFlash {
   /**
@@ -44,8 +45,12 @@ export interface ISourceFlash {
 
 export class SourceFlash implements ISourceFlash {
   private _id: string;
+  private _isItemCall: boolean;
 
   getCustomResolution(): Promise<Rectangle> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getCustomResolution', true)
+    }
     return new Promise(resolve => {
       let customSize;
       iItem.get('prop:BrowserSize', this._id).then(val => {
@@ -61,6 +66,9 @@ export class SourceFlash implements ISourceFlash {
   }
 
   setCustomResolution(value: Rectangle): Promise<SourceFlash> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setCustomResolution', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:BrowserSize', value.toDimensionString(),
         this._id).then(() => {
@@ -70,6 +78,9 @@ export class SourceFlash implements ISourceFlash {
   }
 
   getAllowRightClick(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getAllowRightClick', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
         resolve(val === '1');
@@ -78,6 +89,9 @@ export class SourceFlash implements ISourceFlash {
   }
 
   setAllowRightClick(value: boolean): Promise<SourceFlash> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setAllowRightClick', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
         .then(() => {

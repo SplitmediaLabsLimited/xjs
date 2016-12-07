@@ -6,8 +6,9 @@ import {Environment} from '../environment';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {ItemTypes, Item} from '../items/item';
-import {Source} from './source'
-import {iSource, ISource} from './isource'
+import {Source} from './source';
+import {iSource, ISource} from './isource';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceGame {
 
@@ -64,8 +65,12 @@ export class iSourceGame implements ISourceGame {
   private _id: string;
   private _type: ItemTypes;
   private _value: any;
+  private _isItemCall: boolean;
 
   isSpecialOptimizationEnabled(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isSpecialOptimizationEnabled', true)
+    }
     return new Promise(resolve => {
       iItem.get('GameCapSurfSharing', this._id).then(res => {
         resolve(res === '1');
@@ -74,6 +79,9 @@ export class iSourceGame implements ISourceGame {
   }
 
   setSpecialOptimizationEnabled(value: boolean): Promise<iSourceGame> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setSpecialOptimizationEnabled', true)
+    }
     return new Promise(resolve => {
       iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
         this._id).then(() => {
@@ -83,6 +91,9 @@ export class iSourceGame implements ISourceGame {
   }
 
   isShowMouseEnabled(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isShowMouseEnabled', true)
+    }
     return new Promise(resolve => {
       iItem.get('GameCapShowMouse', this._id).then(res => {
         resolve(res === '1');
@@ -91,6 +102,9 @@ export class iSourceGame implements ISourceGame {
   }
 
   setShowMouseEnabled(value: boolean): Promise<iSourceGame> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setShowMouseEnabled', true)
+    }
     return new Promise(resolve => {
       iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -99,6 +113,9 @@ export class iSourceGame implements ISourceGame {
   }
 
   setOfflineImage(path: string): Promise<iSourceGame> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setOfflineImage', true)
+    }
     return new Promise((resolve, reject) => {
       if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game item'));
@@ -127,6 +144,9 @@ export class iSourceGame implements ISourceGame {
   }
 
   getOfflineImage(): Promise<string> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getOfflineImage', true)
+    }
     return new Promise((resolve, reject) => {
       if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game item'));

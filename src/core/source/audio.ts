@@ -22,7 +22,7 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.AudioSource) {
- *         // Manipulate your audio device Source here
+ *         // Manipulate your audio device source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }

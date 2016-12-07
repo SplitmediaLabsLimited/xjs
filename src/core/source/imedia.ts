@@ -2,6 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {JSON as JXON} from '../../internal/util/json';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceMedia {
   /**
@@ -14,8 +15,12 @@ export interface ISourceMedia {
 
 export class SourceMedia implements ISourceMedia {
   private _id: string;
+  private _isItemCall: boolean;
 
   getFileInfo(): Promise<Object> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getFileInfo', true)
+    }
     return new Promise((resolve, reject) => {
       iItem.get('FileInfo', this._id).then(val => {
         try {

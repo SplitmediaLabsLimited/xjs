@@ -9,7 +9,7 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  * has been added to the stage. A single source could have multiple items linked
  * into it and any changes to the source would affect all items linked to it.
  *
- * Each item is represented by the AudioItem class.
+ * Each item is represented by the ScreenItem class.
  * See: {@link: #core/ScreenItem Core/ScreenItem}
  *
  * ### Basic Usage
@@ -21,7 +21,7 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.ScreenSource) {
- *         // Manipulate your audio device Source here
+ *         // Manipulate your audio device source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }

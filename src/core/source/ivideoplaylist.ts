@@ -2,6 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {IO} from '../../util/io';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceVideoPlaylist {
   /**
@@ -42,8 +43,12 @@ export interface ISourceVideoPlaylist {
 
 export class SourceVideoPlaylist implements ISourceVideoPlaylist {
   private _id: string;
+  private _isItemCall: boolean;
 
   getVideoNowPlaying(): Promise<string> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getVideoNowPlaying', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:srcitem', this._id).then(playlist => {
         let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
@@ -53,6 +58,9 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
   }
 
   setVideoNowPlaying(value:string|number): Promise<SourceVideoPlaylist> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setVideoNowPlaying', true)
+    }
     let file: string;
     let _playlist: string[];
 
@@ -90,6 +98,9 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
   };
 
   getVideoPlaylistSources(): Promise<string[]> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getVideoPlaylistSources', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:FilePlaylist', this._id).then(playlist => {
         let _playlist = String(playlist).split('|');
@@ -102,6 +113,9 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
   };
 
   setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setVideoPlaylistSources', true)
+    }
     let fileString: string;
 
     let filePromises = fileItems.map((filename) => {

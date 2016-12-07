@@ -11,7 +11,7 @@ import {iSourceGame, ISourceGame} from './igame';
  * has been added to the stage. A single source could have multiple items linked
  * into it and any changes to the source would affect all items linked to it.
  *
- * Each item is represented by the AudioItem class.
+ * Each item is represented by the GameItem class.
  * See: {@link: #core/GameItem Core/GameItem}
  *
  * ### Basic Usage
@@ -23,7 +23,7 @@ import {iSourceGame, ISourceGame} from './igame';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.GameSource) {
- *         // Manipulate your audio device Source here
+ *         // Manipulate your audio device source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }

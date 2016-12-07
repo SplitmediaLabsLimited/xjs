@@ -4,7 +4,7 @@ import {exec} from '../../internal/internal';
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {Environment} from '../environment';
-import {Logger} from '../../internal/util/logger'
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceHtml {
   /**

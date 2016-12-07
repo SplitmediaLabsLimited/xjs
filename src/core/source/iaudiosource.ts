@@ -2,6 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger';
 
 export interface ISourceAudio {
 
@@ -66,8 +67,12 @@ export interface ISourceAudio {
 
 export class SourceAudio implements ISourceAudio {
   private _id: string;
+  private _isItemCall: boolean;
 
   isSilenceDetectionEnabled(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isSilenceDetectionEnabled', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:AudioGainEnable', this._id).then(val => {
         resolve(val === '1');
@@ -76,6 +81,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   setSilenceDetectionEnabled(value: boolean): Promise<SourceAudio> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setSilenceDetectionEnabled', true)
+    }
     return new Promise((resolve, reject) => {
       iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
       .then(res => {
@@ -85,6 +93,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   getSilenceThreshold(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getSilenceThreshold', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:AudioGain', this._id).then(val => {
         resolve(Number(val));
@@ -93,6 +104,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   setSilenceThreshold(value: number): Promise<SourceAudio> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setSilenceThreshold', true)
+    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
@@ -109,6 +123,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   getSilencePeriod(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getSilencePeriod', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:AudioGainLatency', this._id).then(val => {
         resolve(Number(val));
@@ -117,6 +134,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   setSilencePeriod(value: number): Promise<SourceAudio> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setSilencePeriod', true)
+    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -133,6 +153,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   getAudioOffset(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getAudioOffset', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:AudioDelay', this._id).then(val => {
         resolve(Number(val));
@@ -141,6 +164,9 @@ export class SourceAudio implements ISourceAudio {
   }
 
   setAudioOffset(value: number): Promise<SourceAudio> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setAudioOffset', true)
+    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));

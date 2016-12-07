@@ -46,7 +46,7 @@ export interface ISourceConfigurable {
 export class SourceConfigurable {
   private _id: string;
   private _srcId: string;
-  protected _isItemCall: boolean;
+  private _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
     let called: boolean = false;
@@ -116,6 +116,9 @@ export class SourceConfigurable {
   }
 
   requestSaveConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'requestSaveConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 
@@ -130,6 +133,9 @@ export class SourceConfigurable {
   }
 
   applyConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'applyConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 
