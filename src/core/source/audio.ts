@@ -7,7 +7,8 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
 
 /**
  * The AudioSource class represents the sources of the audio device items that
- * has been added to the stage.
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the AudioItem class.
  * See: {@link: #core/AudioItem Core/AudioItem}

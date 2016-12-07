@@ -27,7 +27,7 @@ import {MediaSource} from './media';
 /**
  * A Source represents an object of an Item that is used on the stage.
  * Manipulating Source specific properties would render changes to all
- * items of that source.
+ * items linked to that source.
  *
  * Implements: @{link #core/ISource Core/ISource}
  *

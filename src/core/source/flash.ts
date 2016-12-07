@@ -7,8 +7,9 @@ import {ISourceFlash, SourceFlash} from './iflash';
 import {Rectangle} from '../../util/rectangle';
 
 /**
- * The FlashSource class represents the sources of the audio device items that
- * has been added to the stage.
+ * The FlashSource class represents the sources of the flash items that
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the AudioItem class.
  * See: {@link: #core/FlashItem Core/FlashItem}

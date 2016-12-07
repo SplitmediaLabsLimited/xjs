@@ -4,8 +4,9 @@ import {Rectangle} from '../../util/rectangle';
 import {XML} from '../../internal/util/xml';
 
 /**
- * The ImageSource class represents the sources of the audio device items that
- * has been added to the stage.
+ * The ImageSource class represents the sources of the image items that
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the AudioItem class.
  * See: {@link: #core/ImageItem Core/ImageItem}
