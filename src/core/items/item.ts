@@ -57,24 +57,26 @@ export enum ViewTypes {
 }
 
 /**
- * An `Item` represents a Source object that is used as an item on the stage.
- * Some possible items are games, microphones, or a webpage.
+ * An `Item` is rendered from a {@link #core/Source Source} and represents an
+ * object that is used as an item on the stage. Multiple items may be linked to
+ * a singled source and any changes made to the source would affect all linked
+ * items.
  *
- * Implements: {@link #core/IItemLayout Core/IItemLayout}
- * {@link #core/ISource Core/ISource}
+ * Implements: {@link #core/ISource Core/ISource}
+ * {@link #core/IItemLayout Core/IItemLayout}
  *
  * ### Basic Usage
  *
  * ```javascript
  * var xjs = require('xjs');
- * var Scene = xjs.Scene.getById(0);
+ * var Scene = xjs.Scene.getById(1);
  *
  * Scene.getItems().then(function(items) {
  *   if (items.length === 0) return;
  *
  *   // There's a valid item, let's use that
  *   var item = items[items.length - 1];
- *   return item.setCustomName('ItemTesting');
+ *   return item.getId('ItemTesting');
  * }).then(function(item) {
  *   // Do something else here
  * });

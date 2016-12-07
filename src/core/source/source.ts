@@ -25,7 +25,7 @@ import {ImageSource} from './image';
 import {MediaSource} from './media';
 
 /**
- * A Source represents an object of an Item that is used on the stage.
+ * A `Source` represents an object of an Item that is used on the stage.
  * Manipulating Source specific properties would render changes to all
  * items linked to that source.
  *
@@ -33,20 +33,32 @@ import {MediaSource} from './media';
  *
  * ### Basic Usage
  *
- * All methods marked as *Chainable* resolve with the original `Source` instance.
- * This allows you to perform sequential operations correctly:
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Scene = xjs.Scene.getById(1)
  *
+ * Scene.getSource().then(function(source) {
+ *    return source.setCustomName('Custom Name')
+ * }).then(function(source) {
+ *    // set more properties here
+ * })
+ *
+ *
+ * All methods marked as *Chainable* resolve with the original `Source` instance.
+ * This allows you to perform sequential operations correctly: *
  * ```javascript
  * var xjs = require('xjs');
  * var Source = xjs.Source;
  *
  * xjs.ready()
- *    .then(Source.getItemList)
- *    .then(function(items) {
- *     return items[0].getSource()
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source){
+ *     //Manipulate source here
+ *     return source.setName('New Name');
  *  }).then(function(source){
- *     //Manipulate Source here
- *     source.setName('New Name')
+ *     return source.setKeepLoaded(true)
+ *  }).then(function(source){
+ *     // set more properties here
  *  })
  * ```
  */
