@@ -3,6 +3,11 @@
 describe('Scene', function() {
   'use strict';
 
+  var startsWith = function(mainString, stringCompared) {
+    return mainString.toLowerCase().substring(0, stringCompared.length) ===
+      stringCompared.toLowerCase();
+  };
+
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Item = XJS.Item;
@@ -116,7 +121,7 @@ describe('Scene', function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
 
-        } else if (funcName.startsWith('presetname:')) {
+        } else if (startsWith(funcName, 'presetname:')) {
           var sceneIndex = funcName.substring(11);
           var name;
           if (sceneIndex === '0' || sceneIndex === '4') {
@@ -222,7 +227,7 @@ describe('Scene', function() {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
-        } else if (funcName.startsWith('presetname:')) {
+        } else if (startsWith(funcName, 'presetname:')) {
           var sceneIndex = Number(funcName.substring(11)) + 1;
           var name = 'Scene ' + sceneIndex;
 
