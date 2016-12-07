@@ -12,8 +12,8 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {Item, ItemTypes, ViewTypes} from '../items/item';
-import {iSource, ISource} from '../source/isource'
+import {Item, ViewTypes} from '../items/item';
+import {iSource, ISource, ItemTypes} from '../source/isource';
 import {GameSource} from './game';
 import {CameraSource} from './camera';
 import {AudioSource} from './audio';

@@ -13,8 +13,24 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {ItemTypes} from '../items/item';
 import {Logger} from '../../internal/util/logger';
+
+/**
+ * Used by items to define its type.
+ *
+ * Check `getType()` method of {@link #core/Item#getType Core/Item}
+ */
+export enum ItemTypes {
+  UNDEFINED,
+  FILE,
+  LIVE,
+  TEXT,
+  BITMAP,
+  SCREEN,
+  FLASHFILE,
+  GAMESOURCE,
+  HTML
+}
 
 export interface ISource {
   /**
@@ -101,7 +117,7 @@ export interface ISource {
    *
    * Get the type of the source
    */
-  getType(): Promise<ItemTypes>
+  getType(): Promise<number>
 
 }
 
@@ -118,7 +134,7 @@ export class iSource implements ISource{
   private _keepLoaded: boolean;
   private _globalsrc: boolean;
   private _isItemCall: boolean;
-  private _type: number;
+  private _type: ItemTypes;
   private _sceneId: string;
 
   setName(value: string): Promise <iSource> {
@@ -319,10 +335,11 @@ export class iSource implements ISource{
     })
   }
 
-  getType(): Promise<ItemTypes> {
+  getType(): Promise<number> {
     return new Promise(resolve => {
       iItem.get('prop:type', this._id).then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
+        // this._type = ItemTypes[ItemTypes[Number(val)]];
+        console.log('Anything', this._type)
         resolve(this._type);
       });
     });

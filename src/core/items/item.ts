@@ -16,7 +16,7 @@ import {
   globalsrcMinVersion
 } from '../../internal/util/version';
 
-import {iSource, ISource} from '../source/isource';
+import {iSource, ISource, ItemTypes} from '../source/isource';
 import {Source} from '../source/source'
 import {GameSource} from '../source/game';
 import {CameraSource} from '../source/camera';
@@ -27,23 +27,6 @@ import {FlashSource} from '../source/flash';
 import {ScreenSource} from '../source/screen';
 import {ImageSource} from '../source/image';
 import {MediaSource} from '../source/media';
-
-/**
- * Used by items to define its type.
- *
- * Check `getType()` method of {@link #core/Item#getType Core/Item}
- */
-export enum ItemTypes {
-  UNDEFINED,
-  FILE,
-  LIVE,
-  TEXT,
-  BITMAP,
-  SCREEN,
-  FLASHFILE,
-  GAMESOURCE,
-  HTML
-}
 
 /**
  * Used by items to define its view type.
