@@ -2,7 +2,7 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
-import {ISourceAudio, SourceAudio} from './iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {ISourceFlash, SourceFlash} from './iflash';
 import {Rectangle} from '../../util/rectangle';
 
@@ -29,7 +29,7 @@ import {Rectangle} from '../../util/rectangle';
  *   })
  * })
  */
-export class FlashSource extends Source implements ISourceAudio, ISourceFlash {
+export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem
   /**
    * return: Promise<Rectangle>
@@ -94,26 +94,26 @@ export class FlashSource extends Source implements ISourceAudio, ISourceFlash {
 
   // ItemAudio
 
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<FlashSource>;
 
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<FlashSource>;
 
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<FlashSource>;
 
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
-applyMixins(FlashSource, [SourceAudio, SourceFlash])
+applyMixins(FlashSource, [Audio, SourceFlash])
 

@@ -8,7 +8,7 @@ import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 import {Item} from '../items/item';
 import {SourceConfigurable, ISourceConfigurable} from './iconfig';
-import {ISourceAudio, SourceAudio} from './iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
 /**
@@ -34,7 +34,7 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  *   })
  * })
  */
-export class HtmlSource extends Source implements ISourceConfigurable, ISourceAudio,
+export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   ISourceHtml {
 
   //iSourceHtml
@@ -223,49 +223,26 @@ export class HtmlSource extends Source implements ISourceConfigurable, ISourceAu
 
   // ItemAudio
 
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlSource>;
 
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
-  /** See: {@link #core/AudioSource#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
-  isSilenceDetectionEnabled: () => Promise<boolean>
-
-  /** See: {@link #core/AudioSource#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
-  setSilenceDetectionEnabled: (value: boolean) => Promise<HtmlSource>
-
-  /** See: {@link #core/AudioSource#getSilenceThreshold getSilenceThreshold} */
-  getSilenceThreshold: () => Promise<number>
-
-  /** See: {@link #core/AudioSource#setSilenceThreshold setSilenceThreshold} */
-  setSilenceThreshold: (value: number) => Promise<HtmlSource>
-
-  /** See: {@link #core/AudioSource#getSilencePeriod getSilencePeriod} */
-  getSilencePeriod: () => Promise<number>
-
-  /** See: {@link #core/AudioSource#setSilencePeriod setSilencePeriod} */
-  setSilencePeriod: (value: number) => Promise<HtmlSource>
-
-  /** See: {@link #core/AudioSource#getAudioOffset getAudioOffset} */
-  getAudioOffset: () => Promise<number>
-
-  /** See: {@link #core/AudioSource#setAudioOffset setAudioOffset} */
-  setAudioOffset: (value: number) => Promise<SourceAudio>
 }
 
-applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, SourceAudio])
+applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, Audio])

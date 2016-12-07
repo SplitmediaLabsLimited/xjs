@@ -3,7 +3,7 @@
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 
-export interface ISourceAudio {
+export interface IAudio {
 
   /**
    * return: Promise<number>
@@ -19,7 +19,7 @@ export interface ISourceAudio {
    *
    * *Chainable.*
    */
-  setVolume(value: number): Promise<ISourceAudio>;
+  setVolume(value: number): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -35,7 +35,7 @@ export interface ISourceAudio {
    *
    * *Chainable.*
    */
-  setMute(value: boolean): Promise<ISourceAudio>;
+  setMute(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -51,7 +51,7 @@ export interface ISourceAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyAudio(value: boolean): Promise<ISourceAudio>;
+  setStreamOnlyAudio(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -61,7 +61,7 @@ export interface ISourceAudio {
   isAudioAvailable(): Promise<boolean>;
 }
 
-export class SourceAudio implements ISourceAudio {
+export class Audio implements IAudio {
   private _id: string;
   protected _isItemCall: boolean;
 
@@ -73,7 +73,7 @@ export class SourceAudio implements ISourceAudio {
     });
   }
 
-  setVolume(value: number): Promise<SourceAudio> {
+  setVolume(value: number): Promise<Audio> {
     return new Promise(resolve => {
       value = value < 0 ? 0 : value > 100 ? 100 : value;
       iItem.set('prop:volume', String(value),
@@ -91,7 +91,7 @@ export class SourceAudio implements ISourceAudio {
     });
   }
 
-  setMute(value: boolean): Promise<SourceAudio> {
+  setMute(value: boolean): Promise<Audio> {
     return new Promise(resolve => {
       iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -107,7 +107,7 @@ export class SourceAudio implements ISourceAudio {
     });
   }
 
-  setStreamOnlyAudio(value: boolean): Promise<SourceAudio> {
+  setStreamOnlyAudio(value: boolean): Promise<Audio> {
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);

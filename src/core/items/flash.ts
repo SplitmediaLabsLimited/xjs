@@ -10,7 +10,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ISourceAudio, SourceAudio} from '../source/iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -29,7 +29,7 @@ import {ISourceFlash, SourceFlash} from '../source/iflash';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/ISourceAudio Core/ISourceAudio},
+ * {@link #core/IAudio Core/IAudio},
  * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `FlashItem`
@@ -38,7 +38,7 @@ import {ISourceFlash, SourceFlash} from '../source/iflash';
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class FlashItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, ISourceAudio, IItemEffect, ISourceFlash {
+  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceFlash {
 
   //Shared with Source
 
@@ -418,25 +418,25 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
 
   // ItemAudio
 
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<FlashItem>;
 
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<FlashItem>;
 
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<FlashItem>;
 
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -521,4 +521,4 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  SourceAudio, ItemEffect, SourceFlash]);
+  Audio, ItemEffect, SourceFlash]);

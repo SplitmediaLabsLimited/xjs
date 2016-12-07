@@ -4,7 +4,7 @@ import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from './iplayback';
-import {ISourceAudio, SourceAudio} from './iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {CuePoint} from './cuepoint';
 import {ISourceMedia, SourceMedia} from './imedia';
 
@@ -31,7 +31,7 @@ import {ISourceMedia, SourceMedia} from './imedia';
  *   })
  * })
  */
-export class MediaSource extends Source implements ISourcePlayback, ISourceAudio,
+export class MediaSource extends Source implements ISourcePlayback, IAudio,
   ISourceMedia {
   // ItemPlayback
   // Inherited from base class, no need to redefine
@@ -194,29 +194,29 @@ export class MediaSource extends Source implements ISourcePlayback, ISourceAudio
    */
   setCuePoints: (value: CuePoint[]) => Promise<MediaSource>;
 
-  // ItemAudio
+  // General Audio
 
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<MediaSource>;
 
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<MediaSource>;
 
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<MediaSource>;
 
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
 }
 
-applyMixins(MediaSource, [SourcePlayback, SourceAudio, SourceMedia])
+applyMixins(MediaSource, [SourcePlayback, Audio, SourceMedia])

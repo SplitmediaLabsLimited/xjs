@@ -11,7 +11,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from '../source/iplayback';
-import {ISourceAudio, SourceAudio} from '../source/iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {CuePoint} from '../source/cuepoint';
 import {Item} from './item';
 import {Transition} from '../transition';
@@ -30,14 +30,14 @@ import {ISourceMedia, SourceMedia} from '../source/imedia';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/ISourceAudio Core/ISourceAudio},
+ * {@link #core/IAudio Core/IAudio},
  * {@link #core/ISourcePlayback Core/ISourcePlayback}
  *
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
 export class MediaItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, ISourcePlayback, ISourceAudio, IItemEffect,
+  IItemChroma, IItemTransition, ISourcePlayback, IAudio, IItemEffect,
   ISourceMedia {
 
   /** See: {@link #core/MediaSource#getFileInfo getFileInfo} */
@@ -530,27 +530,27 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    */
   isVideo: () => Promise<boolean>;
 
-  // ItemAudio
+  // General Audio
 
-  /** See: {@link #core/ISourceAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/ISourceAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<MediaItem>;
 
-  /** See: {@link #core/ISourceAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<MediaItem>;
 
-  /** See: {@link #core/ISourceAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/ISourceAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<MediaItem>;
 
-  /** See: {@link #core/ISourceAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -635,4 +635,4 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(MediaItem, [Item, ItemLayout, ItemColor, ItemChroma,
-  ItemTransition, SourcePlayback, SourceAudio, ItemEffect, SourceMedia]);
+  ItemTransition, SourcePlayback, Audio, ItemEffect, SourceMedia]);
