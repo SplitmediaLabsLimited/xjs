@@ -513,5 +513,3 @@
 		window.external = MockExternal;
 
 })();
-
-window.asyncId_stub = 0;
