@@ -104,36 +104,14 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<ItemType>
-   *
-   * Get the type of the item
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getType().then(function(type) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getType(): Promise<ItemTypes> {
-    return new Promise(resolve => {
-      iItem.get('prop:type', this._id).then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
-        resolve(this._type);
-      });
-    });
-  }
-
-  /**
    * return: Promise<string>
    *
-   * Get the ID of the item
+   * Get the ID of the source
    *
    * #### Usage
    *
    * ```javascript
-   * item.getId().then(function(id) {
+   * source.getId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
@@ -141,25 +119,6 @@ export class Item extends Source implements IItemLayout, ISource {
   getId(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._id);
-    });
-  }
-
-  /**
-   * return: Promise<number>
-   *
-   * Get (1-indexed) Scene ID where the item is loaded
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSceneId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getSceneId(): Promise<number> {
-    return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
     });
   }
 
@@ -190,6 +149,25 @@ export class Item extends Source implements IItemLayout, ISource {
         resolve(view);
       });
     })
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Get (1-indexed) Scene ID where the source is loaded
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getSceneId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSceneId(): Promise<number> {
+    return new Promise(resolve => {
+      resolve(Number(this._sceneId) + 1);
+    });
   }
 
   /**
@@ -605,6 +583,8 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   refresh: () => Promise<Source>
 
+  /** See: {@link #core/Source#getType getType} */
+  getType: () => Promise<ItemTypes>
 }
 
 applyMixins(Item, [iSource, ItemLayout]);

@@ -452,6 +452,22 @@ export class Source implements ISource{
    *  ```
    */
   refresh: () => Promise<Source>
+
+  /**
+   * return: Promise<ItemType>
+   *
+   * Get the type of the source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getType().then(function(type) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getType: () => Promise<ItemTypes>
+
 }
 
 applyMixins(Source, [iSource])

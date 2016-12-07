@@ -1,6 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from './source';
+import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -12,6 +13,7 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
+import {ItemTypes} from '../items/item';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISource {
@@ -93,6 +95,14 @@ export interface ISource {
    * source.
    */
   getItemList(): Promise<ISource[]>
+
+  /**
+   * return: Promise<ItemType>
+   *
+   * Get the type of the source
+   */
+  getType(): Promise<ItemTypes>
+
 }
 
 /**
@@ -108,7 +118,8 @@ export class iSource implements ISource{
   private _keepLoaded: boolean;
   private _globalsrc: boolean;
   private _isItemCall: boolean;
-  private _type: string;
+  private _type: number;
+  private _sceneId: string;
 
   setName(value: string): Promise <iSource> {
     if(this._isItemCall) {
@@ -306,6 +317,15 @@ export class iSource implements ISource{
         });
       }
     })
+  }
+
+  getType(): Promise<ItemTypes> {
+    return new Promise(resolve => {
+      iItem.get('prop:type', this._id).then(val => {
+        this._type = ItemTypes[ItemTypes[Number(val)]];
+        resolve(this._type);
+      });
+    });
   }
 
 }
