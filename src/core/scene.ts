@@ -584,34 +584,29 @@ export class Scene {
    * ```
    *
    */
-  static searchScenesBySourceId(id: string): Promise<Scene> {
+  static searchScenesBySourceId(srcId: string): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
-
       } else {
         Scene._initializeScenePoolAsync().then(cnt => {
-          let match = null;
+          let sceneArr = []
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
-            if (match === null) {
-              scene.getSources().then(sources => {
-                found = sources.some(source => { // unique ID, so get first result
-                  if (source['_id'] === id.toUpperCase()) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                });
-                if (found) {
-                  resolve(scene);
-                } else if (idx === arr.length - 1) {
-                  // last scene, no match
-                  resolve(match);
+            scene.getSources().then(sources => {
+              found = sources.some(source => { // unique ID, so get first result
+                if (source['_srcId'] === srcId.toUpperCase()) {
+                  sceneArr.push(scene);
+                  return true;
+                } else {
+                  return false;
                 }
               });
-            }
+              if (idx === arr.length - 1) {
+                resolve(sceneArr);
+              }
+            });
           });
         });
       }
