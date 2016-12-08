@@ -520,7 +520,8 @@ export class Scene {
   /**
    * return: Promise<Source>
    *
-   * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * Searches all scenes for a source by ID. ID search will return exactly 1
+   * result (IDs are unique) or null.
    *
    * See also: {@link #core/Source Core/Source}
    *
@@ -544,8 +545,8 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getSources().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
+              scene.getSources().then((function(sources) {
+                found = sources.some(item => { // unique ID, so get first result
                   if (item['_id'] === id.toUpperCase()) {
                     match = item;
                     return true;
@@ -576,7 +577,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(scene) {
    *   // scene contains the source
    * });
    * ```
