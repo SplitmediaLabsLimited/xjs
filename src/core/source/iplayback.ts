@@ -2,7 +2,7 @@
 
 import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
-import {Logger} from '../../internal/util/logger'
+import {Logger} from '../../internal/util/logger';
 
 /**
  *  Used by items that implement the Playback interface.
@@ -22,7 +22,7 @@ const AUDIO_REGEX =
 const VIDEO_REGEX =
   /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
 
-export interface IItemPlayback {
+export interface ISourcePlayback {
 
   /**
    * return: Promise<boolean>
@@ -49,7 +49,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setPlaybackPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
@@ -73,7 +73,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setPlaying(value: boolean): Promise<IItemPlayback>;
+  setPlaying(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
@@ -93,7 +93,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackStartPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
@@ -113,7 +113,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackEndPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<ActionAfterPlayback>
@@ -137,7 +137,7 @@ export interface IItemPlayback {
    *
    * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
    */
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
@@ -155,7 +155,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
+  setAutostartOnSceneLoad(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
@@ -171,7 +171,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setForceDeinterlace(value: boolean): Promise<IItemPlayback>;
+  setForceDeinterlace(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
@@ -189,7 +189,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setRememberingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  setRememberingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
@@ -205,7 +205,7 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setShowingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  setShowingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<CuePoint[]>
@@ -225,7 +225,7 @@ export interface IItemPlayback {
    *
    * See also: {@link #core/CuePoint Core/CuePoint}
    */
-  setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
+  setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
 
   getValue(): Promise<string>;
   setValue(value: string): Promise<any>;
@@ -245,9 +245,9 @@ export interface IItemPlayback {
   isVideo(): Promise<boolean>;
 }
 
-export class ItemPlayback implements IItemPlayback {
+export class SourcePlayback implements ISourcePlayback {
   private _id: string;
-  protected _isItemCall: boolean;
+  private _isItemCall: boolean;
 
   isSeekable(): Promise<boolean> {
     if(this._isItemCall){
@@ -271,7 +271,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackPosition(value: number): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setPlaybackPosition', true)
     }
@@ -305,7 +305,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaying(value: boolean): Promise<ItemPlayback> {
+  setPlaying(value: boolean): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setPlaying', true)
     }
@@ -328,7 +328,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackStartPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackStartPosition(value: number): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setPlaybackStartPosition', true)
     }
@@ -350,7 +350,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackEndPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackEndPosition(value: number): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setPlaybackEndPosition', true)
     }
@@ -373,7 +373,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setActionAfterPlayback', true)
     }
@@ -395,7 +395,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setAutostartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
+  setAutostartOnSceneLoad(value: boolean): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
     }
@@ -417,7 +417,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setForceDeinterlace(value: boolean): Promise<ItemPlayback> {
+  setForceDeinterlace(value: boolean): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setForceDeinterlace', true)
     }
@@ -439,7 +439,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setRememberingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setRememberingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true)
     }
@@ -462,7 +462,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setShowingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setShowingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
     }
@@ -491,7 +491,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setCuePoints(cuePoints: CuePoint[]): Promise<ItemPlayback> {
+  setCuePoints(cuePoints: CuePoint[]): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setCuePoints', true)
     }
@@ -535,7 +535,7 @@ export class ItemPlayback implements IItemPlayback {
     });
   };
 
-  setValue(filename: string): Promise<ItemPlayback> {
+  setValue(filename: string): Promise<SourcePlayback> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setValue', true)
     }

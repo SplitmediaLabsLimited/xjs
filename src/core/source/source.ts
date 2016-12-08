@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {applyMixins} from '../../internal/util/mixin';
-import {ItemTypes, Item} from '../items/item'
+import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -12,7 +12,56 @@ import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {iSource, ISource} from '../source/isource'
+import {Item, ViewTypes} from '../items/item';
+import {iSource, ISource, ItemTypes} from '../source/isource';
+import {GameSource} from './game';
+import {CameraSource} from './camera';
+import {AudioSource} from './audio';
+import {VideoPlaylistSource} from './videoplaylist'
+import {HtmlSource} from './html';
+import {FlashSource} from './flash';
+import {ScreenSource} from './screen';
+import {ImageSource} from './image';
+import {MediaSource} from './media';
+
+/**
+ * A `Source` represents an object of an Item that is used on the stage.
+ * Manipulating Source specific properties would render changes to all
+ * items linked to that source.
+ *
+ * Implements: @{link #core/ISource Core/ISource}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Scene = xjs.Scene.getById(1)
+ *
+ * Scene.getSource().then(function(source) {
+ *    return source.setCustomName('Custom Name')
+ * }).then(function(source) {
+ *    // set more properties here
+ * })
+ *
+ *
+ * All methods marked as *Chainable* resolve with the original `Source` instance.
+ * This allows you to perform sequential operations correctly: *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var Source = xjs.Source;
+ *
+ * xjs.ready()
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source){
+ *     //Manipulate source here
+ *     return source.setName('New Name');
+ *  }).then(function(source){
+ *     return source.setKeepLoaded(true)
+ *  }).then(function(source){
+ *     // set more properties here
+ *  })
+ * ```
+ */
 
 export class Source implements ISource{
   protected _id: string;
@@ -62,50 +111,50 @@ export class Source implements ISource{
    */
   static getCurrentSource(): Promise<Source> {
     return new Promise((resolve, reject) => {
-      console.warn('Warning! getCurrentSource is deprecated and will be ' +
-        'removed soon. Please use getItemList instead. (Only works for ' +
-        'XSplit Broadcaster versions above 2.8.xxxx.xxxx');
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
+        (Environment.isSourcePlugin() || Environment.isSourceProps()) &&
         versionCompare(getVersion())
           .is
           .greaterThan(minVersion)
       ) {
         Source.getItemList().then(items => {
           if (items.length > 0) {
-            resolve(items[0]);
+            resolve(items[0].getSource());
           } else {
             reject(Error('Cannot get item list'))
           }
         });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          resolve(item);
+      } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
+        Scene.searchSourcesById(iItem.getBaseId()).then(source => {
+          resolve(source);
         });
       }
     });
   }
 
   /**
-   * return: Promise<Source[]>
+   * return: Promise<Item[]>
    *
    * Get the Item List of the current source
    *
    * #### Usage
    *
    * ```javascript
-   * xjs.Item.getItemList().then(function(item) {
-   *   // This will fetch the item list of the current source
+   * xjs.Item.getItemList().then(function(items) {
+   *   // This will fetch the item list of the current Item
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *   }
    * }).catch(function(err) {
    *   // Handle the error here. Errors would only occur
    *   // if we try to execute this method on Extension plugins
    * });
    * ```
    */
-  static getItemList(): Promise<Source[]> {
+  static getItemList(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have sources associated with them.'));
@@ -119,7 +168,7 @@ export class Source implements ISource{
           itemArray.push(item);
           resolve(itemArray);
         });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+      } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];
           const itemsArray = itemlist.split(',');
@@ -140,8 +189,64 @@ export class Source implements ISource{
     });
   }
 
+  /**
+   * return: Promise<Source[]>
+   *
+   * Get all unique Source from every scene.
+   * Total number of Sources returned may be less than total number of Items on
+   * all the scenes due to `Linked` items only having a single Source.
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Source.getAllSources().then(function(sources) {
+   *   for(var i = 0 ; i < sources.length ; i++) {
+   *      if(sources[i] instanceof xjs.HtmlSource) {
+   *        // Manipulate HTML Source here
+   *      }
+   *    }
+   * })
+   */
+  static getAllSources(): Promise<Source[]> {
+    return new Promise((resolve,reject)=> {
+      let sourceArray = [];
+      let allSources = []
+      let allJson = [];
+      let promiseArray = []
+      Scene.getSceneCount().then(count => {
+        let jsonePromise = x => new Promise(jsonResolve => {
+          iApp.getAsList('presetconfig:' + x).then(jsonArr => {
+            jsonResolve(jsonArr)
+          })
+        })
+
+        for (var i = 0 ; i < count ; i++) {
+          promiseArray.push(jsonePromise(i))
+        }
+        Promise.all(promiseArray).then(jsons => {
+          for(var i = 0; i < jsons.length ; i++) {
+            allJson = allJson.concat(jsons[i])
+          }
+          let sourcePromise = index => new Promise(sourceResolve => {
+            Scene.searchSourcesById(allJson[index]['id']).then(source => {
+              allSources.push(source)
+            })
+            sourceResolve()
+          })
+
+          for(var i = 0; i < allJson.length ; i++) {
+            sourceArray.push(sourcePromise(i))
+          }
+          Promise.all(sourceArray).then(args => {
+            resolve(allSources)
+          })
+        })
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  }
+
   // Shared with Item
-  //
 
   /**
    * param: (value: string)
@@ -158,9 +263,9 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.setName('newNameHere').then(function(item) {
+   * source.setName('newNameHere').then(function(source) {
    *   // Promise resolves with same Item instance when name has been set
-   *   return item.getName();
+   *   return source.getName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
    * });
@@ -176,7 +281,7 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.getName().then(function(name) {
+   * source.getName().then(function(name) {
    *   // Do something with the name
    * });
    * ```
@@ -189,7 +294,7 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * In XBC 2.8, CustomName can be set individualy even on linked items.
+   * In XBC 2.8, CustomName can be set individually even on linked items.
    * For XBC 2.9 onwards, CustomName will be the same across all linked Items
    * to the same Source
    *
@@ -202,9 +307,9 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.setCustomName('newNameHere').then(function(item) {
+   * source.setCustomName('newNameHere').then(function(source) {
    *   // Promise resolves with same Item instance when custom name has been set
-   *   return item.getCustomName();
+   *   return source.getCustomName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
    * });
@@ -215,12 +320,12 @@ export class Source implements ISource{
   /**
    * return: Promise<string>
    *
-   * Gets the custom name of the item.
+   * Gets the custom name of the source.
    *
    * #### Usage
    *
    * ```javascript
-   * item.getCustomName().then(function(name) {
+   * source.getCustomName().then(function(name) {
    *   // Do something with the name
    * });
    * ```
@@ -230,7 +335,7 @@ export class Source implements ISource{
   /**
    * return: Promise<string|XML>
    *
-   * Gets a special string that refers to the item's main definition.
+   * Gets a special string that refers to the source's main definition.
    *
    * This method can resolve with an XML object, which is an object generated by
    * the framework. Call `toString()` to transform into an XML String. (See the
@@ -239,7 +344,7 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.getValue().then(function(value) {
+   * source.getValue().then(function(value) {
    *   // Do something with the value
    * });
    * ```
@@ -252,16 +357,16 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * Set the item's main definition; this special string defines the item's
-   * "identity". Each type of item requires a different format for this value.
+   * Set the source's main definition; this special string defines the source's
+   * "identity". Each type of source requires a different format for this value.
    *
    * *Chainable.*
    *
    * **WARNING:**
-   * Please do note that using this method COULD break the current item, possibly modifying
-   * its type IF you set an invalid string for the current item.
+   * Please do note that using this method COULD break the current source, possibly modifying
+   * its type IF you set an invalid string for the current source.
    *
-   * #### Possible values by item type
+   * #### Possible values by source type
    * - FILE - path/URL
    * - LIVE - Device ID
    * - BITMAP - path
@@ -273,9 +378,9 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
-   *   .then(function(item) {
-   *   // Promise resolves with same Item instance
+   * source.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
+   *   .then(function(source) {
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -289,7 +394,7 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * item.getKeepLoaded().then(function(isLoaded) {
+   * source.getKeepLoaded().then(function(isLoaded) {
    *   // The rest of your code here
    * });
    * ```
@@ -304,15 +409,15 @@ export class Source implements ISource{
    *
    * Set Keep loaded option to ON or OFF
    *
-   * Items with Keep loaded set to ON would emit `scene-load` event each time
-   * the active scene switches to the item's current scene.
+   * Sources with Keep loaded set to ON would emit `scene-load` event each time
+   * the active scene switches to the source's current scene.
    *
    * *Chainable.*
    *
    * #### Usage
    *
    * ```javascript
-   * item.setKeepLoaded(true).then(function(item) {
+   * source.setKeepLoaded(true).then(function(source) {
    *   // Promise resolves with same Item instance
    * });
    * ```
@@ -322,39 +427,59 @@ export class Source implements ISource{
   /**
    * return: Promise<string>
    *
-   * Get the Source ID of the item.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   * Get the Source ID of the source.
+   * *Available only on XSplit Broadcaster versions higher than 2.8.1603.0401*
    *
    * #### Usage
    *
    * ```javascript
-   * item.getSourceId().then(function(id) {
+   * source.getSourceId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
    */
   getSourceId: () => Promise<string>
 
+  /**
+   * See {@link #core/Item#getItemList getItemList}
+   */
+  getItemList: () => Promise<Item[]>
 
   /**
-   *  return: Promise<Item>
+   *  return: Promise<Source>
    *
-   *  Refreshes the specified item.
+   *  Refreshes the specified Source.
    *
    *  #### Usage
    *  ```javascript
-   *  // Sample 1: let item refresh itself
-   *  xjs.Item.getItemList().then(function(item) {
-   *    item.refresh(); // execution of JavaScript halts because of refresh
+   *  // Sample 1: let source refresh itself
+   *  xjs.Source.getSource().then(function(source) {
+   *    source[0].refresh(); // execution of JavaScript halts because of refresh
    *  });
    *
-   *  // Sample 2: refresh some other item 'otherItem'
-   *  otherItem.refresh().then(function(item) {
-   *    // further manipulation of other item goes here
+   *  // Sample 2: refresh some other source 'otherSource'
+   *  otherSource.refresh().then(function(source) {
+   *    // further manipulation of other source goes here
    *  });
    *  ```
    */
   refresh: () => Promise<Source>
+
+  /**
+   * return: Promise<ItemType>
+   *
+   * Get the type of the source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getType().then(function(type) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getType: () => Promise<ItemTypes>
+
 }
 
 applyMixins(Source, [iSource])

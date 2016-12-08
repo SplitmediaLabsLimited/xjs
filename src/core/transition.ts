@@ -5,18 +5,18 @@ import {App as iApp} from '../internal/app';
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
  * This may be used to set the application's transition scheme when switching scenes,
- * or to set an individual source's transition when its visibility changes.
+ * or to set an individual item's transition when its visibility changes.
  *
  * Simply use one of the available Transition objects such as Transition.FAN or
  * Transition.COLLAPSE as the parameter to the `setTransition()` method of an
- * App instance, or a valid Source instance that supports transitions (this
- * includes {@link #core/CameraSource Core/CameraSource},
- * {@link #core/CameraSource Core/FlashSource},
- * {@link #core/CameraSource Core/GameSource},
- * {@link #core/GameSource Core/HtmlSource},
- * {@link #core/CameraSource Core/ImageSource},
- * {@link #core/GameSource Core/MediaSource}, and
- * {@link #core/HtmlSource Core/ScreenSource}.)
+ * App instance, or a valid Item instance that supports transitions (this
+ * includes {@link #core/CameraItem Core/CameraItem},
+ * {@link #core/FlashItem Core/FlashItem},
+ * {@link #core/GameItem Core/GameItem},
+ * {@link #core/HtmlItem Core/HtmlItem},
+ * {@link #core/ImageItem Core/ImageItem},
+ * {@link #core/MediaItem Core/MediaItem}, and
+ * {@link #core/ScreenItem Core/ScreenItem}.)
  *
  * For scene transitions, you can also use custom stinger transitions,
  * which are exposed through the static method Transition.getSceneTransitions

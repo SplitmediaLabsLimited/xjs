@@ -86,7 +86,7 @@ function readMetaConfigUrl(): Promise<any> {
 function getCurrentSourceId(): Promise<any> {
   return new Promise(resolve => {
     if (
-      Environment.isSourceConfig() ||
+      Environment.isSourceProps() ||
       (
         Environment.isSourcePlugin() &&
         versionCompare(getVersion())
@@ -99,7 +99,7 @@ function getCurrentSourceId(): Promise<any> {
         result => {
           let id = result;
           Item.setBaseId(id);
-          if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
+          if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
             Item.lockSourceSlot(id);
           }
           resolve();
@@ -112,7 +112,7 @@ function getCurrentSourceId(): Promise<any> {
 
 function informWhenConfigLoaded(): Promise<any> {
   return new Promise(resolve => {
-    if (Environment.isSourceConfig()) {
+    if (Environment.isSourceProps()) {
       window.addEventListener('load', () => {
         SourcePropsWindow.getInstance().emit('config-load');
         resolve();

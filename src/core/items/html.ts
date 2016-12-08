@@ -11,15 +11,15 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
+import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
 import {Source} from '../source/source'
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
+import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -31,8 +31,8 @@ import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/IAudio Core/IAudio},
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -57,7 +57,8 @@ import {iHtmlSource, IHtmlSource} from '../source/ihtmlsource'
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, ISourceConfigurable, IAudio, IItemEffect,
+  ISourceHtml {
   /**
    * param: (func: string, arg: string)
    * ```
@@ -119,7 +120,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
     });
   }
 
-  //iHtmlSource
+  //iSourceHtml
 
   /**
    * See: {@link #core/HtmlSource#isBrowserTransparent isBrowserTransparent}
@@ -552,49 +553,49 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<HtmlItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<HtmlItem>;
 
   // ItemAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -678,5 +679,5 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
 }
 
-applyMixins(HtmlItem, [iHtmlSource ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, ItemAudio, ItemEffect]);
+applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  SourceConfigurable, Audio, ItemEffect]);

@@ -1,6 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from './source';
+import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -13,6 +14,23 @@ import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
 import {Logger} from '../../internal/util/logger';
+
+/**
+ * Used by items to define its type.
+ *
+ * Check `getType()` method of {@link #core/Item#getType Core/Item}
+ */
+export enum ItemTypes {
+  UNDEFINED,
+  FILE,
+  LIVE,
+  TEXT,
+  BITMAP,
+  SCREEN,
+  FLASHFILE,
+  GAMESOURCE,
+  HTML
+}
 
 export interface ISource {
   /**
@@ -84,6 +102,23 @@ export interface ISource {
    * Refreshes Specified Item
    */
   refresh(): Promise<ISource>
+
+  /**
+   * return: Promise<ISource[]>
+   *
+   * Get the item list of the current item instance. This is useful when an item is
+   * an instance of a linked item, with multiple other items having the same
+   * source.
+   */
+  getItemList(): Promise<ISource[]>
+
+  /**
+   * return: Promise<ItemType>
+   *
+   * Get the type of the source
+   */
+  getType(): Promise<number>
+
 }
 
 /**
@@ -92,23 +127,15 @@ export interface ISource {
  */
 
 export class iSource implements ISource{
-  protected _id: string;
-  protected _value: any;
-  protected _name: string;
-  protected _cname: string;
-  protected _keepLoaded: boolean;
-  protected _globalsrc: boolean;
-  protected _isItemCall: boolean;
-  protected _type: string;
-
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._name = props['name'];
-    this._cname = props['cname'];
-    this._id = props['id'];
-    this._value = props['value'];
-  }
+  private _id: string;
+  private _value: any;
+  private _name: string;
+  private _cname: string;
+  private _keepLoaded: boolean;
+  private _globalsrc: boolean;
+  private _isItemCall: boolean;
+  private _type: ItemTypes;
+  private _sceneId: string;
 
   setName(value: string): Promise <iSource> {
     if(this._isItemCall) {
@@ -274,4 +301,48 @@ export class iSource implements ISource{
       });
     });
   }
+
+  getItemList(): Promise<iSource[]> {
+    return new Promise((resolve, reject) => {
+      if (
+        versionCompare(getVersion())
+          .is
+          .lessThan(minVersion)
+      ) {
+        Scene.searchItemsById(this._id).then(item => {
+          const itemArray = [];
+          itemArray.push(item);
+          resolve(itemArray);
+        });
+      } else {
+        iItem.get('itemlist', this._id).then(itemlist => {
+          const promiseArray: Promise<iSource>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              Scene.searchItemsById(itemId).then(item => {
+                itemResolve(item);
+              }).catch(() => itemResolve(null));
+            }));
+          });
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results.filter(res => res !== null));
+          });
+        });
+      }
+    })
+  }
+
+  getType(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:type', this._id).then(val => {
+        // this._type = ItemTypes[ItemTypes[Number(val)]];
+        console.log('Anything', this._type)
+        resolve(this._type);
+      });
+    });
+  }
+
 }

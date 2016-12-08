@@ -11,7 +11,9 @@ export class Logger {
   static warn(type:string, warnCaller: string, once: boolean = false) {
     switch(type){
       case 'sourceWarning':
-        Logger.warnMessage = 'Warning! ' + warnCaller +' is a Source specific method. Use this through Source to avoid this warning.'
+        Logger.warnMessage = 'Info: ' + warnCaller +' accesses a source property,' +
+        ' which is shared by all items linked to the source. Setting this property' +
+        ' will affect all linked items.'
         break;
       case 'other':
         //Other conditions that we can add for other warning instances

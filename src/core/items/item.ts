@@ -16,7 +16,7 @@ import {
   globalsrcMinVersion
 } from '../../internal/util/version';
 
-import {iSource, ISource} from '../source/isource';
+import {iSource, ISource, ItemTypes} from '../source/isource';
 import {Source} from '../source/source'
 import {GameSource} from '../source/game';
 import {CameraSource} from '../source/camera';
@@ -28,18 +28,11 @@ import {ScreenSource} from '../source/screen';
 import {ImageSource} from '../source/image';
 import {MediaSource} from '../source/media';
 
-export enum ItemTypes {
-  UNDEFINED,
-  FILE,
-  LIVE,
-  TEXT,
-  BITMAP,
-  SCREEN,
-  FLASHFILE,
-  GAMESOURCE,
-  HTML
-}
-
+/**
+ * Used by items to define its view type.
+ *
+ * Check `getView()` method of {@link #core/Item#getView Core/Item}
+ */
 export enum ViewTypes {
   MAIN,
   PREVIEW,
@@ -47,23 +40,26 @@ export enum ViewTypes {
 }
 
 /**
- * An `Item` represents an object that is used as a item on the stage.
- * Some possible items are games, microphones, or a webpage.
+ * An `Item` is rendered from a {@link #core/Source Source} and represents an
+ * object that is used as an item on the stage. Multiple items may be linked to
+ * a singled source and any changes made to the source would affect all linked
+ * items.
  *
- * Implements: {@link #core/IItemLayout Core/IItemLayout}
+ * Implements: {@link #core/ISource Core/ISource}
+ * {@link #core/IItemLayout Core/IItemLayout}
  *
  * ### Basic Usage
  *
  * ```javascript
  * var xjs = require('xjs');
- * var Scene = xjs.Scene.getById(0);
+ * var Scene = xjs.Scene.getById(1);
  *
  * Scene.getItems().then(function(items) {
  *   if (items.length === 0) return;
  *
  *   // There's a valid item, let's use that
  *   var item = items[items.length - 1];
- *   return item.setCustomName('ItemTesting');
+ *   return item.getId('ItemTesting');
  * }).then(function(item) {
  *   // Do something else here
  * });
@@ -93,36 +89,14 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<ItemTypes>
-   *
-   * Get the type of the item
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getType().then(function(type) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getType(): Promise<ItemTypes> {
-    return new Promise(resolve => {
-      iItem.get('prop:type', this._id).then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
-        resolve(this._type);
-      });
-    });
-  }
-
-  /**
    * return: Promise<string>
    *
-   * Get the ID of the item
+   * Get the ID of the source
    *
    * #### Usage
    *
    * ```javascript
-   * item.getId().then(function(id) {
+   * source.getId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
@@ -130,25 +104,6 @@ export class Item extends Source implements IItemLayout, ISource {
   getId(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._id);
-    });
-  }
-
-  /**
-   * return: Promise<number>
-   *
-   * Get (1-indexed) Scene ID where the item is loaded
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSceneId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getSceneId(): Promise<number> {
-    return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
     });
   }
 
@@ -182,6 +137,25 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
+   * return: Promise<number>
+   *
+   * Get (1-indexed) Scene ID where the source is loaded
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getSceneId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSceneId(): Promise<number> {
+    return new Promise(resolve => {
+      resolve(Number(this._sceneId) + 1);
+    });
+  }
+
+  /**
    * return: XML
    *
    * Convert the Item object to an XML object. Use `toString()` to
@@ -209,64 +183,15 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<Item[]>
-   *
-   * Get the item list of the attached item. This is useful when an item is
-   * an instance of a linked item, with multiple other items having the same
-   * source.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * // item pertains to an actual item instance
-   * item.getItemList().then(function(item) {
-   *   // This will fetch the item list of the current item
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
-   * ```
-   */
-  getItemList(): Promise<Item[]> {
-    return new Promise((resolve, reject) => {
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(this._id).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
-      } else {
-        iItem.get('itemlist', this._id).then(itemlist => {
-          const promiseArray: Promise<Item>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
-
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
-          });
-        });
-      }
-    })
-  }
-
-  /**
-   * param: (options: {linked:<boolean>, scene<Scene> } | empty)
+   * param: (options: {linked?:<boolean>, scene?:<Scene> })
    * ```
    * return: Promise<Item>
    * ```
    * Duplicate current item. Will duplicate item into the current scene
-   * or specified scene
+   * or specified scene as Linked or Unlinked.
+   *
+   * Linked items would generally have a single source, and any changes in the
+   * property of an item would be applied to all linked items.
    *
    *  *Chainable*
    *
@@ -280,7 +205,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
 
-  duplicate(options: { linked: boolean, scene: Scene }): Promise<Item> {
+  duplicate(options: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       if(versionCompare(getVersion())
         .is
@@ -337,7 +262,10 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item>
    *
-   * Unlinks selected item to linked items
+   * Unlinks selected item from linked items.
+   *
+   * Unlinking an item would make it independent of the changes made on other
+   * similar items.
    *
    * #### Usage
    * ```javascript
@@ -358,23 +286,46 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<Source[]>
+   * return: Promise<Item[]>
    *
-   * Gets the Source of linked items.
+   * Get the item list of the current item instance. This is useful when an item is
+   * an instance of a linked item, with multiple other items having the same
+   * source.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * // item pertains to an actual item instance
+   * item.getItemList().then(function(items) {
+   *   // This will fetch the linked items list of the current item
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[0].getSceneId()
+   *   }
+   * }).catch(function(err) {
+   *   // Handle the error here. Errors would only occur
+   *   // if we try to execute this method on Extension plugins
+   * });
+   * ```
+   */
+  getItemList: () => Promise<Item[]>
+
+  /**
+   * return: Promise<Source>
+   *
+   * Gets the Source of an item, linked items would only have 1 source.
    *
    * *Chainable*
    *
    * #### Usage
    * ```javascript
-   * xjs.Item.getSource.then(function(sources){
-   *   for(var i = 0 ; i < sources.length ; i++) {
-   *     //do something with every Source here
-   *     sources[i].setName('Name')
-   *   }
+   * item.getSource().then(function(source) {
+   *   //Manipulate source here
+   *   source.setName('New Name')
    * })
+   * ```
    */
-
-  static getSource(): Promise<Source[]> {
+  getSource(): Promise<Source> {
     let uniqueSource = [];
     let uniqueObj = {};
     let _xmlparams;
@@ -383,75 +334,71 @@ export class Item extends Source implements IItemLayout, ISource {
     var promiseArray: Promise<Source>[] = [];
 
     return new Promise((resolve, reject) => {
-      if (Environment.isExtension()) {
-        //do something or not: temp error
-        reject(Error('Does not work here!'))
-      } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceConfig())) {
-        // do other here
-        Item.getItemList().then((items) => {
-          for(var i=0; i< items.length; i++) {
-            for(var key in items[i]) {
-              if(key === '_srcId') {
-                uniqueObj[items[i][key]] = items[i]
-              }
+      Item.getItemList().then((items) => {
+        for(var i=0; i< items.length; i++) {
+          for(var key in items[i]) {
+            if(key === '_srcId') {
+              uniqueObj[items[i][key]] = items[i]
             }
           }
-          for(var j in uniqueObj) {
-            if(uniqueObj.hasOwnProperty(j)) {
-              uniqueSource.push(uniqueObj[j])
-            }
+        }
+        for(var j in uniqueObj) {
+          if(uniqueObj.hasOwnProperty(j)) {
+            uniqueSource.push(uniqueObj[j])
           }
+        }
 
-          let typePromise = index => new Promise(typeResolve => {
-            let source = uniqueSource[index];
-            let params = source['_xmlparams']
-            let type = Number(source['_type']);
-            if (type === ItemTypes.GAMESOURCE) {
-              typeResolve(new GameSource(params));
-            } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-              source['_name'].indexOf('Video Playlist') === 0 &&
-              source['FilePlaylist'] !== ''){
-              typeResolve(new VideoPlaylistSource(params));
-            } else if (type === ItemTypes.HTML) {
-              typeResolve(new HtmlSource(params));
-            } else if (type === ItemTypes.SCREEN) {
-              typeResolve(new ScreenSource(params));
-            } else if (type === ItemTypes.BITMAP ||
-                type === ItemTypes.FILE &&
-                /\.gif$/.test(source['item'])) {
-              typeResolve(new ImageSource(params));
-            } else if (type === ItemTypes.FILE &&
-                /\.(gif|xbs)$/.test(source['item']) === false &&
-                /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-              typeResolve(new MediaSource(params));
-            } else if (Number(source['type']) === ItemTypes.LIVE &&
-              source['item'].indexOf(
-                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-              typeResolve(new CameraSource(params));
-            } else if (Number(source['type']) === ItemTypes.LIVE &&
-              source['item'].indexOf(
-                '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-              typeResolve(new AudioSource(params));
-            } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
-              typeResolve(new FlashSource(params));
-            } else {
-                typeResolve(new Source(params));
-            }
-          });
-
-          if (Array.isArray(uniqueSource)) {
-            for (var i = 0; i < uniqueSource.length; i++) {
-              promiseArray.push(typePromise(i));
-            }
+        let typePromise = index => new Promise(typeResolve => {
+          let source = uniqueSource[index];
+          let params = source['_xmlparams']
+          let type = Number(source['_type']);
+          if (type === ItemTypes.GAMESOURCE) {
+            typeResolve(new GameSource(params));
+          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+            source['_name'].indexOf('Video Playlist') === 0 &&
+            source['FilePlaylist'] !== ''){
+            typeResolve(new VideoPlaylistSource(params));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HtmlSource(params));
+          } else if (type === ItemTypes.SCREEN) {
+            typeResolve(new ScreenSource(params));
+          } else if (type === ItemTypes.BITMAP ||
+              type === ItemTypes.FILE &&
+              /\.gif$/.test(source['item'])) {
+            typeResolve(new ImageSource(params));
+          } else if (type === ItemTypes.FILE &&
+              /\.(gif|xbs)$/.test(source['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+            typeResolve(new MediaSource(params));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+            typeResolve(new CameraSource(params));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioSource(params));
+          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+            typeResolve(new FlashSource(params));
+          } else {
+              typeResolve(new Source(params));
           }
+        });
 
-          Promise.all(promiseArray).then(results => {
-            resolve(results);
-          });
+        if (Array.isArray(uniqueSource)) {
+          for (var i = 0; i < uniqueSource.length; i++) {
+            promiseArray.push(typePromise(i));
+          }
+        }
 
-        })
-      }
+        Promise.all(promiseArray).then(results => {
+          if(results.length > 1) {
+            resolve(results)
+          } else {
+            resolve(results[0]);
+          }
+        });
+      })
     })
   }
 
@@ -613,6 +560,8 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   refresh: () => Promise<Source>
 
+  /** See: {@link #core/Source#getType getType} */
+  getType: () => Promise<ItemTypes>
 }
 
 applyMixins(Item, [iSource, ItemLayout]);

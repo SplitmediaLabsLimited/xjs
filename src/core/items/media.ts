@@ -10,16 +10,16 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
-import {IItemAudio, ItemAudio} from './iaudio';
-import {CuePoint} from './cuepoint';
+import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from '../source/iplayback';
+import {IAudio, Audio} from '../source/iaudio';
+import {CuePoint} from '../source/cuepoint';
 import {Item} from './item';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
-import {JSON as JXON} from '../../internal/util/json';
 import {MediaSource}   from '../source/media';
+import {ISourceMedia, SourceMedia} from '../source/imedia';
 
 /**
  * The MediaItem class represents a playable media file.
@@ -30,81 +30,18 @@ import {MediaSource}   from '../source/media';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemPlayback Core/IItemPlayback}
+ * {@link #core/IAudio Core/IAudio},
+ * {@link #core/ISourcePlayback Core/ISourcePlayback}
  *
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
 export class MediaItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemPlayback, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, ISourcePlayback, IAudio, IItemEffect,
+  ISourceMedia {
 
-  /**
-   * return: Promise<object>
-   *
-   * Gets file information such as codecs, bitrate, resolution, etc.
-   *
-   * sample file info object format:
-   *
-   * {
-   *  "audio": {
-   *    "duration":"1436734690",
-   *    "samplerate":"44100",
-   *    "bitrate":"128000",
-   *    "codec":"mp3"},
-   *  "video":{
-   *    "frameduration":"333670",
-   *    "bitrate":"1132227",
-   *    "duration":"1436436440",
-   *    "height":"240",
-   *    "width":"320",
-   *    "codec":"mpeg4"}
-   * }
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * mediaItem.getFileInfo().then(function(value) {
-   *   // Do something with the value
-   *   var audioCodec;
-   *   if (typeof value['audio'] !== 'undefined' && typeof value['audio']['codec']) {
-   *     audioCodec = value['audio']['codec'];
-   *   }
-   * });
-   * ```
-   */
-  getFileInfo(): Promise<Object> {
-    return new Promise((resolve, reject) => {
-      iItem.get('FileInfo', this._id).then(val => {
-        try {
-          let fileInfoObj: Object = {};
-          let fileInfoJXON = JXON.parse(val);
-          if (typeof fileInfoJXON['children'] !== 'undefined'
-            && fileInfoJXON['children'].length > 0) {
-            let fileInfoChildren = fileInfoJXON['children'];
-            for (var i = fileInfoChildren.length - 1; i >= 0; i--) {
-              var child = fileInfoChildren[i];
-              var childObj: Object = {};
-              var childObjKeys = Object.keys(child);
-              for (var j = childObjKeys.length - 1; j >= 0; j--) {
-                var key = childObjKeys[j];
-                if (key !== 'value' && key !== 'tag') {
-                  childObj[key] = child[key];
-                }
-              }
-              var tag = child['tag'];
-              fileInfoObj[tag] = childObj;
-            }
-            resolve(fileInfoObj);
-          } else {
-            resolve(fileInfoObj);
-          }
-        } catch (e) {
-          reject(Error('Error retrieving file information'));
-        }
-      });
-    });
-  }
+  /** See: {@link #core/MediaSource#getFileInfo getFileInfo} */
+  getFileInfo: () => Promise<Object>
 
   // ItemLayout
 
@@ -470,112 +407,112 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   // ItemPlayback
 
   /**
-   * See: {@link #core/IItemPlayback#isSeekable isSeekable}
+   * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
    */
   isSeekable: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#getPlaybackPosition getPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#getPlaybackPosition getPlaybackPosition}
    */
   getPlaybackPosition: () => Promise<number>;
 
   /**
-   * See: {@link #core/IItemPlayback#setPlaybackPosition setPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#setPlaybackPosition setPlaybackPosition}
    */
   setPlaybackPosition: (value: number) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#getPlaybackDuration getPlaybackDuration}
+   * See: {@link #core/ISourcePlayback#getPlaybackDuration getPlaybackDuration}
    */
   getPlaybackDuration: () => Promise<number>;
 
   /**
-   * See: {@link #core/IItemPlayback#isPlaying isPlaying}
+   * See: {@link #core/ISourcePlayback#isPlaying isPlaying}
    */
   isPlaying: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#setPlaying setPlaying}
+   * See: {@link #core/ISourcePlayback#setPlaying setPlaying}
    */
   setPlaying: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#getPlaybackStartPosition getPlaybackStartPosition}
+   * See: {@link #core/ISourcePlayback#getPlaybackStartPosition getPlaybackStartPosition}
    */
   getPlaybackStartPosition: () => Promise<number>;
 
   /**
-   * See: {@link #core/IItemPlayback#setPlaybackStartPosition setPlaybackStartPosition}
+   * See: {@link #core/ISourcePlayback#setPlaybackStartPosition setPlaybackStartPosition}
    */
   setPlaybackStartPosition: (value: number) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#getPlaybackEndPosition getPlaybackEndPosition}
+   * See: {@link #core/ISourcePlayback#getPlaybackEndPosition getPlaybackEndPosition}
    */
   getPlaybackEndPosition: () => Promise<number>;
 
   /**
-   * See: {@link #core/IItemPlayback#setPlaybackEndPosition setPlaybackEndPosition}
+   * See: {@link #core/ISourcePlayback#setPlaybackEndPosition setPlaybackEndPosition}
    */
   setPlaybackEndPosition: (value: number) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#getActionAfterPlayback getActionAfterPlayback}
+   * See: {@link #core/ISourcePlayback#getActionAfterPlayback getActionAfterPlayback}
    */
   getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
 
   /**
-   * See: {@link #core/IItemPlayback#setActionAfterPlayback setActionAfterPlayback}
+   * See: {@link #core/ISourcePlayback#setActionAfterPlayback setActionAfterPlayback}
    */
   setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
+   * See: {@link #core/ISourcePlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
    */
   isAutostartOnSceneLoad: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
+   * See: {@link #core/ISourcePlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
    */
   setAutostartOnSceneLoad: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#isForceDeinterlace isForceDeinterlace}
+   * See: {@link #core/ISourcePlayback#isForceDeinterlace isForceDeinterlace}
    */
   isForceDeinterlace: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#setForceDeinterlace setForceDeinterlace}
+   * See: {@link #core/ISourcePlayback#setForceDeinterlace setForceDeinterlace}
    */
   setForceDeinterlace: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
    */
   isRememberingPlaybackPosition: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
    */
   setRememberingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
    */
   isShowingPlaybackPosition: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
+   * See: {@link #core/ISourcePlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
    */
   setShowingPlaybackPosition: (value: boolean) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#getCuePoints getCuePoints}
+   * See: {@link #core/ISourcePlayback#getCuePoints getCuePoints}
    */
   getCuePoints: () => Promise<CuePoint[]>;
 
   /**
-   * See: {@link #core/IItemPlayback#setCuePoints setCuePoints}
+   * See: {@link #core/ISourcePlayback#setCuePoints setCuePoints}
    */
   setCuePoints: (value: CuePoint[]) => Promise<MediaItem>;
 
@@ -584,36 +521,36 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   // setValue: (value: string) => Promise<MediaItem>;
 
   /**
-   * See: {@link #core/IItemPlayback#isAudio isAudio}
+   * See: {@link #core/ISourcePlayback#isAudio isAudio}
    */
   isAudio: () => Promise<boolean>;
 
   /**
-   * See: {@link #core/IItemPlayback#isVideo isVideo}
+   * See: {@link #core/ISourcePlayback#isVideo isVideo}
    */
   isVideo: () => Promise<boolean>;
 
-  // ItemAudio
+  // General Audio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<MediaItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<MediaItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<MediaItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -698,4 +635,4 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(MediaItem, [Item, ItemLayout, ItemColor, ItemChroma,
-  ItemTransition, ItemPlayback, ItemAudio, ItemEffect]);
+  ItemTransition, SourcePlayback, Audio, ItemEffect, SourceMedia]);

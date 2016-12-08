@@ -6,7 +6,7 @@ import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger'
 
-export interface IItemConfigurable {
+export interface ISourceConfigurable {
 
   /**
    * return: Promise<any>
@@ -43,10 +43,10 @@ export interface IItemConfigurable {
   applyConfig(configObj: any);
 }
 
-export class ItemConfigurable {
+export class SourceConfigurable {
   private _id: string;
   private _srcId: string;
-  protected _isItemCall: boolean;
+  private _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
     let called: boolean = false;
@@ -116,6 +116,9 @@ export class ItemConfigurable {
   }
 
   requestSaveConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'requestSaveConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 
@@ -130,6 +133,9 @@ export class ItemConfigurable {
   }
 
   applyConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'applyConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 
