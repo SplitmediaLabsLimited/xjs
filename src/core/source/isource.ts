@@ -338,8 +338,7 @@ export class iSource implements ISource{
   getType(): Promise<number> {
     return new Promise(resolve => {
       iItem.get('prop:type', this._id).then(val => {
-        // this._type = ItemTypes[ItemTypes[Number(val)]];
-        console.log('Anything', this._type)
+        this._type = ItemTypes[ItemTypes[Number(val)]];
         resolve(this._type);
       });
     });

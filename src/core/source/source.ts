@@ -211,7 +211,7 @@ export class Source implements ISource{
       let sourceArray = [];
       let allSources = []
       let allJson = [];
-      let promiseArray = []
+      let promiseArray = [];
       Scene.getSceneCount().then(count => {
         let jsonePromise = x => new Promise(jsonResolve => {
           iApp.getAsList('presetconfig:' + x).then(jsonArr => {
