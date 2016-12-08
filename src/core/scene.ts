@@ -144,7 +144,7 @@ export class Scene {
       Scene._initializeScenePoolAsync().then(cnt => {
         if (sceneNum === 'i12') {
           if (Scene._scenePool[cnt]._id === 'i12') {
-            resolve(Scene._scenePool[cnt]);  
+            resolve(Scene._scenePool[cnt]);
           } else {
             reject(Error('Invalid parameter'));
           }
@@ -289,29 +289,38 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              (_idx => {
-                scene.getItems().then(function(items) {
-                  found = items.some(item => { // unique ID, so get first result
-                    if (item['_id'] === id.toUpperCase()) {
-                      match = item;
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
-                  if (found ||
-                    Number(_idx) === arr.length - 1) { // last scene, no match
-                    resolve(match);
+              scene.getItems().then(items => {
+                found = items.some(item => {
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = item;
+                    return true
+                  } else {
+                    return false
                   }
                 })
-                .catch(err => {
-                  reject(err);
-                });
-              })(idx)
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
         });
       }
     });
@@ -341,30 +350,38 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
+          let promiseArray = []
 
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              (_idx => {
-                scene.getItems().then(function(items) {
-                  found = items.some(item => { // unique ID, so get first result
-                    if (item['_id'] === id.toUpperCase()) {
-                      match = scene;
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
-                  if (found ||
-                    Number(_idx) === arr.length - 1) { // last scene, no match
-                    resolve(match);
+              scene.getItems().then(items => {
+                found = items.some(item => {
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = scene;
+                    return true
+                  } else {
+                    return false
                   }
                 })
-                .catch(err => {
-                  reject(err);
-                });
-              })(idx)
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
 
         });
       }
@@ -565,27 +582,36 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              scene.getSources().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true;
+              scene.getSources().then(sources => {
+                found = sources.some(source => {
+                  if (source['_id'] === id.toUpperCase()) {
+                    match = source;
+                    return true
                   } else {
-                    return false;
+                    return false
                   }
-                });
+                })
                 if (found ||
-                  Number(this) === arr.length - 1) { // last scene, no match
-                  resolve(match);
-                }
-              }).bind(idx))
-              .catch(err => {
-                // Do nothing
-              });
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
         });
       }
     });
@@ -619,25 +645,37 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
               scene.getSources().then(sources => {
-                found = sources.some(source => { // unique ID, so get first result
+                found = sources.some(source => {
                   if (source['_id'] === id.toUpperCase()) {
-                    return true;
+                    match = scene;
+                    return true
                   } else {
-                    return false;
+                    return false
                   }
-                });
-                if (found) {
-                  resolve(scene);
-                } else if (idx === arr.length - 1) {
-                  // last scene, no match
-                  resolve(match);
-                }
-              });
+                })
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
+
         });
       }
     });
@@ -1171,7 +1209,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');                   
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
@@ -1256,7 +1294,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');               
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
