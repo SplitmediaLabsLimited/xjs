@@ -230,7 +230,7 @@ describe('Scene', function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
         } else if (startsWith(funcName, 'presetname:')) {
-          var sceneIndex;
+          var sceneIndex = funcName.substring(11);
           if (!isNaN(sceneIndex)) {
             sceneIndex = Number(funcName.substring(11)) + 1;
           }
