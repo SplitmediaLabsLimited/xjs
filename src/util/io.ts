@@ -162,8 +162,8 @@ export class IO {
   };
 }
 
-window.OnGetVideoDuration = function(file: string, duration: number) {
-  IO._callback[decodeURIComponent(file)].shift().resolve(duration);
+window.OnGetVideoDuration = function(file: string, duration: string) {
+  IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
   if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }
