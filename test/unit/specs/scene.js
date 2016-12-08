@@ -82,27 +82,20 @@ describe('Scene', function() {
       });
     });
 
-    it('either as sync', function() {
-      Scene._scenePool = [];
-      for (var i = 1; i <= MAX_SCENES; i++) {
-        expect(Scene.getById(i)).toBeInstanceOf(Scene);
-      }
-    });
-
-    it('or as async', function(done) {
+    it('asynchronously', function(done) {
       exec(function(next) {
-        Scene.getByIdAsync(2).then(function(scene) {
+        Scene.getById(2).then(function(scene) {
           expect(scene).toBeInstanceOf(Scene);
-          return Scene.getByIdAsync('i12');
+          return Scene.getById('i12');
         }).then(function(scene) {
           expect(scene).toBeInstanceOf(Scene);
-          return Scene.getByIdAsync(100);
+          return Scene.getById(100);
         }).then(function() {
-          done.fail('getByIdAsync should reject if scene id is higher than scene count');
+          done.fail('getById should reject if scene id is higher than scene count');
         }, function(scene) {
-          return Scene.getByIdAsync('Test string');
+          return Scene.getById('Test string');
         }).then(function() {
-          done.fail('getByIdAsync should reject if scene id is string other than i12');
+          done.fail('getById should reject if scene id is string other than i12');
         }, function() {
           next();
         });
@@ -147,10 +140,11 @@ describe('Scene', function() {
         Scene.getByName('Test scene')
         .then(function(scene) {
           expect(scene.length).toEqual(2);
-          return Scene.getByName('Random scene name')
+          expect(scene).eachToBeInstanceOf(Scene);
+          return Scene.getByName('Random scene name');
         }).then(function(scene) {
           expect(scene.length).toEqual(0);
-          return Scene.getByName(true)
+          return Scene.getByName(true);
         }).then(function(scene) {
           expect(scene.length).toEqual(0);
           next();

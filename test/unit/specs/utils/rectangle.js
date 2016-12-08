@@ -20,13 +20,13 @@ describe('Rectangle ===', function() {
       var dimRectangle = Rectangle.fromDimensions(getRandomInt(), getRandomInt());
       expect(dimRectangle).toBeInstanceOf(Rectangle);
       expect(function() {
-        Rectangle.fromDimensions(-getRandomInt(), getRandomInt());
+        Rectangle.fromDimensions(-getRandomInt(1), getRandomInt());
       }).toThrow();
       expect(function() {
-        Rectangle.fromDimensions(getRandomInt(), -getRandomInt());
+        Rectangle.fromDimensions(getRandomInt(), -getRandomInt(1));
       }).toThrow();
       expect(function() {
-        Rectangle.fromDimensions(-getRandomInt(), -getRandomInt());
+        Rectangle.fromDimensions(-getRandomInt(1), -getRandomInt(1));
       }).toThrow();
     });
 
