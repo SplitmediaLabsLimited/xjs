@@ -127,7 +127,9 @@ describe('Scene', function() {
           if (sceneIndex === '0' || sceneIndex === '4') {
             name = 'Test scene';
           } else {
-            sceneIndex = Number(sceneIndex) + 1;
+            if (!isNaN(sceneIndex)) {
+              sceneIndex = Number(sceneIndex) + 1;
+            }
             name = 'Scene ' + sceneIndex;
           }
 
@@ -228,7 +230,10 @@ describe('Scene', function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
         } else if (startsWith(funcName, 'presetname:')) {
-          var sceneIndex = Number(funcName.substring(11)) + 1;
+          var sceneIndex;
+          if (!isNaN(sceneIndex)) {
+            sceneIndex = Number(funcName.substring(11)) + 1;
+          }
           var name = 'Scene ' + sceneIndex;
 
           setTimeout(function() {
