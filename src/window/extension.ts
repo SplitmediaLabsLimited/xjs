@@ -77,14 +77,14 @@ export class ExtensionWindow extends EventEmitter {
     if(event === 'scene-delete' && isDeleteSceneEventFixed) {
       
       EventManager.subscribe("SceneDeleted", function(settingsObj) {
-        ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+        ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
       });
 
     } else if(event === 'scene-add' && isAddSceneEventFixed) {
       
       EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
         Scene.getSceneCount().then(function(count){
-          ExtensionWindow.emit(event, count - 1 );
+          ExtensionWindow.emit(event, count);
         })        
       });
     
