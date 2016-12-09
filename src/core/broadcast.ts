@@ -2,6 +2,7 @@
 
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
+import {BroadcastManager} from './broadcastmanager';
 
 /**
  * The Broadcast class provides methods to start and stop a stream/recording
@@ -11,27 +12,30 @@ import {Environment} from './environment';
  *
  * ```javascript
  * var xjs = require('xjs');
- * var Stream = new xjs.Stream();
+ * var Broadcast = new xjs.Broadcast();
  *
- * Stream.startBroadcast
+ * Broadcast.startBroadcast
  * ```
  */
 
-export class Broadcast{
+export class Broadcast {
+
   /**
    * To be moved to a separate thing or have its own thing :)
    */
-
-  getBroadcastChannelList(): Promise<String[]> {
+  // Should this be on core#channel ???
+  static getBroadcastChannelList(id: string): Promise<String[]> {
     return new Promise(resolve => {
-      exec('CallHost', 'getBroadcastChannelList:'+ id)
+      BroadcastManager.getBroadcastChannels(id).then(result => {
+        console.log('Final::', result)
+      })
     })
   }
 
   startBroadcast(channel:string, id:string): Promise<boolean> {
     return new Promise(resolve => {
       exec('CallHost', 'startBroadcast:' + id, channel);
-      resolve(true);
+      resolve(true); // Should return channel list
     })
   }
 
@@ -41,6 +45,7 @@ export class Broadcast{
       resolve(true);
     })
   }
+
   // can only be used by local recording
   pauseLocalRecording(id): Promise<boolean> {
     return new Promise(resolve => {
