@@ -8,6 +8,8 @@ describe('Scene', function() {
       stringCompared.toLowerCase();
   };
 
+  var ctr = 0;
+
   var XJS = require('xjs');
   var Scene = XJS.Scene;
   var Item = XJS.Item;
@@ -45,7 +47,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'presetcount') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -71,7 +74,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName === 'presetcount') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -107,7 +111,9 @@ describe('Scene', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        
+        ctr++;
+        var asyncId = ctr;
 
         if (funcName === 'presetcount') {
           setTimeout(function() {
@@ -158,7 +164,8 @@ describe('Scene', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
 
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        ctr++;
+        var asyncId = ctr;
         if (funcName === 'preset:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -214,7 +221,9 @@ describe('Scene', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+        ctr++;
+        var asyncId = ctr;
         if (funcName === 'preset:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, global['preset']);
@@ -229,7 +238,6 @@ describe('Scene', function() {
             sceneIndex = Number(funcName.substring(11)) + 1;
           }
           var name = 'Scene ' + sceneIndex;
-
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, name);
           },10);
@@ -241,7 +249,8 @@ describe('Scene', function() {
         .and.callFake(function(funcName, value) {
         global[funcName] = value;
         // if (funcName === 'preset' && typeof value == 'string') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = ctr;
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '1');
           }, 10);
@@ -287,6 +296,7 @@ describe('Scene', function() {
     it('from a Scene object', function(done) {
       exec(function(next) {
         var index = Math.floor((Math.random() * 5) + 1);
+
         Scene.getByName('Scene ' + index)
         .then(function(scene) {
           return Scene.setActiveScene(scene[0]);
