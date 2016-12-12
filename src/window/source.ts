@@ -25,6 +25,7 @@ import {exec} from '../internal/internal';
  */
 export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
+  static _subscriptions: string[];
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -79,10 +80,12 @@ export class SourcePluginWindow extends EventEmitter {
     
     let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
 
-    if(event === 'scene-delete' && isDeleteSceneEventFixed) {      
-      EventManager.subscribe("SceneDeleted", function(settingsObj) {
-        SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
-      });
+    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+      if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
+        EventManager.subscribe("SceneDeleted", function(settingsObj) {
+          SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+        });
+      }
     } else if(['set-background-color', 'set-background-color', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
 
       //Just register the events so not to throw warning. Emitter already created.
