@@ -991,7 +991,7 @@ export class Scene {
    *
    * ```javascript
    * myScene.getItems().then(function(items) {
-   *  // do something to each source in items array
+   *  // do something to each item in items array
    * });
    * ```
    */
