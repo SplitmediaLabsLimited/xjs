@@ -42,7 +42,9 @@ export class SourcePluginWindow extends EventEmitter {
    */
   constructor() {
     super();
-
+    if (!Environment.isSourcePlugin()) {
+      throw new Error('SourcePluginWindow class is only available for source plugins');
+    }
     this.on('message-source', function(message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {

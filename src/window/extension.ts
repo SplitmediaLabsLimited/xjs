@@ -46,7 +46,9 @@ export class ExtensionWindow extends EventEmitter {
    */
   constructor() {
     super();
-
+    if (!Environment.isExtension()) {
+      throw new Error('ExtensionWindow class is only available for extensions');
+    }
     ExtensionWindow._instance = this;
     ExtensionWindow._subscriptions = [];
   }
