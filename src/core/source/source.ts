@@ -35,14 +35,16 @@ import {MediaSource} from './media';
  *
  * ```javascript
  * var xjs = require('xjs');
- * var Scene = xjs.Scene.getById(1)
+ * var Scene = xjs.Scene
  *
- * Scene.getSource().then(function(source) {
- *    return source.setCustomName('Custom Name')
- * }).then(function(source) {
- *    // set more properties here
+ * xjs.ready()
+ *    .then(Scene.getById(1))
+ *    .then(function(scene) {
+ *    scene.getSources().then(function(sources) {
+ *    return sources[0].setCustomName('Custom Name');
+ *    })
  * })
- *
+ *```
  *
  * All methods marked as *Chainable* resolve with the original `Source` instance.
  * This allows you to perform sequential operations correctly: *
@@ -138,27 +140,32 @@ export class Source implements ISource{
   /**
    * return: Promise<Item[]>
    *
-   * Get the Item List of the current source
+   * Get the item List of the current Source.
    *
    * #### Usage
    *
    * ```javascript
-   * xjs.Item.getItemList().then(function(items) {
-   *   // This will fetch the item list of the current Item
+   * xjs.Source.getItemList().then(function(items) {
+   *   // This will fetch the item list of the current Source
    *   for (var i = 0 ; i < items.length ; i++) {
    *     // Manipulate each item here
    *   }
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
    * });
+   * ```
+   *
+   * This is just the shorter way of getting items that are linked to a single
+   * source. See the long version below:
+   * ```javascript
+   * xjs.Source.getCurrentSource().then(function(source) {
+   *    source.getItemList().then(function(items) {
+   *      //Manipulate the items here
+   *    })
+   * })
    * ```
    */
   static getItemList(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      if (Environment.isExtension()) {
-        reject(Error('Extensions do not have sources associated with them.'));
-      } else if (
+      if (
         versionCompare(getVersion())
           .is
           .lessThan(minVersion)
@@ -205,6 +212,7 @@ export class Source implements ISource{
    *      }
    *    }
    * })
+   * ```
    */
   static getAllSources(): Promise<Source[]> {
     return new Promise((resolve,reject)=> {
@@ -256,7 +264,7 @@ export class Source implements ISource{
    *
    * In XBC 2.8, names can be set individualy even on linked items.
    * For XBC 2.9 onwards,  name will be the same across all linked Items
-   * to the same Source
+   * to the same Source.
    *
    * *Chainable.*
    *
@@ -264,7 +272,7 @@ export class Source implements ISource{
    *
    * ```javascript
    * source.setName('newNameHere').then(function(source) {
-   *   // Promise resolves with same Item instance when name has been set
+   *   // Promise resolves with same Source instance when name has been set
    *   return source.getName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
@@ -276,7 +284,7 @@ export class Source implements ISource{
   /**
    * return: Promise<string>
    *
-   * Gets the name of the item.
+   * Gets the name of the source.
    *
    * #### Usage
    *
@@ -300,7 +308,7 @@ export class Source implements ISource{
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on
-   * the other hand would update the item's internal name property.
+   * the other hand would update the source's internal name property.
    *
    * *Chainable.*
    *
@@ -308,7 +316,7 @@ export class Source implements ISource{
    *
    * ```javascript
    * source.setCustomName('newNameHere').then(function(source) {
-   *   // Promise resolves with same Item instance when custom name has been set
+   *   // Promise resolves with same Source instance when custom name has been set
    *   return source.getCustomName();
    * }).then(function(name) {
    *   // 'name' should be the updated value by now.
@@ -389,7 +397,7 @@ export class Source implements ISource{
   /**
    * return: Promise<boolean>
    *
-   * Check if item is kept loaded in memory
+   * Check if source is kept loaded in memory
    *
    * #### Usage
    *
@@ -418,7 +426,7 @@ export class Source implements ISource{
    *
    * ```javascript
    * source.setKeepLoaded(true).then(function(source) {
-   *   // Promise resolves with same Item instance
+   *   // Promise resolves with same Source instance
    * });
    * ```
    */
@@ -441,7 +449,30 @@ export class Source implements ISource{
   getSourceId: () => Promise<string>
 
   /**
-   * See {@link #core/Item#getItemList getItemList}
+   * return: Promise<Item[]>
+   *
+   * Get the item list of the current Source/Item instance. This is useful when
+   * a source has multiple items linked into it or if an item is an instance of
+   * a linked item.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * // source pertains to an actual source instance
+   * // Sample 1
+   * source.getItemList().then(function(items) {
+   *   // This will fetch the linked items list of the current source
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[0].getSceneId();
+   *   }
+   * });
+   *
+   * // Sample 2
+   * item.getItemList().then(function(items) {
+   *   items[0].getSceneId();
+   * })
+   * ```
    */
   getItemList: () => Promise<Item[]>
 
@@ -453,8 +484,8 @@ export class Source implements ISource{
    *  #### Usage
    *  ```javascript
    *  // Sample 1: let source refresh itself
-   *  xjs.Source.getSource().then(function(source) {
-   *    source[0].refresh(); // execution of JavaScript halts because of refresh
+   *  xjs.Source.getCurrentSource().then(function(source) {
+   *    source.refresh(); // execution of JavaScript halts because of refresh
    *  });
    *
    *  // Sample 2: refresh some other source 'otherSource'

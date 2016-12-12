@@ -38,4 +38,6 @@ export {CuePoint} from '../src/core/source/cuepoint';
 export {IAudio} from '../src/core/source/iaudio';
 export {ISourceConfigurable} from '../src/core/source/iconfig';
 export {ISourcePlayback} from '../src/core/source/iplayback';
+export {ViewTypes} from '../src/core/items/item';
+export {ItemTypes} from '../src/core/source/isource';
 

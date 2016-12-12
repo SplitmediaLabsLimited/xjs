@@ -29,7 +29,7 @@ import {ImageSource} from '../source/image';
 import {MediaSource} from '../source/media';
 
 /**
- * Used by items to define its view type.
+ * Used by items to determine the its view type.
  *
  * Check `getView()` method of {@link #core/Item#getView Core/Item}
  */
@@ -42,7 +42,7 @@ export enum ViewTypes {
 /**
  * An `Item` is rendered from a {@link #core/Source Source} and represents an
  * object that is used as an item on the stage. Multiple items may be linked to
- * a singled source and any changes made to the source would affect all linked
+ * a single source and any changes made to the source would affect all linked
  * items.
  *
  * Implements: {@link #core/ISource Core/ISource}
@@ -59,7 +59,7 @@ export enum ViewTypes {
  *
  *   // There's a valid item, let's use that
  *   var item = items[items.length - 1];
- *   return item.getId('ItemTesting');
+ *   return item.setKeepAspectRatio(true);
  * }).then(function(item) {
  *   // Do something else here
  * });
@@ -68,24 +68,51 @@ export enum ViewTypes {
  * This allows you to perform sequential operations correctly:
  * ```javascript
  * var xjs = require('xjs');
- * var Item = xjs.Item;
+ * var Source = xjs.Source;
  *
  * // an item that sets its own properties on load
  * xjs.ready()
- *    .then(Item.getItemList)
- *    .then(function(item) {
- *     return item.setCustomName('MyCustomName');
- *  }).then(function(item) {
- *     return item.setKeepLoaded(true);
- *  }).then(function(item) {
- *     // set more properties here
- *  });
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source) {
+ *    return source.getItemList()
+ *  }).then(function(items) {
+ *    return items[0].setEnhancedResizeEnabled(true)
+ *  }).then(function(items) {
+ *    return items[0].setPositionLocked(true)
+ *  }).then(function(items) {
+ *    //set more properties here
+ *  })
  * ```
  */
 export class Item extends Source implements IItemLayout, ISource {
   constructor(props?: {}) {
     super(props)
     this._isItemCall = true;
+  }
+
+  /**
+   * return: Promise<Item[]>
+   *
+   * Get the item List of the current Item that is linked to a single source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * xjs.Item.getItemList().then(function(items) {
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[i].setKeepAspectRatio(true);
+   *   }
+   * })
+   * ```
+   *
+   * This is simply a shortcut to:
+   * `xjs.Item.getCurrentSource()` -> `source.getItemList()`
+   */
+  static getItemList(): Promise<Item[]> {
+    return new Promise(resolve => {
+      resolve(Source.getItemList())
+    })
   }
 
   /**
@@ -197,15 +224,21 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * #### Usage
    * ```javascript
-   * xjs.Item.getItemList().then(function(item){
-   *   // get a scene to place duplicate on
-   *   item.duplicate(); // Default is linked: false, scene: current scene
-   * });
+   * // item pertains to an acutal Item instance
+   * // Sample 1
+   * item.duplicate() // duplicate selected item to the current scene as unlinked
+   *```
+   * Duplicate the selected item to a specific scene and set it to be linked to
+   * a single source with the original item.
+   * ```javascript
+   * // Sample 2
+   * var toScene = xjs.Scene.getById(2)
+   * item.duplicate({linked:true, scene:toScene})
    *
    * ```
    */
 
-  duplicate(options: { linked?: boolean, scene?: Scene }): Promise<Item> {
+  duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       if(versionCompare(getVersion())
         .is
@@ -285,29 +318,7 @@ export class Item extends Source implements IItemLayout, ISource {
     })
   }
 
-  /**
-   * return: Promise<Item[]>
-   *
-   * Get the item list of the current item instance. This is useful when an item is
-   * an instance of a linked item, with multiple other items having the same
-   * source.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * // item pertains to an actual item instance
-   * item.getItemList().then(function(items) {
-   *   // This will fetch the linked items list of the current item
-   *   for (var i = 0 ; i < items.length ; i++) {
-   *     // Manipulate each item here
-   *     items[0].getSceneId()
-   *   }
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
-   * ```
-   */
+  /** See: {@link #core/Source#getItemList getItemList} */
   getItemList: () => Promise<Item[]>
 
   /**
