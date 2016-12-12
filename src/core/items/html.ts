@@ -11,15 +11,15 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
+import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
 import {Source} from '../source/source'
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {iHtmlSource} from '../source/ihtmlsource'
+import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -31,8 +31,8 @@ import {iHtmlSource} from '../source/ihtmlsource'
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/IAudio Core/IAudio},
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -57,14 +57,15 @@ import {iHtmlSource} from '../source/ihtmlsource'
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemConfigurable, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, ISourceConfigurable, IAudio, IItemEffect,
+  ISourceHtml {
   /**
    * param: (func: string, arg: string)
    * ```
    * return: Promise<HtmlItem>
    * ```
    *
-   * Allow this source to communicate with another source.
+   * Allow this item to call a pre-exposed function within the HTML Item
    */
   call(func: string, arg: string): Promise<HtmlItem> {
     return new Promise(resolve => {
@@ -84,7 +85,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   getURL(): Promise<string> {
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(url => {
+      iItem.get('prop:srcitem', this._id).then(url => {
         let _url = String(url).split('*');
         url = _url[0];
         resolve(url);
@@ -104,11 +105,11 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   setURL(value: string): Promise<HtmlItem> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:item', this._id).then(url => {
+      iItem.get('prop:srcitem', this._id).then(url => {
         let _url = String(url).split('*');
         _url[0] = value;
 
-        return iItem.set('prop:item', _url.join('*'), this._id);
+        return iItem.set('prop:srcitem', _url.join('*'), this._id);
       }).then(code => {
         if (code) {
           resolve(this);
@@ -119,108 +120,77 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
     });
   }
 
-  //iHtmlSource
+  //iSourceHtml
+
   /**
-   * return: Promise<boolean>
-   *
-   * Check if browser is rendered transparent
+   * See: {@link #core/HtmlSource#isBrowserTransparent isBrowserTransparent}
    */
   isBrowserTransparent: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disabled transparency of CEF browser
-   *
-   * *Chainable.*
+   * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom browser window size (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom size has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
    */
   getBrowserCustomSize: () => Promise<Rectangle>
 
   /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<IHtmlItem>
-   * ```
-   *
-   * Sets the custom browser window size for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/HtmlSource#setBrowserCustomSize setBrowserCustomSize}
    */
   setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
+   * See: {@link #core/HtmlSource#getAllowRightClick getAllowRightClick}
    */
   getAllowRightClick: () => Promise<boolean>
 
   /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
+   * See: {@link #core/HtmlSource#setAllowRightClick setAllowRightClick}
    */
   setAllowRightClick: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the javascript commands to be executed on item upon load
+   * See: {@link #core/HtmlSource#getBrowserJS getBrowserJS}
    */
   getBrowserJS: () => Promise<string>
 
   /**
-   * param: (js: string, refresh: boolean = false)
-   * ```
-   * return: Promise<IHtmlItem>
-   * ```
-   *
-   * Sets the javascript commands to be executed on item
-   * right upon setting and on load. Optionally set second parameter
-   * to true to refresh item (needed to clean previously executed JS code.)
-   *
-   * *Chainable.*
+   * See: {@link #core/HtmlSource#setBrowserJS setBrowserJS}
    */
   setBrowserJS: () => Promise<HtmlItem>
+
+  /**
+   * See: {@link #core/HtmlSource#isBrowserJSEnabled isBrowserJSEnabled}
+   */
+  isBrowserJSEnabled: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/HtmlSource#enableBrowserJS enableBrowserJS}
+   */
+  enableBrowserJS: (value: boolean) => Promise<HtmlItem>
+
+  /**
+   * See: {@link #core/HtmlSource#getCustomCSS getCustomCSS}
+   */
+  getCustomCSS: () => Promise<string>
+
+  /**
+   * See: {@link #core/HtmlSource#setCustomCSS setCustomCSS}
+   */
+  setCustomCSS: (value: string) => Promise<HtmlItem>
+
+  /**
+   * See: {@link #core/HtmlSource#isCustomCSSEnabled isCustomCSSEnabled}
+   */
+  isCustomCSSEnabled: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/HtmlSource#enableCustomCSS enableCustomCSS}
+   */
+  enableCustomCSS: (value: boolean) => Promise<HtmlItem>
 
   // ItemLayout
 
@@ -583,49 +553,49 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<HtmlItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<HtmlItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<HtmlItem>;
 
   // ItemAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<HtmlItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -709,5 +679,5 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
 }
 
-applyMixins(HtmlItem, [iHtmlSource ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable, ItemAudio, ItemEffect]);
+applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  SourceConfigurable, Audio, ItemEffect]);

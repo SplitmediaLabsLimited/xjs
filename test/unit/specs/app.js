@@ -11,7 +11,7 @@ describe('App ===', function() {
   var App = new XJS.App();
   var Transition = XJS.Transition;
   var env = new window.Environment(XJS);
-  var environments = ['config', 'extension', 'plugin'];
+  var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
     function() {
@@ -32,13 +32,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'frametime') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '12');
+            window.OnAsyncCallback(asyncId, '12');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -63,13 +63,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'resolution') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '900, 600');
+            window.OnAsyncCallback(asyncId, '900, 600');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -98,13 +98,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'viewport') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '900, 600');
+            window.OnAsyncCallback(asyncId, '900, 600');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -145,13 +145,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1.3.0.429');
+            window.OnAsyncCallback(asyncId, '1.3.0.429');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -194,13 +194,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'framesrendered') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '12683');
+            window.OnAsyncCallback(asyncId, '12683');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -215,128 +215,6 @@ describe('App ===', function() {
       promise.then(function(framesRendered) {
         expect(framesRendered).toBeTypeOf('number');
         expect(framesRendered).not.toBeNaN();
-        done();
-      });
-    });
-  });
-
-  xdescribe('should be able to get active stream channels', function() {
-    beforeEach(function() {
-      spyOn(window.external, 'AppGetPropertyAsync')
-        .and.callFake(function(funcName) {
-        if (funcName == 'recstat') {
-          var randomNumber=Math.floor(Math.random()*1000);
-
-          setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
-              encodeURIComponent('<stat>' +
-                '<channel name="Local Streaming">' +
-                '<stat video="21800992" audio="1383326" output="29635585"' +
-                  'frmdropped="0" frmcoded="145267"/>' +
-                '<channel serviceName="LocalStreaming" name="Local Streaming"' +
-                  ' displayName="Local Streaming" description=""' +
-                  ' rtmpUrl="rtmp://nomaster" streamName=""' +
-                  ' link="http://demo.splitmedialabs.com/VHJavaMediaSDK3/' +
-                  'view.html?id=stream&amp;url=rtmp://192.168.254.99:1935/app' +
-                  '&amp;buffer=1&amp;forceObjectEncoding=0" username=""' +
-                  ' password="" channel=""' +
-                  ' extraConfig="\\rtmp_2ch:1\\rtmp_buf:65536' +
-                  '\\rtmp_timeout_media:0\\rtmp_timeout_close:500' +
-                  '\\lowLatency:0\\hasSupportedResolutionsOnly:0' +
-                  '\\hasSupportedFpsOnly:0\\rtmp_flashver:XSplit/2.4' +
-                  '\\origabitrate:96000\\rtmp_timeout_connect:0' +
-                  '\\opt_faststart:1\\opt_remuxto:mp4&amp;' +
-                  'movflags:frag_keyframe+empty_moov&amp;frag_size:16777216"' +
-                  ' recordBroadcast="1" filetype="flv"' +
-                  ' file="mp4:C:\\Users\\someUser\\Videos\\' +
-                  'XSplit Videos - user\\Local Streaming\\someFolder.mp4"' +
-                  ' enableoutwatermark="0">' +
-                '<configuration>' +
-                '<video codec="libx264ext64&amp;ex:preset:veryfast' +
-                  '&amp;ex:crf:27&amp;ex:vbv-bufsize:1000' +
-                  '&amp;ex:vbv-maxrate:1000&amp;ex:keyint:60' +
-                  '&amp;ex:fps:10000000/333333" framerate="333333"' +
-                  ' x264Presets="&amp;veryfast" quality="27"' +
-                  ' codecCommands="ex:fps:10000000/333333" cbr="0"' +
-                  ' adaptivebr="0" keyint="2" bufferSize="1000k"' +
-                  ' maxBitrate="1000k" resizeex="0"' +
-                  ' dontUseDefaultMixerResolution="0"' +
-                  ' dontUseDefaultMixerFPS="0"/>' +
-                '<audio bitrate="96000" codec="libw7aac&amp;b:96000"' +
-                ' format="44100/2" format2="44100/2"/>' +
-                '</configuration>' +
-                '<extra>' +
-                '<params/>' +
-                '<speex vbr="0" q="10" vmrq="10" vbrmax="42200" abr="42200"' +
-                ' complexity="4" vad="0" dtx="0" hp="1"/>' +
-                '</extra>' +
-                '<meta>' +
-                '<value type="2" name="bufferSize" value="1000k"/>' +
-                '<value type="2" name="maxBitrate" value="1000k"/>' +
-                '<value type="2" name="videodevice"' +
-                ' value="XSplitBroadcaster"/>' +
-                '<value type="2" name="xsplitBroadcasterVersion"' +
-                  ' value="1.3.0.444"/>' +
-                '<value type="2" name="xsplitCoreVersion"' +
-                  ' value="2.4.1506.2436 Version 2.4"/>' +
-                '<value type="2" name="xsplitGameSourceVersion"' +
-                  ' value="1.1.1.148"/>' +
-                '<value type="2" name="xsplitMediaLibVersion"' +
-                  ' value="2.0.0.532"/>' +
-                '<value type="0" name="framerate" value="30"/>' +
-                '<value type="2" name="pluginName" value="LocalStreaming"/>' +
-                '<value type="2" name="pluginVersion" value="2.4.1506.2201"/>' +
-                '</meta>' +
-                '</channel>' +
-                '</channel>' +
-                '</stat>'
-              ));
-          },10);
-
-          return randomNumber;
-        }
-      });
-    });
-
-    it('through a promise', function() {
-      var promise = App.getActiveStreamChannels();
-      expect(promise).toBeInstanceOf(Promise);
-    });
-
-    it('that returns an array of Channels', function(done) {
-      var promise = App.getActiveStreamChannels();
-      promise.then(function(channels) {
-        if (channels.length > 0) {
-          expect(channels).eachHasMethods('getStreamDrops, getStreamTime');
-        }
-        done();
-      });
-    });
-  });
-
-  xdescribe('should be able to get active stream channels', function() {
-    beforeEach(function() {
-      spyOn(window.external, 'AppGetPropertyAsync')
-        .and.callFake(function(funcName) {
-        if (funcName == 'recstat') {
-          var randomNumber=Math.floor(Math.random()*1000);
-
-          setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
-              encodeURIComponent('<stat></stat>'));
-          },10);
-
-          return randomNumber;
-        }
-      });
-    });
-
-    it('that returns an empty array when nothing is present', function(done) {
-      var promise = App.getActiveStreamChannels();
-      promise.then(function(channels) {
-        var emptyArray = [];
-        expect(channels).toBeInstanceOf(Array);
-        expect(channels).toEqual(emptyArray);
         done();
       });
     });
@@ -359,13 +237,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonedev2') {
-          var randomNumber = Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, micDev2Mock);
+            window.OnAsyncCallback(asyncId, micDev2Mock);
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -435,13 +313,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonedev2') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, micDev2);
+            window.OnAsyncCallback(asyncId, micDev2);
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
 
@@ -451,12 +329,12 @@ describe('App ===', function() {
         if (funcName === 'microphonedev2') {
           micDev2 = encodeURIComponent(value);
 
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1');
+            window.OnAsyncCallback(asyncId, '1');
           }, 10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -672,7 +550,6 @@ describe('App ===', function() {
         });
       });
     });
-
   });
 
   describe ('should be able to get silence detection values', function() {
@@ -681,15 +558,15 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonegain') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<configuration enable="0" gain="5"' +
                 ' latency="1000"/>'));
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -751,13 +628,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'microphonegain') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, audioGainMock);
+            window.OnAsyncCallback(asyncId, audioGainMock);
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -776,12 +653,12 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultEnable) {
               silenceDetectionEnabledSet = true;
             }
-            var randomNumber=Math.floor(Math.random()*1000);
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '1');
+              window.OnAsyncCallback(asyncId, '1');
             }, 10);
 
-            return randomNumber;
+            return asyncId;
           }
         });
         promise = App.enableSilenceDetection(true);
@@ -813,12 +690,12 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultThreshold) {
               silenceDetectionThresholdSet = true;
             }
-            var randomNumber=Math.floor(Math.random()*1000);
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '1');
+              window.OnAsyncCallback(asyncId, '1');
             }, 10);
 
-            return randomNumber;
+            return asyncId;
           }
         });
         promise = App.setSilenceDetectionThreshold(10);
@@ -886,12 +763,12 @@ describe('App ===', function() {
             if (encodeURIComponent(value) === audioGainResultPeriod) {
               silenceDetectionPeriodSet = true;
             }
-            var randomNumber=Math.floor(Math.random()*1000);
+            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
             setTimeout(function() {
-              window.OnAsyncCallback(randomNumber, '1');
+              window.OnAsyncCallback(asyncId, '1');
             }, 10);
 
-            return randomNumber;
+            return asyncId;
           }
         });
         promise = App.setSilenceDetectionPeriod(5000);
@@ -1004,13 +881,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'transitionid') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, 'clock');
+            window.OnAsyncCallback(asyncId, 'clock');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -1027,15 +904,16 @@ describe('App ===', function() {
     beforeEach(function() {
       transitionSet = false;
       spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName) {
-        if (funcName === 'transitionid') {
+        .and.callFake(function(funcName, value) {
+
+        if (funcName === 'transitionid' && value == 'clock') {
           transitionSet = true;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1');
+            window.OnAsyncCallback(asyncId, '1');
           }, 10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
       promise = App.setTransition(Transition.CLOCK);
@@ -1058,13 +936,13 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'transitiontime') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '3000');
+            window.OnAsyncCallback(asyncId, '3000');
           },10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
     });
@@ -1091,14 +969,14 @@ describe('App ===', function() {
       transitionTimeSet = false;
       spyOn(window.external, 'AppSetPropertyAsync')
         .and.callFake(function(funcName, value) {
-        if (funcName === 'transitiontime' && typeof value == 'string') {
+        if (funcName === 'transitiontime' && typeof value == 'string' && value === '1000') {
           transitionTimeSet = true;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1');
+            window.OnAsyncCallback(asyncId, '1');
           }, 10);
 
-          return randomNumber;
+          return asyncId;
         }
       });
       promise = App.setTransitionTime('1000');
@@ -1121,26 +999,26 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1.3.0.429');
+            window.OnAsyncCallback(asyncId, '1.3.0.429');
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (funcName == 'preset:0') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '0');
+            window.OnAsyncCallback(asyncId, '0');
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (funcName == 'presetconfig') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<configuration cur="0"' +
                   ' Version="2.4.1506.2436">' +
                 '<placement name="Scene 1" defpos="0">' +
@@ -1487,15 +1365,15 @@ describe('App ===', function() {
                 '</global>' +
                 '</configuration>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         // add these below only because each scene has separate getting of sources
         // this should be addressed to reuse the initial call for presetconfig
         } else if (funcName == 'presetconfig:0') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<placement name="Scene 1" defpos="0">' +
                 '<item type="8" item="C:\\Users\\meso\\Desktop\\' +
                   'sample_get.html" itemaudio=""' +
@@ -1589,13 +1467,13 @@ describe('App ===', function() {
                   ' custom="" />' +
                 '</placement>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (funcName == 'presetconfig:1') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<item type="1"' +
                 ' item="C:\\wamp\\www\\someFolder\\anotherFolder' +
                   '\\images\\someImage.png" itemaudio=""' +
@@ -1854,28 +1732,28 @@ describe('App ===', function() {
                   ' custom="" />' +
                 '</placement>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<placement name="Scene ' + sceneNumber +
                 '" defpos="0"/>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (startsWith(funcName, 'presetname:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('Scene ' + sceneNumber));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else {
 
@@ -1904,56 +1782,56 @@ describe('App ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'version') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '1.3.0.429');
+            window.OnAsyncCallback(asyncId, '1.3.0.429');
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (funcName == 'preset:0') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, '0');
+            window.OnAsyncCallback(asyncId, '0');
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (funcName == 'presetconfig') {
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<?xml version="1.0" encoding="utf-8"?>' +
                 '<configuration cur="0" Version="2.4.1506.2436">' +
                 '<placement name="Scene 1" defpos="0"/>' +
                 '<global/>' +
                 '</configuration>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         // add these below only because each scene has separate getting of sources,
         // this should be addressed to reuse the initial call for presetconfig
         } else if (startsWith(funcName, 'presetconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber,
+            window.OnAsyncCallback(asyncId,
               encodeURIComponent('<placement name="Scene ' + sceneNumber +
                 '" defpos="0"/>'));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else if (startsWith(funcName, 'presetname:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
-          var randomNumber=Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
-            window.OnAsyncCallback(randomNumber, encodeURIComponent('Scene ' +
+            window.OnAsyncCallback(asyncId, encodeURIComponent('Scene ' +
               sceneNumber));
           },10);
-          return randomNumber;
+          return asyncId;
 
         } else {
 
@@ -2249,12 +2127,12 @@ describe('App ===', function() {
         done.fail('Clear browser cookies should work in source config window.');
       }).then(App.clearBrowserCookies)
       .then(function() {
+        expect(true).toBe(true);
         done();
       }, function() {
         done.fail('Clear browser cookies should work in extensions.');
       });
     });
-
   });
 
   describe('should be able to get hashed user identity', function() {

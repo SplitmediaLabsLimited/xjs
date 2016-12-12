@@ -2,7 +2,7 @@
 
 import {exec} from '../internal/internal';
 import {App as iApp} from '../internal/app';
-
+import {Environment} from '../core/environment';
 
 export class IO {
 
@@ -92,39 +92,43 @@ export class IO {
       },
       filter ?: { name : boolean, extensions : String[] }): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      let flags: number = 0;
-      if (optionBag !== undefined && optionBag !== null) {
-        if (optionBag.allowMultiSelect === true) {
-          flags = flags | IO._ALLOW_MULTI_SELECT;
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        let flags: number = 0;
+        if (optionBag !== undefined && optionBag !== null) {
+          if (optionBag.allowMultiSelect === true) {
+            flags = flags | IO._ALLOW_MULTI_SELECT;
+          }
+
+          if (optionBag.fileMustExist === true) {
+            flags = flags | IO._FILE_MUST_EXIST;
+          }
+
+          if (optionBag.forceShowHidden === true) {
+            flags = flags | IO._FORCE_SHOW_HIDDEN;
+          }
         }
 
-        if (optionBag.fileMustExist === true) {
-          flags = flags | IO._FILE_MUST_EXIST;
+        let filterString: string = '';
+        if (filter !== undefined && filter !== null &&
+            filter.name !== undefined && filter.extensions !== undefined) {
+          filterString = filter.name + '|';
+          filterString += (filter.extensions.map(val => {
+            return '*.' + val;
+          })).join(';');
+          filterString += '||';
         }
 
-        if (optionBag.forceShowHidden === true) {
-          flags = flags | IO._FORCE_SHOW_HIDDEN;
-        }
+        exec('OpenFileDialogAsync', null, null, String(flags), filterString,
+            path => {
+              if (path !== 'null') {
+                resolve(path.split('|'));
+              } else {
+                reject(Error('File selection cancelled.'));
+              }
+        });
       }
-
-      let filterString: string = '';
-      if (filter !== undefined && filter !== null &&
-          filter.name !== undefined && filter.extensions !== undefined) {
-        filterString = filter.name + '|';
-        filterString += (filter.extensions.map(val => {
-          return '*.' + val;
-        })).join(';');
-        filterString += '||';
-      }
-
-      exec('OpenFileDialogAsync', null, null, String(flags), filterString,
-          path => {
-            if (path !== 'null') {
-              resolve(path.split('|'));
-            } else {
-              reject(Error('File selection cancelled.'));
-            }
-      });
     });
   }
 
@@ -139,21 +143,27 @@ export class IO {
 
   static _callback = {};
   static getVideoDuration(file: string) {
-
     return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('function is not available for source'));
+      } else {
+        if (typeof file !== 'undefined') {
+          if (IO._callback[file] === undefined){
+            IO._callback[file] = [];
+          }
 
-      if (IO._callback[file] === undefined){
-        IO._callback[file] = [];
+          IO._callback[file].push({resolve,reject});
+          exec('GetVideoDuration', file);
+        } else {
+          reject(new Error('No file indicated.'))
+        }
       }
-
-      IO._callback[file].push({resolve,reject});
-      exec('GetVideoDuration', file);
     });
   };
 }
 
-window.OnGetVideoDuration = function(file: string, duration: number) {
-  IO._callback[decodeURIComponent(file)].shift().resolve(duration);
+window.OnGetVideoDuration = function(file: string, duration: string) {
+  IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
   if(IO._callback[decodeURIComponent(file)].length === 0) {
     delete IO._callback[decodeURIComponent(file)];
   }

@@ -29,6 +29,7 @@ const _RESIZE = '2';
  */
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
+  static _subscriptions: string[];
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -47,6 +48,7 @@ export class ExtensionWindow extends EventEmitter {
     super();
 
     ExtensionWindow._instance = this;
+    ExtensionWindow._subscriptions = [];
   }
 
    /**
@@ -75,19 +77,21 @@ export class ExtensionWindow extends EventEmitter {
     let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
 
     if(event === 'scene-delete' && isDeleteSceneEventFixed) {
-      
-      EventManager.subscribe("SceneDeleted", function(settingsObj) {
-        ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
-      });
-
+      if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
+        ExtensionWindow._subscriptions.push('SceneDeleted');
+        EventManager.subscribe('SceneDeleted', function(settingsObj) {
+          ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+        });
+      }
     } else if(event === 'scene-add' && isAddSceneEventFixed) {
-      
-      EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
-        Scene.getSceneCount().then(function(count){
-          ExtensionWindow.emit(event, count - 1 );
-        })        
-      });
-    
+      if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
+        ExtensionWindow._subscriptions.push('OnSceneAddByUser');
+        EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
+          Scene.getSceneCount().then(function(count){
+            ExtensionWindow.emit(event, count);
+          });
+        });
+      }
     } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
 
       //Just subscribe to the event. Emitter is already handled.
@@ -104,9 +108,11 @@ export class ExtensionWindow extends EventEmitter {
       console.warn('Warning! The event "' + event + '" is not yet supported.');
 
     }
-
   }
 
+  static off(event: string, handler: Function) {
+    ExtensionWindow.getInstance().off(event, handler);
+  }
 
   /** param: (width: number, height: number)
    *

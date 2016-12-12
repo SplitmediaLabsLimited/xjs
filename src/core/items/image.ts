@@ -14,7 +14,7 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
-import {ImageSource} from '../source/image'
+import {XML} from '../../internal/util/xml';
 
 /**
  * The ImageItem class represents an image item (includes GIF files).
@@ -32,6 +32,16 @@ import {ImageSource} from '../source/image'
  */
 export class ImageItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemEffect {
+
+  /**
+   * See: {@link #core/Source#getValue getValue}
+   */
+  getValue: () => Promise<string | XML>
+
+  /**
+   * See: {@link #core/Source#setValue setValue}
+   */
+  setValue: (value: string | XML) => Promise<ImageItem>
 
   // ItemLayout
 

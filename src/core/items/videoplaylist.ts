@@ -6,7 +6,7 @@ import {Item as iItem} from '../../internal/item';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -14,6 +14,7 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {IO} from '../../util/io';
+import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
 
 /**
  * The VideoPlaylistItem class represents the VideoPlaylist item that has been
@@ -25,7 +26,7 @@ import {IO} from '../../util/io';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -46,28 +47,22 @@ import {IO} from '../../util/io';
 
 
 export class VideoPlaylistItem extends Item implements IItemLayout,
-  IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
+  IItemColor, IItemChroma, IItemTransition, ISourceConfigurable,
+  ISourceVideoPlaylist {
 
-    /**
+  //Shared with VideoPlaylistSource
+  /**
    * return: Promise<string>
    *
    * Gets the now playing video of this VideoPlaylist item.
    *
    */
-
-  getVideoNowPlaying(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(playlist => {
-        let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
-        resolve(_playlist)
-      });
-    });
-  }
+  getVideoNowPlaying: () => Promise<string>
 
   /**
    * param: (value: string|number)
    *
-   * return: Promise<VideoPlaylistSource>
+   * return: Promise<VideoPlaylistItem>
    *
    * Sets the now playing video of this VideoPlaylist item.
    *
@@ -76,43 +71,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    * - NUMBER - number|within the range of fileplaylist array length
    *
    */
-
-  setVideoNowPlaying(value:string|number): Promise<VideoPlaylistItem> {
-    let file: string;
-    let _playlist: string[];
-
-    return new Promise((resolve, reject) => {
-      iItem.get('prop:FilePlaylist', this._id).then(playlist => {
-        _playlist = String(playlist).split('|');
-        for (var i = 0; i < _playlist.length; i++){
-          _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
-        };
-        return _playlist;
-      }).then(list => {
-        if (typeof value === 'string') {
-          if(_playlist.indexOf(value) === -1){
-            reject(Error('File not found on Playlist.'))
-          } else {
-            let index = _playlist.indexOf(value);
-            file = _playlist[index] + '*' + index;
-            iItem.set('prop:item', file, this._id)
-            .then(fileplaylist => {
-              resolve(this);
-            });
-          }
-        } else if (typeof value === 'number' && value <= _playlist.length) {
-          file = (_playlist[value] + '*' + value);
-            iItem.set('prop:item', file, this._id)
-              .then(function (fileplaylist) {
-                resolve(this);
-              });
-        } else {
-          reject(Error('Invalid value.'));
-        };
-      })
-    });
-
-  };
+  setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
 
   /**
    * return: Promise<string[]>
@@ -120,18 +79,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    * Gets the file paths of the playlist of this VideoPlaylist item.
    *
    */
-
-  getVideoPlaylistSources(): Promise<string[]> {
-    return new Promise(resolve => {
-      iItem.get('prop:FilePlaylist', this._id).then(playlist => {
-        let _playlist = String(playlist).split('|');
-        for (var i = 0; i < _playlist.length; i++){
-          _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
-        };
-        resolve(_playlist);
-      });
-    });
-  };
+  getVideoPlaylistSources: () => Promise<string[]>
 
   /**
    * param: (file: string[])
@@ -145,38 +93,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    * The now playing item is also set to the first item of the new FilePlaylist.
    *
    */
-
-  setVideoPlaylistSources(fileItems:string[]): Promise<VideoPlaylistItem> {
-    let fileString: string;
-
-    let filePromises = fileItems.map((filename) => {
-      return IO.getVideoDuration(filename);
-    });
-
-    return new Promise((resolve, reject) => {
-      Promise.all(filePromises).then(duration => {
-        for (var i = 0; i < fileItems.length; i++) {
-          if(fileString === undefined){
-            fileString = fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0|';
-          } else {
-            fileString += fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0';
-            if (i+1 < fileItems.length) {
-              fileString += '|';
-            };
-          };
-        };
-        iItem.set('prop:item', fileItems[0] + '*0', this._id);
-        return fileString;
-      }).then(fileString => {
-        iItem.set('prop:FilePlaylist', fileString, this._id)
-        .then(fileplaylist => {
-          resolve(this);
-        });
-      });
-    });
-  };
+  setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
   // ItemLayout
 
@@ -540,29 +457,29 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   setTransitionTime: (value: number) => Promise<VideoPlaylistItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
 }
 
 applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable])
+  SourceConfigurable, SourceVideoPlaylist])

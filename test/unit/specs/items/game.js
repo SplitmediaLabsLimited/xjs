@@ -19,7 +19,7 @@ describe('GameItem', function() {
   var showMouseSet = false;
   var offlineImageSet = false;
   var currentGameItem;
-  var environments = ['config', 'extension', 'plugin'];
+  var environments = ['props', 'extension', 'plugin'];
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
@@ -99,7 +99,7 @@ describe('GameItem', function() {
         }
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
@@ -146,7 +146,7 @@ describe('GameItem', function() {
         }
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (typeof val === 'string') {
           local.item = val;
           offlineImageSet = true;

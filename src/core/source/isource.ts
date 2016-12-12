@@ -1,44 +1,145 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from './source';
+import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
   versionCompare,
-  getVersion
+  getVersion,
+  globalsrcMinVersion
 } from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {ItemTypes} from '../items/item'
+import {Logger} from '../../internal/util/logger';
+
+/**
+ * Used by items to define its type.
+ *
+ * Check `getType()` method of {@link #core/Item#getType Core/Item}
+ */
+export enum ItemTypes {
+  UNDEFINED,
+  FILE,
+  LIVE,
+  TEXT,
+  BITMAP,
+  SCREEN,
+  FLASHFILE,
+  GAMESOURCE,
+  HTML
+}
+
+export interface ISource {
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets the Source name
+   */
+  setName(value: string): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the Source name
+   */
+  getName(): Promise<string>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets the Source custom name
+   */
+  setCustomName(string): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the Source custom name
+   */
+  getCustomName(): Promise<string>
+
+  /**
+   * return: Promise<string|XML>
+   *
+   * Gets Source main definition
+   */
+  getValue(): Promise<string|XML>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Sets Source main definition
+   */
+  setValue(string): Promise<ISource>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if Source is kept loaded in memory
+   */
+  getKeepLoaded(): Promise<boolean>
+
+  /**
+   * return: Promise<ISource>
+   *
+   * Set Keep loaded option to ON or OFF
+   */
+  setKeepLoaded(boolean): Promise<ISource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the Source ID
+   */
+  getSourceId(): Promise<string>
+
+  /**
+   * return Promise<ISource>
+   *
+   * Refreshes Specified Item
+   */
+  refresh(): Promise<ISource>
+
+  /**
+   * return: Promise<ISource[]>
+   *
+   * Get the item list of the current item instance. This is useful when an item is
+   * an instance of a linked item, with multiple other items having the same
+   * source.
+   */
+  getItemList(): Promise<ISource[]>
+
+  /**
+   * return: Promise<ItemType>
+   *
+   * Get the type of the source
+   */
+  getType(): Promise<number>
+
+}
 
 /**
  * Used by Source and Item to implement methods that are used on both classes
  * More info to be added soon.
  */
 
-export class iSource {
-  protected _id: string;
-  protected _value: any;
-  protected _name: string;
-  protected _cname: string;
-  protected _keepLoaded: boolean;
-  protected _globalsrc: boolean;
-  protected _isItemCall: boolean;
+export class iSource implements ISource{
+  private _id: string;
+  private _value: any;
+  private _name: string;
+  private _cname: string;
+  private _keepLoaded: boolean;
+  private _globalsrc: boolean;
+  private _isItemCall: boolean;
+  private _type: ItemTypes;
+  private _sceneId: string;
 
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._name = props['name'];
-    this._cname = props['cname'];
-    this._id = props['id'];
-    this._value = props['value'];
-    this._globalsrc = props['globalsrc'];
-  }
-  setName(value: string): Promise<Source> {
-    if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+  setName(value: string): Promise <iSource> {
+    if(this._isItemCall) {
+      Logger.warn('sourceWarning', 'setName', true)
     }
     return new Promise(resolve => {
       this._name = value;
@@ -74,7 +175,7 @@ export class iSource {
 
   getName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getName',  true)
     }
     return new Promise(resolve => {
       iItem.get('prop:name', this._id).then(val => {
@@ -86,7 +187,7 @@ export class iSource {
 
   setCustomName(value: string): Promise<Source> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setCustomName', true)
     }
     return new Promise(resolve => {
       this._cname = value;
@@ -98,7 +199,7 @@ export class iSource {
 
   getCustomName(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getCustomName', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:cname', this._id).then(val => {
@@ -110,10 +211,10 @@ export class iSource {
 
   getValue(): Promise<string | XML> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getValue', true)
     }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(val => {
+      iItem.get('prop:srcitem', this._id).then(val => {
         val = (val === 'null') ? '' : val;
         if (val === '') { // don't return XML for null values
           this._value = '';
@@ -134,7 +235,7 @@ export class iSource {
 
   setValue(value: string | XML): Promise<Source> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setValue', true)
     }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
@@ -144,13 +245,16 @@ export class iSource {
       } else {
         this._value = val;
       }
-      iItem.set('prop:item', val, this._id).then(() => {
+      iItem.set('prop:srcitem', val, this._id).then(() => {
         resolve(this);
       });
     });
   }
 
   getKeepLoaded(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getKeepLoaded', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:keeploaded', this._id).then(val => {
         this._keepLoaded = (val === '1');
@@ -160,10 +264,17 @@ export class iSource {
   }
 
   setKeepLoaded(value: boolean): Promise<Source> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setKeepLoaded', true)
+    }
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
-      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(globalsrcMinVersion)) {
+        iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
+      }
       iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
@@ -182,4 +293,55 @@ export class iSource {
       }
     });
   }
+
+  refresh(): Promise<iSource> {
+    return new Promise(resolve => {
+      iItem.set('refresh', '', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  getItemList(): Promise<iSource[]> {
+    return new Promise((resolve, reject) => {
+      if (
+        versionCompare(getVersion())
+          .is
+          .lessThan(minVersion)
+      ) {
+        Scene.searchItemsById(this._id).then(item => {
+          const itemArray = [];
+          itemArray.push(item);
+          resolve(itemArray);
+        });
+      } else {
+        iItem.get('itemlist', this._id).then(itemlist => {
+          const promiseArray: Promise<iSource>[] = [];
+          const itemsArray = itemlist.split(',');
+
+          itemsArray.forEach(itemId => {
+            promiseArray.push(new Promise(itemResolve => {
+              Scene.searchItemsById(itemId).then(item => {
+                itemResolve(item);
+              }).catch(() => itemResolve(null));
+            }));
+          });
+
+          Promise.all(promiseArray).then(results => {
+            resolve(results.filter(res => res !== null));
+          });
+        });
+      }
+    })
+  }
+
+  getType(): Promise<number> {
+    return new Promise(resolve => {
+      iItem.get('prop:type', this._id).then(val => {
+        this._type = ItemTypes[ItemTypes[Number(val)]];
+        resolve(this._type);
+      });
+    });
+  }
+
 }

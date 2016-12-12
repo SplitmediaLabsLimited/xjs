@@ -7,7 +7,7 @@ describe('System', function() {
   var System = XJS.System;
   var Environment = XJS.Environment;
   var env = new window.Environment(XJS);
-  var environments = ['config', 'extension', 'plugin'];
+  var environments = ['props', 'extension', 'plugin'];
   var local = {};
 
   beforeAll(function() {
@@ -28,19 +28,19 @@ describe('System', function() {
         });
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(prop) {
-          var rand = Math.floor(Math.random()*1000);
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           switch(prop) {
             case 'html:fontlist':
               setTimeout(function() {
-                window.OnAsyncCallback(rand, 'Times,Arial,Helvetica');
+                window.OnAsyncCallback(asyncId, 'Times,Arial,Helvetica');
               }, 10);
               break;
             default:
               break;
           }
 
-          return rand;
+          return asyncId;
         });
     }
   });

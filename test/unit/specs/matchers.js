@@ -34,6 +34,24 @@ beforeEach(function() {
       };
     },
 
+    eachToBeTypeOf: function() {
+      return {
+        compare: function(actual, expected) {
+          var pass = (actual.length > 0);
+
+          for (var i = 0; i < actual.length; i++) {
+            pass = (typeof actual[i] === expected);
+
+            if (!pass) {
+              break;
+            }
+          }
+
+          return { pass: pass };
+        }
+      };
+    },
+
     eachHasMethods: function() {
       return {
         compare: function(actual, expected) {

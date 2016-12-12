@@ -10,6 +10,16 @@ export class EventEmitter {
     this._handlers[event].push(handler);
   }
 
+  off(event: string, handler: Function) {
+    if (this._handlers[event] !== undefined) {
+      for (var i = this._handlers[event].length - 1; i >= 0; i--) {
+        if (this._handlers[event][i] === handler) {
+          this._handlers[event].splice(i, 1);  
+        }
+      }
+    }
+  }
+
   /** This function lets an event trigger with any number of supplied parameters. */
   emit(event: string, ...params: any[]) {
     if (this._handlers[event] === undefined) {

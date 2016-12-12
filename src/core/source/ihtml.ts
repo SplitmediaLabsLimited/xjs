@@ -4,24 +4,135 @@ import {exec} from '../../internal/internal';
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger';
 
-export class iHtmlSource {
-  protected _id: string;
-  protected _isItemCall: boolean;
-
-  constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._id = props['id'];
-  }
+export interface ISourceHtml {
   /**
    * return: Promise<boolean>
    *
    * Check if browser is rendered transparent
    */
+  isBrowserTransparent(): Promise<boolean>
+
+  /**
+   * param: Promise<boolean>
+   *
+   * return: Promise<ISourceHtml>
+   */
+  enableBrowserTransparency(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the custom browser window size (in pixels) for the item, if set,
+   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+   * custom size has been set.
+   */
+  getBrowserCustomSize(): Promise<Rectangle>
+
+  /**
+   * param: Promise<Rectangle>
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Gets the custom brower window size (in pixels) for the item
+   */
+  setBrowserCustomSize(value: Rectangle): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if right click events are sent to the item or not.
+   */
+  getAllowRightClick(): Promise<boolean>
+
+  /**
+   * param: (value:boolean)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Allow or disallow right click events to be sent to the item. Note that
+   * you can only catch right click events using `mouseup/mousedown`
+   */
+  setAllowRightClick(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the javascript commands to be executed on item upon load
+   */
+  getBrowserJS(): Promise<string>
+
+  /**
+   * param: (js: string, refresh: boolean = false)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Sets the javascript commands to be executed on item
+   * right upon setting and on load. Optionally set second parameter
+   * to true to refresh item (needed to clean previously executed JS code.)
+   *
+   * *Chainable.*
+   */
+  setBrowserJS(value: string): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if BrowserJS is enabled and executed on load
+   */
+  isBrowserJSEnabled(): Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Enables or disables execution of the set BrowserJs upon load.
+   */
+  enableBrowserJS(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the custom CSS applied to the document upon loading
+   */
+  getCustomCSS(): Promise<string>
+
+  /**
+   * param: (value: string)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Sets the custom CSS to be applied to the document upon loading
+   */
+  setCustomCSS(value: string): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if custom CSS is enabled and applied to the document on load
+   */
+  isCustomCSSEnabled(): Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Enables or disables application of custom CSS to the document
+   */
+  enableCustomCSS(value: boolean): Promise<ISourceHtml>
+}
+
+export class iSourceHtml implements ISourceHtml{
+  private _id: string;
+  private _isItemCall: boolean;
+
+
   isBrowserTransparent(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'isBrowserTransparent', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
@@ -30,19 +141,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disabled transparency of CEF browser
-   *
-   * *Chainable.*
-   */
-  enableBrowserTransparency(value: boolean): Promise<iHtmlSource> {
+  enableBrowserTransparency(value: boolean): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'enableBrowserTransparency', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
@@ -52,18 +153,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom browser window size (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom size has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
   getBrowserCustomSize(): Promise<Rectangle> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       let customSize;
@@ -82,22 +174,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<IiHtmlSource>
-   * ```
-   *
-   * Sets the custom browser window size for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setBrowserCustomSize(value: Rectangle): Promise<iHtmlSource> {
+  setBrowserCustomSize(value: Rectangle): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setBrowserCustomSize', true)
     }
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
@@ -111,22 +190,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
   getAllowRightClick(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:BrowserRightClick', this._id).then(val => {
@@ -135,28 +201,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
-  setAllowRightClick(value: boolean): Promise<iHtmlSource> {
+  setAllowRightClick(value: boolean): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setAllowRightClick', true)
     }
     return new Promise(resolve => {
       iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
@@ -166,14 +213,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<string>
-   *
-   * Gets the javascript commands to be executed on item upon load
-   */
   getBrowserJS(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getBrowserJS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -192,21 +234,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: (js: string, refresh: boolean = false)
-   * ```
-   * return: Promise<IiHtmlSource>
-   * ```
-   *
-   * Sets the javascript commands to be executed on item
-   * right upon setting and on load. Optionally set second parameter
-   * to true to refresh item (needed to clean previously executed JS code.)
-   *
-   * *Chainable.*
-   */
-  setBrowserJS(value: string, refresh = false): Promise<iHtmlSource> {
+  setBrowserJS(value: string, refresh = false): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -264,14 +294,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Gets if BrowserJS is enabled and executed on load
-   */
   isBrowserJSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'isBrowserJSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -290,21 +315,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<IiHtmlSource>
-   * ```
-   *
-   * Enables or disables execution of the set BrowserJs upon load.
-   * Note that disabling this will require item to be refreshed
-   * in order to remove any BrowserJS previously executed.
-   *
-   * *Chainable.*
-   */
-  enableBrowserJS(value: boolean): Promise<iHtmlSource> {
+  enableBrowserJS(value: boolean): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'enableBrowserJS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -373,14 +386,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<string>
-   *
-   * Gets the custom CSS applied to the document upon loading
-   */
   getCustomCSS(): Promise<string> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'getCustomCSS', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -399,19 +407,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: (value: string)
-   * ```
-   * return: Promise<IiHtmlSource>
-   * ```
-   *
-   * Sets the custom CSS to be applied to the document upon loading
-   *
-   * *Chainable.*
-   */
-  setCustomCSS(value: string): Promise<iHtmlSource> {
+  setCustomCSS(value: string): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'setCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -474,14 +472,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Gets if custom CSS is enabled and applied to the document on load
-   */
   isCustomCSSEnabled(): Promise<boolean> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'isCustomCSSEnabled', true)
     }
     return new Promise(resolve => {
       iItem.get('prop:custom', this._id).then(custom => {
@@ -500,19 +493,9 @@ export class iHtmlSource {
     });
   }
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<IiHtmlSource>
-   * ```
-   *
-   * Enables or disables application of custom CSS to the document
-   *
-   * *Chainable.*
-   */
-  enableCustomCSS(value: boolean): Promise<iHtmlSource> {
+  enableCustomCSS(value: boolean): Promise<iSourceHtml> {
     if(this._isItemCall){
-      console.warn('This is a Source specific method. Use this through Source to avoid this warning.(Improve this)')
+      Logger.warn('sourceWarning', 'enableCustomCSS', true)
     }
     return new Promise((resolve, reject) => {
       let customObject = {};

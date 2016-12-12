@@ -6,6 +6,7 @@ import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source} from './source/source';
+import {ItemTypes} from './source/isource';
 import {GameSource} from './source/game';
 import {CameraSource} from './source/camera';
 import {AudioSource} from './source/audio';
@@ -16,7 +17,7 @@ import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
 import {MediaSource} from './source/media';
 
-import {Item, ItemTypes, ViewTypes} from './items/item';
+import {Item, ViewTypes} from './items/item';
 import {GameItem} from './items/game';
 import {CameraItem} from './items/camera';
 import {AudioItem} from './items/audio';
@@ -104,28 +105,6 @@ export class Scene {
   }
 
   /**
-   * return: Scene
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#getByIdAsync getByIdAsync} instead.
-   *
-   * Get a specific scene object given the scene number.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * var scene1 = Scene.getById(1);
-   * ```
-   */
-  static getById(sceneNum: number): Scene {
-    // initialize if necessary
-    Scene._initializeScenePool();
-
-    return Scene._scenePool[sceneNum - 1];
-  }
-
-  /**
    * return: Promise<Scene>
    *
    * Get a specific scene object given the scene number.
@@ -139,18 +118,18 @@ export class Scene {
    * });
    * ```
    */
-  static getByIdAsync(sceneNum: any): Promise<Scene> {
+  static getById(sceneNum: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
       Scene._initializeScenePoolAsync().then(cnt => {
         if (sceneNum === 'i12') {
           if (Scene._scenePool[cnt]._id === 'i12') {
-            resolve(Scene._scenePool[cnt]);  
+            resolve(Scene._scenePool[cnt]);
           } else {
             reject(Error('Invalid parameter'));
           }
         } else {
           try {
-            if (sceneNum > cnt){
+            if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined'){
               reject(Error('Invalid parameter'));
             } else {
               resolve(Scene._scenePool[sceneNum - 1]);
@@ -166,7 +145,7 @@ export class Scene {
   /**
    * return: Promise<Scene[]>
    *
-   * Asynchronous functon to get a list of scene objects with a specific name.
+   * Asynchronous function to get a list of scene objects with a specific name.
    *
    * #### Usage
    *
@@ -222,7 +201,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.get('preset:0').then(id => {
-          return Scene.getByIdAsync(Number(id) + 1);
+          return Scene.getById(Number(id) + 1);
         }).then(scene => {
           resolve(scene);
         });
@@ -244,13 +223,11 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         if (scene instanceof Scene) {
-          scene.getId().then(id => {
-            iApp.set('preset', String(id)).then(res => {
+            iApp.set('preset', String(scene._id)).then(res => {
               resolve(res);
             });
-          });
         } else if (typeof scene === 'number') {
-          if (scene < 1) {
+          if (scene < 1 || !Number['isInteger'](Number(scene))) {
             reject(Error('Invalid parameters. Valid range is greater than 0'));
           } else {
             iApp.set('preset', String(scene - 1)).then(res => {
@@ -374,7 +351,7 @@ export class Scene {
   /**
    * return: Promise<Items[]>
    *
-   * Searches all items for a item by name substring. This function
+   * Searches all items for an item by name substring. This function
    * compares against custom name first (recommended) before falling back to the
    * name property of the item.
    *
@@ -385,6 +362,10 @@ export class Scene {
    *   // do something to each item in items array
    * });
    * ```
+   *
+   * Note: With the XBC 2.9 change, linked items would have the same
+   * Name and Custom Name. Changes made on an item would reflect on all
+   * linked items.
    *
    */
   static searchItemsByName(param: string): Promise<Item[]> {
@@ -539,11 +520,8 @@ export class Scene {
   /**
    * return: Promise<Source>
    *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#searchItemsById searchItemsById} instead.
-   *
-   * Searches all scenes for an source by ID. ID search will return exactly 1 result (IDs are unique) or null.
+   * Searches all scenes for a source by ID. ID search will return exactly 1
+   * result (IDs are unique) or null.
    *
    * See also: {@link #core/Source Core/Source}
    *
@@ -567,8 +545,8 @@ export class Scene {
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
             if (match === null) {
-              scene.getSources().then((function(items) {
-                found = items.some(item => { // unique ID, so get first result
+              scene.getSources().then((function(sources) {
+                found = sources.some(item => { // unique ID, so get first result
                   if (item['_id'] === id.toUpperCase()) {
                     match = item;
                     return true;
@@ -594,49 +572,41 @@ export class Scene {
   /**
    * return: Promise<Scene>
    *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#searchScenesByItemId searchScenesByItemId} instead.
-   *
    * Searches all scenes for one that contains the given source ID.
    *
    * #### Usage
    *
    * ```javascript
-   * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(scene) {
    *   // scene contains the source
    * });
    * ```
    *
    */
-  static searchScenesBySourceId(id: string): Promise<Scene> {
+  static searchScenesBySourceId(srcId: string): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
-
       } else {
         Scene._initializeScenePoolAsync().then(cnt => {
-          let match = null;
+          let sceneArr = []
           let found = false;
           Scene._scenePool.forEach((scene, idx, arr) => {
-            if (match === null) {
-              scene.getSources().then(sources => {
-                found = sources.some(source => { // unique ID, so get first result
-                  if (source['_id'] === id.toUpperCase()) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                });
-                if (found) {
-                  resolve(scene);
-                } else if (idx === arr.length - 1) {
-                  // last scene, no match
-                  resolve(match);
+            scene.getSources().then(sources => {
+              found = sources.some(source => { // unique ID, so get first result
+                if (source['_srcId'] === srcId.toUpperCase()) {
+                  sceneArr.push(scene);
+                  return true;
+                } else {
+                  return false;
                 }
               });
-            }
+              if (idx === arr.length - 1) {
+                resolve(sceneArr);
+              }
+            });
           });
         });
       }
@@ -645,10 +615,6 @@ export class Scene {
 
   /**
    * return: Promise<Source[]>
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#searchItemsByName searchItemsByName} instead.
    *
    * Searches all scenes for a source by name substring. This function
    * compares against custom name first (recommended) before falling back to the
@@ -701,10 +667,6 @@ export class Scene {
    * ```
    * return: Promise<Source[]>
    * ```
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#filterItems filterItems} instead.
    *
    * Searches all scenes for sources that satisfies the provided testing function.
    *
@@ -765,10 +727,6 @@ export class Scene {
    * ```
    * return: Promise<Scene[]>
    * ```
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#filterScenesByItems filterScenesByItems} instead.
    *
    * Searches all scenes for sources that satisfies the provided testing
    * function, and then return the scene that contains the source.
@@ -866,6 +824,95 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Source[]>
+   *
+   * Get all unique Sources from the current scene.
+   * Total number of Sources returned may be less that total number of Items on
+   * the scenes due to `Linked` items only having a single Source.
+   *
+   * #### Usage
+   * ```javascript
+   * xjs.Scene.getSources().then(function(sources) {
+   *   for(var i = 0 ; i < sources.length ; i++) {
+   *      if(sources[i] instanceof xjs.HtmlSource) {
+   *        // Manipulate HTML Source here
+   *      }
+   *   }
+   * })
+   * ```
+   */
+  getSources(): Promise<Source[]> {
+    return new Promise((resolve, reject) => {
+      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
+        var promiseArray: Promise<Source>[] = [];
+        let uniqueObj = {};
+        let uniqueSrc = [];
+
+        // type checking to return correct Source subtype
+        let typePromise = index => new Promise(typeResolve => {
+          let source = jsonArr[index];
+          let type = Number(source['type']);
+          if (type === ItemTypes.GAMESOURCE) {
+            typeResolve(new GameSource(source));
+          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+            source['name'].indexOf('Video Playlist') === 0 &&
+            source['FilePlaylist'] !== ''){
+            typeResolve(new VideoPlaylistSource(source));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HtmlSource(source));
+          } else if (type === ItemTypes.SCREEN) {
+            typeResolve(new ScreenSource(source));
+          } else if (type === ItemTypes.BITMAP ||
+              type === ItemTypes.FILE &&
+              /\.gif$/.test(source['item'])) {
+            typeResolve(new ImageSource(source));
+          } else if (type === ItemTypes.FILE &&
+              /\.(gif|xbs)$/.test(source['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+            typeResolve(new MediaSource(source));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+            typeResolve(new CameraSource(source));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioSource(source));
+          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+            typeResolve(new FlashSource(source));
+          } else {
+              typeResolve(new Source(source));
+          }
+        });
+
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneId'] = this._id;
+            promiseArray.push(typePromise(i));
+          }
+        }
+        Promise.all(promiseArray).then(results => {
+          for(var h = 0; h< results.length; h++) {
+            for(var key in results[h]){
+              if(key === '_srcId'){
+                uniqueObj[results[h][key]] = results[h]
+              }
+            }
+          }
+          for(var j in uniqueObj) {
+            if(uniqueObj.hasOwnProperty(j)) {
+              uniqueSrc.push(uniqueObj[j])
+            }
+          }
+          resolve(uniqueSrc);
+        });
+      }).catch(err => {
+        reject(err)
+      });
+    });
+  }
+
+  /**
    * return: number
    *
    * Get the 1-indexed scene number of this scene object.
@@ -934,87 +981,9 @@ export class Scene {
   }
 
   /**
-   * return: Promise<Source[]>
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#getItems getItems} instead.
-   *
-   * Gets all the sources in a specific scene.
-   * See also: {@link #core/Source Core/Source}
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * myScene.getSources().then(function(sources) {
-   *  // do something to each source in sources array
-   * });
-   * ```
-   */
-  getSources(): Promise<Source[]> {
-    return new Promise((resolve, reject) => {
-      console.warn('Warning! getSources is deprecated and will be ' +
-        'removed soon. Please use getItems instead.');
-      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
-        var promiseArray: Promise<Source>[] = [];
-
-        // type checking to return correct Source subtype
-        let typePromise = index => new Promise(typeResolve => {
-          let source = jsonArr[index];
-          let type = Number(source['type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameSource(source));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            source['name'].indexOf('Video Playlist') === 0 &&
-            source['FilePlaylist'] !== ''){
-            typeResolve(new VideoPlaylistSource(source));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlSource(source));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenSource(source));
-          } else if (type === ItemTypes.BITMAP ||
-              type === ItemTypes.FILE &&
-              /\.gif$/.test(source['item'])) {
-            typeResolve(new ImageSource(source));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-            typeResolve(new MediaSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioSource(source));
-          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashSource(source));
-          } else {
-              typeResolve(new Source(source));
-          }
-        });
-
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneId'] = this._id;
-            promiseArray.push(typePromise(i));
-          }
-        }
-
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
-        });
-      }).catch(err => {
-        reject(err)
-      });
-    });
-  }
-
-  /**
    * return: Promise<Item[]>
    *
-   * Gets all the sources in a specific scene.
+   * Gets all the items in a specific scene.
    * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
@@ -1105,118 +1074,29 @@ export class Scene {
   }
 
   /**
-   * param: Array<Source> | Array<string> (source IDs)
-   * ```
-   * return: Promise<Scene>
-   * ```
-   *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Scene#setItemOrder setItemOrder} instead.
-   *
-   * Sets the source order of the current scene. The first source in the array
-   * will be on top (will cover sources below it).
-   */
-  setSourceOrder(sources: Array<any>): Promise<Scene> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('not available for source plugins'));
-      } else {
-        sources.reverse();
-        let ids = [];
-        Scene.getActiveScene().then(scene => {
-          if (sources.every(el => { return (el instanceof Source || el instanceof Item) })) {
-            return new Promise(resolve => {
-              let promises = [];
-              for (let i in sources) {
-                promises.push((_i => {
-                  return new Promise(resolve => {
-                    sources[_i].getId().then(id => {
-                      ids[_i] = id;
-                      resolve(this);
-                    });
-                  });
-                })(i));
-              }
-
-              Promise.all(promises).then(() => {
-                  return scene.getSceneNumber();
-                }).then(id => {
-                  resolve(id);
-                });
-            });
-          } else {
-            ids = sources;
-            return scene.getSceneNumber();
-          }
-        }).then(id => {
-          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
-            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
-            resolve(this);
-          } else {
-            let sceneName: string;
-            this.getName().then(name => {
-              sceneName = name;
-              return iApp.getAsList('presetconfig:' + this._id);
-            }).then(jsonArr => {
-              let newOrder = new JXON();
-              newOrder.children = [];
-              newOrder['tag'] = 'placement';
-              newOrder['name'] = sceneName;
-              if (Array.isArray(jsonArr)) {
-                let attrs = ['name', 'cname', 'item'];
-                for (let i = 0; i < jsonArr.length; i++) {
-                  for (let a = 0; a < attrs.length; a++) {
-                    //This formatting is for json
-                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/\\/g, '\\\\');
-                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');                   
-                  }
-                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
-                }
-
-                iApp.set(
-                  'presetconfig:' + this._id,
-                  //Revert back the formatting from json when transforming to xml
-                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
-                ).then(() => {
-                    resolve(this);
-                });
-              } else {
-                reject(Error('Scene does not have any source'));
-              }
-            });
-          }
-        });
-      }
-    });
-  }
-
-  /**
- * param: Array<Source> | Array<string> (source IDs)
+ * param: Array<Item> | Array<string> (item IDs)
  * ```
  * return: Promise<Scene>
  * ```
  *
  * Sets the item order of the current scene. The first item in the array
- * will be on top (will cover sources below it).
+ * will be on top (will cover items below it).
  */
-  setItemOrder(sources: Array<any>): Promise<Scene> {
+  setItemOrder(items: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));
       } else {
-        sources.reverse();
+        items.reverse();
         let ids = [];
         Scene.getActiveScene().then(scene => {
-          if (sources.every(el => { return (el instanceof Source || el instanceof Item) })) {
+          if (items.every(el => { return (el instanceof Source || el instanceof Item) })) {
             return new Promise(resolve => {
               let promises = [];
-              for (let i in sources) {
+              for (let i in items) {
                 promises.push((_i => {
                   return new Promise(resolve => {
-                    sources[_i].getId().then(id => {
+                    items[_i].getId().then(id => {
                       ids[_i] = id;
                       resolve(this);
                     });
@@ -1231,11 +1111,12 @@ export class Scene {
               });
             });
           } else {
-            ids = sources;
+            ids = items;
             return scene.getSceneNumber();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id && (Environment.isSourceConfig() || Environment.isExtension) ) {
+          if ((Number(id) - 1) === this._id &&
+            (Environment.isSourceProps() || (Environment.isExtension)) ) {
             exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);
           } else {
@@ -1256,7 +1137,7 @@ export class Scene {
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
                       .replace(/\\/g, '\\\\');
                     jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');               
+                      .replace(/"/g, '&quot;');
                   }
                   newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                 }
