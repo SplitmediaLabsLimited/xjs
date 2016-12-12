@@ -32,10 +32,14 @@ export class Broadcast {
     })
   }
 
+  // For start and stop broadcast, check if the provided channel is on the list
+  // Could also check if it's live
+  // Also check if id is in proper id format
+
   startBroadcast(channel:string, id:string): Promise<boolean> {
     return new Promise(resolve => {
       exec('CallHost', 'startBroadcast:' + id, channel);
-      resolve(true); // Should return channel list
+      resolve(true);
     })
   }
 
@@ -49,14 +53,14 @@ export class Broadcast {
   // can only be used by local recording
   pauseLocalRecording(id): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'pauseRecording:'+ id); //id refers to source/extension id of caller
+      exec('CallHost', 'pauseRecording:'+ id);
       resolve(true)
     })
   }
 
   unpauseLocalRecording(id): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'unpauseRecording:'+ id); //id refers to source/extension id of caller
+      exec('CallHost', 'unpauseRecording:'+ id);
       resolve(true)
     })
   }

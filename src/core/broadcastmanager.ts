@@ -2,18 +2,27 @@ import {exec} from '../internal/internal';
 import {EventManager} from '../internal/eventmanager';
 
 export class BroadcastManager {
-  static _callback = {}
+  static _callback = {};
+  static _id:string
 
   static getBroadcastChannels(id:string) {
-    return new Promise(resolve => {
-      exec('CallHost', 'getBroadcastChannelList:'+id)
-      BroadcastManager._callback[id].push({resolve})
+    BroadcastManager._id = id;
+    return new Promise((resolve, reject) => {
+      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(BroadcastManager._id);
+      if (!isID) {
+        reject(Error('Not a valid ID format for items'));
+      } else {
+        if (BroadcastManager._callback[BroadcastManager._id] === undefined){
+          BroadcastManager._callback[BroadcastManager._id] = [];
+        }
+        BroadcastManager._callback[BroadcastManager._id].push({resolve,reject});
+        exec('CallHost', 'getBroadcastChannelList:'+BroadcastManager._id)
+      }
     })
   }
 }
 
-window.SetBroadcastChannelList = function(channels: string) {
+window.SetBroadcastChannelList = function(channels) {
   console.log('Channels::', channels)
-  BroadcastManager._callback[channels].resolve(channels);
+  BroadcastManager._callback[BroadcastManager._id].resolve(channels)
 }
-
