@@ -118,28 +118,34 @@ export class SourcePluginWindow extends EventEmitter {
   }
 }
 
-if (Environment.isSourcePlugin()) {
-  window.MessageSource = function(message: string) {
-    SourcePluginWindow.emit('message-source',
-      JSON.parse(message));
-  };
+// for source plugins
+window.MessageSource = function(message: string) {
+  SourcePluginWindow.emit('message-source',
+    JSON.parse(message));
+};
 
-  window.SetConfiguration = function(configObj: string) {
-    try {
-      var data = JSON.parse(configObj);
-      SourcePluginWindow.emit('apply-config', data);
-      SourcePluginWindow.emit('save-config', data);
-    } catch (e) {
-      // syntax error probably happened, exit gracefully
-      return;
-    }
-  };
+window.SetConfiguration = function(configObj: string) {
+  try {
+    var data = JSON.parse(configObj);
+    SourcePluginWindow.emit('apply-config', data);
+    SourcePluginWindow.emit('save-config', data);
+  } catch (e) {
+    // syntax error probably happened, exit gracefully
+    return;
+  }
+};
 
-  window.setBackGroundColor = function(color: string) {
-    SourcePluginWindow.emit('set-background-color', color);
-  };
+window.setBackGroundColor = function(color: string) {
+  SourcePluginWindow.emit('set-background-color', color);
+};
 
-  window.OnSceneLoad = function() {
+let prevOnSceneLoad = window.OnSceneLoad;
+window.OnSceneLoad = function(...args: any[]) {
+  if (Environment.isSourcePlugin()) {
     SourcePluginWindow.emit('scene-load');
-  };
+  }
+
+  if (prevOnSceneLoad !== undefined) {
+    prevOnSceneLoad(...args)
+  }
 }
