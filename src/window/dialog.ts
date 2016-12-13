@@ -305,8 +305,8 @@ export class Dialog{
   }
 }
 
-if (Environment.isSourceProps() || Environment.isExtension()) {
-  window.OnDialogResult = function(result) {
+window.OnDialogResult = function(result) {
+  if (Environment.isSourceProps() || Environment.isExtension()) {
     document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
       detail: result }));
   }
