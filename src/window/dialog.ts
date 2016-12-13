@@ -230,7 +230,7 @@ export class Dialog{
         undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
     } else {
       exec('NewDialog', this._url, '', this._size === undefined ?
-        undefined : (this._size.getWidth() + ',' + this._size.getHeight()),
+        undefined : (this._size.toDimensionString()),
         this._calculateFlags(),
         this._title)
     }

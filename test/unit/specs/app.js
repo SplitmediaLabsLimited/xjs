@@ -823,59 +823,6 @@ describe('App ===', function() {
     });
   });
 
-  xdescribe ('should be able to open a new modal dialog', function() {
-    var newDialogOpen;
-    beforeEach(function() {
-      newDialogOpen = false;
-      spyOn(window.external, 'NewDialog').and.callFake(function(url) {
-        if (typeof url == 'string')
-          newDialogOpen = true;
-      });
-    });
-
-    it('from a URL string', function(done) {
-      App.newDialog('http://someWebsite.com');
-      expect(newDialogOpen).toBe(true);
-      done();
-    });
-  });
-
-  xdescribe ('should be able to open a new dialog ' +
-    'that automatically closes on mouse leave', function() {
-    var newAutoDialogOpen;
-    beforeEach(function() {
-      newAutoDialogOpen = false;
-      spyOn(window.external, 'NewAutoDialog').and.callFake(function(url) {
-        if (typeof url == 'string')
-          newAutoDialogOpen = true;
-      });
-    });
-
-    it('from a URL string', function(done) {
-      App.newAutoDialog('http://someWebsite.com');
-      expect(newAutoDialogOpen).toBe(true);
-      done();
-    });
-  });
-
-  xdescribe ('should be able to close the dialog', function() {
-    var dialogClose;
-    beforeEach(function() {
-      dialogClose = false;
-      spyOn(window.external, 'CloseDialog').and.callFake(function() {
-        dialogClose = true;
-      });
-      // simulate GetViewId call to pass the test as source config
-      spyOn(window.external, 'GetViewId').and.returnValue('1');
-    });
-
-    it('spawned via NewDialog', function(done) {
-      App.closeDialog();
-      expect(dialogClose).toBe(true);
-      done();
-    });
-  });
-
   describe('should get transition', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
