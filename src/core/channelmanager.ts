@@ -42,7 +42,7 @@ export class ChannelManager extends EventEmitter {
    *  Allows listening to events that this class emits. Currently there are two:
    *  `stream-start` and `stream-end`.
    *
-   *  Sample usage:
+   *  #### Usage:
    *
    * ```javascript
    * ChannelManager.on('stream-start', function(res) {
