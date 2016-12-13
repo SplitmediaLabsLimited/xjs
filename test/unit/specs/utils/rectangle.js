@@ -5,7 +5,7 @@ describe('Rectangle ===', function() {
 
   var XJS = require('xjs');
   var Rectangle = XJS.Rectangle;
-  var getRandomInt = function(min, max) {
+  var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;
     }
@@ -17,24 +17,24 @@ describe('Rectangle ===', function() {
 
   describe('can be instantiated', function() {
     it('from width and height', function() {
-      var dimRectangle = Rectangle.fromDimensions(getRandomInt(), getRandomInt());
+      var dimRectangle = Rectangle.fromDimensions(randomInt(), randomInt());
       expect(dimRectangle).toBeInstanceOf(Rectangle);
       expect(function() {
-        Rectangle.fromDimensions(-getRandomInt(1), getRandomInt());
+        Rectangle.fromDimensions(-randomInt(1), randomInt());
       }).toThrow();
       expect(function() {
-        Rectangle.fromDimensions(getRandomInt(), -getRandomInt(1));
+        Rectangle.fromDimensions(randomInt(), -randomInt(1));
       }).toThrow();
       expect(function() {
-        Rectangle.fromDimensions(-getRandomInt(1), -getRandomInt(1));
+        Rectangle.fromDimensions(-randomInt(1), -randomInt(1));
       }).toThrow();
     });
 
     it('from an object of rectangular coordinates', function() {
-      var firstSmallerInt = getRandomInt(0,50);
-      var secondSmallerInt = getRandomInt(0,50);
-      var firstBiggerInt = getRandomInt(51,100);
-      var secondBiggerInt = getRandomInt(51,100);
+      var firstSmallerInt = randomInt(0,50);
+      var secondSmallerInt = randomInt(0,50);
+      var firstBiggerInt = randomInt(51,100);
+      var secondBiggerInt = randomInt(51,100);
       var coordRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);
       expect(coordRectangle).toBeInstanceOf(Rectangle);
       // throw error when right is smaller than left
@@ -60,10 +60,10 @@ describe('Rectangle ===', function() {
   describe('should be able to get and set', function() {
     var testRectangle;
     beforeEach(function() {
-      var firstSmallerInt = getRandomInt(0,50);
-      var secondSmallerInt = getRandomInt(0,50);
-      var firstBiggerInt = getRandomInt(51,100);
-      var secondBiggerInt = getRandomInt(51,100);
+      var firstSmallerInt = randomInt(0,50);
+      var secondSmallerInt = randomInt(0,50);
+      var firstBiggerInt = randomInt(51,100);
+      var secondBiggerInt = randomInt(51,100);
       testRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);      
     });
 
@@ -71,7 +71,7 @@ describe('Rectangle ===', function() {
       var testLeft = testRectangle.getLeft();
       var newLeft = testLeft;
       while (newLeft === testLeft) {
-        newLeft = getRandomInt(0,50);
+        newLeft = randomInt(0,50);
       }
       testRectangle.setLeft(newLeft);
       var leftValue = testRectangle.getLeft();
@@ -84,7 +84,7 @@ describe('Rectangle ===', function() {
       var testTop = testRectangle.getTop();
       var newTop = testTop;
       while (newTop === testTop) {
-        newTop = getRandomInt(0,50);
+        newTop = randomInt(0,50);
       }
       testRectangle.setTop(newTop);
       var topValue = testRectangle.getTop();
@@ -97,7 +97,7 @@ describe('Rectangle ===', function() {
       var testRight = testRectangle.getRight();
       var newRight = testRight;
       while (newRight === testRight) {
-        newRight = getRandomInt(51,100);
+        newRight = randomInt(51,100);
       }
       testRectangle.setRight(newRight);
       var rightValue = testRectangle.getRight();
@@ -110,7 +110,7 @@ describe('Rectangle ===', function() {
       var testBottom = testRectangle.getBottom();
       var newBottom = testBottom;
       while (newBottom === testBottom) {
-        newBottom = getRandomInt(51,100);
+        newBottom = randomInt(51,100);
       }
       testRectangle.setBottom(newBottom);
       var bottomValue = testRectangle.getBottom();
@@ -123,7 +123,7 @@ describe('Rectangle ===', function() {
       var testWidth = testRectangle.getWidth();
       var newWidth = testWidth;
       while (newWidth === testWidth) {
-        newWidth = getRandomInt(51,100);
+        newWidth = randomInt(51,100);
       }
       testRectangle.setWidth(newWidth);
       var widthValue = testRectangle.getWidth();
@@ -136,7 +136,7 @@ describe('Rectangle ===', function() {
       var testHeight = testRectangle.getHeight();
       var newHeight = testHeight;
       while (newHeight === testHeight) {
-        newHeight = getRandomInt(51,100);
+        newHeight = randomInt(51,100);
       }
       testRectangle.setHeight(newHeight);
       var heightValue = testRectangle.getHeight();
@@ -150,7 +150,7 @@ describe('Rectangle ===', function() {
       var testWidth = testRectangle.getWidth();
       var newLeft = testLeft;
       while (newLeft === testLeft) {
-        newLeft = getRandomInt(0,50);
+        newLeft = randomInt(0,50);
       }
       testRectangle.setLeft(newLeft);
       expect(testRectangle.getWidth()).not.toEqual(testWidth);
@@ -158,7 +158,7 @@ describe('Rectangle ===', function() {
       var testRight = testRectangle.getRight();
       var newRight = testRight;
       while (newRight === testRight) {
-        newRight = getRandomInt(51,100);
+        newRight = randomInt(51,100);
       }
       testRectangle.setRight(newRight);
       expect(testRectangle.getWidth()).not.toEqual(testWidth);
@@ -169,7 +169,7 @@ describe('Rectangle ===', function() {
       var testHeight = testRectangle.getHeight();
       var newTop = testTop;
       while (newTop === testTop) {
-        newTop = getRandomInt(0,50);
+        newTop = randomInt(0,50);
       }
       testRectangle.setTop(newTop);
       expect(testRectangle.getHeight()).not.toEqual(testHeight);
@@ -177,7 +177,7 @@ describe('Rectangle ===', function() {
       var testBottom = testRectangle.getBottom();
       var newBottom = testBottom;
       while (newBottom === testBottom) {
-        newBottom = getRandomInt(51,100);
+        newBottom = randomInt(51,100);
       }
       testRectangle.setBottom(newBottom);
       expect(testRectangle.getHeight()).not.toEqual(testHeight);      
@@ -186,19 +186,19 @@ describe('Rectangle ===', function() {
 
   describe('should be convertible to string', function() {
     it('based on its dimensions', function() {
-      var testRectangle = Rectangle.fromDimensions(getRandomInt(), getRandomInt());
+      var testRectangle = Rectangle.fromDimensions(randomInt(), randomInt());
       expect(testRectangle.toDimensionString()).toBeTypeOf('string');
     });
 
     it('based on its coordinates', function() {
-      var firstSmallerInt = getRandomInt(0,50);
-      var secondSmallerInt = getRandomInt(0,50);
-      var firstBiggerInt = getRandomInt(51,100);
-      var secondBiggerInt = getRandomInt(51,100);
+      var firstSmallerInt = randomInt(0,50);
+      var secondSmallerInt = randomInt(0,50);
+      var firstBiggerInt = randomInt(51,100);
+      var secondBiggerInt = randomInt(51,100);
       var testRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);
       expect(testRectangle.toCoordinateString()).toBeTypeOf('string');
       expect(function() {
-        var rectangleString = Rectangle.fromDimensions(getRandomInt(), getRandomInt()).toCoordinateString();
+        var rectangleString = Rectangle.fromDimensions(randomInt(), randomInt()).toCoordinateString();
       }).toThrow();
       testRectangle = new Rectangle();
       expect(function() {
@@ -221,10 +221,10 @@ describe('Rectangle ===', function() {
     });
 
     it('based on a custom format', function() {
-      var leftValue = getRandomInt(0,50);
-      var topValue = getRandomInt(0,50);
-      var rightValue = getRandomInt(51,100);
-      var bottomValue = getRandomInt(51,100);
+      var leftValue = randomInt(0,50);
+      var topValue = randomInt(0,50);
+      var rightValue = randomInt(51,100);
+      var bottomValue = randomInt(51,100);
       var widthValue = rightValue - leftValue;
       var heightValue = bottomValue - topValue;
       var formatRectangle = Rectangle.fromCoordinates(leftValue, topValue, rightValue, bottomValue);

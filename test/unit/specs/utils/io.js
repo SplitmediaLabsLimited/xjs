@@ -13,7 +13,7 @@ describe('IO ===', function() {
     return Math.random() >= 0.5;
   };
 
-  var getRandomInt = function(min, max) {
+  var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;
     }
@@ -144,7 +144,7 @@ describe('IO ===', function() {
         .and.callFake(function(file) {
         if (file === filePath) {
           setTimeout(function() {
-            window.OnGetVideoDuration(file, getRandomInt(0, 999999999).toString());
+            window.OnGetVideoDuration(file, randomInt(0, 999999999).toString());
           },10);
         } else {
           setTimeout(function() {

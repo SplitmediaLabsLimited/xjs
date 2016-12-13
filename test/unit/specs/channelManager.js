@@ -8,7 +8,6 @@ describe('ChannelManager ===', function() {
   var ChannelManager = XJS.ChannelManager;
   var env = new window.Environment(XJS);
   var environments = ['props', 'extension', 'plugin'];
-  var xjsEnvironment = XJS.Environment;
 
   describe('should be able to listen to stream events', function() {
     it('such as stream start', function(done) {
