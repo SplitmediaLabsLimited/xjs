@@ -29,6 +29,7 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  *     }
  *   })
  * })
+ * ```
  */
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item

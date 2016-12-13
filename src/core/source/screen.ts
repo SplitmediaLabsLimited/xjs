@@ -27,6 +27,7 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  *     }
  *   })
  * })
+ * ```
  */
 export class ScreenSource extends Source implements ISourceScreen {
   /**
@@ -50,7 +51,7 @@ export class ScreenSource extends Source implements ISourceScreen {
   setStickToTitle: (value: boolean) => Promise<ScreenSource>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Screen Capture layered window is selected.
    */
@@ -59,7 +60,7 @@ export class ScreenSource extends Source implements ISourceScreen {
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ScreenSource>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Sets the Screen Capture Layered window
@@ -67,7 +68,7 @@ export class ScreenSource extends Source implements ISourceScreen {
   setCaptureLayered: (value: boolean) => Promise<ScreenSource>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Exclusive Window capture is selected.
    */
@@ -76,7 +77,7 @@ export class ScreenSource extends Source implements ISourceScreen {
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ScreenSource>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Sets the Exclusive Window capture.
@@ -84,10 +85,12 @@ export class ScreenSource extends Source implements ISourceScreen {
   setOptimizedCapture:(value: boolean) => Promise<ScreenSource>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Show mouse clicks is selected.
    *
+   * ShowMouseClicks determine if you would want to dispaly the clicks
+   * you're doing inside your screen captured area.
    */
   getShowMouseClicks: () => Promise<boolean>
 
@@ -95,28 +98,36 @@ export class ScreenSource extends Source implements ISourceScreen {
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ScreenSource>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Sets the Show mouse clicks.
+   *
+   * ShowMouseClicks determine if you would want to dispaly the clicks
+   * you're doing inside your screen captured area.
    */
   setShowMouseClicks: (value: boolean) => Promise<ScreenSource>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Show mouse is selected.
    *
+   * ShowMouse determine if you would want to display the mouse on your
+   * screen captured area.
    */
   getShowMouse: () => Promise<boolean>
 
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ScreenSource>
+   * return: Promise<ScreenSource>
    * ```
    *
    * Sets the Show Mouse.
+   *
+   * ShowMouse determine if you would want to display the mouse on your
+   * screen captured area.
    */
   setShowMouse: (value: boolean) => Promise<ScreenSource>
 

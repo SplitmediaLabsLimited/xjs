@@ -113,7 +113,7 @@ export class Scene {
    *
    * ```javascript
    * var scene1;
-   * Scene.getByIdAsync(1).then(function(scene) {
+   * Scene.getById(1).then(function(scene) {
    *   scene1 = scene;
    * });
    * ```
@@ -401,7 +401,7 @@ export class Scene {
   };
 
   /**
-   * param: function(item, resolve)
+   * param: (func: function)
    * ```
    * return: Promise<Item[]>
    * ```
@@ -461,7 +461,7 @@ export class Scene {
   }
 
   /**
-   * param: function(item, resolve)
+   * param: (func: function)
    * ```
    * return: Promise<Scene[]>
    * ```
@@ -663,7 +663,7 @@ export class Scene {
   };
 
   /**
-   * param: function(source, resolve)
+   * param: (func: function)
    * ```
    * return: Promise<Source[]>
    * ```
@@ -723,7 +723,7 @@ export class Scene {
   }
 
   /**
-   * param: function(source, resolve)
+   * param: (func: function)
    * ```
    * return: Promise<Scene[]>
    * ```
@@ -784,7 +784,8 @@ export class Scene {
 
    * Load scenes that are not yet initialized in XSplit Broadcaster.
    *
-   * Note: For memory saving purposes, this is not called automatically.
+   * Note: This is only necessary for XSplit version 2.7 and below.
+   * Also, for memory saving purposes, this is not called automatically.
    * If your extension wants to manipulate multiple scenes, it is imperative that you call this function.
    * This function is only available to extensions.
    *
@@ -959,7 +960,7 @@ export class Scene {
   }
 
   /**
-   *
+   * param: (value: string)
    * Set the name of this scene object. Cannot be set by source plugins.
    *
    * #### Usage
@@ -990,7 +991,7 @@ export class Scene {
    *
    * ```javascript
    * myScene.getItems().then(function(items) {
-   *  // do something to each source in items array
+   *  // do something to each item in items array
    * });
    * ```
    */
@@ -1053,6 +1054,8 @@ export class Scene {
   }
 
  /**
+  * return: boolean
+  *
   * Checks if a scene is empty.
   *
   * #### Usage

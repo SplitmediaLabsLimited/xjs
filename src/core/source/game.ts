@@ -29,6 +29,7 @@ import {iSourceGame, ISourceGame} from './igame';
  *     }
  *   })
  * })
+ * ```
  */
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame
@@ -68,7 +69,7 @@ export class GameSource extends Source implements ISourceGame{
   /**
    * param: path<string>
    *
-   * Set the offline image of a game item
+   * Set the offline image of a game source
    *
    * *Chainable.*
    */
@@ -77,7 +78,7 @@ export class GameSource extends Source implements ISourceGame{
   /**
    * return: Promise<string>
    *
-   * Get the offline image of a game item
+   * Get the offline image of a game source
    */
   getOfflineImage:() => Promise<string>
 }

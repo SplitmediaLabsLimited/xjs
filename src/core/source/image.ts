@@ -26,14 +26,19 @@ import {XML} from '../../internal/util/xml';
  *     }
  *   })
  * })
+ * ```
  */
 export class ImageSource extends Source {
   /**
+   * Gets a special string that refers to the image's main definition.
+   *
    * See: {@link #core/Source#getValue getValue}
    */
   getValue: () => Promise<string | XML>
 
   /**
+   * Sets the image's main definition.
+   *
    * See: {@link #core/Source#setValue setValue}
    */
   setValue: (value: string | XML) => Promise<ImageSource>

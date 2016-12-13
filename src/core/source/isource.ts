@@ -16,9 +16,9 @@ import {Scene} from '../scene';
 import {Logger} from '../../internal/util/logger';
 
 /**
- * Used by items to define its type.
+ * ItemTypes is used to define the type of the current Source.
  *
- * Check `getType()` method of {@link #core/Item#getType Core/Item}
+ * Check `getType()` method of {@link #core/Source#getType Core/Source}
  */
 export enum ItemTypes {
   UNDEFINED,

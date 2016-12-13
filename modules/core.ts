@@ -27,14 +27,17 @@ export * from '../src/core/source/image';
 export * from '../src/core/source/media';
 export * from '../src/core/source/videoplaylist';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from '../src/core/items/ichroma';
-export {ActionAfterPlayback} from '../src/core/items/iplayback';
-export {CuePoint} from '../src/core/items/cuepoint';
 export {IItemChroma} from '../src/core/items/ichroma';
 export {IItemColor} from '../src/core/items/icolor';
 export {IItemLayout} from '../src/core/items/ilayout';
 export {IItemTransition} from '../src/core/items/itransition';
-export {IItemAudio} from '../src/core/items/iaudio';
-export {IItemConfigurable} from '../src/core/items/iconfig';
-export {IItemPlayback} from '../src/core/items/iplayback';
 export {IItemEffect} from '../src/core/items/ieffects';
+
+export {ActionAfterPlayback} from '../src/core/source/iplayback';
+export {CuePoint} from '../src/core/source/cuepoint';
+export {IAudio} from '../src/core/source/iaudio';
+export {ISourceConfigurable} from '../src/core/source/iconfig';
+export {ISourcePlayback} from '../src/core/source/iplayback';
+export {ViewTypes} from '../src/core/items/item';
+export {ItemTypes} from '../src/core/source/isource';
 
