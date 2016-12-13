@@ -10,7 +10,7 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the ScreenItem class.
- * See: {@link: #core/ScreenItem Core/ScreenItem}
+ * See: {@link #core/ScreenItem Core/ScreenItem}
  *
  * ### Basic Usage
  *
@@ -21,7 +21,7 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.ScreenSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your screen source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
@@ -89,7 +89,7 @@ export class ScreenSource extends Source implements ISourceScreen {
    *
    * Checks if the Show mouse clicks is selected.
    *
-   * ShowMouseClicks determine if you would want to dispaly the clicks
+   * ShowMouseClicks determine if you would want to display the clicks
    * you're doing inside your screen captured area.
    */
   getShowMouseClicks: () => Promise<boolean>
@@ -103,7 +103,7 @@ export class ScreenSource extends Source implements ISourceScreen {
    *
    * Sets the Show mouse clicks.
    *
-   * ShowMouseClicks determine if you would want to dispaly the clicks
+   * ShowMouseClicks determine if you would want to display the clicks
    * you're doing inside your screen captured area.
    */
   setShowMouseClicks: (value: boolean) => Promise<ScreenSource>

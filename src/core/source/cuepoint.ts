@@ -1,7 +1,7 @@
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
- *  {@link #core/MediaItem#getCuePoints Core/MediaItem}.
+ *  {@link #core/MediaSource#getCuePoints Core/MediaSource}.
  */
 export class CuePoint {
   private _time: number;

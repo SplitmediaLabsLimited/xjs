@@ -14,7 +14,7 @@ import {ISourceMedia, SourceMedia} from './imedia';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the MediaItem class.
- * See: {@link: #core/MediaItem Core/MediaItem}
+ * See: {@link #core/MediaItem Core/MediaItem}
  *
  * ### Basic Usage
  *
@@ -25,16 +25,17 @@ import {ISourceMedia, SourceMedia} from './imedia';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.MediaSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your media source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   })
  * })
+ * ```
  */
 export class MediaSource extends Source implements ISourcePlayback, IAudio,
   ISourceMedia {
-  // ItemPlayback
+  // ISourcePlayback
   // Inherited from base class, no need to redefine
   // getValue: () => Promise<string>;
   // setValue: (value: string) => Promise<MediaItem>;

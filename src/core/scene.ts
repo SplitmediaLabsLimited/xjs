@@ -985,7 +985,7 @@ export class Scene {
    * return: Promise<Item[]>
    *
    * Gets all the items in a specific scene.
-   * See also: {@link #core/Source Core/Source}
+   * See also: {@link #core/Item Core/Item}
    *
    * #### Usage
    *
@@ -1054,7 +1054,7 @@ export class Scene {
   }
 
  /**
-  * return: boolean
+  * return: Promise<boolean>
   *
   * Checks if a scene is empty.
   *

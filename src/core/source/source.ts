@@ -29,7 +29,7 @@ import {MediaSource} from './media';
  * Manipulating Source specific properties would render changes to all
  * items linked to that source.
  *
- * Implements: @{link #core/ISource Core/ISource}
+ * Implements: {@link #core/ISource Core/ISource}
  *
  * ### Basic Usage
  *
@@ -145,7 +145,8 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * xjs.Source.getItemList().then(function(items) {
+   * xjs.Source.getItemList()
+   * .then(function(items) {
    *   // This will fetch the item list of the current Source
    *   for (var i = 0 ; i < items.length ; i++) {
    *     // Manipulate each item here
@@ -156,10 +157,10 @@ export class Source implements ISource{
    * This is just the shorter way of getting items that are linked to a single
    * source. See the long version below:
    * ```javascript
-   * xjs.Source.getCurrentSource().then(function(source) {
-   *    source.getItemList().then(function(items) {
-   *      //Manipulate the items here
-   *    })
+   * xjs.Source.getCurrentSource()
+   * .then(source.getItemList)
+   * .then(function(items) {
+   * // Manipulate the items here
    * })
    * ```
    */
@@ -262,7 +263,7 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * In XBC 2.8, names can be set individualy even on linked items.
+   * In XBC 2.8, names can be set individually even on linked items.
    * For XBC 2.9 onwards,  name will be the same across all linked Items
    * to the same Source.
    *

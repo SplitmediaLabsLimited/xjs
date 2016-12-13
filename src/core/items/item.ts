@@ -224,7 +224,7 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * #### Usage
    * ```javascript
-   * // item pertains to an acutal Item instance
+   * // item pertains to an actual Item instance
    * // Sample 1
    * item.duplicate() // duplicate selected item to the current scene as unlinked
    *```
