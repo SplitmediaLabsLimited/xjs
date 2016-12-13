@@ -33,6 +33,20 @@
 		},
 
 		/**
+		 * config|window
+		 */
+		AppSubscribeEvents: function(name) {
+
+		},
+
+		/**
+		 * config|window
+		 */
+		AppUnsubscribeEvents: function(name) {
+
+		},
+
+		/**
 		 * source|config|window
 		 */
 		AttachVideoItem: function(name) {
@@ -506,6 +520,20 @@
 		 */
 		SourcesListShowProps: function(name) {
 
+		},
+
+		/**
+		 * config|window
+		 */
+		SourcesListSubscribeEvents: function(name) {
+
+		},
+
+		/**
+		 * config|window
+		 */
+		SourcesListUnsubscribeEvents: function(name) {
+
 		}
 	};
 
@@ -520,3 +548,5 @@ if (!String.prototype.startsWith) {
       return this.substr(position, searchString.length) === searchString;
   };
 }
+
+window.global_asyncId = 0;
