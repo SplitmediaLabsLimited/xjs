@@ -127,7 +127,7 @@ describe('ExtensionWindow ===', function() {
     });
   });
 
-  describe('should be able to listen to sources list events', function(done) {
+  describe('should be able to listen to sources list events', function() {
     var sources_list_highlight, sources_list_select, highlightCtr, selectCtr;
     beforeEach(function() {
       sources_list_highlight = spyOn(window, 'SourcesListHighlight').and.callThrough();
