@@ -56,6 +56,7 @@ export class SourcePluginWindow extends EventEmitter {
     });
 
     SourcePluginWindow._instance = this;
+    SourcePluginWindow._subscriptions = [];
   }
 
   /**
@@ -85,17 +86,20 @@ export class SourcePluginWindow extends EventEmitter {
     if(event === 'scene-delete' && isDeleteSceneEventFixed) {
       if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
         EventManager.subscribe("SceneDeleted", function(settingsObj) {
-          SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
+          if (Environment.isSourcePlugin()) {
+            SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+          }
         });
       }
-    } else if(['set-background-color', 'set-background-color', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
-
+    } else if(['set-background-color', 'scene-load', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
       //Just register the events so not to throw warning. Emitter already created.
-
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
     }  
+  }
 
+  static off(event: string, handler: Function) {
+    SourcePluginWindow.getInstance().off(event, handler);
   }
 
   // We modify the configuration sent from the source properties window
