@@ -60,7 +60,7 @@ import {MediaSource} from './media';
  *  }).then(function(source){
  *     return source.setKeepLoaded(true)
  *  }).then(function(source){
- *     // set more properties here
+ *     // set more source properties here
  *  })
  * ```
  */
@@ -141,6 +141,7 @@ export class Source implements ISource{
    * return: Promise<Item[]>
    *
    * Get the item List of the current Source.
+   * The item list is a list of items linked to a single Source.
    *
    * #### Usage
    *
@@ -201,7 +202,7 @@ export class Source implements ISource{
    * return: Promise<Source[]>
    *
    * Get all unique Source from every scene.
-   * Total number of Sources returned may be less than total number of Items on
+   * Total number of Sources returned may be less than total number of items on
    * all the scenes due to `Linked` items only having a single Source.
    *
    * #### Usage
@@ -309,7 +310,7 @@ export class Source implements ISource{
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on
-   * the other hand would update the source's internal name property.
+   * the other hand would update the sources internal name property.
    *
    * *Chainable.*
    *
@@ -366,7 +367,7 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * Set the source's main definition; this special string defines the source's
+   * Set the sources main definition. This special string defines the sources
    * "identity". Each type of source requires a different format for this value.
    *
    * *Chainable.*

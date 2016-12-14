@@ -41,6 +41,25 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
 
   //iSourceHtml
   /**
+   * return: Promise<string>
+   *
+   * Gets the URL of this webpage source.
+   */
+  getURL: () => Promise<string>
+
+  /**
+   * param: (url: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Sets the URL of this webpage source.
+   *
+   * *Chainable.*
+   */
+  setURL: () => Promise<HtmlSource>
+
+  /**
    * return: Promise<boolean>
    *
    * Check if browser is rendered transparent

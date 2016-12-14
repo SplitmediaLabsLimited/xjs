@@ -57,50 +57,32 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   // GameSource
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
+   * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
    */
   isSpecialOptimizationEnabled: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
    */
   setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
+   * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
    */
   isShowMouseEnabled: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
    */
   setShowMouseEnabled: (value: boolean) => Promise<GameItem>
 
   /**
-   * param: path<string>
-   *
-   * Set the offline image of a game item
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
    */
   setOfflineImage: (path: string) => Promise<GameItem>
 
   /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game item
+   * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
    */
   getOfflineImage:() => Promise<string>
 

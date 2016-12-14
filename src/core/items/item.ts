@@ -93,7 +93,8 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item[]>
    *
-   * Get the item List of the current Item that is linked to a single source
+   * Gets the list of linked items of the current Item.
+   * Linked items are items linked to a single source.
    *
    * #### Usage
    *
@@ -214,8 +215,8 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    * return: Promise<Item>
    * ```
-   * Duplicate current item. Will duplicate item into the current scene
-   * or specified scene as Linked or Unlinked.
+   * Duplicate an item into the current scene or to a specified scene as
+   * Linked or Unlinked.
    *
    * Linked items would generally have a single source, and any changes in the
    * property of an item would be applied to all linked items.
@@ -295,17 +296,17 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Item>
    *
-   * Unlinks selected item from linked items.
+   * Unlinks selected item.
    *
-   * Unlinking an item would make it independent of the changes made on other
-   * similar items.
+   * Unlinks an item to the source of other linked items and renders its
+   * own source.
    *
    * #### Usage
    * ```javascript
    * item.unlink()
    * ```
    *
-   * Note: Once you unlink an Item, there's still no method to reverses the
+   * Note: Once you unlink an Item, there's still no method to reverse the
    * process.
    *
    */
