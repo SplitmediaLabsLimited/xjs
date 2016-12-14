@@ -71,7 +71,7 @@ describe('SourcePluginWindow ===', function() {
     });
   });
 
-  describe('should be able to listen to scene-related events', function(done) {
+  describe('should be able to listen to scene-related events', function() {
     var someOtherEventSpy;
     beforeEach(function() {
       env.set(environments[2]);
