@@ -36,7 +36,7 @@ describe('ExtensionWindow ===', function() {
   };
 
   describe('should be able to listen to scene events', function() {
-    var sceneLoadSpy, sceneLoadPreviewSpy;
+    var sceneLoadSpy, sceneLoadPreviewSpy, someOtherEventSpy;
     beforeEach(function() {
       isSubscribed = false;
       navigator.__defineGetter__('appVersion', function() {
@@ -63,7 +63,8 @@ describe('ExtensionWindow ===', function() {
         }, 10);
       });
 
-      sceneLoadSpy = spyOn(console, 'warn');
+      sceneLoadSpy = spyOn(console, 'assert');
+      someOtherEventSpy = spyOn(console, 'warn');
       sceneLoadPreviewSpy = spyOn(console, 'info');
     });
 
@@ -106,16 +107,22 @@ describe('ExtensionWindow ===', function() {
       }, 10);
     });
 
+    it('and warn if event is not supported', function() {
+      ExtensionWindow.on('some-other-event', function() {
+      });
+      expect(someOtherEventSpy).toHaveBeenCalled();
+    });
+
     it('should make sure that subscription can be toggled', function(done) {
       var sceneDelete1 = function() {
         sceneDeleteCounter++;
-        console.warn('This should be called');
+        console.assert('This should be called');
         expect(sceneDeleteCounter).toEqual(1);
       };
       var sceneDelete2 = function() {
         sceneDeleteCounter = sceneDeleteCounter * 10;
         expect(sceneDeleteCounter).toEqual(10);
-        expect(console.warn).toHaveBeenCalled();
+        expect(console.assert).toHaveBeenCalled();
         expect(sceneLoadSpy.calls.count()).toEqual(1);
         done();
       }

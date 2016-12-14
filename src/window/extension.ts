@@ -82,7 +82,9 @@ export class ExtensionWindow extends EventEmitter {
       if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
         ExtensionWindow._subscriptions.push('SceneDeleted');
         EventManager.subscribe('SceneDeleted', function(settingsObj) {
-          ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+          if (Environment.isExtension()) {
+            ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+          }
         });
       }
     } else if(event === 'scene-add' && isAddSceneEventFixed) {
@@ -90,12 +92,13 @@ export class ExtensionWindow extends EventEmitter {
         ExtensionWindow._subscriptions.push('OnSceneAddByUser');
         EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
           Scene.getSceneCount().then(function(count){
-            ExtensionWindow.emit(event, count);
+            if (Environment.isExtension()) {
+              ExtensionWindow.emit(event, count);
+            }
           });
         });
       }
     } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
-
       //Just subscribe to the event. Emitter is already handled.
       if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
         try{          
@@ -104,11 +107,8 @@ export class ExtensionWindow extends EventEmitter {
           //This exception most probably for older versions which would work without subscribing to source list events.
         }        
       }       
-    
     } else {
-
       console.warn('Warning! The event "' + event + '" is not yet supported.');
-
     }
   }
 
