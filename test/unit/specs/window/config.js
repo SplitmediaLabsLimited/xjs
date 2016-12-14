@@ -52,42 +52,35 @@ describe('SourcePropsWindow ===', function() {
     return arrayShuffle;
   };
 
-  var testConfigWindow;
-  beforeEach(function() {
-    env.set(environments[0]);
-    testConfigWindow = SourcePropsWindow.getInstance();
-    SourcePropsObj = {};
-    spyOn(parent, 'postMessage')
-    .and.callFake(function(objString, allowed) {
-      var eventObj = JSON.parse(objString);
-      if (eventObj['event'] === 'set-mode') {
-        SourcePropsObj['mode'] = eventObj['value'];
-      } else if (eventObj['event'] === 'resize') {
-        var sizeObj = JSON.parse(eventObj['value']);
-        SourcePropsObj['width'] = Number(sizeObj['width']);
-        SourcePropsObj['height'] = Number(sizeObj['height']);
-      } else if (eventObj['event'] === 'set-custom-tabs') {
-        var customTabArray = JSON.parse(eventObj['value']);
-        SourcePropsObj['custom'] = customTabArray;
-      } else if (eventObj['event'] === 'set-tab-order') {
-        var tabOrderArray = JSON.parse(eventObj['value']);
-        SourcePropsObj['tabOrder'] = tabOrderArray;
-      } else if (eventObj['event'] === 'change-dialog-title') {
-        SourcePropsObj['title'] = eventObj['value'];
-      }
-    });
-
-    spyOn(external, 'Close')
-    .and.callFake(function() {
-      SourcePropsObj['closed'] = true;
-    });
-  });
-
-  afterEach(function() {
-    env.set(environments[1]);
-  });
-
   describe('should be able to change modes', function() {
+    var testConfigWindow;
+    beforeEach(function() {
+      env.set(environments[0]);
+      testConfigWindow = SourcePropsWindow.getInstance();
+      SourcePropsObj = {};
+      spyOn(parent, 'postMessage')
+      .and.callFake(function(objString, allowed) {
+        var eventObj = JSON.parse(objString);
+        if (eventObj['event'] === 'set-mode') {
+          SourcePropsObj['mode'] = eventObj['value'];
+        } else if (eventObj['event'] === 'resize') {
+          var sizeObj = JSON.parse(eventObj['value']);
+          SourcePropsObj['width'] = Number(sizeObj['width']);
+          SourcePropsObj['height'] = Number(sizeObj['height']);
+        } else if (eventObj['event'] === 'set-custom-tabs') {
+          var customTabArray = JSON.parse(eventObj['value']);
+          SourcePropsObj['custom'] = customTabArray;
+        } else if (eventObj['event'] === 'set-tab-order') {
+          var tabOrderArray = JSON.parse(eventObj['value']);
+          SourcePropsObj['tabOrder'] = tabOrderArray;
+        }
+      });
+    });
+
+    afterEach(function() {
+      env.set(environments[1]);
+    });
+
     it('such as full window', function() {
       testConfigWindow.useFullWindow();
       expect(SourcePropsObj['mode']).toEqual('full');
@@ -149,6 +142,33 @@ describe('SourcePropsWindow ===', function() {
   });
 
   describe('should be able to call limited window manipulations', function() {
+    var testConfigWindow;
+    beforeEach(function() {
+      env.set(environments[0]);
+      testConfigWindow = SourcePropsWindow.getInstance();
+      SourcePropsObj = {};
+      spyOn(parent, 'postMessage')
+      .and.callFake(function(objString, allowed) {
+        var eventObj = JSON.parse(objString);
+        if (eventObj['event'] === 'resize') {
+          var sizeObj = JSON.parse(eventObj['value']);
+          SourcePropsObj['width'] = Number(sizeObj['width']);
+          SourcePropsObj['height'] = Number(sizeObj['height']);
+        } else if (eventObj['event'] === 'change-dialog-title') {
+          SourcePropsObj['title'] = eventObj['value'];
+        }
+      });
+
+      spyOn(external, 'Close')
+      .and.callFake(function() {
+        SourcePropsObj['closed'] = true;
+      });
+    });
+
+    afterEach(function() {
+      env.set(environments[1]);
+    });
+
     it('resize', function() {
       var width = randomInt(1, 9999);
       var height = randomInt(1, 9999);
