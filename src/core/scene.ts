@@ -267,29 +267,38 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              (_idx => {
-                scene.getItems().then(function(items) {
-                  found = items.some(item => { // unique ID, so get first result
-                    if (item['_id'] === id.toUpperCase()) {
-                      match = item;
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
-                  if (found ||
-                    Number(_idx) === arr.length - 1) { // last scene, no match
-                    resolve(match);
+              scene.getItems().then(items => {
+                found = items.some(item => {
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = item;
+                    return true
+                  } else {
+                    return false
                   }
                 })
-                .catch(err => {
-                  reject(err);
-                });
-              })(idx)
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
         });
       }
     });
@@ -320,30 +329,38 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
+          let promiseArray = []
 
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              (_idx => {
-                scene.getItems().then(function(items) {
-                  found = items.some(item => { // unique ID, so get first result
-                    if (item['_id'] === id.toUpperCase()) {
-                      match = scene;
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  });
-                  if (found ||
-                    Number(_idx) === arr.length - 1) { // last scene, no match
-                    resolve(match);
+              scene.getItems().then(items => {
+                found = items.some(item => {
+                  if (item['_id'] === id.toUpperCase()) {
+                    match = scene;
+                    return true
+                  } else {
+                    return false
                   }
                 })
-                .catch(err => {
-                  reject(err);
-                });
-              })(idx)
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
 
         });
       }
@@ -547,27 +564,36 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(cnt => {
           let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
             if (match === null) {
-              scene.getSources().then((function(sources) {
-                found = sources.some(item => { // unique ID, so get first result
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true;
+              scene.getSources().then(sources => {
+                found = sources.some(source => {
+                  if (source['_id'] === id.toUpperCase()) {
+                    match = source;
+                    return true
                   } else {
-                    return false;
+                    return false
                   }
-                });
+                })
                 if (found ||
-                  Number(this) === arr.length - 1) { // last scene, no match
-                  resolve(match);
-                }
-              }).bind(idx))
-              .catch(err => {
-                // Do nothing
-              });
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
             }
-          });
+          })
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
         });
       }
     });
@@ -588,30 +614,47 @@ export class Scene {
    * ```
    *
    */
-  static searchScenesBySourceId(srcId: string): Promise<Scene[]> {
+  static searchScenesBySourceId(id: string): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
+
       } else {
         Scene._initializeScenePoolAsync().then(cnt => {
-          let sceneArr = []
+          let match = null;
           let found = false;
-          Scene._scenePool.forEach((scene, idx, arr) => {
-            scene.getSources().then(sources => {
-              found = sources.some(source => { // unique ID, so get first result
-                if (source['_srcId'] === srcId.toUpperCase()) {
-                  sceneArr.push(scene);
-                  return true;
-                } else {
-                  return false;
-                }
-              });
-              if (idx === arr.length - 1) {
-                resolve(sceneArr);
-              }
-            });
-          });
+          let promiseArray = []
+
+          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
+            if (match === null) {
+              scene.getSources().then(sources => {
+                found = sources.some(source => {
+                  if (source['_id'] === id.toUpperCase()) {
+                    match = scene;
+                    return true
+                  } else {
+                    return false
+                  }
+                })
+                if (found ||
+                    Number(idx) === arr.length - 1) { // last scene, no match
+                    sceneResolve(match);
+                  } else {
+                    sceneResolve(null);
+                  }
+              }).catch(err => {
+                sceneResolve(null);
+              })
+            }
+          })
+          Scene._scenePool.map((scene, idx, arr) => {
+            promiseArray.push(scenePromise(scene, idx, arr))
+          })
+          Promise.all(promiseArray).then(results => {
+            resolve(match)
+          })
+
         });
       }
     });
