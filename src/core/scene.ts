@@ -251,7 +251,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(item) {
+   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(item) {
    *   // result is either an Item or null
    * });
    * ```
@@ -302,7 +303,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}').then(function(scene) {
+   * Scene.searchScenesByItemId('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(scene) {
    *   // scene contains the item
    * });
    * ```
@@ -358,7 +360,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchItemsByName('camera').then(function(items) {
+   * Scene.searchItemsByName('camera')
+   * .then(function(items) {
    *   // do something to each item in items array
    * });
    * ```
@@ -528,7 +531,8 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}').then(function(source) {
+   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(source) {
    *   // result is either a Source or null
    * });
    * ```
@@ -674,12 +678,12 @@ export class Scene {
    *
    * ```javascript
    * Scene.filterSources(function(source, resolve) {
-   *   // We'll only fetch Flash Sources by resolving 'true' if the source is an
-   *   // instance of FlashSource
+   *   // We'll only fetch Flash Sources by resolving 'true' if the source is
+   *   // an instance of FlashSource
    *   resolve((source instanceof FlashSource));
    * }).then(function(sources) {
-   *   // sources would either be an empty array if no Flash sources was found,
-   *   // or an array of FlashSource objects
+   *   // sources would either be an empty array if no Flash sources was
+   *   // found, or an array of FlashSource objects
    * });
    * ```
    */
@@ -735,8 +739,8 @@ export class Scene {
    *
    * ```javascript
    * Scene.filterScenesBySources(function(source, resolve) {
-   *   // We'll only fetch the scenes with flash sources by resolving 'true' if
-   *   // the source is an instance of FlashSource
+   *   // We'll only fetch the scenes with flash sources by resolving 'true'
+   *   // if the source is an instance of FlashSource
    *   resolve((source instanceof FlashSource));
    * }).then(function(scenes) {
    *   // scenes would be an array of all scenes with FlashSources
@@ -830,6 +834,7 @@ export class Scene {
    * Get all unique Sources from the current scene.
    * Total number of Sources returned may be less that total number of Items on
    * the scenes due to `Linked` items only having a single Source.
+   * See also: {@link #core/Source Core/Source}
    *
    * #### Usage
    * ```javascript
@@ -985,7 +990,7 @@ export class Scene {
    * return: Promise<Item[]>
    *
    * Gets all the items in a specific scene.
-   * See also: {@link #core/Source Core/Source}
+   * See also: {@link #core/Item Core/Item}
    *
    * #### Usage
    *
@@ -1054,7 +1059,7 @@ export class Scene {
   }
 
  /**
-  * return: boolean
+  * return: Promise<boolean>
   *
   * Checks if a scene is empty.
   *

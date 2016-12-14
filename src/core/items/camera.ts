@@ -61,97 +61,68 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceCamera {
 
   // Shared with Camera Item
-    /**
-   * return: Promise<string>
-   *
-   * Gets the device ID of the underlying camera device.
+  /**
+   * See: {@link #core/CameraSource#getDeviceId getDeviceId}
    */
   getDeviceId: () => Promise<string>
 
   /**
-   * return: Promise<number>
-   *
-   * Gets audio delay with respect to video feed in milliseconds
+   * See: {@link #core/CameraSource#getAudioOffset getAudioOffset}
    */
   getAudioOffset: () => Promise<number>
 
   /**
-   * param: (value: number)
-   *
-   * Sets audio delay with respect to video feed in milliseconds
+   * See: {@link #core/CameraSource#setAudioOffset setAudioOffset}
    */
   setAudioOffset: (value: number) => Promise<ISourceCamera>
 
   /**
-   * return: Promise<MicrophoneDevice>
-   *
-   * Gets the microphone device tied as an audio input,
-   * rejected if no microphone device is used
+   * See: {@link #core/CameraSource#getAudioInput getAudioInput}
    */
   getAudioInput: () => Promise<MicrophoneDevice>
 
   /**
-   * param: (value: number)
-   *
-   * Sets the microphone device to be tied as an audio input
+   * See: {@link #core/CameraSource#setAudioInput setAudioInput}
    */
   setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera feed is paused
+   * See: {@link #core/CameraSource#isStreamPaused isStreamPaused}
    */
   isStreamPaused: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   *
-   * Sets whether camera feed is paused or not
+   * See: {@link #core/CameraSource#setStreamPaused setStreamPaused}
    */
   setStreamPaused: (value: boolean) => Promise<CameraSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is a hardware encoder or not. This check may fail
-   * if camera device is reinitializing or not present (value defaults to false)
-   *
+   * See: {@link #core/CameraSource#isHardwareEncoder isHardwareEncoder}
    */
   isHardwareEncoder: () => Promise<boolean>
+
   /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is active and present.
-   *
+   * See: {@link #core/CameraSource#isActive isActive}
    */
   isActive: () => Promise<boolean>
 
   /**
-   * return: Promise<number>
-   *
-   * Gets feed capture delay in milliseconds
+   * See: {@link #core/CameraSource#getDelay getDelay}
    */
   getDelay: () => Promise<number>
 
   /**
-   * param: (value: number)
-   *
-   * Sets feed capture delay in milliseconds, accepts only positive delay
+   * See: {@link #core/CameraSource#setDelay setDelay}
    */
   setDelay: (value: number) => Promise<CameraSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Checks whether deinterlacing is enforced
+   * See: {@link #core/CameraSource#isForceDeinterlace isForceDeinterlace}
    */
   isForceDeinterlace: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   *
-   * Enables or disables forcing of deinterlacing
+   * See: {@link #core/CameraSource#setForceDeinterlace setForceDeinterlace}
    */
   setForceDeinterlace: (value: boolean) => Promise<CameraSource>
 

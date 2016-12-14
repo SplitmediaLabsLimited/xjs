@@ -17,7 +17,7 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the HtmlItem class.
- * See: {@link: #core/HtmlItem Core/HtmlItem}
+ * See: {@link #core/HtmlItem Core/HtmlItem}
  *
  * ### Basic Usage
  *
@@ -28,17 +28,37 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.HtmlSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your html source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   })
  * })
+ * ```
  */
 export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   ISourceHtml {
 
   //iSourceHtml
+  /**
+   * return: Promise<string>
+   *
+   * Gets the URL of this webpage source.
+   */
+  getURL: () => Promise<string>
+
+  /**
+   * param: (url: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Sets the URL of this webpage source.
+   *
+   * *Chainable.*
+   */
+  setURL: () => Promise<HtmlSource>
+
   /**
    * return: Promise<boolean>
    *

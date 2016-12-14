@@ -13,7 +13,7 @@ import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the VideoPlaylistItem class.
- * See: {@link: #core/VideoPlaylistItem Core/VideoPlaylistItem}
+ * See: {@link #core/VideoPlaylistItem Core/VideoPlaylistItem}
  *
  * ### Basic Usage
  *
@@ -24,12 +24,13 @@ import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.VideoPlaylistSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your videoplaylist source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   })
  * })
+ * ```
  */
 export class VideoPlaylistSource extends Source implements ISourceConfigurable,
 ISourceVideoPlaylist {

@@ -11,7 +11,7 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the AudioItem class.
- * See: {@link: #core/AudioItem Core/AudioItem}
+ * See: {@link #core/AudioItem Core/AudioItem}
  *
  * ### Basic Usage
  *
@@ -28,6 +28,7 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  *     }
  *   })
  * })
+ * ```
  */
 export class AudioSource extends Source implements ISourceAudio, IAudio {
   // SourceAudio

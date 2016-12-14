@@ -12,7 +12,7 @@ import {Rectangle} from '../../util/rectangle';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the FlashItem class.
- * See: {@link: #core/FlashItem Core/FlashItem}
+ * See: {@link #core/FlashItem Core/FlashItem}
  *
  * ### Basic Usage
  *
@@ -23,12 +23,13 @@ import {Rectangle} from '../../util/rectangle';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.FlashSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your game source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }
  *   })
  * })
+ * ```
  */
 export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem

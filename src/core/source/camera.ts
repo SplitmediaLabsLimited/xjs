@@ -12,7 +12,7 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the CameraItem class.
- * See: {@link: #core/CameraItem Core/CameraItem}
+ * See: {@link #core/CameraItem Core/CameraItem}
  *
  * ### Basic Usage
  *
@@ -23,7 +23,7 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  *   scene.getSources().then(function(sources) {
  *   for (var i in sources) {
  *       if (sources[i] instanceof XJS.CameraSource) {
- *         // Manipulate your audio device source here
+ *         // Manipulate your camera device source here
  *         sources[i].setSilenceDetectionEnabled(true);
  *       }
  *     }

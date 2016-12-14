@@ -29,7 +29,7 @@ import {MediaSource} from './media';
  * Manipulating Source specific properties would render changes to all
  * items linked to that source.
  *
- * Implements: @{link #core/ISource Core/ISource}
+ * Implements: {@link #core/ISource Core/ISource}
  *
  * ### Basic Usage
  *
@@ -60,7 +60,7 @@ import {MediaSource} from './media';
  *  }).then(function(source){
  *     return source.setKeepLoaded(true)
  *  }).then(function(source){
- *     // set more properties here
+ *     // set more source properties here
  *  })
  * ```
  */
@@ -141,11 +141,13 @@ export class Source implements ISource{
    * return: Promise<Item[]>
    *
    * Get the item List of the current Source.
+   * The item list is a list of items linked to a single Source.
    *
    * #### Usage
    *
    * ```javascript
-   * xjs.Source.getItemList().then(function(items) {
+   * xjs.Source.getItemList()
+   * .then(function(items) {
    *   // This will fetch the item list of the current Source
    *   for (var i = 0 ; i < items.length ; i++) {
    *     // Manipulate each item here
@@ -156,10 +158,10 @@ export class Source implements ISource{
    * This is just the shorter way of getting items that are linked to a single
    * source. See the long version below:
    * ```javascript
-   * xjs.Source.getCurrentSource().then(function(source) {
-   *    source.getItemList().then(function(items) {
-   *      //Manipulate the items here
-   *    })
+   * xjs.Source.getCurrentSource()
+   * .then(source.getItemList)
+   * .then(function(items) {
+   * // Manipulate the items here
    * })
    * ```
    */
@@ -200,7 +202,7 @@ export class Source implements ISource{
    * return: Promise<Source[]>
    *
    * Get all unique Source from every scene.
-   * Total number of Sources returned may be less than total number of Items on
+   * Total number of Sources returned may be less than total number of items on
    * all the scenes due to `Linked` items only having a single Source.
    *
    * #### Usage
@@ -262,7 +264,7 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * In XBC 2.8, names can be set individualy even on linked items.
+   * In XBC 2.8, names can be set individually even on linked items.
    * For XBC 2.9 onwards,  name will be the same across all linked Items
    * to the same Source.
    *
@@ -308,7 +310,7 @@ export class Source implements ISource{
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName
    * can be edited by users using XBC through the bottom panel. `setName` on
-   * the other hand would update the source's internal name property.
+   * the other hand would update the sources internal name property.
    *
    * *Chainable.*
    *
@@ -365,7 +367,7 @@ export class Source implements ISource{
    * return: Promise<Source>
    * ```
    *
-   * Set the source's main definition; this special string defines the source's
+   * Set the sources main definition. This special string defines the sources
    * "identity". Each type of source requires a different format for this value.
    *
    * *Chainable.*

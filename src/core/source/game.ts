@@ -12,7 +12,7 @@ import {iSourceGame, ISourceGame} from './igame';
  * into it and any changes to the source would affect all items linked to it.
  *
  * Each item is represented by the GameItem class.
- * See: {@link: #core/GameItem Core/GameItem}
+ * See: {@link #core/GameItem Core/GameItem}
  *
  * ### Basic Usage
  *
