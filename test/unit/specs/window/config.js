@@ -36,20 +36,20 @@ describe('SourcePropsWindow ===', function() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  var shuffle = function(array) {
-    let counter = array.length;
+  var shuffle = function(arrayShuffle) {
+    var ctr = arrayShuffle.length;
     // While there are elements in the array
-    while (counter > 0) {
+    while (ctr > 0) {
       // Pick a random index
-      let index = Math.floor(Math.random() * counter);
-      // Decrease counter by 1
-      counter--;
+      var randomIndex = Math.floor(Math.random() * ctr);
+      // Decrease ctr by 1
+      ctr--;
       // And swap the last element with it
-      let temp = array[counter];
-      array[counter] = array[index];
-      array[index] = temp;
+      var temp = arrayShuffle[ctr];
+      arrayShuffle[ctr] = arrayShuffle[randomIndex];
+      arrayShuffle[randomIndex] = temp;
     }
-    return array;
+    return arrayShuffle;
   };
 
   describe('should be able to change modes', function() {
