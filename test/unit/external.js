@@ -550,3 +550,19 @@ if (!String.prototype.startsWith) {
 }
 
 window.global_asyncId = 0;
+
+window.randomWord = function(length) {
+  var rand;
+  var str = '';
+
+  for (var i = 0; i < length; i++) {
+    rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
+    str += String.fromCharCode(rand);
+  }
+
+  return str;
+};
+
+window.randomBoolean = function() {
+	return Math.random() >= 0.5;
+};

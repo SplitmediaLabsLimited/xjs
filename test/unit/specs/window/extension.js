@@ -13,18 +13,6 @@ describe('ExtensionWindow ===', function() {
   var sceneAddCounter = 0;
   var ExtensionObj = {};
 
-  var randomWord = function(length) {
-    var rand;
-    var str = '';
-
-    for (var i = 0; i < length; i++) {
-      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-      str += String.fromCharCode(rand);
-    }
-
-    return str;
-  };
-
   var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;

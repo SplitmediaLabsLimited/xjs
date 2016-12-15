@@ -9,18 +9,6 @@ describe('SourcePluginWindow ===', function() {
   var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
 
-  var randomWord = function(length) {
-    var rand;
-    var str = '';
-
-    for (var i = 0; i < length; i++) {
-      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-      str += String.fromCharCode(rand);
-    }
-
-    return str;
-  };
-
   var randomColor = function() {
     return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1,6).toUpperCase();
   };

@@ -10,22 +10,6 @@ describe('SourcePropsWindow ===', function() {
   var appVersion = navigator.appVersion;
   var SourcePropsObj = {};
 
-  var randomBoolean = function() {
-    return Math.random() >= 0.5;
-  };
-
-  var randomWord = function(length) {
-    var rand;
-    var str = '';
-
-    for (var i = 0; i < length; i++) {
-      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-      str += String.fromCharCode(rand);
-    }
-
-    return str;
-  };
-
   var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;

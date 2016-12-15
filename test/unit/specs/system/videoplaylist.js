@@ -8,18 +8,6 @@ var env = new window.Environment(XJS);
 var environments = ['props', 'extension', 'plugin'];
 var newFile = 'C:\\movie.mov';
 
-var randomWord = function(length) {
-  var rand;
-  var str = '';
-
-  for (var i = 0; i < length; i++) {
-    rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-    str += String.fromCharCode(rand);
-  }
-
-  return str;
-};
-
 describe('Video Playlist', function() {
   var defpos = 0;
   var itemPosition = '';

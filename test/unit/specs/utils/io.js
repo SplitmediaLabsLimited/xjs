@@ -9,10 +9,6 @@ describe('IO ===', function() {
   var environment = XJS.Environment;
   var environments = ['props', 'extension', 'plugin'];
 
-  var randomBoolean = function() {
-    return Math.random() >= 0.5;
-  };
-
   var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;

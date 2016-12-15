@@ -11,18 +11,6 @@ describe('Dialog ===', function() {
   var isSubscribed = false;
   var DialogObj = {};
 
-  var randomWord = function(length) {
-    var rand;
-    var str = '';
-
-    for (var i = 0; i < length; i++) {
-      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-      str += String.fromCharCode(rand);
-    }
-
-    return str;
-  };
-
   var randomInt = function(min, max) {
     if (typeof min === 'undefined') {
       min = 0;
@@ -31,10 +19,6 @@ describe('Dialog ===', function() {
       max = 100;
     }
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  var randomBoolean = function() {
-    return Math.random() >= 0.5;
   };
 
   describe('should call a new dialog', function() {
