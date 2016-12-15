@@ -15,6 +15,8 @@ import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
  * Each item is represented by the VideoPlaylistItem class.
  * See: {@link #core/VideoPlaylistItem Core/VideoPlaylistItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -31,6 +33,9 @@ import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
  *   })
  * })
  * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original
+ *  `VideoPlaylistSource` instance.
  */
 export class VideoPlaylistSource extends Source implements ISourceConfigurable,
 ISourceVideoPlaylist {
@@ -45,9 +50,9 @@ ISourceVideoPlaylist {
 
   /**
    * param: (value: string|number)
-   *
+   * ```
    * return: Promise<VideoPlaylistSource>
-   *
+   * ```
    * Sets the now playing video of this VideoPlaylist item.
    *
    * ## Possible Values
@@ -67,9 +72,9 @@ ISourceVideoPlaylist {
 
   /**
    * param: (file: string[])
-   *
+   * ```
    * return: Promise<string>
-   *
+   * ```
    * Sets the playlist of this VideoPlaylist item according to the specified
    * file paths.
    *

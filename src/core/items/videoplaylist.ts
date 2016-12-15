@@ -52,46 +52,22 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
 
   //Shared with VideoPlaylistSource
   /**
-   * return: Promise<string>
-   *
-   * Gets the now playing video of this VideoPlaylist item.
-   *
+   * See: {@link #core/getVideoNowPlaying getVideoNowPlaying}
    */
   getVideoNowPlaying: () => Promise<string>
 
   /**
-   * param: (value: string|number)
-   *
-   * return: Promise<VideoPlaylistItem>
-   *
-   * Sets the now playing video of this VideoPlaylist item.
-   *
-   * ## Possible Values
-   * - STRING - file path
-   * - NUMBER - number|within the range of fileplaylist array length
-   *
+   * See: {@link #core/setVideoNowPlaying setVideoNowPlaying}
    */
   setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
 
   /**
-   * return: Promise<string[]>
-   *
-   * Gets the file paths of the playlist of this VideoPlaylist item.
-   *
+   * See: {@link #core/getVideoPlaylistSources getVideoPlaylistSources}
    */
   getVideoPlaylistSources: () => Promise<string[]>
 
   /**
-   * param: (file: string[])
-   *
-   * return: Promise<string>
-   *
-   * Sets the playlist of this VideoPlaylist item according to the specified
-   * file paths.
-   *
-   * This call would replace all the items on the playlist.
-   * The now playing item is also set to the first item of the new FilePlaylist.
-   *
+   * See: {@link #core/setVideoPlaylistSources setVideoPlaylistSources}
    */
   setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 

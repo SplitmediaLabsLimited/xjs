@@ -45,8 +45,7 @@ export enum ViewTypes {
  * a single source and any changes made to the source would affect all linked
  * items.
  *
- * Implements: {@link #core/ISource Core/ISource}
- * {@link #core/IItemLayout Core/IItemLayout}
+ * Implements: {@link #core/IItemLayout Core/IItemLayout}
  *
  * ### Basic Usage
  *

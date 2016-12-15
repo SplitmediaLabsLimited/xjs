@@ -29,8 +29,6 @@ import {MediaSource} from './media';
  * Manipulating Source specific properties would render changes to all
  * items linked to that source.
  *
- * Implements: {@link #core/ISource Core/ISource}
- *
  * ### Basic Usage
  *
  * ```javascript
@@ -265,7 +263,7 @@ export class Source implements ISource{
    * ```
    *
    * In XBC 2.8, names can be set individually even on linked items.
-   * For XBC 2.9 onwards,  name will be the same across all linked Items
+   * For XBC 2.9 onwards,  name will be the same across all linked items
    * to the same Source.
    *
    * *Chainable.*
@@ -305,7 +303,7 @@ export class Source implements ISource{
    * ```
    *
    * In XBC 2.8, CustomName can be set individually even on linked items.
-   * For XBC 2.9 onwards, CustomName will be the same across all linked Items
+   * For XBC 2.9 onwards, CustomName will be the same across all linked items
    * to the same Source
    *
    * The main difference between `setName` and `setCustomName` is that the CustomName

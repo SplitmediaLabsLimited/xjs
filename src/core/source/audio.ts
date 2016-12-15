@@ -13,6 +13,8 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  * Each item is represented by the AudioItem class.
  * See: {@link #core/AudioItem Core/AudioItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -29,6 +31,9 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `AudioSource`
+ * instance.
  */
 export class AudioSource extends Source implements ISourceAudio, IAudio {
   // SourceAudio

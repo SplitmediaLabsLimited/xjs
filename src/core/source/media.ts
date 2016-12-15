@@ -16,6 +16,8 @@ import {ISourceMedia, SourceMedia} from './imedia';
  * Each item is represented by the MediaItem class.
  * See: {@link #core/MediaItem Core/MediaItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -32,6 +34,9 @@ import {ISourceMedia, SourceMedia} from './imedia';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `MediaSource`
+ * instance.
  */
 export class MediaSource extends Source implements ISourcePlayback, IAudio,
   ISourceMedia {
