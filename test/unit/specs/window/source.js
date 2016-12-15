@@ -9,10 +9,6 @@ describe('SourcePluginWindow ===', function() {
   var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
 
-  var randomColor = function() {
-    return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1,6).toUpperCase();
-  };
-
   describe('should be able to listen to source-related events', function() {
     beforeEach(function() {
       env.set(environments[2]);

@@ -9,16 +9,6 @@ describe('IO ===', function() {
   var environment = XJS.Environment;
   var environments = ['props', 'extension', 'plugin'];
 
-  var randomInt = function(min, max) {
-    if (typeof min === 'undefined') {
-      min = 0;
-    }
-    if (typeof max === 'undefined') {
-      max = 100;
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
   describe('should be able to show an "Open File" dialog', function() {
     var isValid, allowMultiSelect, fileMustExist, forceShowHidden, isCancelled;
     beforeEach(function() {

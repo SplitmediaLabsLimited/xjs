@@ -11,16 +11,6 @@ describe('Dialog ===', function() {
   var isSubscribed = false;
   var DialogObj = {};
 
-  var randomInt = function(min, max) {
-    if (typeof min === 'undefined') {
-      min = 0;
-    }
-    if (typeof max === 'undefined') {
-      max = 100;
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
   describe('should call a new dialog', function() {
     var normalDialog, autoDialog, closeOk;
 

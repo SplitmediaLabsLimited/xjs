@@ -13,16 +13,6 @@ describe('ExtensionWindow ===', function() {
   var sceneAddCounter = 0;
   var ExtensionObj = {};
 
-  var randomInt = function(min, max) {
-    if (typeof min === 'undefined') {
-      min = 0;
-    }
-    if (typeof max === 'undefined') {
-      max = 100;
-    }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
   describe('should be able to listen to scene events', function() {
     var sceneLoadSpy, sceneLoadPreviewSpy, someOtherEventSpy;
     beforeEach(function() {

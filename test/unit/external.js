@@ -566,3 +566,17 @@ window.randomWord = function(length) {
 window.randomBoolean = function() {
 	return Math.random() >= 0.5;
 };
+
+window.randomColor = function() {
+  return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1,6).toUpperCase();
+};
+
+window.randomInt = function(min, max) {
+  if (typeof min === 'undefined') {
+    min = 0;
+  }
+  if (typeof max === 'undefined') {
+    max = 100;
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};

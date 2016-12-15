@@ -6,10 +6,6 @@ describe('Color ===', function() {
   var XJS = require('xjs');
   var Color = XJS.Color;
   
-  var randomColor = function() {
-    return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1,6).toUpperCase();
-  };
-
   describe('should be able to get different color formats', function() {
     var testColor;
 

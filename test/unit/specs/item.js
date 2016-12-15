@@ -1,17 +1,5 @@
 /* globals describe, it, expect, require */
 
-function randomWord(length) {
-  var rand;
-  var str = '';
-
-  for (var i = 0; i < length; i++) {
-    rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-    str += String.fromCharCode(rand);
-  }
-
-  return str;
-}
-
 describe('Item', function() {
   var Item;
   var local = {};
