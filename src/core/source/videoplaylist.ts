@@ -43,7 +43,7 @@ ISourceVideoPlaylist {
   /**
    * return: Promise<string>
    *
-   * Gets the now playing video of this VideoPlaylist item.
+   * Gets the now playing video of this VideoPlaylist source.
    *
    */
   getVideoNowPlaying: () => Promise<string>
@@ -53,7 +53,7 @@ ISourceVideoPlaylist {
    * ```
    * return: Promise<VideoPlaylistSource>
    * ```
-   * Sets the now playing video of this VideoPlaylist item.
+   * Sets the now playing video of this VideoPlaylist source.
    *
    * ## Possible Values
    * - STRING - file path
@@ -65,7 +65,7 @@ ISourceVideoPlaylist {
   /**
    * return: Promise<string[]>
    *
-   * Gets the file paths of the playlist of this VideoPlaylist item.
+   * Gets the file paths of the playlist of this VideoPlaylist source.
    *
    */
   getVideoPlaylistSources: () => Promise<string[]>
@@ -75,7 +75,7 @@ ISourceVideoPlaylist {
    * ```
    * return: Promise<string>
    * ```
-   * Sets the playlist of this VideoPlaylist item according to the specified
+   * Sets the playlist of this VideoPlaylist source according to the specified
    * file paths.
    *
    * This call would replace all the items on the playlist.

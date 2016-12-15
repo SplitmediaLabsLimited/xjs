@@ -52,22 +52,22 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
 
   //Shared with VideoPlaylistSource
   /**
-   * See: {@link #core/getVideoNowPlaying getVideoNowPlaying}
+   * See: {@link #core/VideoPlaylistSource#getVideoNowPlaying getVideoNowPlaying}
    */
   getVideoNowPlaying: () => Promise<string>
 
   /**
-   * See: {@link #core/setVideoNowPlaying setVideoNowPlaying}
+   * See: {@link #core/VideoPlaylistSource#setVideoNowPlaying setVideoNowPlaying}
    */
   setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
 
   /**
-   * See: {@link #core/getVideoPlaylistSources getVideoPlaylistSources}
+   * See: {@link #core/VideoPlaylistSource#getVideoPlaylistSources getVideoPlaylistSources}
    */
   getVideoPlaylistSources: () => Promise<string[]>
 
   /**
-   * See: {@link #core/setVideoPlaylistSources setVideoPlaylistSources}
+   * See: {@link #core/VideoPlaylistSource#setVideoPlaylistSources setVideoPlaylistSources}
    */
   setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
