@@ -12,6 +12,8 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  * Each item is represented by the ScreenItem class.
  * See: {@link #core/ScreenItem Core/ScreenItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -28,6 +30,9 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  *   })
  * })
  * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `ScreenSource`
+ *  instance.
  */
 export class ScreenSource extends Source implements ISourceScreen {
   /**

@@ -14,6 +14,8 @@ import {iSourceGame, ISourceGame} from './igame';
  * Each item is represented by the GameItem class.
  * See: {@link #core/GameItem Core/GameItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -30,6 +32,9 @@ import {iSourceGame, ISourceGame} from './igame';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `GameSource`
+ * instance.
  */
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame

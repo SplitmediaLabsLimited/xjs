@@ -14,6 +14,8 @@ import {Rectangle} from '../../util/rectangle';
  * Each item is represented by the FlashItem class.
  * See: {@link #core/FlashItem Core/FlashItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -30,6 +32,9 @@ import {Rectangle} from '../../util/rectangle';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `FlashSource`
+ * instance.
  */
 export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem

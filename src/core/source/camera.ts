@@ -14,6 +14,8 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  * Each item is represented by the CameraItem class.
  * See: {@link #core/CameraItem Core/CameraItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -30,6 +32,9 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `CameraSource`
+ * instance.
  */
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item

@@ -45,8 +45,7 @@ export enum ViewTypes {
  * a single source and any changes made to the source would affect all linked
  * items.
  *
- * Implements: {@link #core/ISource Core/ISource}
- * {@link #core/IItemLayout Core/IItemLayout}
+ * Implements: {@link #core/IItemLayout Core/IItemLayout}
  *
  * ### Basic Usage
  *
@@ -129,11 +128,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * });
    * ```
    */
-  getId(): Promise<string> {
-    return new Promise(resolve => {
-      resolve(this._id);
-    });
-  }
+  getId: () => Promise<string>
 
   /**
    * return: Promise<ViewTypes>
@@ -561,11 +556,6 @@ export class Item extends Source implements IItemLayout, ISource {
    * See: {@link #core/Source#setKeepLoaded setKeepLoaded}
    */
   setKeepLoaded: (value: boolean) => Promise<Item>
-
-  /**
-   * See: {@link #core/Source#getSourceId getSourceId}
-   */
-  getSourceId: () => Promise<string>
 
   /**
    * See: {@link #core/Source#refresh refresh}

@@ -11,6 +11,8 @@ import {XML} from '../../internal/util/xml';
  * Each item is represented by the ImageItem class.
  * See: {@link #core/ImageItem Core/ImageItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -27,6 +29,9 @@ import {XML} from '../../internal/util/xml';
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `ImageSource`
+ * instance.
  */
 export class ImageSource extends Source {
   /**

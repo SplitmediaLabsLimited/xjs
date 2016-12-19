@@ -19,6 +19,8 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * Each item is represented by the HtmlItem class.
  * See: {@link #core/HtmlItem Core/HtmlItem}
  *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
  * ### Basic Usage
  *
  * ```javascript
@@ -35,6 +37,9 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  *   })
  * })
  * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `HtmlSource`
+ * instance.
  */
 export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   ISourceHtml {
@@ -92,7 +97,7 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   /**
    * param: Promise<Rectangle>
    * ```
-   * return: Promise<ISourceHtml>
+   * return: Promise<HtmlSource>
    * ```
    *
    * Sets the custom browser window size for the item
