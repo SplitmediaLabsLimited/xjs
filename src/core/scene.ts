@@ -549,15 +549,15 @@ export class Scene {
    *
    * ```javascript
    * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}')
-   * .then(function(source) {
-   *   // result is either a Source or null
+   * .then(function(sources) {
+   *   // result would return one instance of the source per scene
    * });
    * ```
    *
    */
-  static searchSourcesById(id: string): Promise<Source> {
+  static searchSourcesById(srcId: string): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
+      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
       } else {
@@ -570,7 +570,7 @@ export class Scene {
             if (match === null) {
               scene.getSources().then(sources => {
                 found = sources.some(source => {
-                  if (source['_id'] === id.toUpperCase()) {
+                  if (source['_srcId'] === srcId.toUpperCase()) {
                     match = source;
                     return true
                   } else {
@@ -592,7 +592,13 @@ export class Scene {
             promiseArray.push(scenePromise(scene, idx, arr))
           })
           Promise.all(promiseArray).then(results => {
-            resolve(match)
+            let finalResults = []
+            for (var i = 0; i < results.length; i++) {
+              if(results[i] !== null) {
+                finalResults.push(results[i])
+              }
+            }
+            resolve(finalResults)
           })
         });
       }
@@ -608,15 +614,15 @@ export class Scene {
    *
    * ```javascript
    * Scene.searchScenesBySourceId('{10F04AE-6215-3A88-7899-950B12186359}')
-   * .then(function(scene) {
-   *   // scene contains the source
+   * .then(function(scenes) {
+   *   // scenes that contains the source with matching source id
    * });
    * ```
    *
    */
-  static searchScenesBySourceId(id: string): Promise<Scene> {
+  static searchScenesBySourceId(srcId: string): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
 
@@ -630,7 +636,8 @@ export class Scene {
             if (match === null) {
               scene.getSources().then(sources => {
                 found = sources.some(source => {
-                  if (source['_id'] === id.toUpperCase()) {
+                  if (source['_srcId'] === srcId.toUpperCase()) {
+                    console.log(scene)
                     match = scene;
                     return true
                   } else {
@@ -652,7 +659,13 @@ export class Scene {
             promiseArray.push(scenePromise(scene, idx, arr))
           })
           Promise.all(promiseArray).then(results => {
-            resolve(match)
+            let finalResults = []
+            for (var i = 0; i < results.length; i++) {
+              if(results[i] !== null) {
+                finalResults.push(results[i])
+              }
+            }
+            resolve(finalResults)
           })
 
         });
