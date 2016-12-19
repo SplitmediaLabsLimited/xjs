@@ -218,37 +218,39 @@ export class Source implements ISource{
    */
   static getAllSources(): Promise<Source[]> {
     return new Promise((resolve,reject)=> {
-      let sourceArray = [];
-      let allSources = []
       let allJson = [];
+      let allSrc = []
+      let uniqueObj = {};
+      let uniqueSrc = [];
       let promiseArray = [];
-      Scene.getSceneCount().then(count => {
-        let jsonePromise = x => new Promise(jsonResolve => {
-          iApp.getAsList('presetconfig:' + x).then(jsonArr => {
-            jsonResolve(jsonArr)
+      iApp.getAsList('presetconfig').then(jsonArr => {
+        for (var i = 0; i < jsonArr.length - 1; i++) {
+          allJson = allJson.concat(jsonArr[i].children)
+        }
+
+        let sourcePromise = srcid => new Promise(sourceResolve => {
+          Scene.searchSourcesById(srcid).then(result => {
+            allSrc = allSrc.concat(result)
+            sourceResolve(result)
           })
         })
-
-        for (var i = 0 ; i < count ; i++) {
-          promiseArray.push(jsonePromise(i))
+        for (var i = 0; i < allJson.length ; i++) {
+          promiseArray.push(sourcePromise(allJson[i]['srcid']))
         }
-        Promise.all(promiseArray).then(jsons => {
-          for(var i = 0; i < jsons.length ; i++) {
-            allJson = allJson.concat(jsons[i])
+        Promise.all(promiseArray).then(results => {
+          for(var h = 0; h< allSrc.length; h++) {
+            for(var key in allSrc[h]){
+              if(key === '_srcId'){
+                uniqueObj[allSrc[h][key]] = allSrc[h];
+              }
+            }
           }
-          let sourcePromise = index => new Promise(sourceResolve => {
-            Scene.searchSourcesById(allJson[index]['id']).then(source => {
-              allSources.push(source)
-            })
-            sourceResolve()
-          })
-
-          for(var i = 0; i < allJson.length ; i++) {
-            sourceArray.push(sourcePromise(i))
+          for(var j in uniqueObj) {
+            if(uniqueObj.hasOwnProperty(j)) {
+              uniqueSrc.push(uniqueObj[j]);
+            }
           }
-          Promise.all(sourceArray).then(args => {
-            resolve(allSources)
-          })
+          resolve(uniqueSrc);
         })
       }).catch(err => {
         reject(err)

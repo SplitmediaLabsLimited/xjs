@@ -894,7 +894,7 @@ export class Scene {
    *
    * #### Usage
    * ```javascript
-   * xjs.Scene.getSources().then(function(sources) {
+   * scene.getSources().then(function(sources) {
    *   for(var i = 0 ; i < sources.length ; i++) {
    *      if(sources[i] instanceof xjs.HtmlSource) {
    *        // Manipulate HTML Source here
