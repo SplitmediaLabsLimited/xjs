@@ -630,7 +630,7 @@ export class Scene {
             if (match === null) {
               scene.getSources().then(sources => {
                 found = sources.some(source => {
-                  if (source['_id'] === id.toUpperCase()) {
+                  if (source['_srcid'] === id.toUpperCase()) {
                     match = scene;
                     return true
                   } else {
