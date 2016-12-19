@@ -167,7 +167,9 @@ export class Source implements ISource{
    */
   static getItemList(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      if (
+      if (Environment.isExtension()) {
+        reject(Error('Extensions do not have default items associated with them.'));
+      } else if (
         versionCompare(getVersion())
           .is
           .lessThan(minVersion)
