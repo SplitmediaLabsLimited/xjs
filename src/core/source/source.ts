@@ -441,12 +441,12 @@ export class Source implements ISource{
    * #### Usage
    *
    * ```javascript
-   * source.getSourceId().then(function(id) {
+   * source.getId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
    */
-  getSourceId: () => Promise<string>
+  getId: () => Promise<string>
 
   /**
    * return: Promise<Item[]>

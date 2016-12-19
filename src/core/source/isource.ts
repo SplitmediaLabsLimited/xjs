@@ -94,7 +94,7 @@ export interface ISource {
    *
    * Get the Source ID
    */
-  getSourceId(): Promise<string>
+  getId(): Promise<string>
 
   /**
    * return Promise<ISource>
@@ -282,14 +282,18 @@ export class iSource implements ISource{
     });
   }
 
-  getSourceId(): Promise<string> {
+  getId(): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-        reject(new Error('Only available on versions above ' + minVersion));
+      if (this._isItemCall) {
+        resolve(this._id)
       } else {
-        iItem.get('prop:srcid', this._id).then(srcid => {
-          resolve(srcid);
-        });
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          reject(new Error('Only available on versions above ' + minVersion));
+        } else {
+          iItem.get('prop:srcid', this._id).then(srcid => {
+            resolve(srcid);
+          });
+        }
       }
     });
   }
