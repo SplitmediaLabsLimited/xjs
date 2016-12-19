@@ -164,7 +164,8 @@ export class iSource implements ISource{
 
           itemsArray.forEach(itemId => {
             promiseArray.push(new Promise(itemResolve => {
-              iItem.set('prop:name', this._name, itemId).then(() => {
+              iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId)
+              .then(() => {
                 itemResolve(true);
               });
             }));
@@ -197,7 +198,8 @@ export class iSource implements ISource{
     }
     return new Promise(resolve => {
       this._cname = value;
-      iItem.set('prop:cname', this._cname, this._id).then(() => {
+      iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId)
+      .then(() => {
         resolve(this);
       });
     });
@@ -252,7 +254,8 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
-      iItem.set('prop:srcitem', val, this._id).then(() => {
+      iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId)
+      .then(() => {
         resolve(this);
       });
     });
@@ -283,7 +286,8 @@ export class iSource implements ISource{
         .lessThan(globalsrcMinVersion)) {
         iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
       }
-      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
+      iItem.wrapSet('prop:keeploaded', (this._keepLoaded ? '1' : '0'),
+        this._id, this._srcId, this._updateId)
         .then(() => {
           resolve(this);
         });
