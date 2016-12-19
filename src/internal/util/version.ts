@@ -7,6 +7,8 @@ export const deleteSceneEventFixVersion = '2.8.1606.1601';
 export const addSceneEventFixVersion = '2.8.1606.1701';
 export const globalsrcMinVersion = '2.9'
 
+export let mockVersion = '';
+
 export function versionCompare(version: string): any {
   const parts = version.split('.');
   const comp = (prev, curr, idx) => {
@@ -41,9 +43,15 @@ export function versionCompare(version: string): any {
   };
 }
 
+export function setMockVersion(version: string) {
+  mockVersion = version;
+}
+
 export function getVersion(): string {
   let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
   let xbcMatch = navigator.appVersion.match(xbcPattern);
+  xbcMatch = xbcMatch || mockVersion.match(xbcPattern);
+
   if (xbcMatch !== null) {
     return xbcMatch[1];
   } else {

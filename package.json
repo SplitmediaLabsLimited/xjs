@@ -1,6 +1,6 @@
 {
   "name": "xjs-framework",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "XSplit JS Framework",
   "scripts": {
     "test": "karma start --single-run --browsers Chrome"

@@ -1,5 +1,3 @@
-import './internal/init';
-
 export * from './util/color';
 export * from './util/rectangle';
 export * from './util/io';
