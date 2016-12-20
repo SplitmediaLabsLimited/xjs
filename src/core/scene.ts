@@ -391,29 +391,15 @@ export class Scene {
   static searchItemsByName(param: string): Promise<Item[]> {
     return new Promise(resolve => {
       this.filterItems((item: Item, filterResolve: any) => {
-        item.getCustomName().then(cname => {
-          if (cname.match(param)) {
-            filterResolve(true);
-          } else {
-            return item.getName();
-          }
-        }).then(name => {
-          if (name !== undefined) {
-            if (name.match(param)) {
-              filterResolve(true);
-            } else {
-              return item.getValue();
-            }
-          }
-        }).then(value => {
-          if (value !== undefined) {
-            if (value.toString().match(param)) {
-              filterResolve(true);
-            } else {
-              filterResolve(false);
-            }
-          }
-        });
+        if (item['_cname'] === param) {
+          filterResolve(true)
+        } else if (item['_name'] === param) {
+          filterResolve(true)
+        } else if (item['_value'] === param) {
+          filterResolve(true)
+        } else {
+          filterResolve(false)
+        }
       }).then(items => {
         resolve(items);
       });
