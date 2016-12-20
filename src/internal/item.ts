@@ -2,7 +2,10 @@
 
 import {exec} from './internal';
 import {Environment} from '../core/environment';
+import {App as iApp} from '../internal/app';
 import {minVersion, versionCompare, getVersion} from './util/version';
+import {Source} from '../core/source/source'
+import {Scene} from '../core/scene'
 
 export class Item {
 
@@ -60,6 +63,41 @@ export class Item {
     }
   }
 
+  /**
+   * Helper function to check if the supplied item id still exist.
+   */
+  static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
+    return new Promise(resolve => {
+      Item.get('itemlist').then(itemlist => {
+        const itemsArray = itemlist.split(',');
+        let secondJsonArr;
+
+        if (itemsArray.length >= 1) {
+          return(itemsArray[0]);
+        } else {
+          iApp.getAsList('presetconfig')
+          .then(jsonArr => {
+            for (var i = 0; i < jsonArr.length; i++) {
+              secondJsonArr = jsonArr[i].children;
+
+              for (var j = 0; j <  secondJsonArr.length; j++) {
+                if (secondJsonArr[j]['srcid'] === srcId) {
+                  return(secondJsonArr[j]['id']);
+                 }
+              }
+            }
+          })
+        }
+      }).then(resultId => {
+        updateId(resultId);
+        Item.get(name, resultId).then(val => {
+          resolve(val);
+        })
+      })
+
+    })
+  }
+
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
@@ -86,6 +124,41 @@ export class Item {
           resolve(val);
         });
     });
+  }
+
+  /**
+   * Helper function to check if the supplied item id still exist.
+   */
+  static wrapSet(name: string, value:string, id?:string, srcId?:string, updateId?: Function) {
+    return new Promise(resolve => {
+      Item.get('itemlist').then(itemlist => {
+        const itemsArray = itemlist.split(',');
+        let secondJsonArr;
+
+        if (itemsArray.length >= 1) {
+          return(itemsArray[0]);
+        } else {
+          iApp.getAsList('presetconfig')
+          .then(jsonArr => {
+            for (var i = 0; i < jsonArr.length; i++) {
+              secondJsonArr = jsonArr[i].children;
+
+              for (var j = 0; j <  secondJsonArr.length; j++) {
+                if (secondJsonArr[j]['srcid'] === srcId) {
+                  return(secondJsonArr[j]['id']);
+                 }
+              }
+            }
+          })
+        }
+      }).then(resultId => {
+        updateId(resultId);
+        Item.set(name, value, resultId).then(val => {
+          resolve(val);
+        })
+      })
+
+    })
   }
 
   /** Sets an item's local property */
