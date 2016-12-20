@@ -339,9 +339,10 @@ export class Item extends Source implements IItemLayout, ISource {
     let _type;
     let _srcId;
     var promiseArray: Promise<Source>[] = [];
+    let _thisItem = this;
 
     return new Promise((resolve, reject) => {
-      Item.getItemList().then((items) => {
+      this.getItemList().then((items) => {
         for(var i=0; i< items.length; i++) {
           for(var key in items[i]) {
             if(key === '_srcId') {
