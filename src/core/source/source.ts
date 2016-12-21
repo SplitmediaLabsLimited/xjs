@@ -234,19 +234,25 @@ export class Source implements ISource{
 
         let sourcePromise = srcid => new Promise(sourceResolve => {
           Scene.searchSourcesById(srcid).then(result => {
-            allSrc = allSrc.concat(result)
-            sourceResolve(result)
-          })
+            allSrc = allSrc.concat(result);
+            sourceResolve(result);
+          }).catch(err => {
+            sourceResolve(null);
+          });
         })
         for (var i = 0; i < allJson.length ; i++) {
-          promiseArray.push(sourcePromise(allJson[i]['srcid']))
+          if (typeof allJson[i] !== 'undefined') {
+            promiseArray.push(sourcePromise(allJson[i]['srcid']));
+          }
         }
         Promise.all(promiseArray).then(results => {
           for(var h = 0; h< allSrc.length; h++) {
-            for(var key in allSrc[h]){
-              if(key === '_srcId'){
-                uniqueObj[allSrc[h][key]] = allSrc[h];
-              }
+            if (allSrc[h] !== null) {
+              for(var key in allSrc[h]){
+                if(key === '_srcId'){
+                  uniqueObj[allSrc[h][key]] = allSrc[h];
+                }
+              }              
             }
           }
           for(var j in uniqueObj) {
