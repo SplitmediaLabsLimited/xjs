@@ -1,6 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, jasmine, spyOn, beforeAll, afterEach, afterAll */
 
-describe('Scene', function() {
+describe('Scene ===', function() {
   'use strict';
 
   var startsWith = function(mainString, stringCompared) {
@@ -581,7 +581,7 @@ describe('Scene', function() {
           return scene.getItems();
         }).then(function(items){
           sceneItems = items[0];
-          return Scene.searchItemsByName(sceneItems.name);
+          return Scene.searchItemsByName(sceneItems._name);
         }).then(function(item) {
           expect(item).toBeInstanceOf(Array);
           expect(item).eachToBeInstanceOf(Item);

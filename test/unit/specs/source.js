@@ -6,6 +6,7 @@ describe('Source ===', function() {
   var xjs = require('xjs');
   var Source = xjs.Source;
   var Item = xjs.Item;
+  var Scene = xjs.Scene;
   var env = new window.Environment(xjs);
   var environments = ['props', 'extension', 'plugin'];
   var environment = xjs.Environment;
@@ -94,6 +95,19 @@ describe('Source ===', function() {
       } else {
         xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
       }
+    } else if (typeof local['{C878A0BF-F03A-4274-9398-EBD638D07680}'] !== 'undefined' &&
+      local['{C878A0BF-F03A-4274-9398-EBD638D07680}'].hasOwnProperty(property)) {
+      xCallback(asyncId, local['{C878A0BF-F03A-4274-9398-EBD638D07680}'][property]);
+    } else {
+      if (property === 'StreamPause') {
+
+      } else {
+        var placements = parseXml(mockPresetConfig)
+          .getElementsByTagName('configuration')[0];
+        var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
+        var itemSelected = placements.querySelector(selected);
+        xCallback(asyncId, itemSelected.getAttribute(property));
+      }
     }
     return asyncId;
   };
@@ -113,6 +127,32 @@ describe('Source ===', function() {
         } else {
           xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
         }
+      }
+    } else if (typeof local[attachedId] !== 'undefined' &&
+      local[attachedId].hasOwnProperty(property)) {
+      xCallback(asyncId, local[attachedId][property]);
+    } else {
+      if (property === 'StreamPause') {
+
+      } else if (property === 'itemlist') {
+        var placements = parseXml(mockPresetConfig)
+          .getElementsByTagName('configuration')[0];
+        var selected = '[id="' + attachedId  + '"]';
+        var itemSelected = placements.querySelector(selected);
+        var srcid = itemSelected.getAttribute('srcid');
+        var sourcesLinkedSelector = '[srcid="' + srcid  + '"]';
+        var sourcesLinked = placements.querySelectorAll(sourcesLinkedSelector);
+        var sourcesLinkedArray = [];
+        for (var i = 0; i < sourcesLinked.length; i++) {
+          sourcesLinkedArray.push(sourcesLinked[i].getAttribute('id'));
+        }
+        xCallback(asyncId, sourcesLinkedArray.toString());
+      } else {
+        var placements = parseXml(mockPresetConfig)
+          .getElementsByTagName('configuration')[0];
+        var selected = '[id="' + attachedId + '"]';
+        var itemSelected = placements.querySelector(selected);
+        xCallback(asyncId, itemSelected.getAttribute(property));
       }
     }
 
@@ -156,9 +196,11 @@ describe('Source ===', function() {
       property = property.replace(/^prop:/, '');
     }
 
-    if (typeof local[attachedId] === 'undefined') {
-      local[attachedId] = {};
+    if (typeof local['{C878A0BF-F03A-4274-9398-EBD638D07680}'] === 'undefined') {
+      local['{C878A0BF-F03A-4274-9398-EBD638D07680}'] = {};
     }
+
+    local['{C878A0BF-F03A-4274-9398-EBD638D07680}'][property] = value;
 
     xCallback(asyncId, '0');
     return asyncId;
@@ -176,6 +218,8 @@ describe('Source ===', function() {
       local[attachedId] = {};
     }
 
+    local[attachedId][property] = value;
+
     xCallback(asyncId, '0');
     return asyncId;
   };
@@ -190,6 +234,52 @@ describe('Source ===', function() {
       }
     });
 
+    spyOn(window.external, 'SetLocalPropertyAsync')
+    .and.callFake(function(funcName, value) {
+      if (environment.isSourcePlugin()) {
+        return setLocalSource(funcName, value);
+      } else {
+        return setLocal(funcName, value);
+      }
+    });
+
+    spyOn(window.external, 'GetLocalPropertyAsync1')
+    .and.callFake(getLocal);
+
+    spyOn(window.external, 'SetLocalPropertyAsync1')
+    .and.callFake(setLocal);
+
+    spyOn(window.external, 'GetLocalPropertyAsync2')
+    .and.callFake(getLocal);
+
+    spyOn(window.external, 'SetLocalPropertyAsync2')
+    .and.callFake(setLocal);
+
+    spyOn(window.external, 'SearchVideoItem')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'SearchVideoItem2')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem1')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem2')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
       global_asyncId++;
@@ -197,6 +287,10 @@ describe('Source ===', function() {
       switch (funcName) {
         case 'presetcount':
           xCallback(asyncId, presetObj['count']);
+          break;
+
+        case 'presetconfig':
+          xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         default:
@@ -299,6 +393,7 @@ describe('Source ===', function() {
             expect(promise).toBeInstanceOf(Promise);
             expect(sources).toBeInstanceOf(Array);
             expect(sources).eachToBeInstanceOf(Source);
+            next();
           });
         }).then(nextEnvironment);
       }).then(done);
@@ -311,13 +406,12 @@ describe('Source ===', function() {
           .then(function(sources) {
             expect(sources).toBeInstanceOf(Array);
             expect(sources).eachToBeInstanceOf(Source);
-            console.log(sources);
-            console.log(sources.length);
             var srcIdArray = [];
             for (var i = sources.length - 1; i >= 0; i--) {
               srcIdArray.push(sources[i]._srcId);
             }
             expect(hasDuplicates(srcIdArray)).toBe(false);
+            next();
           });
         }).then(nextEnvironment);
       }).then(done);
@@ -325,16 +419,66 @@ describe('Source ===', function() {
   });
 
   describe('should be able to get and set source-specific properties', function() {
-    it('name', function() {
-      // execEnvironments(function(nextEnvironment) {
-      //   exec(function(next) {
-      //     Source.getItemList().then(function(items) {
-      //       expect(items).toBeInstanceOf(Array);
-      //       expect(items).eachToBeInstanceOf(Item);
-      //       next();
-      //     });
-      //   }).then(nextEnvironment);
-      // }).then(done);
+    it('name', function(done) {
+      execEnvironments(function(nextEnvironment) {
+        exec(function(next) {
+          var promise, testSource, otherSource, testName, otherName;
+          var randomTest = '1_' + randomWord(15);
+          var randomOther = '2_' + randomWord(15);
+          // remove attachedId to properly mirror behavior of calling without attaching
+          attachedId = '';
+          if (!environment.isExtension()
+            && navigator.appVersion !== 'XSplit Broadcaster 2.7.1702.2231 ') {
+            promise = new Promise(function(resolve) {
+              Source.getCurrentSource().then(function(source) {
+                resolve(source);
+              });
+            });
+          } else {
+            promise = new Promise(function(resolve) {
+              Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
+              .then(function(item) {
+                return item.getSource();
+              }).then(function(source) {
+                resolve(source);
+              });
+            });
+          }
+          promise.then(function(source) {
+            testSource = source;
+            return Scene.searchItemsById('{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}');
+          }).then(function(item) {
+            return item.getSource();
+          }).then(function(newSource) {
+            otherSource = newSource;
+            return testSource.getName();
+          }).then(function(name) {
+            testName = name;
+            return otherSource.getName();
+          }).then(function(name) {
+            otherName = name;
+            expect(testName).toBeDefined();
+            expect(testName).toBeTypeOf('string');
+            expect(otherName).toBeDefined();
+            expect(otherName).toBeTypeOf('string');
+            expect(testName).not.toEqual(otherName);
+            return testSource.setName(randomTest);
+          }).then(function() {
+            return otherSource.setName(randomOther);
+          }).then(function() {
+            return testSource.getName();
+          }).then(function(name) {
+            testName = name;
+            return otherSource.getName();
+          }).then(function(name) {
+            otherName = name;
+            expect(testName).not.toEqual(otherName);
+            expect(testName).toEqual(randomTest);
+            expect(otherName).toEqual(randomOther);
+            next();
+          });
+        }).then(nextEnvironment);
+      }).then(done);
     });
 
     it('custom name', function() {

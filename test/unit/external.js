@@ -47,9 +47,16 @@
 		},
 
 		/**
-		 * source|config|window
+		 * config|window
 		 */
 		AttachVideoItem: function(name) {
+
+		},
+
+		/**
+		 * source
+		 */
+		AttachVideoItem1: function(name) {
 
 		},
 
