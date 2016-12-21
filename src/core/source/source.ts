@@ -122,13 +122,17 @@ export class Source implements ISource{
       ) {
         Source.getItemList().then(items => {
           if (items.length > 0) {
-            resolve(items[0].getSource());
+            items[0].getSource().then(source => {
+              resolve(source);
+            });
           } else {
-            reject(Error('Cannot get item list'))
+            reject(Error('Cannot get item list'));
           }
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        Scene.searchSourcesById(iItem.getBaseId()).then(source => {
+        Scene.searchItemsById(iItem.getBaseId()).then(item => {
+          return item.getSource();
+        }).then(source => {
           resolve(source);
         });
       }
