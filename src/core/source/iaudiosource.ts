@@ -67,46 +67,67 @@ export interface ISourceAudio {
 
 export class SourceAudio implements ISourceAudio {
   private _id: string;
+  private _srcId: string;
   private _isItemCall: boolean;
 
+  private _updateId(id: string) {
+    this._id = id;
+  }
+
   isSilenceDetectionEnabled(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isSilenceDetectionEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:AudioGainEnable', this._id).then(val => {
-        resolve(val === '1');
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSilenceDetectionEnabled', true)
+        iItem.get('prop:AudioGainEnable', this._id).then(val => {
+          resolve(val === '1');
+        });
+      } else {
+        //wrapget
+        iItem.wrapGet('prop:AudioGainEnable', this._srcId, this._id,
+          this._updateId).then(val => {
+          resolve(val === '1');
+        });
+      }
     });
   }
 
   setSilenceDetectionEnabled(value: boolean): Promise<SourceAudio> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setSilenceDetectionEnabled', true)
-    }
     return new Promise((resolve, reject) => {
-      iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
-      .then(res => {
-          resolve(this);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setSilenceDetectionEnabled', true)
+        iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
+        .then(res => {
+            resolve(this);
+        });
+      } else {
+        //wrapset
+        iItem.wrapSet('prop:AudioGainEnable', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId)
+        .then(res => {
+            resolve(this);
+        });
+      }
     });
   }
 
   getSilenceThreshold(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getSilenceThreshold', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:AudioGain', this._id).then(val => {
-        resolve(Number(val));
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getSilenceThreshold', true)
+        iItem.get('prop:AudioGain', this._id).then(val => {
+          resolve(Number(val));
+        });
+      } else {
+        //wrapget
+        iItem.wrapGet('prop:AudioGain', this._srcId, this._id, this._updateId)
+        .then(val => {
+          resolve(Number(val));
+        });
+      }
     });
   }
 
   setSilenceThreshold(value: number): Promise<SourceAudio> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setSilenceThreshold', true)
-    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for threshold'));
@@ -115,28 +136,38 @@ export class SourceAudio implements ISourceAudio {
           Error('Only integers in the range 0-128 are acceptable for threshold')
         );
       } else {
-        iItem.set('prop:AudioGain', String(value), this._id).then(res => {
-          resolve(this);
-        });
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setSilenceThreshold', true)
+          iItem.set('prop:AudioGain', String(value), this._id).then(res => {
+            resolve(this);
+          });
+        } else {
+          iItem.wrapSet('prop:AudioGain', String(value), this._srcId,
+            this._id, this._updateId).then(res => {
+            resolve(this);
+          });
+        }
       }
     });
   }
 
   getSilencePeriod(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getSilencePeriod', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:AudioGainLatency', this._id).then(val => {
-        resolve(Number(val));
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getSilencePeriod', true)
+        iItem.get('prop:AudioGainLatency', this._id).then(val => {
+          resolve(Number(val));
+        });
+      } else {
+        iItem.wrapGet('prop:AudioGainLatency', this._srcId,
+          this._id, this._updateId).then(val => {
+          resolve(Number(val));
+        });
+      }
     });
   }
 
   setSilencePeriod(value: number): Promise<SourceAudio> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setSilencePeriod', true)
-    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -145,28 +176,38 @@ export class SourceAudio implements ISourceAudio {
           Error('Only integers in the range 0-10000 are acceptable for period')
         );
       } else {
-        iItem.set('prop:AudioGainLatency', String(value), this._id).then(res => {
-          resolve(this);
-        });
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setSilencePeriod', true)
+          iItem.set('prop:AudioGainLatency', String(value), this._id).then(res => {
+            resolve(this);
+          });
+        } else {
+          iItem.wrapSet('prop:AudioGainLatency', String(value), this._srcId,
+            this._id, this._updateId).then(res => {
+            resolve(this);
+          });
+        }
       }
     });
   }
 
   getAudioOffset(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getAudioOffset', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:AudioDelay', this._id).then(val => {
-        resolve(Number(val));
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getAudioOffset', true)
+        iItem.get('prop:AudioDelay', this._id).then(val => {
+          resolve(Number(val));
+        });
+      } else {
+        iItem.wrapGet('prop:AudioDelay', this._srcId, this._id,
+          this._updateId).then(val => {
+          resolve(Number(val));
+        });
+      }
     });
   }
 
   setAudioOffset(value: number): Promise<SourceAudio> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setAudioOffset', true)
-    }
     return new Promise((resolve, reject) => {
       if (typeof value !== 'number') {
         reject(Error('Only numbers are acceptable values for period'));
@@ -174,9 +215,17 @@ export class SourceAudio implements ISourceAudio {
       else if (value < 0) {
         reject(Error('Audio offset cannot be negative'));
       } else {
-        iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
-          resolve(this);
-        });
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setAudioOffset', true)
+          iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
+            resolve(this);
+          });
+        } else {
+          iItem.wrapSet('prop:AudioDelay', String(value), this._srcId,
+            this._id, this._updateId).then(res => {
+            resolve(this);
+          });
+        }
       }
     });
   }

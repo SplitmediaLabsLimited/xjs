@@ -68,7 +68,7 @@ export class Item {
    */
   static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
-      Item.get('itemlist').then(itemlist => {
+      Item.get('itemlist', id).then(itemlist => {
         const itemsArray = itemlist.split(',');
         let secondJsonArr;
 
@@ -131,7 +131,7 @@ export class Item {
    */
   static wrapSet(name: string, value:string, id?:string, srcId?:string, updateId?: Function) {
     return new Promise(resolve => {
-      Item.get('itemlist').then(itemlist => {
+      Item.get('itemlist', id).then(itemlist => {
         const itemsArray = itemlist.split(',');
         let secondJsonArr;
 

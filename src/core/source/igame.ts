@@ -64,50 +64,72 @@ export class iSourceGame implements ISourceGame {
   private _id: string;
   private _type: ItemTypes;
   private _value: any;
+  private _srcId: string;
   private _isItemCall: boolean;
 
+  private _updateId(id: string) {
+    this._id = id;
+  }
+
   isSpecialOptimizationEnabled(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isSpecialOptimizationEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.get('GameCapSurfSharing', this._id).then(res => {
-        resolve(res === '1');
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSpecialOptimizationEnabled', true)
+        iItem.get('GameCapSurfSharing', this._id).then(res => {
+          resolve(res === '1');
+        });
+      } else {
+        iItem.wrapGet('GameCapSurfSharing', this._srcId, this._id, this._updateId).then(res => {
+          resolve(res === '1');
+        });
+      }
     });
   }
 
   setSpecialOptimizationEnabled(value: boolean): Promise<iSourceGame> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setSpecialOptimizationEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
-        this._id).then(() => {
-          resolve(this);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setSpecialOptimizationEnabled', true)
+        iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
+          this._id).then(() => {
+            resolve(this);
+        });
+      } else {
+        iItem.wrapSet('GameCapSurfSharing', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId).then(() => {
+            resolve(this);
+        });
+      }
     });
   }
 
   isShowMouseEnabled(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isShowMouseEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.get('GameCapShowMouse', this._id).then(res => {
-        resolve(res === '1');
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isShowMouseEnabled', true)
+        iItem.get('GameCapShowMouse', this._id).then(res => {
+          resolve(res === '1');
+        });
+      } else {
+        iItem.wrapGet('GameCapShowMouse', this._srcId, this._id, this._updateId).then(res => {
+          resolve(res === '1');
+        });
+      }
     });
   }
 
   setShowMouseEnabled(value: boolean): Promise<iSourceGame> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setShowMouseEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
-        resolve(this);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setShowMouseEnabled', true)
+        iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
+          resolve(this);
+        });
+      } else {
+        iItem.wrapSet('GameCapShowMouse', (value ? '1' : '0'), this._srcId, this._id, this._updateId).then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 

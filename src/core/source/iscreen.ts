@@ -147,113 +147,158 @@ export class iSourceScreen implements ISourceScreen {
   private _id: string;
   private _value: any;
   private _isItemCall: boolean;
+  private _srcId: string;
+  private _checkPromise;
+
+  private _updateId(id: string) {
+    this._id = id;
+  }
 
   isStickToTitle(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isStickToTitle', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:ScrCapTrackWindowTitle', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isStickToTitle', true)
+        this._checkPromise = iItem.get('prop:ScrCapTrackWindowTitle', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ScrCapTrackWindowTitle', this._srcId,
+          this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(val === '0');
       });
     });
   }
 
   setStickToTitle(value: boolean): Promise<iSourceScreen> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setStickToTitle', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
-        .then(() => {
-          resolve(this);
-        });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setStickToTitle', true)
+        this._checkPromise = iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ScrCapTrackWindowTitle', value ? '0' : '1',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
+      });
     });
   }
 
   getCaptureLayered(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getCaptureLayered', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:ScrCapLayered', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getCaptureLayered', true)
+        this._checkPromise = iItem.get('prop:ScrCapLayered', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ScrCapLayered',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setCaptureLayered(value: boolean): Promise<iSourceScreen> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setCaptureLayered', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setCaptureLayered', true)
+        this._checkPromise = iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ScrCapLayered', value ? '1' : '0',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(this);
       });
     });
   }
 
   getOptimizedCapture(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getOptimizedCapture', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:ScrCapOptCapture1', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getOptimizedCapture', true)
+        this._checkPromise = iItem.get('prop:ScrCapOptCapture1', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ScrCapOptCapture1',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setOptimizedCapture(value: boolean): Promise<iSourceScreen> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setOptimizedCapture', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setOptimizedCapture', true)
+        this._checkPromise = iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ScrCapOptCapture1', value ? '1' : '0',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(this);
       });
     });
   }
 
   getShowMouseClicks(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getShowMouseClicks', true)
-    }
     return new Promise(resolve => {
-    iItem.get('prop:ScrCapShowClicks', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getShowMouseClicks', true)
+        this._checkPromise = iItem.get('prop:ScrCapShowClicks', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ScrCapShowClicks',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setShowMouseClicks(value: boolean): Promise<iSourceScreen> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setShowMouseClicks', true)
-    }
     return new Promise(resolve => {
-    iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setShowMouseClicks', true)
+        this._checkPromise = iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ScrCapShowClicks', value ? '1' : '0',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(this)
       });
     });
   }
 
   getShowMouse(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getShowMouse', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:ScrCapShowMouse', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getShowMouse', true)
+        this._checkPromise = iItem.get('prop:ScrCapShowMouse', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ScrCapShowMouse',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setShowMouse(value: boolean): Promise<iSourceScreen> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setShowMouse', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setShowMouse', true)
+        this._checkPromise = iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ScrCapShowMouse', value ? '1' : '0',
+          this._srcId, this._id, this._updateId)
+      }
+      this._checkPromise.then(val => {
         if (val === true) {
           iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id);
         }
@@ -290,7 +335,13 @@ export class iSourceScreen implements ISourceScreen {
     return new Promise(resolve => {
       this.getValue().then(val => {
         return new Promise(iResolve => {
-          iItem.get('screenresolution', this._id).then(res => {
+          if(this._isItemCall) {
+            this._checkPromise = iItem.get('screenresolution', this._id)
+          } else {
+            this._checkPromise = iItem.wrapGet('screenresolution', this._srcId,
+              this._id,this._updateId)
+          }
+          this._checkPromise.then(res => {
             let _res = res.split(',');
             iResolve({
               value : val,
