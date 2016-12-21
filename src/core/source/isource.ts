@@ -138,8 +138,9 @@ export class iSource implements ISource{
   private _sceneId: string;
   private _srcId: string;
 
-  private _updateId(id: string) {
+  private _updateId(id: string, sceneId?: string) {
     this._id = id;
+    this._sceneId = sceneId;
   }
 
   setName(value: string): Promise <iSource> {

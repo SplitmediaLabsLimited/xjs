@@ -66,9 +66,11 @@ export class iSourceGame implements ISourceGame {
   private _value: any;
   private _srcId: string;
   private _isItemCall: boolean;
+  private _sceneId: string;
 
-  private _updateId(id: string) {
+  private _updateId(id: string, sceneId?: string) {
     this._id = id;
+    this._sceneId = sceneId;
   }
 
   isSpecialOptimizationEnabled(): Promise<boolean> {

@@ -18,9 +18,11 @@ export class SourceMedia implements ISourceMedia {
   private _isItemCall: boolean;
   private _srcId: string;
   private _checkPromise;
+  private _sceneId: string;
 
-  private _updateId(id: string) {
+  private _updateId(id: string, sceneId?: string) {
     this._id = id;
+    this._sceneId = sceneId;
   }
 
   getFileInfo(): Promise<Object> {

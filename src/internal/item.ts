@@ -69,27 +69,29 @@ export class Item {
   static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
       Item.get('itemlist', id).then(itemlist => {
-        const itemsArray = itemlist.split(',');
-        let secondJsonArr;
+        return new Promise<string>(resolveInner => {
+          const itemsArray = itemlist.split(',');
+          let secondJsonArr;
 
-        if (itemsArray.length >= 1) {
-          return(itemsArray[0]);
-        } else {
-          iApp.getAsList('presetconfig')
-          .then(jsonArr => {
-            for (var i = 0; i < jsonArr.length; i++) {
-              secondJsonArr = jsonArr[i].children;
+          if ((itemsArray.length >= 1) && (itemsArray[0] !== null)) {
+            resolveInner(itemsArray[0]);
+          } else {
+            iApp.getAsList('presetconfig')
+            .then(jsonArr => {
+              for (var i = 0; i < jsonArr.length; i++) {
+                secondJsonArr = jsonArr[i].children;
 
-              for (var j = 0; j <  secondJsonArr.length; j++) {
-                if (secondJsonArr[j]['srcid'] === srcId) {
-                  return(secondJsonArr[j]['id']);
-                 }
+                for (var j = 0; j <  secondJsonArr.length; j++) {
+                  if (secondJsonArr[j]['srcid'] === srcId) {
+                    updateId(secondJsonArr[j]['id'], secondJsonArr[j]['sceneid'])
+                    resolveInner(secondJsonArr[j]['id']);
+                   }
+                }
               }
-            }
-          })
-        }
+            })
+          }
+        })
       }).then(resultId => {
-        updateId(resultId);
         Item.get(name, resultId).then(val => {
           resolve(val);
         })
@@ -132,27 +134,29 @@ export class Item {
   static wrapSet(name: string, value:string, srcId?:string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
       Item.get('itemlist', id).then(itemlist => {
-        const itemsArray = itemlist.split(',');
-        let secondJsonArr;
+        return new Promise<string>(resolveInner => {
+          const itemsArray = itemlist.split(',');
+          let secondJsonArr;
 
-        if (itemsArray.length >= 1) {
-          return(itemsArray[0]);
-        } else {
-          iApp.getAsList('presetconfig')
-          .then(jsonArr => {
-            for (var i = 0; i < jsonArr.length; i++) {
-              secondJsonArr = jsonArr[i].children;
+          if ((itemsArray.length >= 1) && (itemsArray[0] !== null)) {
+            resolveInner(itemsArray[0]);
+          } else {
+            iApp.getAsList('presetconfig')
+            .then(jsonArr => {
+              for (var i = 0; i < jsonArr.length; i++) {
+                secondJsonArr = jsonArr[i].children;
 
-              for (var j = 0; j <  secondJsonArr.length; j++) {
-                if (secondJsonArr[j]['srcid'] === srcId) {
-                  return(secondJsonArr[j]['id']);
-                 }
+                for (var j = 0; j <  secondJsonArr.length; j++) {
+                  if (secondJsonArr[j]['srcid'] === srcId) {
+                    updateId(secondJsonArr[j]['id'], secondJsonArr[j]['sceneid'])
+                    resolveInner(secondJsonArr[j]['id']);
+                   }
+                }
               }
-            }
-          })
-        }
+            })
+          }
+        })
       }).then(resultId => {
-        updateId(resultId);
         Item.set(name, value, resultId).then(val => {
           resolve(val);
         })

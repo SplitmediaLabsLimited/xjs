@@ -48,9 +48,11 @@ export class SourceFlash implements ISourceFlash {
   private _srcId: string;
   private _isItemCall: boolean;
   private _checkPromise;
+  private _sceneId: string;
 
-  private _updateId(id: string) {
+  private _updateId(id: string, sceneId?: string) {
     this._id = id;
+    this._sceneId = sceneId;
   }
 
   getCustomResolution(): Promise<Rectangle> {
