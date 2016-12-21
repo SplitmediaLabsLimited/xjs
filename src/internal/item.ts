@@ -129,7 +129,7 @@ export class Item {
   /**
    * Helper function to check if the supplied item id still exist.
    */
-  static wrapSet(name: string, value:string, id?:string, srcId?:string, updateId?: Function) {
+  static wrapSet(name: string, value:string, srcId?:string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
       Item.get('itemlist', id).then(itemlist => {
         const itemsArray = itemlist.split(',');
