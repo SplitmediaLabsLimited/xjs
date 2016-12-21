@@ -151,12 +151,12 @@ export class iSourceHtml implements ISourceHtml{
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
 
-    /**
+  /**
    * return: Promise<string>
    *
    * Gets the URL of this webpage item.
@@ -168,7 +168,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(url => {
           let _url = String(url).split('*');
@@ -195,7 +195,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(url => {
           let _url = String(url).split('*');
@@ -220,7 +220,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:BrowserTransparent', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:BrowserTransparent', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(isTransparent => {
         resolve(isTransparent === '1');
@@ -236,7 +236,7 @@ export class iSourceHtml implements ISourceHtml{
         this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:BrowserTransparent', (value ? '1' : '0'),
-        this._srcId, this._id, this._updateId)
+        this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
         resolve(this);
@@ -252,7 +252,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:BrowserSize', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         if (val !== '') {
@@ -280,7 +280,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
         resolve(this);
@@ -295,7 +295,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:BrowserRightClick', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -310,7 +310,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
          resolve(this);
@@ -325,7 +325,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
         let customJS = '';
@@ -351,7 +351,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
 
       this._checkPromise.then(custom => {
@@ -414,7 +414,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
         let enabled = true;
@@ -441,7 +441,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
 
@@ -514,7 +514,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
         let customCSS = '';
@@ -541,7 +541,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
 
@@ -608,7 +608,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
         let enabled = true;
@@ -635,7 +635,7 @@ export class iSourceHtml implements ISourceHtml{
         this._checkPromise = iItem.get('prop:custom', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
-          this._updateId)
+          this._updateId.bind(this))
       }
       this._checkPromise.then(custom => {
 

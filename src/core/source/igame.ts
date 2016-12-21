@@ -68,7 +68,7 @@ export class iSourceGame implements ISourceGame {
   private _isItemCall: boolean;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -81,7 +81,7 @@ export class iSourceGame implements ISourceGame {
           resolve(res === '1');
         });
       } else {
-        iItem.wrapGet('GameCapSurfSharing', this._srcId, this._id, this._updateId).then(res => {
+        iItem.wrapGet('GameCapSurfSharing', this._srcId, this._id, this._updateId.bind(this)).then(res => {
           resolve(res === '1');
         });
       }
@@ -98,7 +98,7 @@ export class iSourceGame implements ISourceGame {
         });
       } else {
         iItem.wrapSet('GameCapSurfSharing', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId).then(() => {
+          this._srcId, this._id, this._updateId.bind(this)).then(() => {
             resolve(this);
         });
       }
@@ -113,7 +113,7 @@ export class iSourceGame implements ISourceGame {
           resolve(res === '1');
         });
       } else {
-        iItem.wrapGet('GameCapShowMouse', this._srcId, this._id, this._updateId).then(res => {
+        iItem.wrapGet('GameCapShowMouse', this._srcId, this._id, this._updateId.bind(this)).then(res => {
           resolve(res === '1');
         });
       }
@@ -128,7 +128,7 @@ export class iSourceGame implements ISourceGame {
           resolve(this);
         });
       } else {
-        iItem.wrapSet('GameCapShowMouse', (value ? '1' : '0'), this._srcId, this._id, this._updateId).then(() => {
+        iItem.wrapSet('GameCapShowMouse', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this)).then(() => {
           resolve(this);
         });
       }

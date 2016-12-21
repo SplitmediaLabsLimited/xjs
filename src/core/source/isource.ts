@@ -138,7 +138,7 @@ export class iSource implements ISource{
   private _sceneId: string;
   private _srcId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -168,7 +168,7 @@ export class iSource implements ISource{
                   itemResolve(true);
                 });
               } else {
-                iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId)
+                iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId.bind(this))
                 .then(() => {
                   itemResolve(true);
                 });
@@ -193,7 +193,7 @@ export class iSource implements ISource{
           resolve(val);
         })
       } else {
-        iItem.wrapGet('prop:name', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:name', this._srcId, this._id, this._updateId.bind(this).bind(this))
         .then(val => {
           this._name = String(val);
           resolve(val);
@@ -212,7 +212,7 @@ export class iSource implements ISource{
           resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId)
+        iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -229,7 +229,7 @@ export class iSource implements ISource{
           resolve(val);
         });
       } else {
-        iItem.wrapGet('prop:cname', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:cname', this._srcId, this._id, this._updateId.bind(this))
         .then(val => {
           resolve(val);
         });
@@ -259,7 +259,7 @@ export class iSource implements ISource{
           }
         });
       } else {
-        iItem.wrapGet('prop:srcitem', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:srcitem', this._srcId, this._id, this._updateId.bind(this))
         .then(val => {
           val = (val === 'null') ? '' : val;
           if (val === '') { // don't return XML for null values
@@ -299,7 +299,7 @@ export class iSource implements ISource{
           resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId)
+        iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -317,7 +317,7 @@ export class iSource implements ISource{
           resolve(this._keepLoaded);
         });
       } else {
-        iItem.wrapGet('prop:keeploaded', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:keeploaded', this._srcId, this._id, this._updateId.bind(this))
         .then(val => {
           this._keepLoaded = (val === '1');
           resolve(this._keepLoaded);
@@ -343,7 +343,7 @@ export class iSource implements ISource{
         });
       } else {
         iItem.wrapSet('prop:keeploaded', (this._keepLoaded ? '1' : '0'),
-          this._id, this._srcId, this._updateId)
+          this._id, this._srcId, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -356,7 +356,7 @@ export class iSource implements ISource{
       if (versionCompare(getVersion()).is.lessThan(minVersion)) {
         reject(new Error('Only available on versions above ' + minVersion));
       } else {
-        iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
         .then(srcid => {
           resolve(srcid);
         });
@@ -404,7 +404,7 @@ export class iSource implements ISource{
             });
           });
         } else {
-          iItem.wrapGet('itemlist', this._srcId, this._id, this._updateId)
+          iItem.wrapGet('itemlist', this._srcId, this._id, this._updateId.bind(this))
           .then(itemlist => {
             const promiseArray: Promise<iSource>[] = [];
             const itemsArray = String(itemlist).split(',');
@@ -435,7 +435,7 @@ export class iSource implements ISource{
           resolve(this._type);
         });
       } else {
-        iItem.wrapGet('prop:type', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:type', this._srcId, this._id, this._updateId.bind(this))
         .then(val => {
           this._type = ItemTypes[ItemTypes[Number(val)]];
           resolve(this._type);

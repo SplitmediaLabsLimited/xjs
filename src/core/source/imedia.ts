@@ -20,7 +20,7 @@ export class SourceMedia implements ISourceMedia {
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -32,7 +32,7 @@ export class SourceMedia implements ISourceMedia {
         this._checkPromise = iItem.get('FileInfo', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('FileInfo', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         try {

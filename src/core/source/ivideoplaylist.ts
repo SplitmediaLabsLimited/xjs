@@ -48,7 +48,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -60,7 +60,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(playlist => {
         let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
@@ -79,7 +79,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
         this._checkPromise = iItem.get('prop:FilePlaylist', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:FilePlaylist', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(playlist => {
         _playlist = String(playlist).split('|');
@@ -120,7 +120,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
         this._checkPromise = iItem.get('prop:FilePlaylist', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:FilePlaylist', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(playlist => {
         let _playlist = String(playlist).split('|');
@@ -160,7 +160,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
           iItem.set('prop:srcitem', fileItems[0] + '*0', this._id);
         } else {
           iItem.wrapSet('prop:srcitem', fileItems[0] + '*0', this._srcId,
-          this._id, this._updateId);
+          this._id, this._updateId.bind(this));
         }
         return fileString;
       }).then(fileString => {

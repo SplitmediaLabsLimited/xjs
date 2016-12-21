@@ -71,21 +71,20 @@ export class Item {
       Item.get('itemlist', id).then(itemlist => {
         return new Promise<string>(resolveInner => {
           const itemsArray = itemlist.split(',');
-          let secondJsonArr;
-
-          if ((itemsArray.length >= 1) && (itemsArray[0] !== null)) {
+          let secondJsonArr = [];
+          if ((itemsArray.length >= 1) && (itemsArray[0] !== 'null')) {
             resolveInner(itemsArray[0]);
           } else {
             iApp.getAsList('presetconfig')
             .then(jsonArr => {
               for (var i = 0; i < jsonArr.length; i++) {
-                secondJsonArr = jsonArr[i].children;
-
-                for (var j = 0; j <  secondJsonArr.length; j++) {
-                  if (secondJsonArr[j]['srcid'] === srcId) {
-                    updateId(secondJsonArr[j]['id'], secondJsonArr[j]['sceneid'])
-                    resolveInner(secondJsonArr[j]['id']);
-                   }
+                if (jsonArr[i].children !== undefined) {
+                  for (var j = 0; j <  jsonArr[i].children.length; j++) {
+                    if (jsonArr[i].children[j]['srcid'] === srcId) {
+                      updateId(jsonArr[i].children[j]['id'], i)
+                      resolveInner(jsonArr[i].children[j]['id']);
+                     }
+                  }
                 }
               }
             })
@@ -137,20 +136,19 @@ export class Item {
         return new Promise<string>(resolveInner => {
           const itemsArray = itemlist.split(',');
           let secondJsonArr;
-
-          if ((itemsArray.length >= 1) && (itemsArray[0] !== null)) {
+          if ((itemsArray.length >= 1) && (itemsArray[0] !== 'null')) {
             resolveInner(itemsArray[0]);
           } else {
             iApp.getAsList('presetconfig')
             .then(jsonArr => {
               for (var i = 0; i < jsonArr.length; i++) {
-                secondJsonArr = jsonArr[i].children;
-
-                for (var j = 0; j <  secondJsonArr.length; j++) {
-                  if (secondJsonArr[j]['srcid'] === srcId) {
-                    updateId(secondJsonArr[j]['id'], secondJsonArr[j]['sceneid'])
-                    resolveInner(secondJsonArr[j]['id']);
-                   }
+                if (jsonArr[i].children !== undefined) {
+                  for (var j = 0; j <  jsonArr[i].children.length; j++) {
+                    if (jsonArr[i].children[j]['srcid'] === srcId) {
+                      updateId(jsonArr[i].children[j]['id'], i)
+                      resolveInner(jsonArr[i].children[j]['id']);
+                     }
+                  }
                 }
               }
             })

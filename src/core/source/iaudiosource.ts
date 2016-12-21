@@ -71,7 +71,7 @@ export class SourceAudio implements ISourceAudio {
   private _isItemCall: boolean;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -86,7 +86,7 @@ export class SourceAudio implements ISourceAudio {
       } else {
         //wrapget
         iItem.wrapGet('prop:AudioGainEnable', this._srcId, this._id,
-          this._updateId).then(val => {
+          this._updateId.bind(this)).then(val => {
           resolve(val === '1');
         });
       }
@@ -104,7 +104,7 @@ export class SourceAudio implements ISourceAudio {
       } else {
         //wrapset
         iItem.wrapSet('prop:AudioGainEnable', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
         .then(res => {
             resolve(this);
         });
@@ -121,7 +121,7 @@ export class SourceAudio implements ISourceAudio {
         });
       } else {
         //wrapget
-        iItem.wrapGet('prop:AudioGain', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:AudioGain', this._srcId, this._id, this._updateId.bind(this))
         .then(val => {
           resolve(Number(val));
         });
@@ -145,7 +145,7 @@ export class SourceAudio implements ISourceAudio {
           });
         } else {
           iItem.wrapSet('prop:AudioGain', String(value), this._srcId,
-            this._id, this._updateId).then(res => {
+            this._id, this._updateId.bind(this)).then(res => {
             resolve(this);
           });
         }
@@ -162,7 +162,7 @@ export class SourceAudio implements ISourceAudio {
         });
       } else {
         iItem.wrapGet('prop:AudioGainLatency', this._srcId,
-          this._id, this._updateId).then(val => {
+          this._id, this._updateId.bind(this)).then(val => {
           resolve(Number(val));
         });
       }
@@ -185,7 +185,7 @@ export class SourceAudio implements ISourceAudio {
           });
         } else {
           iItem.wrapSet('prop:AudioGainLatency', String(value), this._srcId,
-            this._id, this._updateId).then(res => {
+            this._id, this._updateId.bind(this)).then(res => {
             resolve(this);
           });
         }
@@ -202,7 +202,7 @@ export class SourceAudio implements ISourceAudio {
         });
       } else {
         iItem.wrapGet('prop:AudioDelay', this._srcId, this._id,
-          this._updateId).then(val => {
+          this._updateId.bind(this)).then(val => {
           resolve(Number(val));
         });
       }
@@ -224,7 +224,7 @@ export class SourceAudio implements ISourceAudio {
           });
         } else {
           iItem.wrapSet('prop:AudioDelay', String(value), this._srcId,
-            this._id, this._updateId).then(res => {
+            this._id, this._updateId.bind(this)).then(res => {
             resolve(this);
           });
         }

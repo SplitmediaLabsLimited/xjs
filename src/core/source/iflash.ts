@@ -50,7 +50,7 @@ export class SourceFlash implements ISourceFlash {
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -63,7 +63,7 @@ export class SourceFlash implements ISourceFlash {
         this._checkPromise = iItem.get('prop:BrowserSize', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
           if (val !== '') {
@@ -88,7 +88,7 @@ export class SourceFlash implements ISourceFlash {
         });
       } else {
         iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
-          this._srcId, this._id, this._updateId).then(() => {
+          this._srcId, this._id, this._updateId.bind(this)).then(() => {
             resolve(this);
         });
       }
@@ -104,7 +104,7 @@ export class SourceFlash implements ISourceFlash {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === '1');
         });
       }
@@ -121,7 +121,7 @@ export class SourceFlash implements ISourceFlash {
             resolve(this);
           });
       } else {
-        iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'), this._srcId, this._id, this._updateId)
+        iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this))
           .then(() => {
             resolve(this);
           });

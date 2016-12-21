@@ -110,7 +110,7 @@ export class SourceCamera implements ISourceCamera {
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -129,7 +129,7 @@ export class SourceCamera implements ISourceCamera {
           resolve(val);
         });
       } else {
-        iItem.wrapGet('prop:item', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:item', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val);
         });
       }
@@ -149,7 +149,7 @@ export class SourceCamera implements ISourceCamera {
           resolve((audioDelay - streamDelay) / 10000);
         });
       } else {
-        iItem.wrapGet('prop:StreamDelay', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:StreamDelay', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           streamDelay = Number(val);
           return iItem.get('prop:AudioDelay', this._id);
         }).then(val => {
@@ -168,7 +168,7 @@ export class SourceCamera implements ISourceCamera {
         this._checkPromise = iItem.get('prop:itemaudio', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
           itemAudio = val;
@@ -208,7 +208,7 @@ export class SourceCamera implements ISourceCamera {
         this._checkPromise = iItem.get('prop:itemaudio', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
           if (val === '') {
@@ -247,7 +247,7 @@ export class SourceCamera implements ISourceCamera {
           });
       } else {
         iItem.wrapSet('prop:itemaudio', value.getDisplayId(),
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
           .then(val => {
             resolve(this);
           });
@@ -263,7 +263,7 @@ export class SourceCamera implements ISourceCamera {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:StreamPause', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:StreamPause', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === '1');
         });
       }
@@ -278,7 +278,7 @@ export class SourceCamera implements ISourceCamera {
           this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:StreamPause', value ? '1' : '0',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
             return iItem.get('prop:StreamPause', this._id);
@@ -299,7 +299,7 @@ export class SourceCamera implements ISourceCamera {
         this._checkPromise = iItem.get('prop:hwencoder', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:hwencoder', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
           if (val === '1') {
@@ -326,7 +326,7 @@ export class SourceCamera implements ISourceCamera {
           resolve(val === 'active');
         });
       } else {
-        iItem.wrapGet('prop:activestate', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:activestate', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === 'active');
         });
       }
@@ -341,7 +341,7 @@ export class SourceCamera implements ISourceCamera {
         this._checkPromise = iItem.get('prop:StreamDelay', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:StreamDelay', this._srcId,
-          this._id, this._updateId).then(val => {
+          this._id, this._updateId.bind(this)).then(val => {
           streamDelay = Number(val);
           return iItem.get('prop:AudioDelay', this._id);
         })
@@ -390,7 +390,7 @@ export class SourceCamera implements ISourceCamera {
           if(this._isItemCall) {
             return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
           } else {
-            return iItem.wrapSet('prop:StreamDelay', String(value * 10000), this._srcId, this._id, this._updateId);
+            return iItem.wrapSet('prop:StreamDelay', String(value * 10000), this._srcId, this._id, this._updateId.bind(this));
           }
         } else {
           isPositive = false;
@@ -418,7 +418,7 @@ export class SourceCamera implements ISourceCamera {
           resolve(val === '3');
         });
       } else {
-        iItem.wrapGet('prop:fdeinterlace', this._srcId, this._id, this._updateId).then(val => {
+        iItem.wrapGet('prop:fdeinterlace', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === '3');
         });
       }
@@ -434,7 +434,7 @@ export class SourceCamera implements ISourceCamera {
         });
       } else {
         iItem.wrapSet('prop:fdeinterlace', (value ? '3' : '0'), this._srcId,
-          this._id, this._updateId).then(() => {
+          this._id, this._updateId.bind(this)).then(() => {
           resolve(this);
         });
       }

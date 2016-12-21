@@ -151,7 +151,7 @@ export class iSourceScreen implements ISourceScreen {
   private _checkPromise;
   private _sceneId: string;
 
-  private _updateId(id: string, sceneId?: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
   }
@@ -163,7 +163,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.get('prop:ScrCapTrackWindowTitle', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ScrCapTrackWindowTitle', this._srcId,
-          this._id, this._updateId)
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '0');
@@ -178,7 +178,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.set('prop:ScrCapTrackWindowTitle', value ? '0' : '1', this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:ScrCapTrackWindowTitle', value ? '0' : '1',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
         resolve(this);
@@ -193,7 +193,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.get('prop:ScrCapLayered', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ScrCapLayered',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -208,7 +208,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.set('prop:ScrCapLayered', value ? '1' : '0', this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:ScrCapLayered', value ? '1' : '0',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(this);
@@ -223,7 +223,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.get('prop:ScrCapOptCapture1', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ScrCapOptCapture1',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -238,7 +238,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.set('prop:ScrCapOptCapture1', value ? '1' : '0', this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:ScrCapOptCapture1', value ? '1' : '0',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(this);
@@ -253,7 +253,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.get('prop:ScrCapShowClicks', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ScrCapShowClicks',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -268,7 +268,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.set('prop:ScrCapShowClicks', value ? '1' : '0', this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:ScrCapShowClicks', value ? '1' : '0',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(this)
@@ -283,7 +283,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.get('prop:ScrCapShowMouse', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ScrCapShowMouse',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -298,7 +298,7 @@ export class iSourceScreen implements ISourceScreen {
         this._checkPromise = iItem.set('prop:ScrCapShowMouse', value ? '1' : '0', this._id)
       } else {
         this._checkPromise = iItem.wrapSet('prop:ScrCapShowMouse', value ? '1' : '0',
-          this._srcId, this._id, this._updateId)
+          this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         if (val === true) {
@@ -341,7 +341,7 @@ export class iSourceScreen implements ISourceScreen {
             this._checkPromise = iItem.get('screenresolution', this._id)
           } else {
             this._checkPromise = iItem.wrapGet('screenresolution', this._srcId,
-              this._id,this._updateId)
+              this._id,this._updateId.bind(this))
           }
           this._checkPromise.then(res => {
             let _res = res.split(',');
