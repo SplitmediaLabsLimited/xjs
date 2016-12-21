@@ -146,20 +146,35 @@ export interface ISourceHtml {
 
 export class iSourceHtml implements ISourceHtml{
   private _id: string;
+  private _srcId: string;
   private _isItemCall: boolean;
+  private _checkPromise;
+  private _sceneId: string;
 
-    /**
+  private _updateId(id?: string, sceneId?: string) {
+    this._id = id;
+    this._sceneId = sceneId;
+  }
+
+  /**
    * return: Promise<string>
    *
    * Gets the URL of this webpage item.
    */
   getURL(): Promise<string> {
     return new Promise(resolve => {
-      iItem.get('prop:srcitem', this._id).then(url => {
-        let _url = String(url).split('*');
-        url = _url[0];
-        resolve(url);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getURL', true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(url => {
+          let _url = String(url).split('*');
+          url = _url[0];
+          resolve(url);
+        });
     });
   }
 
@@ -175,52 +190,71 @@ export class iSourceHtml implements ISourceHtml{
    */
   setURL(value: string): Promise<iSourceHtml> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:srcitem', this._id).then(url => {
-        let _url = String(url).split('*');
-        _url[0] = value;
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setURL', true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(url => {
+          let _url = String(url).split('*');
+          _url[0] = value;
 
-        return iItem.set('prop:srcitem', _url.join('*'), this._id);
-      }).then(code => {
-        if (code) {
-          resolve(this);
-        } else {
-          reject('Invalid value');
-        }
-      });
+          return iItem.set('prop:srcitem', _url.join('*'), this._id);
+        }).then(code => {
+          if (code) {
+            resolve(this);
+          } else {
+            reject('Invalid value');
+          }
+        });
     });
   }
 
 
   isBrowserTransparent(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isBrowserTransparent', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:BrowserTransparent', this._id).then(isTransparent => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isBrowserTransparent', true)
+        this._checkPromise = iItem.get('prop:BrowserTransparent', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:BrowserTransparent', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(isTransparent => {
         resolve(isTransparent === '1');
       });
     });
   }
 
   enableBrowserTransparency(value: boolean): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'enableBrowserTransparency', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
-        this._id).then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'enableBrowserTransparency', true)
+        this._checkPromise = iItem.set('prop:BrowserTransparent', (value ? '1' : '0'),
+        this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:BrowserTransparent', (value ? '1' : '0'),
+        this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
     });
   }
 
   getBrowserCustomSize(): Promise<Rectangle> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getBrowserCustomSize', true)
-    }
     return new Promise(resolve => {
       let customSize;
-      iItem.get('prop:BrowserSize', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getBrowserCustomSize', true)
+        this._checkPromise = iItem.get('prop:BrowserSize', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(
@@ -236,50 +270,64 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   setBrowserCustomSize(value: Rectangle): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setBrowserCustomSize', true)
-    }
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
       value.setWidth(value.getWidth() * window.devicePixelRatio);
       value.setHeight(value.getHeight() * window.devicePixelRatio);
 
-      iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
-        .then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setBrowserCustomSize', true)
+        this._checkPromise = iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
     });
   }
 
   getAllowRightClick(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getAllowRightClick', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:BrowserRightClick', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getAllowRightClick', true)
+        this._checkPromise = iItem.get('prop:BrowserRightClick', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setAllowRightClick(value: boolean): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setAllowRightClick', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-        .then(() => {
-          resolve(this);
-        });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setAllowRightClick', true)
+        this._checkPromise = iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+         resolve(this);
+      });
     });
   }
 
   getBrowserJS(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getBrowserJS', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getBrowserJS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
         let customJS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -296,13 +344,17 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   setBrowserJS(value: string, refresh = false): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setBrowserJS', true)
-    }
     return new Promise((resolve, reject) => {
       let customObject = {};
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setBrowserJS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
 
-      iItem.get('prop:custom', this._id).then(custom => {
+      this._checkPromise.then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -356,11 +408,15 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   isBrowserJSEnabled(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isBrowserJSEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isBrowserJSEnabled', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -377,13 +433,17 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   enableBrowserJS(value: boolean): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'enableBrowserJS', true)
-    }
     return new Promise((resolve, reject) => {
       let customObject = {};
 
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'enableBrowserJS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -448,11 +508,15 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   getCustomCSS(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getCustomCSS', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getCustomCSS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
         let customCSS = '';
         try {
           let customObject = JSON.parse(custom);
@@ -469,13 +533,17 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   setCustomCSS(value: string): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setCustomCSS', true)
-    }
     return new Promise((resolve, reject) => {
       let customObject = {};
 
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setCustomCSS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
 
         let customJS = '';
         let customCSS = '';
@@ -534,11 +602,15 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   isCustomCSSEnabled(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isCustomCSSEnabled', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isCustomCSSEnabled', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
         let enabled = true;
         try {
           let customObject = JSON.parse(custom);
@@ -555,13 +627,17 @@ export class iSourceHtml implements ISourceHtml{
   }
 
   enableCustomCSS(value: boolean): Promise<iSourceHtml> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'enableCustomCSS', true)
-    }
     return new Promise((resolve, reject) => {
       let customObject = {};
 
-      iItem.get('prop:custom', this._id).then(custom => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'enableCustomCSS', true)
+        this._checkPromise = iItem.get('prop:custom', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:custom', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(custom => {
 
         let customJS = '';
         let customCSS = '';

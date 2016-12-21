@@ -16,13 +16,25 @@ export interface ISourceMedia {
 export class SourceMedia implements ISourceMedia {
   private _id: string;
   private _isItemCall: boolean;
+  private _srcId: string;
+  private _checkPromise;
+  private _sceneId: string;
+
+  private _updateId(id?: string, sceneId?: string) {
+    this._id = id;
+    this._sceneId = sceneId;
+  }
 
   getFileInfo(): Promise<Object> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getFileInfo', true)
-    }
     return new Promise((resolve, reject) => {
-      iItem.get('FileInfo', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getFileInfo', true)
+        this._checkPromise = iItem.get('FileInfo', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('FileInfo', this._srcId,
+          this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
         try {
           let fileInfoObj: Object = {};
           let fileInfoJXON = JXON.parse(val);

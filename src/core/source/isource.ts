@@ -138,14 +138,12 @@ export class iSource implements ISource{
   private _sceneId: string;
   private _srcId: string;
 
-  private _updateId(id: string) {
+  private _updateId(id?: string, sceneId?: string) {
     this._id = id;
+    this._sceneId = sceneId;
   }
 
   setName(value: string): Promise <iSource> {
-    if(this._isItemCall) {
-      Logger.warn('sourceWarning', 'setName', true)
-    }
     return new Promise(resolve => {
       this._name = value;
 
@@ -164,10 +162,17 @@ export class iSource implements ISource{
 
           itemsArray.forEach(itemId => {
             promiseArray.push(new Promise(itemResolve => {
-              iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId)
-              .then(() => {
-                itemResolve(true);
-              });
+              if (this._isItemCall){
+                Logger.warn('sourceWarning', 'setName', true)
+                iItem.set('prop:name', this._name, itemId).then(() => {
+                  itemResolve(true);
+                });
+              } else {
+                iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId.bind(this))
+                .then(() => {
+                  itemResolve(true);
+                });
+              }
             }));
           });
 
@@ -180,65 +185,98 @@ export class iSource implements ISource{
   }
 
   getName(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getName',  true)
-    }
     return new Promise(resolve => {
-      iItem.wrapGet('prop:name', this._srcId, this._id, this._updateId)
-      .then(val => {
-        this._name = String(val);
-        resolve(val);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getName',  true)
+        iItem.get('prop:name', this._id).then(val => {
+          this._name = val;
+          resolve(val);
+        })
+      } else {
+        iItem.wrapGet('prop:name', this._srcId, this._id, this._updateId.bind(this).bind(this))
+        .then(val => {
+          this._name = String(val);
+          resolve(val);
+        });
+      }
     });
   }
 
   setCustomName(value: string): Promise<Source> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setCustomName', true)
-    }
     return new Promise(resolve => {
       this._cname = value;
-      iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId)
-      .then(() => {
-        resolve(this);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setCustomName', true)
+        iItem.set('prop:cname', this._cname, this._id)
+        .then(() => {
+          resolve(this);
+        });
+      } else {
+        iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId.bind(this))
+        .then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
   getCustomName(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getCustomName', true)
-    }
     return new Promise(resolve => {
-      iItem.wrapGet('prop:cname', this._srcId, this._id, this._updateId)
-      .then(val => {
-        resolve(val);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getCustomName', true)
+        iItem.get('prop:cname', this._id)
+        .then(val => {
+          resolve(val);
+        });
+      } else {
+        iItem.wrapGet('prop:cname', this._srcId, this._id, this._updateId.bind(this))
+        .then(val => {
+          resolve(val);
+        });
+      }
     });
   }
 
   getValue(): Promise<string | XML> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getValue', true)
-    }
     return new Promise(resolve => {
-      iItem.wrapGet('prop:srcitem', this._srcId, this._id, this._updateId)
-      .then(val => {
-        val = (val === 'null') ? '' : val;
-        if (val === '') { // don't return XML for null values
-          this._value = '';
-          resolve(val);
-        } else {
-          try {
-            this._value = XML.parseJSON(JXON.parse(val));
-            resolve(this._value);
-          } catch (e) {
-            // value is not valid XML (it is a string instead)
-            this._value = val;
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getValue', true)
+        iItem.get('prop:srcitem', this._id)
+        .then(val => {
+          val = (val === 'null') ? '' : val;
+          if (val === '') { // don't return XML for null values
+            this._value = '';
             resolve(val);
+          } else {
+            try {
+              this._value = XML.parseJSON(JXON.parse(val));
+              resolve(this._value);
+            } catch (e) {
+              // value is not valid XML (it is a string instead)
+              this._value = val;
+              resolve(val);
+            }
           }
-        }
-      });
+        });
+      } else {
+        iItem.wrapGet('prop:srcitem', this._srcId, this._id, this._updateId.bind(this))
+        .then(val => {
+          val = (val === 'null') ? '' : val;
+          if (val === '') { // don't return XML for null values
+            this._value = '';
+            resolve(val);
+          } else {
+            try {
+              this._value = XML.parseJSON(JXON.parse(val));
+              resolve(this._value);
+            } catch (e) {
+              // value is not valid XML (it is a string instead)
+              this._value = val;
+              resolve(val);
+            }
+          }
+        });
+      }
     });
   }
 
@@ -254,30 +292,41 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
-      iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId)
-      .then(() => {
-        resolve(this);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setValue', true)
+        iItem.set('prop:srcitem', val, this._id)
+        .then(() => {
+          resolve(this);
+        });
+      } else {
+        iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId.bind(this))
+        .then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
   getKeepLoaded(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getKeepLoaded', true)
-    }
     return new Promise(resolve => {
-      iItem.wrapGet('prop:keeploaded', this._srcId, this._id, this._updateId)
-      .then(val => {
-        this._keepLoaded = (val === '1');
-        resolve(this._keepLoaded);
-      });
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getKeepLoaded', true)
+        iItem.get('prop:keeploaded', this._id)
+        .then(val => {
+          this._keepLoaded = (val === '1');
+          resolve(this._keepLoaded);
+        });
+      } else {
+        iItem.wrapGet('prop:keeploaded', this._srcId, this._id, this._updateId.bind(this))
+        .then(val => {
+          this._keepLoaded = (val === '1');
+          resolve(this._keepLoaded);
+        });
+      }
     });
   }
 
   setKeepLoaded(value: boolean): Promise<Source> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setKeepLoaded', true)
-    }
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
@@ -286,11 +335,19 @@ export class iSource implements ISource{
         .lessThan(globalsrcMinVersion)) {
         iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
       }
-      iItem.wrapSet('prop:keeploaded', (this._keepLoaded ? '1' : '0'),
-        this._id, this._srcId, this._updateId)
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setKeepLoaded', true)
+        iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
         .then(() => {
           resolve(this);
         });
+      } else {
+        iItem.wrapSet('prop:keeploaded', (this._keepLoaded ? '1' : '0'),
+          this._id, this._srcId, this._updateId.bind(this))
+        .then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -302,7 +359,7 @@ export class iSource implements ISource{
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           reject(new Error('Only available on versions above ' + minVersion));
         } else {
-        iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId)
+        iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
         .then(srcid => {
             resolve(srcid);
           });
@@ -332,34 +389,62 @@ export class iSource implements ISource{
           resolve(itemArray);
         });
       } else {
-        iItem.wrapGet('itemlist', this._srcId, this._id, this._updateId)
-        .then(itemlist => {
-          const promiseArray: Promise<iSource>[] = [];
-          const itemsArray = String(itemlist).split(',');
+        if (this._isItemCall) {
+          iItem.get('itemlist', this._id)
+          .then(itemlist => {
+            const promiseArray: Promise<iSource>[] = [];
+            const itemsArray = String(itemlist).split(',');
 
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
+            itemsArray.forEach(itemId => {
+              promiseArray.push(new Promise(itemResolve => {
+                Scene.searchItemsById(itemId).then(item => {
+                  itemResolve(item);
+                }).catch(() => itemResolve(null));
+              }));
+            });
 
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
+            Promise.all(promiseArray).then(results => {
+              resolve(results.filter(res => res !== null));
+            });
           });
-        });
+        } else {
+          iItem.wrapGet('itemlist', this._srcId, this._id, this._updateId.bind(this))
+          .then(itemlist => {
+            const promiseArray: Promise<iSource>[] = [];
+            const itemsArray = String(itemlist).split(',');
+
+            itemsArray.forEach(itemId => {
+              promiseArray.push(new Promise(itemResolve => {
+                Scene.searchItemsById(itemId).then(item => {
+                  itemResolve(item);
+                }).catch(() => itemResolve(null));
+              }));
+            });
+
+            Promise.all(promiseArray).then(results => {
+              resolve(results.filter(res => res !== null));
+            });
+          });
+        }
       }
     })
   }
 
   getType(): Promise<number> {
     return new Promise(resolve => {
-      iItem.wrapGet('prop:type', this._srcId, this._id, this._updateId)
-      .then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
-        resolve(this._type);
-      });
+      if(this._isItemCall) {
+        iItem.get('prop:type', this._id)
+        .then(val => {
+          this._type = ItemTypes[ItemTypes[Number(val)]];
+          resolve(this._type);
+        });
+      } else {
+        iItem.wrapGet('prop:type', this._srcId, this._id, this._updateId.bind(this))
+        .then(val => {
+          this._type = ItemTypes[ItemTypes[Number(val)]];
+          resolve(this._type);
+        });
+      }
     });
   }
 
