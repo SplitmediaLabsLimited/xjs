@@ -139,14 +139,18 @@ describe('Source ===', function() {
           .getElementsByTagName('configuration')[0];
         var selected = '[id="' + attachedId  + '"]';
         var itemSelected = placements.querySelector(selected);
-        var srcid = itemSelected.getAttribute('srcid');
-        var sourcesLinkedSelector = '[srcid="' + srcid  + '"]';
-        var sourcesLinked = placements.querySelectorAll(sourcesLinkedSelector);
-        var sourcesLinkedArray = [];
-        for (var i = 0; i < sourcesLinked.length; i++) {
-          sourcesLinkedArray.push(sourcesLinked[i].getAttribute('id'));
+        if (itemSelected !== null) {
+          var srcid = itemSelected.getAttribute('srcid');
+          var sourcesLinkedSelector = '[srcid="' + srcid  + '"]';
+          var sourcesLinked = placements.querySelectorAll(sourcesLinkedSelector);
+          var sourcesLinkedArray = [];
+          for (var i = 0; i < sourcesLinked.length; i++) {
+            sourcesLinkedArray.push(sourcesLinked[i].getAttribute('id'));
+          }
+          xCallback(asyncId, sourcesLinkedArray.toString());
+        } else {
+          xCallback(asyncId, 'null');
         }
-        xCallback(asyncId, sourcesLinkedArray.toString());
       } else {
         var placements = parseXml(mockPresetConfig)
           .getElementsByTagName('configuration')[0];
