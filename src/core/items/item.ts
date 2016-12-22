@@ -400,11 +400,7 @@ export class Item extends Source implements IItemLayout, ISource {
         }
 
         Promise.all(promiseArray).then(results => {
-          if(results.length > 1) {
-            resolve(results)
-          } else {
-            resolve(results[0]);
-          }
+          resolve(results[0]);
         });
       })
     })

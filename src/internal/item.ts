@@ -68,74 +68,81 @@ export class Item {
    */
   static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
-      Item.get('itemlist', id).then(itemlist => {
-        return new Promise<string>(resolveInner => {
-          const itemsArray = itemlist.split(',');
-          let secondJsonArr = [];
-          if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
-            resolveInner(itemsArray[0]);
-          } else {
-            let idMatch, sceneMatch;
-            iApp.getAsList('presetconfig')
-            .then(jsonArr => {
-              for (var i = 0; i < jsonArr.length; i++) {
-                if (jsonArr[i].children !== undefined) {
-                  for (var j = 0; j <  jsonArr[i].children.length; j++) {
-                    if (jsonArr[i].children[j]['srcid'] === srcId) {
-                      sceneMatch = i;
-                      idMatch = jsonArr[i].children[j]['id'];
-                      break;
-                    }
-                  }
-                }
-                if (idMatch !== undefined) {
-                  break;
-                }
-              }
-              if (idMatch !== undefined) {
-                return new Promise<string>( previewResolve => {
-                  previewResolve('');
-                });
-              } else {
-                return new Promise<string>( (previewResolve, previewReject) => {
-                  iApp.getAsList('presetconfig:i12')
-                  .then(previewJSONArr => {
-                    let previewMatch = '';
-                    for (var k = 0; k < previewJSONArr.length; ++k) {
-                      if (previewJSONArr[k]['srcid'] === srcId) {
-                        previewMatch = previewJSONArr[k]['id'];
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(minVersion)) {
+        Item.get(name, id).then(val => {
+          resolve(val);
+        });        
+      } else {
+        Item.get('itemlist', id).then(itemlist => {
+          return new Promise<string>(resolveInner => {
+            const itemsArray = itemlist.split(',');
+            let secondJsonArr = [];
+            if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
+              resolveInner(itemsArray[0]);
+            } else {
+              let idMatch, sceneMatch;
+              iApp.getAsList('presetconfig')
+              .then(jsonArr => {
+                for (var i = 0; i < jsonArr.length; i++) {
+                  if (jsonArr[i].children !== undefined) {
+                    for (var j = 0; j <  jsonArr[i].children.length; j++) {
+                      if (jsonArr[i].children[j]['srcid'] === srcId) {
+                        sceneMatch = i;
+                        idMatch = jsonArr[i].children[j]['id'];
                         break;
                       }
                     }
-                    previewResolve(previewMatch);
-                  }).catch(e => {
-                    previewReject(e);
+                  }
+                  if (idMatch !== undefined) {
+                    break;
+                  }
+                }
+                if (idMatch !== undefined) {
+                  return new Promise<string>( previewResolve => {
+                    previewResolve('');
                   });
-                });
-              }
-            }).then(previewId => {
-              if (previewId !== '') {
-                idMatch = previewId;
-                sceneMatch = 'i12';
-              }
-              if (idMatch !== undefined) {
-                updateId(idMatch, sceneMatch);
-                resolveInner(idMatch);
-              } else {
+                } else {
+                  return new Promise<string>( (previewResolve, previewReject) => {
+                    iApp.getAsList('presetconfig:i12')
+                    .then(previewJSONArr => {
+                      let previewMatch = '';
+                      for (var k = 0; k < previewJSONArr.length; ++k) {
+                        if (previewJSONArr[k]['srcid'] === srcId) {
+                          previewMatch = previewJSONArr[k]['id'];
+                          break;
+                        }
+                      }
+                      previewResolve(previewMatch);
+                    }).catch(e => {
+                      previewReject(e);
+                    });
+                  });
+                }
+              }).then(previewId => {
+                if (previewId !== '') {
+                  idMatch = previewId;
+                  sceneMatch = 'i12';
+                }
+                if (idMatch !== undefined) {
+                  updateId(idMatch, sceneMatch);
+                  resolveInner(idMatch);
+                } else {
+                  resolveInner(id);
+                }
+              }).catch(e => {
                 resolveInner(id);
-              }
-            }).catch(e => {
-              resolveInner(id);
-            });
-          }
-        })
-      }).then(resultId => {
-        Item.get(name, resultId).then(val => {
-          resolve(val);
-        })
-      })
-
-    })
+              });
+            }
+          })
+        }).then(resultId => {
+          Item.get(name, resultId).then(val => {
+            resolve(val);
+          });
+        });
+      }
+    });
   }
 
   /** Get an item's local property asynchronously */
@@ -171,74 +178,81 @@ export class Item {
    */
   static wrapSet(name: string, value:string, srcId?:string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
-      Item.get('itemlist', id).then(itemlist => {
-        return new Promise<string>(resolveInner => {
-          const itemsArray = itemlist.split(',');
-          let secondJsonArr = [];
-          if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
-            resolveInner(itemsArray[0]);
-          } else {
-            let idMatch, sceneMatch;
-            iApp.getAsList('presetconfig')
-            .then(jsonArr => {
-              for (var i = 0; i < jsonArr.length; i++) {
-                if (jsonArr[i].children !== undefined) {
-                  for (var j = 0; j <  jsonArr[i].children.length; j++) {
-                    if (jsonArr[i].children[j]['srcid'] === srcId) {
-                      sceneMatch = i;
-                      idMatch = jsonArr[i].children[j]['id'];
-                      break;
-                    }
-                  }
-                }
-                if (idMatch !== undefined) {
-                  break;
-                }
-              }
-              if (idMatch !== undefined) {
-                return new Promise<string>( previewResolve => {
-                  previewResolve('');
-                });
-              } else {
-                return new Promise<string>( (previewResolve, previewReject) => {
-                  iApp.getAsList('presetconfig:i12')
-                  .then(previewJSONArr => {
-                    let previewMatch = '';
-                    for (var k = 0; k < previewJSONArr.length; ++k) {
-                      if (previewJSONArr[k]['srcid'] === srcId) {
-                        previewMatch = previewJSONArr[k]['id'];
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(minVersion)) {
+        Item.set(name, value, id).then(val => {
+          resolve(val);
+        });       
+      } else {
+        Item.get('itemlist', id).then(itemlist => {
+          return new Promise<string>(resolveInner => {
+            const itemsArray = itemlist.split(',');
+            let secondJsonArr = [];
+            if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
+              resolveInner(itemsArray[0]);
+            } else {
+              let idMatch, sceneMatch;
+              iApp.getAsList('presetconfig')
+              .then(jsonArr => {
+                for (var i = 0; i < jsonArr.length; i++) {
+                  if (jsonArr[i].children !== undefined) {
+                    for (var j = 0; j <  jsonArr[i].children.length; j++) {
+                      if (jsonArr[i].children[j]['srcid'] === srcId) {
+                        sceneMatch = i;
+                        idMatch = jsonArr[i].children[j]['id'];
                         break;
                       }
                     }
-                    previewResolve(previewMatch);
-                  }).catch(e => {
-                    previewReject(e);
+                  }
+                  if (idMatch !== undefined) {
+                    break;
+                  }
+                }
+                if (idMatch !== undefined) {
+                  return new Promise<string>( previewResolve => {
+                    previewResolve('');
                   });
-                });
-              }
-            }).then(previewId => {
-              if (previewId !== '') {
-                idMatch = previewId;
-                sceneMatch = 'i12';
-              }
-              if (idMatch !== undefined) {
-                updateId(idMatch, sceneMatch);
-                resolveInner(idMatch);
-              } else {
+                } else {
+                  return new Promise<string>( (previewResolve, previewReject) => {
+                    iApp.getAsList('presetconfig:i12')
+                    .then(previewJSONArr => {
+                      let previewMatch = '';
+                      for (var k = 0; k < previewJSONArr.length; ++k) {
+                        if (previewJSONArr[k]['srcid'] === srcId) {
+                          previewMatch = previewJSONArr[k]['id'];
+                          break;
+                        }
+                      }
+                      previewResolve(previewMatch);
+                    }).catch(e => {
+                      previewReject(e);
+                    });
+                  });
+                }
+              }).then(previewId => {
+                if (previewId !== '') {
+                  idMatch = previewId;
+                  sceneMatch = 'i12';
+                }
+                if (idMatch !== undefined) {
+                  updateId(idMatch, sceneMatch);
+                  resolveInner(idMatch);
+                } else {
+                  resolveInner(id);
+                }
+              }).catch(e => {
                 resolveInner(id);
-              }
-            }).catch(e => {
-              resolveInner(id);
-            });
-          }
-        })
-      }).then(resultId => {
-        Item.set(name, value, resultId).then(val => {
-          resolve(val);
-        })
-      })
-
-    })
+              });
+            }
+          })
+        }).then(resultId => {
+          Item.set(name, value, resultId).then(val => {
+            resolve(val);
+          });
+        });
+      }      
+    });
   }
 
   /** Sets an item's local property */
