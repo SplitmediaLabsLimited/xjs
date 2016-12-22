@@ -72,22 +72,61 @@ export class Item {
         return new Promise<string>(resolveInner => {
           const itemsArray = itemlist.split(',');
           let secondJsonArr = [];
-          if ((itemsArray.length >= 1) && (itemsArray[0] !== 'null')) {
+          if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
             resolveInner(itemsArray[0]);
           } else {
+            let idMatch, sceneMatch;
             iApp.getAsList('presetconfig')
             .then(jsonArr => {
               for (var i = 0; i < jsonArr.length; i++) {
                 if (jsonArr[i].children !== undefined) {
                   for (var j = 0; j <  jsonArr[i].children.length; j++) {
                     if (jsonArr[i].children[j]['srcid'] === srcId) {
-                      updateId(jsonArr[i].children[j]['id'], i)
-                      resolveInner(jsonArr[i].children[j]['id']);
-                     }
+                      sceneMatch = i;
+                      idMatch = jsonArr[i].children[j]['id'];
+                      break;
+                    }
                   }
                 }
+                if (idMatch !== undefined) {
+                  break;
+                }
               }
-            })
+              if (idMatch !== undefined) {
+                return new Promise<string>( previewResolve => {
+                  previewResolve('');
+                });
+              } else {
+                return new Promise<string>( (previewResolve, previewReject) => {
+                  iApp.getAsList('presetconfig:i12')
+                  .then(previewJSONArr => {
+                    let previewMatch = '';
+                    for (var k = 0; k < previewJSONArr.length; ++k) {
+                      if (previewJSONArr[k]['srcid'] === srcId) {
+                        previewMatch = previewJSONArr[k]['id'];
+                        break;
+                      }
+                    }
+                    previewResolve(previewMatch);
+                  }).catch(e => {
+                    previewReject(e);
+                  });
+                });
+              }
+            }).then(previewId => {
+              if (previewId !== '') {
+                idMatch = previewId;
+                sceneMatch = 'i12';
+              }
+              if (idMatch !== undefined) {
+                updateId(idMatch, sceneMatch);
+                resolveInner(idMatch);
+              } else {
+                resolveInner(id);
+              }
+            }).catch(e => {
+              resolveInner(id);
+            });
           }
         })
       }).then(resultId => {
@@ -135,23 +174,62 @@ export class Item {
       Item.get('itemlist', id).then(itemlist => {
         return new Promise<string>(resolveInner => {
           const itemsArray = itemlist.split(',');
-          let secondJsonArr;
-          if ((itemsArray.length >= 1) && (itemsArray[0] !== 'null')) {
+          let secondJsonArr = [];
+          if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
             resolveInner(itemsArray[0]);
           } else {
+            let idMatch, sceneMatch;
             iApp.getAsList('presetconfig')
             .then(jsonArr => {
               for (var i = 0; i < jsonArr.length; i++) {
                 if (jsonArr[i].children !== undefined) {
                   for (var j = 0; j <  jsonArr[i].children.length; j++) {
                     if (jsonArr[i].children[j]['srcid'] === srcId) {
-                      updateId(jsonArr[i].children[j]['id'], i)
-                      resolveInner(jsonArr[i].children[j]['id']);
-                     }
+                      sceneMatch = i;
+                      idMatch = jsonArr[i].children[j]['id'];
+                      break;
+                    }
                   }
                 }
+                if (idMatch !== undefined) {
+                  break;
+                }
               }
-            })
+              if (idMatch !== undefined) {
+                return new Promise<string>( previewResolve => {
+                  previewResolve('');
+                });
+              } else {
+                return new Promise<string>( (previewResolve, previewReject) => {
+                  iApp.getAsList('presetconfig:i12')
+                  .then(previewJSONArr => {
+                    let previewMatch = '';
+                    for (var k = 0; k < previewJSONArr.length; ++k) {
+                      if (previewJSONArr[k]['srcid'] === srcId) {
+                        previewMatch = previewJSONArr[k]['id'];
+                        break;
+                      }
+                    }
+                    previewResolve(previewMatch);
+                  }).catch(e => {
+                    previewReject(e);
+                  });
+                });
+              }
+            }).then(previewId => {
+              if (previewId !== '') {
+                idMatch = previewId;
+                sceneMatch = 'i12';
+              }
+              if (idMatch !== undefined) {
+                updateId(idMatch, sceneMatch);
+                resolveInner(idMatch);
+              } else {
+                resolveInner(id);
+              }
+            }).catch(e => {
+              resolveInner(id);
+            });
           }
         })
       }).then(resultId => {
