@@ -18,6 +18,7 @@ describe('Source ===', function() {
   var attachedId;
   var itemDeleted = false;
   var deletedId;
+  var isOtherSource = false;
 
   var hasDuplicates = function(array) {
     return (new Set(array)).size !== array.length;
@@ -216,7 +217,7 @@ describe('Source ===', function() {
     deletedId = '';
     spyOn(window.external, 'GetLocalPropertyAsync')
     .and.callFake(function(funcName) {
-      if (environment.isSourcePlugin()) {
+      if (environment.isSourcePlugin() !isOtherSource) {
         return getLocalSource(funcName);
       } else {
         return getLocal(funcName);
@@ -443,9 +444,11 @@ describe('Source ===', function() {
             return testSource.getName();
           }).then(function(name) {
             testName = name;
+            isOtherSource = true;
             return otherSource.getName();
-          }).then(function(name) {
-            otherName = name;
+          }).then(function(otherName1) {
+            isOtherSource = false;
+            otherName = otherName1;
             expect(testName).toBeDefined();
             expect(testName).toBeTypeOf('string');
             expect(otherName).toBeDefined();
@@ -453,14 +456,18 @@ describe('Source ===', function() {
             expect(testName).not.toEqual(otherName);
             return testSource.setName(randomTest);
           }).then(function() {
+            isOtherSource = true;
             return otherSource.setName(randomOther);
           }).then(function() {
+            isOtherSource = false;
             return testSource.getName();
-          }).then(function(name) {
-            testName = name;
+          }).then(function(name2) {
+            testName = name2;
+            isOtherSource = true;
             return otherSource.getName();
-          }).then(function(name) {
-            otherName = name;
+            isOtherSource = false;
+          }).then(function(otherName2) {
+            otherName = otherName2;
             expect(testName).not.toEqual(otherName);
             expect(testName).toEqual(randomTest);
             expect(otherName).toEqual(randomOther);
@@ -499,60 +506,57 @@ describe('Source ===', function() {
     });
 
     it('which still proceeds even if original item is deleted', function(done) {
-
       execEnvironments(function(nextEnvironment) {
-        exec(function(next) {
-          itemDeleted = false;
-          mockPresetConfig = initialMockPresetConfig;
-          presetObj = convertPresetStringToPresetObject(mockPresetConfig);
-          var promise;
-          // remove attachedId to properly mirror behavior of calling without attaching
-          attachedId = '';
-          local = {};
-          if (!environment.isExtension()
-            && navigator.appVersion !== 'XSplit Broadcaster 2.7.1702.2231 ') {
-            promise = new Promise(function(resolve) {
-              Source.getCurrentSource().then(function(source) {
-                resolve(source);
-              });
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.9.1611.1623 ';
+        });
+        itemDeleted = false;
+        mockPresetConfig = initialMockPresetConfig;
+        presetObj = convertPresetStringToPresetObject(mockPresetConfig);
+        var promise;
+        // remove attachedId to properly mirror behavior of calling without attaching
+        attachedId = '';
+        local = {};
+        if (!environment.isExtension()) {
+          promise = new Promise(function(resolve) {
+            Source.getCurrentSource().then(function(source) {
+              resolve(source);
             });
-          } else {
-            promise = new Promise(function(resolve) {
-              Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
-              .then(function(item) {
-                return item.getSource();
-              }).then(function(source) {
-                resolve(source);
-              });
-            });
-          }
-
-          var sourceForItemDeletion;
-          var initialID;
-          var initialName;
-          var finalID;
-          var finalName;
-          promise.then(function(source) {
-            sourceForItemDeletion = source;
-            initialID = sourceForItemDeletion._id;
-            deletedId = sourceForItemDeletion._id;
-            return sourceForItemDeletion.getName();
-          }).then(function(name) {
-            initialName = name;
-            // simulate deletion of item (this time by deleting whole scene)
-            itemDeleted = true;
-            mockPresetConfig = replacePlacementWithID(mockPresetConfig, deletedId);
-            return sourceForItemDeletion.getName();
-          }).then(function(name) {
-            finalName = name;
-            finalID = sourceForItemDeletion._id;
-            expect(initialName).toEqual(finalName);
-            expect(initialID).not.toEqual(finalID);
-            next();
           });
+        } else {
+          promise = new Promise(function(resolve) {
+            Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
+            .then(function(item) {
+              return item.getSource();
+            }).then(function(source) {
+              resolve(source);
+            });
+          });
+        }
 
-
-        }).then(nextEnvironment);
+        var sourceForItemDeletion;
+        var initialID;
+        var initialName;
+        var finalID;
+        var finalName;
+        promise.then(function(source) {
+          sourceForItemDeletion = source;
+          initialID = sourceForItemDeletion._id;
+          deletedId = sourceForItemDeletion._id;
+          return sourceForItemDeletion.getName();
+        }).then(function(name) {
+          initialName = name;
+          // simulate deletion of item (this time by deleting whole scene)
+          itemDeleted = true;
+          mockPresetConfig = replacePlacementWithID(mockPresetConfig, deletedId);
+          return sourceForItemDeletion.getName();
+        }).then(function(name) {
+          finalName = name;
+          finalID = sourceForItemDeletion._id;
+          expect(initialName).toEqual(finalName);
+          expect(initialID).not.toEqual(finalID);
+          nextEnvironment();
+        });
       }).then(done);
     });
   });
