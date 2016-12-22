@@ -168,7 +168,7 @@ export class iSource implements ISource{
                   itemResolve(true);
                 });
               } else {
-                iItem.wrapSet('prop:name', this._name, itemId, this._srcId, this._updateId.bind(this))
+                iItem.wrapSet('prop:name', this._name, this._srcId, itemId, this._updateId.bind(this))
                 .then(() => {
                   itemResolve(true);
                 });
@@ -212,7 +212,7 @@ export class iSource implements ISource{
           resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:cname', this._cname, this._id, this._srcId, this._updateId.bind(this))
+        iItem.wrapSet('prop:cname', this._cname, this._srcId, this._id, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -299,7 +299,7 @@ export class iSource implements ISource{
           resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:srcitem', val, this._id, this._srcId, this._updateId.bind(this))
+        iItem.wrapSet('prop:srcitem', val, this._srcId, this._id, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -343,7 +343,7 @@ export class iSource implements ISource{
         });
       } else {
         iItem.wrapSet('prop:keeploaded', (this._keepLoaded ? '1' : '0'),
-          this._id, this._srcId, this._updateId.bind(this))
+          this._srcId, this._id, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
