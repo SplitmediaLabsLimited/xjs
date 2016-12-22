@@ -11,11 +11,13 @@ describe('Source ===', function() {
   var environments = ['props', 'extension', 'plugin'];
   var environment = xjs.Environment;
   var appVersion = navigator.appVersion;
+  var initialMockPresetConfig = '<configuration cur="4"><placement name="Scene 1" defpos="2"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{C878A0BF-F03A-4274-9398-EBD638D07680}" srcid="{60A168F5-A726-4B55-8AD9-BDD4D88258E2}" type="8" name="http://localhost/XJS/test/functional/test.html" cname="" item="http://localhost/XJS/test/functional/test.html*{&quot;configUrl&quot;:&quot;http://localhost/XJS/test/functional/test.html&quot;}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="1" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="640" BrowserSizeY="360" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="BrowserSize">0,0</presproperty><presproperty __map_id="BrowserSizeOnSet">640,360</presproperty></item><item pos_left="0.562500" pos_top="0.000000" pos_right="0.937500" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}" srcid="{4FB8159F-2846-42FB-B2E7-4294E973FFEE}" type="2" name="Elgato Game Capture HD" cname="" item="clsid:{39F50F4C-99E1-464A-B6F9-D605B4FB5918}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="0" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="logitechcanrecommend">0</presproperty></item></placement><placement name="Scene 2" defpos="0"/><placement name="Scene 3" defpos="0"/><placement name="Scene 4" defpos="0"/><placement name="Scene 5" defpos="1"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{5E4279F7-BF64-448B-B953-A54F1315AFE1}" srcid="{60A168F5-A726-4B55-8AD9-BDD4D88258E2}" type="8" name="http://localhost/XJS/test/functional/test.html" cname="" item="http://localhost/XJS/test/functional/test.html*{&quot;configUrl&quot;:&quot;http://localhost/XJS/test/functional/test.html&quot;}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="1" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="640" BrowserSizeY="360" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="BrowserSize">0,0</presproperty><presproperty __map_id="BrowserSizeOnSet">640,360</presproperty></item></placement><global><camera id="obj-moniker-clsid:{39f50f4c-99e1-464a-b6f9-d605b4fb5918}" width="0" height="0" frametime="0" videosubtype="{00000000-0000-0000-0000-000000000000}" xbarroute1="" xbarroute2="" vpersist="" apersist=""/></global><scriptproperty __map_id="http%3A%2F%2Flocalhost%2FScript_Plugin%2Fwebm-encoder%2Froot%2Fbase.html%3Ftakte"><presproperty __map_id="webm_encoder_HKhTV2LMuWwefbNr0GkJQw==">{"destinationPath":"F:\\Videos\\","showAdvancedSettings":true,"frameRatePNG":"30","frameRateMOV":"Auto","videoBitrate":"10000","audioBitrate":"128","keyFrameInterval":"Auto","customFPSValues":[]}</presproperty></scriptproperty></configuration>';
   var mockPresetConfig = '<configuration cur="4"><placement name="Scene 1" defpos="2"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{C878A0BF-F03A-4274-9398-EBD638D07680}" srcid="{60A168F5-A726-4B55-8AD9-BDD4D88258E2}" type="8" name="http://localhost/XJS/test/functional/test.html" cname="" item="http://localhost/XJS/test/functional/test.html*{&quot;configUrl&quot;:&quot;http://localhost/XJS/test/functional/test.html&quot;}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="1" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="640" BrowserSizeY="360" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="BrowserSize">0,0</presproperty><presproperty __map_id="BrowserSizeOnSet">640,360</presproperty></item><item pos_left="0.562500" pos_top="0.000000" pos_right="0.937500" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}" srcid="{4FB8159F-2846-42FB-B2E7-4294E973FFEE}" type="2" name="Elgato Game Capture HD" cname="" item="clsid:{39F50F4C-99E1-464A-B6F9-D605B4FB5918}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="0" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="logitechcanrecommend">0</presproperty></item></placement><placement name="Scene 2" defpos="0"/><placement name="Scene 3" defpos="0"/><placement name="Scene 4" defpos="0"/><placement name="Scene 5" defpos="1"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{5E4279F7-BF64-448B-B953-A54F1315AFE1}" srcid="{60A168F5-A726-4B55-8AD9-BDD4D88258E2}" type="8" name="http://localhost/XJS/test/functional/test.html" cname="" item="http://localhost/XJS/test/functional/test.html*{&quot;configUrl&quot;:&quot;http://localhost/XJS/test/functional/test.html&quot;}" itemaudio="" volume="100" mute="0" sounddev="0" fdeinterlace="0" mipmaps="0" autoresdet="1" keeploaded="1" cc_pin="0" key_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:0.970000&amp;str:0.900000&amp;rad:0.070000&amp;color:2155905152&amp;trail:0.000000&amp;filtering:0.000000&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" LastRunState="-1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="640" BrowserSizeY="360" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="BrowserSize">0,0</presproperty><presproperty __map_id="BrowserSizeOnSet">640,360</presproperty></item></placement><global><camera id="obj-moniker-clsid:{39f50f4c-99e1-464a-b6f9-d605b4fb5918}" width="0" height="0" frametime="0" videosubtype="{00000000-0000-0000-0000-000000000000}" xbarroute1="" xbarroute2="" vpersist="" apersist=""/></global><scriptproperty __map_id="http%3A%2F%2Flocalhost%2FScript_Plugin%2Fwebm-encoder%2Froot%2Fbase.html%3Ftakte"><presproperty __map_id="webm_encoder_HKhTV2LMuWwefbNr0GkJQw==">{"destinationPath":"F:\\Videos\\","showAdvancedSettings":true,"frameRatePNG":"30","frameRateMOV":"Auto","videoBitrate":"10000","audioBitrate":"128","keyFrameInterval":"Auto","customFPSValues":[]}</presproperty></scriptproperty></configuration>';
   var presetObj = {};
   var local = {};
   var attachedId;
   var itemDeleted = false;
+  var deletedId;
 
   var hasDuplicates = function(array) {
     return (new Set(array)).size !== array.length;
@@ -62,6 +64,10 @@ describe('Source ===', function() {
     return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
+  var serializeXml = function(xml) {
+    return ( new window.XMLSerializer() ).serializeToString(xml);
+  };
+
   var convertPresetStringToPresetObject = function(presetString) {
     var tempPresetObj = {};
     var presetXML = parseXml(mockPresetConfig);
@@ -71,6 +77,17 @@ describe('Source ===', function() {
       tempPresetObj[i.toString()] = scenesArray[i].outerHTML;
     }
     return tempPresetObj;
+  };
+
+  var replacePlacementWithID = function(preset, id) {
+    var tempPresetObj = {};
+    var presetXML = parseXml(mockPresetConfig);
+    var itemForDeletion = presetXML.querySelector('item[id="' + id + '"]');
+    var sceneDeleted = itemForDeletion.parentNode;
+    var sceneDeletedName = sceneDeleted.getAttribute('name');
+    var sceneDeletedDefPos = sceneDeleted.getAttribute('defpos');
+    sceneDeleted.outerHTML = '<placement name="' + sceneDeletedName + '" defpos="'+ sceneDeletedDefPos + '"/>';
+    return serializeXml(presetXML);
   };
 
   presetObj = convertPresetStringToPresetObject(mockPresetConfig);
@@ -90,10 +107,10 @@ describe('Source ===', function() {
     }
 
     if (property === 'itemlist') {
-      if (itemDeleted) {
-        xCallback(asyncId, '');
-      } else {
+      if (deletedId !== '{C878A0BF-F03A-4274-9398-EBD638D07680}') {
         xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
+      } else {
+        xCallback(asyncId, '{5E4279F7-BF64-448B-B953-A54F1315AFE1}');
       }
     } else if (typeof local['{C878A0BF-F03A-4274-9398-EBD638D07680}'] !== 'undefined' &&
       local['{C878A0BF-F03A-4274-9398-EBD638D07680}'].hasOwnProperty(property)) {
@@ -102,10 +119,13 @@ describe('Source ===', function() {
       if (property === 'StreamPause') {
 
       } else {
-        var placements = parseXml(mockPresetConfig)
-          .getElementsByTagName('configuration')[0];
+        var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
+        var secondary = '[id="{5E4279F7-BF64-448B-B953-A54F1315AFE1}"]';
         var itemSelected = placements.querySelector(selected);
+        if (itemSelected === null) {
+          itemSelected = placements.querySelector(secondary);
+        }
         xCallback(asyncId, itemSelected.getAttribute(property));
       }
     }
@@ -122,11 +142,7 @@ describe('Source ===', function() {
 
     if (attachedId === '') {
       if (property === 'itemlist') {
-        if (itemDeleted) {
-          xCallback(asyncId, '');
-        } else {
-          xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
-        }
+        xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
       }
     } else if (typeof local[attachedId] !== 'undefined' &&
       local[attachedId].hasOwnProperty(property)) {
@@ -135,8 +151,7 @@ describe('Source ===', function() {
       if (property === 'StreamPause') {
 
       } else if (property === 'itemlist') {
-        var placements = parseXml(mockPresetConfig)
-          .getElementsByTagName('configuration')[0];
+        var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="' + attachedId  + '"]';
         var itemSelected = placements.querySelector(selected);
         if (itemSelected !== null) {
@@ -152,43 +167,12 @@ describe('Source ===', function() {
           xCallback(asyncId, 'null');
         }
       } else {
-        var placements = parseXml(mockPresetConfig)
-          .getElementsByTagName('configuration')[0];
+        var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="' + attachedId + '"]';
         var itemSelected = placements.querySelector(selected);
         xCallback(asyncId, itemSelected.getAttribute(property));
       }
     }
-
-    // if (property === 'itemaudio' && shouldFail) {
-    //   xCallback(asyncId, '');
-    // } else if (typeof local[attachedId] !== 'undefined' && local[attachedId].hasOwnProperty(
-    //   property)) {
-    //   xCallback(asyncId, local[attachedId][property]);
-    // } else {
-    //   if (property === 'StreamPause') {
-    //     xCallback(asyncId, '0');
-    //   } else if (property === 'hwencoder') {
-    //     if (shouldFail) {
-    //       xCallback(asyncId, '0');
-    //     } else {
-    //       xCallback(asyncId, '1');
-    //     }
-    //   } else if (property === 'activestate') {
-    //     if (shouldFail2) {
-    //       xCallback(asyncId, 'not_present');
-    //     } else {
-    //       xCallback(asyncId, 'active');
-    //     }
-    //   } else {
-    //     var placement = parseXml(mockPresetConfig)
-    //       .getElementsByTagName('placement')[0];
-    //     var selected = '[id="' + attachedId + '"]';
-    //     var itemSelected = placement.querySelector(selected);
-    //     xCallback(asyncId, itemSelected.getAttribute(property));
-    //   }
-    // }
-
     return asyncId;
   };
 
@@ -229,6 +213,7 @@ describe('Source ===', function() {
   };
 
   beforeEach(function() {
+    deletedId = '';
     spyOn(window.external, 'GetLocalPropertyAsync')
     .and.callFake(function(funcName) {
       if (environment.isSourcePlugin()) {
@@ -513,8 +498,62 @@ describe('Source ===', function() {
 
     });
 
-    it('which still proceeds even if original item is deleted', function() {
+    it('which still proceeds even if original item is deleted', function(done) {
 
+      execEnvironments(function(nextEnvironment) {
+        exec(function(next) {
+          itemDeleted = false;
+          mockPresetConfig = initialMockPresetConfig;
+          presetObj = convertPresetStringToPresetObject(mockPresetConfig);
+          var promise;
+          // remove attachedId to properly mirror behavior of calling without attaching
+          attachedId = '';
+          local = {};
+          if (!environment.isExtension()
+            && navigator.appVersion !== 'XSplit Broadcaster 2.7.1702.2231 ') {
+            promise = new Promise(function(resolve) {
+              Source.getCurrentSource().then(function(source) {
+                resolve(source);
+              });
+            });
+          } else {
+            promise = new Promise(function(resolve) {
+              Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
+              .then(function(item) {
+                return item.getSource();
+              }).then(function(source) {
+                resolve(source);
+              });
+            });
+          }
+
+          var sourceForItemDeletion;
+          var initialID;
+          var initialName;
+          var finalID;
+          var finalName;
+          promise.then(function(source) {
+            sourceForItemDeletion = source;
+            initialID = sourceForItemDeletion._id;
+            deletedId = sourceForItemDeletion._id;
+            return sourceForItemDeletion.getName();
+          }).then(function(name) {
+            initialName = name;
+            // simulate deletion of item (this time by deleting whole scene)
+            itemDeleted = true;
+            mockPresetConfig = replacePlacementWithID(mockPresetConfig, deletedId);
+            return sourceForItemDeletion.getName();
+          }).then(function(name) {
+            finalName = name;
+            finalID = sourceForItemDeletion._id;
+            expect(initialName).toEqual(finalName);
+            expect(initialID).not.toEqual(finalID);
+            next();
+          });
+
+
+        }).then(nextEnvironment);
+      }).then(done);
     });
   });
 });
