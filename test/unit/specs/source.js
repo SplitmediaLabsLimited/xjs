@@ -217,7 +217,7 @@ describe('Source ===', function() {
     deletedId = '';
     spyOn(window.external, 'GetLocalPropertyAsync')
     .and.callFake(function(funcName) {
-      if (environment.isSourcePlugin() !isOtherSource) {
+      if (environment.isSourcePlugin() && !isOtherSource) {
         return getLocalSource(funcName);
       } else {
         return getLocal(funcName);
@@ -226,7 +226,7 @@ describe('Source ===', function() {
 
     spyOn(window.external, 'SetLocalPropertyAsync')
     .and.callFake(function(funcName, value) {
-      if (environment.isSourcePlugin()) {
+      if (environment.isSourcePlugin() && !isOtherSource) {
         return setLocalSource(funcName, value);
       } else {
         return setLocal(funcName, value);
@@ -445,6 +445,7 @@ describe('Source ===', function() {
           }).then(function(name) {
             testName = name;
             isOtherSource = true;
+            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
             return otherSource.getName();
           }).then(function(otherName1) {
             isOtherSource = false;
@@ -457,6 +458,7 @@ describe('Source ===', function() {
             return testSource.setName(randomTest);
           }).then(function() {
             isOtherSource = true;
+            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
             return otherSource.setName(randomOther);
           }).then(function() {
             isOtherSource = false;
@@ -464,6 +466,7 @@ describe('Source ===', function() {
           }).then(function(name2) {
             testName = name2;
             isOtherSource = true;
+            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
             return otherSource.getName();
             isOtherSource = false;
           }).then(function(otherName2) {
