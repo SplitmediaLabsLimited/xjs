@@ -1,5 +1,3 @@
-import './internal/init';
-
 export * from './util/color';
 export * from './util/rectangle';
 export * from './util/io';
@@ -36,8 +34,10 @@ export * from './core/items/videoplaylist';
 
 export {MaskEffect} from './core/items/ieffects';
 export {KeyingType, ChromaPrimaryColors, ChromaAntiAliasLevel} from './core/items/ichroma';
-export {ActionAfterPlayback} from './core/items/iplayback';
-export {CuePoint} from './core/items/cuepoint';
+export {ActionAfterPlayback} from './core/source/iplayback';
+export {CuePoint} from './core/source/cuepoint';
+export {ViewTypes} from './core/items/item';
+export {ItemTypes} from './core/source/isource';
 
 export * from './system/system';
 export * from './system/audio';

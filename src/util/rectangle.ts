@@ -196,7 +196,7 @@ export class Rectangle {
    *  left, top, right, bottom.
    */
   toCoordinateString(): string {
-    if (this._left === undefined) {
+    if ([this._left, this._right, this._top, this._bottom].indexOf(undefined) > -1) {
       throw new Error('This Rectangle instance does not have coordinates.');
     } else {
       return this._left + ',' + this._top + ',' + this._right + ',' + this._bottom;

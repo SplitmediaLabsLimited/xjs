@@ -22,7 +22,10 @@ module.exports = function(config) {
       'dist/xjs.js',
       'test/unit/specs/*.js',
       'test/unit/specs/items/*.js',
-      'test/unit/specs/system/*.js'
+      'test/unit/specs/sources/*.js',
+      'test/unit/specs/system/*.js',
+      'test/unit/specs/utils/*.js',
+      'test/unit/specs/window/*.js'
     ],
 
 

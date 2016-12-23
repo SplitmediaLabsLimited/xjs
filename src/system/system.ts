@@ -135,7 +135,12 @@ export class System{
             if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
               String(device['disp']).toLowerCase() !==
               ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
-              '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase()) {
+              '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase() &&
+              String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) 3D Camera Virtual Driver').toLowerCase()) === -1 &&
+              String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) Camera SR300 Virtual Driver').toLowerCase()) === -1 &&
+              String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#').toLowerCase()) === -1 &&
+              String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#').toLowerCase()) === -1
+              ) {
               devices.push(CameraDevice.parse(device));
             }
           }

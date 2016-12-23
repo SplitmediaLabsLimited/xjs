@@ -33,9 +33,30 @@
 		},
 
 		/**
-		 * source|config|window
+		 * config|window
+		 */
+		AppSubscribeEvents: function(name) {
+
+		},
+
+		/**
+		 * config|window
+		 */
+		AppUnsubscribeEvents: function(name) {
+
+		},
+
+		/**
+		 * config|window
 		 */
 		AttachVideoItem: function(name) {
+
+		},
+
+		/**
+		 * source
+		 */
+		AttachVideoItem1: function(name) {
 
 		},
 
@@ -92,6 +113,13 @@
 		 * source
 		 */
 		CallInnerAsync2: function(name) {
+
+		},
+
+		/**
+		 * source|config|window
+		 */
+		CheckDllGrant: function(name) {
 
 		},
 
@@ -499,6 +527,20 @@
 		 */
 		SourcesListShowProps: function(name) {
 
+		},
+
+		/**
+		 * config|window
+		 */
+		SourcesListSubscribeEvents: function(name) {
+
+		},
+
+		/**
+		 * config|window
+		 */
+		SourcesListUnsubscribeEvents: function(name) {
+
 		}
 	};
 
@@ -506,3 +548,42 @@
 		window.external = MockExternal;
 
 })();
+
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+      position = position || 0;
+      return this.substr(position, searchString.length) === searchString;
+  };
+}
+
+window.global_asyncId = 0;
+
+window.randomWord = function(length) {
+  var rand;
+  var str = '';
+
+  for (var i = 0; i < length; i++) {
+    rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
+    str += String.fromCharCode(rand);
+  }
+
+  return str;
+};
+
+window.randomBoolean = function() {
+	return Math.random() >= 0.5;
+};
+
+window.randomColor = function() {
+  return '#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1,6).toUpperCase();
+};
+
+window.randomInt = function(min, max) {
+  if (typeof min === 'undefined') {
+    min = 0;
+  }
+  if (typeof max === 'undefined') {
+    max = 100;
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};

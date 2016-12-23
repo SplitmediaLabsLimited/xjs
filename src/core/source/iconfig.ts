@@ -4,8 +4,9 @@ import {Item as iItem} from '../../internal/item';
 import {Global} from '../../internal/global';
 import {exec} from '../../internal/internal';
 import {Environment} from '../environment';
+import {Logger} from '../../internal/util/logger'
 
-export interface IItemConfigurable {
+export interface ISourceConfigurable {
 
   /**
    * return: Promise<any>
@@ -17,7 +18,7 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Persists a JSON object for configuration. Available to items only.
+   * Persists a JSON object for configuration. Available to sources only.
    *
    * *Chainable.*
    */
@@ -26,7 +27,8 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Requests the item to save a configuration. This makes the item emit the save-config event.
+   * Requests the source to save a configuration. This makes the source emit
+   * the save-config event.
    *
    * *Chainable.*
    */
@@ -35,18 +37,24 @@ export interface IItemConfigurable {
   /**
    * param: config<JSON>
    *
-   * Requests the item to save a configuration. This makes the item emit the apply-config event.
+   * Requests the source to save a configuration. This makes the source emit
+   * the apply-config event.
    *
    * *Chainable.*
    */
   applyConfig(configObj: any);
 }
 
-export class ItemConfigurable {
+export class SourceConfigurable {
   private _id: string;
   private _srcId: string;
+  private _isItemCall: boolean;
 
   loadConfig(): Promise<any> {
+    let called: boolean = false;
+    if(this._isItemCall) {
+      Logger.warn('sourceWarning', 'loadConfig', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:BrowserConfiguration', this._id).then(
         config => {
@@ -61,6 +69,9 @@ export class ItemConfigurable {
   }
 
   saveConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'saveConfig', true)
+    }
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot = iItem.attach(this._id);
@@ -91,9 +102,9 @@ export class ItemConfigurable {
                 'in JSON format.'));
             }
           } else {
-            reject(Error('Items may only request other ' +
-              'Items to save a configuration. Consider ' +
-              'calling requestSaveConfig() on this Item ' +
+            reject(Error('Sources may only request other ' +
+              'Sources to save a configuration. Consider ' +
+              'calling requestSaveConfig() on this Source ' +
               'instance instead.'));
           }
         });
@@ -107,6 +118,9 @@ export class ItemConfigurable {
   }
 
   requestSaveConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'requestSaveConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 
@@ -121,6 +135,9 @@ export class ItemConfigurable {
   }
 
   applyConfig(configObj: any): Promise<any> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'applyConfig', true)
+    }
     return new Promise(resolve=> {
       let slot = iItem.attach(this._id);
 

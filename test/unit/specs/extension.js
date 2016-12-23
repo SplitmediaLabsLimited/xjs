@@ -12,26 +12,24 @@ describe('Extension Class', function() {
   };
 
   beforeEach(function(done) {
-    if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
     env.set('extension');
-      spyOn(window.external, 'SetPresProperty')
-        .and.callFake(function(presName, val) {
-          local[presName] = val;
-      });
+    spyOn(window.external, 'SetPresProperty')
+      .and.callFake(function(presName, val) {
+        local[presName] = val;
+    });
 
-      spyOn(window.external, 'GetPresProperty')
-        .and.callFake(function(presName) {
-        var rand = Math.floor(Math.random()*1000);
+    spyOn(window.external, 'GetPresProperty')
+      .and.callFake(function(presName) {
+      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
-        setTimeout(function() {
-          window.OnAsyncCallback(rand, local[presName]);
-        }, 10);
+      setTimeout(function() {
+        window.OnAsyncCallback(asyncId, local[presName]);
+      }, 10);
 
-        return rand;
-      });
+      return asyncId;
+    });
 
-      done();
-    }
+    done();
   });
 
   it('should be able to fetch its own instance', function() {
@@ -65,7 +63,7 @@ describe('Extension Class', function() {
         }
 
         done();
-    });
+      });
     } else {
       expect(extension).toBeUndefined();
       done();

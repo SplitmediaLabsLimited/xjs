@@ -3,39 +3,39 @@
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 
-export interface IItemAudio {
+export interface IAudio {
 
   /**
    * return: Promise<number>
    *
-   * Get item's volume level expressed as an integer from 0 to 100
+   * Get source's volume level expressed as an integer from 0 to 100
    */
   getVolume(): Promise<number>;
 
   /**
    * param: (value: number)
    *
-   * Set volume level of item as an integer from 0 (muted) to 100 (maximum)
+   * Set volume level of source as an integer from 0 (muted) to 100 (maximum)
    *
    * *Chainable.*
    */
-  setVolume(value: number): Promise<IItemAudio>;
+  setVolume(value: number): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
    *
-   * Check if item's mute option is active
+   * Check if source's mute option is active
    */
   isMute(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Set item's Mute property to ON or OFF
+   * Set source's Mute property to ON or OFF
    *
    * *Chainable.*
    */
-  setMute(value: boolean): Promise<IItemAudio>;
+  setMute(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -51,7 +51,7 @@ export interface IItemAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyAudio(value: boolean): Promise<IItemAudio>;
+  setStreamOnlyAudio(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -61,8 +61,9 @@ export interface IItemAudio {
   isAudioAvailable(): Promise<boolean>;
 }
 
-export class ItemAudio implements IItemAudio {
+export class Audio implements IAudio {
   private _id: string;
+  protected _isItemCall: boolean;
 
   getVolume(): Promise<number> {
     return new Promise(resolve => {
@@ -72,7 +73,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setVolume(value: number): Promise<ItemAudio> {
+  setVolume(value: number): Promise<Audio> {
     return new Promise(resolve => {
       value = value < 0 ? 0 : value > 100 ? 100 : value;
       iItem.set('prop:volume', String(value),
@@ -90,7 +91,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setMute(value: boolean): Promise<ItemAudio> {
+  setMute(value: boolean): Promise<Audio> {
     return new Promise(resolve => {
       iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -106,7 +107,7 @@ export class ItemAudio implements IItemAudio {
     });
   }
 
-  setStreamOnlyAudio(value: boolean): Promise<ItemAudio> {
+  setStreamOnlyAudio(value: boolean): Promise<Audio> {
     return new Promise(resolve => {
       iItem.set('prop:sounddev', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);

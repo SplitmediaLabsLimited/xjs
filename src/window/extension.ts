@@ -29,6 +29,7 @@ const _RESIZE = '2';
  */
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
+  static _subscriptions: string[];
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -45,8 +46,11 @@ export class ExtensionWindow extends EventEmitter {
    */
   constructor() {
     super();
-
+    if (!Environment.isExtension()) {
+      throw new Error('ExtensionWindow class is only available for extensions');
+    }
     ExtensionWindow._instance = this;
+    ExtensionWindow._subscriptions = [];
   }
 
    /**
@@ -75,21 +79,26 @@ export class ExtensionWindow extends EventEmitter {
     let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
 
     if(event === 'scene-delete' && isDeleteSceneEventFixed) {
-      
-      EventManager.subscribe("SceneDeleted", function(settingsObj) {
-        ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
-      });
-
+      if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
+        ExtensionWindow._subscriptions.push('SceneDeleted');
+        EventManager.subscribe('SceneDeleted', function(settingsObj) {
+          if (Environment.isExtension()) {
+            ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+          }
+        });
+      }
     } else if(event === 'scene-add' && isAddSceneEventFixed) {
-      
-      EventManager.subscribe("OnSceneAddByUser", function(settingsObj) {
-        Scene.getSceneCount().then(function(count){
-          ExtensionWindow.emit(event, count - 1 );
-        })        
-      });
-    
+      if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
+        ExtensionWindow._subscriptions.push('OnSceneAddByUser');
+        EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
+          Scene.getSceneCount().then(function(count){
+            if (Environment.isExtension()) {
+              ExtensionWindow.emit(event, count);
+            }
+          });
+        });
+      }
     } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
-
       //Just subscribe to the event. Emitter is already handled.
       if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
         try{          
@@ -98,15 +107,14 @@ export class ExtensionWindow extends EventEmitter {
           //This exception most probably for older versions which would work without subscribing to source list events.
         }        
       }       
-    
     } else {
-
       console.warn('Warning! The event "' + event + '" is not yet supported.');
-
     }
-
   }
 
+  static off(event: string, handler: Function) {
+    ExtensionWindow.getInstance().off(event, handler);
+  }
 
   /** param: (width: number, height: number)
    *
@@ -125,16 +133,15 @@ export class ExtensionWindow extends EventEmitter {
    */
   setTitle(value: string) {
      ExtensionWindow._value = value;
-     App.postMessage("8");
+     App.postMessage('8');
   };
 
-  
   /**
    * param (flag: number)
    *
    * Modifies this extension's window border.
    *
-   * "4" is th e base command on setting border flags.
+   * '4' is th e base command on setting border flags.
    * 
    * Flags can be:
    *     (bit 0 - enable border)
@@ -144,72 +151,78 @@ export class ExtensionWindow extends EventEmitter {
    *     (bit 4 - enable maximize btn)
    */
   setBorder(flag: number){
-    App.postMessage("4", String(flag));
+    App.postMessage('4', String(flag));
   }
 
   /**
    * Closes this extension window
    */
   close() {
-    App.postMessage("1");
+    App.postMessage('1');
   }
 
   /**
    * Disable Close Button on this extension's window
    */
   disableClose() {
-    App.postMessage("5","0")
+    App.postMessage('5','0')
   }
 
   /**
    * Enable Close Button on this extension's window
    */
   enableClose() {
-    App.postMessage("5", "1")
+    App.postMessage('5', '1')
   }
 }
 
-if (Environment.isExtension()) {
+// for extensions
+window.Setid = function(id) {
+  exec('CallHost', 'setExtensionWindowTitle:' + id, ExtensionWindow._value);
+}
 
-  window.Setid = function(id) {
-    exec("CallHost", "setExtensionWindowTitle:" + id, ExtensionWindow._value);
+window.SourcesListUpdate = (view, sources) => {
+  if (Number(view) === 0) { // main view {
+    let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
+          propsArr: JXON[] = [],
+          ids = [];
+
+    if (propsJSON.children && propsJSON.children.length > 0) {
+       propsArr = propsJSON.children;
+       for(var i=0; i < propsArr.length; i++){
+         ids.push(propsArr[i]['id']);
+       }
+    }
+
+    ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
   }
+};
 
-  window.OnSceneLoad = function(view: number, scene: number) {
+window.SourcesListHighlight = (view, id) => {
+  if (Number(view) === 0) { // main view {
+    ExtensionWindow.emit('sources-list-highlight', id === '' ?
+      null : id);
+  }
+};
+
+window.SourcesListSelect = (view, id) => {
+  if (Number(view) === 0) { // main view
+    ExtensionWindow.emit('sources-list-select', id === '' ?
+      null : id);
+  }
+};  
+
+let oldOnSceneLoad = window.OnSceneLoad;
+window.OnSceneLoad = function(...args: any[]) {
+  if (Environment.isExtension()) {
+    let view = args[0];
+    let scene = args[1];
     if (Number(view) === 0) { // only emit events when main view is changing
       ExtensionWindow.emit('scene-load', Number(scene));
     }
-  };
+  }
 
-  window.SourcesListUpdate = (view, sources) => {
-    if (view === 0) { // main view {
-      let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
-            propsArr: JXON[] = [],
-            ids = [];
-
-      if (propsJSON.children && propsJSON.children.length > 0) {
-         propsArr = propsJSON.children;
-         for(var i=0; i < propsArr.length; i++){
-           ids.push(propsArr[i]['id']);
-         }
-      }
-
-      ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
-    }
-  };
-
-  window.SourcesListHighlight = (view, id) => {
-    if (view === 0) { // main view {
-      ExtensionWindow.emit('sources-list-highlight', id === '' ?
-        null : id);
-    }
-  };
-
-  window.SourcesListSelect = (view, id) => {
-    if (view === 0) { // main view
-      ExtensionWindow.emit('sources-list-select', id === '' ?
-        null : id);
-    }
-  };  
-
+  if (oldOnSceneLoad !== undefined) {
+    oldOnSceneLoad(...args)
+  }
 }

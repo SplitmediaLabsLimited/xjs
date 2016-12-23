@@ -10,13 +10,14 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {ISourceFlash, SourceFlash} from '../source/iflash';
 
 /**
  * The FlashItem class represents a flash item, which is any SWF file
@@ -28,7 +29,7 @@ import {Environment} from '../environment';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemAudio Core/IItemAudio},
+ * {@link #core/IAudio Core/IAudio},
  * {@link #core/IItemEffect Core/IItemEffect}
  *
  *  All methods marked as *Chainable* resolve with the original `FlashItem`
@@ -37,102 +38,21 @@ import {Environment} from '../environment';
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
 export class FlashItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemAudio, IItemEffect {
+  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceFlash {
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom resolution (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom resolution has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  getCustomResolution(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      let customSize;
-      iItem.get('prop:BrowserSize', this._id).then(val => {
-        if (val !== '') {
-          var [width, height] = decodeURIComponent(val).split(',');
-          customSize = Rectangle.fromDimensions(Number(width), Number(height));
-        } else {
-          customSize = Rectangle.fromDimensions(0, 0);
-        }
-        resolve(customSize);
-      });
-    });
-  }
+  //Shared with Source
 
-  /**
-   * param: (value: Rectangle)
-   * ```
-   * return: Promise<FlashItem>
-   * ```
-   *
-   * Sets the custom resolution for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setCustomResolution(value: Rectangle): Promise<FlashItem> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserSize', value.toDimensionString(),
-        this._id).then(() => {
-          resolve(this);
-      });
-    });
-  }
+  /** See: {@link #core/FlashSource#getCustomResolution getCustomResolution} */
+  getCustomResolution: () => Promise<Rectangle>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getAllowRightClick(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:BrowserRightClick', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+  /** See: {@link #core/FlashSource#setCustomResolution setCustomResolution} */
+  setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
 
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
-  setAllowRightClick(value: boolean): Promise<Item> {
-    return new Promise(resolve => {
-      iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-        .then(() => {
-          resolve(this);
-        });
-    });
-  }
+  /** See: {@link #core/FlashSource#getAllowRightClick getAllowRightClick} */
+  getAllowRightClick: () => Promise<boolean>
+
+  /** See: {@link #core/FlashSource#setAllowRightClick setAllowRightClick} */
+  setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
 
   // ItemLayout
 
@@ -498,25 +418,25 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
 
   // ItemAudio
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<FlashItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<FlashItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<FlashItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 
   // ItemEffect
@@ -601,4 +521,4 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
 }
 
 applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemAudio, ItemEffect]);
+  Audio, ItemEffect, SourceFlash]);

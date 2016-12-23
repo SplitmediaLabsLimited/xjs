@@ -1,5 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
+import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
 
@@ -39,6 +40,9 @@ export class SourcePropsWindow extends EventEmitter {
    */
   constructor() {
     super();
+    if (!Environment.isSourceProps()) {
+      throw new Error('SourcePropsWindow class is only available for source properties');
+    }
     window.addEventListener('message', function(event) {
       try {
         var data = JSON.parse(event.data);

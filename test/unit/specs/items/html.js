@@ -54,7 +54,7 @@ describe('HtmlItem', function() {
         },10);
       break;
 
-      case 'prop:item':
+      case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
@@ -170,7 +170,7 @@ describe('HtmlItem', function() {
 
     switch (funcName) {
 
-      case 'prop:item':
+      case 'prop:srcitem':
       	var isValid;
         if (typeof val === 'string') {
           local.item = val;
@@ -578,8 +578,8 @@ describe('HtmlItem', function() {
       function(done) {
         exec(function(next) {
           urlSet = false;
-          var randomBoolean = !!Math.floor(Math.random() * 2);
-          var promise = currentHtmlItem.enableBrowserJS(randomBoolean);
+          var testBoolean = randomBoolean();
+          var promise = currentHtmlItem.enableBrowserJS(testBoolean);
           promise.then(function() {
             if (!isXSplit) {
               expect(urlSet).toBe(true);
@@ -587,14 +587,14 @@ describe('HtmlItem', function() {
             return currentHtmlItem.isBrowserJSEnabled();
           })
           .then(function(firstEnabled) {
-            expect(firstEnabled).toBe(randomBoolean);
-            return currentHtmlItem.enableBrowserJS(!randomBoolean);
+            expect(firstEnabled).toBe(testBoolean);
+            return currentHtmlItem.enableBrowserJS(!testBoolean);
           })
           .then(function() {
             return currentHtmlItem.isBrowserJSEnabled();
           })
           .then(function(secondEnabled) {
-            expect(secondEnabled).toBe(!randomBoolean);
+            expect(secondEnabled).toBe(!testBoolean);
             next();
           });
         }).then(done);
@@ -642,8 +642,8 @@ describe('HtmlItem', function() {
       function(done) {
         exec(function(next) {
           urlSet = false;
-          var randomBoolean = !!Math.floor(Math.random() * 2);
-          var promise = currentHtmlItem.enableCustomCSS(randomBoolean);
+          var testBoolean = randomBoolean();
+          var promise = currentHtmlItem.enableCustomCSS(testBoolean);
           promise.then(function() {
             if (!isXSplit) {
               expect(urlSet).toBe(true);
@@ -651,14 +651,14 @@ describe('HtmlItem', function() {
             return currentHtmlItem.isCustomCSSEnabled();
           })
           .then(function(firstEnabled) {
-            expect(firstEnabled).toBe(randomBoolean);
-            return currentHtmlItem.enableCustomCSS(!randomBoolean);
+            expect(firstEnabled).toBe(testBoolean);
+            return currentHtmlItem.enableCustomCSS(!testBoolean);
           })
           .then(function() {
             return currentHtmlItem.isCustomCSSEnabled();
           })
           .then(function(secondEnabled) {
-            expect(secondEnabled).toBe(!randomBoolean);
+            expect(secondEnabled).toBe(!testBoolean);
             next();
           });
         }).then(done);
@@ -681,8 +681,8 @@ describe('HtmlItem', function() {
       function(done) {
         exec(function(next) {
           urlSet = false;
-          var randomBoolean = !!Math.floor(Math.random() * 2);
-          var promise = currentHtmlItem.enableBrowserTransparency(randomBoolean);
+          var testBoolean = randomBoolean();
+          var promise = currentHtmlItem.enableBrowserTransparency(testBoolean);
           promise.then(function() {
             if (!isXSplit) {
               expect(urlSet).toBe(true);
@@ -690,14 +690,14 @@ describe('HtmlItem', function() {
             return currentHtmlItem.isBrowserTransparent();
           })
           .then(function(firstEnabled) {
-            expect(firstEnabled).toBe(randomBoolean);
-            return currentHtmlItem.enableBrowserTransparency(!randomBoolean);
+            expect(firstEnabled).toBe(testBoolean);
+            return currentHtmlItem.enableBrowserTransparency(!testBoolean);
           })
           .then(function() {
             return currentHtmlItem.isBrowserTransparent();
           })
           .then(function(secondEnabled) {
-            expect(secondEnabled).toBe(!randomBoolean);
+            expect(secondEnabled).toBe(!testBoolean);
             next();
           });
         }).then(done);

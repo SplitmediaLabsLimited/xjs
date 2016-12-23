@@ -12,21 +12,27 @@ import {ItemLayout, IItemLayout} from './ilayout';
 import {
   minVersion,
   versionCompare,
-  getVersion
+  getVersion,
+  globalsrcMinVersion
 } from '../../internal/util/version';
 
-export enum ItemTypes {
-  UNDEFINED,
-  FILE,
-  LIVE,
-  TEXT,
-  BITMAP,
-  SCREEN,
-  FLASHFILE,
-  GAMESOURCE,
-  HTML
-}
+import {iSource, ISource, ItemTypes} from '../source/isource';
+import {Source} from '../source/source'
+import {GameSource} from '../source/game';
+import {CameraSource} from '../source/camera';
+import {AudioSource} from '../source/audio';
+import {VideoPlaylistSource} from '../source/videoplaylist'
+import {HtmlSource} from '../source/html';
+import {FlashSource} from '../source/flash';
+import {ScreenSource} from '../source/screen';
+import {ImageSource} from '../source/image';
+import {MediaSource} from '../source/media';
 
+/**
+ * Used by items to determine the its view type.
+ *
+ * Check `getView()` method of {@link #core/Item#getView Core/Item}
+ */
 export enum ViewTypes {
   MAIN,
   PREVIEW,
@@ -34,8 +40,10 @@ export enum ViewTypes {
 }
 
 /**
- * An `Item` represents an object that is used as a item on the stage.
- * Some possible items are games, microphones, or a webpage.
+ * An `Item` is rendered from a {@link #core/Source Source} and represents an
+ * object that is used as an item on the stage. Multiple items may be linked to
+ * a single source and any changes made to the source would affect all linked
+ * items.
  *
  * Implements: {@link #core/IItemLayout Core/IItemLayout}
  *
@@ -43,14 +51,14 @@ export enum ViewTypes {
  *
  * ```javascript
  * var xjs = require('xjs');
- * var Scene = xjs.Scene.getById(0);
+ * var Scene = xjs.Scene.getById(1);
  *
  * Scene.getItems().then(function(items) {
  *   if (items.length === 0) return;
  *
  *   // There's a valid item, let's use that
  *   var item = items[items.length - 1];
- *   return item.setCustomName('ItemTesting');
+ *   return item.setKeepAspectRatio(true);
  * }).then(function(item) {
  *   // Do something else here
  * });
@@ -59,385 +67,68 @@ export enum ViewTypes {
  * This allows you to perform sequential operations correctly:
  * ```javascript
  * var xjs = require('xjs');
- * var Item = xjs.Item;
+ * var Source = xjs.Source;
  *
  * // an item that sets its own properties on load
  * xjs.ready()
- *    .then(Item.getItemList)
- *    .then(function(item) {
- *     return item.setCustomName('MyCustomName');
- *  }).then(function(item) {
- *     return item.setKeepLoaded(true);
- *  }).then(function(item) {
- *     // set more properties here
- *  });
+ *    .then(Source.getCurrentSource)
+ *    .then(function(source) {
+ *    return source.getItemList()
+ *  }).then(function(items) {
+ *    return items[0].setEnhancedResizeEnabled(true)
+ *  }).then(function(items) {
+ *    return items[0].setPositionLocked(true)
+ *  }).then(function(items) {
+ *    //set more properties here
+ *  })
  * ```
  */
-export class Item implements IItemLayout {
-  protected _id: string;
-  protected _srcId: string;
-  protected _type: ItemTypes;
-  protected _value: any;
-  private _name: string;
-  private _cname: string;
-  private _sceneId: any;
-  private _keepLoaded: boolean;
-  private _globalsrc: boolean;
-
-  private _xmlparams: {};
-
+export class Item extends Source implements IItemLayout, ISource {
   constructor(props?: {}) {
-    props = props ? props : {};
-
-    this._name = props['name'];
-    this._cname = props['cname'];
-    this._id = props['id'];
-    this._srcId = props['srcid'];
-    this._sceneId = props['sceneId'];
-    this._value = props['value'];
-    this._keepLoaded = props['keeploaded'];
-    this._type = Number(props['type']);
-    this._globalsrc = props['globalsrc'];
-
-    this._xmlparams = props;
+    super(props)
+    this._isItemCall = true;
   }
 
   /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Item>
-   * ```
+   * return: Promise<Item[]>
    *
-   * Sets the name of the item.
-   *
-   * *Chainable.*
+   * Gets the list of linked items of the current Item.
+   * Linked items are items linked to a single source.
    *
    * #### Usage
    *
    * ```javascript
-   * item.setName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when name has been set
-   *   return item.getName();
-   * }).then(function(name) {
-   *   // 'name' should be the updated value by now.
-   * });
+   * xjs.Item.getItemList().then(function(items) {
+   *   for (var i = 0 ; i < items.length ; i++) {
+   *     // Manipulate each item here
+   *     items[i].setKeepAspectRatio(true);
+   *   }
+   * })
    * ```
+   *
+   * This is simply a shortcut to:
+   * `xjs.Item.getCurrentSource()` -> `source.getItemList()`
    */
-  setName(value: string): Promise<Item> {
+  static getItemList(): Promise<Item[]> {
     return new Promise(resolve => {
-      this._name = value;
-
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        iItem.set('prop:name', this._name, this._id).then(() => {
-          resolve(this);
-        });
-      } else {
-        iItem.get('itemlist', this._id).then(itemlist => {
-          const promiseArray: Promise<boolean>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              iItem.set('prop:name', this._name, itemId).then(() => {
-                itemResolve(true);
-              });
-            }));
-          });
-
-          Promise.all(promiseArray).then(() => {
-            resolve(this);
-          });
-        });
-      }
-    });
+      resolve(Source.getItemList())
+    })
   }
 
   /**
    * return: Promise<string>
    *
-   * Gets the name of the item.
+   * Get the ID of the source
    *
    * #### Usage
    *
    * ```javascript
-   * item.getName().then(function(name) {
-   *   // Do something with the name
-   * });
-   * ```
-   */
-  getName(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:name', this._id).then(val => {
-        this._name = val;
-        resolve(val);
-      });
-    });
-  }
-
-  /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Sets the custom name of the item.
-   *
-   * The main difference between `setName` and `setCustomName` is that the CustomName
-   * can be edited by users using XBC through the bottom panel. `setName` on
-   * the other hand would update the item's internal name property.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setCustomName('newNameHere').then(function(item) {
-   *   // Promise resolves with same Item instance when custom name has been set
-   *   return item.getCustomName();
-   * }).then(function(name) {
-   *   // 'name' should be the updated value by now.
-   * });
-   * ```
-   */
-  setCustomName(value: string): Promise<Item> {
-    return new Promise(resolve => {
-      this._cname = value;
-      iItem.set('prop:cname', this._cname, this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<string>
-   *
-   * Gets the custom name of the item.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getCustomName().then(function(name) {
-   *   // Do something with the name
-   * });
-   * ```
-   */
-  getCustomName(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:cname', this._id).then(val => {
-        this._cname = val;
-        resolve(val);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<string|XML>
-   *
-   * Gets a special string that refers to the item's main definition.
-   *
-   * This method can resolve with an XML object, which is an object generated by
-   * the framework. Call `toString()` to transform into an XML String. (See the
-   * documentation for `setValue` for more details.)
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getValue().then(function(value) {
-   *   // Do something with the value
-   * });
-   * ```
-   */
-  getValue(): Promise<string | XML> {
-    return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(val => {
-        val = (val === 'null') ? '' : val;
-        if (val === '') { // don't return XML for null values
-          this._value = '';
-          resolve(val);
-        } else {
-          try {
-            this._value = XML.parseJSON(JXON.parse(val));
-            resolve(this._value);
-          } catch (e) {
-            // value is not valid XML (it is a string instead)
-            this._value = val;
-            resolve(val);
-          }
-        }
-      });
-    });
-  }
-
-  /**
-   * param: (value: string)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Set the item's main definition; this special string defines the item's
-   * "identity". Each type of item requires a different format for this value.
-   *
-   * *Chainable.*
-   *
-   * **WARNING:**
-   * Please do note that using this method COULD break the current item, possibly modifying
-   * its type IF you set an invalid string for the current item.
-   *
-   * #### Possible values by item type
-   * - FILE - path/URL
-   * - LIVE - Device ID
-   * - BITMAP - path
-   * - SCREEN - XML string
-   * - FLASHFILE - path
-   * - GAMESOURCE - XML string
-   * - HTML - path/URL or html:<plugin>
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setValue('@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL')
-   *   .then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   */
-  setValue(value: string | XML): Promise<Item> {
-    return new Promise(resolve => {
-      var val: string = (typeof value === 'string') ?
-        <string>value : (<XML>value).toString();
-      if (typeof value !== 'string') { // XML
-        this._value = JXON.parse(val);
-      } else {
-        this._value = val;
-      }
-      iItem.set('prop:item', val, this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if item is kept loaded in memory
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getKeepLoaded().then(function(isLoaded) {
+   * source.getId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
    */
-  getKeepLoaded(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:keeploaded', this._id).then(val => {
-        this._keepLoaded = (val === '1');
-        resolve(this._keepLoaded);
-      });
-    });
-  }
-
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Set Keep loaded option to ON or OFF
-   *
-   * Items with Keep loaded set to ON would emit `scene-load` event each time
-   * the active scene switches to the item's current scene.
-   *
-   * *Chainable.*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setKeepLoaded(true).then(function(item) {
-   *   // Promise resolves with same Item instance
-   * });
-   * ```
-   */
-  setKeepLoaded(value: boolean): Promise<Item> {
-    return new Promise(resolve => {
-      this._keepLoaded = value;
-      this._globalsrc = value;
-      iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
-      iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
-        .then(() => {
-          resolve(this);
-        });
-    });
-  }
-
-  /**
-   * return: Promise<ItemTypes>
-   *
-   * Get the type of the item
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getType().then(function(type) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getType(): Promise<ItemTypes> {
-    return new Promise(resolve => {
-      iItem.get('prop:type', this._id).then(val => {
-        this._type = ItemTypes[ItemTypes[Number(val)]];
-        resolve(this._type);
-      });
-    });
-  }
-
-  /**
-   * return: Promise<string>
-   *
-   * Get the ID of the item
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getId(): Promise<string> {
-    return new Promise(resolve => {
-      resolve(this._id);
-    });
-  }
-
-  /**
-   * return: Promise<number>
-   *
-   * Get (1-indexed) Scene ID where the item is loaded
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getSceneId().then(function(id) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getSceneId(): Promise<any> {
-    return new Promise(resolve => {
-      if (this._sceneId === 'i12') {
-        resolve('i12');
-      } else {
-        resolve(Number(this._sceneId) + 1);
-      }
-    });
-  }
+  getId: () => Promise<string>
 
   /**
    * return: Promise<ViewTypes>
@@ -469,28 +160,21 @@ export class Item implements IItemLayout {
   }
 
   /**
-   * return: Promise<string>
+   * return: Promise<number>
    *
-   * Get the Source ID of the item.
-   * *Available only on XSplit Broadcaster verions higher than 2.8.1603.0401*
+   * Get (1-indexed) Scene ID where the source is loaded
    *
    * #### Usage
    *
    * ```javascript
-   * item.getSourceId().then(function(id) {
+   * source.getSceneId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
    */
-  getSourceId(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-        reject(new Error('Only available on versions above ' + minVersion));
-      } else {
-        iItem.get('prop:srcid', this._id).then(srcid => {
-          resolve(srcid);
-        });
-      }
+  getSceneId(): Promise<number> {
+    return new Promise(resolve => {
+      resolve(Number(this._sceneId) + 1);
     });
   }
 
@@ -522,215 +206,204 @@ export class Item implements IItemLayout {
   }
 
   /**
+   * param: (options: {linked?:<boolean>, scene?:<Scene> })
+   * ```
+   * return: Promise<Item>
+   * ```
+   * Duplicate an item into the current scene or to a specified scene as
+   * Linked or Unlinked.
+   *
+   * Linked items would generally have a single source, and any changes in the
+   * property of an item would be applied to all linked items.
+   *
+   *  *Chainable*
+   *
+   * #### Usage
+   * ```javascript
+   * // item pertains to an actual Item instance
+   * // Sample 1
+   * item.duplicate() // duplicate selected item to the current scene as unlinked
+   *```
+   * Duplicate the selected item to a specific scene and set it to be linked to
+   * a single source with the original item.
+   * ```javascript
+   * // Sample 2
+   * var toScene = xjs.Scene.getById(2)
+   * item.duplicate({linked:true, scene:toScene})
+   *
+   * ```
+   */
+
+  duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
+    return new Promise((resolve, reject) => {
+      if(versionCompare(getVersion())
+        .is
+        .lessThan(globalsrcMinVersion)) {
+        iApp.callFunc('additem', this.toXML().toString()).then(() => {
+          resolve(this)
+        })
+      } else {
+        if(options){
+          if(options.linked) {
+            iItem.set('prop:keeploaded', '1', this._id)
+          }
+          if(options.scene !== undefined && options.linked !== undefined) {
+            if(options.scene instanceof Scene) {
+              options.scene.getSceneNumber().then((id) => {
+                iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
+                this.toXML().toString())
+                  .then(() => {
+                  resolve(this);
+                });
+              })
+            } else {
+              reject(Error('Invalid parameters'));
+            }
+          } else if(options.linked === undefined) {
+            if(options.scene instanceof Scene) {
+              options.scene.getSceneNumber().then((id) => {
+                iApp.callFunc(`link:0|s:${id}|additem`,
+                  this.toXML().toString())
+                  .then(() => {
+                  resolve(this);
+                });
+              })
+            } else {
+              reject(Error('Invalid parameters'));
+            }
+          } else if(options.scene === undefined) {
+            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
+            this.toXML().toString())
+              .then(() => {
+              resolve(this);
+            });
+          }
+        } else {
+          iApp.callFunc('link:0|additem', this.toXML().toString())
+              .then(() => {
+              resolve(this);
+            });
+        }
+      }
+    });
+  }
+
+  /**
    * return: Promise<Item>
    *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon.
-   * Please use {@link #core/Item#getItemList getItemList} instead.
+   * Unlinks selected item.
    *
-   * Get the current source (when function is called by sources), or the source
-   * that was right-clicked to open the source properties window (when function is called
-   * from the source properties window)
+   * Unlinks an item to the source of other linked items and renders its
+   * own source.
    *
    * #### Usage
-   *
    * ```javascript
-   * xjs.Source.getCurrentSource().then(function(source) {
-   *   // This will fetch the current source (the plugin)
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
+   * item.unlink()
    * ```
+   *
+   * Note: Once you unlink an Item, there's still no method to reverse the
+   * process.
+   *
    */
-  static getCurrentSource(): Promise<Item> {
-    return new Promise((resolve, reject) => {
-      console.warn('Warning! getCurrentSource is deprecated and will be ' +
-        'removed soon. Please use getItemList instead. (Only works for ' +
-        'XSplit Broadcaster versions above 2.8.xxxx.xxxx');
-      if (Environment.isExtension()) {
-        reject(Error('Extensions do not have sources ' +
-          'associated with them.'));
-      } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceConfig()) &&
-        versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion)
-      ) {
-        Item.getItemList().then(items => {
-          if (items.length > 0) {
-            resolve(items[0]);
-          } else {
-            reject(Error('Cannot get item list'))
-          }
-        });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          resolve(item);
-        });
-      }
-    });
-  }
-
-  /**
-   * return: Promise<Item[]>
-   *
-   * Get the Item List of the current source
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * xjs.Item.getItemList().then(function(item) {
-   *   // This will fetch the item list of the current source
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
-   * ```
-   */
-  static getItemList(): Promise<Item[]> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isExtension()) {
-        reject(Error('Extensions do not have sources associated with them.'));
-      } else if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceConfig()) {
-        iItem.get('itemlist').then(itemlist => {
-          const promiseArray: Promise<Item>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
-
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
-          });
-        });
-      }
-    });
-  }
-
-  /**
-   * return: Promise<Item[]>
-   *
-   * Get the item list of the attached item. This is useful when an item is
-   * an instance of a global source, with multiple other items having the same
-   * source as the current item.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * // item pertains to an actual item instance
-   * item.getItemList().then(function(item) {
-   *   // This will fetch the item list of the current item
-   * }).catch(function(err) {
-   *   // Handle the error here. Errors would only occur
-   *   // if we try to execute this method on Extension plugins
-   * });
-   * ```
-   */
-  getItemList(): Promise<Item[]> {
-    return new Promise((resolve, reject) => {
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(this._id).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
-      } else {
-        iItem.get('itemlist', this._id).then(itemlist => {
-          const promiseArray: Promise<Item>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
-
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
-          });
-        });
-      }
+  unlink(): Promise<Item> {
+    return new Promise(resolve => {
+      iItem.set('prop:globalsrc', '0', this._id)
+        .then(() => {
+        resolve(this)
+      })
     })
   }
 
-  /**
-   *  return: Promise<Item>
-   *
-   *  Refreshes the specified item.
-   *
-   *  #### Usage
-   *  ```javascript
-   *  // Sample 1: let item refresh itself
-   *  xjs.Item.getItemList().then(function(item) {
-   *    item.refresh(); // execution of JavaScript halts because of refresh
-   *  });
-   *
-   *  // Sample 2: refresh some other item 'otherItem'
-   *  otherItem.refresh().then(function(item) {
-   *    // further manipulation of other item goes here
-   *  });
-   *  ```
-   */
-  refresh(): Promise<Item> {
-    return new Promise(resolve => {
-      iItem.set('refresh', '', this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
-
-    /**
-   * return: Promise<boolean>
-   *
-   * Removes the video item from the scene.
-   *
-    *  #### Usage
-   *  ```javascript
-   *  // let item remove itself
-   *  xjs.Item.getItemList().then(function(item) {
-   *    item.remove();
-   *  });
-   */
-
-  remove(): Promise<boolean> {    
-     return new Promise(resolve => {
-      iItem.set('remove', '', this._id).then((val) => {
-        resolve(val);
-      });
-    });
-  }
+  /** See: {@link #core/Source#getItemList getItemList} */
+  getItemList: () => Promise<Item[]>
 
   /**
-   * Duplicate current item. Will duplicate item into the current scene
+   * return: Promise<Source>
+   *
+   * Gets the Source of an item, linked items would only have 1 source.
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   * ```javascript
+   * item.getSource().then(function(source) {
+   *   //Manipulate source here
+   *   source.setName('New Name')
+   * })
+   * ```
    */
-  duplicate(): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.callFunc('additem', this.toXML().toString()).then(() => {
-        resolve(true);
-      });
-    });
+  getSource(): Promise<Source> {
+    let uniqueSource = [];
+    let uniqueObj = {};
+    let _xmlparams;
+    let _type;
+    let _srcId;
+    var promiseArray: Promise<Source>[] = [];
+    let _thisItem = this;
+
+    return new Promise((resolve, reject) => {
+      this.getItemList().then((items) => {
+        for(var i=0; i< items.length; i++) {
+          for(var key in items[i]) {
+            if(key === '_srcId') {
+              uniqueObj[items[i][key]] = items[i]
+            }
+          }
+        }
+        for(var j in uniqueObj) {
+          if(uniqueObj.hasOwnProperty(j)) {
+            uniqueSource.push(uniqueObj[j])
+          }
+        }
+
+        let typePromise = index => new Promise(typeResolve => {
+          let source = uniqueSource[index];
+          let params = source['_xmlparams']
+          let type = Number(source['_type']);
+          if (type === ItemTypes.GAMESOURCE) {
+            typeResolve(new GameSource(params));
+          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+            source['_name'].indexOf('Video Playlist') === 0 &&
+            source['FilePlaylist'] !== ''){
+            typeResolve(new VideoPlaylistSource(params));
+          } else if (type === ItemTypes.HTML) {
+            typeResolve(new HtmlSource(params));
+          } else if (type === ItemTypes.SCREEN) {
+            typeResolve(new ScreenSource(params));
+          } else if (type === ItemTypes.BITMAP ||
+              type === ItemTypes.FILE &&
+              /\.gif$/.test(source['item'])) {
+            typeResolve(new ImageSource(params));
+          } else if (type === ItemTypes.FILE &&
+              /\.(gif|xbs)$/.test(source['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+            typeResolve(new MediaSource(params));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+            typeResolve(new CameraSource(params));
+          } else if (Number(source['type']) === ItemTypes.LIVE &&
+            source['item'].indexOf(
+              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+            typeResolve(new AudioSource(params));
+          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+            typeResolve(new FlashSource(params));
+          } else {
+              typeResolve(new Source(params));
+          }
+        });
+
+        if (Array.isArray(uniqueSource)) {
+          for (var i = 0; i < uniqueSource.length; i++) {
+            promiseArray.push(typePromise(i));
+          }
+        }
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results[0]);
+        });
+      })
+    })
   }
 
   // ItemLayout
@@ -840,6 +513,54 @@ export class Item implements IItemLayout {
    */
   setRotateZ: (value: number) => Promise<Item>;
 
+  // iSource
+  /**
+   * See: {@link #core/Source#setName setName}
+   */
+  setName: (value: string) => Promise<Item>
+
+  /**
+   * See: {@link #core/Source#getName getName}
+   */
+  getName: () => Promise<string>
+
+  /**
+   * See: {@link #core/Source#setCustomName setCustomName}
+   */
+  setCustomName: () => Promise<Item>
+
+  /**
+   * See: {@link #core/Source#getCustomName getCustomName}
+   */
+  getCustomName: ()  => Promise<string>
+
+  /**
+   * See: {@link #core/Source#getValue getValue}
+   */
+  getValue: () => Promise<string | XML>
+
+  /**
+   * See: {@link #core/Source#setValue setValue}
+   */
+  setValue: (value: string | XML) => Promise<Item>
+
+  /**
+   * See: {@link #core/Source#getKeepLoaded getKeepLoaded}
+   */
+  getKeepLoaded: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/Source#setKeepLoaded setKeepLoaded}
+   */
+  setKeepLoaded: (value: boolean) => Promise<Item>
+
+  /**
+   * See: {@link #core/Source#refresh refresh}
+   */
+  refresh: () => Promise<Source>
+
+  /** See: {@link #core/Source#getType getType} */
+  getType: () => Promise<ItemTypes>
 }
 
-applyMixins(Item, [ItemLayout]);
+applyMixins(Item, [iSource, ItemLayout]);

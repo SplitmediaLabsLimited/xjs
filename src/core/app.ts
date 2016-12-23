@@ -8,6 +8,7 @@ import {XML as XML} from '../internal/util/xml';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Transition} from './transition';
+import {mockVersion} from '../internal/util/version';
 
 var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
@@ -126,6 +127,7 @@ export class App{
     return new Promise((resolve, reject) => {
       var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
       var xbcMatch = navigator.appVersion.match(xbcPattern);
+      xbcMatch = xbcMatch || mockVersion.match(xbcPattern);
       if (xbcMatch !== null) {
         resolve(xbcMatch[1]);
       } else {

@@ -14,6 +14,7 @@ import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
+import {XML} from '../../internal/util/xml';
 
 /**
  * The ImageItem class represents an image item (includes GIF files).
@@ -29,7 +30,18 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class ImageItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemEffect {
+
+  /**
+   * See: {@link #core/Source#getValue getValue}
+   */
+  getValue: () => Promise<string | XML>
+
+  /**
+   * See: {@link #core/Source#setValue setValue}
+   */
+  setValue: (value: string | XML) => Promise<ImageItem>
 
   // ItemLayout
 
@@ -473,4 +485,4 @@ export class ImageItem extends Item implements IItemLayout, IItemColor, IItemChr
   showFileMaskingGuide: (value: boolean) => Promise<ImageItem>;
 }
 
-applyMixins(ImageItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);
+applyMixins(ImageItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);

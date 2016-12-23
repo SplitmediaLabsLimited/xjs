@@ -1,6 +1,6 @@
 XSplit JS Framework
 
-[![Build Status](https://travis-ci.org/xjsframework/xjs.svg)](https://travis-ci.org/xjsframework/xjs)
+[![Build Status](https://travis-ci.org/xjsframework/xjs.svg?branch=master)](https://travis-ci.org/xjsframework/xjs)
 
 The XSplit JS Framework allows developers to create plugins for XSplit Broadcaster.
 

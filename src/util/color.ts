@@ -42,11 +42,11 @@ export class Color {
   }
 
   private setRgb(rgb: string): Color {
-    this._rgb = rgb.replace(/^#/, '');
+    this._rgb = rgb.replace(/^#/, '').toUpperCase();
     this._irgb = parseInt(this._rgb, 16);
 
     this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
-    this._rgb.substring(0, 2)].join('');
+    this._rgb.substring(0, 2)].join('').toUpperCase();
     this._ibgr = parseInt(this._bgr, 16);
 
     return this;

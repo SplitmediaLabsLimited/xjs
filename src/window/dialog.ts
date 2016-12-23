@@ -6,8 +6,7 @@ import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
-
-var dialogProxy: any;
+let dialogProxy: any;
 
 /**
  *  This class is used to spawn new browser processes that can be used to open
@@ -70,11 +69,12 @@ export class Dialog{
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
 
-        if (typeof dialogProxy !== 'undefined') {
+        if (typeof dialogProxy !== 'undefined' && typeof Proxy !== 'undefined') {
           dialogProxy._result = e.detail;
         } else {
           this._result = e.detail;
         }
+
         this._resultListener = null;
       };
 
@@ -112,7 +112,7 @@ export class Dialog{
    * *Chainable.*
    */
   static createAutoDialog(url: string): Dialog {
-    if (Environment.isSourceConfig()) {
+    if (Environment.isSourceProps()) {
       throw new Error('Auto dialogs are not available for config windows.');
     } else {
       let dialog = new Dialog();
@@ -230,7 +230,7 @@ export class Dialog{
         undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
     } else {
       exec('NewDialog', this._url, '', this._size === undefined ?
-        undefined : (this._size.getWidth() + ',' + this._size.getHeight()),
+        undefined : (this._size.toDimensionString()),
         this._calculateFlags(),
         this._title)
     }
@@ -259,7 +259,17 @@ export class Dialog{
 
         document.addEventListener('xsplit-dialog-result', eventListener);
         this._resultListener = eventListener;
-      } else { // listener already active
+      } else if(typeof Proxy === 'undefined') {
+        Object.observe(this, changes => {
+          // Search for changes with the name as result
+          let change = changes.filter(elem => {
+            return elem.name === '_result';
+          });
+          if (change !== undefined && change.length > 0) {
+            resolve(change[0].object._result);
+          }
+        })
+      } else {
         dialogProxy = new Proxy( this, {
           set: (target, property, value, receiver) => {
             if (property === '_result') {
@@ -295,8 +305,8 @@ export class Dialog{
   }
 }
 
-if (Environment.isSourceConfig() || Environment.isExtension()) {
-  window.OnDialogResult = function(result) {
+window.OnDialogResult = function(result) {
+  if (Environment.isSourceProps() || Environment.isExtension()) {
     document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
       detail: result }));
   }

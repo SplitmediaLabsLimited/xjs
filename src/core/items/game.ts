@@ -14,8 +14,8 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
-import {ItemTypes} from './item';
 import {Environment} from '../environment';
+import {iSourceGame, ISourceGame} from '../source/igame';
 
 /**
  * The GameItem Class provides methods specifically used for game items and
@@ -51,117 +51,40 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect {
+export class GameItem extends Item implements IItemLayout, IItemColor,
+  IItemChroma, IItemTransition, IItemEffect, ISourceGame {
+
+  // GameSource
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
+   * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
    */
-  isSpecialOptimizationEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('GameCapSurfSharing', this._id).then(res => {
-        resolve(res === '1');
-      });
-    });
-  }
+  isSpecialOptimizationEnabled: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
    */
-  setSpecialOptimizationEnabled(value: boolean): Promise<GameItem> {
-    return new Promise(resolve => {
-      iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
-        this._id).then(() => {
-          resolve(this);
-      });
-    });
-  }
+  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
+   * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
    */
-  isShowMouseEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('GameCapShowMouse', this._id).then(res => {
-        resolve(res === '1');
-      });
-    });
-  }
+  isShowMouseEnabled: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
    */
-  setShowMouseEnabled(value: boolean): Promise<GameItem> {
-    return new Promise(resolve => {
-      iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
-        resolve(this);
-      });
-    });
-  }
+  setShowMouseEnabled: (value: boolean) => Promise<GameItem>
 
   /**
-   * param: path<string>
-   *
-   * Set the offline image of a game item
-   *
-   * *Chainable.*
+   * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
    */
-  setOfflineImage(path: string): Promise<GameItem> {
-    return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game item'));
-      } else if (Environment.isSourcePlugin()) {
-        reject(
-          Error('Source plugins cannot update offline images of other items')
-        );
-      } else if (!(this._value instanceof XML)) {
-        this.getValue().then(() => {
-          this.setOfflineImage(path).then(itemObj => {
-            resolve(itemObj);
-          });
-        });
-      } else {
-        var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-        if (regExp.test(path) || path === '') {
-          var valueObj = JXON.parse(this._value.toString());
-          valueObj['replace'] = path;
-          this.setValue(XML.parseJSON(valueObj)).then(() => {
-            resolve(this);
-          });
-        }
-      }
-    });
-  }
+  setOfflineImage: (path: string) => Promise<GameItem>
 
   /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game item
+   * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
    */
-  getOfflineImage(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game item'));
-      } else {
-        this.getValue().then(() => {
-          var valueObj = JXON.parse(this._value.toString());
-          resolve(valueObj['replace'] ? valueObj['replace'] : '');
-        });
-      }
-    });
-  }
+  getOfflineImage:() => Promise<string>
 
   // ItemLayout
 
@@ -605,5 +528,5 @@ export class GameItem extends Item implements IItemLayout, IItemColor, IItemChro
   showFileMaskingGuide: (value: boolean) => Promise<GameItem>;
 }
 
-applyMixins(GameItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemEffect]);
+applyMixins(GameItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
+  ItemEffect, iSourceGame]);

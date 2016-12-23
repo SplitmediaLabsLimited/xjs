@@ -25,6 +25,7 @@ import {exec} from '../internal/internal';
  */
 export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
+  static _subscriptions: string[];
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -41,7 +42,9 @@ export class SourcePluginWindow extends EventEmitter {
    */
   constructor() {
     super();
-
+    if (!Environment.isSourcePlugin()) {
+      throw new Error('SourcePluginWindow class is only available for source plugins');
+    }
     this.on('message-source', function(message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
@@ -53,6 +56,7 @@ export class SourcePluginWindow extends EventEmitter {
     });
 
     SourcePluginWindow._instance = this;
+    SourcePluginWindow._subscriptions = [];
   }
 
   /**
@@ -79,18 +83,23 @@ export class SourcePluginWindow extends EventEmitter {
     
     let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
 
-    if(event === 'scene-delete' && isDeleteSceneEventFixed) {      
-      EventManager.subscribe("SceneDeleted", function(settingsObj) {
-        SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : settingsObj['index']);
-      });
-    } else if(['set-background-color', 'set-background-color', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
-
+    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+      if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
+        EventManager.subscribe("SceneDeleted", function(settingsObj) {
+          if (Environment.isSourcePlugin()) {
+            SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+          }
+        });
+      }
+    } else if(['set-background-color', 'scene-load', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
       //Just register the events so not to throw warning. Emitter already created.
-
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
     }  
+  }
 
+  static off(event: string, handler: Function) {
+    SourcePluginWindow.getInstance().off(event, handler);
   }
 
   // We modify the configuration sent from the source properties window
@@ -113,28 +122,34 @@ export class SourcePluginWindow extends EventEmitter {
   }
 }
 
-if (Environment.isSourcePlugin()) {
-  window.MessageSource = function(message: string) {
-    SourcePluginWindow.emit('message-source',
-      JSON.parse(message));
-  };
+// for source plugins
+window.MessageSource = function(message: string) {
+  SourcePluginWindow.emit('message-source',
+    JSON.parse(message));
+};
 
-  window.SetConfiguration = function(configObj: string) {
-    try {
-      var data = JSON.parse(configObj);
-      SourcePluginWindow.emit('apply-config', data);
-      SourcePluginWindow.emit('save-config', data);
-    } catch (e) {
-      // syntax error probably happened, exit gracefully
-      return;
-    }
-  };
+window.SetConfiguration = function(configObj: string) {
+  try {
+    var data = JSON.parse(configObj);
+    SourcePluginWindow.emit('apply-config', data);
+    SourcePluginWindow.emit('save-config', data);
+  } catch (e) {
+    // syntax error probably happened, exit gracefully
+    return;
+  }
+};
 
-  window.setBackGroundColor = function(color: string) {
-    SourcePluginWindow.emit('set-background-color', color);
-  };
+window.setBackGroundColor = function(color: string) {
+  SourcePluginWindow.emit('set-background-color', color);
+};
 
-  window.OnSceneLoad = function() {
+let prevOnSceneLoad = window.OnSceneLoad;
+window.OnSceneLoad = function(...args: any[]) {
+  if (Environment.isSourcePlugin()) {
     SourcePluginWindow.emit('scene-load');
-  };
+  }
+
+  if (prevOnSceneLoad !== undefined) {
+    prevOnSceneLoad(...args)
+  }
 }

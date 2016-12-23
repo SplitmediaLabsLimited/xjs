@@ -59,29 +59,67 @@ export class VideoPlaylist implements Addable {
         var fileItems = new JXON();
 
         let isError = false;
-        for (var i = 0; i < this._playlist.length; i++) {
-          if (typeof duration === 'object') {
-            isError = true;
-            break;
+
+        if (this._playlist.length)
+        {
+          for (var i = 0; i < this._playlist.length; i++) {
+            if (typeof duration[i] === 'object') {
+              isError = true;
+              break;
+            }
+            this._fileplaylist += this._playlist[i] + '*' + i + '*1*' +
+              duration[i] + '*100*0*0*0*0*0|';
           }
-          this._fileplaylist += this._playlist[i] + '*' + i + '*1*' +
-            duration[i] + '*100*0*0*0*0*0|';
-        }
+          let _inner_this = this;
+          if (!isError) {
+            iApp.get('preset:0').then(function(main) {
+              return iApp.get('presetconfig:' + main);
+            }).then(function(presetConfig) {
+              let placementJSON = JXON.parse(presetConfig);
+              let defpos = placementJSON['defpos'];
 
-        if (!isError) {
-          fileItems.tag = 'item';
-          fileItems['type'] = '1';
-          fileItems['name'] = 'Video Playlist';
-          fileItems['pos_left'] = '0.250000';
-          fileItems['pos_top'] = '0.250000';
-          fileItems['pos_right'] = '0.750000';
-          fileItems['pos_bottom'] = '0.750000';
-          fileItems['item']           = this._playlist[0] + '*0';
-          fileItems['FilePlaylist']   = this._fileplaylist;
+              fileItems.tag = 'item';
+              fileItems['type'] = '1';
+              fileItems['name'] = 'Video Playlist';
 
-          resolve(XML.parseJSON(fileItems));
+              if (defpos === '0') {
+                fileItems['pos_left'] = '0';
+                fileItems['pos_top'] = '0';
+                fileItems['pos_right'] = '0.5';
+                fileItems['pos_bottom'] = '0.5';
+              } else if (defpos === '1') {
+                fileItems['pos_left'] = '0.5';
+                fileItems['pos_top'] = '0';
+                fileItems['pos_right'] = '1';
+                fileItems['pos_bottom'] = '0.5';
+              }  else if (defpos === '2') {
+                fileItems['pos_left'] = '0';
+                fileItems['pos_top'] = '0.5';
+                fileItems['pos_right'] = '0.5';
+                fileItems['pos_bottom'] = '1';
+              } else if (defpos === '3') {
+                fileItems['pos_left'] = '0.5';
+                fileItems['pos_top'] = '0.5';
+                fileItems['pos_right'] = '1';
+                fileItems['pos_bottom'] = '1';
+              } else {
+                fileItems['pos_left'] = '0.25';
+                fileItems['pos_top'] = '0.25';
+                fileItems['pos_right'] = '0.75';
+                fileItems['pos_bottom'] = '0.75';
+              }
+              fileItems['item'] = _inner_this._playlist[0] + '*0';
+              fileItems['FilePlaylist'] = _inner_this._fileplaylist;
+
+              resolve(XML.parseJSON(fileItems));
+
+            });
+
+          } else {
+            reject(new Error('One or more files included are invalid.'));
+          }
         } else {
-          reject(new Error('One or more files included are invalid.'));
+          reject(new Error('No media file included.'));
         }
       });
     });
@@ -95,7 +133,7 @@ export class VideoPlaylist implements Addable {
   addToScene(): Promise <boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
-        reject(Error('This function is not available to sources.'));
+        reject(new Error('This function is not available to sources.'));
       } else {
         this.toXML().then(fileitem => {
           iApp.callFunc('additem', ' ' + fileitem)

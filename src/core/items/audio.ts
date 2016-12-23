@@ -2,7 +2,8 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
-import {IItemAudio, ItemAudio} from './iaudio';
+import {IAudio, Audio} from '../source/iaudio';
+import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
 import {Scene} from '../scene';
 import {Item} from './item';
 import {Environment} from '../environment';
@@ -13,7 +14,7 @@ import {Environment} from '../environment';
  *
  * Inherits from: {@link #core/Item Core/Item}
  *
- * Implements: {@link #core/IItemAudio Core/IItemAudio}
+ * Implements: {@link #core/IAudio Core/IAudio}
  *
  * ### Basic Usage
  *
@@ -35,167 +36,56 @@ import {Environment} from '../environment';
  *  All methods marked as *Chainable* resolve with the original `AudioItem`
  *  instance.
  */
-export class AudioItem extends Item implements IItemAudio {
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if silence detection is on or off
-   */
-  isSilenceDetectionEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:AudioGainEnable', this._id).then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
+export class AudioItem extends Item implements ISourceAudio, IAudio {
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set silence detection to ON or OFF
-   *
-   * *Chainable.*
-   */
-  setSilenceDetectionEnabled(value: boolean): Promise<AudioItem> {
-    return new Promise((resolve, reject) => {
-      iItem.set('prop:AudioGainEnable', (value ? '1' : '0'), this._id)
-      .then(res => {
-          resolve(this);
-      });
-    });
-  }
+  // SourceAudio
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection threshold.
-   * Amplitude less than threshold will be detected as silence.
-   */
-  getSilenceThreshold(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:AudioGain', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
+  /** See: {@link #core/AudioSource#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
+  isSilenceDetectionEnabled: () => Promise<boolean>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection threshold, min of 0, max of 128
-   *
-   * *Chainable.*
-   */
-  setSilenceThreshold(value: number): Promise<AudioItem> {
-    return new Promise((resolve, reject) => {
-      if (typeof value !== 'number') {
-        reject(Error('Only numbers are acceptable values for threshold'));
-      } else if (value % 1 !== 0 || value < 0 || value > 128) {
-        reject(
-          Error('Only integers in the range 0-128 are acceptable for threshold')
-        );
-      } else {
-        iItem.set('prop:AudioGain', String(value), this._id).then(res => {
-          resolve(this);
-        });
-      }
-    });
-  }
+  /** See: {@link #core/AudioSource#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
+  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioItem>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection period in ms time unit.
-   * Reaction time before filter removes noice/sound less than threshold
-   */
-  getSilencePeriod(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:AudioGainLatency', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
+  /** See: {@link #core/AudioSource#getSilenceThreshold getSilenceThreshold} */
+  getSilenceThreshold: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection period, min of 0, max of 10000
-   *
-   * *Chainable.*
-   */
-  setSilencePeriod(value: number): Promise<AudioItem> {
-    return new Promise((resolve, reject) => {
-      if (typeof value !== 'number') {
-        reject(Error('Only numbers are acceptable values for period'));
-      } else if (value % 1 !== 0 || value < 0 || value > 10000) {
-        reject(
-          Error('Only integers in the range 0-10000 are acceptable for period')
-        );
-      } else {
-        iItem.set('prop:AudioGainLatency', String(value), this._id).then(res => {
-          resolve(this);
-        });
-      }
-    });
-  }
+  /** See: {@link #core/AudioSource#setSilenceThreshold setSilenceThreshold} */
+  setSilenceThreshold: (value: number) => Promise<AudioItem>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets audio delay (1 unit = 100ns)
-   */
-  getAudioOffset(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:AudioDelay', this._id).then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
+  /** See: {@link #core/AudioSource#getSilencePeriod getSilencePeriod} */
+  getSilencePeriod: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets audio delay, accepts only positive delay
-   *
-   * *Chainable.*
-   */
-  setAudioOffset(value: number): Promise<ItemAudio> {
-    return new Promise((resolve, reject) => {
-      if (typeof value !== 'number') {
-        reject(Error('Only numbers are acceptable values for period'));
-      }
-      else if (value < 0) {
-        reject(Error('Audio offset cannot be negative'));
-      } else {
-        iItem.set('prop:AudioDelay', String(value), this._id).then(res => {
-          resolve(this);
-        });
-      }
-    });
-  }
+  /** See: {@link #core/AudioSource#setSilencePeriod setSilencePeriod} */
+  setSilencePeriod: (value: number) => Promise<AudioItem>
 
-  // ItemAudio
+  /** See: {@link #core/AudioSource#getAudioOffset getAudioOffset} */
+  getAudioOffset: () => Promise<number>
 
-  /** See: {@link #core/IItemAudio#getVolume getVolume} */
+  /** See: {@link #core/AudioSource#setAudioOffset setAudioOffset} */
+  setAudioOffset: (value: number) => Promise<SourceAudio>
+
+  // General Audio
+
+  /** See: {@link #core/IAudio#getVolume getVolume} */
   getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IItemAudio#isMute isMute} */
+  /** See: {@link #core/IAudio#isMute isMute} */
   isMute:   () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setVolume setVolume} */
+  /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#setMute setMute} */
+  /** See: {@link #core/IAudio#setMute setMute} */
   setMute:  (value: boolean) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IItemAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
   setStreamOnlyAudio: (value: boolean) => Promise<AudioItem>;
 
-  /** See: {@link #core/IItemAudio#isAudioAvailable isAudioAvailable} */
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(AudioItem, [ItemAudio]);
+applyMixins(AudioItem, [SourceAudio, Audio]);

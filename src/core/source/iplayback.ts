@@ -2,11 +2,10 @@
 
 import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
+import {Logger} from '../../internal/util/logger';
 
 /**
- *  Used by items that implement the Playback interface.
- *  Check `getActionAfterPlayback()`/`setActionAfterPlayback()` method of
- *  {@link #core/Mediaitem#getActionAfterPlayback Core/Mediaitem}.
+ *  Used by sources that implement the Playback interface.
  */
 export enum ActionAfterPlayback {
   NONE,
@@ -21,13 +20,13 @@ const AUDIO_REGEX =
 const VIDEO_REGEX =
   /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
 
-export interface IItemPlayback {
+export interface ISourcePlayback {
 
   /**
    * return: Promise<boolean>
    *
    * Determines if it is possible to move the playback position of this media
-   * item. It is possible for some video formats to not allow seeking of the
+   * source. It is possible for some video formats to not allow seeking of the
    * playback position.
    */
   isSeekable(): Promise<boolean>;
@@ -35,7 +34,7 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Gets the playback position of this item in seconds. The system can
+   * Gets the playback position of this source in seconds. The system can
    * store precision up to 100ns.
    */
   getPlaybackPosition(): Promise<number>;
@@ -43,17 +42,17 @@ export interface IItemPlayback {
   /**
    * param: (value: number)
    *
-   * Sets the playback position of this item. Parameter is in seconds, up to
+   * Sets the playback position of this source. Parameter is in seconds, up to
    * a precision level of 100ns.
    *
    * *Chainable.*
    */
-  setPlaybackPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
    *
-   * Gets the total playback duration of this item in seconds. Precision is up
+   * Gets the total playback duration of this source in seconds. Precision is up
    * to 100ns units.
    */
   getPlaybackDuration(): Promise<number>;
@@ -61,24 +60,24 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks if current item is playing.
+   * Checks if current source is playing.
    */
   isPlaying(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Plays (or pauses playback for) this item.
+   * Plays (or pauses playback for) this source.
    *
    * *Chainable.*
    */
-  setPlaying(value: boolean): Promise<IItemPlayback>;
+  setPlaying(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
    *
-   * Gets the specified start position in seconds for this item, with precision
-   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * Gets the specified start position in seconds for this source, with precision
+   * up to 100ns. If this source loops or is set to rewind, the playback position
    * will return to the start position.
    */
   getPlaybackStartPosition(): Promise<number>;
@@ -86,19 +85,19 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Sets the specified start position in seconds for this item, with precision
-   * up to 100ns. If this item loops or is set to rewind, the playback position
+   * Sets the specified start position in seconds for this source, with precision
+   * up to 100ns. If this source loops or is set to rewind, the playback position
    * will return to the start position.
    *
    * *Chainable.*
    */
-  setPlaybackStartPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackStartPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<number>
    *
-   * Gets the specified end position in seconds for this item, with precision
-   * up to 100ns. If playback reaches the end position, this item will then
+   * Gets the specified end position in seconds for this source, with precision
+   * up to 100ns. If playback reaches the end position, this source will then
    * execute the specified action after playback (rewind, loop, etc.)
    */
   getPlaybackEndPosition(): Promise<number>;
@@ -106,18 +105,18 @@ export interface IItemPlayback {
   /**
    * return: Promise<number>
    *
-   * Sets the specified end position in seconds for this item, with precision
-   * up to 100ns. If playback reaches the end position, this item will then
+   * Sets the specified end position in seconds for this source, with precision
+   * up to 100ns. If playback reaches the end position, this source will then
    * execute the specified action after playback (rewind, loop, etc.)
    *
    * *Chainable.*
    */
-  setPlaybackEndPosition(value: number): Promise<IItemPlayback>;
+  setPlaybackEndPosition(value: number): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<ActionAfterPlayback>
    *
-   * Gets the specified action after playback for this item is done (either
+   * Gets the specified action after playback for this source is done (either
    * playback reaches the end of the video, or the specified playback end
    * position.)
    *
@@ -128,7 +127,7 @@ export interface IItemPlayback {
   /**
    * param: (value: ActionAfterPlayback)
    *
-   * Sets the action to be executed on this item once playback is done (either
+   * Sets the action to be executed on this source once playback is done (either
    * playback reaches the end of the video, or the specified playback end
    * position.)
    *
@@ -136,25 +135,25 @@ export interface IItemPlayback {
    *
    * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
    */
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<IItemPlayback>;
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
    *
-   * Checks whether this item is set to start playback when the application
-   * switches to this item's scene.
+   * Checks whether this source is set to start playback when the application
+   * switches to this source's scene.
    */
   isAutostartOnSceneLoad(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Specifies whether this item is set to start playback when the application
-   * switches to this item's scene.
+   * Specifies whether this source is set to start playback when the application
+   * switches to this source's scene.
    *
    * *Chainable.*
    */
-  setAutostartOnSceneLoad(value: boolean): Promise<IItemPlayback>;
+  setAutostartOnSceneLoad(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
@@ -170,12 +169,12 @@ export interface IItemPlayback {
    *
    * *Chainable.*
    */
-  setForceDeinterlace(value: boolean): Promise<IItemPlayback>;
+  setForceDeinterlace(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
    *
-   * Check whether this item should retain its playback position when switching
+   * Check whether this source should retain its playback position when switching
    * scenes.
    */
   isRememberingPlaybackPosition(): Promise<boolean>;
@@ -183,33 +182,33 @@ export interface IItemPlayback {
   /**
    * param: (value: boolean)
    *
-   * Sets whether this item should retain its playback position when switching
+   * Sets whether this source should retain its playback position when switching
    * scenes.
    *
    * *Chainable.*
    */
-  setRememberingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  setRememberingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<boolean>
    *
-   * Checks if this item is set to display its playback position.
+   * Checks if this source is set to display its playback position.
    */
   isShowingPlaybackPosition(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
    *
-   * Sets whether this item should display its playback position.
+   * Sets whether this source should display its playback position.
    *
    * *Chainable.*
    */
-  setShowingPlaybackPosition(value: boolean): Promise<IItemPlayback>;
+  setShowingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
   /**
    * return: Promise<CuePoint[]>
    *
-   * Gets the set of Cue Points created for this item.
+   * Gets the set of Cue Points created for this source.
    *
    * See also: {@link #core/CuePoint Core/CuePoint}
    */
@@ -218,13 +217,13 @@ export interface IItemPlayback {
   /**
    * param: (value: CuePoint[])
    *
-   * Assign the specified array of Cue Points for this item.
+   * Assign the specified array of Cue Points for this source.
    *
    * *Chainable.*
    *
    * See also: {@link #core/CuePoint Core/CuePoint}
    */
-  setCuePoints(value: CuePoint[]): Promise<IItemPlayback>;
+  setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
 
   getValue(): Promise<string>;
   setValue(value: string): Promise<any>;
@@ -232,22 +231,26 @@ export interface IItemPlayback {
   /**
    * return: Promise<boolean>
    *
-   * Checks if this item's file type is an audio file type.
+   * Checks if this source's file type is an audio file type.
    */
   isAudio(): Promise<boolean>;
 
   /**
    * return: Promise<boolean>
    *
-   * Checks if this item's file type is a video file type.
+   * Checks if this source's file type is a video file type.
    */
   isVideo(): Promise<boolean>;
 }
 
-export class ItemPlayback implements IItemPlayback {
+export class SourcePlayback implements ISourcePlayback {
   private _id: string;
+  private _isItemCall: boolean;
 
   isSeekable(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isSeekable', true)
+    }
     return new Promise(resolve => {
       iItem.get('sync:syncable', this._id).then(val => {
         resolve(val === '1' ? true : false);
@@ -256,6 +259,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackPosition(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.get('sync:position', this._id).then(val => {
         resolve(Number(val) / 10000000);
@@ -263,7 +269,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackPosition(value: number): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.set('sync:position', String(value * 10000000),
         this._id).then(() => {
@@ -273,6 +282,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackDuration(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getPlaybackDuration', true)
+    }
     return new Promise(resolve => {
       iItem.get('sync:duration', this._id).then(val => {
         resolve(Number(val) / 10000000);
@@ -281,6 +293,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isPlaying(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isPlaying', true)
+    }
     return new Promise(resolve => {
       iItem.get('sync:state', this._id).then(val => {
         resolve(val === "running");
@@ -288,7 +303,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaying(value: boolean): Promise<ItemPlayback> {
+  setPlaying(value: boolean): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setPlaying', true)
+    }
     return new Promise(resolve => {
       iItem.set('sync:state', value ? "running" : "stopped",
         this._id).then(() => {
@@ -298,6 +316,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackStartPosition(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getPlaybackStartPosition', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:InPoint', this._id).then(val => {
         resolve(Number(val) / 10000000);
@@ -305,7 +326,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackStartPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackStartPosition(value: number): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setPlaybackStartPosition', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:InPoint', String(value * 10000000), this._id).then(() => {
         resolve(this);
@@ -314,6 +338,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getPlaybackEndPosition(): Promise<number> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getPlaybackEndPosition', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:OutPoint', this._id).then(val => {
         resolve(Number(val) / 10000000);
@@ -321,7 +348,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setPlaybackEndPosition(value: number): Promise<ItemPlayback> {
+  setPlaybackEndPosition(value: number): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setPlaybackEndPosition', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:OutPoint', String(value * 10000000),
         this._id).then(() => {
@@ -331,6 +361,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getActionAfterPlayback(): Promise<ActionAfterPlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getActionAfterPlayback', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:OpWhenFinished', this._id).then(val => {
         resolve(Number(val));
@@ -338,7 +371,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ItemPlayback> {
+  setActionAfterPlayback(value: ActionAfterPlayback): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setActionAfterPlayback', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
         resolve(this);
@@ -347,6 +383,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isAutostartOnSceneLoad(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isAutostartOnSceneLoad', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:StartOnLoad', this._id).then(val => {
         resolve(val === '1');
@@ -354,7 +393,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setAutostartOnSceneLoad(value: boolean): Promise<ItemPlayback> {
+  setAutostartOnSceneLoad(value: boolean): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -363,6 +405,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isForceDeinterlace(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isForceDeinterlace', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:fdeinterlace', this._id).then(val => {
         resolve(val === '3');
@@ -370,7 +415,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setForceDeinterlace(value: boolean): Promise<ItemPlayback> {
+  setForceDeinterlace(value: boolean): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setForceDeinterlace', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
         resolve(this);
@@ -379,6 +427,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isRememberingPlaybackPosition(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isRememberingPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:RememberPosition', this._id).then(val => {
         resolve(val === '1');
@@ -386,7 +437,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setRememberingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setRememberingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:RememberPosition', (value ? '1' : '0'),
         this._id).then(() => {
@@ -396,6 +450,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isShowingPlaybackPosition(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isShowingPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:ShowPosition', this._id).then(val => {
         resolve(val === '1');
@@ -403,7 +460,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setShowingPlaybackPosition(value: boolean): Promise<ItemPlayback> {
+  setShowingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
+    }
     return new Promise(resolve => {
       iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id).then(() => {
         resolve(this);
@@ -412,6 +472,9 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   getCuePoints(): Promise<CuePoint[]> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getCuePoints', true)
+    }
     return new Promise(resolve => {
       iItem.get('prop:CuePoints', this._id).then(cuePointString => {
         if (cuePointString === '') {
@@ -426,7 +489,10 @@ export class ItemPlayback implements IItemPlayback {
     });
   }
 
-  setCuePoints(cuePoints: CuePoint[]): Promise<ItemPlayback> {
+  setCuePoints(cuePoints: CuePoint[]): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setCuePoints', true)
+    }
     return new Promise(resolve => {
       const cuePointString = cuePoints.map(point => point.toString()).join(',');
       resolve(this);
@@ -434,34 +500,46 @@ export class ItemPlayback implements IItemPlayback {
   }
 
   isAudio(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isAudio', true)
+    }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(filename => {
+      iItem.get('prop:srcitem', this._id).then(filename => {
         resolve(AUDIO_REGEX.test(filename));
       });
     });
   }
 
   isVideo(): Promise<boolean> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'isVideo', true)
+    }
     return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(filename => {
+      iItem.get('prop:srcitem', this._id).then(filename => {
         resolve(VIDEO_REGEX.test(filename));
       });
     });
   }
 
   getValue(): Promise<string> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'getValue', true)
+    }
     return new Promise(resolve => {
       // we do not do any additional checking since we are assured of the type
-      iItem.get('prop:item', this._id).then(val => {
+      iItem.get('prop:srcitem', this._id).then(val => {
         resolve(val);
       });
     });
   };
 
-  setValue(filename: string): Promise<ItemPlayback> {
+  setValue(filename: string): Promise<SourcePlayback> {
+    if(this._isItemCall){
+      Logger.warn('sourceWarning', 'setValue', true)
+    }
     return new Promise((resolve, reject) => {
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
-        iItem.set('prop:item', filename, this._id)
+        iItem.set('prop:srcitem', filename, this._id)
         .then(() => iItem.set('prop:name', filename, this._id))
         .then(() => iItem.set('prop:CuePoints', '', this._id))
         .then(() => {

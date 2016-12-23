@@ -6,7 +6,7 @@ import {Item as iItem} from '../../internal/item';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
-import {ItemConfigurable, IItemConfigurable} from './iconfig';
+import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
@@ -14,6 +14,9 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {IO} from '../../util/io';
+import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
+import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from '../source/iplayback';
+import {CuePoint} from '../source/cuepoint';
 
 /**
  * The VideoPlaylistItem class represents the VideoPlaylist item that has been
@@ -25,7 +28,7 @@ import {IO} from '../../util/io';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/IItemConfigurable Core/IItemConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
  *
  * ### Basic Usage
  *
@@ -46,137 +49,29 @@ import {IO} from '../../util/io';
 
 
 export class VideoPlaylistItem extends Item implements IItemLayout,
-  IItemColor, IItemChroma, IItemTransition, IItemConfigurable {
+  IItemColor, IItemChroma, IItemTransition, ISourceConfigurable,
+  ISourceVideoPlaylist, ISourcePlayback {
+
+  //Shared with VideoPlaylistSource
+  /**
+   * See: {@link #core/VideoPlaylistSource#getVideoNowPlaying getVideoNowPlaying}
+   */
+  getVideoNowPlaying: () => Promise<string>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the now playing video of this VideoPlaylist item.
-   *
+   * See: {@link #core/VideoPlaylistSource#setVideoNowPlaying setVideoNowPlaying}
    */
-
-  getVideoNowPlaying(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:item', this._id).then(playlist => {
-        let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
-        resolve(_playlist)
-      });
-    });
-  }
+  setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
 
   /**
-   * param: (value: string|number)
-   *
-   * return: Promise<VideoPlaylistItem>
-   *
-   * Sets the now playing video of this VideoPlaylist item.
-   *
-   * ## Possible Values
-   * - STRING - file path
-   * - NUMBER - number|within the range of fileplaylist array length
-   *
+   * See: {@link #core/VideoPlaylistSource#getVideoPlaylistSources getVideoPlaylistSources}
    */
-
-  setVideoNowPlaying(value:string|number): Promise<VideoPlaylistItem> {
-    let file: string;
-    let _playlist: string[];
-
-    return new Promise((resolve, reject) => {
-      iItem.get('prop:FilePlaylist', this._id).then(playlist => {
-        _playlist = String(playlist).split('|');
-        for (var i = 0; i < _playlist.length; i++){
-          _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
-        };
-        return _playlist;
-      }).then(list => {
-        if (typeof value === 'string') {
-          if(_playlist.indexOf(value) === -1){
-            reject(Error('File not found on Playlist.'))
-          } else {
-            let index = _playlist.indexOf(value);
-            file = _playlist[index] + '*' + index;
-            iItem.set('prop:item', file, this._id)
-            .then(fileplaylist => {
-              resolve(this);
-            });
-          }
-        } else if (typeof value === 'number' && value <= _playlist.length) {
-          file = (_playlist[value] + '*' + value);
-            iItem.set('prop:item', file, this._id)
-              .then(function (fileplaylist) {
-                resolve(this);
-              });
-        } else {
-          reject(Error('Invalid value.'));
-        };
-      })
-    });
-
-  };
+  getVideoPlaylistSources: () => Promise<string[]>
 
   /**
-   * return: Promise<string[]>
-   *
-   * Gets the file paths of the playlist of this VideoPlaylist item.
-   *
+   * See: {@link #core/VideoPlaylistSource#setVideoPlaylistSources setVideoPlaylistSources}
    */
-
-  getVideoPlaylistItems(): Promise<string[]> {
-    return new Promise(resolve => {
-      iItem.get('prop:FilePlaylist', this._id).then(playlist => {
-        let _playlist = String(playlist).split('|');
-        for (var i = 0; i < _playlist.length; i++){
-          _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
-        };
-        resolve(_playlist);
-      });
-    });
-  };
-
-  /**
-   * param: (file: string[])
-   *
-   * return: Promise<string>
-   *
-   * Sets the playlist of this VideoPlaylist item according to the specified
-   * file paths.
-   *
-   * This call would replace all the items on the playlist.
-   * The now playing item is also set to the first item of the new FilePlaylist.
-   *
-   */
-
-  setVideoPlaylistItems(fileItems:string[]): Promise<VideoPlaylistItem> {
-    let fileString: string;
-
-    let filePromises = fileItems.map((filename) => {
-      return IO.getVideoDuration(filename);
-    });
-
-    return new Promise((resolve, reject) => {
-      Promise.all(filePromises).then(duration => {
-        for (var i = 0; i < fileItems.length; i++) {
-          if(fileString === undefined){
-            fileString = fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0|';
-          } else {
-            fileString += fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0';
-            if (i+1 < fileItems.length) {
-              fileString += '|';
-            };
-          };
-        };
-        iItem.set('prop:item', fileItems[0] + '*0', this._id);
-        return fileString;
-      }).then(fileString => {
-        iItem.set('prop:FilePlaylist', fileString, this._id)
-        .then(fileplaylist => {
-          resolve(this);
-        });
-      });
-    });
-  };
+  setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
   // ItemLayout
 
@@ -540,29 +435,154 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   setTransitionTime: (value: number) => Promise<VideoPlaylistItem>;
 
-  // ItemConfigurable
+  // SourceConfigurable
 
   /**
-   * See: {@link #core/IItemConfigurable#loadConfig loadConfig}
+   * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
    */
   loadConfig: () => Promise<any>;
 
   /**
-   * See: {@link #core/IItemConfigurable#saveConfig saveConfig}
+   * See: {@link #core/ISourceConfigurable#saveConfig saveConfig}
    */
   saveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#requestSaveConfig requestSaveConfig}
+   * See: {@link #core/ISourceConfigurable#requestSaveConfig requestSaveConfig}
    */
   requestSaveConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
   /**
-   * See: {@link #core/IItemConfigurable#applyConfig applyConfig}
+   * See: {@link #core/ISourceConfigurable#applyConfig applyConfig}
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
+// SourcePlayback
+
+  /**
+   * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
+   */
+  isSeekable: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getPlaybackPosition getPlaybackPosition}
+   */
+  getPlaybackPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setPlaybackPosition setPlaybackPosition}
+   */
+  setPlaybackPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getPlaybackDuration getPlaybackDuration}
+   */
+  getPlaybackDuration: () => Promise<number>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isPlaying isPlaying}
+   */
+  isPlaying: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setPlaying setPlaying}
+   */
+  setPlaying: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getPlaybackStartPosition getPlaybackStartPosition}
+   */
+  getPlaybackStartPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setPlaybackStartPosition setPlaybackStartPosition}
+   */
+  setPlaybackStartPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getPlaybackEndPosition getPlaybackEndPosition}
+   */
+  getPlaybackEndPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setPlaybackEndPosition setPlaybackEndPosition}
+   */
+  setPlaybackEndPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getActionAfterPlayback getActionAfterPlayback}
+   */
+  getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setActionAfterPlayback setActionAfterPlayback}
+   */
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isForceDeinterlace isForceDeinterlace}
+   */
+  isForceDeinterlace: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setForceDeinterlace setForceDeinterlace}
+   */
+  setForceDeinterlace: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
+   */
+  isRememberingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
+   */
+  setRememberingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
+   */
+  isShowingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
+   */
+  setShowingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#getCuePoints getCuePoints}
+   */
+  getCuePoints: () => Promise<CuePoint[]>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#setCuePoints setCuePoints}
+   */
+  setCuePoints: (value: CuePoint[]) => Promise<VideoPlaylistItem>;
+
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isAudio isAudio}
+   */
+  isAudio: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourcePlayback#isVideo isVideo}
+   */
+  isVideo: () => Promise<boolean>;
 }
 
 applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemConfigurable])
+  SourceConfigurable, SourceVideoPlaylist, SourcePlayback])

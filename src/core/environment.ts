@@ -40,19 +40,6 @@ export class Environment {
   /**
    * return: boolean
    *
-   * > #### For Deprecation
-   * This method is deprecated and will be removed soon. Please use
-   * {@link #core/Environment#isSourceProps isSourceProps} instead.
-   *
-   * Determines if this HTML is running within the source properties window.
-   */
-  static isSourceConfig(): Boolean {
-    return Environment._isSourceProps;
-  }
-
-  /**
-   * return: boolean
-   *
    * Determines if this HTML is running within the source properties window.
    */
   static isSourceProps(): Boolean {
