@@ -416,6 +416,7 @@ describe('Source ===', function() {
           var randomTest = '1_' + randomWord(15);
           var randomOther = '2_' + randomWord(15);
           // remove attachedId to properly mirror behavior of calling without attaching
+          var shouldAttach = false;
           attachedId = '';
           if (!environment.isExtension()
             && navigator.appVersion !== 'XSplit Broadcaster 2.7.1702.2231 ') {
@@ -425,6 +426,10 @@ describe('Source ===', function() {
               });
             });
           } else {
+            if (environment.isSourcePlugin()
+              && navigator.appVersion === 'XSplit Broadcaster 2.7.1702.2231 ') {
+              shouldAttach = true;
+            }
             promise = new Promise(function(resolve) {
               Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
               .then(function(item) {
@@ -444,8 +449,10 @@ describe('Source ===', function() {
             return testSource.getName();
           }).then(function(name) {
             testName = name;
-            isOtherSource = true;
-            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            if (shouldAttach) {
+              isOtherSource = true;
+              attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            }
             return otherSource.getName();
           }).then(function(otherName1) {
             isOtherSource = false;
@@ -457,19 +464,23 @@ describe('Source ===', function() {
             expect(testName).not.toEqual(otherName);
             return testSource.setName(randomTest);
           }).then(function() {
-            isOtherSource = true;
-            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            if (shouldAttach) {
+              isOtherSource = true;
+              attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            }
             return otherSource.setName(randomOther);
           }).then(function() {
             isOtherSource = false;
             return testSource.getName();
           }).then(function(name2) {
             testName = name2;
-            isOtherSource = true;
-            attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            if (shouldAttach) {
+              isOtherSource = true;
+              attachedId = '{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}';
+            }
             return otherSource.getName();
-            isOtherSource = false;
           }).then(function(otherName2) {
+            isOtherSource = false;
             otherName = otherName2;
             expect(testName).not.toEqual(otherName);
             expect(testName).toEqual(randomTest);
@@ -480,31 +491,31 @@ describe('Source ===', function() {
       }).then(done);
     });
 
-    it('custom name', function() {
+    xit('custom name', function() {
 
     });
 
-    it('value', function() {
+    xit('value', function() {
 
     });
 
-    it('kept loaded in memory', function() {
+    xit('kept loaded in memory', function() {
 
     });
 
-    it('source ID', function() {
+    xit('source ID', function() {
 
     });
 
-    it('item list', function() {
+    xit('item list', function() {
 
     });
 
-    it('refresh', function() {
+    xit('refresh', function() {
 
     });
 
-    it('type', function() {
+    xit('type', function() {
 
     });
 
