@@ -15,6 +15,7 @@ import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {IO} from '../../util/io';
 import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
+import {ItemPlayback, IItemPlayback, ActionAfterPlayback} from './iplayback';
 
 /**
  * The VideoPlaylistItem class represents the VideoPlaylist item that has been
@@ -455,6 +456,131 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
+  // ItemPlayback
+
+  /**
+   * See: {@link #core/IItemPlayback#isSeekable isSeekable}
+   */
+  isSeekable: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackPosition getPlaybackPosition}
+   */
+  getPlaybackPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackPosition setPlaybackPosition}
+   */
+  setPlaybackPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackDuration getPlaybackDuration}
+   */
+  getPlaybackDuration: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isPlaying isPlaying}
+   */
+  isPlaying: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setPlaying setPlaying}
+   */
+  setPlaying: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackStartPosition getPlaybackStartPosition}
+   */
+  getPlaybackStartPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackStartPosition setPlaybackStartPosition}
+   */
+  setPlaybackStartPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getPlaybackEndPosition getPlaybackEndPosition}
+   */
+  getPlaybackEndPosition: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setPlaybackEndPosition setPlaybackEndPosition}
+   */
+  setPlaybackEndPosition: (value: number) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getActionAfterPlayback getActionAfterPlayback}
+   */
+  getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setActionAfterPlayback setActionAfterPlayback}
+   */
+  setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isForceDeinterlace isForceDeinterlace}
+   */
+  isForceDeinterlace: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setForceDeinterlace setForceDeinterlace}
+   */
+  setForceDeinterlace: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
+   */
+  isRememberingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
+   */
+  setRememberingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
+   */
+  isShowingPlaybackPosition: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
+   */
+  setShowingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#getCuePoints getCuePoints}
+   */
+  getCuePoints: () => Promise<CuePoint[]>;
+
+  /**
+   * See: {@link #core/IItemPlayback#setCuePoints setCuePoints}
+   */
+  setCuePoints: (value: CuePoint[]) => Promise<VideoPlaylistItem>;
+
+  // Inherited from base class, no need to redefine
+  // getValue: () => Promise<string>;
+  // setValue: (value: string) => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isAudio isAudio}
+   */
+  isAudio: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/IItemPlayback#isVideo isVideo}
+   */
+  isVideo: () => Promise<boolean>;
 }
 
 applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
