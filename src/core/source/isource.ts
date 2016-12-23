@@ -212,7 +212,6 @@ export class iSource implements ISource{
         });
       } else {
         iItem.wrapSet('prop:cname', this._cname, this._srcId, this._id, this._updateId.bind(this))
-          this._srcId, this._id, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
@@ -286,7 +285,6 @@ export class iSource implements ISource{
         });
       } else {
         iItem.wrapSet('prop:srcitem', val, this._srcId, this._id, this._updateId.bind(this))
-          this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
