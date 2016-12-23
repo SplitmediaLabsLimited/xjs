@@ -108,7 +108,7 @@ ISourceVideoPlaylist {
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 
-  // SourcePlayback
+// SourcePlayback
 
   /**
    * See: {@link #core/ISourcePlayback#isSeekable isSeekable}

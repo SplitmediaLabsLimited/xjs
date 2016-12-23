@@ -404,7 +404,7 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
    */
   setTransitionTime: (value: number) => Promise<MediaItem>;
 
-  // ItemPlayback
+  // SourcePlayback
 
   /**
    * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
