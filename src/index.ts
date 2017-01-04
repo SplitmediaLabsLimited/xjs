@@ -4,8 +4,8 @@ export * from './util/io';
 
 export * from './core/environment';
 export * from './core/app';
-export * from './core/channel';
-export * from './core/broadcast';
+export * from './core/streaminfo';
+export * from './core/output';
 export * from './core/channelmanager';
 export * from './core/scene';
 export * from './core/transition';
