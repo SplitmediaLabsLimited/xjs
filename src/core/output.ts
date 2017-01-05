@@ -2,7 +2,7 @@
 
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
-import {Channel} from './channel';
+import {StreamInfo} from './streaminfo';
 import {XML} from '../internal/util/xml';
 import {JSON as JXON} from '../internal/util/json';
 
@@ -15,25 +15,23 @@ import {JSON as JXON} from '../internal/util/json';
  * ```javascript
  * var xjs = require('xjs');
  *
- * xjs.Output.startBroadcast('Local Recording')
+ * xjs.Output.getOutputList('{AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA}')
+ * .then(outputs => {
+ *   for (var i=0; i< outputs.length; i++) {
+ *     //do something with the output here
+ *     if (outputs[i]['_name'] === 'Local Recording') {
+ *       outputs[i].startBroadcast()
+ *     }
+ *   }
+ * })
  * ```
  */
-
-
-
-  /**
-   * Ideal situation
-   * getOutputChannelList would return an array of objects(channels)
-   * start/stop broadcast would then be called through channel.start/stop
-   *
-   */
 
 export class Output {
   static _callback = {};
   static _id:string;
 
   static _localRecording:boolean = false;
-  protected _channels: JXON;
   protected _name: string;
 
   constructor(props?: {name: string}) {
@@ -45,25 +43,20 @@ export class Output {
    * param: (id: string)
    * id refers to the item id of the source/extension caller
    *
-   * Fetch all available Channels you can broadcast on based on your installed
+   * Fetch all available Outputs you can broadcast on based on your installed
    * Broadcast plugin.
    */
-
-  //Something similar with getActiveStreamChannels
-  static getOutputChannelList(id: string): Promise<Output[]> {
+  static getOutputList(id: string): Promise<Output[]> {
     return new Promise(resolve => {
       Output.getBroadcastChannels(id).then(result => {
-        let testArr = []
-        var resultArr = String(result).match(/"(?:[^"\\]|\\.)*"/g)
-        for (var i = 0; i<resultArr.length; i++) {
-          resultArr[i] = resultArr[i].replace(/["]+/g, '')
-        }
-        for (var i = 0; i< resultArr.length; i++) {
-          testArr.push(new Output({
-            name: resultArr[i]
+        const results = JXON.parse(result)
+        let channels = []
+        for (var i=0; i< results.children.length; i++) {
+          channels.push(new Output({
+            name: results.children[i]['name']
           }))
         }
-        resolve(testArr)
+        resolve(channels)
       })
     })
   }
@@ -100,7 +93,7 @@ export class Output {
    *
    * Stop a broadcast of the provided channel.
    */
-  stopBroadcast(channel:string): Promise<boolean> {
+  stopBroadcast(): Promise<boolean> {
     return new Promise(resolve => {
       exec('CallHost', 'stopBroadcast', this._name);
       resolve(true);
@@ -114,7 +107,7 @@ export class Output {
    */
   pauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      Channel.getActiveStreamChannels().then(channels => {
+      StreamInfo.getActiveStreamChannels().then(channels => {
         for (var i=0; i < channels.length; i++) {
           if(channels[i]['_name'] === 'Local Recording') {
             Output._localRecording = true
@@ -137,7 +130,7 @@ export class Output {
    */
   unpauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve,reject) => {
-      Channel.getActiveStreamChannels().then(channels => {
+      StreamInfo.getActiveStreamChannels().then(channels => {
         for (var i=0; i < channels.length; i++) {
           if(channels[i]['_name'] === 'Local Recording') {
             Output._localRecording = true
