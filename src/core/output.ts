@@ -14,7 +14,7 @@ import {JSON as JXON} from '../internal/util/json';
  *
  * ```javascript
  * var xjs = require('xjs');
- *
+ *   // {AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA} is your item id or extension id
  * xjs.Output.getOutputList('{AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA}')
  * .then(outputs => {
  *   for (var i=0; i< outputs.length; i++) {
@@ -148,17 +148,12 @@ export class Output {
 
   private static getBroadcastChannels(id:string) {
     Output._id = id;
-    return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
-      if (!isID) {
-        reject(Error('Not a valid ID format for items'));
-      } else {
-        if (Output._callback[Output._id] === undefined){
-          Output._callback[Output._id] = [];
-        }
-        Output._callback[Output._id] = ({resolve});
-        exec('CallHost', 'getBroadcastChannelList:'+Output._id)
+    return new Promise(resolve => {
+      if (Output._callback[Output._id] === undefined){
+        Output._callback[Output._id] = [];
       }
+      Output._callback[Output._id] = ({resolve});
+      exec('CallHost', 'getBroadcastChannelList:'+Output._id)
     })
   }
 }

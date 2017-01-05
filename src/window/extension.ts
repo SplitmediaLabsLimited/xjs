@@ -30,6 +30,8 @@ const _RESIZE = '2';
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
   static _subscriptions: string[];
+  static _callback = {};
+  protected _id: string;
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -38,6 +40,9 @@ export class ExtensionWindow extends EventEmitter {
     if (ExtensionWindow._instance === undefined) {
       ExtensionWindow._instance = new ExtensionWindow();
     }
+    ExtensionWindow._instance.getId().then(id => {
+      ExtensionWindow._instance._id = String(id)
+    })
     return ExtensionWindow._instance;
   }
 
@@ -69,7 +74,7 @@ export class ExtensionWindow extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. 
+   *  Allows listening to events that this class emits.
    *
    */
   static on(event: string, handler: Function) {
@@ -101,12 +106,12 @@ export class ExtensionWindow extends EventEmitter {
     } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
       //Just subscribe to the event. Emitter is already handled.
       if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
-        try{          
+        try{
           exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() );
         } catch (ex) {
           //This exception most probably for older versions which would work without subscribing to source list events.
-        }        
-      }       
+        }
+      }
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported.');
     }
@@ -127,6 +132,20 @@ export class ExtensionWindow extends EventEmitter {
   static _value: string;
 
   /**
+   * Get's the extension window id
+   */
+  getId() {
+    return new Promise(resolve => {
+      if(this._id === undefined) {
+        App.postMessage("8")
+        ExtensionWindow._callback['ExtensionWindowID'] = ({resolve})
+      } else {
+        resolve(this._id)
+      }
+    })
+  }
+
+  /**
    * param: (value: string)
    *
    * Renames the extension window.
@@ -142,7 +161,7 @@ export class ExtensionWindow extends EventEmitter {
    * Modifies this extension's window border.
    *
    * '4' is th e base command on setting border flags.
-   * 
+   *
    * Flags can be:
    *     (bit 0 - enable border)
    *     (bit 1 - enable caption)
@@ -210,8 +229,7 @@ window.SourcesListSelect = (view, id) => {
     ExtensionWindow.emit('sources-list-select', id === '' ?
       null : id);
   }
-};  
-
+  };
 let oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
   if (Environment.isExtension()) {
