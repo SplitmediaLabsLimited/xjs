@@ -9,22 +9,6 @@ import {JSON as JXON} from '../internal/util/json';
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
- *
- * ### Basic Usage
- *
- * ```javascript
- * var xjs = require('xjs');
- *   // {AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA} is your item id or extension id
- * xjs.Output.getOutputList('{AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA}')
- * .then(outputs => {
- *   for (var i=0; i< outputs.length; i++) {
- *     //do something with the output here
- *     if (outputs[i]['_name'] === 'Local Recording') {
- *       outputs[i].startBroadcast()
- *     }
- *   }
- * })
- * ```
  */
 
 export class Output {
@@ -41,10 +25,27 @@ export class Output {
 
   /**
    * param: (id: string)
-   * id refers to the item id of the source/extension caller
    *
    * Fetch all available Outputs you can broadcast on based on your installed
    * Broadcast plugin.
+   *
+   * ### Basic Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Output.getOutputList('{AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA}')
+   * .then(function(outputs) {
+   *   for (var i=0; i< outputs.length; i++) {
+   *     //do something with the output here
+   *     if (outputs[i]['_name'] === 'Local Recording') {
+   *       outputs[i].startBroadcast()
+   *     }
+   *   }
+   * })
+   * ```
+   *
+   * To get item id see: {@link #core/Item#getId getId}
+   * To get extension id see: {@link #window/ExtensionWindow#getId getId}
    */
   static getOutputList(id: string): Promise<Output[]> {
     return new Promise(resolve => {
@@ -111,6 +112,8 @@ export class Output {
         for (var i=0; i < channels.length; i++) {
           if(channels[i]['_name'] === 'Local Recording') {
             Output._localRecording = true
+          } else {
+            Output._localRecording = false
           }
         }
         if(Output._localRecording) {
@@ -134,6 +137,8 @@ export class Output {
         for (var i=0; i < channels.length; i++) {
           if(channels[i]['_name'] === 'Local Recording') {
             Output._localRecording = true
+          } else {
+            Output._localRecording = false
           }
         }
         if(Output._localRecording) {
@@ -148,7 +153,13 @@ export class Output {
 
   private static getBroadcastChannels(id:string) {
     Output._id = id;
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      if(Environment.isSourcePlugin()) {
+        let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
+        if (!isID) {
+          reject(Error('Not a valid ID format for items'));
+        }
+      }
       if (Output._callback[Output._id] === undefined){
         Output._callback[Output._id] = [];
       }

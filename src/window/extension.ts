@@ -9,6 +9,7 @@ import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, get
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
+import {Extension} from '../core/extension'
 
 const _RESIZE = '2';
 
@@ -30,8 +31,6 @@ const _RESIZE = '2';
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
   static _subscriptions: string[];
-  static _callback = {};
-  protected _id: string;
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
@@ -40,9 +39,6 @@ export class ExtensionWindow extends EventEmitter {
     if (ExtensionWindow._instance === undefined) {
       ExtensionWindow._instance = new ExtensionWindow();
     }
-    ExtensionWindow._instance.getId().then(id => {
-      ExtensionWindow._instance._id = String(id)
-    })
     return ExtensionWindow._instance;
   }
 
@@ -132,27 +128,15 @@ export class ExtensionWindow extends EventEmitter {
   static _value: string;
 
   /**
-   * Get's the extension window id
-   */
-  getId() {
-    return new Promise(resolve => {
-      if(this._id === undefined) {
-        App.postMessage("8")
-        ExtensionWindow._callback['ExtensionWindowID'] = ({resolve})
-      } else {
-        resolve(this._id)
-      }
-    })
-  }
-
-  /**
    * param: (value: string)
    *
    * Renames the extension window.
    */
   setTitle(value: string) {
-     ExtensionWindow._value = value;
-     App.postMessage('8');
+    let ext = Extension.getInstance()
+    ext.getId().then(id => {
+      exec("CallHost", "setExtensionWindowTitle:" + id, value);
+    })
   };
 
   /**
@@ -196,8 +180,6 @@ export class ExtensionWindow extends EventEmitter {
 }
 
 // for extensions
-window.Setid = function(id) {
-  exec('CallHost', 'setExtensionWindowTitle:' + id, ExtensionWindow._value);
 }
 
 window.SourcesListUpdate = (view, sources) => {
