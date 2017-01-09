@@ -180,7 +180,6 @@ export class ExtensionWindow extends EventEmitter {
 }
 
 // for extensions
-}
 
 window.SourcesListUpdate = (view, sources) => {
   if (Number(view) === 0) { // main view {

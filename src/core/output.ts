@@ -6,7 +6,8 @@ import {Extension} from './extension';
 import {StreamInfo} from './streaminfo';
 import {XML} from '../internal/util/xml';
 import {JSON as JXON} from '../internal/util/json';
-import {Source} from './source/source'
+import {Scene} from './scene';
+import {Item as iItem} from '../internal/item';
 
 /**
  * The Output class provides methods to start and stop a stream/recording
@@ -49,30 +50,27 @@ export class Output {
    *   }
    * })
    * ```
-   *
-   * To get item id see: {@link #core/Item#getId Item/getId}
-   *
-   * To get extension id see: {@link #window/ExtensionWindow#getId Extension/getId}
    */
   static getOutputList(): Promise<Output[]> {
     return new Promise(resolve => {
       let _id: string;
-      if (Environment.isExtension) {
-        Extension.getInstance().getId().then(id => {
-          _id = id;
-        })
-      } else if (Environment.isSourcePlugin) {
-
+      let _checkId;
+      if (Environment.isExtension()) {
+        _checkId = Extension.getInstance().getId()
+      } else if (Environment.isSourcePlugin()) {
+        _checkId =  iItem.getBaseId()
       }
-      Output._getBroadcastChannels(_id).then(result => {
-        const results = JXON.parse(result)
-        let channels = []
-        for (var i=0; i< results.children.length; i++) {
-          channels.push(new Output({
-            name: results.children[i]['name']
-          }))
-        }
-        resolve(channels)
+      _checkId.then(id => {
+        Output._getBroadcastChannels(id).then(result => {
+          const results = JXON.parse(result)
+          let channels = []
+          for (var i=0; i< results.children.length; i++) {
+            channels.push(new Output({
+              name: results.children[i]['name']
+            }))
+          }
+          resolve(channels)
+        })
       })
     })
   }
