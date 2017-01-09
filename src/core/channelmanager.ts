@@ -3,7 +3,7 @@
 
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
-import {Channel} from './channel';
+import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
 
@@ -82,7 +82,7 @@ export class ChannelManager extends EventEmitter {
             statJSON = JXON.parse('<stat />');
           }
 
-          let eventChannel: Channel = new Channel({
+          let eventChannel: StreamInfo = new StreamInfo({
             name: channelName,
             stat: statJSON,
             channel: infoJSON

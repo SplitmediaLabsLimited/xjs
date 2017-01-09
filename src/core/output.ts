@@ -2,9 +2,11 @@
 
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
+import {Extension} from './extension';
 import {StreamInfo} from './streaminfo';
 import {XML} from '../internal/util/xml';
 import {JSON as JXON} from '../internal/util/json';
+import {Source} from './source/source'
 
 /**
  * The Output class provides methods to start and stop a stream/recording
@@ -26,6 +28,10 @@ export class Output {
   /**
    * param: (id: string)
    *
+   * ```
+   * return Promise<Output[]>
+   * ```
+   *
    * Fetch all available Outputs you can broadcast on based on your installed
    * Broadcast plugin.
    *
@@ -44,12 +50,21 @@ export class Output {
    * })
    * ```
    *
-   * To get item id see: {@link #core/Item#getId getId}
-   * To get extension id see: {@link #window/ExtensionWindow#getId getId}
+   * To get item id see: {@link #core/Item#getId Item/getId}
+   *
+   * To get extension id see: {@link #window/ExtensionWindow#getId Extension/getId}
    */
-  static getOutputList(id: string): Promise<Output[]> {
+  static getOutputList(): Promise<Output[]> {
     return new Promise(resolve => {
-      Output.getBroadcastChannels(id).then(result => {
+      let _id: string;
+      if (Environment.isExtension) {
+        Extension.getInstance().getId().then(id => {
+          _id = id;
+        })
+      } else if (Environment.isSourcePlugin) {
+
+      }
+      Output._getBroadcastChannels(_id).then(result => {
         const results = JXON.parse(result)
         let channels = []
         for (var i=0; i< results.children.length; i++) {
@@ -76,8 +91,9 @@ export class Output {
   /**
    * param: (channel: string)
    *
+   * ```
    * return: Promise<boolean>
-   *
+   * ```
    * Start a broadcast of the provided channel.
    */
   startBroadcast(): Promise<boolean> {
@@ -89,9 +105,9 @@ export class Output {
 
   /**
    * param: (channel: string)
-   *
+   * ```
    * return: Promise<boolean>
-   *
+   * ```
    * Stop a broadcast of the provided channel.
    */
   stopBroadcast(): Promise<boolean> {
@@ -151,7 +167,7 @@ export class Output {
     })
   }
 
-  private static getBroadcastChannels(id:string) {
+  private static _getBroadcastChannels(id:string) {
     Output._id = id;
     return new Promise((resolve, reject) => {
       if(Environment.isSourcePlugin()) {

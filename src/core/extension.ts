@@ -73,7 +73,7 @@ export class Extension {
   /**
    *  return: Promise<string>
    *
-   * Get's the extensions id.
+   *  Get the extension id.
    */
   getId(): Promise<string> {
     return new Promise(resolve => {

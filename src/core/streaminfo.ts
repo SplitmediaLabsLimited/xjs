@@ -3,6 +3,10 @@ import {JSON as JXON} from '../internal/util/json';
 import {exec} from '../internal/internal';
 import {XML} from '../internal/util/xml';
 
+/**
+ * The StreamInfo class provides methods to monitor the current stream activity
+ * and other details.
+ */
 
 export class StreamInfo {
   private _name: string;
