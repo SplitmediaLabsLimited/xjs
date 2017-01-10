@@ -78,7 +78,7 @@ describe('Output ===', function() {
     });   
   });
 
-  describe('should fetch all available outputs', function(done) {
+  describe('should fetch all available outputs', function() {
     it('through a promise', function(done) {
       exec(function(next) {
         var getOutputList = Output.getOutputList();
