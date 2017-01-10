@@ -20,7 +20,7 @@ export class Extension {
       Extension._instance = new Extension();
     }
     Extension._instance.getId().then(id => {
-      Extension._instance._id = String(id)
+      Extension._instance._id = String(id);
     })
     return Extension._instance;
   }
@@ -78,10 +78,10 @@ export class Extension {
   getId(): Promise<string> {
     return new Promise(resolve => {
       if(this._id === undefined) {
-        Extension._callback['ExtensionWindowID'] = ({resolve})
-        App.postMessage("8")
+        Extension._callback['ExtensionWindowID'] = ({resolve});
+        App.postMessage("8");
       } else {
-        resolve(this._id)
+        resolve(this._id);
       }
     })
   }

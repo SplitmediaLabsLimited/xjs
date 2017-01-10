@@ -49,16 +49,20 @@ export class Output {
    * ```
    */
   static getOutputList(): Promise<Output[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       let _id: string;
       let _checkId;
       if (Environment.isExtension()) {
         _checkId = Extension.getInstance().getId()
       } else if (Environment.isSourcePlugin()) {
         _checkId = iItem.get('itemlist').then(result => {
-          let results = result.split(',')
-          return results[0]
-        })
+          let results = result.split(',');
+          return results[0];
+        });
+      } else {
+        _checkId = new Promise((innerResolve, innerReject) => {
+          innerReject(Error('Outputs class is not accessible to source properties.'));
+        });
       }
       _checkId.then(id => {
         Output._getBroadcastChannels(id).then(result => {
@@ -67,10 +71,12 @@ export class Output {
           for (var i=0; i< results.children.length; i++) {
             channels.push(new Output({
               name: results.children[i]['name']
-            }))
+            }));
           }
           resolve(channels)
-        })
+        });
+      }).catch(function(err) {
+        reject(err);
       })
     })
   }
@@ -173,7 +179,7 @@ export class Output {
         Output._callback[Output._id] = [];
       }
       Output._callback[Output._id] = ({resolve});
-      exec('CallHost', 'getBroadcastChannelList:'+Output._id)
+      exec('CallHost', 'getBroadcastChannelList:'+Output._id);
     })
   }
 }
