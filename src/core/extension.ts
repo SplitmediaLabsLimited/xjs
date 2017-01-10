@@ -78,8 +78,8 @@ export class Extension {
   getId(): Promise<string> {
     return new Promise(resolve => {
       if(this._id === undefined) {
-        App.postMessage("8")
         Extension._callback['ExtensionWindowID'] = ({resolve})
+        App.postMessage("8")
       } else {
         resolve(this._id)
       }

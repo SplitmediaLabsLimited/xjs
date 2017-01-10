@@ -219,10 +219,13 @@ describe('ExtensionWindow ===', function() {
       expect(ExtensionObj['height']).toEqual(String(newHeight));
     });
 
-    it('setting title', function() {
+    it('setting title', function(done) {
       var newWord = randomWord(10);
       testExtension.setTitle(newWord);
-      expect(ExtensionObj['title']).toEqual(newWord);
+      setTimeout(function() {
+        expect(ExtensionObj['title']).toEqual(newWord);
+        done();
+      }, 10);
     });
 
     it('setting border', function() {
