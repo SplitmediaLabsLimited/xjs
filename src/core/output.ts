@@ -58,7 +58,10 @@ export class Output {
       if (Environment.isExtension()) {
         _checkId = Extension.getInstance().getId()
       } else if (Environment.isSourcePlugin()) {
-        _checkId =  iItem.getBaseId()
+        _checkId = iItem.get('itemlist').then(result => {
+          let results = result.split(',')
+          return results[0]
+        })
       }
       _checkId.then(id => {
         Output._getBroadcastChannels(id).then(result => {
