@@ -374,7 +374,8 @@ export class AudioDevice{
       dSoundGuid : deviceJXON['DSoundGuid'],
       defaultCommunication : (deviceJXON['DefaultCommunication'] === '1'),
       defaultConsole : (deviceJXON['DefaultConsole'] === '1'),
-      defaultMultimedia : (deviceJXON['DefaultMultimedia'] === '1')
+      defaultMultimedia : (deviceJXON['DefaultMultimedia'] === '1'),
+      mix: deviceJXON['mix']
     });
 
     audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level']*100 : 100))
