@@ -40,14 +40,10 @@ export class Output {
    *
    * ```javascript
    * var xjs = require('xjs');
-   * xjs.Output.getOutputList('{AAAAAAAA-AAAA-1A1A-1111-AAAAAAAAAAAA}')
+   *
+   * xjs.Output.getOutputList()
    * .then(function(outputs) {
-   *   for (var i=0; i< outputs.length; i++) {
-   *     //do something with the output here
-   *     if (outputs[i]['_name'] === 'Local Recording') {
-   *       outputs[i].startBroadcast()
-   *     }
-   *   }
+   *   // select your output here
    * })
    * ```
    */
@@ -90,11 +86,8 @@ export class Output {
   }
 
   /**
-   * param: (channel: string)
-   *
-   * ```
    * return: Promise<boolean>
-   * ```
+   *
    * Start a broadcast of the provided channel.
    */
   startBroadcast(): Promise<boolean> {
@@ -105,10 +98,8 @@ export class Output {
   }
 
   /**
-   * param: (channel: string)
-   * ```
    * return: Promise<boolean>
-   * ```
+   *
    * Stop a broadcast of the provided channel.
    */
   stopBroadcast(): Promise<boolean> {
