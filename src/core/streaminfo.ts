@@ -1,12 +1,19 @@
 import {App as iApp} from '../internal/app';
 import {JSON as JXON} from '../internal/util/json';
+import {exec} from '../internal/internal';
+import {XML} from '../internal/util/xml';
 
-export class Channel {
+/**
+ * The StreamInfo class provides methods to monitor the current stream activity
+ * and other details.
+ */
+
+export class StreamInfo {
   private _name: string;
   private _stat: JXON;
   private _channel: JXON;
 
-  /** Channel constructor (only used internally) */
+  /** StreamInfo constructor (only used internally) */
   constructor(props: {name: string, stat: JXON, channel: JXON}) {
     this._name = props.name;
     this._stat = props.stat;
@@ -14,11 +21,11 @@ export class Channel {
   }
 
   /**
-   *  return: Promise<Channel[]>
+   *  return: Promise<StreamInfo[]>
    *
    *  Gets the list of currently active channels.
    */
-  static getActiveStreamChannels(): Promise<Channel[]> {
+  static getActiveStreamChannels(): Promise<StreamInfo[]> {
     return new Promise(resolve => {
       iApp.getAsList('recstat').then(activeStreams => {
         if (activeStreams.length === 0) {
@@ -26,7 +33,7 @@ export class Channel {
         } else {
           let channels = [];
           for (var i = 0; i < activeStreams.length; ++i) {
-            channels.push(new Channel({
+            channels.push(new StreamInfo({
               name: activeStreams[i]['name'],
               stat: activeStreams[i].children.filter(child => {
                 return child.tag.toLowerCase() === 'stat';
@@ -56,7 +63,8 @@ export class Channel {
   /**
    * return: Promise<number>
    *
-   * Gets the number of frames dropped */
+   * Gets the number of frames dropped
+   */
   getStreamDrops(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('streamdrops:' + this._name).then(val => {
@@ -71,7 +79,8 @@ export class Channel {
   /**
    * return: Promise<number>
    *
-   * Gets the number of frames rendered  */
+   * Gets the number of frames rendered
+   */
   getStreamRenderedFrames(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('streamdrops:' + this._name).then(val => {
@@ -86,14 +95,30 @@ export class Channel {
   /**
    * return: Promise<number>
    *
-   * Gets the current duration of the stream in microseconds  */
+   * Gets the current duration of the stream in microseconds
+   */
   getStreamTime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('streamtime:' + this._name).then(val => {
          var duration: number = Number(val) / 10;
-
          resolve(duration);
       });
     });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the current bandwidth usage of the stream
+   */
+  getBandwidthUsage(): Promise<number> {
+    return new Promise(resolve => {
+      const usage = JSON.parse(iApp.getGlobalProperty('bandwidthusage-all'));
+      for (var i = 0; i < usage.length; i++) {
+        if (usage[i].ChannelName === this._name) {
+          resolve(usage[i].AvgBitrate)
+        }
+      }
+    })
   }
 }

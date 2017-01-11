@@ -9,6 +9,7 @@ import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, get
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
+import {Extension} from '../core/extension'
 
 const _RESIZE = '2';
 
@@ -69,7 +70,7 @@ export class ExtensionWindow extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. 
+   *  Allows listening to events that this class emits.
    *
    */
   static on(event: string, handler: Function) {
@@ -101,12 +102,12 @@ export class ExtensionWindow extends EventEmitter {
     } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
       //Just subscribe to the event. Emitter is already handled.
       if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
-        try{          
+        try{
           exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() );
         } catch (ex) {
           //This exception most probably for older versions which would work without subscribing to source list events.
-        }        
-      }       
+        }
+      }
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported.');
     }
@@ -132,8 +133,10 @@ export class ExtensionWindow extends EventEmitter {
    * Renames the extension window.
    */
   setTitle(value: string) {
-     ExtensionWindow._value = value;
-     App.postMessage('8');
+    let ext = Extension.getInstance()
+    ext.getId().then(id => {
+      exec("CallHost", "setExtensionWindowTitle:" + id, value);
+    })
   };
 
   /**
@@ -142,7 +145,7 @@ export class ExtensionWindow extends EventEmitter {
    * Modifies this extension's window border.
    *
    * '4' is th e base command on setting border flags.
-   * 
+   *
    * Flags can be:
    *     (bit 0 - enable border)
    *     (bit 1 - enable caption)
@@ -177,9 +180,6 @@ export class ExtensionWindow extends EventEmitter {
 }
 
 // for extensions
-window.Setid = function(id) {
-  exec('CallHost', 'setExtensionWindowTitle:' + id, ExtensionWindow._value);
-}
 
 window.SourcesListUpdate = (view, sources) => {
   if (Number(view) === 0) { // main view {
@@ -210,8 +210,7 @@ window.SourcesListSelect = (view, id) => {
     ExtensionWindow.emit('sources-list-select', id === '' ?
       null : id);
   }
-};  
-
+  };
 let oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
   if (Environment.isExtension()) {

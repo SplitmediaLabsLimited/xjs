@@ -1,10 +1,10 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('Channel ===', function() {
+describe('StreamInfo ===', function() {
   'use strict';
 
   var XJS = require('xjs');
-  var Channel = XJS.Channel;
+  var StreamInfo = XJS.StreamInfo;
 
   describe('should be able to get active stream channels', function() {
     beforeEach(function() {
@@ -85,16 +85,16 @@ describe('Channel ===', function() {
     });
 
     it('through a promise', function(done) {
-      var promise = Channel.getActiveStreamChannels();
+      var promise = StreamInfo.getActiveStreamChannels();
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
-    it('that returns an array of Channels', function(done) {
-      var promise = Channel.getActiveStreamChannels();
-      promise.then(function(channels) {
-        if (channels.length > 0) {
-          expect(channels).eachHasMethods('getStreamDrops, getStreamTime, ' +
+    it('that returns an array of StreamInfo', function(done) {
+      var promise = StreamInfo.getActiveStreamChannels();
+      promise.then(function(streaminfo) {
+        if (streaminfo.length > 0) {
+          expect(streaminfo).eachHasMethods('getStreamDrops, getStreamTime, ' +
             'getName, getStreamRenderedFrames');
         }
         done();
@@ -120,17 +120,17 @@ describe('Channel ===', function() {
     });
 
     it('that returns an empty array when nothing is present', function(done) {
-      var promise = Channel.getActiveStreamChannels();
-      promise.then(function(channels) {
+      var promise = StreamInfo.getActiveStreamChannels();
+      promise.then(function(streaminfo) {
         var emptyArray = [];
-        expect(channels).toBeInstanceOf(Array);
-        expect(channels).toEqual(emptyArray);
+        expect(streaminfo).toBeInstanceOf(Array);
+        expect(streaminfo).toEqual(emptyArray);
         done();
       });
     });
   });
 
-  describe('where each channel', function() {
+  describe('where each stream info', function() {
     var channelLocal;
     var isEmpty = false;
     beforeEach(function(done) {
@@ -228,9 +228,9 @@ describe('Channel ===', function() {
           return asyncId;
         }
       });
-      Channel.getActiveStreamChannels()
-      .then(function(channels) {
-        channelLocal = channels[0];
+      StreamInfo.getActiveStreamChannels()
+      .then(function(streaminfo) {
+        channelLocal = streaminfo[0];
         done();
       });
       

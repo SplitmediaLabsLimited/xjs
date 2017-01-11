@@ -3,7 +3,7 @@
 
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
-import {Channel} from './channel';
+import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
 
@@ -42,7 +42,7 @@ export class ChannelManager extends EventEmitter {
    *  Allows listening to events that this class emits. Currently there are two:
    *  `stream-start` and `stream-end`.
    *
-   *  Sample usage:
+   *  #### Usage:
    *
    * ```javascript
    * ChannelManager.on('stream-start', function(res) {
@@ -89,7 +89,7 @@ export class ChannelManager extends EventEmitter {
             statJSON = JXON.parse('<stat />');
           }
 
-          let eventChannel: Channel = new Channel({
+          let eventChannel: StreamInfo = new StreamInfo({
             name: channelName,
             stat: statJSON,
             channel: infoJSON
