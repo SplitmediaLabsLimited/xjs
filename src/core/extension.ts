@@ -2,10 +2,15 @@
 
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+import {App} from '../internal/app';
 
 export class Extension {
   private static _instance: Extension;
   private _presName: string;
+
+  static _callback = {};
+  protected _id: string;
+
 
   /**
    *  Gets the instance of the Extension class. Use this instead of the constructor.
@@ -14,6 +19,9 @@ export class Extension {
     if (Extension._instance === undefined) {
       Extension._instance = new Extension();
     }
+    Extension._instance.getId().then(id => {
+      Extension._instance._id = String(id);
+    })
     return Extension._instance;
   }
 
@@ -61,4 +69,24 @@ export class Extension {
       });
     });
   }
+
+  /**
+   *  return: Promise<string>
+   *
+   *  Get the extension id.
+   */
+  getId(): Promise<string> {
+    return new Promise(resolve => {
+      if(this._id === undefined) {
+        Extension._callback['ExtensionWindowID'] = ({resolve});
+        App.postMessage("8");
+      } else {
+        resolve(this._id);
+      }
+    })
+  }
 }
+
+window.Setid = function(id) {
+    Extension._callback['ExtensionWindowID'].resolve(id);
+  }

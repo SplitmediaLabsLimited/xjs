@@ -3,7 +3,7 @@
 
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
-import {Channel} from './channel';
+import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
 
@@ -42,7 +42,7 @@ export class ChannelManager extends EventEmitter {
    *  Allows listening to events that this class emits. Currently there are two:
    *  `stream-start` and `stream-end`.
    *
-   *  Sample usage:
+   *  #### Usage:
    *
    * ```javascript
    * ChannelManager.on('stream-start', function(res) {
@@ -73,16 +73,23 @@ export class ChannelManager extends EventEmitter {
             channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
             channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
             channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
+            channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
+            channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
+            channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
             
-            statJSON = JXON.parse('<stat frmdropped="' +
-              channelInfoObj['Dropped'] +
-              '" frmcoded="' + channelInfoObj['NotDropped'] + '" />');
+            statJSON = JXON.parse('<stat' + 
+              ' video="' + channelInfoObj['Video'] +
+              '" audio="' + channelInfoObj['Audio'] +
+              '" output="' + channelInfoObj['Output'] +
+              '" frmdropped="' + channelInfoObj['Dropped'] +
+              '" frmcoded="' + channelInfoObj['NotDropped'] +
+              '" />');
             addedInfo['streamTime'] = channelInfoObj['StreamTime'];
           } else if (event === 'stream-start') {
             statJSON = JXON.parse('<stat />');
           }
 
-          let eventChannel: Channel = new Channel({
+          let eventChannel: StreamInfo = new StreamInfo({
             name: channelName,
             stat: statJSON,
             channel: infoJSON

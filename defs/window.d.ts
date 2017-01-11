@@ -16,4 +16,5 @@ interface Window {
   SetEvent: Function;
   AppOnEvent: Function;
   SourcesListUpdate: Function;
+  SetBroadcastChannelList: Function;
 }

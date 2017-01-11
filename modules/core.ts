@@ -2,11 +2,11 @@ export * from '../src/core/environment';
 export * from '../src/core/app';
 export * from '../src/core/scene';
 export * from '../src/core/transition';
-export * from '../src/core/channel';
+export * from '../src/core/streaminfo';
 export * from '../src/core/channelmanager';
 export * from '../src/core/dll';
 export * from '../src/core/extension';
-
+export * from '../src/core/output';
 export {Item} from '../src/core/items/item';
 export * from '../src/core/items/camera';
 export * from '../src/core/items/game';

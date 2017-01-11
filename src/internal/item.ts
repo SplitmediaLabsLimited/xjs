@@ -73,7 +73,7 @@ export class Item {
         .lessThan(minVersion)) {
         Item.get(name, id).then(val => {
           resolve(val);
-        });        
+        });
       } else {
         Item.get('itemlist', id).then(itemlist => {
           return new Promise<string>(resolveInner => {
@@ -183,7 +183,7 @@ export class Item {
         .lessThan(minVersion)) {
         Item.set(name, value, id).then(val => {
           resolve(val);
-        });       
+        });
       } else {
         Item.get('itemlist', id).then(itemlist => {
           return new Promise<string>(resolveInner => {
@@ -251,7 +251,7 @@ export class Item {
             resolve(val);
           });
         });
-      }      
+      }
     });
   }
 
@@ -284,12 +284,12 @@ export class Item {
     });
   }
 
-  /** helper function to get current source on init */
+  /** For SourceProps and XBC version 2.7 below */
   static setBaseId(id: string): void {
     Item.baseID = id;
   }
 
-  /** helper function for Source.getCurrentSource() */
+  /** For SourceProps and XBC version 2.7 below */
   static getBaseId(): string {
     return Item.baseID;
   }

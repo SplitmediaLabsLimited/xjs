@@ -44,12 +44,12 @@ describe('App ===', function() {
     });
 
     it('through a promise', function() {
-      var promise = App.getFrametime();
+      var promise = App.getFrameTime();
       expect(promise).toBeInstanceOf(Promise);
     });
 
     it('that always return as a number', function(done) {
-      var promise = App.getFrametime();
+      var promise = App.getFrameTime();
       promise.then(function(count) {
         expect(count).toBeTypeOf('number');
         expect(count).not.toBeNaN();

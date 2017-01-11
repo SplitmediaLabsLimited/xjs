@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.0.0
+ * version: 2.1.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -91,7 +91,7 @@ var App = (function () {
      * });
      * ```
      */
-    App.prototype.getFrametime = function () {
+    App.prototype.getFrameTime = function () {
         return new Promise(function (resolve) {
             app_1.App.get('frametime').then(function (val) {
                 resolve(Number(val));
@@ -1041,98 +1041,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":47,"../internal/internal":51,"../internal/util/json":53,"../internal/util/version":56,"../internal/util/xml":57,"../system/audio":58,"../util/rectangle":71,"./environment":5,"./transition":46}],2:[function(require,module,exports){
-var app_1 = require('../internal/app');
-var Channel = (function () {
-    /** Channel constructor (only used internally) */
-    function Channel(props) {
-        this._name = props.name;
-        this._stat = props.stat;
-        this._channel = props.channel;
-    }
-    /**
-     *  return: Promise<Channel[]>
-     *
-     *  Gets the list of currently active channels.
-     */
-    Channel.getActiveStreamChannels = function () {
-        return new Promise(function (resolve) {
-            app_1.App.getAsList('recstat').then(function (activeStreams) {
-                if (activeStreams.length === 0) {
-                    resolve([]);
-                }
-                else {
-                    var channels = [];
-                    for (var i = 0; i < activeStreams.length; ++i) {
-                        channels.push(new Channel({
-                            name: activeStreams[i]['name'],
-                            stat: activeStreams[i].children.filter(function (child) {
-                                return child.tag.toLowerCase() === 'stat';
-                            })[0],
-                            channel: activeStreams[i].children.filter(function (child) {
-                                return child.tag.toLowerCase() === 'channel';
-                            })[0]
-                        }));
-                    }
-                    resolve(channels);
-                }
-            });
-        });
-    };
-    /**
-     *  return: Promise<string>
-     *
-     *  Gets the name of the channel.
-     */
-    Channel.prototype.getName = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            resolve(_this._name);
-        });
-    };
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames dropped */
-    Channel.prototype.getStreamDrops = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
-                var drops = val.split(','), dropped = Number(drops[0]) || 0;
-                resolve(dropped);
-            });
-        });
-    };
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames rendered  */
-    Channel.prototype.getStreamRenderedFrames = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
-                var drops = val.split(','), rendered = Number(drops[1]) || 0;
-                resolve(rendered);
-            });
-        });
-    };
-    /**
-     * return: Promise<number>
-     *
-     * Gets the current duration of the stream in microseconds  */
-    Channel.prototype.getStreamTime = function () {
-        var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.get('streamtime:' + _this._name).then(function (val) {
-                var duration = Number(val) / 10;
-                resolve(duration);
-            });
-        });
-    };
-    return Channel;
-})();
-exports.Channel = Channel;
-},{"../internal/app":47}],3:[function(require,module,exports){
+},{"../internal/app":48,"../internal/internal":52,"../internal/util/json":54,"../internal/util/version":57,"../internal/util/xml":58,"../system/audio":59,"../util/rectangle":72,"./environment":4,"./transition":47}],2:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1143,7 +1052,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var eventemitter_1 = require('../util/eventemitter');
 var eventmanager_1 = require('../internal/eventmanager');
-var channel_1 = require('./channel');
+var streaminfo_1 = require('./streaminfo');
 var json_1 = require('../internal/util/json');
 var environment_1 = require('./environment');
 /**
@@ -1185,7 +1094,7 @@ var ChannelManager = (function (_super) {
      *  Allows listening to events that this class emits. Currently there are two:
      *  `stream-start` and `stream-end`.
      *
-     *  Sample usage:
+     *  #### Usage:
      *
      * ```javascript
      * ChannelManager.on('stream-start', function(res) {
@@ -1215,15 +1124,22 @@ var ChannelManager = (function (_super) {
                         channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
                         channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
                         channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
-                        statJSON = json_1.JSON.parse('<stat frmdropped="' +
-                            channelInfoObj['Dropped'] +
-                            '" frmcoded="' + channelInfoObj['NotDropped'] + '" />');
+                        channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
+                        channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
+                        channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
+                        statJSON = json_1.JSON.parse('<stat' +
+                            ' video="' + channelInfoObj['Video'] +
+                            '" audio="' + channelInfoObj['Audio'] +
+                            '" output="' + channelInfoObj['Output'] +
+                            '" frmdropped="' + channelInfoObj['Dropped'] +
+                            '" frmcoded="' + channelInfoObj['NotDropped'] +
+                            '" />');
                         addedInfo['streamTime'] = channelInfoObj['StreamTime'];
                     }
                     else if (event === 'stream-start') {
                         statJSON = json_1.JSON.parse('<stat />');
                     }
-                    var eventChannel = new channel_1.Channel({
+                    var eventChannel = new streaminfo_1.StreamInfo({
                         name: channelName,
                         stat: statJSON,
                         channel: infoJSON
@@ -1258,7 +1174,7 @@ eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (se
         ChannelManager.emit(eventString, settingsObj['info']);
     }
 });
-},{"../internal/eventmanager":48,"../internal/util/json":53,"../util/eventemitter":68,"./channel":2,"./environment":5}],4:[function(require,module,exports){
+},{"../internal/eventmanager":49,"../internal/util/json":54,"../util/eventemitter":69,"./environment":4,"./streaminfo":46}],3:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1428,7 +1344,7 @@ window.Setdlldogrant = function (value) {
         Dll.emit('access-revoked');
     }
 };
-},{"../internal/internal":51,"../util/eventemitter":68}],5:[function(require,module,exports){
+},{"../internal/internal":52,"../util/eventemitter":69}],4:[function(require,module,exports){
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -1482,10 +1398,11 @@ var Environment = (function () {
 })();
 exports.Environment = Environment;
 Environment.initialize();
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var internal_1 = require('../internal/internal');
+var app_1 = require('../internal/app');
 var Extension = (function () {
     function Extension() {
         if (environment_1.Environment.isExtension()) {
@@ -1502,6 +1419,9 @@ var Extension = (function () {
         if (Extension._instance === undefined) {
             Extension._instance = new Extension();
         }
+        Extension._instance.getId().then(function (id) {
+            Extension._instance._id = String(id);
+        });
         return Extension._instance;
     };
     /**
@@ -1538,10 +1458,31 @@ var Extension = (function () {
             });
         });
     };
+    /**
+     *  return: Promise<string>
+     *
+     *  Get the extension id.
+     */
+    Extension.prototype.getId = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._id === undefined) {
+                Extension._callback['ExtensionWindowID'] = ({ resolve: resolve });
+                app_1.App.postMessage("8");
+            }
+            else {
+                resolve(_this._id);
+            }
+        });
+    };
+    Extension._callback = {};
     return Extension;
 })();
 exports.Extension = Extension;
-},{"../core/environment":5,"../internal/internal":51}],7:[function(require,module,exports){
+window.Setid = function (id) {
+    Extension._callback['ExtensionWindowID'].resolve(id);
+};
+},{"../core/environment":4,"../internal/app":48,"../internal/internal":52}],6:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1590,7 +1531,7 @@ var AudioItem = (function (_super) {
 })(item_1.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/iaudiosource":30,"./item":17}],8:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/iaudiosource":30,"./item":16}],7:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1717,7 +1658,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [item_2.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, icamera_1.SourceCamera]);
-},{"../../internal/item":52,"../../internal/util/mixin":55,"../source/iaudio":29,"../source/icamera":31,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],9:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/mixin":56,"../source/iaudio":29,"../source/icamera":31,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1762,7 +1703,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/iflash":33,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],10:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/iflash":33,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],9:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1822,7 +1763,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igame_1.iSourceGame]);
-},{"../../internal/util/mixin":55,"../source/igame":34,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],11:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/igame":34,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],10:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1904,7 +1845,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/internal":51,"../../internal/item":52,"../../internal/util/mixin":55,"../source/iaudio":29,"../source/iconfig":32,"../source/ihtml":35,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],12:[function(require,module,exports){
+},{"../../internal/internal":52,"../../internal/item":53,"../../internal/util/mixin":56,"../source/iaudio":29,"../source/iconfig":32,"../source/ihtml":35,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -2288,7 +2229,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":52,"../../util/color":67}],13:[function(require,module,exports){
+},{"../../internal/item":53,"../../util/color":68}],12:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -2442,7 +2383,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":52,"../../util/color":67}],14:[function(require,module,exports){
+},{"../../internal/item":53,"../../util/color":68}],13:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -3000,7 +2941,7 @@ var ItemEffect = (function () {
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":52,"../../util/color":67}],15:[function(require,module,exports){
+},{"../../internal/item":53,"../../util/color":68}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -3612,7 +3553,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":52,"../../util/rectangle":71}],16:[function(require,module,exports){
+},{"../../internal/item":53,"../../util/rectangle":72}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3650,7 +3591,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":55,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],17:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],16:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4041,7 +3982,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":47,"../../internal/item":52,"../../internal/util/json":53,"../../internal/util/mixin":55,"../../internal/util/version":56,"../../internal/util/xml":57,"../scene":22,"../source/audio":23,"../source/camera":24,"../source/flash":26,"../source/game":27,"../source/html":28,"../source/image":36,"../source/isource":40,"../source/media":42,"../source/screen":43,"../source/source":44,"../source/videoplaylist":45,"./ilayout":15}],18:[function(require,module,exports){
+},{"../../internal/app":48,"../../internal/item":53,"../../internal/util/json":54,"../../internal/util/mixin":56,"../../internal/util/version":57,"../../internal/util/xml":58,"../scene":22,"../source/audio":23,"../source/camera":24,"../source/flash":26,"../source/game":27,"../source/html":28,"../source/image":36,"../source/isource":40,"../source/media":42,"../source/screen":43,"../source/source":44,"../source/videoplaylist":45,"./ilayout":14}],17:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -4109,7 +4050,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":52,"../transition":46}],19:[function(require,module,exports){
+},{"../../internal/item":53,"../transition":47}],18:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4152,7 +4093,7 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.SourcePlayback, iaudio_1.Audio, ieffects_1.ItemEffect, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/imedia":37,"../source/iplayback":38,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],20:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/imedia":37,"../source/iplayback":38,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],19:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4192,7 +4133,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":55,"../source/iscreen":39,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],21:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iscreen":39,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],20:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4247,7 +4188,196 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback]);
-},{"../../internal/util/mixin":55,"../source/iconfig":32,"../source/iplayback":38,"../source/ivideoplaylist":41,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],22:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iconfig":32,"../source/iplayback":38,"../source/ivideoplaylist":41,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],21:[function(require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var internal_1 = require('../internal/internal');
+var environment_1 = require('./environment');
+var extension_1 = require('./extension');
+var streaminfo_1 = require('./streaminfo');
+var json_1 = require('../internal/util/json');
+var item_1 = require('../internal/item');
+/**
+ * The Output class provides methods to start and stop a stream/recording
+ * and pause or unpause a Local Recording.
+ */
+var Output = (function () {
+    function Output(props) {
+        this._name = props.name;
+    }
+    /**
+     * param: (id: string)
+     *
+     * ```
+     * return Promise<Output[]>
+     * ```
+     *
+     * Fetch all available Outputs you can broadcast on based on your installed
+     * Broadcast plugin.
+     *
+     * ### Basic Usage
+     *
+     * ```javascript
+     * var xjs = require('xjs');
+     *
+     * xjs.Output.getOutputList()
+     * .then(function(outputs) {
+     *   outputs.map(output => {
+     *    output.getName()
+     *    .then(function(name) {
+     *      if(name.includes('Twitch')) {
+     *        output.startBroadcast();
+     *      }
+     *    })
+     *  })
+     * })
+     * ```
+     */
+    Output.getOutputList = function () {
+        return new Promise(function (resolve, reject) {
+            var _id;
+            var _checkId;
+            if (environment_1.Environment.isExtension()) {
+                _checkId = extension_1.Extension.getInstance().getId();
+            }
+            else if (environment_1.Environment.isSourcePlugin()) {
+                _checkId = item_1.Item.get('itemlist').then(function (result) {
+                    var results = result.split(',');
+                    return results[0];
+                });
+            }
+            else {
+                _checkId = new Promise(function (innerResolve, innerReject) {
+                    innerReject(Error('Outputs class is not accessible to source properties.'));
+                });
+            }
+            _checkId.then(function (id) {
+                Output._getBroadcastChannels(id).then(function (result) {
+                    var results = json_1.JSON.parse(result);
+                    var channels = [];
+                    for (var i = 0; i < results.children.length; i++) {
+                        channels.push(new Output({
+                            name: results.children[i]['name']
+                        }));
+                    }
+                    resolve(channels);
+                });
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    /**
+     *  return: Promise<string>
+     *
+     *  Gets the name of the Output.
+     */
+    Output.prototype.getName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this._name);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Start a broadcast of the provided channel.
+     */
+    Output.prototype.startBroadcast = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'startBroadcast', _this._name);
+            resolve(true);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Stop a broadcast of the provided channel.
+     */
+    Output.prototype.stopBroadcast = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'stopBroadcast', _this._name);
+            resolve(true);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Pause a local recording.
+     */
+    Output.prototype.pauseLocalRecording = function () {
+        return new Promise(function (resolve, reject) {
+            streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
+                for (var i = 0; i < channels.length; i++) {
+                    if (channels[i]['_name'] === 'Local Recording') {
+                        Output._localRecording = true;
+                    }
+                    else {
+                        Output._localRecording = false;
+                    }
+                }
+                if (Output._localRecording) {
+                    internal_1.exec('CallHost', 'pauseRecording');
+                    resolve(true);
+                }
+                else {
+                    reject(Error('Local recording is not active.'));
+                }
+            });
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Unpause a local recording.
+     */
+    Output.prototype.unpauseLocalRecording = function () {
+        return new Promise(function (resolve, reject) {
+            streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
+                for (var i = 0; i < channels.length; i++) {
+                    if (channels[i]['_name'] === 'Local Recording') {
+                        Output._localRecording = true;
+                    }
+                    else {
+                        Output._localRecording = false;
+                    }
+                }
+                if (Output._localRecording) {
+                    internal_1.exec('CallHost', 'unpauseRecording');
+                    resolve(true);
+                }
+                else {
+                    reject(Error('Local recording is not active.'));
+                }
+            });
+        });
+    };
+    Output._getBroadcastChannels = function (id) {
+        Output._id = id;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                var isID = /^{[A-F0-9\-]*}$/i.test(Output._id);
+                if (!isID) {
+                    reject(Error('Not a valid ID format for items'));
+                }
+            }
+            if (Output._callback[Output._id] === undefined) {
+                Output._callback[Output._id] = [];
+            }
+            Output._callback[Output._id] = ({ resolve: resolve });
+            internal_1.exec('CallHost', 'getBroadcastChannelList:' + Output._id);
+        });
+    };
+    Output._callback = {};
+    Output._localRecording = false;
+    return Output;
+})();
+exports.Output = Output;
+window.SetBroadcastChannelList = function (channels) {
+    Output._callback[Output._id].resolve(channels);
+};
+},{"../internal/internal":52,"../internal/item":53,"../internal/util/json":54,"./environment":4,"./extension":5,"./streaminfo":46}],22:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -5476,7 +5606,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":47,"../internal/internal":51,"../internal/util/json":53,"../internal/util/version":56,"../internal/util/xml":57,"./environment":5,"./items/audio":7,"./items/camera":8,"./items/flash":9,"./items/game":10,"./items/html":11,"./items/image":16,"./items/item":17,"./items/media":19,"./items/screen":20,"./items/videoplaylist":21,"./source/audio":23,"./source/camera":24,"./source/flash":26,"./source/game":27,"./source/html":28,"./source/image":36,"./source/isource":40,"./source/media":42,"./source/screen":43,"./source/source":44,"./source/videoplaylist":45}],23:[function(require,module,exports){
+},{"../internal/app":48,"../internal/internal":52,"../internal/util/json":54,"../internal/util/version":57,"../internal/util/xml":58,"./environment":4,"./items/audio":6,"./items/camera":7,"./items/flash":8,"./items/game":9,"./items/html":10,"./items/image":15,"./items/item":16,"./items/media":18,"./items/screen":19,"./items/videoplaylist":20,"./source/audio":23,"./source/camera":24,"./source/flash":26,"./source/game":27,"./source/html":28,"./source/image":36,"./source/isource":40,"./source/media":42,"./source/screen":43,"./source/source":44,"./source/videoplaylist":45}],23:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5527,7 +5657,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/iaudiosource":30,"../source/source":44}],24:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/iaudiosource":30,"../source/source":44}],24:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5578,7 +5708,7 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [iaudio_1.Audio, icamera_1.SourceCamera]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/icamera":31,"../source/source":44}],25:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/icamera":31,"../source/source":44}],25:[function(require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -5695,7 +5825,7 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [iaudio_1.Audio, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/source":44,"./iflash":33}],27:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/source":44,"./iflash":33}],27:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5745,7 +5875,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [igame_1.iSourceGame]);
-},{"../../internal/util/mixin":55,"../source/source":44,"./igame":34}],28:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/source":44,"./igame":34}],28:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5797,7 +5927,7 @@ var HtmlSource = (function (_super) {
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurable, iaudio_1.Audio]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/ihtml":35,"../source/source":44,"./iconfig":32}],29:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/ihtml":35,"../source/source":44,"./iconfig":32}],29:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var Audio = (function () {
@@ -5863,7 +5993,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":52}],30:[function(require,module,exports){
+},{"../../internal/item":53}],30:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var logger_1 = require('../../internal/util/logger');
@@ -6035,7 +6165,7 @@ var SourceAudio = (function () {
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":52,"../../internal/util/logger":54}],31:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":55}],31:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var system_1 = require('../../system/system');
@@ -6384,7 +6514,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":52,"../../internal/util/logger":54,"../../system/system":64}],32:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":55,"../../system/system":65}],32:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -6492,7 +6622,7 @@ var SourceConfigurable = (function () {
     return SourceConfigurable;
 })();
 exports.SourceConfigurable = SourceConfigurable;
-},{"../../internal/global":49,"../../internal/internal":51,"../../internal/item":52,"../../internal/util/logger":54,"../environment":5}],33:[function(require,module,exports){
+},{"../../internal/global":50,"../../internal/internal":52,"../../internal/item":53,"../../internal/util/logger":55,"../environment":4}],33:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var rectangle_1 = require('../../util/rectangle');
@@ -6580,7 +6710,7 @@ var SourceFlash = (function () {
     return SourceFlash;
 })();
 exports.SourceFlash = SourceFlash;
-},{"../../internal/item":52,"../../internal/util/logger":54,"../../util/rectangle":71}],34:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":55,"../../util/rectangle":72}],34:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var environment_1 = require('../environment');
@@ -6711,7 +6841,7 @@ var iSourceGame = (function () {
     return iSourceGame;
 })();
 exports.iSourceGame = iSourceGame;
-},{"../../internal/item":52,"../../internal/util/json":53,"../../internal/util/logger":54,"../../internal/util/xml":57,"../environment":5,"./isource":40}],35:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/json":54,"../../internal/util/logger":55,"../../internal/util/xml":58,"../environment":4,"./isource":40}],35:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var internal_1 = require('../../internal/internal');
 var item_1 = require('../../internal/item');
@@ -7246,7 +7376,7 @@ var iSourceHtml = (function () {
     return iSourceHtml;
 })();
 exports.iSourceHtml = iSourceHtml;
-},{"../../internal/internal":51,"../../internal/item":52,"../../internal/util/logger":54,"../../util/rectangle":71,"../environment":5}],36:[function(require,module,exports){
+},{"../../internal/internal":52,"../../internal/item":53,"../../internal/util/logger":55,"../../util/rectangle":72,"../environment":4}],36:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -7349,7 +7479,7 @@ var SourceMedia = (function () {
     return SourceMedia;
 })();
 exports.SourceMedia = SourceMedia;
-},{"../../internal/item":52,"../../internal/util/json":53,"../../internal/util/logger":54}],38:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/json":54,"../../internal/util/logger":55}],38:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var cuepoint_1 = require('./cuepoint');
@@ -7675,7 +7805,7 @@ var SourcePlayback = (function () {
     return SourcePlayback;
 })();
 exports.SourcePlayback = SourcePlayback;
-},{"../../internal/item":52,"../../internal/util/logger":54,"./cuepoint":25}],39:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":55,"./cuepoint":25}],39:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var xml_1 = require('../../internal/util/xml');
@@ -7964,7 +8094,7 @@ var iSourceScreen = (function () {
     return iSourceScreen;
 })();
 exports.iSourceScreen = iSourceScreen;
-},{"../../internal/item":52,"../../internal/util/json":53,"../../internal/util/logger":54,"../../internal/util/xml":57,"../../util/rectangle":71}],40:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/json":54,"../../internal/util/logger":55,"../../internal/util/xml":58,"../../util/rectangle":72}],40:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var version_1 = require('../../internal/util/version');
@@ -8278,7 +8408,7 @@ var iSource = (function () {
     return iSource;
 })();
 exports.iSource = iSource;
-},{"../../internal/item":52,"../../internal/util/json":53,"../../internal/util/logger":54,"../../internal/util/version":56,"../../internal/util/xml":57,"../scene":22}],41:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/json":54,"../../internal/util/logger":55,"../../internal/util/version":57,"../../internal/util/xml":58,"../scene":22}],41:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var io_1 = require('../../util/io');
@@ -8421,7 +8551,7 @@ var SourceVideoPlaylist = (function () {
     return SourceVideoPlaylist;
 })();
 exports.SourceVideoPlaylist = SourceVideoPlaylist;
-},{"../../internal/item":52,"../../internal/util/logger":54,"../../util/io":69}],42:[function(require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":55,"../../util/io":70}],42:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8472,7 +8602,7 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":55,"../source/iaudio":29,"../source/source":44,"./imedia":37,"./iplayback":38}],43:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/iaudio":29,"../source/source":44,"./imedia":37,"./iplayback":38}],43:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8756,7 +8886,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [isource_1.iSource]);
-},{"../../internal/app":47,"../../internal/item":52,"../../internal/util/mixin":55,"../../internal/util/version":56,"../environment":5,"../scene":22,"../source/isource":40}],45:[function(require,module,exports){
+},{"../../internal/app":48,"../../internal/item":53,"../../internal/util/mixin":56,"../../internal/util/version":57,"../environment":4,"../scene":22,"../source/isource":40}],45:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8808,7 +8938,121 @@ var VideoPlaylistSource = (function (_super) {
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
 mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist]);
-},{"../../internal/util/mixin":55,"../source/source":44,"./iconfig":32,"./ivideoplaylist":41}],46:[function(require,module,exports){
+},{"../../internal/util/mixin":56,"../source/source":44,"./iconfig":32,"./ivideoplaylist":41}],46:[function(require,module,exports){
+var app_1 = require('../internal/app');
+/**
+ * The StreamInfo class provides methods to monitor the current stream activity
+ * and other details.
+ */
+var StreamInfo = (function () {
+    /** StreamInfo constructor (only used internally) */
+    function StreamInfo(props) {
+        this._name = props.name;
+        this._stat = props.stat;
+        this._channel = props.channel;
+    }
+    /**
+     *  return: Promise<StreamInfo[]>
+     *
+     *  Gets the list of currently active channels.
+     */
+    StreamInfo.getActiveStreamChannels = function () {
+        return new Promise(function (resolve) {
+            app_1.App.getAsList('recstat').then(function (activeStreams) {
+                if (activeStreams.length === 0) {
+                    resolve([]);
+                }
+                else {
+                    var channels = [];
+                    for (var i = 0; i < activeStreams.length; ++i) {
+                        channels.push(new StreamInfo({
+                            name: activeStreams[i]['name'],
+                            stat: activeStreams[i].children.filter(function (child) {
+                                return child.tag.toLowerCase() === 'stat';
+                            })[0],
+                            channel: activeStreams[i].children.filter(function (child) {
+                                return child.tag.toLowerCase() === 'channel';
+                            })[0]
+                        }));
+                    }
+                    resolve(channels);
+                }
+            });
+        });
+    };
+    /**
+     *  return: Promise<string>
+     *
+     *  Gets the name of the channel.
+     */
+    StreamInfo.prototype.getName = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            resolve(_this._name);
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames dropped
+     */
+    StreamInfo.prototype.getStreamDrops = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
+                var drops = val.split(','), dropped = Number(drops[0]) || 0;
+                resolve(dropped);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames rendered
+     */
+    StreamInfo.prototype.getStreamRenderedFrames = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('streamdrops:' + _this._name).then(function (val) {
+                var drops = val.split(','), rendered = Number(drops[1]) || 0;
+                resolve(rendered);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current duration of the stream in microseconds
+     */
+    StreamInfo.prototype.getStreamTime = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('streamtime:' + _this._name).then(function (val) {
+                var duration = Number(val) / 10;
+                resolve(duration);
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current bandwidth usage of the stream
+     */
+    StreamInfo.prototype.getBandwidthUsage = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var usage = JSON.parse(app_1.App.getGlobalProperty('bandwidthusage-all'));
+            for (var i = 0; i < usage.length; i++) {
+                if (usage[i].ChannelName === _this._name) {
+                    resolve(usage[i].AvgBitrate);
+                }
+            }
+        });
+    };
+    return StreamInfo;
+})();
+exports.StreamInfo = StreamInfo;
+},{"../internal/app":48}],47:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -8949,7 +9193,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":47}],47:[function(require,module,exports){
+},{"../internal/app":48}],48:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var json_1 = require('./util/json');
@@ -9029,7 +9273,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":51,"./util/json":53}],48:[function(require,module,exports){
+},{"./internal":52,"./util/json":54}],49:[function(require,module,exports){
 var internal_1 = require('./internal');
 /**
  * Usage:
@@ -9086,7 +9330,7 @@ window.AppOnEvent = function (event) {
         _cb({ event: event });
     });
 };
-},{"./internal":51}],49:[function(require,module,exports){
+},{"./internal":52}],50:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -9108,7 +9352,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = require('../core/environment');
 var item_1 = require('./item');
@@ -9240,7 +9484,7 @@ function init() {
     });
 }
 exports.default = init;
-},{"../core/environment":5,"../window/config":72,"./global":49,"./internal":51,"./item":52,"./util/version":56}],51:[function(require,module,exports){
+},{"../core/environment":4,"../window/config":73,"./global":50,"./internal":52,"./item":53,"./util/version":57}],52:[function(require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 exports.DEBUG = false;
 var _callbacks = {};
@@ -9285,7 +9529,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         callback.call(this, decodeURIComponent(result));
     }
 };
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('./internal');
 var environment_1 = require('../core/environment');
@@ -9542,11 +9786,11 @@ var Item = (function () {
             });
         });
     };
-    /** helper function to get current source on init */
+    /** For SourceProps and XBC version 2.7 below */
     Item.setBaseId = function (id) {
         Item.baseID = id;
     };
-    /** helper function for Source.getCurrentSource() */
+    /** For SourceProps and XBC version 2.7 below */
     Item.getBaseId = function () {
         return Item.baseID;
     };
@@ -9557,7 +9801,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":5,"../internal/app":47,"./internal":51,"./util/version":56}],53:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":48,"./internal":52,"./util/version":57}],54:[function(require,module,exports){
 var xml_1 = require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -9628,7 +9872,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":57}],54:[function(require,module,exports){
+},{"./xml":58}],55:[function(require,module,exports){
 var Logger = (function () {
     function Logger() {
     }
@@ -9662,7 +9906,7 @@ var Logger = (function () {
     return Logger;
 })();
 exports.Logger = Logger;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -9674,7 +9918,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /*
 * List here the versions where we would limit a functionality.
 */
@@ -9734,7 +9978,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -9789,7 +10033,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -10112,7 +10356,8 @@ var AudioDevice = (function () {
             dSoundGuid: deviceJXON['DSoundGuid'],
             defaultCommunication: (deviceJXON['DefaultCommunication'] === '1'),
             defaultConsole: (deviceJXON['DefaultConsole'] === '1'),
-            defaultMultimedia: (deviceJXON['DefaultMultimedia'] === '1')
+            defaultMultimedia: (deviceJXON['DefaultMultimedia'] === '1'),
+            mix: deviceJXON['mix']
         });
         audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] * 100 : 100))
             ._setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
@@ -10130,7 +10375,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":53,"../internal/util/xml":57}],59:[function(require,module,exports){
+},{"../internal/util/json":54,"../internal/util/xml":58}],60:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -10244,7 +10489,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":47,"../internal/util/json":53,"../internal/util/xml":57}],60:[function(require,module,exports){
+},{"../internal/app":48,"../internal/util/json":54,"../internal/util/xml":58}],61:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -10285,7 +10530,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/app":47}],61:[function(require,module,exports){
+},{"../internal/app":48}],62:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../util/rectangle');
 var json_1 = require('../internal/util/json');
@@ -10624,7 +10869,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":5,"../internal/app":47,"../internal/util/json":53,"../internal/util/xml":57,"../util/rectangle":71}],62:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":48,"../internal/util/json":54,"../internal/util/xml":58,"../util/rectangle":72}],63:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -10703,7 +10948,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":47,"../internal/util/json":53,"../internal/util/xml":57}],63:[function(require,module,exports){
+},{"../internal/app":48,"../internal/util/json":54,"../internal/util/xml":58}],64:[function(require,module,exports){
 var internal_1 = require('../internal/internal');
 /**
  *  This class servers to allow developers to add new screen regions or window
@@ -10725,7 +10970,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../internal/internal":51}],64:[function(require,module,exports){
+},{"../internal/internal":52}],65:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var audio_1 = require('./audio');
@@ -11035,7 +11280,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/environment":5,"../internal/app":47,"../internal/internal":51,"./audio":58,"./camera":59,"./game":61,"./microphone":62}],65:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":48,"../internal/internal":52,"./audio":59,"./camera":60,"./game":62,"./microphone":63}],66:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 /**
@@ -11098,7 +11343,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":47}],66:[function(require,module,exports){
+},{"../internal/app":48}],67:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
 var json_1 = require('../internal/util/json');
@@ -11238,7 +11483,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":5,"../internal/app":47,"../internal/util/json":53,"../internal/util/xml":57,"../util/io":69}],67:[function(require,module,exports){
+},{"../core/environment":4,"../internal/app":48,"../internal/util/json":54,"../internal/util/xml":58,"../util/io":70}],68:[function(require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -11314,7 +11559,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 // simple event emitter
 var EventEmitter = (function () {
     function EventEmitter() {
@@ -11353,7 +11598,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = require('../internal/internal');
 var environment_1 = require('../core/environment');
@@ -11517,7 +11762,7 @@ window.OnGetVideoDurationFailed = function (file) {
         delete IO._callback[decodeURIComponent(file)];
     }
 };
-},{"../core/environment":5,"../internal/internal":51}],70:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":52}],71:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = require('../internal/util/version');
 var init_1 = require('../internal/init');
@@ -11551,7 +11796,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../internal/init":50,"../internal/util/version":56}],71:[function(require,module,exports){
+},{"../internal/init":51,"../internal/util/version":57}],72:[function(require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -11768,7 +12013,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11936,7 +12181,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":5,"../internal/internal":51,"../util/eventemitter":68}],73:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":52,"../util/eventemitter":69}],74:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -12229,7 +12474,7 @@ window.OnDialogResult = function (result) {
             detail: result }));
     }
 };
-},{"../core/environment":5,"../internal/internal":51,"../util/rectangle":71}],74:[function(require,module,exports){
+},{"../core/environment":4,"../internal/internal":52,"../util/rectangle":72}],75:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -12246,6 +12491,7 @@ var version_1 = require('../internal/util/version');
 var internal_1 = require('../internal/internal');
 var app_1 = require('../internal/app');
 var item_1 = require('../core/items/item');
+var extension_1 = require('../core/extension');
 var _RESIZE = '2';
 /** This utility class represents the extension window. It allows manipulation
  *  of the window (e.g., resizing), and also serves as an event emitter
@@ -12362,8 +12608,10 @@ var ExtensionWindow = (function (_super) {
      * Renames the extension window.
      */
     ExtensionWindow.prototype.setTitle = function (value) {
-        ExtensionWindow._value = value;
-        app_1.App.postMessage('8');
+        var ext = extension_1.Extension.getInstance();
+        ext.getId().then(function (id) {
+            internal_1.exec("CallHost", "setExtensionWindowTitle:" + id, value);
+        });
     };
     ;
     /**
@@ -12405,9 +12653,6 @@ var ExtensionWindow = (function (_super) {
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;
 // for extensions
-window.Setid = function (id) {
-    internal_1.exec('CallHost', 'setExtensionWindowTitle:' + id, ExtensionWindow._value);
-};
 window.SourcesListUpdate = function (view, sources) {
     if (Number(view) === 0) {
         var propsJSON = json_1.JSON.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
@@ -12449,7 +12694,7 @@ window.OnSceneLoad = function () {
         oldOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":5,"../core/items/item":17,"../core/scene":22,"../internal/app":47,"../internal/eventmanager":48,"../internal/internal":51,"../internal/util/json":53,"../internal/util/version":56,"../util/eventemitter":68}],75:[function(require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":16,"../core/scene":22,"../internal/app":48,"../internal/eventmanager":49,"../internal/internal":52,"../internal/util/json":54,"../internal/util/version":57,"../util/eventemitter":69}],76:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -12602,7 +12847,7 @@ window.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":5,"../internal/eventmanager":48,"../internal/global":49,"../internal/util/version":56,"../util/eventemitter":68}],"xjs":[function(require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":49,"../internal/global":50,"../internal/util/version":57,"../util/eventemitter":69}],"xjs":[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -12611,7 +12856,8 @@ __export(require('./util/rectangle'));
 __export(require('./util/io'));
 __export(require('./core/environment'));
 __export(require('./core/app'));
-__export(require('./core/channel'));
+__export(require('./core/streaminfo'));
+__export(require('./core/output'));
 __export(require('./core/channelmanager'));
 __export(require('./core/scene'));
 __export(require('./core/transition'));
@@ -12666,4 +12912,4 @@ __export(require('./window/extension'));
 __export(require('./window/dialog'));
 var ready_1 = require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channel":2,"./core/channelmanager":3,"./core/dll":4,"./core/environment":5,"./core/extension":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/html":11,"./core/items/ichroma":12,"./core/items/ieffects":14,"./core/items/image":16,"./core/items/item":17,"./core/items/media":19,"./core/items/screen":20,"./core/items/videoplaylist":21,"./core/scene":22,"./core/source/audio":23,"./core/source/camera":24,"./core/source/cuepoint":25,"./core/source/flash":26,"./core/source/game":27,"./core/source/html":28,"./core/source/image":36,"./core/source/iplayback":38,"./core/source/isource":40,"./core/source/media":42,"./core/source/screen":43,"./core/source/source":44,"./core/source/videoplaylist":45,"./core/transition":46,"./system/audio":58,"./system/camera":59,"./system/file":60,"./system/game":61,"./system/microphone":62,"./system/screen":63,"./system/system":64,"./system/url":65,"./system/videoplaylist":66,"./util/color":67,"./util/io":69,"./util/ready":70,"./util/rectangle":71,"./window/config":72,"./window/dialog":73,"./window/extension":74,"./window/source":75}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/output":21,"./core/scene":22,"./core/source/audio":23,"./core/source/camera":24,"./core/source/cuepoint":25,"./core/source/flash":26,"./core/source/game":27,"./core/source/html":28,"./core/source/image":36,"./core/source/iplayback":38,"./core/source/isource":40,"./core/source/media":42,"./core/source/screen":43,"./core/source/source":44,"./core/source/videoplaylist":45,"./core/streaminfo":46,"./core/transition":47,"./system/audio":59,"./system/camera":60,"./system/file":61,"./system/game":62,"./system/microphone":63,"./system/screen":64,"./system/system":65,"./system/url":66,"./system/videoplaylist":67,"./util/color":68,"./util/io":70,"./util/ready":71,"./util/rectangle":72,"./window/config":73,"./window/dialog":74,"./window/extension":75,"./window/source":76}]},{},["xjs"]);
