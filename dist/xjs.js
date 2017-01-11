@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.1.0
+ * version: 2.1.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -4307,24 +4307,29 @@ var Output = (function () {
      * Pause a local recording.
      */
     Output.prototype.pauseLocalRecording = function () {
+        var _this = this;
         return new Promise(function (resolve, reject) {
-            streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
-                for (var i = 0; i < channels.length; i++) {
-                    if (channels[i]['_name'] === 'Local Recording') {
-                        Output._localRecording = true;
+            if (_this._name === 'Local Recording') {
+                streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
+                    Output._localRecording = false;
+                    for (var i = 0; i < channels.length; i++) {
+                        if (channels[i]['_name'] === 'Local Recording') {
+                            Output._localRecording = true;
+                            break;
+                        }
+                    }
+                    if (Output._localRecording) {
+                        internal_1.exec('CallHost', 'pauseRecording');
+                        resolve(true);
                     }
                     else {
-                        Output._localRecording = false;
+                        reject(Error('Local recording is not active.'));
                     }
-                }
-                if (Output._localRecording) {
-                    internal_1.exec('CallHost', 'pauseRecording');
-                    resolve(true);
-                }
-                else {
-                    reject(Error('Local recording is not active.'));
-                }
-            });
+                });
+            }
+            else {
+                reject(Error('Output is not a local recording'));
+            }
         });
     };
     /**
@@ -4333,24 +4338,29 @@ var Output = (function () {
      * Unpause a local recording.
      */
     Output.prototype.unpauseLocalRecording = function () {
+        var _this = this;
         return new Promise(function (resolve, reject) {
-            streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
-                for (var i = 0; i < channels.length; i++) {
-                    if (channels[i]['_name'] === 'Local Recording') {
-                        Output._localRecording = true;
+            if (_this._name === 'Local Recording') {
+                streaminfo_1.StreamInfo.getActiveStreamChannels().then(function (channels) {
+                    Output._localRecording = false;
+                    for (var i = 0; i < channels.length; i++) {
+                        if (channels[i]['_name'] === 'Local Recording') {
+                            Output._localRecording = true;
+                            break;
+                        }
+                    }
+                    if (Output._localRecording) {
+                        internal_1.exec('CallHost', 'unpauseRecording');
+                        resolve(true);
                     }
                     else {
-                        Output._localRecording = false;
+                        reject(Error('Local recording is not active.'));
                     }
-                }
-                if (Output._localRecording) {
-                    internal_1.exec('CallHost', 'unpauseRecording');
-                    resolve(true);
-                }
-                else {
-                    reject(Error('Local recording is not active.'));
-                }
-            });
+                });
+            }
+            else {
+                reject(Error('Output is not a local recording'));
+            }
         });
     };
     Output._getBroadcastChannels = function (id) {

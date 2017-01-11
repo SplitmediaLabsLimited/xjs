@@ -129,22 +129,27 @@ export class Output {
    */
   pauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      StreamInfo.getActiveStreamChannels().then(channels => {
-        for (var i=0; i < channels.length; i++) {
-          if(channels[i]['_name'] === 'Local Recording') {
-            Output._localRecording = true
-          } else {
-            Output._localRecording = false
+      if (this._name === 'Local Recording') {
+        StreamInfo.getActiveStreamChannels().then(channels => {
+          Output._localRecording = false;
+          for (var i=0; i < channels.length; i++) {
+            if(channels[i]['_name'] === 'Local Recording') {
+              Output._localRecording = true;
+              break;
+            }
           }
-        }
-        if(Output._localRecording) {
-          exec('CallHost', 'pauseRecording');
-          resolve(true)
-        } else {
-          reject(Error('Local recording is not active.'))
-        }
-      })
-    })
+          if(Output._localRecording) {
+            exec('CallHost', 'pauseRecording');
+            resolve(true);
+          } else {
+            reject(Error('Local recording is not active.'));
+          }
+        })
+
+      } else {
+        reject(Error('Output is not a local recording'));
+      }
+    });
   }
 
   /**
@@ -154,21 +159,26 @@ export class Output {
    */
   unpauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve,reject) => {
-      StreamInfo.getActiveStreamChannels().then(channels => {
-        for (var i=0; i < channels.length; i++) {
-          if(channels[i]['_name'] === 'Local Recording') {
-            Output._localRecording = true
-          } else {
-            Output._localRecording = false
+      if (this._name === 'Local Recording') {
+        StreamInfo.getActiveStreamChannels().then(channels => {
+          Output._localRecording = false;
+          for (var i=0; i < channels.length; i++) {
+            if(channels[i]['_name'] === 'Local Recording') {
+              Output._localRecording = true;
+              break;
+            }
           }
-        }
-        if(Output._localRecording) {
-          exec('CallHost', 'unpauseRecording');
-          resolve(true)
-        } else {
-          reject(Error('Local recording is not active.'))
-        }
-      })
+          if(Output._localRecording) {
+            exec('CallHost', 'unpauseRecording');
+            resolve(true);
+          } else {
+            reject(Error('Local recording is not active.'));
+          }
+        })
+
+      } else {
+        reject(Error('Output is not a local recording'));
+      }
     })
   }
 
