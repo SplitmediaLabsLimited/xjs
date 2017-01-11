@@ -43,8 +43,14 @@ export class Output {
    *
    * xjs.Output.getOutputList()
    * .then(function(outputs) {
-   *   // select your output here
-   *   output[0].startBroadcast();
+   *   outputs.map(output => {
+   *    output.getName()
+   *    .then(function(name) {
+   *      if(name.includes('Twitch')) {
+   *        output.startBroadcast();
+   *      }
+   *    })
+   *  })
    * })
    * ```
    */
