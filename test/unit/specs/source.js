@@ -91,6 +91,12 @@ describe('Source ===', function() {
     return serializeXml(presetXML);
   };
 
+  var getRandomItemId = function(presetConfig) {
+    var items = parseXml(presetConfig).getElementsByTagName('item');
+    var item = items[Math.floor(Math.random()*items.length)];
+    return item.getAttribute('id');
+  };
+
   presetObj = convertPresetStringToPresetObject(mockPresetConfig);
 
   var xCallback = function(id, result) {
@@ -299,10 +305,10 @@ describe('Source ===', function() {
   });
 
   afterEach(function() {
-    env.set(environments[1]);
     navigator.__defineGetter__('appVersion', function() {
       return appVersion;
     });
+    env.set(environments[1]);
   });
 
   describe('should be able to get currently bound source', function() {
@@ -491,32 +497,159 @@ describe('Source ===', function() {
       }).then(done);
     });
 
-    xit('custom name', function() {
-
+    it('custom name', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var testSource, testCustomName, newCustomName;
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        testSource = source;
+        return source.getCustomName();
+      }).then(function(customName) {
+        newCustomName = randomWord(15);
+        expect(customName).toBeDefined();
+        expect(customName).toBeTypeOf('string');
+        expect(customName).not.toEqual(newCustomName);
+        return testSource.setCustomName(newCustomName);
+      }).then(function(source) {
+        return source.getCustomName();
+      }).then(function(customName) {
+        expect(customName).toEqual(newCustomName);
+        done();
+      });
     });
 
-    xit('value', function() {
-
+    it('value', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var testSource, testValue, newValue;
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        testSource = source;
+        return source.getValue();
+      }).then(function(value) {
+        newValue = randomWord(20);
+        expect(value).toBeDefined();
+        expect(value).toBeTypeOf('string');
+        expect(value).not.toEqual(newValue);
+        return testSource.setValue(newValue);
+      }).then(function(source) {
+        return source.getValue();
+      }).then(function(value) {
+        expect(value).toEqual(newValue);
+        done();
+      });
     });
 
-    xit('kept loaded in memory', function() {
-
+    it('kept loaded in memory', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var testSource, testBoolean;
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        testSource = source;
+        return source.getKeepLoaded();
+      }).then(function(keeploaded) {
+        testBoolean = keeploaded;
+        expect(testBoolean).toBeDefined();
+        expect(testBoolean).toBeTypeOf('boolean');
+        return testSource.setKeepLoaded(!testBoolean);
+      }).then(function(source) {
+        return source.getKeepLoaded();
+      }).then(function(keeploaded) {
+        expect(keeploaded).toEqual(!testBoolean);
+        done();
+      });
     });
 
-    xit('source ID', function() {
-
+    it('source ID', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        return source.getId();
+      }).then(function(id) {
+        var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
+        var selected = '[id="' + randomId + '"]';
+        var itemSelected = placements.querySelector(selected);
+        expect(id).toBeDefined();
+        expect(id).toBeTypeOf('string');
+        expect(id).toEqual(itemSelected.getAttribute('srcid'));
+        done();
+      });
     });
 
-    xit('item list', function() {
-
+    it('item list', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        return source.getItemList();
+      }).then(function(items) {
+        expect(items).toBeInstanceOf(Array);
+        expect(items).eachToBeInstanceOf(Item);
+        done();
+      });
     });
 
-    xit('refresh', function() {
-
+    it('refresh', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var testSource;
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        testSource = source;
+        return source.refresh();
+      }).then(function(source) {
+        expect(source).toBeInstanceOf(Source);
+        expect(source).toEqual(testSource);
+        done();
+      });
     });
 
-    xit('type', function() {
-
+    it('type', function(done) {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.9.1611.1623 ';
+      });
+      var testSource;
+      var randomId = getRandomItemId(mockPresetConfig);
+      Scene.searchItemsById(randomId)
+      .then(function(item) {
+        return item.getSource();
+      }).then(function(source) {
+        testSource = source;
+        return source.getType();
+      }).then(function(type) {
+        expect(type).toBeDefined();
+        expect(type).toBeTypeOf('number');
+        expect(type).toBeLessThan(9);
+        expect(type).not.toBeLessThan(1);
+        done();
+      });
     });
 
     it('which still proceeds even if original item is deleted', function(done) {
