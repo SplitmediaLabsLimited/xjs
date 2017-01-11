@@ -50,7 +50,7 @@ export class App{
    * });
    * ```
    */
-  getFrametime(): Promise<number> {
+  getFrameTime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
         resolve(Number(val));
