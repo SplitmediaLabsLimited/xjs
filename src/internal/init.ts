@@ -115,7 +115,7 @@ function informWhenConfigLoaded(): Promise<any> {
     if (Environment.isSourceProps()) {
       window.addEventListener('load', () => {
         try {
-          SourcePropsWindow.getInstance().emit('config-load');  
+          SourcePropsWindow.getInstance().emit('config-load');
         } catch(e) {
 
         }
