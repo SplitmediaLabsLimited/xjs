@@ -2,6 +2,7 @@
 
 import {setMockVersion} from '../internal/util/version';
 import init from '../internal/init';
+import {remoteExec} from '../internal/internal'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
@@ -43,14 +44,20 @@ export function setOnce() {
 }
 
 // Remote Receiver and Sender
-  // const connection: any; //Connection we decide to use
-
-  // connection.onmessage = function(message) {
-  //   console.log(message)
-  // }
+  var connection = new WebSocket('ws://localhost:1337');
 
   // resolve object and send
-  // connection.send()
+  connection.onmessage = function(message: string, ...args: any[]) {
+    var json = JSON.parse(message.data);
+
+    if (json.type === 'message') {
+      remoteExec(message, args)
+      .then(res => {
+        console.log('From Exec::', res)
+        // connection.send(res)
+      })
+    }
+  }
 /**
  * 1. Once connection is established, let xjs get remote version by sending
  * navigator.userAgent and set the version on Remote.
