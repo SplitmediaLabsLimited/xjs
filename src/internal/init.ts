@@ -127,10 +127,22 @@ function informWhenConfigLoaded(): Promise<any> {
   });
 }
 
-export default function init(): void {
+function remoteMessageReceiver(connection){
+  connection.onmessage = function(message) {
+     var json = JSON.parse(message.data);
+    if (json.type === 'message') {
+
+    }
+  }
+}
+
+export default function init(connection?): void {
   Global.addInitializationPromise(readMetaConfigUrl());
   Global.addInitializationPromise(getCurrentSourceId());
   Global.addInitializationPromise(informWhenConfigLoaded());
+  if(connection !== undefined) {
+    remoteMessageReceiver(connection)
+  }
 
   Promise.all(Global.getInitializationPromises()).then(() => {
     document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
