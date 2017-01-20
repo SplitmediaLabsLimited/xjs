@@ -3,6 +3,7 @@
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
+let remoteId;
 
 /**
 * Executes an external function

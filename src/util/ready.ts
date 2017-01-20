@@ -2,12 +2,14 @@
 
 import {setMockVersion} from '../internal/util/version';
 import init from '../internal/init';
+import {Remote} from '../internal/remote'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
-let remoteType: string = 'local';
+let remoteType: string = 'proxy';
 let sendMessage: string;
 const connection = new WebSocket('ws://localhost:1337');
+Remote.setConnection(connection);
 
 let readyPromise: Promise<any> = new Promise(resolve => {
   document.addEventListener('xsplit-js-ready', () => {
@@ -20,7 +22,6 @@ let readyPromise: Promise<any> = new Promise(resolve => {
 });
 
 export function ready(config: Object): Promise<any> {
-  console.log(config)
   if (config && config['version'] !== undefined) {
     setMockVersion(config['version']);
   }
@@ -34,9 +35,14 @@ export function ready(config: Object): Promise<any> {
   setReady();
   if (isReady && !isInit) {
     setOnce();
-    init(connection);
+    init();
     if(remoteType === 'proxy') {
+      connection.onopen = function () {
+        connection.send('EXT')
+      };
       getRemoteVersion()
+    } else {
+      connection.send('WEB')
     }
   }
 
@@ -52,6 +58,15 @@ export function setOnce() {
 }
 
 export function getRemoteVersion() {
+  console.log('Get Remote')
   let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
   let xbcMatch = navigator.appVersion.match(xbcPattern);
+
+  Remote.sendMessage('navigator')
+}
+
+connection.onmessage = function (message) {
+  //decode message first then
+  // Remote.receiveMessage(message)
+  console.log(message)
 }
