@@ -8,7 +8,7 @@ let remoteId;
 /**
 * Executes an external function
 */
-export function exec(funcName: string, ...args: any[]) {
+export function exec(funcName: string, asyncId?:number, ...args: any[]) {
   let callback: Function = null,
   ret: any = false;
 

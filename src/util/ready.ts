@@ -6,7 +6,7 @@ import {Remote} from '../internal/remote'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
-let remoteType: string = 'proxy';
+let remoteType: string = 'local';
 let sendMessage: string;
 const connection = new WebSocket('ws://localhost:1337');
 Remote.setConnection(connection);
@@ -38,11 +38,15 @@ export function ready(config: Object): Promise<any> {
     init();
     if(remoteType === 'proxy') {
       connection.onopen = function () {
+        console.log('Proxy')
         connection.send('EXT')
       };
-      getRemoteVersion()
-    } else {
-      connection.send('WEB')
+    } else if (remoteType === 'remote'){
+      connection.onopen = function () {
+        console.log('Remote')
+        connection.send('WEB')
+        connection.send('getVersion')
+      };
     }
   }
 
@@ -58,15 +62,16 @@ export function setOnce() {
 }
 
 export function getRemoteVersion() {
-  console.log('Get Remote')
+  console.log('Get Remote::', remoteType)
   let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
   let xbcMatch = navigator.appVersion.match(xbcPattern);
 
-  Remote.sendMessage('navigator')
 }
 
 connection.onmessage = function (message) {
-  //decode message first then
-  // Remote.receiveMessage(message)
-  console.log(message)
+  let json = JSON.parse(message.data)
+  // further parse json.data.text
+  // to get function name, asyncId, arguments
+  console.log(remoteType,'::',json)
+  Remote.receiveMessage(json.data.text)
 }

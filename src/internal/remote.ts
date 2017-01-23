@@ -4,8 +4,18 @@ import {exec} from './internal'
 export class Remote {
   static connection;
 
-  static receiveMessage(funcName: string, asyncId: number, ...args:any[]) {
-    console.log('Got::', arguments)
+  static receiveMessage(funcName: string, asyncId?: number, ...args:any[]) {
+    console.log('Got::', funcName)
+    if (funcName === 'getVersion') {
+    let version = window.navigator.appVersion
+    let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+    let xbcMatch = version.match(xbcPattern);
+      if(xbcMatch !== null) {
+        Remote.returnResult(xbcMatch[1])
+      }
+    } else {
+      exec(funcName, asyncId, ...args)
+    }
   }
 
   static sendMessage(funcName: string, asyncId?: number, ...args:any[]) {
@@ -13,18 +23,16 @@ export class Remote {
      if (asyncId === undefined) {
       asyncId = Math.round(Math.random() * 1000)
     }
-    let message = {
-                  funcName,
+    let message = ({
+                  result: funcName,
                   asyncId
-    }
-    // Remote.connection.send(message)
+    })
+    Remote.connection.send(funcName)
   }
 
   static returnResult(result: any, asyncId?: number) {
-    let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
-    let xbcMatch = result.match(xbcPattern);
-    console.log('Return::', xbcMatch[1])
-    Remote.connection.send(xbcMatch[1])
+    console.log('Return::', result)
+    Remote.connection.send(result)
   }
 
   static setConnection(con) {
