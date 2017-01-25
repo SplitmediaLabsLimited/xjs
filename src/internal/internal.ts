@@ -1,5 +1,7 @@
 /// <reference path="../../defs/window.d.ts" />
 
+import {Remote} from './remote'
+
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
@@ -8,9 +10,10 @@ let remoteId;
 /**
 * Executes an external function
 */
-export function exec(funcName: string, asyncId?:number, ...args: any[]) {
+export function exec(funcName: string, ...args: any[]) {
   let callback: Function = null,
   ret: any = false;
+  let remoteCheck;
 
   if (args.length > 0) {
     callback = args[args.length - 1];
@@ -34,7 +37,7 @@ export function exec(funcName: string, asyncId?:number, ...args: any[]) {
     ) {
     ret = window.external[funcName].apply(this, args);
   }
-
+  Remote.returnMessage(ret, Remote.asyncId)
   // register callback if present
   if (callback !== null) {
     _callbacks[ret] = callback;
