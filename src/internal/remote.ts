@@ -2,21 +2,24 @@
 import {exec} from './internal'
 
 export class Remote {
-  static asyncId;
 
   static receiveMessage(obj: string) {
+    let messageArr;
+    if (obj !== undefined) {
+      messageArr = obj.split(',');
+    }
     // decode message here first
     console.log('Receive::', obj)
-    let funcName = obj['message'];
-    Remote.asyncId = obj['asyncId']
-    let args = obj['args']
-    if (funcName === 'getVersion') {
-      Remote.returnMessage(window.navigator.appVersion)
-    } else {
-      exec(funcName, args)
+    try {
+      if(messageArr[0] === 'getVersion') {
+        Remote.sendMessage(window.navigator.appVersion)
+      } else {
+        exec(messageArr[0], messageArr)
+      }
+    } catch(e) {
+      return;
     }
-
   }
 
-  static returnMessage;
+  static sendMessage;
 }

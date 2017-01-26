@@ -5,12 +5,13 @@ import {Remote} from './remote'
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
-let remoteId;
+let remoteAsyncId: number = 100;
 
 /**
 * Executes an external function
 */
 export function exec(funcName: string, ...args: any[]) {
+  remoteAsyncId++
   let callback: Function = null,
   ret: any = false;
   let remoteCheck;
@@ -37,7 +38,8 @@ export function exec(funcName: string, ...args: any[]) {
     ) {
     ret = window.external[funcName].apply(this, args);
   }
-  Remote.returnMessage(ret, Remote.asyncId)
+
+  Remote.sendMessage(ret,remoteAsyncId)
   // register callback if present
   if (callback !== null) {
     _callbacks[ret] = callback;

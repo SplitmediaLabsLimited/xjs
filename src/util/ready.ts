@@ -23,12 +23,17 @@ export function ready(config: Object): Promise<any> {
   if (config && config['remote'] !== undefined) {
     if(config['remote']['type'] !== undefined) {
       remoteType = config['remote']['type'];
-      Remote.returnMessage = config['remote']['sendMessage'];
+    }
+    if(config['remote']['sendMessage'] !== undefined) {
+      Remote.sendMessage = config['remote']['sendMessage'];
     }
   }
 
+  if(remoteType === 'proxy') {
+    Remote.sendMessage('getVersion')
+  }
+
   if (config && config['version'] !== undefined) {
-    console.log(config['version'])
     setMockVersion(config['version']);
   }
 
