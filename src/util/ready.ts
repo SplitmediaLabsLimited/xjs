@@ -6,7 +6,6 @@ import {Remote} from '../internal/remote'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
-let remoteType: string = 'local';
 
 
 let readyPromise: Promise<any> = new Promise(resolve => {
@@ -22,15 +21,17 @@ let readyPromise: Promise<any> = new Promise(resolve => {
 export function ready(config: Object): Promise<any> {
   if (config && config['remote'] !== undefined) {
     if(config['remote']['type'] !== undefined) {
-      remoteType = config['remote']['type'];
+      Remote.remoteType = config['remote']['type'];
     }
     if(config['remote']['sendMessage'] !== undefined) {
       Remote.sendMessage = config['remote']['sendMessage'];
     }
   }
 
-  if(remoteType === 'proxy') {
+  if(Remote.remoteType === 'remote') {
     Remote.sendMessage('getVersion')
+  } else if (Remote.remoteType === 'proxy') {
+    setMockVersion(window.navigator.appVersion);
   }
 
   if (config && config['version'] !== undefined) {

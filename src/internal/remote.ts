@@ -1,25 +1,35 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 import {exec} from './internal'
+import {setMockVersion} from '../internal/util/version';
 
 export class Remote {
 
-  static receiveMessage(obj: string) {
+  static receiveMessage(message: string) {
     let messageArr;
-    if (obj !== undefined) {
-      messageArr = obj.split(',');
-    }
-    // decode message here first
-    console.log('Receive::', obj)
-    try {
-      if(messageArr[0] === 'getVersion') {
-        Remote.sendMessage(window.navigator.appVersion)
+    let isVersion = false;
+
+    if (Remote.remoteType === 'remote') {
+      console.log('Receive::', message, Remote.remoteType)
+      if(!isVersion) {
+        setMockVersion(message)
+        isVersion = true
       } else {
-        exec(messageArr[0], messageArr)
+        // Do something with return here
       }
-    } catch(e) {
-      return;
+    } else if (Remote.remoteType === 'proxy') {
+      console.log('Receive::', message, Remote.remoteType)
+      if (message !== undefined) {
+        // decode message here first
+        if (message === 'getVersion') {
+          Remote.sendMessage(window.navigator.appVersion)
+        } else {
+          exec(message)
+        }
+      }
     }
   }
 
   static sendMessage;
+
+  static remoteType = 'local';
 }

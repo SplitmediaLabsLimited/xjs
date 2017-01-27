@@ -39,7 +39,12 @@ export function exec(funcName: string, ...args: any[]) {
     ret = window.external[funcName].apply(this, args);
   }
 
-  Remote.sendMessage(ret,remoteAsyncId)
+  let retObj = {
+    'value': ret,
+    'asyncId': remoteAsyncId,
+    'args': args
+  }
+  Remote.sendMessage(JSON.stringify(retObj))
   // register callback if present
   if (callback !== null) {
     _callbacks[ret] = callback;
