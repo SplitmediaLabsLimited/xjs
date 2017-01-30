@@ -11,10 +11,10 @@ let remoteAsyncId: number = 100;
 * Executes an external function
 */
 export function exec(funcName: string, ...args: any[]) {
+  console.log('Exec Got::', funcName, args)
   remoteAsyncId++
   let callback: Function = null,
   ret: any = false;
-  let remoteCheck;
 
   if (args.length > 0) {
     callback = args[args.length - 1];
@@ -37,26 +37,28 @@ export function exec(funcName: string, ...args: any[]) {
     window.external[funcName] instanceof Function
     ) {
     ret = window.external[funcName].apply(this, args);
+    let retObj = {
+        'asyncId': remoteAsyncId,
+        'result': ret
+      }
+    if (Remote.remoteType === 'proxy') {
+      return Remote.sendMessage(JSON.stringify(retObj))
+    }
   }
 
-  let retObj = {
-    'value': ret,
-    'asyncId': remoteAsyncId,
-    'args': args
-  }
-  Remote.sendMessage(JSON.stringify(retObj))
   // register callback if present
   if (callback !== null) {
     _callbacks[ret] = callback;
   }
-
   return ret;
 }
 
 window.OnAsyncCallback = function(asyncID: number, result: string) {
-  let callback = _callbacks[asyncID];
+  if (Remote.remoteType === 'local') {
+    let callback = _callbacks[remoteAsyncId];
 
-  if (callback instanceof Function) {
-    callback.call(this, decodeURIComponent(result));
+    if (callback instanceof Function) {
+      callback.call(this, decodeURIComponent(result));
+    }
   }
 }

@@ -19,32 +19,34 @@ let readyPromise: Promise<any> = new Promise(resolve => {
 });
 
 export function ready(config: Object): Promise<any> {
-  if (config && config['remote'] !== undefined) {
-    if(config['remote']['type'] !== undefined) {
-      Remote.remoteType = config['remote']['type'];
+  return new Promise(resolve => {
+    if (config && config['remote'] !== undefined) {
+      if(config['remote']['type'] !== undefined) {
+        Remote.remoteType = config['remote']['type'];
+      }
+      if(config['remote']['sendMessage'] !== undefined) {
+        Remote.sendMessage = config['remote']['sendMessage'];
+      }
     }
-    if(config['remote']['sendMessage'] !== undefined) {
-      Remote.sendMessage = config['remote']['sendMessage'];
+
+    if(Remote.remoteType === 'remote') {
+      Remote.sendMessage('getVersion')
+    } else if (Remote.remoteType === 'proxy') {
+      setMockVersion(window.navigator.appVersion);
     }
-  }
 
-  if(Remote.remoteType === 'remote') {
-    Remote.sendMessage('getVersion')
-  } else if (Remote.remoteType === 'proxy') {
-    setMockVersion(window.navigator.appVersion);
-  }
+    if (config && config['version'] !== undefined) {
+      setMockVersion(config['version']);
+    }
 
-  if (config && config['version'] !== undefined) {
-    setMockVersion(config['version']);
-  }
+    setReady();
+    if (isReady && !isInit) {
+      setOnce();
+      init();
+    }
 
-  setReady();
-  if (isReady && !isInit) {
-    setOnce();
-    init();
-  }
-
-  return readyPromise;
+    resolve(readyPromise)
+  })
 }
 
 export function setReady() {
