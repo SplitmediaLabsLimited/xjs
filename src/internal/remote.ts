@@ -7,16 +7,26 @@ export class Remote {
 
   static receiveMessage(message: string) {
     let messageArr = [];
-    return new Promise(resolve => {
+    let result;
+    return new Promise((resolve, reject) => {
       if (Remote.remoteType === 'remote') {
-        if(!Remote.isVersion) {
+        if(!Remote.isVersion && message.indexOf('setVersion') !== -1) {
           setMockVersion(message)
           Remote.isVersion = true
           resolve(message)
         } else {
-          // Do something with return here
-          let result = JSON.parse(message)
-          resolve(result)
+          if (message.indexOf('setVersion') !== -1) {
+            reject(Error('Version was already set.'))
+          } else {
+            try{
+              result = JSON.parse(message)
+              resolve(result)
+            }catch(err){
+              reject(Error('This does not look like a valid JSON object:: '
+                + message))
+            }
+            // Do something with return here
+          }
         }
       } else if (Remote.remoteType === 'proxy') {
         console.log('Received::', message)
@@ -24,12 +34,14 @@ export class Remote {
           messageArr = message.split(',')
           // decode message here first
           if (message === 'getVersion' || messageArr[0] === 'getVersion') {
-            Remote.sendMessage(window.navigator.appVersion);
+            Remote.sendMessage('setVersion:: ' + window.navigator.appVersion);
             resolve(true);
           } else {
             resolve(exec.apply(this, messageArr));
           }
         }
+      } else if (Remote.remoteType === 'local') {
+        reject(Error('Remote calls do not work on local mode.'))
       }
     })
   }
@@ -37,4 +49,6 @@ export class Remote {
   static sendMessage;
 
   static remoteType = 'local';
+
+  static remoteAsyncId: number;
 }

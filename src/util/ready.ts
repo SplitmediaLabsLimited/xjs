@@ -7,7 +7,6 @@ import {Remote} from '../internal/remote'
 let isReady: boolean = false;
 let isInit: boolean = false;
 
-
 let readyPromise: Promise<any> = new Promise(resolve => {
   document.addEventListener('xsplit-js-ready', () => {
     resolve();
@@ -30,11 +29,10 @@ export function ready(config: Object): Promise<any> {
     }
 
     if(Remote.remoteType === 'remote') {
-      Remote.sendMessage('getVersion')
+      Remote.sendMessage('getVersion');
     } else if (Remote.remoteType === 'proxy') {
       setMockVersion(window.navigator.appVersion);
     }
-
     if (config && config['version'] !== undefined) {
       setMockVersion(config['version']);
     }
@@ -45,7 +43,7 @@ export function ready(config: Object): Promise<any> {
       init();
     }
 
-    resolve(readyPromise)
+    resolve(readyPromise);
   })
 }
 

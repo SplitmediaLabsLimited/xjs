@@ -5,14 +5,13 @@ import {Remote} from './remote'
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
-let remoteAsyncId: number = 100;
+Remote.remoteAsyncId = 0;
 
 /**
 * Executes an external function
 */
 export function exec(funcName: string, ...args: any[]) {
-  console.log('Exec Got::', funcName, args)
-  remoteAsyncId++
+  Remote.remoteAsyncId++;
   let callback: Function = null,
   ret: any = false;
 
@@ -37,25 +36,35 @@ export function exec(funcName: string, ...args: any[]) {
     window.external[funcName] instanceof Function
     ) {
     ret = window.external[funcName].apply(this, args);
-    let retObj = {
-        'asyncId': remoteAsyncId,
-        'result': ret
-      }
-    if (Remote.remoteType === 'proxy') {
-      return Remote.sendMessage(JSON.stringify(retObj))
-    }
+  }
+
+  let retObj = {
+    'result': ret,
+    'asyncId': Remote.remoteAsyncId
   }
 
   // register callback if present
   if (callback !== null) {
     _callbacks[ret] = callback;
   }
+
+  if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
+    return Remote.sendMessage(JSON.stringify(retObj));
+  }
+
   return ret;
 }
 
 window.OnAsyncCallback = function(asyncID: number, result: string) {
-  if (Remote.remoteType === 'local') {
-    let callback = _callbacks[remoteAsyncId];
+  let retObj = {
+    'result': result,
+    'asyncId': Remote.remoteAsyncId
+  }
+
+  if (Remote.remoteType === 'proxy') {
+    return Remote.sendMessage(JSON.stringify(retObj));
+  } else {
+    let callback = _callbacks[Remote.remoteAsyncId];
 
     if (callback instanceof Function) {
       callback.call(this, decodeURIComponent(result));
