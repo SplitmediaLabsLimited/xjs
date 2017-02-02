@@ -18,14 +18,7 @@ export class Remote {
           if (message.indexOf('setVersion') !== -1) {
             reject(Error('Version was already set.'))
           } else {
-            try{
-              result = JSON.parse(message)
-              resolve(result)
-            }catch(err){
-              reject(Error('This does not look like a valid JSON object:: '
-                + message))
-            }
-            // Do something with return here
+            exec(message)
           }
         }
       } else if (Remote.remoteType === 'proxy') {
@@ -49,6 +42,4 @@ export class Remote {
   static sendMessage;
 
   static remoteType = 'local';
-
-  static remoteAsyncId: number;
 }
