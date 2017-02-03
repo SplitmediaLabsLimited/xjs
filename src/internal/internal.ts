@@ -5,9 +5,8 @@ import {Remote} from './remote'
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
-let _remoteCallbacks = {};
-let remoteAsyncId = 0;
-let remoteAsync = []
+let remoteCounter = 0;
+let remoteAsyncIdArr = []
 
 /**
 * Executes an external function
@@ -18,8 +17,8 @@ export function exec(funcName: string, ...args: any[]) {
   ret: any = false;
 
   if (Remote.remoteType === 'proxy') {
-      remoteAsyncId++;
-      remoteAsync.push(remoteAsyncId)
+      remoteCounter++;
+      remoteAsyncIdArr.push(remoteCounter)
   }
 
   if (args.length > 0) {
@@ -28,31 +27,6 @@ export function exec(funcName: string, ...args: any[]) {
       args.pop();
     } else {
       callback = null;
-    }
-  }
-
-  // For Remote
-  if (Remote.remoteType === 'remote') {
-    let message = [
-      funcName, String(args)
-    ].join(',')
-
-    if (message.indexOf('result') !== -1
-          && message.indexOf('asyncId') !== -1) {
-
-      let result = JSON.parse(funcName)
-      _remoteCallbacks[remoteAsync[0]].apply(this, [result['result']]);
-
-      delete _remoteCallbacks[result['func']]
-      remoteAsync.shift()
-      return message;
-    } else {
-      remoteAsyncId++;
-      if (callback !== null) {
-        _remoteCallbacks[remoteAsyncId] = callback;
-      }
-      remoteAsync.push(remoteAsyncId)
-      Remote.sendMessage(message)
     }
   }
 
@@ -70,33 +44,71 @@ export function exec(funcName: string, ...args: any[]) {
     ret = window.external[funcName].apply(this, args);
   }
 
-  // register callback if present
-  if (callback !== null) {
-    _callbacks[ret] = callback;
+  // For Remote
+  if (Remote.remoteType === 'remote') {
+    let message;
+    if (args.length >= 1) {
+      message = [
+        funcName, String(args)
+      ].join(',')
+    } else {
+      message = funcName
+    }
+
+    remoteCounter++;
+
+    console.log('Send this to Proxy::', message)
+    remoteAsyncIdArr.push(remoteCounter)
+    Remote.sendMessage(encodeURIComponent(message))
   }
 
-  // For Proxy
+  // register callback if present
+  if (callback !== null) {
+    if (Remote.remoteType === 'remote') {
+      _callbacks[remoteCounter] = callback;
+    } else {
+      _callbacks[ret] = callback;
+    }
+  }
+
+  // Used by proxy to return Sync calls
   if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
     retObj = {
       'result': ret,
-      'asyncId': remoteAsync[0]
+      'asyncId': String(remoteAsyncIdArr[0])
     }
-    remoteAsync.shift()
-
+    remoteAsyncIdArr.shift()
+    console.log('Sync,Send to Remote::', retObj)
     return Remote.sendMessage(JSON.stringify(retObj));
   }
 
   return ret;
 }
 
-window.OnAsyncCallback = function(asyncID: number, result: string) {
+// Only used by remote to use saved callback
+export function callCallback(message) {
+  let result = JSON.parse(message)
 
+  console.log('Remote Callback got this:: ', result)
+
+  if (_callbacks[remoteAsyncIdArr[0]] !== undefined
+    && typeof(result['asyncId']) === 'number') {
+    _callbacks[remoteAsyncIdArr[0]].apply(this, [result['result']]);
+    remoteAsyncIdArr.shift()
+  }
+
+  return result['result'];
+}
+
+window.OnAsyncCallback = function(asyncID: number, result: string) {
+  // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
     let retObj = {
       'result': result,
-      'asyncId': remoteAsync[0],
+      'asyncId': remoteAsyncIdArr[0],
     }
-    remoteAsync.shift()
+    remoteAsyncIdArr.shift()
+    console.log('Async,Send to Remote::', retObj)
     return Remote.sendMessage(JSON.stringify(retObj));
   } else {
     let callback = _callbacks[asyncID];
