@@ -44,8 +44,12 @@ export class App {
   }
 
   /** Get the value of the given global property */
-  static getGlobalProperty(name: string): string {
-    return exec('GetGlobalProperty', name);
+  static getGlobalProperty(name: string) {
+    return new Promise(resolve => {
+      exec('GetGlobalProperty', name).then(result => {
+        resolve(result);
+      })
+    })
   }
 
   /** Calls a DLL function synchronously */

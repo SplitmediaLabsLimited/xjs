@@ -18,7 +18,7 @@ export class Remote {
           if (message.indexOf('setVersion') !== -1) {
             reject(Error('Version was already set.'))
           } else {
-            callCallback(decodeURIComponent(message))
+            resolve(callCallback(decodeURIComponent(message)));
           }
         }
       } else if (Remote.remoteType === 'proxy') {

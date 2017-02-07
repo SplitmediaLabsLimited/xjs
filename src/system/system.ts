@@ -269,7 +269,10 @@ export class System{
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else {
-        var res = exec('GetCursorPos');
+        let res;
+        exec('GetCursorPos').then(result => {
+          res = result
+        });
         if (typeof res === 'string') {
           var posArr = res.split(',');
           var pos = {};

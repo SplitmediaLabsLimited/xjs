@@ -48,8 +48,9 @@ export class Extension {
           'SetPresProperty',
           this._presName,
           JSON.stringify(configObj)
-        );
-        resolve(this);
+        ).then(result => {
+          resolve(this);
+        })
       } else {
         reject(Error('Configuration object should be in JSON format'));
       }

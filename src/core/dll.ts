@@ -124,7 +124,9 @@ export class Dll extends EventEmitter {
    */
   static isAccessGranted(): Promise<boolean> {
     return new Promise(resolve => {
-      resolve(exec('CheckDllGrant') === '1');
+      exec('CheckDllGrant').then(result => {
+        resolve (result === '1')
+      })
     });
   }
 }
