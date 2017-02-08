@@ -3,7 +3,7 @@ import {exec, callCallback} from './internal'
 import {setMockVersion} from '../internal/util/version';
 
 export class Remote {
-  static isVersion = false;
+  private static isVersion = false;
 
   static receiveMessage(message: string) {
     let messageArr = [];
@@ -22,14 +22,20 @@ export class Remote {
           }
         }
       } else if (Remote.remoteType === 'proxy') {
-        console.log('Received::', message)
         if (message !== undefined) {
-          messageArr = decodeURIComponent(message).split(',')
-          // decode message here first
+          messageArr = decodeURIComponent(message).split(',');
           if (message === 'getVersion' || messageArr[0] === 'getVersion') {
             Remote.sendMessage('setVersion:: ' + window.navigator.appVersion);
             resolve(true);
           } else {
+            let asyncId = Number(messageArr.pop())
+            messageArr.push(result => {
+              let retObj = {
+                result,
+                asyncId
+              }
+              Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj)))
+            })
             resolve(exec.apply(this, messageArr));
           }
         }

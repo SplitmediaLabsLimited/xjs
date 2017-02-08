@@ -271,17 +271,18 @@ export class System{
       } else {
         let res;
         exec('GetCursorPos').then(result => {
+          console.log('System::', result)
           res = result
+          if (typeof res === 'string') {
+            var posArr = res.split(',');
+            var pos = {};
+            pos['x'] = Number(posArr[0]);
+            pos['y'] = Number(posArr[1]);
+            resolve(pos)
+          } else {
+            reject(Error('cannot fetch current cursor position'));
+          }
         });
-        if (typeof res === 'string') {
-          var posArr = res.split(',');
-          var pos = {};
-          pos['x'] = Number(posArr[0]);
-          pos['y'] = Number(posArr[1]);
-          resolve(pos)
-        } else {
-          reject(Error('cannot fetch current cursor position'));
-        }
       }
     });
   }

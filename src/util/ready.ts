@@ -18,13 +18,16 @@ let readyPromise: Promise<any> = new Promise(resolve => {
 });
 
 export function ready(config: Object): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise((resolve,reject) => {
     if (config && config['remote'] !== undefined) {
       if(config['remote']['type'] !== undefined) {
         Remote.remoteType = config['remote']['type'];
       }
-      if(config['remote']['sendMessage'] !== undefined) {
+      if(config['remote']['sendMessage'] !== undefined
+        && config['remote']['sendMessage'] instanceof Function) {
         Remote.sendMessage = config['remote']['sendMessage'];
+      } else {
+        reject(Error('Send message should be instance of function.'))
       }
     }
 
