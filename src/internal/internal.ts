@@ -5,13 +5,15 @@ import {Remote} from './remote'
 export var DEBUG: boolean = false;
 
 let _callbacks = {};
+let _proxyCallbacks = {};
+let _remoteCallbacks = {};
 let counter = 0;
 
 /**
 * Executes an external function
 */
-export function exec(funcName: string, ...args: any[]) {
-  return new Promise(resolve => {
+export function exec(funcName: string, ...args: any[]): Promise<any> {
+  return new Promise((resolve, reject) => {
     let callback: Function = null;
     let ret: any = false;
 
@@ -33,8 +35,8 @@ export function exec(funcName: string, ...args: any[]) {
     // For Remote
     if (Remote.remoteType === 'remote') {
       counter++;
-
       let message;
+
       if (args.length >= 1) {
         message = [
           funcName, String(args), counter
@@ -45,10 +47,7 @@ export function exec(funcName: string, ...args: any[]) {
         ].join()
       }
 
-      console.log('Send this to Proxy::', message)
       Remote.sendMessage(encodeURIComponent(message));
-    } else if (Remote.remoteType === 'proxy') {
-      // console.log('Proxy Got::', funcName, args)
     }
 
     if (
@@ -62,18 +61,23 @@ export function exec(funcName: string, ...args: any[]) {
     // register callback if present
     if (callback !== null) {
       if (Remote.remoteType === 'remote') {
-        _callbacks[counter] = callback;
+        _remoteCallbacks[counter] = callback;
       } else if (Remote.remoteType === 'proxy') {
-        _callbacks[ret] = callback;
+        _proxyCallbacks[ret] = callback;
       } else {
         _callbacks[ret] = callback;
+      }
+    } else { //if Remote and Sync create a callback
+      if (Remote.remoteType === 'remote' ) {
+        _remoteCallbacks[counter] = result => {
+          resolve(result);
+        }
       }
     }
 
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
-      console.log('Sync Proxy::', ret)
-      _callbacks[ret].call(this, decodeURIComponent(ret))
-    } else {
+      _proxyCallbacks[ret].call(this, decodeURIComponent(ret))
+    } else if (Remote.remoteType === 'local') {
       resolve(ret);
     }
   })
@@ -83,19 +87,19 @@ export function exec(funcName: string, ...args: any[]) {
 export function callCallback(message) {
   return new Promise(resolve => {
     let result = JSON.parse(message);
-    console.log('Remote Final Callback::', result)
-    if (typeof(result['asyncId']) === 'number') {
-      _callbacks[result['asyncId']].apply(this, [result['result']]);
+    if (typeof(result['asyncId']) === 'number'
+      && _remoteCallbacks[result['asyncId']] !== undefined) {
+      _remoteCallbacks[result['asyncId']].apply(this, [result['result']]);
+    } else {
+      resolve(result['result']);
     }
-    resolve(result['result']);
   })
 }
 
 window.OnAsyncCallback = function(asyncID: number, result: string) {
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
-    console.log('Async Proxy::', result)
-    let callback = _callbacks[asyncID];
+    let callback = _proxyCallbacks[asyncID];
 
     callback.call(this, decodeURIComponent(result));
   } else {

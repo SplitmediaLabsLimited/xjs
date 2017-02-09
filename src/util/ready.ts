@@ -36,6 +36,7 @@ export function ready(config: Object): Promise<any> {
     } else if (Remote.remoteType === 'proxy') {
       setMockVersion(window.navigator.appVersion);
     }
+
     if (config && config['version'] !== undefined) {
       setMockVersion(config['version']);
     }

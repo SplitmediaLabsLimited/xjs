@@ -18,7 +18,9 @@ export class Remote {
           if (message.indexOf('setVersion') !== -1) {
             reject(Error('Version was already set.'))
           } else {
-            resolve(callCallback(decodeURIComponent(message)));
+            callCallback(decodeURIComponent(message)).then(result => {
+              resolve(result)
+            });
           }
         }
       } else if (Remote.remoteType === 'proxy') {
@@ -34,9 +36,9 @@ export class Remote {
                 result,
                 asyncId
               }
-              Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj)))
+              resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))))
             })
-            resolve(exec.apply(this, messageArr));
+            exec.apply(this, messageArr);
           }
         }
       } else if (Remote.remoteType === 'local') {

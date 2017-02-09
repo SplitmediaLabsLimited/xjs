@@ -271,7 +271,6 @@ export class System{
       } else {
         let res;
         exec('GetCursorPos').then(result => {
-          console.log('System::', result)
           res = result
           if (typeof res === 'string') {
             var posArr = res.split(',');
