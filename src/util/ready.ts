@@ -30,8 +30,8 @@ export function finishReady(config: Object): Promise<any> {
       init();
     }
 
-    if (readyResolve !== undefined){
-      readyResolve.call(this, 'Done')
+    if (readyResolve !== undefined && Remote.remoteType === 'remote'){
+      readyResolve.call(this, null);
     }
 
     resolve(readyPromise);
@@ -56,7 +56,7 @@ export function ready(config: Object): Promise<any> {
     if(Remote.remoteType === 'remote') {
       // Create a callback that would resolve ready()
       // Resolve ready() for Remote once finishReady was already called.
-      readyResolve = () => { resolve () }
+      readyResolve = () => { resolve () };
 
       Remote.sendMessage('getVersion');
     } else {

@@ -91,7 +91,7 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
 // Only used by remote to use saved callback
 export function finalCallback(message) {
   return new Promise(resolve => {
-    const result = JSON.parse(message)
+    const result = JSON.parse(message);
     if (typeof(result['asyncId']) === 'number'
       && _remoteCallbacks[result['asyncId']] !== undefined) {
       _remoteCallbacks[result['asyncId']].apply(this, [result['result']]);
