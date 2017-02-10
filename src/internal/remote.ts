@@ -1,43 +1,48 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
-import {exec, callCallback} from './internal'
+import {exec, finalCallback} from './internal';
 import {setMockVersion} from '../internal/util/version';
+import {finishReady} from '../util/ready';
 
 export class Remote {
   private static isVersion = false;
 
   static receiveMessage(message: string) {
-    let messageArr = [];
+    let messageObj = {};
     let result;
     return new Promise((resolve, reject) => {
       if (Remote.remoteType === 'remote') {
+        // Receive version on first message from proxy
         if(!Remote.isVersion && message.indexOf('setVersion') !== -1) {
-          setMockVersion(message)
           Remote.isVersion = true
-          resolve(message)
+          resolve(finishReady({message}))
         } else {
           if (message.indexOf('setVersion') !== -1) {
             reject(Error('Version was already set.'))
           } else {
-            callCallback(decodeURIComponent(message)).then(result => {
+            finalCallback(decodeURIComponent(message)).then(result => {
               resolve(result)
             });
           }
         }
       } else if (Remote.remoteType === 'proxy') {
         if (message !== undefined) {
-          messageArr = decodeURIComponent(message).split(',');
-          if (message === 'getVersion' || messageArr[0] === 'getVersion') {
+          if (message === 'getVersion') {
+            // First message to get and send version
             Remote.sendMessage('setVersion:: ' + window.navigator.appVersion);
             resolve(true);
           } else {
-            let asyncId = Number(messageArr.pop())
-            messageArr.push(result => {
+            // Succeeding messages, actual exec calls.
+            messageObj = JSON.parse(decodeURIComponent(message))
+            messageObj['callback'] = (result => {
               let retObj = {
                 result,
-                asyncId
+                asyncId: Number(messageObj['asyncId'])
               }
               resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))))
             })
+            let messageArr = [messageObj['funcName'],
+                    messageObj['args'] ? String(messageObj['args']) : undefined,
+                    messageObj['callback']]
             exec.apply(this, messageArr);
           }
         }

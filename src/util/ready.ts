@@ -6,6 +6,7 @@ import {Remote} from '../internal/remote'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
+let readyResolve;
 
 let readyPromise: Promise<any> = new Promise(resolve => {
   document.addEventListener('xsplit-js-ready', () => {
@@ -16,6 +17,27 @@ let readyPromise: Promise<any> = new Promise(resolve => {
     resolve();
   }
 });
+
+export function finishReady(config: Object): Promise<any> {
+  return new Promise(resolve => {
+    if (config && config['version'] !== undefined) {
+      setMockVersion(config['version']);
+    }
+
+    setReady();
+    if (isReady && !isInit) {
+      setOnce();
+      init();
+    }
+
+    if (readyResolve !== undefined){
+      readyResolve.call(this, 'Done')
+    }
+
+    resolve(readyPromise);
+
+  })
+}
 
 export function ready(config: Object): Promise<any> {
   return new Promise((resolve,reject) => {
@@ -32,22 +54,14 @@ export function ready(config: Object): Promise<any> {
     }
 
     if(Remote.remoteType === 'remote') {
+      // Create a callback that would resolve ready()
+      // Resolve ready() for Remote once finishReady was already called.
+      readyResolve = () => { resolve () }
+
       Remote.sendMessage('getVersion');
-    } else if (Remote.remoteType === 'proxy') {
-      setMockVersion(window.navigator.appVersion);
+    } else {
+      resolve(finishReady(config));
     }
-
-    if (config && config['version'] !== undefined) {
-      setMockVersion(config['version']);
-    }
-
-    setReady();
-    if (isReady && !isInit) {
-      setOnce();
-      init();
-    }
-
-    resolve(readyPromise);
   })
 }
 

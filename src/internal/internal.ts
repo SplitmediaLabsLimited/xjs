@@ -14,6 +14,7 @@ let counter = 0;
 */
 export function exec(funcName: string, ...args: any[]): Promise<any> {
   return new Promise((resolve, reject) => {
+
     let callback: Function = null;
     let ret: any = false;
 
@@ -32,22 +33,25 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
       ].join(' '));
     }
 
-    // For Remote
+    // For Remote, parse message and send to proxy
     if (Remote.remoteType === 'remote') {
       counter++;
-      let message;
+      let message = {};
 
       if (args.length >= 1) {
-        message = [
-          funcName, String(args), counter
-        ].join()
+        message = {
+          funcName,
+          args,
+          asyncId: counter
+        }
       } else {
-        message = [
-          funcName, counter
-        ].join()
+        message = {
+          funcName,
+          asyncId: counter
+        }
       }
 
-      Remote.sendMessage(encodeURIComponent(message));
+      Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
     }
 
     if (
@@ -67,7 +71,7 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
       } else {
         _callbacks[ret] = callback;
       }
-    } else { //if Remote and Sync create a callback
+    } else { //if Remote and Sync create its callback
       if (Remote.remoteType === 'remote' ) {
         _remoteCallbacks[counter] = result => {
           resolve(result);
@@ -75,8 +79,9 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
       }
     }
 
+    // Sync calls end here for proxy and local
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
-      _proxyCallbacks[ret].call(this, decodeURIComponent(ret))
+      resolve(_proxyCallbacks[ret].call(this, decodeURIComponent(ret)));
     } else if (Remote.remoteType === 'local') {
       resolve(ret);
     }
@@ -84,9 +89,9 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
 }
 
 // Only used by remote to use saved callback
-export function callCallback(message) {
+export function finalCallback(message) {
   return new Promise(resolve => {
-    let result = JSON.parse(message);
+    const result = JSON.parse(message)
     if (typeof(result['asyncId']) === 'number'
       && _remoteCallbacks[result['asyncId']] !== undefined) {
       _remoteCallbacks[result['asyncId']].apply(this, [result['result']]);
@@ -100,7 +105,6 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
     let callback = _proxyCallbacks[asyncID];
-
     callback.call(this, decodeURIComponent(result));
   } else {
     let callback = _callbacks[asyncID];
