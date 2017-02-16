@@ -95,10 +95,20 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   isBrowserTransparent: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
+   * See: {@link #core/HtmlSource#enableBrowserTransparency enableBrowserTransparency}
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
 
+  /**
+   * See: {@link #core/HtmlSource#isBrowser60FPS isBrowser60FPS}
+   */
+  isBrowser60FPS: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/HtmlSource#enableBrowser60FPS enableBrowser60FPS}
+   */
+  enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
+  
   /**
    * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
    */

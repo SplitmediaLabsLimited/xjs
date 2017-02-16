@@ -41,6 +41,20 @@ export interface ISourceHtml {
   enableBrowserTransparency(value: boolean): Promise<ISourceHtml>
 
   /**
+   * return: Promise<boolean>
+   *
+   * Check if browser can render up to a maximum of 60FPS
+   */
+  isBrowser60FPS(): Promise<boolean>
+
+  /**
+   * param: Promise<boolean>
+   *
+   * return: Promise<ISourceHtml>
+   */
+  enableBrowser60FPS(value: boolean): Promise<ISourceHtml>
+
+  /**
    * return: Promise<Rectangle>
    *
    * Gets the custom browser window size (in pixels) for the item, if set,
@@ -54,7 +68,7 @@ export interface ISourceHtml {
    *
    * return: Promise<ISourceHtml>
    *
-   * Gets the custom brower window size (in pixels) for the item
+   * Set the custom brower window size (in pixels) for the item
    */
   setBrowserCustomSize(value: Rectangle): Promise<ISourceHtml>
 
@@ -212,7 +226,6 @@ export class iSourceHtml implements ISourceHtml{
     });
   }
 
-
   isBrowserTransparent(): Promise<boolean> {
     return new Promise(resolve => {
       if(this._isItemCall){
@@ -239,6 +252,39 @@ export class iSourceHtml implements ISourceHtml{
         this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  isBrowser60FPS(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isBrowser60FPS', true);
+        this._checkPromise = iItem.get('prop:Browser60fps', this._id);
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:Browser60fps', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(isBrowser60FPS => {
+        resolve(isBrowser60FPS === '1');
+      });
+    });
+  }
+
+  enableBrowser60FPS(value: boolean): Promise<iSourceHtml> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isBrowser60FPS', true);
+        this._checkPromise = iItem.get('prop:Browser60fps', this._id);
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:Browser60fps', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(isBrowser60FPS => {
+        if ((isBrowser60FPS === '1') !== value) {
+          iItem.set('prop:Browser60fps',  (value ? '1' : '0'), this._id);
+        }
         resolve(this);
       });
     });
