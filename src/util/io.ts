@@ -56,8 +56,12 @@ export class IO {
    * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
    *
    */
-  static openUrl(url: string) {
-    exec('OpenUrl', url);
+  static openUrl(url: string):Promise<string> {
+    return new Promise(resolve => {
+      exec('OpenUrl', url).then(res => {
+        resolve(res)
+      })
+    })
   }
 
   private static _ALLOW_MULTI_SELECT: number = 0x200;

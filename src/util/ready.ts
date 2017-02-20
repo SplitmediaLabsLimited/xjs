@@ -33,7 +33,6 @@ export function finishReady(config: Object): Promise<any> {
     if (readyResolve !== undefined && Remote.remoteType === 'remote'){
       readyResolve.call(this, null);
     }
-
     resolve(readyPromise);
 
   })

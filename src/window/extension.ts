@@ -5,7 +5,10 @@ import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
 import {JSON as JXON} from '../internal/util/json';
 import {Scene} from '../core/scene';
-import {addSceneEventFixVersion, deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
+import {addSceneEventFixVersion,
+        deleteSceneEventFixVersion,
+        versionCompare,
+        getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
@@ -73,44 +76,57 @@ export class ExtensionWindow extends EventEmitter {
    *  Allows listening to events that this class emits.
    *
    */
-  static on(event: string, handler: Function) {
-    ExtensionWindow.getInstance().on(event, handler);
+  static on(event: string, handler: Function): Promise<any> {
+    return new Promise((resolve,reject) => {
+      ExtensionWindow.getInstance().on(event, handler);
 
-    let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
-    let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
+      let isDeleteSceneEventFixed = versionCompare(getVersion()).
+      is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
+      let isAddSceneEventFixed = versionCompare(getVersion()).
+      is.greaterThanOrEqualTo(addSceneEventFixVersion);
 
-    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
-      if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
-        ExtensionWindow._subscriptions.push('SceneDeleted');
-        EventManager.subscribe('SceneDeleted', function(settingsObj) {
-          if (Environment.isExtension()) {
-            ExtensionWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
-          }
-        });
-      }
-    } else if(event === 'scene-add' && isAddSceneEventFixed) {
-      if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
-        ExtensionWindow._subscriptions.push('OnSceneAddByUser');
-        EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
-          Scene.getSceneCount().then(function(count){
+      if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+        if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
+          ExtensionWindow._subscriptions.push('SceneDeleted');
+          EventManager.subscribe('SceneDeleted', function(settingsObj) {
             if (Environment.isExtension()) {
-              ExtensionWindow.emit(event, count);
+              ExtensionWindow.emit(event, settingsObj['index'] === '' ?
+              null : Number(settingsObj['index']) + 1);
             }
+            resolve();
           });
-        });
-      }
-    } else if(['sources-list-highlight', 'sources-list-select', 'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
-      //Just subscribe to the event. Emitter is already handled.
-      if (['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >= 0) {
-        try{
-          exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() );
-        } catch (ex) {
-          //This exception most probably for older versions which would work without subscribing to source list events.
         }
+      } else if(event === 'scene-add' && isAddSceneEventFixed) {
+        if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
+          ExtensionWindow._subscriptions.push('OnSceneAddByUser');
+          EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
+            Scene.getSceneCount().then(function(count){
+              if (Environment.isExtension()) {
+                ExtensionWindow.emit(event, count);
+                resolve();
+              }
+            });
+          });
+        }
+      } else if(['sources-list-highlight', 'sources-list-select',
+      'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
+        //Just subscribe to the event. Emitter is already handled.
+        if (['sources-list-highlight', 'sources-list-select',
+        'sources-list-update'].indexOf(event) >= 0) {
+          try{
+            exec( 'SourcesListSubscribeEvents',
+              ViewTypes.MAIN.toString() ).then(res => {
+                resolve(res)
+              })
+          } catch (ex) {
+            // This exception most probably for older versions which
+            // would work without subscribing to source list events.
+          }
+        }
+      } else {
+        reject(Error('Warning! The event "' + event + '" is not yet supported.'));
       }
-    } else {
-      console.warn('Warning! The event "' + event + '" is not yet supported.');
-    }
+    })
   }
 
   static off(event: string, handler: Function) {
@@ -132,10 +148,14 @@ export class ExtensionWindow extends EventEmitter {
    *
    * Renames the extension window.
    */
-  setTitle(value: string) {
-    let ext = Extension.getInstance()
-    ext.getId().then(id => {
-      exec("CallHost", "setExtensionWindowTitle:" + id, value);
+  setTitle(value: string):Promise<any> {
+    return new Promise(resolve => {
+      let ext = Extension.getInstance()
+      ext.getId().then(id => {
+        exec("CallHost", "setExtensionWindowTitle:" + id, value).then(res => {
+          resolve(res)
+        })
+      })
     })
   };
 

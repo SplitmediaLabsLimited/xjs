@@ -163,7 +163,9 @@ export class SourcePropsWindow extends EventEmitter {
   };
 
   /** Closes the properties window. */
-  close() {
-    exec('Close');
+  close():Promise<any> {
+    return new Promise(resolve => {
+      resolve(exec('Close'));
+    })
   };
 }
