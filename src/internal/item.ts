@@ -17,39 +17,41 @@ export class Item {
   private static islockedSourceSlot: boolean = false;
 
   /** Prepare an item for manipulation */
-  static attach(itemID: string): number {
-    let slot = Item.itemSlotMap.indexOf(itemID);
-    if (slot === -1) {
-      slot = ++Item.lastSlot % Item.MAX_SLOTS;
-      if (Item.islockedSourceSlot && slot === 0) {
-        ++slot; // source cannot attach to first slot
+  static attach(itemID: string): Promise<Number> {
+    return new Promise(resolve => {
+      let slot = Item.itemSlotMap.indexOf(itemID);
+      if (slot === -1) {
+        slot = ++Item.lastSlot % Item.MAX_SLOTS;
+        if (Item.islockedSourceSlot && slot === 0) {
+          ++slot; // source cannot attach to first slot
+        }
+        Item.lastSlot = slot;
+        Item.itemSlotMap[slot] = itemID;
       }
-      Item.lastSlot = slot;
-      Item.itemSlotMap[slot] = itemID;
-    }
 
-    if (!Environment.isSourcePlugin()) {
-      exec('SearchVideoItem' +
-        (String(slot) === '0' ? '' : (slot + 1)),
-        itemID
-      );
-    } else {
-      let hasGlobalSources = versionCompare(getVersion())
-        .is
-        .greaterThan(minVersion);
-
-      if (hasGlobalSources) {
-        exec('AttachVideoItem' + (slot + 1),
-          itemID
-        );
-      } else {
-        exec('AttachVideoItem' +
+      if (!Environment.isSourcePlugin()) {
+        exec('SearchVideoItem' +
           (String(slot) === '0' ? '' : (slot + 1)),
           itemID
         );
+      } else {
+        let hasGlobalSources = versionCompare(getVersion())
+        .is
+        .greaterThan(minVersion);
+
+        if (hasGlobalSources) {
+          exec('AttachVideoItem' + (slot + 1),
+            itemID
+          );
+        } else {
+          exec('AttachVideoItem' +
+            (String(slot) === '0' ? '' : (slot + 1)),
+            itemID
+          );
+        }
       }
-    }
-    return slot;
+      resolve(slot);
+    })
   }
 
   /** used for source plugins. lock an id to slot 0 */
@@ -148,7 +150,11 @@ export class Item {
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let itemId;
+      Item.attach(id).then(res => {
+        itemId = res
+      })
+      let slot = id !== undefined && id !== null ? itemId : -1;
       let hasGlobalSources = versionCompare(getVersion())
         .is
         .greaterThan(minVersion);
@@ -176,7 +182,8 @@ export class Item {
   /**
    * Helper function to check if the supplied item id still exist.
    */
-  static wrapSet(name: string, value:string, srcId?:string, id?:string, updateId?: Function) {
+  static wrapSet(name: string, value:string,
+        srcId?:string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
       if(versionCompare(getVersion())
         .is
@@ -189,7 +196,8 @@ export class Item {
           return new Promise<string>(resolveInner => {
             const itemsArray = itemlist.split(',');
             let secondJsonArr = [];
-            if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) && (itemsArray[0] !== 'null')) {
+            if ((itemsArray.indexOf(id) > -1) && (itemsArray.length > 0) &&
+                (itemsArray[0] !== 'null')) {
               resolveInner(itemsArray[0]);
             } else {
               let idMatch, sceneMatch;
@@ -258,7 +266,11 @@ export class Item {
   /** Sets an item's local property */
   static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-      let slot = id !== undefined && id !== null ? Item.attach(id) : -1;
+      let itemId;
+      Item.attach(id).then(res => {
+        itemId = res
+      })
+      let slot = id !== undefined && id !== null ? itemId : -1;
       let hasGlobalSources = versionCompare(getVersion())
         .is
         .greaterThan(minVersion);
