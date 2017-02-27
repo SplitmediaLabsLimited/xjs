@@ -72,12 +72,12 @@ export class ChannelManager extends EventEmitter {
           if (event === 'stream-end') {
             channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
             channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
-            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
+            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']/10) || 0;
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
-            
-            statJSON = JXON.parse('<stat' + 
+
+            statJSON = JXON.parse('<stat' +
               ' video="' + channelInfoObj['Video'] +
               '" audio="' + channelInfoObj['Audio'] +
               '" output="' + channelInfoObj['Output'] +
@@ -100,7 +100,16 @@ export class ChannelManager extends EventEmitter {
             channel: eventChannel,
             streamTime: addedInfo['streamTime']
           });
-        }
+        } else if (channelInfoObj.hasOwnProperty('new') &&
+          channelInfoObj.hasOwnProperty('old')) {
+            if (event === 'recording-renamed') {
+              handler.call(this, {
+                error: false,
+                oldName: channelInfoObj['old'],
+                newName: decodeURIComponent(channelInfoObj['new'])
+              })
+            }
+          }
       } catch (e) {
         handler.call(this, { error: true })
       }
@@ -108,17 +117,29 @@ export class ChannelManager extends EventEmitter {
   }
 }
 
-EventManager.subscribe(['StreamStart', 'StreamEnd'], (settingsObj: string) => {
-  let settings = [];
-
+EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'],
+  (settingsObj: string) => {
+  let eventString;
   if (settingsObj.hasOwnProperty('event') &&
       settingsObj.hasOwnProperty('info')) {
-    let eventString = settingsObj['event'];
+    eventString = settingsObj['event'];
     if (settingsObj['event'] === 'StreamStart') {
       eventString = 'stream-start';
     } else if (settingsObj['event'] === 'StreamEnd') {
       eventString = 'stream-end';
     }
     ChannelManager.emit(eventString, settingsObj['info']);
+  }
+  if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+    && settingsObj.hasOwnProperty('new')) {
+    eventString = settingsObj['event'];
+    if (settingsObj['event'] === 'RecordingRenamed') {
+      eventString = 'recording-renamed';
+      const renameInfo = {
+        old: settingsObj['old'],
+        new: settingsObj['new']
+      }
+      ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+    }
   }
 });
