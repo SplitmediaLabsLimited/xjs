@@ -6,9 +6,12 @@ import {finishReady} from '../util/ready';
 export class Remote {
   private static isVersion = false;
 
+  static sendMessage;
+
+  static remoteType = 'local';
+
   static receiveMessage(message: string) {
     let messageObj = {};
-    let result;
 
     return new Promise((resolve, reject) => {
       if (Remote.remoteType === 'remote') {
@@ -20,9 +23,22 @@ export class Remote {
           if (message.indexOf('setVersion') !== -1) {
             reject(Error('Version was already set.'));
           } else {
-            finalCallback(decodeURIComponent(message)).then(result => {
-              resolve(result);
-            });
+            messageObj = JSON.parse(decodeURIComponent(message))
+            switch(messageObj['type']) {
+              case 'exec':
+                Remote.execHandler(message);
+                break;
+              case 'subscribe':
+                // Callback method for EventManager
+                break;
+              case 'emit':
+                // Callback method for EventEmitter
+                break;
+              default:
+                reject(Error('Call type is undefined.'))
+                break;
+            }
+
           }
         }
       } else if (Remote.remoteType === 'proxy') {
@@ -32,22 +48,22 @@ export class Remote {
             Remote.sendMessage('setVersion:: ' + window.navigator.appVersion);
             resolve(true);
           } else {
-            // Succeeding messages, actual exec calls.
+            // Succeeding messages from exec/event/emit
             messageObj = JSON.parse(decodeURIComponent(message));
-            messageObj['callback'] = (result => {
-              let retObj = {
-                result,
-                asyncId: Number(messageObj['asyncId'])
-              }
-              resolve(
-                Remote.sendMessage(
-                  encodeURIComponent(JSON.stringify(retObj)))
-              );
-            })
-            let messageArr = [messageObj['funcName'],
-                    messageObj['args'] ? String(messageObj['args']) : undefined,
-                    messageObj['callback']];
-            exec.apply(this, messageArr);
+            switch(messageObj['type']) {
+              case 'exec':
+                Remote.execHandler(message);
+                break;
+              case 'subscribe':
+                Remote.subscribeHandler(message);
+                break;
+              case 'emit':
+                Remote.emitHandler(message);
+                break;
+              default:
+                reject(Error('Call type is undefined.'))
+                break;
+            }
           }
         }
       } else if (Remote.remoteType === 'local') {
@@ -56,7 +72,45 @@ export class Remote {
     })
   }
 
-  static sendMessage;
+  // Handle exec messages
+  static execHandler(message:string) {
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        finalCallback(decodeURIComponent(message))
+        .then(result => {
+          resolve(result);
+        });
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = {};
+        return new Promise((resolve, reject) => {
+          messageObj = JSON.parse(decodeURIComponent(message));
+          messageObj['callback'] = (result => {
+            let retObj = {
+              result,
+              asyncId: Number(messageObj['asyncId']),
+              type: 'exec'
+            }
+            resolve(
+              Remote.sendMessage(
+                encodeURIComponent(JSON.stringify(retObj)))
+            );
+          })
+          let messageArr = [messageObj['funcName'],
+                  messageObj['args'] ? String(messageObj['args']) : undefined,
+                  messageObj['callback']];
+          exec.apply(this, messageArr);
+        })
+      }
+    })
+  }
 
-  static remoteType = 'local';
+  // Handle eventmanager subscribe events
+  static subscribeHandler(message:string) {
+
+  }
+
+  // Hanndle eventemitter on/off events
+  static emitHandler(message:string) {
+
+  }
 }

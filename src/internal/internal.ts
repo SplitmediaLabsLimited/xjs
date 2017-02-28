@@ -42,12 +42,14 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
         message = {
           funcName,
           args,
-          asyncId: counter
+          asyncId: counter,
+          type: 'exec'
         }
       } else {
         message = {
           funcName,
-          asyncId: counter
+          asyncId: counter,
+          type: 'exec'
         }
       }
 
