@@ -6,6 +6,7 @@ import {EventManager} from '../internal/eventmanager';
 import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
+import {Remote} from '../internal/remote';
 
 /**
  *  The ChannelManager class allows limited access to channels (also termed as outputs)
@@ -53,8 +54,19 @@ export class ChannelManager extends EventEmitter {
    * });
    * ```
    */
+
+  static _proxyCallbacks = {};
+  static _remoteCallbacks = {};
+
   static on(event: string, handler: Function) {
     // ChannelManager._emitter.on(event, handler);
+    if (Remote.remoteType === 'remote') {
+      let message = {
+        event,
+        type: 'emit'
+      }
+      Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
+    }
     if (Environment.isSourceProps()) {
       console.warn('Channel Manager: stream-related events are not received' +
         ' via the Source Properties');
@@ -76,8 +88,8 @@ export class ChannelManager extends EventEmitter {
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
-            
-            statJSON = JXON.parse('<stat' + 
+
+            statJSON = JXON.parse('<stat' +
               ' video="' + channelInfoObj['Video'] +
               '" audio="' + channelInfoObj['Audio'] +
               '" output="' + channelInfoObj['Output'] +
@@ -95,16 +107,37 @@ export class ChannelManager extends EventEmitter {
             channel: infoJSON
           });
 
-          handler.call(this, {
-            error: false,
-            channel: eventChannel,
-            streamTime: addedInfo['streamTime']
-          });
+          // register callback for remote and the one created for proxy
+          if (handler instanceof Function) {
+            if (Remote.remoteType === 'remote') {
+              ChannelManager._remoteCallbacks[event] = handler;
+            } else if (Remote.remoteType === 'proxy') {
+              handler.call(this, {
+                error: false,
+                channel: eventChannel,
+                streamTime: addedInfo['streamTime']
+              })
+            } else {
+              handler.call(this, {
+                error: false,
+                channel: eventChannel,
+                streamTime: addedInfo['streamTime']
+              });
+            }
+          }
         }
       } catch (e) {
         handler.call(this, { error: true })
       }
     });
+  }
+
+  static finalCallback(message:string) {
+    return new Promise(resolve => {
+      const result = JSON.parse(decodeURIComponent(message));
+      console.log(result, ChannelManager._remoteCallbacks)
+      ChannelManager._remoteCallbacks[result['type']].call(this, result['result'])
+    })
   }
 }
 

@@ -2,6 +2,8 @@
 import {exec, finalCallback} from './internal';
 import {setMockVersion} from '../internal/util/version';
 import {finishReady} from '../util/ready';
+import {EventManager} from './eventmanager';
+import {ChannelManager} from '../core/channelmanager';
 
 export class Remote {
   private static isVersion = false;
@@ -29,10 +31,10 @@ export class Remote {
                 Remote.execHandler(message);
                 break;
               case 'subscribe':
-                // Callback method for EventManager
+                Remote.subscribeHandler(message)
                 break;
               case 'emit':
-                // Callback method for EventEmitter
+                Remote.emitHandler(message)
                 break;
               default:
                 reject(Error('Call type is undefined.'))
@@ -106,11 +108,50 @@ export class Remote {
 
   // Handle eventmanager subscribe events
   static subscribeHandler(message:string) {
-
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        // EventManager.finalCallback(message)
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            result,
+            type: 'subscribe'
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ));
+        });
+        let messageArr = [messageObj['event'],
+                    messageObj['callback']];
+        EventManager.subscribe.apply(this, messageArr)
+      }
+    })
   }
 
   // Hanndle eventemitter on/off events
   static emitHandler(message:string) {
-
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        ChannelManager.finalCallback(message);
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            result,
+            type: 'emit'
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ))
+        })
+        let messageArr = [messageObj['event'],
+                    messageObj['callback']]
+        ChannelManager.on.apply(this, messageArr)
+      }
+    })
   }
+
 }
