@@ -65,6 +65,7 @@ export class ChannelManager extends EventEmitter {
         event,
         type: 'emit'
       }
+      ChannelManager._remoteCallbacks[event] = handler;
       Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
     }
     if (Environment.isSourceProps()) {
@@ -107,24 +108,23 @@ export class ChannelManager extends EventEmitter {
             channel: infoJSON
           });
 
+
           // register callback for remote and the one created for proxy
-          if (handler instanceof Function) {
-            if (Remote.remoteType === 'remote') {
-              ChannelManager._remoteCallbacks[event] = handler;
-            } else if (Remote.remoteType === 'proxy') {
-              handler.call(this, {
-                error: false,
-                channel: eventChannel,
-                streamTime: addedInfo['streamTime']
-              })
-            } else {
-              handler.call(this, {
-                error: false,
-                channel: eventChannel,
-                streamTime: addedInfo['streamTime']
-              });
-            }
+          if (Remote.remoteType === 'proxy') {
+            handler.call(this, {
+              error: false,
+              channel: eventChannel,
+              event,
+              streamTime: addedInfo['streamTime']
+            })
+          } else {
+            handler.call(this, {
+              error: false,
+              channel: eventChannel,
+              streamTime: addedInfo['streamTime']
+            });
           }
+
         }
       } catch (e) {
         handler.call(this, { error: true })
@@ -135,8 +135,7 @@ export class ChannelManager extends EventEmitter {
   static finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
-      console.log(result, ChannelManager._remoteCallbacks)
-      ChannelManager._remoteCallbacks[result['type']].call(this, result['result'])
+      ChannelManager._remoteCallbacks[result['result']['event']].call(this, result['result'])
     })
   }
 }
