@@ -4,6 +4,7 @@ import {setMockVersion} from '../internal/util/version';
 import {finishReady} from '../util/ready';
 import {EventManager} from './eventmanager';
 import {ChannelManager} from '../core/channelmanager';
+import {EventEmitter} from '../util/eventemitter';
 
 export class Remote {
   private static isVersion = false;
@@ -36,6 +37,9 @@ export class Remote {
               case 'emit':
                 Remote.emitHandler(message)
                 break;
+              case 'event-emitter':
+                Remote.eventEmitterHandler(message);
+                break;
               default:
                 reject(Error('Call type is undefined.'))
                 break;
@@ -61,6 +65,9 @@ export class Remote {
                 break;
               case 'emit':
                 Remote.emitHandler(message);
+                break;
+              case 'event-emitter':
+                Remote.eventEmitterHandler(message);
                 break;
               default:
                 reject(Error('Call type is undefined.'))
@@ -150,6 +157,31 @@ export class Remote {
         let messageArr = [messageObj['event'],
                     messageObj['callback']]
         ChannelManager.on.apply(this, messageArr)
+      }
+    })
+  }
+
+  // Hanndle test on/off events
+  static eventEmitterHandler(message:string) {
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        EventEmitter.finalCallback(message);
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            result,
+            type: 'event-emitter',
+            event: messageObj['event']
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ))
+        })
+        let messageArr = [messageObj['event'],
+                    messageObj['callback']]
+        EventEmitter.setCallback.call(this, messageArr)
       }
     })
   }
