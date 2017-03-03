@@ -32,7 +32,6 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
         'internal.exec("', funcName, '") ', JSON.stringify(args)
       ].join(' '));
     }
-
     // For Remote, parse message and send to proxy
     if (Remote.remoteType === 'remote') {
       counter++;

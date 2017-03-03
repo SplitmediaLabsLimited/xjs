@@ -62,18 +62,21 @@ export class EventEmitter {
   }
 
   static setCallback(message:string) {
-    if (EventEmitter._proxyHandlers[message[0]] === undefined) {
-        EventEmitter._proxyHandlers[message[0]] = [];
+    return new Promise(resolve => {
+      if (EventEmitter._proxyHandlers[message[0]] === undefined) {
+          EventEmitter._proxyHandlers[message[0]] = [];
       }
-      EventEmitter._proxyHandlers[message[0]].push(message[1])
+      resolve (EventEmitter._proxyHandlers[message[0]].push(message[1]))
+    })
   }
 
   static finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
       for (let handler of EventEmitter._remoteHandlers[result['event']]) {
-        handler.call(this, result['result'])
+        handler.apply(this, [result['result']])
       }
+      resolve()
     })
   }
 }

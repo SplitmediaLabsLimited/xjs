@@ -31,14 +31,11 @@ export class Remote {
               case 'exec':
                 Remote.execHandler(message);
                 break;
-              case 'subscribe':
-                Remote.subscribeHandler(message)
-                break;
-              case 'emit':
-                Remote.emitHandler(message)
-                break;
               case 'event-emitter':
                 Remote.eventEmitterHandler(message);
+                break;
+              case 'additional':
+                // Add other types here
                 break;
               default:
                 reject(Error('Call type is undefined.'))
@@ -59,12 +56,6 @@ export class Remote {
             switch(messageObj['type']) {
               case 'exec':
                 Remote.execHandler(message);
-                break;
-              case 'subscribe':
-                Remote.subscribeHandler(message);
-                break;
-              case 'emit':
-                Remote.emitHandler(message);
                 break;
               case 'event-emitter':
                 Remote.eventEmitterHandler(message);
@@ -113,55 +104,7 @@ export class Remote {
     })
   }
 
-  // Handle eventmanager subscribe events
-  static subscribeHandler(message:string) {
-    return new Promise(resolve => {
-      if (Remote.remoteType === 'remote') {
-        // EventManager.finalCallback(message)
-      } else if (Remote.remoteType === 'proxy') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
-        messageObj['callback'] = (result => {
-          let retObj = {
-            result,
-            type: 'subscribe'
-          }
-          resolve(
-            Remote.sendMessage(
-              encodeURIComponent(JSON.stringify(retObj))
-          ));
-        });
-        let messageArr = [messageObj['event'],
-                    messageObj['callback']];
-        EventManager.subscribe.apply(this, messageArr)
-      }
-    })
-  }
-
-  // Hanndle eventemitter on/off events
-  static emitHandler(message:string) {
-    return new Promise(resolve => {
-      if (Remote.remoteType === 'remote') {
-        ChannelManager.finalCallback(message);
-      } else if (Remote.remoteType === 'proxy') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
-        messageObj['callback'] = (result => {
-          let retObj = {
-            result,
-            type: 'emit'
-          }
-          resolve(
-            Remote.sendMessage(
-              encodeURIComponent(JSON.stringify(retObj))
-          ))
-        })
-        let messageArr = [messageObj['event'],
-                    messageObj['callback']]
-        ChannelManager.on.apply(this, messageArr)
-      }
-    })
-  }
-
-  // Hanndle test on/off events
+  // Hanndle emit on/off events
   static eventEmitterHandler(message:string) {
     return new Promise(resolve => {
       if (Remote.remoteType === 'remote') {
@@ -185,5 +128,4 @@ export class Remote {
       }
     })
   }
-
 }

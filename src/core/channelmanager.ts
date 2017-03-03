@@ -59,15 +59,6 @@ export class ChannelManager extends EventEmitter {
   static _remoteCallbacks = {};
 
   static on(event: string, handler: Function) {
-    // ChannelManager._emitter.on(event, handler);
-    if (Remote.remoteType === 'remote') {
-      let message = {
-        event,
-        type: 'emit'
-      }
-      ChannelManager._remoteCallbacks[event] = handler;
-      Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
-    }
     if (Environment.isSourceProps()) {
       console.warn('Channel Manager: stream-related events are not received' +
         ' via the Source Properties');
@@ -75,8 +66,8 @@ export class ChannelManager extends EventEmitter {
     ChannelManager._emitter.on(event, (params) => {
       try {
         let channelInfoObj = JSON.parse(decodeURIComponent(params));
-        if (channelInfoObj.hasOwnProperty('ChannelName')) {
 
+        if (channelInfoObj.hasOwnProperty('ChannelName')) {
           let channelName = channelInfoObj['ChannelName'];
           let infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
@@ -108,35 +99,16 @@ export class ChannelManager extends EventEmitter {
             channel: infoJSON
           });
 
-
-          // register callback for remote and the one created for proxy
-          if (Remote.remoteType === 'proxy') {
-            handler.call(this, {
-              error: false,
-              channel: eventChannel,
-              event,
-              streamTime: addedInfo['streamTime']
-            })
-          } else {
-            handler.call(this, {
-              error: false,
-              channel: eventChannel,
-              streamTime: addedInfo['streamTime']
-            });
-          }
-
+          handler.call(this, {
+            error: false,
+            channel: eventChannel,
+            streamTime: addedInfo['streamTime']
+          });
         }
       } catch (e) {
         handler.call(this, { error: true })
       }
     });
-  }
-
-  static finalCallback(message:string) {
-    return new Promise(resolve => {
-      const result = JSON.parse(decodeURIComponent(message));
-      ChannelManager._remoteCallbacks[result['result']['event']].call(this, result['result'])
-    })
   }
 }
 
