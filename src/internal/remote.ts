@@ -5,6 +5,7 @@ import {finishReady} from '../util/ready';
 import {EventManager} from './eventmanager';
 import {ChannelManager} from '../core/channelmanager';
 import {EventEmitter} from '../util/eventemitter';
+import {IO} from '../util/io';
 
 export class Remote {
   private static isVersion = false;
@@ -23,9 +24,7 @@ export class Remote {
           Remote.isVersion = true;
           resolve(finishReady({message}));
         } else {
-          if (message.indexOf('setVersion') !== -1) {
-            reject(Error('Version was already set.'));
-          } else {
+          if (message.indexOf('setVersion') === -1) {
             messageObj = JSON.parse(decodeURIComponent(message))
             switch(messageObj['type']) {
               case 'exec':
@@ -34,8 +33,8 @@ export class Remote {
               case 'event-emitter':
                 Remote.eventEmitterHandler(message);
                 break;
-              case 'additional':
-                // Add other types here
+              case 'window':
+                Remote.windowHandler(message);
                 break;
               default:
                 reject(Error('Call type is undefined.'))
@@ -60,6 +59,9 @@ export class Remote {
               case 'event-emitter':
                 Remote.eventEmitterHandler(message);
                 break;
+              case 'window':
+                Remote.windowHandler(message);
+                break;
               default:
                 reject(Error('Call type is undefined.'))
                 break;
@@ -73,7 +75,7 @@ export class Remote {
   }
 
   // Handle exec messages
-  static execHandler(message:string) {
+  private static execHandler(message:string) {
     return new Promise(resolve => {
       if (Remote.remoteType === 'remote') {
         finalCallback(decodeURIComponent(message))
@@ -105,7 +107,7 @@ export class Remote {
   }
 
   // Hanndle emit on/off events
-  static eventEmitterHandler(message:string) {
+  private static eventEmitterHandler(message:string) {
     return new Promise(resolve => {
       if (Remote.remoteType === 'remote') {
         EventEmitter.finalCallback(message);
@@ -125,6 +127,31 @@ export class Remote {
         let messageArr = [messageObj['event'],
                     messageObj['callback']]
         EventEmitter.setCallback.call(this, messageArr)
+      }
+    })
+  }
+
+  // Hanndle emit on/off events
+  private static windowHandler(message:string) {
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        IO.finalCallback(message);
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            duration: result,
+            file: messageObj['file'],
+            type: 'window'
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ))
+        })
+        let messageArr = [messageObj['file'],
+                    messageObj['callback']]
+        IO.getVideoDuration.call(this, messageArr)
       }
     })
   }

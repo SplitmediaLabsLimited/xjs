@@ -82,7 +82,9 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
 
     // Sync calls end here for proxy and local
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
-      resolve(_proxyCallbacks[ret].call(this, decodeURIComponent(ret)));
+      if (_proxyCallbacks[ret] !== undefined) {
+        resolve(_proxyCallbacks[ret].call(this, decodeURIComponent(ret)));
+      }
     } else if (Remote.remoteType === 'local') {
       resolve(ret);
     }

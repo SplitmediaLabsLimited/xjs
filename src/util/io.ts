@@ -3,6 +3,7 @@
 import {exec} from '../internal/internal';
 import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
+import {Remote} from '../internal/remote';
 
 export class IO {
 
@@ -146,38 +147,78 @@ export class IO {
    */
 
   static _callback = {};
-  static getVideoDuration(file: string) {
+  static _remoteCallback = {};
+  static _proxyCallback = {};
+
+  static getVideoDuration(file: any) {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else {
         if (typeof file !== 'undefined') {
-          if (IO._callback[file] === undefined){
-            IO._callback[file] = [];
+          if (Remote.remoteType === 'remote') {
+            let message = {
+              file,
+              type: 'window'
+            }
+            if (IO._remoteCallback[file] === undefined) {
+              IO._remoteCallback[file] = [];
+            }
+            IO._remoteCallback[file].push({resolve,reject});
+            Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
+          } else if (Remote.remoteType === 'proxy') {
+            if (IO._proxyCallback[file[0]] === undefined) {
+              IO._proxyCallback[file[0]] = [];
+            }
+            IO._proxyCallback[file[0]].push(file[1]);
+            exec('GetVideoDuration', file[0]);
+          } else {
+            if (IO._callback[file] === undefined){
+              IO._callback[file] = [];
+            }
+            IO._callback[file].push({resolve,reject});
+            exec('GetVideoDuration', file);
           }
-
-          IO._callback[file].push({resolve,reject});
-          exec('GetVideoDuration', file);
         } else {
           reject(new Error('No file indicated.'))
         }
       }
     });
   };
+
+  static finalCallback(message:string) {
+    return new Promise(resolve => {
+      const result = JSON.parse(decodeURIComponent(message))
+      if (result['duration'] !== undefined) {
+        IO._remoteCallback[result['file']].shift().resolve(result['duration'])
+      } else {
+        IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(
+          Error('Invalid file path.'));
+      }
+    })
+  }
 }
 
 window.OnGetVideoDuration = function(file: string, duration: string) {
-  IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
-  if(IO._callback[decodeURIComponent(file)].length === 0) {
-    delete IO._callback[decodeURIComponent(file)];
+  if (Remote.remoteType === 'proxy') {
+    IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
+  } else {
+    IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
+    if(IO._callback[decodeURIComponent(file)].length === 0) {
+      delete IO._callback[decodeURIComponent(file)];
+    }
   }
 };
 
 window.OnGetVideoDurationFailed = function(file: string) {
-  IO._callback[decodeURIComponent(file)].shift().reject(
-    Error('Invalid file path.'));
-  if(IO._callback[decodeURIComponent(file)].length === 0) {
-    delete IO._callback[decodeURIComponent(file)];
+  if (Remote.remoteType === 'proxy') {
+    IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
+  } else {
+    IO._callback[decodeURIComponent(file)].shift().reject(
+      Error('Invalid file path.'));
+    if(IO._callback[decodeURIComponent(file)].length === 0) {
+      delete IO._callback[decodeURIComponent(file)];
+    }
   }
 };
 
