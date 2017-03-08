@@ -6,6 +6,8 @@ import {EventManager} from './eventmanager';
 import {ChannelManager} from '../core/channelmanager';
 import {EventEmitter} from '../util/eventemitter';
 import {IO} from '../util/io';
+import {Extension} from '../core/extension';
+import {Output} from '../core/output';
 
 export class Remote {
   private static isVersion = false;
@@ -36,6 +38,12 @@ export class Remote {
               case 'window':
                 Remote.windowHandler(message);
                 break;
+              case 'extWindow':
+                Remote.extWindowHandler(message);
+                break;
+              case 'broadcastChannels':
+                Remote.broadcastChannelsHandler(message);
+                break;
               default:
                 reject(Error('Call type is undefined.'))
                 break;
@@ -61,6 +69,12 @@ export class Remote {
                 break;
               case 'window':
                 Remote.windowHandler(message);
+                break;
+              case 'extWindow':
+                Remote.extWindowHandler(message);
+                break;
+              case 'broadcastChannels':
+                Remote.broadcastChannelsHandler(message);
                 break;
               default:
                 reject(Error('Call type is undefined.'))
@@ -152,6 +166,49 @@ export class Remote {
         let messageArr = [messageObj['file'],
                     messageObj['callback']]
         IO.getVideoDuration.call(this, messageArr)
+      }
+    })
+  }
+
+  private static extWindowHandler(message: string) {
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        Extension.finalCallback(message)
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            id: result,
+            type: 'extWindow'
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ))
+        })
+        let Ext = messageObj['instance'] = new Extension()
+        Ext.getId(messageObj['callback'])
+      }
+    })
+  }
+
+  private static broadcastChannelsHandler(message: string) {
+    return new Promise(resolve => {
+      if (Remote.remoteType === 'remote') {
+        Output.finalCallback(message)
+      } else if (Remote.remoteType === 'proxy') {
+        let messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result => {
+          let retObj = {
+            channels: result,
+            type: 'broadcastChannels'
+          }
+          resolve(
+            Remote.sendMessage(
+              encodeURIComponent(JSON.stringify(retObj))
+          ))
+        })
+        Output._getBroadcastChannels(messageObj['id'], messageObj['callback'])
       }
     })
   }

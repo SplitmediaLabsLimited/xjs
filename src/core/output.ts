@@ -8,6 +8,7 @@ import {XML} from '../internal/util/xml';
 import {JSON as JXON} from '../internal/util/json';
 import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
+import {Remote} from '../internal/remote'
 
 /**
  * The Output class provides methods to start and stop a stream/recording
@@ -17,6 +18,9 @@ import {Item as iItem} from '../internal/item';
 export class Output {
   static _callback = {};
   static _id:string;
+
+  static _remoteCallback = {};
+  static _proxyCallback = {};
 
   static _localRecording:boolean = false;
   protected _name: string;
@@ -67,7 +71,7 @@ export class Output {
         });
       } else {
         _checkId = new Promise((innerResolve, innerReject) => {
-          innerReject(Error('Outputs class is not accessible to source properties.'));
+          innerReject(Error('Outputs class is only accessible from Source Plugins and Extensions.'));
         });
       }
       _checkId.then(id => {
@@ -182,7 +186,7 @@ export class Output {
     })
   }
 
-  private static _getBroadcastChannels(id:string) {
+  static _getBroadcastChannels(id:string, handler?:Function) {
     Output._id = id;
     return new Promise((resolve, reject) => {
       if(Environment.isSourcePlugin()) {
@@ -191,15 +195,41 @@ export class Output {
           reject(Error('Not a valid ID format for items'));
         }
       }
-      if (Output._callback[Output._id] === undefined){
-        Output._callback[Output._id] = [];
+      if (Remote.remoteType === 'remote') {
+        let message = {
+            type: 'broadcastChannels',
+            id: Output._id
+          }
+          Extension._remoteCallback[Output._id] = ({resolve});
+          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+      } else if (Remote.remoteType === 'proxy') {
+        if (Output._proxyCallback[Output._id] === undefined){
+          Output._proxyCallback[Output._id] = [];
+        }
+        Output._proxyCallback[Output._id] = handler;
+        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
+      } else {
+        if (Output._callback[Output._id] === undefined){
+          Output._callback[Output._id] = [];
+        }
+        Output._callback[Output._id] = ({resolve});
+        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
       }
-      Output._callback[Output._id] = ({resolve});
-      exec('CallHost', 'getBroadcastChannelList:'+Output._id);
+    })
+  }
+
+  static finalCallback(message:string) {
+    return new Promise(resolve => {
+      const result = JSON.parse(decodeURIComponent(message))
+      Extension._remoteCallback[Output._id].resolve(result['channels'])
     })
   }
 }
 
 window.SetBroadcastChannelList = function(channels) {
-  Output._callback[Output._id].resolve(channels)
+  if (Remote.remoteType === 'proxy') {
+    Output._proxyCallback[Output._id].call(this, channels)
+  } else {
+    Output._callback[Output._id].resolve(channels)
+  }
 }
