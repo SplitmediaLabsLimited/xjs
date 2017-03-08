@@ -32,10 +32,28 @@ export class EventEmitter {
   }
 
   off(event: string, handler: Function) {
-    if (this._handlers[event] !== undefined) {
-      for (var i = this._handlers[event].length - 1; i >= 0; i--) {
-        if (this._handlers[event][i] === handler) {
-          this._handlers[event].splice(i, 1);
+    if (Remote.remoteType === 'remote') {
+      if (EventEmitter._remoteHandlers[event] !== undefined) {
+        for (var i = EventEmitter._remoteHandlers[event].length - 1; i >= 0; i--) {
+          if (EventEmitter._remoteHandlers[event][i] === handler) {
+            EventEmitter._remoteHandlers[event].splice(i, 1);
+          }
+        }
+      }
+    } else if (Remote.remoteType === 'proxy') {
+      if (EventEmitter._proxyHandlers[event] !== undefined) {
+        for (var i = EventEmitter._proxyHandlers[event].length - 1; i >= 0; i--) {
+          if (EventEmitter._proxyHandlers[event][i] === handler) {
+            EventEmitter._proxyHandlers[event].splice(i, 1);
+          }
+        }
+      }
+    } else {
+      if (this._handlers[event] !== undefined) {
+        for (var i = this._handlers[event].length - 1; i >= 0; i--) {
+          if (this._handlers[event][i] === handler) {
+            this._handlers[event].splice(i, 1);
+          }
         }
       }
     }
