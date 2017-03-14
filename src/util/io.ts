@@ -189,8 +189,8 @@ export class IO {
   static finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
-      if (result['duration'] !== undefined) {
-        IO._remoteCallback[result['file']].shift().resolve(result['duration'])
+      if (result['result'] !== undefined) {
+        IO._remoteCallback[result['file']].shift().resolve(result['result'])
       } else {
         IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(
           Error('Invalid file path.'));

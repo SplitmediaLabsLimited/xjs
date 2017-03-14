@@ -221,7 +221,7 @@ export class Output {
   static finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
-      Extension._remoteCallback[Output._id].resolve(result['channels'])
+      Extension._remoteCallback[Output._id].resolve(result['result'])
     })
   }
 }

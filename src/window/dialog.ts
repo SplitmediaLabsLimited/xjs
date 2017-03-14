@@ -6,6 +6,8 @@ import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+import {Remote} from '../internal/remote';
+
 let dialogProxy: any;
 
 /**
@@ -63,6 +65,9 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      if (Remote.remoteType === 'remote') {
+        throw new Error('Unable to listen to Dialog window events through Remote')
+      }
       this._result = null;
 
       let eventListener = (e) => {
