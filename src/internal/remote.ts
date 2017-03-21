@@ -20,7 +20,7 @@ import {Output} from '../core/output';
  * what type it is (remote/proxy).
  * You can use websockets, datachannnels, etc... for this.
  *
- * Initial declaration
+ * Initial declaration on ready:
  *
  * ```javascript
  * var xjs = require('xjs');
@@ -37,6 +37,9 @@ import {Output} from '../core/output';
  * // Then handle received messages(string) should be passed to
  * xjs.Remote.receiveMessage(message)
  * ```
+ *
+ * Once this is set up, you can already use xjs normally as if you are just making
+ * calls locally.
  */
 
 export class Remote {
@@ -51,7 +54,7 @@ export class Remote {
   /**
    * Initial assignment should be done on xjs.ready()
    * Types:
-   *  - local
+   *  - local (default)
    *  - remote
    *  - proxy
    */
