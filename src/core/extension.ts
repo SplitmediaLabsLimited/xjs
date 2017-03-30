@@ -3,10 +3,13 @@
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
+import {Remote} from '../internal/remote';
 
 export class Extension {
   private static _instance: Extension;
   private _presName: string;
+  static _proxyCallback = {};
+  static _remoteCallback = {};
 
   static _callback = {};
   protected _id: string;
@@ -48,8 +51,9 @@ export class Extension {
           'SetPresProperty',
           this._presName,
           JSON.stringify(configObj)
-        );
-        resolve(this);
+        ).then(result => {
+          resolve(this);
+        })
       } else {
         reject(Error('Configuration object should be in JSON format'));
       }
@@ -75,18 +79,41 @@ export class Extension {
    *
    *  Get the extension id.
    */
-  getId(): Promise<string> {
+  getId(handler?: Function): Promise<string> {
     return new Promise(resolve => {
       if(this._id === undefined) {
-        Extension._callback['ExtensionWindowID'] = ({resolve});
-        App.postMessage("8");
+        if (Remote.remoteType === 'remote') {
+          let message = {
+            type: 'extWindow',
+            instance: Extension._instance
+          }
+          Extension._remoteCallback['ExtensionWindowID'] = ({resolve});
+          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+        } else if (Remote.remoteType === 'proxy') {
+          Extension._proxyCallback['ExtensionWindowID'] = handler;
+          App.postMessage("8");
+        } else {
+          Extension._callback['ExtensionWindowID'] = ({resolve});
+          App.postMessage("8");
+        }
       } else {
         resolve(this._id);
       }
     })
   }
+
+  static finalCallback(message) {
+    return new Promise(resolve => {
+      const result = JSON.parse(decodeURIComponent(message));
+      Extension._remoteCallback['ExtensionWindowID'].resolve(result['result']);
+    })
+  }
 }
 
 window.Setid = function(id) {
+  if (Remote.remoteType === 'proxy') {
+    Extension._proxyCallback['ExtensionWindowID'].call(this, id);
+  } else {
     Extension._callback['ExtensionWindowID'].resolve(id);
   }
+}

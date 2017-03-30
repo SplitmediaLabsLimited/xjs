@@ -17,21 +17,25 @@ export class EventManager {
   static callbacks = {};
 
   static subscribe(event, _cb) {
-    event = event instanceof Array ? event : [event];
+    return new Promise(resolve => {
+      event = event instanceof Array ? event : [event];
 
-    if (event instanceof Array) {
-      event.forEach(_event => {
-        if (EventManager.callbacks[_event] === undefined) {
-          EventManager.callbacks[_event] = [];
-        }
+      if (event instanceof Array) {
+        event.forEach(_event => {
+          if (EventManager.callbacks[_event] === undefined) {
+            EventManager.callbacks[_event] = [];
+          }
 
-        if (_event === 'OnSceneAddByUser') {
-          exec('AppSubscribeEvents');
-        }        
+          if (_event === 'OnSceneAddByUser') {
+            exec('AppSubscribeEvents').then(res => {
+              resolve(res)
+            })
+          }
 
-        EventManager.callbacks[_event].push(_cb);
-      });
-    }
+          EventManager.callbacks[_event].push(_cb);
+        });
+      }
+    })
   }
 }
 

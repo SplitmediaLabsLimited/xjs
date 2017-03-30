@@ -69,7 +69,10 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   call(func: string, arg: string): Promise<HtmlItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
+      let slot
+      iItem.attach(this._id).then(res => {
+        slot = res
+      })
       exec('CallInner' +
         (String(slot) === '0' ? '' : slot + 1),
         func,

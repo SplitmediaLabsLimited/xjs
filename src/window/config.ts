@@ -3,6 +3,7 @@
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {exec} from '../internal/internal';
+import {Remote} from '../internal/remote';
 
 /** This utility class exposes functionality for source plugin developers to
  *  handle the properties window for their source plugins. The framework also
@@ -43,33 +44,36 @@ export class SourcePropsWindow extends EventEmitter {
     if (!Environment.isSourceProps()) {
       throw new Error('SourcePropsWindow class is only available for source properties');
     }
-    window.addEventListener('message', function(event) {
-      try {
-        var data = JSON.parse(event.data);
-      } catch (e) {
-        // syntax error probably happened, exit gracefully
-        return;
-      }
+    if (Remote.remoteType === 'remote') {
+      throw new Error("Unable to listen to SourcePropsWindow events through Remote");
+    } else {
+      window.addEventListener('message', function(event) {
+        try {
+          var data = JSON.parse(event.data);
+        } catch (e) {
+          // syntax error probably happened, exit gracefully
+          return;
+        }
+        switch(data.event) {
+          // currently, restrict messages to selected set
+          case 'set-selected-tab':
+            this.emit(data.event, data.value);
+            break;
+          case 'async-callback':
+            this.emit(data.event, {
+                asyncId : data.value.asyncId,
+                result  : data.value.result
+              });
+            break;
+        }
+      }.bind(this));
 
-      switch(data.event) {
-        // currently, restrict messages to selected set
-        case 'set-selected-tab':
-          this.emit(data.event, data.value);
-          break;
-        case 'async-callback':
-          this.emit(data.event, {
-              asyncId : data.value.asyncId,
-              result  : data.value.result
-            });
-          break;
-      }
-    }.bind(this));
+      this.on('config-load', () => {
+        this._informConfigLoaded();
+      });
 
-    this.on('config-load', () => {
-      this._informConfigLoaded();
-    });
-
-    SourcePropsWindow._instance = this;
+      SourcePropsWindow._instance = this;
+    }
   }
 
   // helper function to communicate with built-in container
@@ -163,7 +167,9 @@ export class SourcePropsWindow extends EventEmitter {
   };
 
   /** Closes the properties window. */
-  close() {
-    exec('Close');
+  close():Promise<any> {
+    return new Promise(resolve => {
+      resolve(exec('Close'));
+    })
   };
 }

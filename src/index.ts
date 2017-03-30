@@ -55,4 +55,6 @@ export * from './window/source';
 export * from './window/extension';
 export * from './window/dialog';
 
+export * from './internal/remote';
+
 export {ready} from './util/ready';

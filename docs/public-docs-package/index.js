@@ -9,7 +9,8 @@ module.exports = new Package('angular-v2-public-docs', [basePackage])
     'core.ts',
     'system.ts',
     'util.ts',
-    'window.ts'
+    'window.ts',
+    'internal.ts'
   ];
 })
 

@@ -269,16 +269,19 @@ export class System{
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else {
-        var res = exec('GetCursorPos');
-        if (typeof res === 'string') {
-          var posArr = res.split(',');
-          var pos = {};
-          pos['x'] = Number(posArr[0]);
-          pos['y'] = Number(posArr[1]);
-          resolve(pos)
-        } else {
-          reject(Error('cannot fetch current cursor position'));
-        }
+        let res;
+        exec('GetCursorPos').then(result => {
+          res = result
+          if (typeof res === 'string') {
+            var posArr = res.split(',');
+            var pos = {};
+            pos['x'] = Number(posArr[0]);
+            pos['y'] = Number(posArr[1]);
+            resolve(pos)
+          } else {
+            reject(Error('cannot fetch current cursor position'));
+          }
+        });
       }
     });
   }

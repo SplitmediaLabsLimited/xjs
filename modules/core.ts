@@ -34,6 +34,7 @@ export * from '../src/core/source/screen';
 export * from '../src/core/source/image';
 export * from '../src/core/source/media';
 export * from '../src/core/source/videoplaylist';
+
 export {ActionAfterPlayback} from '../src/core/source/iplayback';
 export {CuePoint} from '../src/core/source/cuepoint';
 export {IAudio} from '../src/core/source/iaudio';

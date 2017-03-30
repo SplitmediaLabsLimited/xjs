@@ -993,7 +993,7 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * myScene.getSceneName().then(function(name) {
+   * myScene.getName().then(function(name) {
    *  console.log('My scene is named ' + name);
    * });
    * ```

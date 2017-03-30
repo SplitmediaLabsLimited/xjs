@@ -38,8 +38,12 @@ export class Dll extends EventEmitter {
    *  Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']);
    *  ```
    */
-  static load(path: string[]) {
-    exec('LoadDll', path.join(','));
+  static load(path: string[]): Promise<any> {
+    return new Promise(resolve => {
+      exec('LoadDll', path.join(',')).then(result => {
+        resolve(result)
+      })
+    })
   }
 
   static _emitter = new Dll();
@@ -124,7 +128,9 @@ export class Dll extends EventEmitter {
    */
   static isAccessGranted(): Promise<boolean> {
     return new Promise(resolve => {
-      resolve(exec('CheckDllGrant') === '1');
+      exec('CheckDllGrant').then(result => {
+        resolve (result === '1')
+      })
     });
   }
 }
