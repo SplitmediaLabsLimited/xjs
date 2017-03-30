@@ -69,7 +69,10 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   call(func: string, arg: string): Promise<HtmlItem> {
     return new Promise(resolve => {
-      let slot = iItem.attach(this._id);
+      let slot
+      iItem.attach(this._id).then(res => {
+        slot = res
+      })
       exec('CallInner' +
         (String(slot) === '0' ? '' : slot + 1),
         func,
@@ -95,10 +98,20 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   isBrowserTransparent: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
+   * See: {@link #core/HtmlSource#enableBrowserTransparency enableBrowserTransparency}
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
 
+  /**
+   * See: {@link #core/HtmlSource#isBrowser60FPS isBrowser60FPS}
+   */
+  isBrowser60FPS: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/HtmlSource#enableBrowser60FPS enableBrowser60FPS}
+   */
+  enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
+  
   /**
    * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
    */

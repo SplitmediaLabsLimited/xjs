@@ -6,6 +6,7 @@ import {EventManager} from '../internal/eventmanager';
 import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
+import {Remote} from '../internal/remote';
 
 /**
  *  The ChannelManager class allows limited access to channels (also termed as outputs)
@@ -53,8 +54,11 @@ export class ChannelManager extends EventEmitter {
    * });
    * ```
    */
+
+  static _proxyCallbacks = {};
+  static _remoteCallbacks = {};
+
   static on(event: string, handler: Function) {
-    // ChannelManager._emitter.on(event, handler);
     if (Environment.isSourceProps()) {
       console.warn('Channel Manager: stream-related events are not received' +
         ' via the Source Properties');
@@ -62,8 +66,8 @@ export class ChannelManager extends EventEmitter {
     ChannelManager._emitter.on(event, (params) => {
       try {
         let channelInfoObj = JSON.parse(decodeURIComponent(params));
-        if (channelInfoObj.hasOwnProperty('ChannelName')) {
 
+        if (channelInfoObj.hasOwnProperty('ChannelName')) {
           let channelName = channelInfoObj['ChannelName'];
           let infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
@@ -76,8 +80,8 @@ export class ChannelManager extends EventEmitter {
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
-            
-            statJSON = JXON.parse('<stat' + 
+
+            statJSON = JXON.parse('<stat' +
               ' video="' + channelInfoObj['Video'] +
               '" audio="' + channelInfoObj['Audio'] +
               '" output="' + channelInfoObj['Output'] +

@@ -120,7 +120,10 @@ export class Transition {
   static getSceneTransitions(): Promise<Transition[]> {
     return new Promise(resolve => {
       var transitions: Transition[] = [];
-      var transitionString = iApp.getGlobalProperty('transitions');
+      let transitionString
+      iApp.getGlobalProperty('transitions').then(result => {
+        transitionString = result
+      });
       try {
         if (transitionString !== '') {
           var transitionArray = JSON.parse(transitionString);

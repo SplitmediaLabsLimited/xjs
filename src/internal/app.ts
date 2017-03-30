@@ -44,15 +44,23 @@ export class App {
   }
 
   /** Get the value of the given global property */
-  static getGlobalProperty(name: string): string {
-    return exec('GetGlobalProperty', name);
+  static getGlobalProperty(name: string):Promise<any> {
+    return new Promise(resolve => {
+      exec('GetGlobalProperty', name).then(result => {
+        resolve(result);
+      })
+    })
   }
 
   /** Calls a DLL function synchronously */
-  static callDll(func: string, ...arg: string[]): string {
+  static callDll(func: string, ...arg: string[]): Promise<string> {
     var args: any[] = [].slice.call(arguments);
-    args.unshift('CallDll');
-    return exec.apply(this, args);
+    return new Promise(resolve => {
+      args.unshift('CallDll');
+      exec.apply(this, args).then(result => {
+        resolve(result)
+      })
+    })
   }
 
   /** Calls an application method asynchronously */

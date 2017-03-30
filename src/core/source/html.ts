@@ -77,11 +77,30 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
    * return: Promise<HtmlSource>
    * ```
    *
-   * Enable or disabled transparency of CEF browser
+   * Enable or disable transparency of CEF browser
    *
    * *Chainable.*
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if browser can render up to a maximum of 60FPS
+   */
+  isBrowser60FPS: () => Promise<boolean>
+
+  /**
+   * param: Promise<boolean>
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Enable or disable browser source to render up to a maximum of 60FPS
+   *
+   * *Chainable.*
+   */
+  enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>
 
   /**
    * return: Promise<Rectangle>

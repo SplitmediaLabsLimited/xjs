@@ -6,6 +6,8 @@ import {Rectangle} from '../util/rectangle';
 import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+import {Remote} from '../internal/remote';
+
 let dialogProxy: any;
 
 /**
@@ -63,6 +65,9 @@ export class Dialog{
     if (Environment.isSourcePlugin()) {
       throw new Error('Dialogs are not available for source plugins.');
     } else {
+      if (Remote.remoteType === 'remote') {
+        throw new Error('Unable to listen to Dialog window events through Remote')
+      }
       this._result = null;
 
       let eventListener = (e) => {
@@ -135,12 +140,16 @@ export class Dialog{
    *  external.Close();
    *  ```
    */
-  static return(result ?: string) {
-    if (result !== undefined) {
-      exec('SetDialogResult', result);
-    }
+  static return(result ?: string):Promise<any> {
+    return new Promise(resolve => {
+      if (result !== undefined) {
+        exec('SetDialogResult', result).then(res => {
+          resolve(res)
+        })
+      }
 
-    exec('Close');
+      resolve(exec('Close'));
+    })
   }
 
   /**
@@ -222,20 +231,25 @@ export class Dialog{
    *
    * *Chainable.*
    */
-  show(): Dialog {
-    this._result = null;
+  show(): Promise<Dialog> {
+    return new Promise(resolve => {
+      this._result = null;
 
-    if (this._autoclose) {
-      exec('NewAutoDialog', this._url, '', this._size === undefined ?
-        undefined : (this._size.getWidth() + ',' + this._size.getHeight()));
-    } else {
-      exec('NewDialog', this._url, '', this._size === undefined ?
+      if (this._autoclose) {
+        exec('NewAutoDialog', this._url, '', this._size === undefined ?
+        undefined : (this._size.getWidth() + ',' +
+        this._size.getHeight())).then(result => {
+          resolve(this)
+        })
+      } else {
+        exec('NewDialog', this._url, '', this._size === undefined ?
         undefined : (this._size.toDimensionString()),
         this._calculateFlags(),
-        this._title)
-    }
-
-    return this;
+        this._title).then(result => {
+          resolve(this)
+        })
+      }
+    })
   }
 
   /**
@@ -286,8 +300,10 @@ export class Dialog{
   /**
    *  Closes the dialog that this window spawned.
    */
-  close(): void {
-    exec('CloseDialog');
+  close(): Promise<any> {
+    return new Promise(resolve => {
+      resolve(exec('CloseDialog'));
+    })
   }
 
   private _calculateFlags(): String {

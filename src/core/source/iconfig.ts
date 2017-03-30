@@ -74,7 +74,10 @@ export class SourceConfigurable {
     }
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
-        let slot = iItem.attach(this._id);
+        let slot;
+        iItem.attach(this._id).then(res => {
+          slot = res
+        });
         let savingAllowed = false;
         iItem.get('prop:srcid').then(srcId => {
           if (typeof srcId !== 'string' || srcId === '') {
@@ -122,7 +125,10 @@ export class SourceConfigurable {
       Logger.warn('sourceWarning', 'requestSaveConfig', true)
     }
     return new Promise(resolve=> {
-      let slot = iItem.attach(this._id);
+      let slot
+      iItem.attach(this._id).then(res => {
+        slot = res
+      });
 
       exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
           'MessageSource', JSON.stringify({
@@ -139,7 +145,10 @@ export class SourceConfigurable {
       Logger.warn('sourceWarning', 'applyConfig', true)
     }
     return new Promise(resolve=> {
-      let slot = iItem.attach(this._id);
+      let slot
+      iItem.attach(this._id).then(res => {
+        slot = res
+      });
 
       exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
           'MessageSource', JSON.stringify({
