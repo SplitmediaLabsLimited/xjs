@@ -122,25 +122,25 @@ export class Transition {
       var transitions: Transition[] = [];
       let transitionString
       iApp.getGlobalProperty('transitions').then(result => {
-        transitionString = result
-      });
-      try {
-        if (transitionString !== '') {
-          var transitionArray = JSON.parse(transitionString);
-          for (var i = transitionArray.length - 1; i >= 0; i--) {
-            var transitionObject = transitionArray[i];
-            if (transitionObject.hasOwnProperty('Id') &&
-              transitionObject.hasOwnProperty('Name')) {
-                transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']))
+        transitionString = result;
+        try {
+          if (transitionString !== '') {
+            var transitionArray = JSON.parse(transitionString);
+            for (var i = transitionArray.length - 1; i >= 0; i--) {
+              var transitionObject = transitionArray[i];
+              if (transitionObject.hasOwnProperty('Id') &&
+                transitionObject.hasOwnProperty('Name')) {
+                  transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']))
+              }
             }
+            resolve(transitions);
+          } else {
+            resolve(transitions);
           }
-          resolve(transitions);
-        } else {
-          resolve(transitions);
+        } catch(e) {
+          throw new Error('Error retrieving available transitions');
         }
-      } catch(e) {
-        throw new Error('Error retrieving available transitions');
-      }
+      });
     });
   }
 }

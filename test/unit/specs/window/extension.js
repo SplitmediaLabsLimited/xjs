@@ -14,7 +14,7 @@ describe('ExtensionWindow ===', function() {
   var ExtensionObj = {};
 
   describe('should be able to listen to scene events', function() {
-    var sceneLoadSpy, sceneLoadPreviewSpy, someOtherEventSpy;
+    var sceneLoadSpy, sceneLoadPreviewSpy;
     beforeEach(function() {
       isSubscribed = false;
       navigator.__defineGetter__('appVersion', function() {
@@ -42,7 +42,6 @@ describe('ExtensionWindow ===', function() {
       });
 
       sceneLoadSpy = spyOn(console, 'assert');
-      someOtherEventSpy = spyOn(console, 'warn');
       sceneLoadPreviewSpy = spyOn(console, 'info');
     });
 
@@ -85,10 +84,13 @@ describe('ExtensionWindow ===', function() {
       }, 10);
     });
 
-    it('and warn if event is not supported', function() {
+    it('and warn if event is not supported', function(done) {
       ExtensionWindow.on('some-other-event', function() {
+      }).then(function() {
+        done.fail('Event listener should reject for not supported events');
+      }).catch(function() {
+        done();
       });
-      expect(someOtherEventSpy).toHaveBeenCalled();
     });
 
     it('should make sure that subscription can be toggled', function(done) {

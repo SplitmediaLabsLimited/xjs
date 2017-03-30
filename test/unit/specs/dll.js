@@ -13,9 +13,11 @@ describe('Dll ===', function() {
       spyOn(external, 'LoadDll');
     });
 
-    it(' to load dll', function() {
-      Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']);
-      expect(external.LoadDll).toHaveBeenCalled();
+    it(' to load dll', function(done) {
+      Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']).then(function() {
+        expect(external.LoadDll).toHaveBeenCalled();
+        done();
+      });
     });
   });
 

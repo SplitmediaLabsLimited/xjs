@@ -391,16 +391,16 @@ describe('GameItem', function() {
       function(done) {
         var testBoolean = randomBoolean();
         exec(function(next) {
-          currentGameItem.setSpecialOptimizationEnabled(testBoolean);
-          if (!isXSplit) {
-            expect(specialOptimizationSet).toBe(true);
-          }
-          currentGameItem.isSpecialOptimizationEnabled().then(function(firstEnabled) {
+          currentGameItem.setSpecialOptimizationEnabled(testBoolean).then(function() {
+            if (!isXSplit) {
+              expect(specialOptimizationSet).toBe(true);
+            }
+            return currentGameItem.isSpecialOptimizationEnabled();  
+          }).then(function(firstEnabled) {
             expect(firstEnabled).toBe(testBoolean);
             currentGameItem.setSpecialOptimizationEnabled(!testBoolean);
             return currentGameItem.isSpecialOptimizationEnabled();
-          })
-          .then(function(secondEnabled) {
+          }).then(function(secondEnabled) {
             expect(secondEnabled).toBe(!testBoolean);
             next();
           });
@@ -422,11 +422,12 @@ describe('GameItem', function() {
     it('should be able to show or hide mouse in game capture', function(done) {
       var testBoolean = randomBoolean();
       exec(function(next) {
-        currentGameItem.setShowMouseEnabled(testBoolean);
-        if (!isXSplit) {
-          expect(showMouseSet).toBe(true);
-        }
-        currentGameItem.isShowMouseEnabled().then(function(firstEnabled) {
+        currentGameItem.setShowMouseEnabled(testBoolean).then(function() {
+          if (!isXSplit) {
+            expect(showMouseSet).toBe(true);
+          }
+          return currentGameItem.isShowMouseEnabled();
+        }).then(function(firstEnabled) {
           expect(firstEnabled).toBe(testBoolean);
           currentGameItem.setShowMouseEnabled(!testBoolean);
           return currentGameItem.isShowMouseEnabled();

@@ -81,12 +81,14 @@ export class Dll extends EventEmitter {
       const funcCall = 'CallDll';
       params.unshift(func);
       params.unshift(funcCall);
-      const retValue: string = exec.apply(this, params);
-      if (retValue !== undefined) {
-        resolve(retValue);
-      } else {
-        reject('DLL call not accessible.');
-      }
+      exec.apply(this, params)
+      .then( retValue => {
+        if (retValue !== undefined) {
+          resolve(retValue);
+        } else {
+          reject('DLL call not accessible.');
+        }
+      });
     });
   }
 
@@ -110,12 +112,14 @@ export class Dll extends EventEmitter {
       const funcCall = 'CallDllEx';
       params.unshift(func);
       params.unshift(funcCall);
-      const retValue: string = exec.apply(this, params);
-      if (retValue !== undefined) {
-        resolve(retValue);
-      } else {
-        reject('DLL call not accessible.');
-      }
+      exec.apply(this, params)
+      .then( retValue => {
+        if (retValue !== undefined) {
+          resolve(retValue);
+        } else {
+          reject('DLL call not accessible.');
+        }
+      });
     });
   }
 
