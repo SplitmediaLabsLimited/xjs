@@ -137,6 +137,10 @@ export class IO {
     });
   }
 
+  static _callback = {};
+  static _remoteCallback = {};
+  static _proxyCallback = {};
+
   /**
    * param: (file: string)
    *
@@ -145,11 +149,6 @@ export class IO {
    * Returns the duration of a video file on the local system, specified in
    * units of 10^-7 seconds.
    */
-
-  static _callback = {};
-  static _remoteCallback = {};
-  static _proxyCallback = {};
-
   static getVideoDuration(file: any) {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
