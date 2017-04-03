@@ -1,3 +1,5 @@
+import {Remote} from '../internal/remote'
+
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -52,7 +54,11 @@ export class Environment {
    * Determines if this HTML is running as an extension plugin.
    */
   static isExtension(): Boolean {
-    return Environment._isExtension;
+    if (Remote.remoteType === 'remote') {
+      return true;
+    } else {
+      return Environment._isExtension;  
+    }
   }
 }
 
