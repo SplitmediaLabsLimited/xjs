@@ -75,11 +75,11 @@ export class SourceConfigurable {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin) {
         let slot;
-        iItem.attach(this._id).then(res => {
-          slot = res
-        });
         let savingAllowed = false;
-        iItem.get('prop:srcid').then(srcId => {
+        iItem.attach(this._id).then(res => {
+          slot = res;
+          return iItem.get('prop:srcid');
+        }).then(srcId => {
           if (typeof srcId !== 'string' || srcId === '') {
             // version is lower than 2.8
             savingAllowed = (slot === 0);
@@ -125,18 +125,16 @@ export class SourceConfigurable {
       Logger.warn('sourceWarning', 'requestSaveConfig', true)
     }
     return new Promise(resolve=> {
-      let slot
+      let slot;
       iItem.attach(this._id).then(res => {
-        slot = res
+        slot = res;
+        exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
+            'MessageSource', JSON.stringify({
+                'request': 'saveConfig',
+                'data': configObj
+            }));
+        resolve(this);
       });
-
-      exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
-          'MessageSource', JSON.stringify({
-              'request': 'saveConfig',
-              'data': configObj
-          }));
-
-      resolve(this);
     });
   }
 
@@ -145,19 +143,16 @@ export class SourceConfigurable {
       Logger.warn('sourceWarning', 'applyConfig', true)
     }
     return new Promise(resolve=> {
-      let slot
+      let slot;
       iItem.attach(this._id).then(res => {
-        slot = res
-      });
-
-      exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
+        slot = res;
+        exec('CallInner' + (slot === 0 ? '' : (slot + 1)),
           'MessageSource', JSON.stringify({
               'request': 'applyConfig',
               'data': configObj
           }));
-
-      resolve(this);
+        resolve(this);
+      });
     });
   }
-
 }

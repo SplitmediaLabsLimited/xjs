@@ -93,8 +93,10 @@ export class ExtensionWindow extends EventEmitter {
               ExtensionWindow.emit(event, settingsObj['index'] === '' ?
               null : Number(settingsObj['index']) + 1);
             }
-            resolve();
+            resolve(this);
           });
+        } else {
+          resolve(this);
         }
       } else if(event === 'scene-add' && isAddSceneEventFixed) {
         if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
@@ -103,10 +105,14 @@ export class ExtensionWindow extends EventEmitter {
             Scene.getSceneCount().then(function(count){
               if (Environment.isExtension()) {
                 ExtensionWindow.emit(event, count);
-                resolve();
+                resolve(this);
+              } else {
+                reject(Error('ExtensionWindow class is only available for extensions.'));
               }
             });
           });
+        } else {
+          resolve(this);
         }
       } else if(['sources-list-highlight', 'sources-list-select',
       'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
@@ -116,12 +122,14 @@ export class ExtensionWindow extends EventEmitter {
           try{
             exec( 'SourcesListSubscribeEvents',
               ViewTypes.MAIN.toString() ).then(res => {
-                resolve(res)
+                resolve(this);
               })
           } catch (ex) {
             // This exception most probably for older versions which
             // would work without subscribing to source list events.
           }
+        } else {
+          resolve(this);
         }
       } else {
         reject(Error('Warning! The event "' + event + '" is not yet supported.'));
@@ -152,7 +160,8 @@ export class ExtensionWindow extends EventEmitter {
     return new Promise(resolve => {
       let ext = Extension.getInstance()
       ext.getId().then(id => {
-        exec("CallHost", "setExtensionWindowTitle:" + id, value).then(res => {
+        exec("CallHost", "setExtensionWindowTitle:" + id, value)
+        .then(res => {
           resolve(res)
         })
       })

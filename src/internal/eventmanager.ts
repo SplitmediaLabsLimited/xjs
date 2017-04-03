@@ -27,14 +27,13 @@ export class EventManager {
           }
 
           if (_event === 'OnSceneAddByUser') {
-            exec('AppSubscribeEvents').then(res => {
-              resolve(res)
-            })
+            exec('AppSubscribeEvents');
           }
 
           EventManager.callbacks[_event].push(_cb);
         });
       }
+      resolve(this);
     })
   }
 }

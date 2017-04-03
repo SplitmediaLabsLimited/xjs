@@ -144,11 +144,12 @@ export class Dialog{
     return new Promise(resolve => {
       if (result !== undefined) {
         exec('SetDialogResult', result).then(res => {
-          resolve(res)
-        })
+          resolve(res);
+          exec('Close');
+        });
+      } else {
+        resolve(exec('Close'));
       }
-
-      resolve(exec('Close'));
     })
   }
 

@@ -58,8 +58,8 @@ export class App {
     return new Promise(resolve => {
       args.unshift('CallDll');
       exec.apply(this, args).then(result => {
-        resolve(result)
-      })
+        resolve(result);
+      });
     })
   }
 

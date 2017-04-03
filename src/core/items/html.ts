@@ -71,13 +71,13 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
     return new Promise(resolve => {
       let slot
       iItem.attach(this._id).then(res => {
-        slot = res
-      })
-      exec('CallInner' +
-        (String(slot) === '0' ? '' : slot + 1),
-        func,
-        arg);
-      resolve(this);
+        slot = res;
+        exec('CallInner' +
+          (String(slot) === '0' ? '' : slot + 1),
+          func,
+          arg);
+        resolve(this);
+      });
     });
   }
 

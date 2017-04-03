@@ -116,12 +116,12 @@ export class StreamInfo {
       let usage;
       iApp.getGlobalProperty('bandwidthusage-all').then(result => {
         usage = result;
-      })
-      for (var i = 0; i < usage.length; i++) {
-        if (usage[i].ChannelName === this._name) {
-          resolve(usage[i].AvgBitrate)
+        for (var i = 0; i < usage.length; i++) {
+          if (usage[i].ChannelName === this._name) {
+            resolve(usage[i].AvgBitrate)
+          }
         }
-      }
-    })
+      });
+    });
   }
 }

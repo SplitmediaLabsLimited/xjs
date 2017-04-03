@@ -1041,7 +1041,9 @@ export class App{
    */
   getUserIdHash(): Promise<string> {
     return new Promise(resolve => {
-      resolve(iApp.getGlobalProperty('userid'));
+      iApp.getGlobalProperty('userid').then( res => {
+        resolve(res);
+      })
     });
   }
 }

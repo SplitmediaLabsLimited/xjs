@@ -277,10 +277,22 @@ export class Item {
   /** Sets an item's local property */
   static set(name: string, value: string, id?: string): Promise<boolean> {
     return new Promise(resolve => {
-      let itemId;
-      Item.attach(id).then(res => {
-        itemId = res;
-        let slot = id !== undefined && id !== null ? itemId : -1;
+      let slotPromise;
+      let slot;
+      if (id !== undefined && id !== null) {
+        slotPromise = new Promise( slotResolve => {
+          Item.attach(id).then(res => {
+            slotResolve(res);
+          });
+        });
+      } else {
+        slotPromise = new Promise( slotResolve => {
+          slotResolve(-1);
+        });
+      }
+      slotPromise.then( newSlot => {
+        slot = newSlot;
+
         let hasGlobalSources = versionCompare(getVersion())
           .is
           .greaterThan(minVersion);
@@ -295,7 +307,6 @@ export class Item {
         ) {
           slot = -1;
         }
-
         exec('SetLocalPropertyAsync' +
           (String(slot) === '-1' ? '' : slot + 1),
           name,

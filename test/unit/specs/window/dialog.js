@@ -106,9 +106,10 @@ describe('Dialog ===', function() {
       DialogObj['result'] = '';
       DialogObj['closed'] = false;
       var newReturn = randomWord(10);
-      Dialog.return(newReturn);
-      expect(DialogObj['result']).toEqual(newReturn);
-      expect(DialogObj['closed']).toBe(true);
+      Dialog.return(newReturn).then(function() {
+        expect(DialogObj['result']).toEqual(newReturn);
+        expect(DialogObj['closed']).toBe(true);
+      });
     });
 
     it('which can be pre-sized', function() {

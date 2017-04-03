@@ -151,13 +151,15 @@ export class Item extends Source implements IItemLayout, ISource {
       iItem.get('prop:viewid', this._id).then(viewId => {
         let view = ViewTypes.MAIN;
         if (viewId === '1') {
-          let preview
+          let preview;
           iApp.getGlobalProperty('preview_editor_opened').then(result => {
-            preview = result
+            preview = result;
+            view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
+            resolve(view);  
           })
-          view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
+        } else {
+          resolve(view);
         }
-        resolve(view);
       });
     })
   }
