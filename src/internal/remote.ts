@@ -76,7 +76,12 @@ export class Remote {
         // Receive version on first message from proxy
         if(!Remote._isVersion && message.indexOf('setVersion') !== -1) {
           Remote._isVersion = true;
-          resolve(finishReady({message}));
+          let mockVersion = message;
+          let msgArray = message.split("::");
+          if (typeof msgArray[1] !== 'undefined') {
+            mockVersion = msgArray[1];
+          }
+          resolve(finishReady({version: mockVersion}));
         } else {
           if (message.indexOf('setVersion') === -1) {
             messageObj = JSON.parse(decodeURIComponent(message))
@@ -100,14 +105,13 @@ export class Remote {
                 reject(Error('Call type is undefined.'))
                 break;
             }
-
           }
         }
       } else if (Remote.remoteType === 'proxy') {
         if (message !== undefined) {
           if (message === 'getVersion') {
             // First message to get and send version
-            Remote.sendMessage('setVersion:: ' + window.navigator.appVersion);
+            Remote.sendMessage('setVersion::' + window.navigator.appVersion);
             resolve(true);
           } else {
             // Succeeding messages from exec/event/emit
@@ -163,8 +167,7 @@ export class Remote {
                 encodeURIComponent(JSON.stringify(retObj)))
             );
           })
-          let messageArr = [messageObj['funcName'],
-                  messageObj['args'] ? String(messageObj['args']) : undefined,
+          let messageArr = [messageObj['funcName'], ...messageObj['args'] ,
                   messageObj['callback']];
           exec.apply(this, messageArr);
         })
