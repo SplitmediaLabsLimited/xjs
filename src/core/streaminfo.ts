@@ -115,7 +115,7 @@ export class StreamInfo {
     return new Promise(resolve => {
       let usage;
       iApp.getGlobalProperty('bandwidthusage-all').then(result => {
-        usage = result;
+        usage = JSON.parse(result);
         for (var i = 0; i < usage.length; i++) {
           if (usage[i].ChannelName === this._name) {
             resolve(usage[i].AvgBitrate)
