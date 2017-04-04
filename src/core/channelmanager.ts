@@ -76,7 +76,7 @@ export class ChannelManager extends EventEmitter {
           if (event === 'stream-end') {
             channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
             channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
-            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
+            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']/10) || 0;
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
