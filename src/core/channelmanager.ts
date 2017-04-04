@@ -37,6 +37,9 @@ export class ChannelManager extends EventEmitter {
     ChannelManager._emitter.emit.apply(ChannelManager._emitter, params);
   }
 
+  static _proxyCallbacks = {};
+  static _remoteCallbacks = {};
+
   /**
    *  param: (event: string, handler: Function)
    *
@@ -54,10 +57,6 @@ export class ChannelManager extends EventEmitter {
    * });
    * ```
    */
-
-  static _proxyCallbacks = {};
-  static _remoteCallbacks = {};
-
   static on(event: string, handler: Function) {
     if (Environment.isSourceProps()) {
       console.warn('Channel Manager: stream-related events are not received' +
