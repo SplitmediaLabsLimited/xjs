@@ -1511,7 +1511,7 @@ var Extension = (function () {
             }
         });
     };
-    Extension.finalCallback = function (message) {
+    Extension._finalCallback = function (message) {
         return new Promise(function (resolve) {
             var result = JSON.parse(decodeURIComponent(message));
             Extension._remoteCallback['ExtensionWindowID'].resolve(result['result']);
@@ -4455,7 +4455,7 @@ var Output = (function () {
             }
         });
     };
-    Output.finalCallback = function (message) {
+    Output._finalCallback = function (message) {
         return new Promise(function (resolve) {
             var result = JSON.parse(decodeURIComponent(message));
             extension_1.Extension._remoteCallback[Output._id].resolve(result['result']);
@@ -10232,7 +10232,7 @@ var Remote = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             if (Remote.remoteType === 'remote') {
-                eventemitter_1.EventEmitter.finalCallback(message);
+                eventemitter_1.EventEmitter._finalCallback(message);
             }
             else if (Remote.remoteType === 'proxy') {
                 var messageObj = JSON.parse(decodeURIComponent(message));
@@ -10247,7 +10247,7 @@ var Remote = (function () {
                 });
                 var messageArr = [messageObj['event'],
                     messageObj['callback'], messageObj['id']];
-                eventemitter_1.EventEmitter.setCallback.call(_this, messageArr);
+                eventemitter_1.EventEmitter._setCallback.call(_this, messageArr);
             }
         });
     };
@@ -10257,13 +10257,13 @@ var Remote = (function () {
             if (Remote.remoteType === 'remote') {
                 var messageObj = JSON.parse(decodeURIComponent(message));
                 if (messageObj['type'] === 'window') {
-                    io_1.IO.finalCallback(message);
+                    io_1.IO._finalCallback(message);
                 }
                 else if (messageObj['type'] === 'extWindow') {
-                    extension_1.Extension.finalCallback(message);
+                    extension_1.Extension._finalCallback(message);
                 }
                 else if (messageObj['type'] === 'broadcastChannels') {
-                    output_1.Output.finalCallback(message);
+                    output_1.Output._finalCallback(message);
                 }
             }
             else if (Remote.remoteType === 'proxy') {
@@ -12153,7 +12153,7 @@ var EventEmitter = (function () {
             }
         }
     };
-    EventEmitter.setCallback = function (message) {
+    EventEmitter._setCallback = function (message) {
         return new Promise(function (resolve) {
             if (EventEmitter._proxyHandlers[message[0]] === undefined) {
                 EventEmitter._proxyHandlers[message[0]] = [];
@@ -12161,7 +12161,7 @@ var EventEmitter = (function () {
             resolve(EventEmitter._proxyHandlers[message[0]].push(message[1]));
         });
     };
-    EventEmitter.finalCallback = function (message) {
+    EventEmitter._finalCallback = function (message) {
         var _this = this;
         return new Promise(function (resolve) {
             var result = JSON.parse(decodeURIComponent(message));
@@ -12349,7 +12349,7 @@ var IO = (function () {
         });
     };
     ;
-    IO.finalCallback = function (message) {
+    IO._finalCallback = function (message) {
         return new Promise(function (resolve) {
             var result = JSON.parse(decodeURIComponent(message));
             if (result['result'] !== undefined) {
