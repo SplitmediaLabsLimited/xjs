@@ -134,6 +134,12 @@ describe('StreamInfo ===', function() {
     var channelLocal;
     var isEmpty = false;
     beforeEach(function(done) {
+      spyOn(window.external, 'GetGlobalProperty')
+        .and.callFake(function(funcName) {
+          if (funcName === 'bandwidthusage-all') {
+            return '[{"ChannelName":"Local Streaming","AvgBitrate":167.0},{"ChannelName":"Local Recording","AvgBitrate":0.0}]';
+          }
+        })
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);          
@@ -298,6 +304,16 @@ describe('StreamInfo ===', function() {
       channelLocal.getStreamTime()
       .then(function(streamTime) {
         expect(streamTime).toEqual(0);
+        done();
+      });
+    });
+
+    it('should be able to get its bandwidth usage', function(done) {
+      isEmpty = false;
+      channelLocal.getBandwidthUsage()
+      .then(function(usage) {
+        expect(usage).toBeTypeOf('number');
+        expect(usage).toEqual(167);
         done();
       });
     });
