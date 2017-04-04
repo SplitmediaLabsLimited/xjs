@@ -186,6 +186,7 @@ export class Remote {
           let retObj = {
             result,
             type: 'event-emitter',
+            id: messageObj['id'],
             event: messageObj['event']
           }
           resolve(
@@ -194,7 +195,7 @@ export class Remote {
           ))
         })
         let messageArr = [messageObj['event'],
-                    messageObj['callback']]
+                    messageObj['callback'],messageObj['id']]
         EventEmitter.setCallback.call(this, messageArr)
       }
     })

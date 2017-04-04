@@ -7,22 +7,24 @@ export class EventEmitter {
   static _proxyHandlers = {};
 
   /** This function attaches a handler to an event. Duplicate handlers are allowed. */
-  on(event: string, handler: Function) {
+  on(event: string, handler: Function, id?: string) {
     if (Remote.remoteType === 'remote') {
+      let id = new Date().getTime() + '_' + Math.floor(Math.random()*1000)
       let message = {
         event,
+        id,
         type: 'event-emitter'
       }
-      if (EventEmitter._remoteHandlers[event] === undefined) {
-        EventEmitter._remoteHandlers[event] = [];
+      if (EventEmitter._remoteHandlers[id] === undefined) {
+        EventEmitter._remoteHandlers[id] = [];
       }
-      EventEmitter._remoteHandlers[event].push(handler)
+      EventEmitter._remoteHandlers[id].push(handler)
       Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
     } else if (Remote.remoteType === 'proxy') {
-      if (EventEmitter._proxyHandlers[event] === undefined) {
-        EventEmitter._proxyHandlers[event] = [];
+      if (EventEmitter._proxyHandlers[id] === undefined) {
+        EventEmitter._proxyHandlers[id] = [];
       }
-      EventEmitter._proxyHandlers[event].push(handler)
+      EventEmitter._proxyHandlers[id].push(handler)
     } else {
       if (this._handlers[event] === undefined) {
         this._handlers[event] = [];
@@ -91,8 +93,10 @@ export class EventEmitter {
   static finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
-      for (let handler of EventEmitter._remoteHandlers[result['event']]) {
-        handler.apply(this, [result['result']])
+      if (EventEmitter._remoteHandlers[result['id']] !== undefined) {
+        for (let handler of EventEmitter._remoteHandlers[result['id']]) {
+          handler.apply(this, [result['result']])
+        }
       }
       resolve()
     })
