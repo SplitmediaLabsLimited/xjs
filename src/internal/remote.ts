@@ -179,7 +179,7 @@ export class Remote {
   private static _eventEmitterHandler(message:string) {
     return new Promise(resolve => {
       if (Remote.remoteType === 'remote') {
-        EventEmitter.finalCallback(message);
+        EventEmitter._finalCallback(message);
       } else if (Remote.remoteType === 'proxy') {
         let messageObj = JSON.parse(decodeURIComponent(message));
         messageObj['callback'] = (result => {
@@ -196,7 +196,7 @@ export class Remote {
         })
         let messageArr = [messageObj['event'],
                     messageObj['callback'],messageObj['id']]
-        EventEmitter.setCallback.call(this, messageArr)
+        EventEmitter._setCallback.call(this, messageArr)
       }
     })
   }
@@ -206,11 +206,11 @@ export class Remote {
       if (Remote.remoteType === 'remote') {
         let messageObj = JSON.parse(decodeURIComponent(message));
         if (messageObj['type'] === 'window') {
-          IO.finalCallback(message);
+          IO._finalCallback(message);
         } else if (messageObj['type'] === 'extWindow') {
-          Extension.finalCallback(message)
+          Extension._finalCallback(message)
         } else if (messageObj['type'] === 'broadcastChannels') {
-          Output.finalCallback(message)
+          Output._finalCallback(message)
         }
       } else if (Remote.remoteType === 'proxy') {
         let messageObj = JSON.parse(decodeURIComponent(message));

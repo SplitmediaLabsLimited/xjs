@@ -102,7 +102,7 @@ export class Extension {
     })
   }
 
-  static finalCallback(message) {
+  static _finalCallback(message) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
       Extension._remoteCallback['ExtensionWindowID'].resolve(result['result']);

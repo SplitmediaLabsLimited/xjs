@@ -185,7 +185,7 @@ export class IO {
     });
   };
 
-  static finalCallback(message:string) {
+  static _finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
       if (result['result'] !== undefined) {
