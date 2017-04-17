@@ -18,6 +18,7 @@ import {Environment} from './environment';
  *  The following events are emitted.
  *    - `stream-start`
  *    - `stream-end`
+ *    - `recording-renamed`
  *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
  *
@@ -39,8 +40,8 @@ export class ChannelManager extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. Currently there are two:
-   *  `stream-start` and `stream-end`.
+   *  Allows listening to events that this class emits. Currently there are three:
+   *  `stream-start`, `stream-end` and `recording-renamed`.
    *
    *  #### Usage:
    *
@@ -103,10 +104,17 @@ export class ChannelManager extends EventEmitter {
         } else if (channelInfoObj.hasOwnProperty('new') &&
           channelInfoObj.hasOwnProperty('old')) {
             if (event === 'recording-renamed') {
+              const name = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, "/")
+              const nameArr = name.split('/')
+              const newName = nameArr[nameArr.length - 1]
+
               handler.call(this, {
                 error: false,
-                oldName: channelInfoObj['old'],
-                newName: decodeURIComponent(channelInfoObj['new'])
+                recordingInfo: {
+                  oldName: channelInfoObj['old'],
+                  newName: newName,
+                  fullPath: decodeURIComponent(channelInfoObj['new'])
+                }
               })
             }
           }
