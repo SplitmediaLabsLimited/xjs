@@ -118,12 +118,12 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<string>
    *
-   * Get the ID of the source
+   * Get the ID of the Item
    *
    * #### Usage
    *
    * ```javascript
-   * source.getId().then(function(id) {
+   * item.getId().then(function(id) {
    *   // The rest of your code here
    * });
    * ```
@@ -155,7 +155,7 @@ export class Item extends Source implements IItemLayout, ISource {
           iApp.getGlobalProperty('preview_editor_opened').then(result => {
             preview = result;
             view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
-            resolve(view);  
+            resolve(view);
           })
         } else {
           resolve(view);
