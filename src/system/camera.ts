@@ -7,7 +7,7 @@ import {App as iApp} from '../internal/app';
 
 /**
  * The CameraDevice Class is the object returned by
- * {@link #system/System System Class'} getCameraDevices method. It provides
+ * {@link #system/System System Class} getCameraDevices method. It provides
  * you with methods to fetch the Camera Device's id, name, and to add it as
  * a source in the current scene.
  *
@@ -19,11 +19,8 @@ import {App as iApp} from '../internal/app';
  *
  * System.getCameraDevices().then(function(cameras) {
  *   for (var i in cameras) {
- *     // Do not include the imaginary xsplit camera if that ever exist
- *     if (cameras[i].getName().indexOf('xsplit') === -1) {
- *       xml = cameras[i].toXML();
- *       // do something with the XML here
- *     }
+ *     xml = cameras[i].toXML();
+ *     // do something with the XML here
  *   }
  * });
  * ```

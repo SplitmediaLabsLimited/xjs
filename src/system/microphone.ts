@@ -26,6 +26,14 @@ export class MicrophoneDevice implements Addable {
   private _disp: string;
   private _name: string;
 
+  /**
+   * param: (deviceJXON: JXON)
+   * ```
+   * return MicrophoneDevice
+   * ```
+   * Create a MicrophoneDevice onject based on a JXON object
+   *
+   */
   static parse(jxon: JXON): MicrophoneDevice {
     var m = new MicrophoneDevice();
 

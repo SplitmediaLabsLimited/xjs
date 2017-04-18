@@ -8,7 +8,7 @@ import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
 
 /**
- * The Game Class is the object returned by {@link #system/System System Class'}
+ * The Game Class is the object returned by {@link #system/System System Class}
  * getGames method. It provides you with methods to fetch the game object's
  * attributes, as well as methods to add any game to the current scene.
  *

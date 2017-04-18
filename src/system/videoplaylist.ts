@@ -125,11 +125,7 @@ export class VideoPlaylist implements Addable {
     });
   }
 
-  /**
-   *  Adds the prepared video playlist to the current scene.
-   *
-   *  This function is not available to sources.
-   */
+  /** Adds the prepared video playlist to the current scene. This function is not available to sources. */
   addToScene(): Promise <boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {

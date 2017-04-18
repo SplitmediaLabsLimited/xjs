@@ -8,10 +8,7 @@ import {exec} from '../internal/internal';
 export class Screen implements Addable {
 
 
-  /**
-   * Initializes the screen region selector crosshair so user may select
-   * a desktop region or a window to add to the stage in the current scene.
-   */
+  /** Initializes the screen region selector crosshair so user may select a desktop region or a window to add to the stage in the current scene. */
   addToScene(): Promise<boolean> {
     return new Promise(resolve => {
       exec('AppCallFunc', 'addscreen');

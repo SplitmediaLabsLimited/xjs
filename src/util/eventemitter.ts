@@ -33,6 +33,7 @@ export class EventEmitter {
     }
   }
 
+  /** This function removes a handler to an event.*/
   off(event: string, handler: Function) {
     if (Remote.remoteType === 'remote') {
       if (EventEmitter._remoteHandlers[event] !== undefined) {
