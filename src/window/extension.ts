@@ -33,28 +33,16 @@ const _RESIZE = '2';
  */
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
-  static _subscriptions: string[];
+  static _subscriptions: string[] = [];
 
   /**
    *  Gets the instance of the window utility. Use this instead of the constructor.
    */
-  static getInstance() {
+  static _getInstance() {
     if (ExtensionWindow._instance === undefined) {
       ExtensionWindow._instance = new ExtensionWindow();
     }
     return ExtensionWindow._instance;
-  }
-
-  /**
-   *  Use getInstance() instead.
-   */
-  constructor() {
-    super();
-    if (!Environment.isExtension()) {
-      throw new Error('ExtensionWindow class is only available for extensions');
-    }
-    ExtensionWindow._instance = this;
-    ExtensionWindow._subscriptions = [];
   }
 
    /**
@@ -65,7 +53,7 @@ export class ExtensionWindow extends EventEmitter {
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
     ExtensionWindow
-      .getInstance()
+      ._getInstance()
       .emit
       .apply(ExtensionWindow._instance, params);
   }
@@ -78,7 +66,7 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
-      ExtensionWindow.getInstance().on(event, handler);
+      ExtensionWindow._getInstance().on(event, handler);
 
       let isDeleteSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
@@ -138,14 +126,14 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   static off(event: string, handler: Function) {
-    ExtensionWindow.getInstance().off(event, handler);
+    ExtensionWindow._getInstance().off(event, handler);
   }
 
   /** param: (width: number, height: number)
    *
    *  Resizes this extension's window.
    */
-  resize(width: number, height: number) {
+  static resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
 
@@ -156,7 +144,7 @@ export class ExtensionWindow extends EventEmitter {
    *
    * Renames the extension window.
    */
-  setTitle(value: string):Promise<any> {
+  static setTitle(value: string):Promise<any> {
     return new Promise(resolve => {
       let ext = Extension.getInstance()
       ext.getId().then(id => {
@@ -182,28 +170,28 @@ export class ExtensionWindow extends EventEmitter {
    *     (bit 3 - enable minimize btn)
    *     (bit 4 - enable maximize btn)
    */
-  setBorder(flag: number){
+  static setBorder(flag: number){
     App.postMessage('4', String(flag));
   }
 
   /**
    * Closes this extension window
    */
-  close() {
+  static close() {
     App.postMessage('1');
   }
 
   /**
    * Disable Close Button on this extension's window
    */
-  disableClose() {
+  static disableClose() {
     App.postMessage('5','0')
   }
 
   /**
    * Enable Close Button on this extension's window
    */
-  enableClose() {
+  static enableClose() {
     App.postMessage('5', '1')
   }
 }
