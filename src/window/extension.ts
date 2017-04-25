@@ -209,7 +209,7 @@ export class ExtensionWindow extends EventEmitter {
 }
 
 // for extensions
-
+const oldSourcesListUpdate = window.SourcesListUpdate;
 window.SourcesListUpdate = (view, sources) => {
   if (Number(view) === 0) { // main view {
     let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
@@ -225,22 +225,34 @@ window.SourcesListUpdate = (view, sources) => {
 
     ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
   }
+  if (typeof oldSourcesListUpdate === 'function') {
+    oldSourcesListUpdate(view, sources);
+  }
 };
 
+const oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = (view, id) => {
   if (Number(view) === 0) { // main view {
     ExtensionWindow.emit('sources-list-highlight', id === '' ?
       null : id);
   }
+  if (typeof oldSourcesListHighlight === 'function') {
+    oldSourcesListHighlight(view, id);
+  }
 };
 
+const oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = (view, id) => {
   if (Number(view) === 0) { // main view
     ExtensionWindow.emit('sources-list-select', id === '' ?
       null : id);
   }
-  };
-let oldOnSceneLoad = window.OnSceneLoad;
+  if (typeof oldSourcesListSelect === 'function') {
+    oldSourcesListSelect(view, id);
+  }
+};
+
+const oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
   if (Environment.isExtension()) {
     let view = args[0];
@@ -250,7 +262,7 @@ window.OnSceneLoad = function(...args: any[]) {
     }
   }
 
-  if (oldOnSceneLoad !== undefined) {
-    oldOnSceneLoad(...args)
+  if (typeof oldOnSceneLoad === 'function') {
+    oldOnSceneLoad(...args);
   }
 }

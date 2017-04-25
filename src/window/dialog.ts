@@ -322,9 +322,13 @@ export class Dialog{
   }
 }
 
+const oldOnDialogResult = window.OnDialogResult;
 window.OnDialogResult = function(result) {
   if (Environment.isSourceProps() || Environment.isExtension()) {
     document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
       detail: result }));
+  }
+  if (typeof oldOnDialogResult === 'function') {
+    oldOnDialogResult(result)
   }
 }
