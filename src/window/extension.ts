@@ -32,18 +32,8 @@ const _RESIZE = '2';
  *
  */
 export class ExtensionWindow extends EventEmitter {
-  private static _instance: ExtensionWindow;
+  private static _instance = new ExtensionWindow;
   static _subscriptions: string[] = [];
-
-  /**
-   *  Gets the instance of the window utility. Use this instead of the constructor.
-   */
-  static _getInstance() {
-    if (ExtensionWindow._instance === undefined) {
-      ExtensionWindow._instance = new ExtensionWindow();
-    }
-    return ExtensionWindow._instance;
-  }
 
    /**
    *  param: (event: string, ...params: any[])
@@ -53,7 +43,7 @@ export class ExtensionWindow extends EventEmitter {
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
     ExtensionWindow
-      ._getInstance()
+      ._instance
       .emit
       .apply(ExtensionWindow._instance, params);
   }
@@ -66,7 +56,7 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
-      ExtensionWindow._getInstance().on(event, handler);
+      ExtensionWindow._instance.on(event, handler);
 
       let isDeleteSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
@@ -126,7 +116,7 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   static off(event: string, handler: Function) {
-    ExtensionWindow._getInstance().off(event, handler);
+    ExtensionWindow._instance.off(event, handler);
   }
 
   /** param: (width: number, height: number)
