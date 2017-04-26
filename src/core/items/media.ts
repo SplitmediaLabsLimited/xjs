@@ -542,13 +542,13 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   isAutoMute: () => Promise<boolean>;
 
   /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<MediaSource>;
+  setVolume: (value: number) => Promise<MediaItem>;
 
   /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<MediaSource>;
+  setMute: (value: boolean) => Promise<MediaItem>;
 
   /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<MediaSource>;
+  setAutoMute: (value: boolean) => Promise<MediaItem>;
 
   /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
