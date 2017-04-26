@@ -424,12 +424,17 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
+  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  isAutoMute: () => Promise<boolean>;
+
   /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<FlashItem>;
+  setVolume: (value: number) => Promise<MediaSource>;
 
   /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<FlashItem>;
+  setMute: (value: boolean) => Promise<MediaSource>;
 
+  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  setAutoMute: (value: boolean) => Promise<MediaSource>;
   /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
 
