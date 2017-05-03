@@ -56,6 +56,13 @@
       .pipe(gulp.dest('./dist/'));
   });
 
+  gulp.task('uglify-es2015', function() {
+    return gulp.src('./dist/xjs-es2015.js')
+      .pipe(uglify())
+      .pipe(rename({ suffix: '.min', extname: '.js'}))
+      .pipe(gulp.dest('./dist/'));
+  });
+
   gulp.task('test/unit', function(done) {
     new Server({
       configFile: __dirname + '/karma.conf.js',
@@ -111,7 +118,7 @@
 
   /**
    * Gulp task to version up/down or append the version indicated in package.json
-   * 
+   *
    * usage: gulp version --down --minor
    * flags:
    *   --down
@@ -172,7 +179,7 @@
                 type,
                 argv.down ? 'down' : 'up'
               );
-            } 
+            }
 
             version = jsonObj.version;
             updatedContents = JSON.stringify(jsonObj, null, 2);
@@ -240,6 +247,7 @@
   gulp.task('docs', ['docs/assets', 'docs/app', 'docs/dgeni']);
 
   gulp.task('default', ['es2015'], function(cb) {
+    runSequence(['uglify-es2015']);
     runSequence(['uglify'], cb);
   });
 }());
