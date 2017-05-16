@@ -148,6 +148,7 @@
         './bower.json',
         './dist/xjs.js',
         './dist/xjs-es2015.js',
+        './dist/xjs-es2015.min.js',
         './dist/xjs.min.js'
       ], {base: './'})
       .pipe(data(function(file) {
