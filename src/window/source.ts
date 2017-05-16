@@ -25,10 +25,13 @@ import {exec} from '../internal/internal';
  */
 export class SourcePluginWindow extends EventEmitter {
   private static _instance: SourcePluginWindow;
-  static _subscriptions: string[];
+  static _subscriptions: string[] = [];
 
   /**
-   *  Gets the instance of the window utility. Use this instead of the constructor.
+   * ** For deprecation, the need for getting the instance of a SourcePluginWindow looks redundant,
+   * `** since a SourcePluginWindow should technically have a single instance`
+   *
+   * Gets the instance of the window utility. Use this instead of the constructor.
    */
   static getInstance() {
     if (SourcePluginWindow._instance === undefined) {
@@ -38,7 +41,9 @@ export class SourcePluginWindow extends EventEmitter {
   }
 
   /**
-   *  Use getInstance() instead.
+   *  ** For Deprecation
+   *
+   *  Use getInstance()
    */
   constructor() {
     super();
@@ -66,10 +71,17 @@ export class SourcePluginWindow extends EventEmitter {
    */
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
-    SourcePluginWindow
-      .getInstance()
-      .emit
-      .apply(SourcePluginWindow._instance, params);
+    try {
+      SourcePluginWindow
+        .getInstance()
+        .emit
+        .apply(SourcePluginWindow._instance, params);
+    } catch(event) {
+      SourcePluginWindow
+        ._instance
+        .emit
+        .apply(SourcePluginWindow._instance, params);
+    }
   }
 
   /**

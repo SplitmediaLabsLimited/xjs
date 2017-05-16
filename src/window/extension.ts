@@ -32,12 +32,12 @@ const _RESIZE = '2';
  *
  */
 export class ExtensionWindow extends EventEmitter {
-  private static _instance = new ExtensionWindow;
+  private static _instance: ExtensionWindow;
   static _subscriptions: string[] = [];
 
-  /**
- * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant
- * `** redundant, since an ExtensionWinow should technically have a single instance`
+/**
+ * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
+ * `** since an ExtensionWinow should technically have a single instance`
  *
  * Gets the instance of the window utility. Use this instead of the constructor.
  */
@@ -48,7 +48,7 @@ export class ExtensionWindow extends EventEmitter {
     return ExtensionWindow._instance;
   }
 
-    /**
+  /**
    *  ** For Deprecation
    *
    *  Use getInstance()
@@ -62,7 +62,7 @@ export class ExtensionWindow extends EventEmitter {
     ExtensionWindow._subscriptions = [];
   }
 
-   /**
+  /**
    *  param: (event: string, ...params: any[])
    *
    *  Allows this class to emit an event.
@@ -90,7 +90,7 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
-      ExtensionWindow._instance.on(event, handler);
+      ExtensionWindow.getInstance().on(event, handler);
       let isDeleteSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
       let isAddSceneEventFixed = versionCompare(getVersion()).
@@ -149,7 +149,7 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   static off(event: string, handler: Function) {
-    ExtensionWindow._instance.off(event, handler);
+    ExtensionWindow.getInstance().off(event, handler);
   }
 
   /** param: (width: number, height: number)
