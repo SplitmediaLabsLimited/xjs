@@ -1,3 +1,5 @@
+import {Scene} from '../core/scene';
+
 export interface Addable {
-  addToScene(): Promise<boolean>;
+  addToScene(value: number | Scene ): Promise<boolean>;
 }

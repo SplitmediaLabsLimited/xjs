@@ -2,6 +2,7 @@
 
 import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
+import {Scene} from '../core/scene';
 
 /**
  *  Class for adding a web source to the stage.
@@ -44,20 +45,58 @@ export class Url implements Addable {
   }
 
   /**
-   *  return: Promise<boolean>
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<boolean>
+   * ```
    *
-   *  Adds this URL to the current scene as an HTML source.
+   * Adds this URL to the current scene as an HTML source by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
    *
    *  Will raise an error if URL is not http or https.
    */
-  addToScene(): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this._getUrl().then(url => {
-        iApp.callFunc('addurl', url).then(() => {
-          resolve(true);
+      let scenePrefix = '';
+      let scenePromise;
+      if (typeof value === 'number' || value instanceof Scene) {
+        scenePromise = new Promise((innerResolve, innerReject) => {
+          Scene.getSceneCount().then(sceneCount => {
+            if (typeof value === 'number') {
+              let int = Math.floor(value);
+              if (int > sceneCount || int === 0) {
+                innerReject(new Error('Scene not existing.'));
+              } else {
+                scenePrefix = 's:' + (int - 1) + '|';
+                innerResolve();
+              }
+            } else {
+              value.getSceneNumber().then(int => {
+                if (int > sceneCount || int === 0) {
+                  innerReject(new Error('Scene not existing.'));
+                } else {
+                  scenePrefix = 's:' + (int - 1) + '|';
+                  innerResolve();
+                }
+              });
+            }
+          });
         });
-      }).catch(error => {
-        reject(error);
+      } else if (typeof value === 'undefined') {
+        scenePromise = Promise.resolve();
+      } else {
+        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+      }
+
+      scenePromise.then(() => {
+        return this._getUrl();
+      }).then(url => {
+        return iApp.callFunc(scenePrefix + 'addurl', url);
+      }).then(() => {
+        resolve(true);
+      }).catch(err => {
+        reject(err);
       });
     });
   }
