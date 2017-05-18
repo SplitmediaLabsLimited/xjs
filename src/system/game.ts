@@ -403,14 +403,14 @@ export class Game implements Addable {
             var defposPromise;
             if (Environment.isSourcePlugin()) {
               defposPromise = new Promise(defposResolve => {
-                iApp.get('presetconfig:-1').then(function(presetConfig) {
+                iApp.get('presetconfig:-1').then(presetConfig => {
                   let placementJSON = JXON.parse(presetConfig);
                   defposResolve(placementJSON['defpos']);
                 });
               });
             } else {
               defposPromise = new Promise(defposResolve => {
-                iApp.get('preset:0').then(function(main) {
+                iApp.get('preset:0').then(main => {
                   return iApp.get('presetconfig:' + main);
                 }).then(function(presetConfig) {
                   let placementJSON = JXON.parse(presetConfig);
@@ -419,7 +419,7 @@ export class Game implements Addable {
               });
             }
 
-            defposPromise.then(function(defpos) {
+            defposPromise.then(defpos => {
               let posString;
               if (defpos === '0') {
                 posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
@@ -435,9 +435,9 @@ export class Game implements Addable {
 
               let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
               return iApp.callFunc(scenePrefix + 'additem', adstring);
-            });        
-          }).then(() => {
-            resolve(true);
+            }).then(() => {
+              resolve(true);
+            });
           }).catch(err => {
             reject(err);
           });
