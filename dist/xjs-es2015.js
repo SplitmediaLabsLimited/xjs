@@ -1069,6 +1069,7 @@ var environment_1 = _require('./environment');
  *  The following events are emitted.
  *    - `stream-start`
  *    - `stream-end`
+ *    - `recording-renamed`
  *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
  *
@@ -1094,8 +1095,8 @@ var ChannelManager = (function (_super) {
     /**
      *  param: (event: string, handler: Function)
      *
-     *  Allows listening to events that this class emits. Currently there are two:
-     *  `stream-start` and `stream-end`.
+     *  Allows listening to events that this class emits. Currently there are three:
+     *  `stream-start`, `stream-end` and `recording-renamed`.
      *
      *  #### Usage:
      *
@@ -1152,6 +1153,22 @@ var ChannelManager = (function (_super) {
                         streamTime: addedInfo['streamTime']
                     });
                 }
+                else if (channelInfoObj.hasOwnProperty('new') &&
+                    channelInfoObj.hasOwnProperty('old')) {
+                    if (event === 'recording-renamed') {
+                        var name_1 = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, "/");
+                        var nameArr = name_1.split('/');
+                        var newName = nameArr[nameArr.length - 1];
+                        handler.call(_this, {
+                            error: false,
+                            recordingInfo: {
+                                oldName: channelInfoObj['old'],
+                                newName: newName,
+                                fullPath: decodeURIComponent(channelInfoObj['new'])
+                            }
+                        });
+                    }
+                }
             }
             catch (e) {
                 handler.call(_this, { error: true });
@@ -1164,11 +1181,11 @@ var ChannelManager = (function (_super) {
     return ChannelManager;
 })(eventemitter_1.EventEmitter);
 exports.ChannelManager = ChannelManager;
-eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (settingsObj) {
-    var settings = [];
+eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'], function (settingsObj) {
+    var eventString;
     if (settingsObj.hasOwnProperty('event') &&
         settingsObj.hasOwnProperty('info')) {
-        var eventString = settingsObj['event'];
+        eventString = settingsObj['event'];
         if (settingsObj['event'] === 'StreamStart') {
             eventString = 'stream-start';
         }
@@ -1176,6 +1193,18 @@ eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (se
             eventString = 'stream-end';
         }
         ChannelManager.emit(eventString, settingsObj['info']);
+    }
+    if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+        && settingsObj.hasOwnProperty('new')) {
+        eventString = settingsObj['event'];
+        if (settingsObj['event'] === 'RecordingRenamed') {
+            eventString = 'recording-renamed';
+            var renameInfo = {
+                old: settingsObj['old'],
+                new: settingsObj['new']
+            };
+            ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+        }
     }
 });
 },{"../internal/eventmanager":49,"../internal/util/json":55,"../util/eventemitter":70,"./environment":4,"./streaminfo":46}],3:[function(_require,module,exports){
@@ -1338,6 +1367,7 @@ var Dll = (function (_super) {
     return Dll;
 })(eventemitter_1.EventEmitter);
 exports.Dll = Dll;
+var oldUpdateLocalProperty = window.UpdateLocalProperty;
 window.UpdateLocalProperty = function (prop, value) {
     if (prop === 'prop:dlldogrant') {
         var granted = value === '1';
@@ -1348,7 +1378,11 @@ window.UpdateLocalProperty = function (prop, value) {
             Dll.emit('access-revoked');
         }
     }
+    if (typeof oldUpdateLocalProperty === 'function') {
+        oldUpdateLocalProperty(prop, value);
+    }
 };
+var oldSetdlldogrant = window.Setdlldogrant;
 window.Setdlldogrant = function (value) {
     var granted = value === '1';
     if (granted) {
@@ -1356,6 +1390,9 @@ window.Setdlldogrant = function (value) {
     }
     else {
         Dll.emit('access-revoked');
+    }
+    if (typeof oldSetdlldogrant === 'function') {
+        oldSetdlldogrant(value);
     }
 };
 },{"../internal/internal":52,"../util/eventemitter":70}],4:[function(_require,module,exports){
@@ -1523,12 +1560,16 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
+var oldSetid = window.Setid;
 window.Setid = function (id) {
     if (remote_1.Remote.remoteType === 'proxy') {
         Extension._proxyCallback['ExtensionWindowID'].call(this, id);
     }
     else {
         Extension._callback['ExtensionWindowID'].resolve(id);
+    }
+    if (typeof oldSetid === 'function') {
+        oldSetid(id);
     }
 };
 },{"../core/environment":4,"../internal/app":48,"../internal/internal":52,"../internal/remote":54}],6:[function(_require,module,exports){
@@ -2397,8 +2438,14 @@ var ItemColor = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:border', _this._id).then(function (val) {
-                var bgr = Number(val) - 0x80000000;
-                var color = color_1.Color.fromBGRInt(bgr);
+                var color;
+                if (val === '0') {
+                    color = color_1.Color.fromTransparent();
+                }
+                else {
+                    var bgr = Number(val) - 0x80000000;
+                    color = color_1.Color.fromBGRInt(bgr);
+                }
                 resolve(color);
             });
         });
@@ -2406,7 +2453,14 @@ var ItemColor = (function () {
     ItemColor.prototype.setBorderColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), _this._id).then(function () {
+            var colorString;
+            if (value.isTransparent()) {
+                colorString = '0';
+            }
+            else {
+                colorString = String(value.getIbgr() - 0x80000000);
+            }
+            item_1.Item.set('prop:border', colorString, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -4468,12 +4522,16 @@ var Output = (function () {
     return Output;
 })();
 exports.Output = Output;
+var oldSetBroadcastChannelList = window.SetBroadcastChannelList;
 window.SetBroadcastChannelList = function (channels) {
     if (remote_1.Remote.remoteType === 'proxy') {
         Output._proxyCallback[Output._id].call(this, channels);
     }
     else {
         Output._callback[Output._id].resolve(channels);
+    }
+    if (typeof oldSetBroadcastChannelList === 'function') {
+        oldSetBroadcastChannelList(channels);
     }
 };
 },{"../internal/internal":52,"../internal/item":53,"../internal/remote":54,"../internal/util/json":55,"./environment":4,"./extension":5,"./streaminfo":46}],22:[function(_require,module,exports){
@@ -9149,6 +9207,25 @@ var StreamInfo = (function () {
     /**
      * return: Promise<number>
      *
+     * Gets the number of GOP frames dropped
+     */
+    StreamInfo.prototype.getGOPDrops = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var usage;
+            app_1.App.getGlobalProperty('bandwidthusage-all').then(function (result) {
+                usage = JSON.parse(result);
+                for (var i = 0; i < usage.length; i++) {
+                    if (usage[i].ChannelName === _this._name) {
+                        resolve(usage[i].Dropped);
+                    }
+                }
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
      * Gets the number of frames rendered
      */
     StreamInfo.prototype.getStreamRenderedFrames = function () {
@@ -9469,6 +9546,7 @@ var EventManager = (function () {
     return EventManager;
 })();
 exports.EventManager = EventManager;
+var oldSetEvent = window.SetEvent;
 window.SetEvent = function (args) {
     var settings = [];
     settings = args.split('&');
@@ -9482,13 +9560,20 @@ window.SetEvent = function (args) {
     EventManager.callbacks[settingsObj['event']].map(function (_cb) {
         _cb(settingsObj);
     });
+    if (typeof oldSetEvent === 'function') {
+        oldSetEvent(args);
+    }
 };
+var oldAppOnEvent = window.AppOnEvent;
 window.AppOnEvent = function (event) {
     if (EventManager.callbacks[event] === undefined)
         return;
     EventManager.callbacks[event].map(function (_cb) {
         _cb({ event: event });
     });
+    if (typeof oldAppOnEvent === 'function') {
+        oldAppOnEvent(event);
+    }
 };
 },{"./internal":52}],50:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -9750,6 +9835,7 @@ function finalCallback(message) {
     });
 }
 exports.finalCallback = finalCallback;
+var asyncCallback = window.OnAsyncCallback;
 window.OnAsyncCallback = function (asyncID, result) {
     // Used by proxy to return Async calls
     if (remote_1.Remote.remoteType === 'proxy') {
@@ -9761,6 +9847,9 @@ window.OnAsyncCallback = function (asyncID, result) {
         if (callback instanceof Function) {
             callback.call(this, decodeURIComponent(result));
         }
+    }
+    if (typeof asyncCallback === 'function') {
+        asyncCallback(asyncID, result);
     }
 };
 },{"./remote":54}],53:[function(_require,module,exports){
@@ -10541,7 +10630,7 @@ var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 /**
  * The AudioDevice Class is the object returned by
- * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * {@link #system/System System Class} getAudioDevices method. It provides you
  * with methods to fetch the audio device object's attributes, and also provides
  * methods to convert it back to an XML object that is compatible with XBC.
  *
@@ -10680,7 +10769,7 @@ var AudioDevice = (function () {
     /**
      * return: boolean
      *
-     * Gets whether audio device is the system default
+     * Gets whether the audio device is enabled/not
      *
      * #### Usage
      *
@@ -10868,9 +10957,6 @@ var AudioDevice = (function () {
             ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
         return audio;
     };
-    AudioDevice.STATE_ACTIVE = 'Active';
-    AudioDevice.DATAFLOW_RENDER = 'Render';
-    AudioDevice.DATAFLOW_CAPTURE = 'Capture';
     AudioDevice.SYSTEM_LEVEL_MUTE = 0;
     AudioDevice.SYSTEM_LEVEL_ENABLE = 1;
     AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED = 255;
@@ -10884,7 +10970,7 @@ var xml_1 = _require('../internal/util/xml');
 var app_1 = _require('../internal/app');
 /**
  * The CameraDevice Class is the object returned by
- * {@link #system/System System Class'} getCameraDevices method. It provides
+ * {@link #system/System System Class} getCameraDevices method. It provides
  * you with methods to fetch the Camera Device's id, name, and to add it as
  * a source in the current scene.
  *
@@ -10896,11 +10982,8 @@ var app_1 = _require('../internal/app');
  *
  * System.getCameraDevices().then(function(cameras) {
  *   for (var i in cameras) {
- *     // Do not include the imaginary xsplit camera if that ever exist
- *     if (cameras[i].getName().indexOf('xsplit') === -1) {
- *       xml = cameras[i].toXML();
- *       // do something with the XML here
- *     }
+ *     xml = cameras[i].toXML();
+ *     // do something with the XML here
  *   }
  * });
  * ```
@@ -11040,7 +11123,7 @@ var xml_1 = _require('../internal/util/xml');
 var app_1 = _require('../internal/app');
 var environment_1 = _require('../core/environment');
 /**
- * The Game Class is the object returned by {@link #system/System System Class'}
+ * The Game Class is the object returned by {@link #system/System System Class}
  * getGames method. It provides you with methods to fetch the game object's
  * attributes, as well as methods to add any game to the current scene.
  *
@@ -11396,6 +11479,14 @@ var app_1 = _require('../internal/app');
 var MicrophoneDevice = (function () {
     function MicrophoneDevice() {
     }
+    /**
+     * param: (deviceJXON: JXON)
+     * ```
+     * return MicrophoneDevice
+     * ```
+     * Create a MicrophoneDevice onject based on a JXON object
+     *
+     */
     MicrophoneDevice.parse = function (jxon) {
         var m = new MicrophoneDevice();
         m._disp = jxon['disp'];
@@ -11459,10 +11550,7 @@ var internal_1 = _require('../internal/internal');
 var Screen = (function () {
     function Screen() {
     }
-    /**
-     * Initializes the screen region selector crosshair so user may select
-     * a desktop region or a window to add to the stage in the current scene.
-     */
+    /** Initializes the screen region selector crosshair so user may select a desktop region or a window to add to the stage in the current scene. */
     Screen.prototype.addToScene = function () {
         return new Promise(function (resolve) {
             internal_1.exec('AppCallFunc', 'addscreen');
@@ -11482,7 +11570,7 @@ var game_1 = _require('./game');
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's first parameter.
  *
  * ### Basic Usage
@@ -11499,7 +11587,7 @@ var internal_1 = _require('../internal/internal');
 })(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
 var AudioDeviceDataflow = exports.AudioDeviceDataflow;
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's second parameter.
  *
  * ### Basic Usage
@@ -11696,7 +11784,7 @@ var System = (function () {
      *   var fontsArrayLength = fontsArray.length;
      *   for (var i = 0; i < fontsArrayLength; ++i) {
      *     var option = document.createElement('option');
-     *     option.text = 'Kiwi';
+     *     option.text = fontsArray[i];
      *     mySelect.add(option);
      *   }
      * });
@@ -11964,11 +12052,7 @@ var VideoPlaylist = (function () {
             });
         });
     };
-    /**
-     *  Adds the prepared video playlist to the current scene.
-     *
-     *  This function is not available to sources.
-     */
+    /** Adds the prepared video playlist to the current scene. This function is not available to sources. */
     VideoPlaylist.prototype.addToScene = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -12003,6 +12087,9 @@ var Color = (function () {
         else if (props['ibgr'] !== undefined) {
             this.setIbgr(props['ibgr']);
         }
+        else if (props['isTransparent'] !== undefined && props['isTransparent'] === true) {
+            this.setTransparent();
+        }
         else {
             throw new Error('Do not call Color constructor without parameters.');
         }
@@ -12019,6 +12106,9 @@ var Color = (function () {
     Color.fromBGRInt = function (ibgr) {
         return new Color({ ibgr: ibgr });
     };
+    Color.fromTransparent = function () {
+        return new Color({ isTransparent: true });
+    };
     Color.prototype.getRgb = function () {
         return this._rgb;
     };
@@ -12028,6 +12118,7 @@ var Color = (function () {
         this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
             this._rgb.substring(0, 2)].join('').toUpperCase();
         this._ibgr = parseInt(this._bgr, 16);
+        this._transparent = false;
         return this;
     };
     Color.prototype.getBgr = function () {
@@ -12060,6 +12151,17 @@ var Color = (function () {
         }
         this.setBgr(bgr);
         return this;
+    };
+    Color.prototype.setTransparent = function () {
+        this._rgb = '0';
+        this._irgb = 0;
+        this._bgr = '0';
+        this._ibgr = 0;
+        this._transparent = true;
+        return this;
+    };
+    Color.prototype.isTransparent = function () {
+        return this._transparent;
     };
     return Color;
 })();
@@ -12099,6 +12201,7 @@ var EventEmitter = (function () {
             this._handlers[event].push(handler);
         }
     };
+    /** This function removes a handler to an event.*/
     EventEmitter.prototype.off = function (event, handler) {
         if (remote_1.Remote.remoteType === 'remote') {
             if (EventEmitter._remoteHandlers[event] !== undefined) {
@@ -12369,6 +12472,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
+var oldOnGetVideoDuration = window.OnGetVideoDuration;
 window.OnGetVideoDuration = function (file, duration) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
@@ -12379,7 +12483,11 @@ window.OnGetVideoDuration = function (file, duration) {
             delete IO._callback[decodeURIComponent(file)];
         }
     }
+    if (typeof oldOnGetVideoDuration === 'function') {
+        oldOnGetVideoDuration(file, duration);
+    }
 };
+var oldOnGetVideoDurationFailed = window.OnGetVideoDurationFailed;
 window.OnGetVideoDurationFailed = function (file) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
@@ -12389,6 +12497,9 @@ window.OnGetVideoDurationFailed = function (file) {
         if (IO._callback[decodeURIComponent(file)].length === 0) {
             delete IO._callback[decodeURIComponent(file)];
         }
+    }
+    if (typeof oldOnGetVideoDurationFailed === 'function') {
+        oldOnGetVideoDuration(file);
     }
 };
 },{"../core/environment":4,"../internal/internal":52,"../internal/remote":54}],72:[function(_require,module,exports){
@@ -13159,10 +13270,14 @@ var Dialog = (function () {
     return Dialog;
 })();
 exports.Dialog = Dialog;
+var oldOnDialogResult = window.OnDialogResult;
 window.OnDialogResult = function (result) {
     if (environment_1.Environment.isSourceProps() || environment_1.Environment.isExtension()) {
         document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
             detail: result }));
+    }
+    if (typeof oldOnDialogResult === 'function') {
+        oldOnDialogResult(result);
     }
 };
 },{"../core/environment":4,"../internal/internal":52,"../internal/remote":54,"../util/rectangle":73}],76:[function(_require,module,exports){
@@ -13373,6 +13488,7 @@ var ExtensionWindow = (function (_super) {
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;
 // for extensions
+var oldSourcesListUpdate = window.SourcesListUpdate;
 window.SourcesListUpdate = function (view, sources) {
     if (Number(view) === 0) {
         var propsJSON = json_1.JSON.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
@@ -13384,17 +13500,28 @@ window.SourcesListUpdate = function (view, sources) {
         }
         ExtensionWindow.emit('sources-list-update', ids.join(','));
     }
+    if (typeof oldSourcesListUpdate === 'function') {
+        oldSourcesListUpdate(view, sources);
+    }
 };
+var oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = function (view, id) {
     if (Number(view) === 0) {
         ExtensionWindow.emit('sources-list-highlight', id === '' ?
             null : id);
     }
+    if (typeof oldSourcesListHighlight === 'function') {
+        oldSourcesListHighlight(view, id);
+    }
 };
+var oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = function (view, id) {
     if (Number(view) === 0) {
         ExtensionWindow.emit('sources-list-select', id === '' ?
             null : id);
+    }
+    if (typeof oldSourcesListSelect === 'function') {
+        oldSourcesListSelect(view, id);
     }
 };
 var oldOnSceneLoad = window.OnSceneLoad;
@@ -13410,7 +13537,7 @@ window.OnSceneLoad = function () {
             ExtensionWindow.emit('scene-load', Number(scene));
         }
     }
-    if (oldOnSceneLoad !== undefined) {
+    if (typeof oldOnSceneLoad === 'function') {
         oldOnSceneLoad.apply(void 0, args);
     }
 };
