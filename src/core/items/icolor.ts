@@ -226,8 +226,13 @@ export class ItemColor implements IItemColor {
   getBorderColor(): Promise<Color> {
     return new Promise(resolve => {
       iItem.get('prop:border', this._id).then(val => {
-        var bgr: number = Number(val) - 0x80000000;
-        var color: Color = Color.fromBGRInt(bgr);
+        var color: Color;
+        if (val === '0') {
+          color = Color.fromTransparent();
+        } else {
+          var bgr: number = Number(val) - 0x80000000;
+          color = Color.fromBGRInt(bgr);
+        }
         resolve(color);
       });
     });
@@ -235,10 +240,15 @@ export class ItemColor implements IItemColor {
 
   setBorderColor(value: Color): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      iItem.set('prop:border',
-        String(value.getIbgr() - 0x80000000), this._id).then(() => {
-          resolve(this);
-        });
+      var colorString: string;
+      if (value.isTransparent()) {
+        colorString = '0';
+      } else {
+        colorString = String(value.getIbgr() - 0x80000000);
+      }
+      iItem.set('prop:border', colorString, this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 
