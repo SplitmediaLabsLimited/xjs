@@ -87,7 +87,7 @@ export enum ViewTypes {
  * ```
  */
 export class Item extends Source implements IItemLayout, ISource {
-  static _emitters = {};
+  static _emitter = new EventEmitter();
   static _subscriptions = [];
 
   constructor(props?: {}) {
@@ -95,13 +95,41 @@ export class Item extends Source implements IItemLayout, ISource {
     this._isItemCall = true;
   }
 
-  /** This function attaches a handler to an event. Duplicate handlers are allowed. */
-  on(event: string, handler: Function, id?: string) {
-    // check if emitter for id is already there
-    if (!Item._emitters.hasOwnProperty(this._id)) {
-      Item._emitters[this._id] = new EventEmitter();
-    }
-    Item._emitters[this._id].on(event, handler);
+  /**
+   * param: (event: string,  handler: Function)
+   *
+   * Allows listening to events per instance.
+   * Currently there are only two:
+   * `item-changed` and `item-destroyed`.
+   *
+   * Item change is triggered thru any property change:
+   * - via js(source plugin/extension),
+   * - via visibility-toggling through the sources list,
+   * - or via the source properties dialog
+   *
+   *  #### Usage:
+   *
+   * ```javascript
+   * let itemChange = function(...args) {
+   *   console.log('Item has changed');
+   * }
+   * 
+   * let current;
+   * let items;
+   * xjs.Scene.getActiveScene()
+   * .then( scene => {
+   *   current = scene;
+   *   return current.getItems();
+   * }).then( list => {
+   *   items = list;
+   *   items[0].on('item-changed', itemChange);
+   * });
+   * ```
+   *
+   * Duplicate handlers are allowed.
+   */
+  on(event: string, handler: Function) {
+    Item._emitter.on(event + '_' + this._id, handler);
     // add additional functionality for events
     let isItemSubscribeEventsSupported = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(itemSubscribeEventVersion);
@@ -110,22 +138,47 @@ export class Item extends Source implements IItemLayout, ISource {
       !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
       Item._subscriptions.push('itempropchange_' + this._id);
       EventManager.subscribe('itempropchange_' + this._id, (...eventArgs) => {
-        Item._emitters[this._id].emit('item-changed', ...eventArgs);
+        Item._emitter.emit('item-changed_' + this._id, ...eventArgs);
       });
     } else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
       !Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
       Item._subscriptions.push('itemdestroyed_' + this._id);
       EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
-        Item._emitters[this._id].emit('item-destroyed', ...eventArgs);
+        Item._emitter.emit('item-destroyed_' + this._id, ...eventArgs);
       });
     }
   }
 
-  /** This function removes a handler to an event.*/
+  /**
+   * param: (event: string,  handler: Function)
+   *
+   * Removes specificied event handler bound by `on`.
+   * Note that this can only be done for named function handlers.
+   *
+   *  #### Usage:
+   *
+   * ```javascript
+   * let itemChange = function(...args) {
+   *   console.log('Item has changed');
+   * }
+   * 
+   * let current;
+   * let items;
+   * xjs.Scene.getActiveScene()
+   * .then( scene => {
+   *   current = scene;
+   *   return current.getItems();
+   * }).then( list => {
+   *   items = list;
+   *   items[0].on('item-changed', itemChange);
+   *   setTimeout( ()=> {
+   *     items[0].off('item-changed', itemChange);
+   *   }, 10000);
+   * });
+   * ```
+   */
   off(event: string, handler: Function) {
-    if (Item._emitters.hasOwnProperty(this._id)) {
-      Item._emitters[this._id].off(event, handler);
-    }
+    Item._emitter.off(event + '_' + this._id, handler);
   }
 
   /**
@@ -277,7 +330,6 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```
    */
-
   duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       if(versionCompare(getVersion())
