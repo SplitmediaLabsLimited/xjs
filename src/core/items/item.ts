@@ -97,12 +97,10 @@ export class Item extends Source implements IItemLayout, ISource {
 
   /** This function attaches a handler to an event. Duplicate handlers are allowed. */
   on(event: string, handler: Function, id?: string) {
+    // check if emitter for id is already there
     if (!Item._emitters.hasOwnProperty(this._id)) {
       Item._emitters[this._id] = new EventEmitter();
     }
-
-    // check if emitter for id is already there
-
     Item._emitters[this._id].on(event, handler);
     // add additional functionality for events
     let isItemSubscribeEventsSupported = versionCompare(getVersion()).
