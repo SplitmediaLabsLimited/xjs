@@ -2,8 +2,10 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
+import {EventEmitter} from '../../util/eventemitter';
 import {Item as iItem} from '../../internal/item';
 import {App as iApp} from '../../internal/app';
+import {EventManager} from '../../internal/eventmanager';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
@@ -13,6 +15,7 @@ import {
   minVersion,
   versionCompare,
   getVersion,
+  itemSubscribeEventVersion,
   globalsrcMinVersion
 } from '../../internal/util/version';
 
@@ -84,9 +87,47 @@ export enum ViewTypes {
  * ```
  */
 export class Item extends Source implements IItemLayout, ISource {
+  static _emitters = {};
+  static _subscriptions = [];
+
   constructor(props?: {}) {
     super(props)
     this._isItemCall = true;
+  }
+
+  /** This function attaches a handler to an event. Duplicate handlers are allowed. */
+  on(event: string, handler: Function, id?: string) {
+    if (!Item._emitters.hasOwnProperty(this._id)) {
+      Item._emitters[this._id] = new EventEmitter();
+    }
+
+    // check if emitter for id is already there
+
+    Item._emitters[this._id].on(event, handler);
+    // add additional functionality for events
+    let isItemSubscribeEventsSupported = versionCompare(getVersion()).
+      is.greaterThanOrEqualTo(itemSubscribeEventVersion);
+
+    if (event === 'item-changed' && isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
+      Item._subscriptions.push('itempropchange_' + this._id);
+      EventManager.subscribe('itempropchange_' + this._id, (...eventArgs) => {
+        Item._emitters[this._id].emit('item-changed', ...eventArgs);
+      });
+    } else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
+      Item._subscriptions.push('itemdestroyed_' + this._id);
+      EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
+        Item._emitters[this._id].emit('item-destroyed', ...eventArgs);
+      });
+    }
+  }
+
+  /** This function removes a handler to an event.*/
+  off(event: string, handler: Function) {
+    if (Item._emitters.hasOwnProperty(this._id)) {
+      Item._emitters[this._id].off(event, handler);
+    }
   }
 
   /**
