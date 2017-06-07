@@ -40,6 +40,22 @@ export interface IAudio {
   /**
    * return: Promise<boolean>
    *
+   * Check if source is automatically being muted when hiding
+   */
+  isAutoMute(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Set source to automatically mute when hiding
+   *
+   * *Chainable.*
+   */
+  setAutoMute(value: boolean): Promise<IAudio>;
+
+  /**
+   * return: Promise<boolean>
+   *
    * Checks if audio is also output to system sound
    */
   isStreamOnlyAudio(): Promise<boolean>;
@@ -94,6 +110,22 @@ export class Audio implements IAudio {
   setMute(value: boolean): Promise<Audio> {
     return new Promise(resolve => {
       iItem.set('prop:mute', (value ? '1' : '0'), this._id).then(() => {
+        resolve(this);
+      });
+    })
+  }
+
+  isAutoMute(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.get('prop:keepaudio', this._id).then(val => {
+        resolve(val !== '1');
+      });
+    });
+  }
+
+  setAutoMute(value: boolean): Promise<Audio> {
+    return new Promise(resolve => {
+      iItem.set('prop:keepaudio', (value ? '0' : '1'), this._id).then(() => {
         resolve(this);
       });
     })

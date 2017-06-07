@@ -563,11 +563,17 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
+  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  isAutoMute: () => Promise<boolean>;
+
   /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlItem>;
 
   /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  setAutoMute: (value: boolean) => Promise<HtmlItem>;
 
   /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;
