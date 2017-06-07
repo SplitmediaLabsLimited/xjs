@@ -33,11 +33,14 @@ const _RESIZE = '2';
  */
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
-  static _subscriptions: string[];
+  static _subscriptions: string[] = [];
 
-  /**
-   *  Gets the instance of the window utility. Use this instead of the constructor.
-   */
+/**
+ * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
+ * `** since an ExtensionWinow should technically have a single instance`
+ *
+ * Gets the instance of the window utility. Use this instead of the constructor.
+ */
   static getInstance() {
     if (ExtensionWindow._instance === undefined) {
       ExtensionWindow._instance = new ExtensionWindow();
@@ -46,7 +49,9 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   /**
-   *  Use getInstance() instead.
+   *  ** For Deprecation
+   *
+   *  Use getInstance()
    */
   constructor() {
     super();
@@ -57,17 +62,24 @@ export class ExtensionWindow extends EventEmitter {
     ExtensionWindow._subscriptions = [];
   }
 
-   /**
+  /**
    *  param: (event: string, ...params: any[])
    *
    *  Allows this class to emit an event.
    */
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
-    ExtensionWindow
-      .getInstance()
-      .emit
-      .apply(ExtensionWindow._instance, params);
+    try {
+      ExtensionWindow
+        .getInstance()
+        .emit
+        .apply(ExtensionWindow._instance, params);
+    } catch(event) {
+      ExtensionWindow
+        ._instance
+        .emit
+        .apply(ExtensionWindow._instance, params);
+    }
   }
 
   /**
@@ -79,7 +91,6 @@ export class ExtensionWindow extends EventEmitter {
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
       ExtensionWindow.getInstance().on(event, handler);
-
       let isDeleteSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
       let isAddSceneEventFixed = versionCompare(getVersion()).
@@ -145,6 +156,13 @@ export class ExtensionWindow extends EventEmitter {
    *
    *  Resizes this extension's window.
    */
+  static resize(width: number, height: number) {
+    App.postMessage(_RESIZE, String(width), String(height));
+  }
+
+  /**
+   * `** For deprecation, please use the static method instead`
+   */
   resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
@@ -155,6 +173,21 @@ export class ExtensionWindow extends EventEmitter {
    * param: (value: string)
    *
    * Renames the extension window.
+   */
+  static setTitle(value: string):Promise<any> {
+    return new Promise(resolve => {
+      let ext = Extension.getInstance()
+      ext.getId().then(id => {
+        exec("CallHost", "setExtensionWindowTitle:" + id, value)
+        .then(res => {
+          resolve(res)
+        })
+      })
+    })
+  };
+
+  /**
+   * `** For deprecation, please use the static method instead`
    */
   setTitle(value: string):Promise<any> {
     return new Promise(resolve => {
@@ -182,6 +215,13 @@ export class ExtensionWindow extends EventEmitter {
    *     (bit 3 - enable minimize btn)
    *     (bit 4 - enable maximize btn)
    */
+  static setBorder(flag: number){
+    App.postMessage('4', String(flag));
+  }
+
+  /**
+   * `** For deprecation, please use the static method instead`
+   * */
   setBorder(flag: number){
     App.postMessage('4', String(flag));
   }
@@ -189,6 +229,13 @@ export class ExtensionWindow extends EventEmitter {
   /**
    * Closes this extension window
    */
+  static close() {
+    App.postMessage('1');
+  }
+
+  /**
+   * `** For deprecation, please use the static method instead`
+   * */
   close() {
     App.postMessage('1');
   }
@@ -196,6 +243,13 @@ export class ExtensionWindow extends EventEmitter {
   /**
    * Disable Close Button on this extension's window
    */
+  static disableClose() {
+    App.postMessage('5','0')
+  }
+
+  /**
+   * `** For deprecation, please use the static method instead`
+   * */
   disableClose() {
     App.postMessage('5','0')
   }
@@ -203,6 +257,13 @@ export class ExtensionWindow extends EventEmitter {
   /**
    * Enable Close Button on this extension's window
    */
+  static enableClose() {
+    App.postMessage('5', '1')
+  }
+
+  /**
+   * `** For deprecation, please use the static method instead`
+   * */
   enableClose() {
     App.postMessage('5', '1')
   }
