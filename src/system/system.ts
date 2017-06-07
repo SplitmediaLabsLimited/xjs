@@ -8,6 +8,7 @@ import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+import {Scene} from '../core/scene';
 
 /**
  * This enum is used for {@link #system/System System Class} getAudioDevices

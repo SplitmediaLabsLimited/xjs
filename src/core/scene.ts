@@ -623,7 +623,6 @@ export class Scene {
               scene.getSources().then(sources => {
                 found = sources.some(source => {
                   if (source['_srcId'] === srcId.toUpperCase()) {
-                    console.log(scene)
                     match = scene;
                     return true
                   } else {

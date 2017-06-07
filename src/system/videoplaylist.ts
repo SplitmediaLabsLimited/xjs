@@ -6,6 +6,8 @@ import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import {IO} from '../util/io';
 import {Environment} from '../core/environment';
+import {Scene} from '../core/scene';
+
 /**
  *  Special class for adding a video playlist to the stage.
  *
@@ -125,15 +127,59 @@ export class VideoPlaylist implements Addable {
     });
   }
 
-  /** Adds the prepared video playlist to the current scene. This function is not available to sources. */
-  addToScene(): Promise <boolean> {
+  /**
+   * param: (value?: number | Scene)
+   * ```
+   *  return: Promise<boolean>
+   * ```
+   *
+   * Adds the prepared video playlist to the current scene by default.
+   * Accepts an optional parameter value, which when supplied,
+   * points to the scene where item will be added instead.
+   * This function is not available to sources.
+   */
+  addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(new Error('This function is not available to sources.'));
       } else {
-        this.toXML().then(fileitem => {
-          iApp.callFunc('additem', ' ' + fileitem)
-          .then(() => { resolve(true) });
+        let scenePrefix = '';
+        let scenePromise;
+        if (typeof value === 'number' || value instanceof Scene) {
+          scenePromise = new Promise((innerResolve, innerReject) => {
+            Scene.getSceneCount().then(sceneCount => {
+              if (typeof value === 'number') {
+                let int = Math.floor(value);
+                if (int > sceneCount || int === 0) {
+                  innerReject(new Error('Scene not existing.'));
+                } else {
+                  scenePrefix = 's:' + (int - 1) + '|';
+                  innerResolve();
+                }
+              } else {
+                value.getSceneNumber().then(int => {
+                  if (int > sceneCount || int === 0) {
+                    innerReject(new Error('Scene not existing.'));
+                  } else {
+                    scenePrefix = 's:' + (int - 1) + '|';
+                    innerResolve();
+                  }
+                });
+              }
+            });
+          });
+        } else if (typeof value === 'undefined') {
+          scenePromise = Promise.resolve();
+        } else {
+          scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+        }
+
+        scenePromise.then(() => {
+          return this.toXML();
+        }).then(fileItem => {
+          return iApp.callFunc(scenePrefix + 'additem', ' ' + fileItem);
+        }).then(() => {
+          resolve(true);
         }).catch(err => {
           reject(err);
         });

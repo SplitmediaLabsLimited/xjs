@@ -6,6 +6,7 @@ import {XML as XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
 import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
+import {Scene} from '../core/scene';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class}
@@ -280,17 +281,57 @@ export class Game implements Addable {
   }
 
   /**
-   *  Adds this game to the current scene.
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Adds this game to the current scene by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
    */
-  addToScene(): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.callFunc('addgamesource', 'dev:' + this.toXML()).then(() => {
+  addToScene(value?: number | Scene ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let scenePrefix = '';
+      let scenePromise;
+      if (typeof value === 'number' || value instanceof Scene) {
+        scenePromise = new Promise((innerResolve, innerReject) => {
+          Scene.getSceneCount().then(sceneCount => {
+            if (typeof value === 'number') {
+              let int = Math.floor(value);
+              if (int > sceneCount || int === 0) {
+                innerReject(new Error('Scene not existing.'));
+              } else {
+                scenePrefix = 's:' + (int - 1) + '|';
+                innerResolve();
+              }
+            } else {
+              value.getSceneNumber().then(int => {
+                if (int > sceneCount || int === 0) {
+                  innerReject(new Error('Scene not existing.'));
+                } else {
+                  scenePrefix = 's:' + (int - 1) + '|';
+                  innerResolve();
+                }
+              });
+            }
+          });
+        });
+      } else if (typeof value === 'undefined') {
+        scenePromise = Promise.resolve();
+      } else {
+        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+      }
+
+      scenePromise.then(() => {
+        return iApp.callFunc(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
+      }).then(() => {
         resolve(true);
+      }).catch(err => {
+        reject(err);
       });
     });
   }
-
-
 
   static _autoDetect: Game;
 
@@ -325,50 +366,84 @@ export class Game implements Addable {
       ad._fpsCapture = 0;
       ad._imagename = "";
 
-      Game._autoDetect.addToScene = function() {
-        return new Promise(resolve => {
-          var defposPromise;
-          if (Environment.isSourcePlugin()) {
-            defposPromise = new Promise(defposResolve => {
-              iApp.get('presetconfig:-1').then(function(presetConfig) {
-                let placementJSON = JXON.parse(presetConfig);
-                defposResolve(placementJSON['defpos']);
+      Game._autoDetect.addToScene = function(value) {
+        return new Promise((resolve, reject) => {
+          let scenePrefix = '';
+          let scenePromise;
+          if (typeof value === 'number' || value instanceof Scene) {
+            scenePromise = new Promise((innerResolve, innerReject) => {
+              Scene.getSceneCount().then(sceneCount => {
+                if (typeof value === 'number') {
+                  let int = Math.floor(value);
+                  if (int > sceneCount || int === 0) {
+                    innerReject(new Error('Scene not existing.'));
+                  } else {
+                    scenePrefix = 's:' + (int - 1) + '|';
+                    innerResolve();
+                  }
+                } else {
+                  value.getSceneNumber().then(int => {
+                    if (int > sceneCount || int === 0) {
+                      innerReject(new Error('Scene not existing.'));
+                    } else {
+                      scenePrefix = 's:' + (int - 1) + '|';
+                      innerResolve();
+                    }
+                  });
+                }
               });
             });
+          } else if (typeof value === 'undefined') {
+            scenePromise = Promise.resolve();
           } else {
-            defposPromise = new Promise(defposResolve => {
-              iApp.get('preset:0').then(function(main) {
-                return iApp.get('presetconfig:' + main);
-              }).then(function(presetConfig) {
-                let placementJSON = JXON.parse(presetConfig);
-                defposResolve(placementJSON['defpos']);
-              });
-            });
+            scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
           }
 
-          defposPromise.then(function(defpos) {
-            let posString;
-            if (defpos === '0') {
-              posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
-            } else if (defpos === '1') {
-              posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
-            }  else if (defpos === '2') {
-              posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
-            } else if (defpos === '3') {
-              posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+          scenePromise.then(() => {
+            var defposPromise;
+            if (Environment.isSourcePlugin()) {
+              defposPromise = new Promise(defposResolve => {
+                iApp.get('presetconfig:-1').then(presetConfig => {
+                  let placementJSON = JXON.parse(presetConfig);
+                  defposResolve(placementJSON['defpos']);
+                });
+              });
             } else {
-              posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+              defposPromise = new Promise(defposResolve => {
+                iApp.get('preset:0').then(main => {
+                  return iApp.get('presetconfig:' + main);
+                }).then(function(presetConfig) {
+                  let placementJSON = JXON.parse(presetConfig);
+                  defposResolve(placementJSON['defpos']);
+                });
+              });
             }
 
-            let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
-            iApp.callFunc('additem', adstring).then(() => {
+            defposPromise.then(defpos => {
+              let posString;
+              if (defpos === '0') {
+                posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+              } else if (defpos === '1') {
+                posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+              }  else if (defpos === '2') {
+                posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+              } else if (defpos === '3') {
+                posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+              } else {
+                posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+              }
+
+              let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
+              return iApp.callFunc(scenePrefix + 'additem', adstring);
+            }).then(() => {
               resolve(true);
             });
+          }).catch(err => {
+            reject(err);
           });
         });
       };
     }
-
     return Game._autoDetect;
   }
 }
