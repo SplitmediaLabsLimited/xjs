@@ -43,6 +43,12 @@ describe('Item ===', function() {
         }, 10);
       break;
 
+      case 'prop:item':
+        setTimeout(function() {
+          window.OnAsyncCallback(asyncId, local.item);
+        }, 10);
+      break;
+
       case 'prop:keeploaded':
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, local.keeploaded);
