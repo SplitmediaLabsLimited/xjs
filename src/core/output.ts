@@ -226,10 +226,15 @@ export class Output {
   }
 }
 
+const oldSetBroadcastChannelList =window.SetBroadcastChannelList;
 window.SetBroadcastChannelList = function(channels) {
   if (Remote.remoteType === 'proxy') {
     Output._proxyCallback[Output._id].call(this, channels)
   } else {
     Output._callback[Output._id].resolve(channels)
+  }
+
+  if (typeof oldSetBroadcastChannelList === 'function') {
+    oldSetBroadcastChannelList(channels)
   }
 }

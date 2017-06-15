@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.2.0
+ * version: 2.3.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1069,6 +1069,7 @@ var environment_1 = _require('./environment');
  *  The following events are emitted.
  *    - `stream-start`
  *    - `stream-end`
+ *    - `recording-renamed`
  *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
  *
@@ -1094,8 +1095,8 @@ var ChannelManager = (function (_super) {
     /**
      *  param: (event: string, handler: Function)
      *
-     *  Allows listening to events that this class emits. Currently there are two:
-     *  `stream-start` and `stream-end`.
+     *  Allows listening to events that this class emits. Currently there are three:
+     *  `stream-start`, `stream-end` and `recording-renamed`.
      *
      *  #### Usage:
      *
@@ -1152,6 +1153,22 @@ var ChannelManager = (function (_super) {
                         streamTime: addedInfo['streamTime']
                     });
                 }
+                else if (channelInfoObj.hasOwnProperty('new') &&
+                    channelInfoObj.hasOwnProperty('old')) {
+                    if (event === 'recording-renamed') {
+                        var name_1 = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, "/");
+                        var nameArr = name_1.split('/');
+                        var newName = nameArr[nameArr.length - 1];
+                        handler.call(_this, {
+                            error: false,
+                            recordingInfo: {
+                                oldName: channelInfoObj['old'],
+                                newName: newName,
+                                fullPath: decodeURIComponent(channelInfoObj['new'])
+                            }
+                        });
+                    }
+                }
             }
             catch (e) {
                 handler.call(_this, { error: true });
@@ -1164,11 +1181,11 @@ var ChannelManager = (function (_super) {
     return ChannelManager;
 })(eventemitter_1.EventEmitter);
 exports.ChannelManager = ChannelManager;
-eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (settingsObj) {
-    var settings = [];
+eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'], function (settingsObj) {
+    var eventString;
     if (settingsObj.hasOwnProperty('event') &&
         settingsObj.hasOwnProperty('info')) {
-        var eventString = settingsObj['event'];
+        eventString = settingsObj['event'];
         if (settingsObj['event'] === 'StreamStart') {
             eventString = 'stream-start';
         }
@@ -1176,6 +1193,18 @@ eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd'], function (se
             eventString = 'stream-end';
         }
         ChannelManager.emit(eventString, settingsObj['info']);
+    }
+    if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+        && settingsObj.hasOwnProperty('new')) {
+        eventString = settingsObj['event'];
+        if (settingsObj['event'] === 'RecordingRenamed') {
+            eventString = 'recording-renamed';
+            var renameInfo = {
+                old: settingsObj['old'],
+                new: settingsObj['new']
+            };
+            ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+        }
     }
 });
 },{"../internal/eventmanager":49,"../internal/util/json":55,"../util/eventemitter":70,"./environment":4,"./streaminfo":46}],3:[function(_require,module,exports){
@@ -1338,6 +1367,7 @@ var Dll = (function (_super) {
     return Dll;
 })(eventemitter_1.EventEmitter);
 exports.Dll = Dll;
+var oldUpdateLocalProperty = window.UpdateLocalProperty;
 window.UpdateLocalProperty = function (prop, value) {
     if (prop === 'prop:dlldogrant') {
         var granted = value === '1';
@@ -1348,7 +1378,11 @@ window.UpdateLocalProperty = function (prop, value) {
             Dll.emit('access-revoked');
         }
     }
+    if (typeof oldUpdateLocalProperty === 'function') {
+        oldUpdateLocalProperty(prop, value);
+    }
 };
+var oldSetdlldogrant = window.Setdlldogrant;
 window.Setdlldogrant = function (value) {
     var granted = value === '1';
     if (granted) {
@@ -1356,6 +1390,9 @@ window.Setdlldogrant = function (value) {
     }
     else {
         Dll.emit('access-revoked');
+    }
+    if (typeof oldSetdlldogrant === 'function') {
+        oldSetdlldogrant(value);
     }
 };
 },{"../internal/internal":52,"../util/eventemitter":70}],4:[function(_require,module,exports){
@@ -1523,12 +1560,16 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
+var oldSetid = window.Setid;
 window.Setid = function (id) {
     if (remote_1.Remote.remoteType === 'proxy') {
         Extension._proxyCallback['ExtensionWindowID'].call(this, id);
     }
     else {
         Extension._callback['ExtensionWindowID'].resolve(id);
+    }
+    if (typeof oldSetid === 'function') {
+        oldSetid(id);
     }
 };
 },{"../core/environment":4,"../internal/app":48,"../internal/internal":52,"../internal/remote":54}],6:[function(_require,module,exports){
@@ -2397,8 +2438,14 @@ var ItemColor = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             item_1.Item.get('prop:border', _this._id).then(function (val) {
-                var bgr = Number(val) - 0x80000000;
-                var color = color_1.Color.fromBGRInt(bgr);
+                var color;
+                if (val === '0') {
+                    color = color_1.Color.fromTransparent();
+                }
+                else {
+                    var bgr = Number(val) - 0x80000000;
+                    color = color_1.Color.fromBGRInt(bgr);
+                }
                 resolve(color);
             });
         });
@@ -2406,7 +2453,14 @@ var ItemColor = (function () {
     ItemColor.prototype.setBorderColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            item_1.Item.set('prop:border', String(value.getIbgr() - 0x80000000), _this._id).then(function () {
+            var colorString;
+            if (value.isTransparent()) {
+                colorString = '0';
+            }
+            else {
+                colorString = String(value.getIbgr() - 0x80000000);
+            }
+            item_1.Item.set('prop:border', colorString, _this._id).then(function () {
                 resolve(_this);
             });
         });
@@ -3652,8 +3706,11 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = new __();
 };
 var mixin_1 = _require('../../internal/util/mixin');
+var eventemitter_1 = _require('../../util/eventemitter');
 var item_1 = _require('../../internal/item');
 var app_1 = _require('../../internal/app');
+var eventmanager_1 = _require('../../internal/eventmanager');
+var environment_1 = _require('../environment');
 var json_1 = _require('../../internal/util/json');
 var xml_1 = _require('../../internal/util/xml');
 var scene_1 = _require('../scene');
@@ -3731,6 +3788,101 @@ var Item = (function (_super) {
         _super.call(this, props);
         this._isItemCall = true;
     }
+    /**
+     * param: (event: string,  handler: Function)
+     *
+     * Allows listening to events per instance.
+     * Currently there are only two:
+     * `item-changed` and `item-destroyed`.
+     *
+     * Item change is triggered thru any property change:
+     * - via js(source plugin/extension),
+     * - via visibility-toggling through the sources list,
+     * - or via the source properties dialog
+     *
+     *  #### Usage:
+     *
+     * ```javascript
+     * let itemChange = function(...args) {
+     *   console.log('Item has changed');
+     * }
+     *
+     * let current;
+     * let items;
+     * xjs.Scene.getActiveScene()
+     * .then( scene => {
+     *   current = scene;
+     *   return current.getItems();
+     * }).then( list => {
+     *   items = list;
+     *   items[0].on('item-changed', itemChange);
+     * });
+     * ```
+     *
+     * Duplicate handlers are allowed.
+     */
+    Item.prototype.on = function (event, handler) {
+        var _this = this;
+        Item._emitter.on(event + '_' + this._id, handler);
+        // add additional functionality for events
+        var isItemSubscribeEventsSupported = version_1.versionCompare(version_1.getVersion()).
+            is.greaterThanOrEqualTo(version_1.itemSubscribeEventVersion);
+        if (event === 'item-changed' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
+            Item._subscriptions.push('itempropchange_' + this._id);
+            eventmanager_1.EventManager.subscribe('itempropchange_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-changed_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
+        else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
+            Item._subscriptions.push('itemdestroyed_' + this._id);
+            eventmanager_1.EventManager.subscribe('itemdestroyed_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-destroyed_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
+    };
+    /**
+     * param: (event: string,  handler: Function)
+     *
+     * Removes specificied event handler bound by `on`.
+     * Note that this can only be done for named function handlers.
+     *
+     *  #### Usage:
+     *
+     * ```javascript
+     * let itemChange = function(...args) {
+     *   console.log('Item has changed');
+     * }
+     *
+     * let current;
+     * let items;
+     * xjs.Scene.getActiveScene()
+     * .then( scene => {
+     *   current = scene;
+     *   return current.getItems();
+     * }).then( list => {
+     *   items = list;
+     *   items[0].on('item-changed', itemChange);
+     *   setTimeout( ()=> {
+     *     items[0].off('item-changed', itemChange);
+     *   }, 10000);
+     * });
+     * ```
+     */
+    Item.prototype.off = function (event, handler) {
+        Item._emitter.off(event + '_' + this._id, handler);
+    };
     /**
      * return: Promise<Item[]>
      *
@@ -4036,11 +4188,13 @@ var Item = (function (_super) {
             });
         });
     };
+    Item._emitter = new eventemitter_1.EventEmitter();
+    Item._subscriptions = [];
     return Item;
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":48,"../../internal/item":53,"../../internal/util/json":55,"../../internal/util/mixin":57,"../../internal/util/version":58,"../../internal/util/xml":59,"../scene":22,"../source/audio":23,"../source/camera":24,"../source/flash":26,"../source/game":27,"../source/html":28,"../source/image":36,"../source/isource":40,"../source/media":42,"../source/screen":43,"../source/source":44,"../source/videoplaylist":45,"./ilayout":14}],17:[function(_require,module,exports){
+},{"../../internal/app":48,"../../internal/eventmanager":49,"../../internal/item":53,"../../internal/util/json":55,"../../internal/util/mixin":57,"../../internal/util/version":58,"../../internal/util/xml":59,"../../util/eventemitter":70,"../environment":4,"../scene":22,"../source/audio":23,"../source/camera":24,"../source/flash":26,"../source/game":27,"../source/html":28,"../source/image":36,"../source/isource":40,"../source/media":42,"../source/screen":43,"../source/source":44,"../source/videoplaylist":45,"./ilayout":14}],17:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -4468,12 +4622,16 @@ var Output = (function () {
     return Output;
 })();
 exports.Output = Output;
+var oldSetBroadcastChannelList = window.SetBroadcastChannelList;
 window.SetBroadcastChannelList = function (channels) {
     if (remote_1.Remote.remoteType === 'proxy') {
         Output._proxyCallback[Output._id].call(this, channels);
     }
     else {
         Output._callback[Output._id].resolve(channels);
+    }
+    if (typeof oldSetBroadcastChannelList === 'function') {
+        oldSetBroadcastChannelList(channels);
     }
 };
 },{"../internal/internal":52,"../internal/item":53,"../internal/remote":54,"../internal/util/json":55,"./environment":4,"./extension":5,"./streaminfo":46}],22:[function(_require,module,exports){
@@ -5095,7 +5253,6 @@ var Scene = (function () {
                             scene.getSources().then(function (sources) {
                                 found = sources.some(function (source) {
                                     if (source['_srcId'] === srcId.toUpperCase()) {
-                                        console.log(scene);
                                         match = scene;
                                         return true;
                                     }
@@ -6029,13 +6186,25 @@ mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurab
 },{"../../internal/util/mixin":57,"../source/iaudio":29,"../source/ihtml":35,"../source/source":44,"./iconfig":32}],29:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
+var logger_1 = _require('../../internal/util/logger');
 var Audio = (function () {
     function Audio() {
     }
+    Audio.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
     Audio.prototype.getVolume = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:volume', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getVolume', true);
+                _this._checkPromise = item_1.Item.get('prop:volume', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:volume', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val));
             });
         });
@@ -6044,7 +6213,14 @@ var Audio = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             value = value < 0 ? 0 : value > 100 ? 100 : value;
-            item_1.Item.set('prop:volume', String(value), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setVolume', true);
+                _this._checkPromise = item_1.Item.set('prop:volume', String(value), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:volume', String(value), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
@@ -6052,7 +6228,14 @@ var Audio = (function () {
     Audio.prototype.isMute = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:mute', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isMute', true);
+                _this._checkPromise = item_1.Item.get('prop:mute', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:mute', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -6060,7 +6243,44 @@ var Audio = (function () {
     Audio.prototype.setMute = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:mute', (value ? '1' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setMute', true);
+                _this._checkPromise = item_1.Item.set('prop:mute', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:mute', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    Audio.prototype.isAutoMute = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isAutoMute', true);
+                _this._checkPromise = item_1.Item.get('prop:keepaudio', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:keepaudio', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
+                resolve(val !== '1');
+            });
+        });
+    };
+    Audio.prototype.setAutoMute = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setAutoMute', true);
+                _this._checkPromise = item_1.Item.set('prop:keepaudio', (value ? '0' : '1'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:keepaudio', (value ? '0' : '1'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
@@ -6068,7 +6288,14 @@ var Audio = (function () {
     Audio.prototype.isStreamOnlyAudio = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:sounddev', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isStreamOnlyAudio', true);
+                _this._checkPromise = item_1.Item.get('prop:sounddev', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:sounddev', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -6076,7 +6303,14 @@ var Audio = (function () {
     Audio.prototype.setStreamOnlyAudio = function (value) {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:sounddev', (value ? '1' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setStreamOnlyAudio', true);
+                _this._checkPromise = item_1.Item.set('prop:sounddev', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:sounddev', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
@@ -6084,7 +6318,14 @@ var Audio = (function () {
     Audio.prototype.isAudioAvailable = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:audioavail', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isAudioAvailable', true);
+                _this._checkPromise = item_1.Item.get('prop:audioavail', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:audioavail', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -6092,7 +6333,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":53}],30:[function(_require,module,exports){
+},{"../../internal/item":53,"../../internal/util/logger":56}],30:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -6623,14 +6864,22 @@ var logger_1 = _require('../../internal/util/logger');
 var SourceConfigurable = (function () {
     function SourceConfigurable() {
     }
+    SourceConfigurable.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
     SourceConfigurable.prototype.loadConfig = function () {
         var _this = this;
         var called = false;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'loadConfig', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:BrowserConfiguration', _this._id).then(function (config) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'loadConfig', true);
+                _this._checkPromise = item_1.Item.get('prop:BrowserConfiguration', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:BrowserConfiguration', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (config) {
                 var configObj = config === 'null' ? {} : JSON.parse(config);
                 var persist = global_1.Global.getPersistentConfig();
                 for (var key in persist) {
@@ -7641,233 +7890,321 @@ var VIDEO_REGEX = /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)
 var SourcePlayback = (function () {
     function SourcePlayback() {
     }
+    SourcePlayback.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
     SourcePlayback.prototype.isSeekable = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isSeekable', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('sync:syncable', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSeekable', true);
+                _this._checkPromise = item_1.Item.get('sync:syncable', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('sync:syncable', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1' ? true : false);
             });
         });
     };
     SourcePlayback.prototype.getPlaybackPosition = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('sync:position', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.get('sync:position', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('sync:position', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
             });
         });
     };
     SourcePlayback.prototype.setPlaybackPosition = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('sync:position', String(value * 10000000), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.set('sync:position', String(value * 10000000), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('sync:position', String(value * 10000000), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.getPlaybackDuration = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getPlaybackDuration', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('sync:duration', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getPlaybackDuration', true);
+                _this._checkPromise = item_1.Item.get('sync:duration', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('sync:duration', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
             });
         });
     };
     SourcePlayback.prototype.isPlaying = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isPlaying', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('sync:state', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isPlaying', true);
+                _this._checkPromise = item_1.Item.get('sync:state', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('sync:state', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === "running");
             });
         });
     };
     SourcePlayback.prototype.setPlaying = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setPlaying', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('sync:state', value ? "running" : "stopped", _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setPlaying', true);
+                _this._checkPromise = item_1.Item.set('sync:state', value ? "running" : "stopped", _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('sync:state', value ? "running" : "stopped", _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.getPlaybackStartPosition = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getPlaybackStartPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:InPoint', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getPlaybackStartPosition', true);
+                _this._checkPromise = item_1.Item.get('prop:InPoint', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:InPoint', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
             });
         });
     };
     SourcePlayback.prototype.setPlaybackStartPosition = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setPlaybackStartPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:InPoint', String(value * 10000000), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setPlaybackStartPosition', true);
+                _this._checkPromise = item_1.Item.set('prop:InPoint', String(value * 10000000), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:InPoint', String(value * 10000000), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.getPlaybackEndPosition = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getPlaybackEndPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:OutPoint', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getPlaybackEndPosition', true);
+                _this._checkPromise = item_1.Item.get('prop:OutPoint', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:OutPoint', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
             });
         });
     };
     SourcePlayback.prototype.setPlaybackEndPosition = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setPlaybackEndPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:OutPoint', String(value * 10000000), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setPlaybackEndPosition', true);
+                _this._checkPromise = item_1.Item.set('prop:OutPoint', String(value * 10000000), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:OutPoint', String(value * 10000000), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.getActionAfterPlayback = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getActionAfterPlayback', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:OpWhenFinished', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getActionAfterPlayback', true);
+                _this._checkPromise = item_1.Item.get('prop:OpWhenFinished', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:OpWhenFinished', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(Number(val));
             });
         });
     };
     SourcePlayback.prototype.setActionAfterPlayback = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setActionAfterPlayback', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:OpWhenFinished', String(value), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setActionAfterPlayback', true);
+                _this._checkPromise = item_1.Item.set('prop:OpWhenFinished', String(value), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:OpWhenFinished', String(value), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.isAutostartOnSceneLoad = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isAutostartOnSceneLoad', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:StartOnLoad', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isAutostartOnSceneLoad', true);
+                _this._checkPromise = item_1.Item.get('prop:StartOnLoad', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:StartOnLoad', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
     };
     SourcePlayback.prototype.setAutostartOnSceneLoad = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:StartOnLoad', (value ? '1' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true);
+                _this._checkPromise = item_1.Item.set('prop:StartOnLoad', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:StartOnLoad', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.isForceDeinterlace = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isForceDeinterlace', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:fdeinterlace', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isForceDeinterlace', true);
+                _this._checkPromise = item_1.Item.get('prop:fdeinterlace', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:fdeinterlace', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '3');
             });
         });
     };
     SourcePlayback.prototype.setForceDeinterlace = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setForceDeinterlace', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:fdeinterlace', (value ? '3' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setForceDeinterlace', true);
+                _this._checkPromise = item_1.Item.set('prop:fdeinterlace', (value ? '3' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:fdeinterlace', (value ? '3' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.isRememberingPlaybackPosition = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isRememberingPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:RememberPosition', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isRememberingPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.get('prop:RememberPosition', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:RememberPosition', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
     };
     SourcePlayback.prototype.setRememberingPlaybackPosition = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:RememberPosition', (value ? '1' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.set('prop:RememberPosition', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:RememberPosition', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.isShowingPlaybackPosition = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isShowingPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:ShowPosition', _this._id).then(function (val) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isShowingPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.get('prop:ShowPosition', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:ShowPosition', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
                 resolve(val === '1');
             });
         });
     };
     SourcePlayback.prototype.setShowingPlaybackPosition = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.set('prop:ShowPosition', (value ? '1' : '0'), _this._id).then(function () {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true);
+                _this._checkPromise = item_1.Item.set('prop:ShowPositio', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:ShowPositio', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
                 resolve(_this);
             });
         });
     };
     SourcePlayback.prototype.getCuePoints = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getCuePoints', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:CuePoints', _this._id).then(function (cuePointString) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getCuePoints', true);
+                _this._checkPromise = item_1.Item.get('prop:CuePoints', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:CuePoints', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (cuePointString) {
                 if (cuePointString === '') {
                     resolve([]);
                 }
@@ -7881,57 +8218,79 @@ var SourcePlayback = (function () {
     };
     SourcePlayback.prototype.setCuePoints = function (cuePoints) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setCuePoints', true);
-        }
+        var cuePointString = cuePoints.map(function (point) { return point.toString(); }).join(',');
         return new Promise(function (resolve) {
-            var cuePointString = cuePoints.map(function (point) { return point.toString(); }).join(',');
-            resolve(_this);
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setCuePoints', true);
+                _this._checkPromise = item_1.Item.set('prop:CuePoints', cuePointString, _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:CuePoints', cuePointString, _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
         });
     };
     SourcePlayback.prototype.isAudio = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isAudio', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:srcitem', _this._id).then(function (filename) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isAudio', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
                 resolve(AUDIO_REGEX.test(filename));
             });
         });
     };
     SourcePlayback.prototype.isVideo = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'isVideo', true);
-        }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:srcitem', _this._id).then(function (filename) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isVideo', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
                 resolve(VIDEO_REGEX.test(filename));
             });
         });
     };
     SourcePlayback.prototype.getValue = function () {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'getValue', true);
-        }
         return new Promise(function (resolve) {
             // we do not do any additional checking since we are assured of the type
-            item_1.Item.get('prop:srcitem', _this._id).then(function (val) {
-                resolve(val);
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getValue', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
+                resolve(filename);
             });
         });
     };
     ;
     SourcePlayback.prototype.setValue = function (filename) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setValue', true);
-        }
         return new Promise(function (resolve, reject) {
             if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
-                item_1.Item.set('prop:srcitem', filename, _this._id)
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                    _this._checkPromise = item_1.Item.set('prop:srcitem', filename, _this._id);
+                }
+                else {
+                    _this._checkPromise = item_1.Item.wrapSet('prop:srcitem', filename, _this._srcId, _this._id, _this._updateId.bind(_this));
+                }
+                _this._checkPromise
                     .then(function () { return item_1.Item.set('prop:name', filename, _this._id); })
                     .then(function () { return item_1.Item.set('prop:CuePoints', '', _this._id); })
                     .then(function () {
@@ -8366,10 +8725,10 @@ var iSource = (function () {
         return new Promise(function (resolve) {
             if (_this._isItemCall) {
                 logger_1.Logger.warn('sourceWarning', 'getValue', true);
-                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+                _this._checkPromise = item_1.Item.get('prop:item', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:item', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 val = (val === 'null') ? '' : val;
@@ -8393,9 +8752,6 @@ var iSource = (function () {
     };
     iSource.prototype.setValue = function (value) {
         var _this = this;
-        if (this._isItemCall) {
-            logger_1.Logger.warn('sourceWarning', 'setValue', true);
-        }
         return new Promise(function (resolve) {
             var val = (typeof value === 'string') ?
                 value : value.toString();
@@ -9149,6 +9505,25 @@ var StreamInfo = (function () {
     /**
      * return: Promise<number>
      *
+     * Gets the number of GOP frames dropped
+     */
+    StreamInfo.prototype.getGOPDrops = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var usage;
+            app_1.App.getGlobalProperty('bandwidthusage-all').then(function (result) {
+                usage = JSON.parse(result);
+                for (var i = 0; i < usage.length; i++) {
+                    if (usage[i].ChannelName === _this._name) {
+                        resolve(usage[i].Dropped);
+                    }
+                }
+            });
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
      * Gets the number of frames rendered
      */
     StreamInfo.prototype.getStreamRenderedFrames = function () {
@@ -9243,6 +9618,10 @@ var Transition = (function () {
                 }
                 this._key = fileName;
             }
+            this._value = key;
+        }
+        else if (typeof setValue !== null) {
+            this._key = setValue; // retain key so that NONE is readable
             this._value = key;
         }
         else {
@@ -9459,6 +9838,10 @@ var EventManager = (function () {
                     if (_event === 'OnSceneAddByUser') {
                         internal_1.exec('AppSubscribeEvents');
                     }
+                    else if (_event.startsWith('itempropchange_')) {
+                        var itemID = _event.split('_')[1];
+                        internal_1.exec('ItemSubscribeEvents', itemID);
+                    }
                     EventManager.callbacks[_event].push(_cb);
                 });
             }
@@ -9469,6 +9852,7 @@ var EventManager = (function () {
     return EventManager;
 })();
 exports.EventManager = EventManager;
+var oldSetEvent = window.SetEvent;
 window.SetEvent = function (args) {
     var settings = [];
     settings = args.split('&');
@@ -9482,13 +9866,35 @@ window.SetEvent = function (args) {
     EventManager.callbacks[settingsObj['event']].map(function (_cb) {
         _cb(settingsObj);
     });
+    if (typeof oldSetEvent === 'function') {
+        oldSetEvent(args);
+    }
 };
+var oldAppOnEvent = window.AppOnEvent;
 window.AppOnEvent = function (event) {
     if (EventManager.callbacks[event] === undefined)
         return;
     EventManager.callbacks[event].map(function (_cb) {
         _cb({ event: event });
     });
+    if (typeof oldAppOnEvent === 'function') {
+        oldAppOnEvent(event);
+    }
+};
+var oldOnEvent = window.OnEvent;
+window.OnEvent = function (event, item) {
+    var eventArgs = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        eventArgs[_i - 2] = arguments[_i];
+    }
+    if (EventManager.callbacks[event + '_' + item] === undefined)
+        return;
+    EventManager.callbacks[event + '_' + item].map(function (_cb) {
+        _cb.apply(void 0, eventArgs);
+    });
+    if (typeof oldOnEvent === 'function') {
+        oldOnEvent(event);
+    }
 };
 },{"./internal":52}],50:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -9750,6 +10156,7 @@ function finalCallback(message) {
     });
 }
 exports.finalCallback = finalCallback;
+var asyncCallback = window.OnAsyncCallback;
 window.OnAsyncCallback = function (asyncID, result) {
     // Used by proxy to return Async calls
     if (remote_1.Remote.remoteType === 'proxy') {
@@ -9761,6 +10168,9 @@ window.OnAsyncCallback = function (asyncID, result) {
         if (callback instanceof Function) {
             callback.call(this, decodeURIComponent(result));
         }
+    }
+    if (typeof asyncCallback === 'function') {
+        asyncCallback(asyncID, result);
     }
 };
 },{"./remote":54}],53:[function(_require,module,exports){
@@ -10428,6 +10838,7 @@ exports.minVersion = '2.8.1603.0401';
 exports.deleteSceneEventFixVersion = '2.8.1606.1601';
 exports.addSceneEventFixVersion = '2.8.1606.1701';
 exports.globalsrcMinVersion = '2.9';
+exports.itemSubscribeEventVersion = '2.9.1608.2301';
 exports.mockVersion = '';
 function versionCompare(version) {
     var parts = version.split('.');
@@ -10541,7 +10952,7 @@ var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 /**
  * The AudioDevice Class is the object returned by
- * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * {@link #system/System System Class} getAudioDevices method. It provides you
  * with methods to fetch the audio device object's attributes, and also provides
  * methods to convert it back to an XML object that is compatible with XBC.
  *
@@ -10680,7 +11091,7 @@ var AudioDevice = (function () {
     /**
      * return: boolean
      *
-     * Gets whether audio device is the system default
+     * Gets whether the audio device is enabled/not
      *
      * #### Usage
      *
@@ -10868,9 +11279,6 @@ var AudioDevice = (function () {
             ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
         return audio;
     };
-    AudioDevice.STATE_ACTIVE = 'Active';
-    AudioDevice.DATAFLOW_RENDER = 'Render';
-    AudioDevice.DATAFLOW_CAPTURE = 'Capture';
     AudioDevice.SYSTEM_LEVEL_MUTE = 0;
     AudioDevice.SYSTEM_LEVEL_ENABLE = 1;
     AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED = 255;
@@ -10882,9 +11290,10 @@ exports.AudioDevice = AudioDevice;
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 var app_1 = _require('../internal/app');
+var scene_1 = _require('../core/scene');
 /**
  * The CameraDevice Class is the object returned by
- * {@link #system/System System Class'} getCameraDevices method. It provides
+ * {@link #system/System System Class} getCameraDevices method. It provides
  * you with methods to fetch the Camera Device's id, name, and to add it as
  * a source in the current scene.
  *
@@ -10896,11 +11305,8 @@ var app_1 = _require('../internal/app');
  *
  * System.getCameraDevices().then(function(cameras) {
  *   for (var i in cameras) {
- *     // Do not include the imaginary xsplit camera if that ever exist
- *     if (cameras[i].getName().indexOf('xsplit') === -1) {
- *       xml = cameras[i].toXML();
- *       // do something with the XML here
- *     }
+ *     xml = cameras[i].toXML();
+ *     // do something with the XML here
  *   }
  * });
  * ```
@@ -10978,22 +11384,69 @@ var CameraDevice = (function () {
         return cam;
     };
     /**
-     *  Adds this camera device to the current scene.
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Adds this camera device to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      */
-    CameraDevice.prototype.addToScene = function () {
+    CameraDevice.prototype.addToScene = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.callFunc('addcamera', 'dev:' + _this._id).then(function () {
+        return new Promise(function (resolve, reject) {
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                return app_1.App.callFunc(scenePrefix + 'addcamera', 'dev:' + _this._id);
+            }).then(function () {
                 resolve(true);
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59}],62:[function(_require,module,exports){
+},{"../core/scene":22,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59}],62:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
+var scene_1 = _require('../core/scene');
 /**
  *  Class for adding files (such as images and media)
  *  from your file system to the stage.
@@ -11017,30 +11470,75 @@ var File = (function () {
         this._path = file;
     }
     /**
-     *  return: Promise<boolean>
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
      *
-     *  Adds this file to the current scene.
+     * Adds this file to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      */
-    File.prototype.addToScene = function () {
+    File.prototype.addToScene = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.callFunc('addfile', _this._path).then(function () {
+        return new Promise(function (resolve, reject) {
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                return app_1.App.callFunc(scenePrefix + 'addfile', _this._path);
+            }).then(function () {
                 resolve(true);
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
     return File;
 })();
 exports.File = File;
-},{"../internal/app":48}],63:[function(_require,module,exports){
+},{"../core/scene":22,"../internal/app":48}],63:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 var app_1 = _require('../internal/app');
 var environment_1 = _require('../core/environment');
+var scene_1 = _require('../core/scene');
 /**
- * The Game Class is the object returned by {@link #system/System System Class'}
+ * The Game Class is the object returned by {@link #system/System System Class}
  * getGames method. It provides you with methods to fetch the game object's
  * attributes, as well as methods to add any game to the current scene.
  *
@@ -11280,13 +11778,59 @@ var Game = (function () {
         return xml_1.XML.parseJSON(gamesource);
     };
     /**
-     *  Adds this game to the current scene.
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Adds this game to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      */
-    Game.prototype.addToScene = function () {
+    Game.prototype.addToScene = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.callFunc('addgamesource', 'dev:' + _this.toXML()).then(function () {
+        return new Promise(function (resolve, reject) {
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                return app_1.App.callFunc(scenePrefix + 'addgamesource', 'dev:' + _this.toXML());
+            }).then(function () {
                 resolve(true);
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
@@ -11320,48 +11864,87 @@ var Game = (function () {
             ad._fpsRender = 0;
             ad._fpsCapture = 0;
             ad._imagename = "";
-            Game._autoDetect.addToScene = function () {
-                return new Promise(function (resolve) {
-                    var defposPromise;
-                    if (environment_1.Environment.isSourcePlugin()) {
-                        defposPromise = new Promise(function (defposResolve) {
-                            app_1.App.get('presetconfig:-1').then(function (presetConfig) {
-                                var placementJSON = json_1.JSON.parse(presetConfig);
-                                defposResolve(placementJSON['defpos']);
+            Game._autoDetect.addToScene = function (value) {
+                return new Promise(function (resolve, reject) {
+                    var scenePrefix = '';
+                    var scenePromise;
+                    if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                        scenePromise = new Promise(function (innerResolve, innerReject) {
+                            scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                                if (typeof value === 'number') {
+                                    var int = Math.floor(value);
+                                    if (int > sceneCount || int === 0) {
+                                        innerReject(new Error('Scene not existing.'));
+                                    }
+                                    else {
+                                        scenePrefix = 's:' + (int - 1) + '|';
+                                        innerResolve();
+                                    }
+                                }
+                                else {
+                                    value.getSceneNumber().then(function (int) {
+                                        if (int > sceneCount || int === 0) {
+                                            innerReject(new Error('Scene not existing.'));
+                                        }
+                                        else {
+                                            scenePrefix = 's:' + (int - 1) + '|';
+                                            innerResolve();
+                                        }
+                                    });
+                                }
                             });
                         });
+                    }
+                    else if (typeof value === 'undefined') {
+                        scenePromise = Promise.resolve();
                     }
                     else {
-                        defposPromise = new Promise(function (defposResolve) {
-                            app_1.App.get('preset:0').then(function (main) {
-                                return app_1.App.get('presetconfig:' + main);
-                            }).then(function (presetConfig) {
-                                var placementJSON = json_1.JSON.parse(presetConfig);
-                                defposResolve(placementJSON['defpos']);
-                            });
-                        });
+                        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
                     }
-                    defposPromise.then(function (defpos) {
-                        var posString;
-                        if (defpos === '0') {
-                            posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
-                        }
-                        else if (defpos === '1') {
-                            posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
-                        }
-                        else if (defpos === '2') {
-                            posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
-                        }
-                        else if (defpos === '3') {
-                            posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+                    scenePromise.then(function () {
+                        var defposPromise;
+                        if (environment_1.Environment.isSourcePlugin()) {
+                            defposPromise = new Promise(function (defposResolve) {
+                                app_1.App.get('presetconfig:-1').then(function (presetConfig) {
+                                    var placementJSON = json_1.JSON.parse(presetConfig);
+                                    defposResolve(placementJSON['defpos']);
+                                });
+                            });
                         }
                         else {
-                            posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+                            defposPromise = new Promise(function (defposResolve) {
+                                app_1.App.get('preset:0').then(function (main) {
+                                    return app_1.App.get('presetconfig:' + main);
+                                }).then(function (presetConfig) {
+                                    var placementJSON = json_1.JSON.parse(presetConfig);
+                                    defposResolve(placementJSON['defpos']);
+                                });
+                            });
                         }
-                        var adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
-                        app_1.App.callFunc('additem', adstring).then(function () {
+                        defposPromise.then(function (defpos) {
+                            var posString;
+                            if (defpos === '0') {
+                                posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+                            }
+                            else if (defpos === '1') {
+                                posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+                            }
+                            else if (defpos === '2') {
+                                posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+                            }
+                            else if (defpos === '3') {
+                                posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+                            }
+                            else {
+                                posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+                            }
+                            var adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
+                            return app_1.App.callFunc(scenePrefix + 'additem', adstring);
+                        }).then(function () {
                             resolve(true);
                         });
+                    }).catch(function (err) {
+                        reject(err);
                     });
                 });
             };
@@ -11371,11 +11954,12 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":4,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59,"../util/rectangle":73}],64:[function(_require,module,exports){
+},{"../core/environment":4,"../core/scene":22,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59,"../util/rectangle":73}],64:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 var app_1 = _require('../internal/app');
+var scene_1 = _require('../core/scene');
 /**
  * The MicrophoneDevice class provides you with methods to add a microphone
  * device as a source on the stage.
@@ -11396,6 +11980,14 @@ var app_1 = _require('../internal/app');
 var MicrophoneDevice = (function () {
     function MicrophoneDevice() {
     }
+    /**
+     * param: (deviceJXON: JXON)
+     * ```
+     * return MicrophoneDevice
+     * ```
+     * Create a MicrophoneDevice onject based on a JXON object
+     *
+     */
     MicrophoneDevice.parse = function (jxon) {
         var m = new MicrophoneDevice();
         m._disp = jxon['disp'];
@@ -11437,42 +12029,135 @@ var MicrophoneDevice = (function () {
         return xml_1.XML.parseJSON(microphone);
     };
     /**
-     *  Adds this microphone device to the current scene.
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Adds this microphone device to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      */
-    MicrophoneDevice.prototype.addToScene = function () {
+    MicrophoneDevice.prototype.addToScene = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
+        return new Promise(function (resolve, reject) {
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                return app_1.App.callFunc(scenePrefix + 'additem', _this.toXML().toString());
+            }).then(function () {
                 resolve(true);
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59}],65:[function(_require,module,exports){
+},{"../core/scene":22,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59}],65:[function(_require,module,exports){
 var internal_1 = _require('../internal/internal');
+var scene_1 = _require('../core/scene');
 /**
- *  This class servers to allow developers to add new screen regions or window
+ *  This class serves to allow developers to add new screen regions or window
  *  regions to the stage in XSplit Broadcaster.
  */
 var Screen = (function () {
     function Screen() {
     }
     /**
-     * Initializes the screen region selector crosshair so user may select
-     * a desktop region or a window to add to the stage in the current scene.
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Initializes the screen region selector crosshair
+     * so user may select a desktop region or a window to add to the stage in the current scene.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      */
-    Screen.prototype.addToScene = function () {
-        return new Promise(function (resolve) {
-            internal_1.exec('AppCallFunc', 'addscreen');
-            resolve(true);
+    Screen.prototype.addToScene = function (value) {
+        return new Promise(function (resolve, reject) {
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                internal_1.exec('AppCallFunc', scenePrefix + 'addscreen');
+                resolve(true);
+            }).catch(function (err) {
+                reject(err);
+            });
         });
     };
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../internal/internal":52}],66:[function(_require,module,exports){
+},{"../core/scene":22,"../internal/internal":52}],66:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -11482,7 +12167,7 @@ var game_1 = _require('./game');
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's first parameter.
  *
  * ### Basic Usage
@@ -11499,7 +12184,7 @@ var internal_1 = _require('../internal/internal');
 })(exports.AudioDeviceDataflow || (exports.AudioDeviceDataflow = {}));
 var AudioDeviceDataflow = exports.AudioDeviceDataflow;
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's second parameter.
  *
  * ### Basic Usage
@@ -11696,7 +12381,7 @@ var System = (function () {
      *   var fontsArrayLength = fontsArray.length;
      *   for (var i = 0; i < fontsArrayLength; ++i) {
      *     var option = document.createElement('option');
-     *     option.text = 'Kiwi';
+     *     option.text = fontsArray[i];
      *     mySelect.add(option);
      *   }
      * });
@@ -11788,6 +12473,7 @@ exports.System = System;
 },{"../core/environment":4,"../internal/app":48,"../internal/internal":52,"./audio":60,"./camera":61,"./game":63,"./microphone":64}],67:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
+var scene_1 = _require('../core/scene');
 /**
  *  Class for adding a web source to the stage.
  *  URLs will use http by default unless https
@@ -11827,34 +12513,77 @@ var Url = (function () {
         });
     };
     /**
-     *  return: Promise<boolean>
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<boolean>
+     * ```
      *
-     *  Adds this URL to the current scene as an HTML source.
+     * Adds this URL to the current scene as an HTML source by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
      *
      *  Will raise an error if URL is not http or https.
      */
-    Url.prototype.addToScene = function () {
+    Url.prototype.addToScene = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            _this._getUrl().then(function (url) {
-                app_1.App.callFunc('addurl', url).then(function () {
-                    resolve(true);
+            var scenePrefix = '';
+            var scenePromise;
+            if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                scenePromise = new Promise(function (innerResolve, innerReject) {
+                    scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                        if (typeof value === 'number') {
+                            var int = Math.floor(value);
+                            if (int > sceneCount || int === 0) {
+                                innerReject(new Error('Scene not existing.'));
+                            }
+                            else {
+                                scenePrefix = 's:' + (int - 1) + '|';
+                                innerResolve();
+                            }
+                        }
+                        else {
+                            value.getSceneNumber().then(function (int) {
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            });
+                        }
+                    });
                 });
-            }).catch(function (error) {
-                reject(error);
+            }
+            else if (typeof value === 'undefined') {
+                scenePromise = Promise.resolve();
+            }
+            else {
+                scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+            }
+            scenePromise.then(function () {
+                return _this._getUrl();
+            }).then(function (url) {
+                return app_1.App.callFunc(scenePrefix + 'addurl', url);
+            }).then(function () {
+                resolve(true);
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/app":48}],68:[function(_require,module,exports){
+},{"../core/scene":22,"../internal/app":48}],68:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
 var io_1 = _require('../util/io');
 var environment_1 = _require('../core/environment');
+var scene_1 = _require('../core/scene');
 /**
  *  Special class for adding a video playlist to the stage.
  *
@@ -11965,20 +12694,64 @@ var VideoPlaylist = (function () {
         });
     };
     /**
-     *  Adds the prepared video playlist to the current scene.
+     * param: (value?: number | Scene)
+     * ```
+     *  return: Promise<boolean>
+     * ```
      *
-     *  This function is not available to sources.
+     * Adds the prepared video playlist to the current scene by default.
+     * Accepts an optional parameter value, which when supplied,
+     * points to the scene where item will be added instead.
+     * This function is not available to sources.
      */
-    VideoPlaylist.prototype.addToScene = function () {
+    VideoPlaylist.prototype.addToScene = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isSourcePlugin()) {
                 reject(new Error('This function is not available to sources.'));
             }
             else {
-                _this.toXML().then(function (fileitem) {
-                    app_1.App.callFunc('additem', ' ' + fileitem)
-                        .then(function () { resolve(true); });
+                var scenePrefix = '';
+                var scenePromise;
+                if (typeof value === 'number' || value instanceof scene_1.Scene) {
+                    scenePromise = new Promise(function (innerResolve, innerReject) {
+                        scene_1.Scene.getSceneCount().then(function (sceneCount) {
+                            if (typeof value === 'number') {
+                                var int = Math.floor(value);
+                                if (int > sceneCount || int === 0) {
+                                    innerReject(new Error('Scene not existing.'));
+                                }
+                                else {
+                                    scenePrefix = 's:' + (int - 1) + '|';
+                                    innerResolve();
+                                }
+                            }
+                            else {
+                                value.getSceneNumber().then(function (int) {
+                                    if (int > sceneCount || int === 0) {
+                                        innerReject(new Error('Scene not existing.'));
+                                    }
+                                    else {
+                                        scenePrefix = 's:' + (int - 1) + '|';
+                                        innerResolve();
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+                else if (typeof value === 'undefined') {
+                    scenePromise = Promise.resolve();
+                }
+                else {
+                    scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'));
+                }
+                scenePromise.then(function () {
+                    return _this.toXML();
+                }).then(function (fileItem) {
+                    return app_1.App.callFunc(scenePrefix + 'additem', ' ' + fileItem);
+                }).then(function () {
+                    resolve(true);
                 }).catch(function (err) {
                     reject(err);
                 });
@@ -11988,7 +12761,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59,"../util/io":71}],69:[function(_require,module,exports){
+},{"../core/environment":4,"../core/scene":22,"../internal/app":48,"../internal/util/json":55,"../internal/util/xml":59,"../util/io":71}],69:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -12002,6 +12775,9 @@ var Color = (function () {
         }
         else if (props['ibgr'] !== undefined) {
             this.setIbgr(props['ibgr']);
+        }
+        else if (props['isTransparent'] !== undefined && props['isTransparent'] === true) {
+            this.setTransparent();
         }
         else {
             throw new Error('Do not call Color constructor without parameters.');
@@ -12019,6 +12795,9 @@ var Color = (function () {
     Color.fromBGRInt = function (ibgr) {
         return new Color({ ibgr: ibgr });
     };
+    Color.fromTransparent = function () {
+        return new Color({ isTransparent: true });
+    };
     Color.prototype.getRgb = function () {
         return this._rgb;
     };
@@ -12028,6 +12807,7 @@ var Color = (function () {
         this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
             this._rgb.substring(0, 2)].join('').toUpperCase();
         this._ibgr = parseInt(this._bgr, 16);
+        this._transparent = false;
         return this;
     };
     Color.prototype.getBgr = function () {
@@ -12060,6 +12840,17 @@ var Color = (function () {
         }
         this.setBgr(bgr);
         return this;
+    };
+    Color.prototype.setTransparent = function () {
+        this._rgb = '0';
+        this._irgb = 0;
+        this._bgr = '0';
+        this._ibgr = 0;
+        this._transparent = true;
+        return this;
+    };
+    Color.prototype.isTransparent = function () {
+        return this._transparent;
     };
     return Color;
 })();
@@ -12099,6 +12890,7 @@ var EventEmitter = (function () {
             this._handlers[event].push(handler);
         }
     };
+    /** This function removes a handler to an event.*/
     EventEmitter.prototype.off = function (event, handler) {
         if (remote_1.Remote.remoteType === 'remote') {
             if (EventEmitter._remoteHandlers[event] !== undefined) {
@@ -12369,6 +13161,7 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
+var oldOnGetVideoDuration = window.OnGetVideoDuration;
 window.OnGetVideoDuration = function (file, duration) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
@@ -12379,7 +13172,11 @@ window.OnGetVideoDuration = function (file, duration) {
             delete IO._callback[decodeURIComponent(file)];
         }
     }
+    if (typeof oldOnGetVideoDuration === 'function') {
+        oldOnGetVideoDuration(file, duration);
+    }
 };
+var oldOnGetVideoDurationFailed = window.OnGetVideoDurationFailed;
 window.OnGetVideoDurationFailed = function (file) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
@@ -12389,6 +13186,9 @@ window.OnGetVideoDurationFailed = function (file) {
         if (IO._callback[decodeURIComponent(file)].length === 0) {
             delete IO._callback[decodeURIComponent(file)];
         }
+    }
+    if (typeof oldOnGetVideoDurationFailed === 'function') {
+        oldOnGetVideoDuration(file);
     }
 };
 },{"../core/environment":4,"../internal/internal":52,"../internal/remote":54}],72:[function(_require,module,exports){
@@ -13159,10 +13959,14 @@ var Dialog = (function () {
     return Dialog;
 })();
 exports.Dialog = Dialog;
+var oldOnDialogResult = window.OnDialogResult;
 window.OnDialogResult = function (result) {
     if (environment_1.Environment.isSourceProps() || environment_1.Environment.isExtension()) {
         document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
             detail: result }));
+    }
+    if (typeof oldOnDialogResult === 'function') {
+        oldOnDialogResult(result);
     }
 };
 },{"../core/environment":4,"../internal/internal":52,"../internal/remote":54,"../util/rectangle":73}],76:[function(_require,module,exports){
@@ -13202,7 +14006,9 @@ var _RESIZE = '2';
 var ExtensionWindow = (function (_super) {
     __extends(ExtensionWindow, _super);
     /**
-     *  Use getInstance() instead.
+     *  ** For Deprecation
+     *
+     *  Use getInstance()
      */
     function ExtensionWindow() {
         _super.call(this);
@@ -13213,7 +14019,10 @@ var ExtensionWindow = (function (_super) {
         ExtensionWindow._subscriptions = [];
     }
     /**
-     *  Gets the instance of the window utility. Use this instead of the constructor.
+     * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
+     * `** since an ExtensionWinow should technically have a single instance`
+     *
+     * Gets the instance of the window utility. Use this instead of the constructor.
      */
     ExtensionWindow.getInstance = function () {
         if (ExtensionWindow._instance === undefined) {
@@ -13222,20 +14031,28 @@ var ExtensionWindow = (function (_super) {
         return ExtensionWindow._instance;
     };
     /**
-    *  param: (event: string, ...params: any[])
-    *
-    *  Allows this class to emit an event.
-    */
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
     ExtensionWindow.emit = function (event) {
         var params = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             params[_i - 1] = arguments[_i];
         }
         params.unshift(event);
-        ExtensionWindow
-            .getInstance()
-            .emit
-            .apply(ExtensionWindow._instance, params);
+        try {
+            ExtensionWindow
+                .getInstance()
+                .emit
+                .apply(ExtensionWindow._instance, params);
+        }
+        catch (event) {
+            ExtensionWindow
+                ._instance
+                .emit
+                .apply(ExtensionWindow._instance, params);
+        }
     };
     /**
      *  param: (event: string, handler: Function)
@@ -13314,6 +14131,12 @@ var ExtensionWindow = (function (_super) {
      *
      *  Resizes this extension's window.
      */
+    ExtensionWindow.resize = function (width, height) {
+        app_1.App.postMessage(_RESIZE, String(width), String(height));
+    };
+    /**
+     * `** For deprecation, please use the static method instead`
+     */
     ExtensionWindow.prototype.resize = function (width, height) {
         app_1.App.postMessage(_RESIZE, String(width), String(height));
     };
@@ -13321,6 +14144,21 @@ var ExtensionWindow = (function (_super) {
      * param: (value: string)
      *
      * Renames the extension window.
+     */
+    ExtensionWindow.setTitle = function (value) {
+        return new Promise(function (resolve) {
+            var ext = extension_1.Extension.getInstance();
+            ext.getId().then(function (id) {
+                internal_1.exec("CallHost", "setExtensionWindowTitle:" + id, value)
+                    .then(function (res) {
+                    resolve(res);
+                });
+            });
+        });
+    };
+    ;
+    /**
+     * `** For deprecation, please use the static method instead`
      */
     ExtensionWindow.prototype.setTitle = function (value) {
         return new Promise(function (resolve) {
@@ -13348,31 +14186,57 @@ var ExtensionWindow = (function (_super) {
      *     (bit 3 - enable minimize btn)
      *     (bit 4 - enable maximize btn)
      */
+    ExtensionWindow.setBorder = function (flag) {
+        app_1.App.postMessage('4', String(flag));
+    };
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
     ExtensionWindow.prototype.setBorder = function (flag) {
         app_1.App.postMessage('4', String(flag));
     };
     /**
      * Closes this extension window
      */
+    ExtensionWindow.close = function () {
+        app_1.App.postMessage('1');
+    };
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
     ExtensionWindow.prototype.close = function () {
         app_1.App.postMessage('1');
     };
     /**
      * Disable Close Button on this extension's window
      */
+    ExtensionWindow.disableClose = function () {
+        app_1.App.postMessage('5', '0');
+    };
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
     ExtensionWindow.prototype.disableClose = function () {
         app_1.App.postMessage('5', '0');
     };
     /**
      * Enable Close Button on this extension's window
      */
+    ExtensionWindow.enableClose = function () {
+        app_1.App.postMessage('5', '1');
+    };
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
     ExtensionWindow.prototype.enableClose = function () {
         app_1.App.postMessage('5', '1');
     };
+    ExtensionWindow._subscriptions = [];
     return ExtensionWindow;
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;
 // for extensions
+var oldSourcesListUpdate = window.SourcesListUpdate;
 window.SourcesListUpdate = function (view, sources) {
     if (Number(view) === 0) {
         var propsJSON = json_1.JSON.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
@@ -13384,17 +14248,28 @@ window.SourcesListUpdate = function (view, sources) {
         }
         ExtensionWindow.emit('sources-list-update', ids.join(','));
     }
+    if (typeof oldSourcesListUpdate === 'function') {
+        oldSourcesListUpdate(view, sources);
+    }
 };
+var oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = function (view, id) {
     if (Number(view) === 0) {
         ExtensionWindow.emit('sources-list-highlight', id === '' ?
             null : id);
     }
+    if (typeof oldSourcesListHighlight === 'function') {
+        oldSourcesListHighlight(view, id);
+    }
 };
+var oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = function (view, id) {
     if (Number(view) === 0) {
         ExtensionWindow.emit('sources-list-select', id === '' ?
             null : id);
+    }
+    if (typeof oldSourcesListSelect === 'function') {
+        oldSourcesListSelect(view, id);
     }
 };
 var oldOnSceneLoad = window.OnSceneLoad;
@@ -13410,7 +14285,7 @@ window.OnSceneLoad = function () {
             ExtensionWindow.emit('scene-load', Number(scene));
         }
     }
-    if (oldOnSceneLoad !== undefined) {
+    if (typeof oldOnSceneLoad === 'function') {
         oldOnSceneLoad.apply(void 0, args);
     }
 };
@@ -13445,7 +14320,9 @@ var version_1 = _require('../internal/util/version');
 var SourcePluginWindow = (function (_super) {
     __extends(SourcePluginWindow, _super);
     /**
-     *  Use getInstance() instead.
+     *  ** For Deprecation
+     *
+     *  Use getInstance()
      */
     function SourcePluginWindow() {
         _super.call(this);
@@ -13466,7 +14343,10 @@ var SourcePluginWindow = (function (_super) {
         SourcePluginWindow._subscriptions = [];
     }
     /**
-     *  Gets the instance of the window utility. Use this instead of the constructor.
+     * ** For deprecation, the need for getting the instance of a SourcePluginWindow looks redundant,
+     * `** since a SourcePluginWindow should technically have a single instance`
+     *
+     * Gets the instance of the window utility. Use this instead of the constructor.
      */
     SourcePluginWindow.getInstance = function () {
         if (SourcePluginWindow._instance === undefined) {
@@ -13485,10 +14365,18 @@ var SourcePluginWindow = (function (_super) {
             params[_i - 1] = arguments[_i];
         }
         params.unshift(event);
-        SourcePluginWindow
-            .getInstance()
-            .emit
-            .apply(SourcePluginWindow._instance, params);
+        try {
+            SourcePluginWindow
+                .getInstance()
+                .emit
+                .apply(SourcePluginWindow._instance, params);
+        }
+        catch (event) {
+            SourcePluginWindow
+                ._instance
+                .emit
+                .apply(SourcePluginWindow._instance, params);
+        }
     };
     /**
      *  param: (event: string, handler: Function)
@@ -13533,6 +14421,7 @@ var SourcePluginWindow = (function (_super) {
         }
         return data;
     };
+    SourcePluginWindow._subscriptions = [];
     return SourcePluginWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePluginWindow = SourcePluginWindow;

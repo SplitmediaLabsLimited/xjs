@@ -2,8 +2,10 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
+import {EventEmitter} from '../../util/eventemitter';
 import {Item as iItem} from '../../internal/item';
 import {App as iApp} from '../../internal/app';
+import {EventManager} from '../../internal/eventmanager';
 import {Environment} from '../environment';
 import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
@@ -13,6 +15,7 @@ import {
   minVersion,
   versionCompare,
   getVersion,
+  itemSubscribeEventVersion,
   globalsrcMinVersion
 } from '../../internal/util/version';
 
@@ -84,9 +87,98 @@ export enum ViewTypes {
  * ```
  */
 export class Item extends Source implements IItemLayout, ISource {
+  static _emitter = new EventEmitter();
+  static _subscriptions = [];
+
   constructor(props?: {}) {
     super(props)
     this._isItemCall = true;
+  }
+
+  /**
+   * param: (event: string,  handler: Function)
+   *
+   * Allows listening to events per instance.
+   * Currently there are only two:
+   * `item-changed` and `item-destroyed`.
+   *
+   * Item change is triggered thru any property change:
+   * - via js(source plugin/extension),
+   * - via visibility-toggling through the sources list,
+   * - or via the source properties dialog
+   *
+   *  #### Usage:
+   *
+   * ```javascript
+   * let itemChange = function(...args) {
+   *   console.log('Item has changed');
+   * }
+   * 
+   * let current;
+   * let items;
+   * xjs.Scene.getActiveScene()
+   * .then( scene => {
+   *   current = scene;
+   *   return current.getItems();
+   * }).then( list => {
+   *   items = list;
+   *   items[0].on('item-changed', itemChange);
+   * });
+   * ```
+   *
+   * Duplicate handlers are allowed.
+   */
+  on(event: string, handler: Function) {
+    Item._emitter.on(event + '_' + this._id, handler);
+    // add additional functionality for events
+    let isItemSubscribeEventsSupported = versionCompare(getVersion()).
+      is.greaterThanOrEqualTo(itemSubscribeEventVersion);
+
+    if (event === 'item-changed' && isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
+      Item._subscriptions.push('itempropchange_' + this._id);
+      EventManager.subscribe('itempropchange_' + this._id, (...eventArgs) => {
+        Item._emitter.emit('item-changed_' + this._id, ...eventArgs);
+      });
+    } else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
+      Item._subscriptions.push('itemdestroyed_' + this._id);
+      EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
+        Item._emitter.emit('item-destroyed_' + this._id, ...eventArgs);
+      });
+    }
+  }
+
+  /**
+   * param: (event: string,  handler: Function)
+   *
+   * Removes specificied event handler bound by `on`.
+   * Note that this can only be done for named function handlers.
+   *
+   *  #### Usage:
+   *
+   * ```javascript
+   * let itemChange = function(...args) {
+   *   console.log('Item has changed');
+   * }
+   * 
+   * let current;
+   * let items;
+   * xjs.Scene.getActiveScene()
+   * .then( scene => {
+   *   current = scene;
+   *   return current.getItems();
+   * }).then( list => {
+   *   items = list;
+   *   items[0].on('item-changed', itemChange);
+   *   setTimeout( ()=> {
+   *     items[0].off('item-changed', itemChange);
+   *   }, 10000);
+   * });
+   * ```
+   */
+  off(event: string, handler: Function) {
+    Item._emitter.off(event + '_' + this._id, handler);
   }
 
   /**
@@ -238,7 +330,6 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```
    */
-
   duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       if(versionCompare(getVersion())

@@ -139,6 +139,7 @@ export class Dll extends EventEmitter {
   }
 }
 
+const oldUpdateLocalProperty = window.UpdateLocalProperty;
 window.UpdateLocalProperty = (prop: string, value: string) => {
   if (prop === 'prop:dlldogrant') {
     const granted: boolean = value === '1';
@@ -148,13 +149,22 @@ window.UpdateLocalProperty = (prop: string, value: string) => {
       Dll.emit('access-revoked');
     }
   }
+
+  if (typeof oldUpdateLocalProperty === 'function') {
+    oldUpdateLocalProperty(prop, value)
+  }
 };
 
+const oldSetdlldogrant = window.Setdlldogrant;
 window.Setdlldogrant = (value: string) => {
   const granted: boolean = value === '1';
   if (granted) {
     Dll.emit('access-granted');
   } else {
     Dll.emit('access-revoked');
+  }
+
+  if (typeof oldSetdlldogrant === 'function') {
+    oldSetdlldogrant(value)
   }
 }

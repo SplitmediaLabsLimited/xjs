@@ -245,238 +245,326 @@ export interface ISourcePlayback {
 
 export class SourcePlayback implements ISourcePlayback {
   private _id: string;
+  private _srcId: string;
   private _isItemCall: boolean;
+  private _checkPromise;
+  private _sceneId: string;
+
+  private _updateId(id?: string, sceneId?: string) {
+    this._id = id;
+    this._sceneId = sceneId;
+  }
 
   isSeekable(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isSeekable', true)
-    }
     return new Promise(resolve => {
-      iItem.get('sync:syncable', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSeekable',  true)
+        this._checkPromise = iItem.get('sync:syncable', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('sync:syncable', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1' ? true : false);
       });
     });
   }
 
   getPlaybackPosition(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.get('sync:position', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getPlaybackPosition',  true)
+        this._checkPromise = iItem.get('sync:position', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('sync:position', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
       });
     });
   }
 
   setPlaybackPosition(value: number): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.set('sync:position', String(value * 10000000),
-        this._id).then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setPlaybackPosition', true)
+        this._checkPromise = iItem.set('sync:position', String(value * 10000000), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('sync:position', String(value * 10000000),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
     });
   }
 
   getPlaybackDuration(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getPlaybackDuration', true)
-    }
     return new Promise(resolve => {
-      iItem.get('sync:duration', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getPlaybackDuration',  true)
+        this._checkPromise = iItem.get('sync:duration', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('sync:duration', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
       });
     });
   }
 
   isPlaying(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isPlaying', true)
-    }
     return new Promise(resolve => {
-      iItem.get('sync:state', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isPlaying',  true)
+        this._checkPromise = iItem.get('sync:state', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('sync:state', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === "running");
       });
     });
   }
 
   setPlaying(value: boolean): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setPlaying', true)
-    }
     return new Promise(resolve => {
-      iItem.set('sync:state', value ? "running" : "stopped",
-        this._id).then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setPlaying', true)
+        this._checkPromise = iItem.set('sync:state', value ? "running" : "stopped", this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('sync:state', value ? "running" : "stopped",
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
     });
   }
 
   getPlaybackStartPosition(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getPlaybackStartPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:InPoint', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getPlaybackStartPosition',  true)
+        this._checkPromise = iItem.get('prop:InPoint', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:InPoint', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
       });
     });
   }
 
   setPlaybackStartPosition(value: number): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setPlaybackStartPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:InPoint', String(value * 10000000), this._id).then(() => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setPlaybackStartPosition', true)
+        this._checkPromise = iItem.set('prop:InPoint', String(value * 10000000), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:InPoint', String(value * 10000000),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
         resolve(this);
       });
     });
   }
 
   getPlaybackEndPosition(): Promise<number> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getPlaybackEndPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:OutPoint', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getPlaybackEndPosition',  true)
+        this._checkPromise = iItem.get('prop:OutPoint', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:OutPoint', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
       });
     });
   }
 
   setPlaybackEndPosition(value: number): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setPlaybackEndPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:OutPoint', String(value * 10000000),
-        this._id).then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setPlaybackEndPosition', true)
+        this._checkPromise = iItem.set('prop:OutPoint', String(value * 10000000), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:OutPoint', String(value * 10000000),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
     });
   }
 
   getActionAfterPlayback(): Promise<ActionAfterPlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getActionAfterPlayback', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:OpWhenFinished', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getActionAfterPlayback',  true)
+        this._checkPromise = iItem.get('prop:OpWhenFinished', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:OpWhenFinished', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(Number(val));
       });
     });
   }
 
   setActionAfterPlayback(value: ActionAfterPlayback): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setActionAfterPlayback', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:OpWhenFinished', String(value), this._id).then(() => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setActionAfterPlayback', true)
+        this._checkPromise = iItem.set('prop:OpWhenFinished', String(value), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:OpWhenFinished', String(value),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
         resolve(this);
       });
     });
   }
 
   isAutostartOnSceneLoad(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isAutostartOnSceneLoad', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:StartOnLoad', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isAutostartOnSceneLoad',  true)
+        this._checkPromise = iItem.get('prop:StartOnLoad', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:StartOnLoad', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setAutostartOnSceneLoad(value: boolean): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id).then(() => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
+        this._checkPromise = iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:StartOnLoad', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
         resolve(this);
       });
-    })
+    });
   }
 
   isForceDeinterlace(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isForceDeinterlace', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:fdeinterlace', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isForceDeinterlace',  true)
+        this._checkPromise = iItem.get('prop:fdeinterlace', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:fdeinterlace', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '3');
       });
     });
   }
 
   setForceDeinterlace(value: boolean): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setForceDeinterlace', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setForceDeinterlace', true)
+        this._checkPromise = iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:fdeinterlace', (value ? '3' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
         resolve(this);
       });
-    })
+    });
   }
 
   isRememberingPlaybackPosition(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isRememberingPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:RememberPosition', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isRememberingPlaybackPosition',  true)
+        this._checkPromise = iItem.get('prop:RememberPosition', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:RememberPosition', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setRememberingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:RememberPosition', (value ? '1' : '0'),
-        this._id).then(() => {
-          resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true)
+        this._checkPromise = iItem.set('prop:RememberPosition', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:RememberPosition', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
       });
-    })
+    });
   }
 
   isShowingPlaybackPosition(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isShowingPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:ShowPosition', this._id).then(val => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isShowingPlaybackPosition',  true)
+        this._checkPromise = iItem.get('prop:ShowPosition', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:ShowPosition', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
         resolve(val === '1');
       });
     });
   }
 
   setShowingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
-    }
     return new Promise(resolve => {
-      iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id).then(() => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
+        this._checkPromise = iItem.set('prop:ShowPositio', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:ShowPositio', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
         resolve(this);
       });
-    })
+    });
   }
 
   getCuePoints(): Promise<CuePoint[]> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getCuePoints', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:CuePoints', this._id).then(cuePointString => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getCuePoints',  true)
+        this._checkPromise = iItem.get('prop:CuePoints', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:CuePoints', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(cuePointString => {
         if (cuePointString === '') {
           resolve([]);
         } else {
@@ -485,66 +573,88 @@ export class SourcePlayback implements ISourcePlayback {
             string => CuePoint._fromString(string));
           resolve(cuePoints);
         }
-      })
+      });
     });
   }
 
   setCuePoints(cuePoints: CuePoint[]): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setCuePoints', true)
-    }
+    const cuePointString = cuePoints.map(point => point.toString()).join(',');
     return new Promise(resolve => {
-      const cuePointString = cuePoints.map(point => point.toString()).join(',');
-      resolve(this);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setCuePoints', true)
+        this._checkPromise = iItem.set('prop:CuePoints', cuePointString, this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:CuePoints', cuePointString,
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
+      });
     });
   }
 
   isAudio(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isAudio', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:srcitem', this._id).then(filename => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isAudio',  true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(filename => {
         resolve(AUDIO_REGEX.test(filename));
       });
     });
   }
 
   isVideo(): Promise<boolean> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'isVideo', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:srcitem', this._id).then(filename => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isVideo',  true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(filename => {
         resolve(VIDEO_REGEX.test(filename));
       });
     });
   }
 
   getValue(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getValue', true)
-    }
     return new Promise(resolve => {
       // we do not do any additional checking since we are assured of the type
-      iItem.get('prop:srcitem', this._id).then(val => {
-        resolve(val);
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getValue',  true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(filename => {
+        resolve(filename);
       });
     });
   };
 
   setValue(filename: string): Promise<SourcePlayback> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setValue', true)
-    }
     return new Promise((resolve, reject) => {
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
-        iItem.set('prop:srcitem', filename, this._id)
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setValue', true)
+          this._checkPromise = iItem.set('prop:srcitem', filename, this._id)
+        } else {
+          this._checkPromise = iItem.wrapSet('prop:srcitem', filename,
+            this._srcId, this._id, this._updateId.bind(this))
+        }
+        this._checkPromise
         .then(() => iItem.set('prop:name', filename, this._id))
         .then(() => iItem.set('prop:CuePoints', '', this._id))
         .then(() => {
           resolve(this);
-        })
+        });
       } else {
         reject(new Error('You can only set the value to a valid media type'));
       }
