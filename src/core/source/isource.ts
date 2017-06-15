@@ -266,9 +266,6 @@ export class iSource implements ISource{
   }
 
   setValue(value: string | XML): Promise<Source> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setValue', true)
-    }
     return new Promise(resolve => {
       var val: string = (typeof value === 'string') ?
         <string>value : (<XML>value).toString();
