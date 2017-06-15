@@ -241,9 +241,9 @@ export class iSource implements ISource{
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'getValue', true)
-        this._checkPromise = iItem.get('prop:srcitem', this._id)
+        this._checkPromise = iItem.get('prop:item', this._id)
       } else {
-        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+        this._checkPromise = iItem.wrapGet('prop:item', this._srcId,
           this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
