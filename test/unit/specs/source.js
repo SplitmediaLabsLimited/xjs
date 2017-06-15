@@ -112,7 +112,9 @@ describe('Source ===', function() {
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
-
+    if (property === 'item') {
+      property = 'srcitem';
+    }
     if (property === 'itemlist') {
       if (deletedId !== '{C878A0BF-F03A-4274-9398-EBD638D07680}') {
         xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
@@ -146,7 +148,9 @@ describe('Source ===', function() {
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
-
+    if (property === 'item') {
+      property = 'srcitem';
+    }
     if (attachedId === '') {
       if (property === 'itemlist') {
         xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
@@ -542,6 +546,7 @@ describe('Source ===', function() {
         expect(value).not.toEqual(newValue);
         return testSource.setValue(newValue);
       }).then(function(source) {
+        console.log(source);
         return source.getValue();
       }).then(function(value) {
         expect(value).toEqual(newValue);

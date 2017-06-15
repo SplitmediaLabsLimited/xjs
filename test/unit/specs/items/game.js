@@ -100,6 +100,7 @@ describe('GameItem', function() {
       break;
 
       case 'prop:srcitem':
+      case 'prop:item':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
           setTimeout(function() {
