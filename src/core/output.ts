@@ -13,6 +13,53 @@ import {Remote} from '../internal/remote'
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
+ *
+ * This can be used together with {@link #core/StreamInfo StreamInfo Class},
+ * where you can check the status of the outputs you start.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Output.getOutputList()
+ * .then(function(outputs) {
+ *   outputs.map(output => {
+ *    output.getName()
+ *    .then(function(name) {
+ *      // You can also save the name on a variable to be able to use it
+ *      // when checking for the stream info.
+ *      if(name.includes('Twitch')) {
+ *        output.startBroadcast();
+ *      }
+ *    })
+ *  })
+ * })
+ * ```
+ *
+ * Once there's an active stream, StreamInfo class can be used at any time to
+ * check the stream status of that output.
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * xjs.ready()
+ * .then(xjs.StreamInfo.getActiveStreamChannels)
+ * .then(function(channels) {
+ *   let stream = []
+ *   channels.forEach(function(channel){
+ *     channel.getName()
+ *     .then(name => {
+ *       if(name.includes('Twitch')) {
+ *         stream.push(channel)
+ *       }
+ *     })
+ *   })
+ *   return stream
+ * }).then(function(stream) {
+ *   // Get any stream information you need here
+ *   return stream[0].getStreamRenderedFrames()
+ * })
+ * ```
  */
 
 export class Output {
@@ -40,23 +87,6 @@ export class Output {
    * Fetch all available Outputs you can broadcast on based on your installed
    * Broadcast plugin.
    *
-   * ### Basic Usage
-   *
-   * ```javascript
-   * var xjs = require('xjs');
-   *
-   * xjs.Output.getOutputList()
-   * .then(function(outputs) {
-   *   outputs.map(output => {
-   *    output.getName()
-   *    .then(function(name) {
-   *      if(name.includes('Twitch')) {
-   *        output.startBroadcast();
-   *      }
-   *    })
-   *  })
-   * })
-   * ```
    */
   static getOutputList(): Promise<Output[]> {
     return new Promise((resolve, reject) => {

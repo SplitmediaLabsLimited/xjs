@@ -4,8 +4,30 @@ import {exec} from '../internal/internal';
 import {XML} from '../internal/util/xml';
 
 /**
- * The StreamInfo class provides methods to monitor the current stream activity
- * and other details.
+ * The StreamInfo class provides methods to monitor the current active streams
+ *  activity and other details.
+ *
+ * This can be used together with {@link #core/Output Output Class} to check
+ * the details of the currently live outputs.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.ready()
+ * .then(xjs.StreamInfo.getActiveStreamChannels)
+ * .then(function(channels) {
+ *    channels.forEach(channel => {
+ *      channel.getName()
+ *      .then(funcntion(name) {
+ *        if(name.includes('Twitch')) {
+ *          channel.getStreamRenderedFrames()
+ *        }
+ *      })
+ *    })
+ * })
+ * ```
  */
 
 export class StreamInfo {
@@ -133,14 +155,18 @@ export class StreamInfo {
   getBandwidthUsage(): Promise<number> {
     return new Promise(resolve => {
       let usage;
-      iApp.getGlobalProperty('bandwidthusage-all').then(result => {
-        usage = JSON.parse(result);
-        for (var i = 0; i < usage.length; i++) {
-          if (usage[i].ChannelName === this._name) {
-            resolve(usage[i].AvgBitrate)
+      if (this._name !== 'Local Recording') {
+        iApp.getGlobalProperty('bandwidthusage-all').then(result => {
+          usage = JSON.parse(result);
+          for (var i = 0; i < usage.length; i++) {
+            if (usage[i].ChannelName === this._name) {
+              resolve(usage[i].AvgBitrate)
+            }
           }
-        }
-      });
+        });
+      } else {
+        resolve(0)
+      }
     });
   }
 }
