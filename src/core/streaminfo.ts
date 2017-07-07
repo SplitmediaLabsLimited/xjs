@@ -7,7 +7,7 @@ import {XML} from '../internal/util/xml';
  * The StreamInfo class provides methods to monitor the current active streams
  *  activity and other details.
  *
- * This can be used together with {@link #core/Output Output Class} to check
+ * This can be used together with {@link #core/Output Output Class} and check
  * the details of the currently live outputs.
  *
  * ### Basic Usage
@@ -18,14 +18,19 @@ import {XML} from '../internal/util/xml';
  * xjs.ready()
  * .then(xjs.StreamInfo.getActiveStreamChannels)
  * .then(function(channels) {
- *    channels.forEach(channel => {
- *      channel.getName()
- *      .then(funcntion(name) {
- *        if(name.includes('Twitch')) {
- *          channel.getStreamRenderedFrames()
- *        }
- *      })
- *    })
+ *   var stream = []
+ *   channels.forEach(function(channel){
+ *     channel.getName()
+ *     .then(name => {
+ *       if(name.includes('Twitch')) {
+ *         stream.push(channel)
+ *       }
+ *     })
+ *   })
+ *   return stream
+ * }).then(function(stream) {
+ *   // Get any stream information you need here
+ *   return stream[0].getStreamRenderedFrames()
  * })
  * ```
  */

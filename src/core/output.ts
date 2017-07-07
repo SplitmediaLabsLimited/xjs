@@ -21,7 +21,7 @@ import {Remote} from '../internal/remote'
  *
  * ```javascript
  * var xjs = require('xjs');
- *
+ * var streamName;
  * xjs.Output.getOutputList()
  * .then(function(outputs) {
  *   outputs.map(output => {
@@ -30,6 +30,7 @@ import {Remote} from '../internal/remote'
  *      // You can also save the name on a variable to be able to use it
  *      // when checking for the stream info.
  *      if(name.includes('Twitch')) {
+ *        streamName = name
  *        output.startBroadcast();
  *      }
  *    })
@@ -41,15 +42,13 @@ import {Remote} from '../internal/remote'
  * check the stream status of that output.
  *
  * ```javascript
- * var xjs = require('xjs');
- * xjs.ready()
- * .then(xjs.StreamInfo.getActiveStreamChannels)
+ * xjs.StreamInfo.getActiveStreamChannels
  * .then(function(channels) {
- *   let stream = []
+ *   var stream = []
  *   channels.forEach(function(channel){
  *     channel.getName()
  *     .then(name => {
- *       if(name.includes('Twitch')) {
+ *       if(name === streamName) {
  *         stream.push(channel)
  *       }
  *     })
