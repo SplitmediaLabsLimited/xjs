@@ -10,6 +10,12 @@ import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
 
+import {
+  versionCompare,
+  getVersion,
+  handlePreStreamDialogFixVersion
+} from '../internal/util/version';
+
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
@@ -107,10 +113,19 @@ export class Output {
    *
    * Start a broadcast of the provided channel.
    */
-  startBroadcast(): Promise<boolean> {
+  startBroadcast(optionBag ?: {
+    suppressPrestreamDialog ?: boolean
+  }): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'startBroadcast', this._name);
-      resolve(true);
+      if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) &&
+        typeof optionBag !== 'undefined' && optionBag !== null &&
+        optionBag['suppressPrestreamDialog']) {
+        exec('CallHostFunc', 'startBroadcast', this._name, 'suppressPrestreamDialog=1');
+        resolve(true);
+      } else {
+        exec('CallHost', 'startBroadcast', this._name);
+        resolve(true);    
+      }
     })
   }
 
