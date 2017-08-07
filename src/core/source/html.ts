@@ -45,6 +45,17 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   ISourceHtml {
 
   //iSourceHtml
+
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Allow this source to call a pre-exposed function within the HTML Source
+   */
+  call: () => Promise<HtmlSource>
+
   /**
    * return: Promise<string>
    *
