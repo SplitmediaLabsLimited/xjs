@@ -274,14 +274,18 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
+      let setFunction = 'prop:srcitem';
+      if (String(this._type) === '2') {
+         setFunction = 'prop:item';
+      }
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setValue', true)
-        iItem.set('prop:srcitem', val, this._id)
+        iItem.set(setFunction, val, this._id)
         .then(() => {
           resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:srcitem', val, this._srcId, this._id, this._updateId.bind(this))
+        iItem.wrapSet(setFunction, val, this._srcId, this._id, this._updateId.bind(this))
         .then(() => {
           resolve(this);
         });
