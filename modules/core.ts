@@ -22,7 +22,7 @@ export {IItemChroma} from '../src/core/items/ichroma';
 export {IItemColor} from '../src/core/items/icolor';
 export {IItemLayout} from '../src/core/items/ilayout';
 export {IItemTransition} from '../src/core/items/itransition';
-export {IItemEffect} from '../src/core/items/ieffects';
+export {IItemEffect, MaskEffect} from '../src/core/items/ieffects';
 
 export {Source} from '../src/core/source/source';
 export * from '../src/core/source/camera';
