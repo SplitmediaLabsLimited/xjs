@@ -505,6 +505,16 @@ export class Item extends Source implements IItemLayout, ISource {
   // ItemLayout
 
   /**
+   * See: {@link #core/IItemLayout#bringForward bringForward}
+   */
+  bringForward: () => Promise<Item>;
+
+  /**
+   * See: {@link #core/IItemLayout#bringToFront bringToFront}
+   */
+  bringToFront: () => Promise<Item>;
+
+  /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
   isKeepAspectRatio: () => Promise<boolean>;
@@ -553,6 +563,16 @@ export class Item extends Source implements IItemLayout, ISource {
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendBackward sendBackward}
+   */
+  sendBackward: () => Promise<Item>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendToBack sendToBack}
+   */
+  sendToBack: () => Promise<Item>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

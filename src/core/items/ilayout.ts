@@ -1,8 +1,8 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
+import {Scene} from '../scene';
 import {Rectangle} from '../../util/rectangle';
-
 
 export interface IItemLayout {
 
@@ -428,6 +428,74 @@ export interface IItemLayout {
    * ```
    */
   setCroppingEnhanced(value: Object): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<Item>
+   *
+   * Move item one level up in the z-index (to the front)
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.bringForward().then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   */
+  bringForward(): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<Item>
+   *
+   * Move item one level down in the z-index (to the back)
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.sendBackward().then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   */
+  sendBackward(): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<Item>
+   *
+   * Move item to highest level in the z-index (to the absolute front)
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.bringToFront().then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   */
+  bringToFront(): Promise<IItemLayout>;
+
+  /**
+   * return: Promise<Item>
+   *
+   * Move item to lowest level in the z-index (to the absolute back)
+   *
+   * *Chainable.*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.sendToBack().then(function(item) {
+   *   // Promise resolves with same Item instance
+   * });
+   * ```
+   */
+  sendToBack(): Promise<IItemLayout>;
 }
 
 export class ItemLayout implements IItemLayout {
@@ -1141,6 +1209,54 @@ export class ItemLayout implements IItemLayout {
         reject('Error setting cropping,' +
           ' insufficient properties (left, top, right, bottom)');
       }
+    });
+  }
+
+  bringForward(): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      iItem.set('prop:zorder', '+', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  sendBackward(): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      iItem.set('prop:zorder', '-', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  bringToFront(): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      let itemsLength = 0;
+      let itemIndex = -1;
+      let forwardStep = 0;
+      Scene.searchScenesByItemId(this._id).then( itemScene => {
+        return itemScene.getItems();
+      }).then( sceneItems => {
+        itemsLength = sceneItems.length;
+        for (var i = 0; i < itemsLength; ++i) {
+          if (sceneItems[i]['_id'] === this._id) {
+            itemIndex = i;
+            break;
+          }
+        }
+        if (itemsLength > 0 && itemIndex > -1) {
+          forwardStep = itemsLength - 1 - itemIndex;
+        }
+        console.log(forwardStep);
+      });
+      // get index in scene
+      // call bring forward based on index
+    });
+  }
+
+  sendToBack(): Promise<ItemLayout> {
+    return new Promise(resolve => {
+      // get index in scene
+      // call send backward based on index
     });
   }
 }

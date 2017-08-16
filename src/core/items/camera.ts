@@ -94,7 +94,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/CameraSource#setStreamPaused setStreamPaused}
    */
-  setStreamPaused: (value: boolean) => Promise<CameraSource>
+  setStreamPaused: (value: boolean) => Promise<CameraItem>
 
   /**
    * See: {@link #core/CameraSource#isHardwareEncoder isHardwareEncoder}
@@ -114,7 +114,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/CameraSource#setDelay setDelay}
    */
-  setDelay: (value: number) => Promise<CameraSource>
+  setDelay: (value: number) => Promise<CameraItem>
 
   /**
    * See: {@link #core/CameraSource#isForceDeinterlace isForceDeinterlace}
@@ -124,9 +124,19 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/CameraSource#setForceDeinterlace setForceDeinterlace}
    */
-  setForceDeinterlace: (value: boolean) => Promise<CameraSource>
+  setForceDeinterlace: (value: boolean) => Promise<CameraItem>
 
   // ItemLayout
+
+  /**
+   * See: {@link #core/IItemLayout#bringForward bringForward}
+   */
+  bringForward: () => Promise<CameraItem>;  
+
+  /**
+   * See: {@link #core/IItemLayout#bringToFront bringToFront}
+   */
+  bringToFront: () => Promise<CameraItem>;  
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -177,6 +187,16 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendBackward sendBackward}
+   */
+  sendBackward: () => Promise<CameraItem>;  
+
+  /**
+   * See: {@link #core/IItemLayout#sendToBack sendToBack}
+   */
+  sendToBack: () => Promise<CameraItem>; 
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

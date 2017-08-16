@@ -47,7 +47,6 @@ import {CuePoint} from '../source/cuepoint';
  * ```
  */
 
-
 export class VideoPlaylistItem extends Item implements IItemLayout,
   IItemColor, IItemChroma, IItemTransition, ISourceConfigurable,
   ISourceVideoPlaylist, ISourcePlayback {
@@ -74,6 +73,16 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
   // ItemLayout
+
+  /**
+   * See: {@link #core/IItemLayout#bringForward bringForward}
+   */
+  bringForward: () => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemLayout#bringToFront bringToFront}
+   */
+  bringToFront: () => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -124,6 +133,16 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendBackward sendBackward}
+   */
+  sendBackward: () => Promise<VideoPlaylistItem>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendToBack sendToBack}
+   */
+  sendToBack: () => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
