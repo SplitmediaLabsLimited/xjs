@@ -1233,9 +1233,9 @@ export class ItemLayout implements IItemLayout {
       let itemsLength = 0;
       let itemIndex = -1;
       let forwardStep = 0;
-      Scene.searchScenesByItemId(this._id).then( itemScene => {
+      Scene.searchScenesByItemId(this._id).then(itemScene => {
         return itemScene.getItems();
-      }).then( sceneItems => {
+      }).then(sceneItems => {
         itemsLength = sceneItems.length;
         for (var i = 0; i < itemsLength; ++i) {
           if (sceneItems[i]['_id'] === this._id) {
@@ -1246,7 +1246,19 @@ export class ItemLayout implements IItemLayout {
         if (itemsLength > 0 && itemIndex > -1) {
           forwardStep = itemsLength - 1 - itemIndex;
         }
-        console.log(forwardStep);
+        let promiseArray = [];
+        let zorderPromise = (itemId, idx) => new Promise( zorderResolve => {
+          iItem.set('prop:zorder', '+', this._id).then(() => {
+            zorderResolve();
+          });
+        });
+        for (var i = forwardStep - 1; i >= 0; i--) {
+          promiseArray.push(zorderPromise(this._id, i));
+        }
+
+        Promise.all(promiseArray).then(() => {
+          resolve(this);
+        });
       });
       // get index in scene
       // call bring forward based on index
@@ -1255,8 +1267,38 @@ export class ItemLayout implements IItemLayout {
 
   sendToBack(): Promise<ItemLayout> {
     return new Promise(resolve => {
+      let itemsLength = 0;
+      let itemIndex = -1;
+      let backwardStep = 0;
+      Scene.searchScenesByItemId(this._id).then(itemScene => {
+        return itemScene.getItems();
+      }).then(sceneItems => {
+        itemsLength = sceneItems.length;
+        for (var i = 0; i < itemsLength; ++i) {
+          if (sceneItems[i]['_id'] === this._id) {
+            itemIndex = i;
+            break;
+          }
+        }
+        if (itemsLength > 0 && itemIndex > -1) {
+          backwardStep = itemIndex;
+        }
+        let promiseArray = [];
+        let zorderPromise = (itemId, idx) => new Promise( zorderResolve => {
+          iItem.set('prop:zorder', '-', this._id).then(() => {
+            zorderResolve();
+          });
+        });
+        for (var i = backwardStep - 1; i >= 0; i--) {
+          promiseArray.push(zorderPromise(this._id, i));
+        }
+
+        Promise.all(promiseArray).then(() => {
+          resolve(this);
+        });
+      });
       // get index in scene
-      // call send backward based on index
+      // call bring forward based on index
     });
   }
 }
