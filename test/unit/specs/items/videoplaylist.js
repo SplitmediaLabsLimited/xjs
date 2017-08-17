@@ -393,13 +393,26 @@ describe('VideoPlaylistItem', function() {
     	if (currentVideoPlaylistItem !== null) {
 	      expect(currentVideoPlaylistItem).hasMethods([
 	        'isKeepAspectRatio',
-	        'setKeepAspectRatio',
-	        'isPositionLocked',
-	        'setPositionLocked',
-	        'isEnhancedResizeEnabled',
-	        'setEnhancedResizeEnabled',
-	        'getPosition',
-	        'setPosition'
+          'setKeepAspectRatio',
+          'isPositionLocked',
+          'setPositionLocked',
+          'isEnhancedResizeEnabled',
+          'setEnhancedResizeEnabled',
+          'getPosition',
+          'setPosition',
+          'getRotateY',
+          'setRotateY',
+          'getRotateX',
+          'setRotateX',
+          'getRotateZ',
+          'setRotateZ',
+          'getCropping',
+          'setCropping',
+          'getCanvasRotate',
+          'setCanvasRotate',
+          'getEnhancedRotate',
+          'setEnhancedRotate',
+          'setCroppingEnhanced'
 	        ].join(','));
     	}
     });
@@ -418,7 +431,9 @@ describe('VideoPlaylistItem', function() {
 	        'getSaturation',
 	        'setSaturation',
 	        'getBorderColor',
-	        'setBorderColor'
+	        'setBorderColor',
+          'isFullDynamicColorRange',
+          'setFullDynamicColorRange'
 	        ].join(','));
     	}
     });
@@ -526,20 +541,5 @@ describe('VideoPlaylistItem', function() {
       }
     });
   });
-
-  describe('VideoPlaylistItem-specific methods checking', function() {
-    beforeEach(function(done) {
-      if (enumerated.length > 0) {
-        currentVideoPlaylistItem = enumerated[0];
-        done();
-      }
-    });
-
-    afterEach(function() {
-      navigator.__defineGetter__('appVersion', function() {
-        return appVersion;
-      });
-    });
-  })
 
 })//end of code

@@ -394,13 +394,26 @@ describe('HtmlItem', function() {
     	if (currentHtmlItem !== null) {
 	      expect(currentHtmlItem).hasMethods([
 	        'isKeepAspectRatio',
-	        'setKeepAspectRatio',
-	        'isPositionLocked',
-	        'setPositionLocked',
-	        'isEnhancedResizeEnabled',
-	        'setEnhancedResizeEnabled',
-	        'getPosition',
-	        'setPosition'
+          'setKeepAspectRatio',
+          'isPositionLocked',
+          'setPositionLocked',
+          'isEnhancedResizeEnabled',
+          'setEnhancedResizeEnabled',
+          'getPosition',
+          'setPosition',
+          'getRotateY',
+          'setRotateY',
+          'getRotateX',
+          'setRotateX',
+          'getRotateZ',
+          'setRotateZ',
+          'getCropping',
+          'setCropping',
+          'getCanvasRotate',
+          'setCanvasRotate',
+          'getEnhancedRotate',
+          'setEnhancedRotate',
+          'setCroppingEnhanced'
 	        ].join(','));
     	}
     });
@@ -419,7 +432,9 @@ describe('HtmlItem', function() {
 	        'getSaturation',
 	        'setSaturation',
 	        'getBorderColor',
-	        'setBorderColor'
+	        'setBorderColor',
+          'isFullDynamicColorRange',
+          'setFullDynamicColorRange'
 	        ].join(','));
     	}
     });

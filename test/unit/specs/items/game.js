@@ -291,7 +291,20 @@ describe('GameItem', function() {
         'isEnhancedResizeEnabled',
         'setEnhancedResizeEnabled',
         'getPosition',
-        'setPosition'
+        'setPosition',
+        'getRotateY',
+        'setRotateY',
+        'getRotateX',
+        'setRotateX',
+        'getRotateZ',
+        'setRotateZ',
+        'getCropping',
+        'setCropping',
+        'getCanvasRotate',
+        'setCanvasRotate',
+        'getEnhancedRotate',
+        'setEnhancedRotate',
+        'setCroppingEnhanced'
         ].join(','));
     });
 
@@ -308,7 +321,9 @@ describe('GameItem', function() {
         'getSaturation',
         'setSaturation',
         'getBorderColor',
-        'setBorderColor'
+        'setBorderColor',
+        'isFullDynamicColorRange',
+        'setFullDynamicColorRange'
         ].join(','));
     });
 
@@ -396,7 +411,7 @@ describe('GameItem', function() {
             if (!isXSplit) {
               expect(specialOptimizationSet).toBe(true);
             }
-            return currentGameItem.isSpecialOptimizationEnabled();  
+            return currentGameItem.isSpecialOptimizationEnabled();
           }).then(function(firstEnabled) {
             expect(firstEnabled).toBe(testBoolean);
             currentGameItem.setSpecialOptimizationEnabled(!testBoolean);
