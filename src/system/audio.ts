@@ -5,7 +5,7 @@ import {XML as XML} from '../internal/util/xml';
 
 /**
  * The AudioDevice Class is the object returned by
- * {@link #system/System System Class'} getAudioDevices method. It provides you
+ * {@link #system/System System Class} getAudioDevices method. It provides you
  * with methods to fetch the audio device object's attributes, and also provides
  * methods to convert it back to an XML object that is compatible with XBC.
  *
@@ -30,11 +30,6 @@ import {XML as XML} from '../internal/util/xml';
  * ```
  */
 export class AudioDevice{
-
-  static STATE_ACTIVE: string = 'Active';
-
-  static DATAFLOW_RENDER: string = 'Render';
-  static DATAFLOW_CAPTURE: string = 'Capture';
 
   static SYSTEM_LEVEL_MUTE: number = 0;
   static SYSTEM_LEVEL_ENABLE: number = 1;
@@ -181,7 +176,7 @@ export class AudioDevice{
   /**
    * return: boolean
    *
-   * Gets whether audio device is the system default
+   * Gets whether the audio device is enabled/not
    *
    * #### Usage
    *

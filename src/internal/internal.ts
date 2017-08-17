@@ -104,6 +104,7 @@ export function finalCallback(message) {
   })
 }
 
+let asyncCallback = window.OnAsyncCallback;
 window.OnAsyncCallback = function(asyncID: number, result: string) {
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
@@ -115,5 +116,9 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
     if (callback instanceof Function) {
       callback.call(this, decodeURIComponent(result));
     }
+  }
+
+  if(typeof asyncCallback === 'function') {
+    asyncCallback(asyncID, result);
   }
 }

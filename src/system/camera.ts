@@ -4,10 +4,11 @@ import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
 import {App as iApp} from '../internal/app';
+import {Scene} from '../core/scene';
 
 /**
  * The CameraDevice Class is the object returned by
- * {@link #system/System System Class'} getCameraDevices method. It provides
+ * {@link #system/System System Class} getCameraDevices method. It provides
  * you with methods to fetch the Camera Device's id, name, and to add it as
  * a source in the current scene.
  *
@@ -19,11 +20,8 @@ import {App as iApp} from '../internal/app';
  *
  * System.getCameraDevices().then(function(cameras) {
  *   for (var i in cameras) {
- *     // Do not include the imaginary xsplit camera if that ever exist
- *     if (cameras[i].getName().indexOf('xsplit') === -1) {
- *       xml = cameras[i].toXML();
- *       // do something with the XML here
- *     }
+ *     xml = cameras[i].toXML();
+ *     // do something with the XML here
  *   }
  * });
  * ```
@@ -110,12 +108,54 @@ export class CameraDevice implements Addable {
   }
 
   /**
-   *  Adds this camera device to the current scene.
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Adds this camera device to the current scene by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
    */
-  addToScene(): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.callFunc('addcamera', 'dev:' + this._id).then(() => {
+  addToScene(value?: number | Scene ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let scenePrefix = '';
+      let scenePromise;
+      if (typeof value === 'number' || value instanceof Scene) {
+        scenePromise = new Promise((innerResolve, innerReject) => {
+          Scene.getSceneCount().then(sceneCount => {
+            if (typeof value === 'number') {
+              let int = Math.floor(value);
+              if (int > sceneCount || int === 0) {
+                innerReject(new Error('Scene not existing.'));
+              } else {
+                scenePrefix = 's:' + (int - 1) + '|';
+                innerResolve();
+              }
+            } else {
+              value.getSceneNumber().then(int => {
+                if (int > sceneCount || int === 0) {
+                  innerReject(new Error('Scene not existing.'));
+                } else {
+                  scenePrefix = 's:' + (int - 1) + '|';
+                  innerResolve();
+                }
+              });
+            }
+          });
+        });
+      } else if (typeof value === 'undefined') {
+        scenePromise = Promise.resolve();
+      } else {
+        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+      }
+
+      scenePromise.then(() => {
+        return iApp.callFunc(scenePrefix + 'addcamera', 'dev:' + this._id);
+      }).then(() => {
         resolve(true);
+      }).catch(err => {
+        reject(err);
       });
     });
   }

@@ -33,6 +33,7 @@ export class EventEmitter {
     }
   }
 
+  /** This function removes a handler to an event.*/
   off(event: string, handler: Function) {
     if (Remote.remoteType === 'remote') {
       if (EventEmitter._remoteHandlers[event] !== undefined) {
@@ -81,7 +82,7 @@ export class EventEmitter {
     }
   }
 
-  static setCallback(message:string) {
+  static _setCallback(message:string) {
     return new Promise(resolve => {
       if (EventEmitter._proxyHandlers[message[0]] === undefined) {
           EventEmitter._proxyHandlers[message[0]] = [];
@@ -90,7 +91,7 @@ export class EventEmitter {
     })
   }
 
-  static finalCallback(message:string) {
+  static _finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
       if (EventEmitter._remoteHandlers[result['id']] !== undefined) {

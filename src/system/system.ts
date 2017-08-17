@@ -8,9 +8,10 @@ import {Game as Game} from './game';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
+import {Scene} from '../core/scene';
 
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's first parameter.
  *
  * ### Basic Usage
@@ -27,7 +28,7 @@ export enum AudioDeviceDataflow {
 }
 
 /**
- * This enum is used for {@link #system/System System Class'} getAudioDevices
+ * This enum is used for {@link #system/System System Class} getAudioDevices
  * method's second parameter.
  *
  * ### Basic Usage
@@ -227,7 +228,7 @@ export class System{
    *   var fontsArrayLength = fontsArray.length;
    *   for (var i = 0; i < fontsArrayLength; ++i) {
    *     var option = document.createElement('option');
-   *     option.text = 'Kiwi';
+   *     option.text = fontsArray[i];
    *     mySelect.add(option);
    *   }
    * });

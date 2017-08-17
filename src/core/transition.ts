@@ -78,6 +78,9 @@ export class Transition {
         this._key = fileName;
       }
       this._value = key;
+    } else if (typeof setValue !== null){
+      this._key = setValue; // retain key so that NONE is readable
+      this._value = key;
     } else {
       this._key = key; // retain key so that NONE is readable
       this._value = key.toLowerCase();

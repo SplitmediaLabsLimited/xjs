@@ -49,14 +49,25 @@ export class SourceConfigurable {
   private _id: string;
   private _srcId: string;
   private _isItemCall: boolean;
+  private _checkPromise;
+  private _sceneId: string;
+
+  private _updateId(id?: string, sceneId?: string) {
+    this._id = id;
+    this._sceneId = sceneId;
+  }
 
   loadConfig(): Promise<any> {
     let called: boolean = false;
-    if(this._isItemCall) {
-      Logger.warn('sourceWarning', 'loadConfig', true)
-    }
     return new Promise(resolve => {
-      iItem.get('prop:BrowserConfiguration', this._id).then(
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'loadConfig',  true)
+        this._checkPromise = iItem.get('prop:BrowserConfiguration', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:BrowserConfiguration', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(
         config => {
           let configObj = config === 'null' ? {} : JSON.parse(config);
           let persist = Global.getPersistentConfig();

@@ -185,7 +185,7 @@ export class IO {
     });
   };
 
-  static finalCallback(message:string) {
+  static _finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
       if (result['result'] !== undefined) {
@@ -198,6 +198,7 @@ export class IO {
   }
 }
 
+const oldOnGetVideoDuration = window.OnGetVideoDuration;
 window.OnGetVideoDuration = function(file: string, duration: string) {
   if (Remote.remoteType === 'proxy') {
     IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
@@ -207,8 +208,13 @@ window.OnGetVideoDuration = function(file: string, duration: string) {
       delete IO._callback[decodeURIComponent(file)];
     }
   }
+
+  if (typeof oldOnGetVideoDuration === 'function') {
+    oldOnGetVideoDuration(file, duration)
+  }
 };
 
+const oldOnGetVideoDurationFailed = window.OnGetVideoDurationFailed;
 window.OnGetVideoDurationFailed = function(file: string) {
   if (Remote.remoteType === 'proxy') {
     IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
@@ -218,6 +224,10 @@ window.OnGetVideoDurationFailed = function(file: string) {
     if(IO._callback[decodeURIComponent(file)].length === 0) {
       delete IO._callback[decodeURIComponent(file)];
     }
+  }
+
+  if (typeof oldOnGetVideoDurationFailed === 'function') {
+    oldOnGetVideoDuration(file)
   }
 };
 

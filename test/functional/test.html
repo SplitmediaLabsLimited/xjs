@@ -9,6 +9,65 @@
 
 </head>
 <body>
+  <script>
+  /* check for global callbacks */
+  window.UpdateLocalProperty = function(a, b) {
+    console.log("UPDATE LOCAL :: " + a + " ::> " + b);
+  }
+
+  window.Setdlldogrant = function(a) {
+    console.log("DLL GRANT :: " + a);
+  }
+
+  window.Setid = function(a) {
+    console.log("SET ID :: " + a);
+  }
+
+  window.SetBroadcastChannelList = function(a) {
+    console.log("SET BROADCAST CHANNEL LIST :: " + a);
+  }
+
+  window.SetEvent = function(a) {
+    console.log("SET EVENT :: " + a);
+  }
+
+  window.AppOnEvent = function(a) {
+    console.log("APP EVENT :: " + a);
+  }
+
+  window.OnAsyncCallback = function(a, b) {
+    console.log("ASYNC CALLBACK :: " + a + " ::> " + b);
+  }
+
+  window.OnGetVideoDuration = function(a, b) {
+    console.log("GET VIDEO DURATION :: " + a + " ::> " + b);
+  }
+
+  window.OnGetVideoDurationFailed = function(a) {
+    console.log("VIDEO DURATION FAILED :: " + a);
+  }
+
+  window.OnDialogResult = function(a) {
+    console.log("DIALOG RESULT :: " + a);
+  }
+
+  window.SourcesListUpdate = function(a, b) {
+    console.log("SOURCES LIST UPDATE :: " + a + " ::> " + b);
+  }
+
+  window.SourcesListHighlight = function(a, b) {
+    console.log("SOURCES LIST HIGHLIGHT :: " + a + " ::> " + b);
+  }
+
+  window.SourcesListSelect = function(a, b) {
+    console.log("SOURCES LIST SELECT :: " + a + " ::> " + b);
+  }
+
+  window.OnSceneLoad = function(a, b) {
+    console.log("SCENE LOAD :: " + a + " ::> " + b);
+  }
+
+  </script>  
   <script src="../../dist/xjs.js"></script>
   <script src="js/cssjson.js"></script>
   <script src="js/rose.js"></script>

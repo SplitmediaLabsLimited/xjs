@@ -102,7 +102,7 @@ export class Extension {
     })
   }
 
-  static finalCallback(message) {
+  static _finalCallback(message) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
       Extension._remoteCallback['ExtensionWindowID'].resolve(result['result']);
@@ -110,10 +110,15 @@ export class Extension {
   }
 }
 
+const oldSetid = window.Setid;
 window.Setid = function(id) {
   if (Remote.remoteType === 'proxy') {
     Extension._proxyCallback['ExtensionWindowID'].call(this, id);
   } else {
     Extension._callback['ExtensionWindowID'].resolve(id);
+  }
+
+  if (typeof oldSetid === 'function') {
+    oldSetid(id)
   }
 }

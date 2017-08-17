@@ -28,6 +28,9 @@ export class EventManager {
 
           if (_event === 'OnSceneAddByUser') {
             exec('AppSubscribeEvents');
+          } else if (_event.startsWith('itempropchange_')) {
+            let itemID = _event.split('_')[1];
+            exec('ItemSubscribeEvents', itemID);
           }
 
           EventManager.callbacks[_event].push(_cb);
@@ -38,6 +41,7 @@ export class EventManager {
   }
 }
 
+const oldSetEvent = window.SetEvent;
 window.SetEvent = (args: string) => {
   let settings = [];
   settings = args.split('&');
@@ -53,12 +57,32 @@ window.SetEvent = (args: string) => {
   EventManager.callbacks[settingsObj['event']].map(_cb => {
     _cb(settingsObj);
   });
+
+  if(typeof oldSetEvent === 'function') {
+    oldSetEvent(args)
+  }
 }
 
+const oldAppOnEvent = window.AppOnEvent;
 window.AppOnEvent = event => {
   if (EventManager.callbacks[event] === undefined) return;
 
   EventManager.callbacks[event].map(_cb => {
     _cb({ event });
   });
+  if (typeof oldAppOnEvent === 'function') {
+    oldAppOnEvent(event)
+  }
+}
+
+const oldOnEvent = window.OnEvent;
+window.OnEvent = (event, item, ...eventArgs ) => {
+  if (EventManager.callbacks[event + '_' + item] === undefined) return;
+
+  EventManager.callbacks[event + '_' + item].map(_cb => {
+    _cb(...eventArgs);
+  });
+  if (typeof oldOnEvent === 'function') {
+    oldOnEvent(event)
+  }
 }

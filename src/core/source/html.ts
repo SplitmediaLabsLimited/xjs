@@ -274,11 +274,17 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   /** See: {@link #core/IAudio#isMute isMute} */
   isMute: () => Promise<boolean>;
 
+  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  isAutoMute: () => Promise<boolean>;
+
   /** See: {@link #core/IAudio#setVolume setVolume} */
   setVolume: (value: number) => Promise<HtmlSource>;
 
   /** See: {@link #core/IAudio#setMute setMute} */
   setMute: (value: boolean) => Promise<HtmlSource>;
+
+  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  setAutoMute: (value: boolean) => Promise<HtmlSource>;
 
   /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
   isStreamOnlyAudio: () => Promise<boolean>;

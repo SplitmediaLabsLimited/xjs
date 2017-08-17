@@ -19,6 +19,7 @@ import {Remote} from '../internal/remote';
  *  The following events are emitted.
  *    - `stream-start`
  *    - `stream-end`
+ *    - `recording-renamed`
  *
  *  Use the `on(event: string, handler: Function)` function to listen to events.
  *
@@ -37,11 +38,14 @@ export class ChannelManager extends EventEmitter {
     ChannelManager._emitter.emit.apply(ChannelManager._emitter, params);
   }
 
+  static _proxyCallbacks = {};
+  static _remoteCallbacks = {};
+
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. Currently there are two:
-   *  `stream-start` and `stream-end`.
+   *  Allows listening to events that this class emits. Currently there are three:
+   *  `stream-start`, `stream-end` and `recording-renamed`.
    *
    *  #### Usage:
    *
@@ -54,10 +58,6 @@ export class ChannelManager extends EventEmitter {
    * });
    * ```
    */
-
-  static _proxyCallbacks = {};
-  static _remoteCallbacks = {};
-
   static on(event: string, handler: Function) {
     if (Environment.isSourceProps()) {
       console.warn('Channel Manager: stream-related events are not received' +
@@ -76,7 +76,7 @@ export class ChannelManager extends EventEmitter {
           if (event === 'stream-end') {
             channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
             channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
-            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']) || 0;
+            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']/10) || 0;
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
@@ -104,7 +104,23 @@ export class ChannelManager extends EventEmitter {
             channel: eventChannel,
             streamTime: addedInfo['streamTime']
           });
-        }
+        } else if (channelInfoObj.hasOwnProperty('new') &&
+          channelInfoObj.hasOwnProperty('old')) {
+            if (event === 'recording-renamed') {
+              const name = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, "/")
+              const nameArr = name.split('/')
+              const newName = nameArr[nameArr.length - 1]
+
+              handler.call(this, {
+                error: false,
+                recordingInfo: {
+                  oldName: channelInfoObj['old'],
+                  newName: newName,
+                  fullPath: decodeURIComponent(channelInfoObj['new'])
+                }
+              })
+            }
+          }
       } catch (e) {
         handler.call(this, { error: true })
       }
@@ -112,17 +128,29 @@ export class ChannelManager extends EventEmitter {
   }
 }
 
-EventManager.subscribe(['StreamStart', 'StreamEnd'], (settingsObj: string) => {
-  let settings = [];
-
+EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'],
+  (settingsObj: string) => {
+  let eventString;
   if (settingsObj.hasOwnProperty('event') &&
       settingsObj.hasOwnProperty('info')) {
-    let eventString = settingsObj['event'];
+    eventString = settingsObj['event'];
     if (settingsObj['event'] === 'StreamStart') {
       eventString = 'stream-start';
     } else if (settingsObj['event'] === 'StreamEnd') {
       eventString = 'stream-end';
     }
     ChannelManager.emit(eventString, settingsObj['info']);
+  }
+  if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+    && settingsObj.hasOwnProperty('new')) {
+    eventString = settingsObj['event'];
+    if (settingsObj['event'] === 'RecordingRenamed') {
+      eventString = 'recording-renamed';
+      const renameInfo = {
+        old: settingsObj['old'],
+        new: settingsObj['new']
+      }
+      ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+    }
   }
 });
