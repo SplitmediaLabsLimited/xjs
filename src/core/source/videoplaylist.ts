@@ -40,7 +40,7 @@ import {CuePoint} from '../source/cuepoint'
  *  `VideoPlaylistSource` instance.
  */
 export class VideoPlaylistSource extends Source implements ISourceConfigurable,
-ISourceVideoPlaylist {
+ISourceVideoPlaylist, ISourcePlayback {
   //Shared with VideoPlaylistItem
   /**
    * return: Promise<string>
@@ -235,4 +235,4 @@ ISourceVideoPlaylist {
   isVideo: () => Promise<boolean>;
 }
 
-applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist])
+applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist, SourcePlayback])

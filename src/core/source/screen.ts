@@ -1,6 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from '../source/source';
+import {applyMixins} from '../../internal/util/mixin';
 import {Rectangle} from '../../util/rectangle';
 import {ISourceScreen, iSourceScreen} from './iscreen';
 
@@ -179,3 +180,5 @@ export class ScreenSource extends Source implements ISourceScreen {
    */
   setClientArea: (value: boolean) => Promise<ScreenSource>
 }
+
+applyMixins(ScreenSource, [iSourceScreen])

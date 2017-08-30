@@ -53,7 +53,6 @@ describe('ScreenItem', function() {
         },10);
       break;
 
-      case 'prop:srcitem':
       case 'prop:item':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
