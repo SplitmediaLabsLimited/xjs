@@ -57,7 +57,9 @@ export class Output {
    *    output.getName()
    *    .then(function(name) {
    *      if(name.includes('Twitch')) {
-   *        output.startBroadcast();
+   *        output.startBroadcast({
+   *          suppressPrestreamDialog : true
+   *        });
    *      }
    *    })
    *  })
@@ -109,9 +111,18 @@ export class Output {
   }
 
   /**
+   * param: ([options]) -- see below
+   *
+   * ```
    * return: Promise<boolean>
+   * ```
    *
    * Start a broadcast of the provided channel.
+   *
+   * Accepts an optional JSON object argument,
+   * which can be used to indicate certain flags, such as (additional options may be added):
+   * - `suppressPrestreamDialog` : used to bypass the showing of the pre-stream dialog
+   *  of the outputs supporting it, will use last settings provided
    */
   startBroadcast(optionBag ?: {
     suppressPrestreamDialog ?: boolean
