@@ -192,7 +192,7 @@ export class iSourceHtml implements ISourceHtml{
     return new Promise(resolve => {
       let slot
       if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getURL', true)
+        Logger.warn('sourceWarning', 'call', true)
         this._checkPromise = iItem.attach(this._id)
       } else {
         this._checkPromise = iItem.attach(this._id)
