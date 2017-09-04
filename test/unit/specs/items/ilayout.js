@@ -157,7 +157,11 @@ describe('Layouts interface', function() {
       'setCanvasRotate',
       'getEnhancedRotate',
       'setEnhancedRotate',
-      'setCroppingEnhanced'
+      'setCroppingEnhanced',
+      'bringForward',
+      'sendBackward',
+      'bringToFront',
+      'sendToBack'
       ].join(',');
 
     enumeratedItems.forEach(function(currentItem) {
