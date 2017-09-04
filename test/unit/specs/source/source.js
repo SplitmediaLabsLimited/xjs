@@ -375,7 +375,7 @@ describe('Source ===', function() {
         }, function(err) {
           if (environment.isExtension()) {
             expect(err).toEqual(jasmine.any(Error));
-            nextEnvironment();            
+            nextEnvironment();
           } else {
             done.failed('Source getItemList static method should reject when called from extension');
           }
@@ -546,7 +546,6 @@ describe('Source ===', function() {
         expect(value).not.toEqual(newValue);
         return testSource.setValue(newValue);
       }).then(function(source) {
-        console.log(source);
         return source.getValue();
       }).then(function(value) {
         expect(value).toEqual(newValue);

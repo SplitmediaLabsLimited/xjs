@@ -290,7 +290,9 @@ describe('FlashItem', function() {
 	        'getSaturation',
 	        'setSaturation',
 	        'getBorderColor',
-	        'setBorderColor'
+	        'setBorderColor',
+          'isFullDynamicColorRange',
+          'setFullDynamicColorRange'
 	        ].join(','));
     	}
     });
