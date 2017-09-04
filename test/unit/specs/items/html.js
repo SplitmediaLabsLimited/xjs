@@ -281,7 +281,19 @@ describe('HtmlItem', function() {
       break;
 
       case 'prop:BrowserRightClick':
-        local.rightclick = val;
+        var isValid;
+        if (val === '1' || val === '0') {
+          local.rightclick = val;
+          urlSet = true;
+          isValid = '0';
+        } else {
+          urlSet = false;
+          isValid = '-1';
+        }
+        var irand = rand;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
       break;
 
     }
@@ -413,7 +425,11 @@ describe('HtmlItem', function() {
           'setCanvasRotate',
           'getEnhancedRotate',
           'setEnhancedRotate',
-          'setCroppingEnhanced'
+          'setCroppingEnhanced',
+          'bringForward',
+          'sendBackward',
+          'bringToFront',
+          'sendToBack'
 	        ].join(','));
     	}
     });
@@ -765,12 +781,14 @@ describe('HtmlItem', function() {
 
     it('should be able to set and get allow right click', function(done) {
       exec(function(next) {
-        currentHtmlItem.setAllowRightClick(!local.rightclick);
-        currentHtmlItem.getAllowRightClick().then(function(val) {
-          expect(val).toBeTypeOf('boolean');
-          local.keeploaded = val;
-          next();
-        });
+        currentHtmlItem.setAllowRightClick(!local.rightclick)
+        .then(function(ret) {
+          currentHtmlItem.getAllowRightClick().then(function(val) {
+            expect(val).toBeTypeOf('boolean');
+            local.keeploaded = val;
+            next();
+          });
+        })
       }).then(done);
     });
   });

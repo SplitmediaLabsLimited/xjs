@@ -297,7 +297,11 @@ describe('Item ===', function() {
             'setCanvasRotate',
             'getEnhancedRotate',
             'setEnhancedRotate',
-            'setCroppingEnhanced'
+            'setCroppingEnhanced',
+            'bringForward',
+            'sendBackward',
+            'bringToFront',
+            'sendToBack'
             ].join(','));
         });
 
