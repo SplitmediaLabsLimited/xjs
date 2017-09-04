@@ -7,13 +7,15 @@ module.exports = function getFileInfo(log) {
     var fileName = ts.getSourceFileOfNode(symbol.declarations[0]).fileName;
 
     var file = path.resolve(basePath, fileName);
+    var urlFile = file.replace(/^.+src/, '../src');
+    var reltaive = file.replace(/^.+src/, 'src');
     var fileInfo = {
       filePath: file,
       baseName: path.basename(file, path.extname(file)),
       extension: path.extname(file).replace(/^\./, ''),
       basePath: basePath,
-      relativePath: fileName,
-      projectRelativePath: fileName
+      relativePath: reltaive,
+      projectRelativePath: urlFile
     };
     return fileInfo;
   };
