@@ -89,6 +89,16 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   // ItemLayout
 
   /**
+   * See: {@link #core/IItemLayout#bringForward bringForward}
+   */
+  bringForward: () => Promise<GameItem>;
+
+  /**
+   * See: {@link #core/IItemLayout#bringToFront bringToFront}
+   */
+  bringToFront: () => Promise<GameItem>;
+
+  /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
   isKeepAspectRatio: () => Promise<boolean>;
@@ -137,6 +147,16 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendBackward sendBackward}
+   */
+  sendBackward: () => Promise<GameItem>;  
+
+  /**
+   * See: {@link #core/IItemLayout#sendToBack sendToBack}
+   */
+  sendToBack: () => Promise<GameItem>;  
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

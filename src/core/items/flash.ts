@@ -57,6 +57,16 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   // ItemLayout
 
   /**
+   * See: {@link #core/IItemLayout#bringForward bringForward}
+   */
+  bringForward: () => Promise<FlashItem>;
+
+  /**
+   * See: {@link #core/IItemLayout#bringToFront bringToFront}
+   */
+  bringToFront: () => Promise<FlashItem>;
+
+  /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
    */
   isKeepAspectRatio: () => Promise<boolean>;
@@ -105,6 +115,16 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/IItemLayout#getRotateZ getRotateZ}
    */
   getRotateZ: () => Promise<number>;
+
+  /**
+   * See: {@link #core/IItemLayout#sendBackward sendBackward}
+   */
+  sendBackward: () => Promise<FlashItem>;  
+
+  /**
+   * See: {@link #core/IItemLayout#sendToBack sendToBack}
+   */
+  sendToBack: () => Promise<FlashItem>; 
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
