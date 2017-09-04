@@ -10,6 +10,12 @@ import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
 
+import {
+  versionCompare,
+  getVersion,
+  handlePreStreamDialogFixVersion
+} from '../internal/util/version';
+
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
@@ -86,6 +92,25 @@ export class Output {
    * Fetch all available Outputs you can broadcast on based on your installed
    * Broadcast plugin.
    *
+   * ### Basic Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   *
+   * xjs.Output.getOutputList()
+   * .then(function(outputs) {
+   *   outputs.map(output => {
+   *    output.getName()
+   *    .then(function(name) {
+   *      if(name.includes('Twitch')) {
+   *        output.startBroadcast({
+   *          suppressPrestreamDialog : true
+   *        });
+   *      }
+   *    })
+   *  })
+   * })
+   * ```
    */
   static getOutputList(): Promise<Output[]> {
     return new Promise((resolve, reject) => {
@@ -132,14 +157,32 @@ export class Output {
   }
 
   /**
+   * param: ([options]) -- see below
+   *
+   * ```
    * return: Promise<boolean>
+   * ```
    *
    * Start a broadcast of the provided channel.
+   *
+   * Accepts an optional JSON object argument,
+   * which can be used to indicate certain flags, such as (additional options may be added):
+   * - `suppressPrestreamDialog` : used to bypass the showing of the pre-stream dialog
+   *  of the outputs supporting it, will use last settings provided
    */
-  startBroadcast(): Promise<boolean> {
+  startBroadcast(optionBag ?: {
+    suppressPrestreamDialog ?: boolean
+  }): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'startBroadcast', this._name);
-      resolve(true);
+      if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) &&
+        typeof optionBag !== 'undefined' && optionBag !== null &&
+        optionBag['suppressPrestreamDialog']) {
+        exec('CallHostFunc', 'startBroadcast', this._name, 'suppressPrestreamDialog=1');
+        resolve(true);
+      } else {
+        exec('CallHost', 'startBroadcast', this._name);
+        resolve(true);    
+      }
     })
   }
 
