@@ -104,6 +104,10 @@ describe('Item ===', function() {
       case 'prop:globalsrc':
         local.isGlobal = val;
       break;
+
+      case 'prop:srcid':
+        local.srcid = val;
+      break;
     }
   }
 
@@ -137,7 +141,7 @@ describe('Item ===', function() {
           if (prop === 'presetcount') {
             setTimeout(function() {
               window.OnAsyncCallback(asyncId, 5);
-            }, 10);            
+            }, 10);
           } else if (prop.startsWith('presetconfig:')) {
             var sceneIndex = prop.substring(13);
             if (sceneIndex !== '2') {
@@ -232,7 +236,7 @@ describe('Item ===', function() {
     }).then(done);
   });
 
-  it('should be able to get the source id', function(done) {
+  it('should be able to get its source', function(done) {
     exec(function(next) {
       Item.getSource().then(function(source) {
         expect(source).toBeDefined();
@@ -256,7 +260,64 @@ describe('Item ===', function() {
     expect(Item).hasMethods('toXML');
   });
 
-  it('should have static getCurrentSource method', function() {
-    expect(XJS.Item).hasMethods('getCurrentSource');
-  });
+  it('should have duplicate method', function() {
+    expect(Item).hasMethods('duplicate');
+  })
+
+  it('should have unlink method', function() {
+    expect(Item).hasMethods('unlink');
+  })
+
+
+  it('shoud have static getItemList method', function() {
+    expect(Item).hasMethods('getItemList');
+  })
+
+  describe('interface method checking', function() {
+
+        it('should implement the layout interface', function() {
+          expect(Item).hasMethods([
+            'isKeepAspectRatio',
+            'setKeepAspectRatio',
+            'isPositionLocked',
+            'setPositionLocked',
+            'isEnhancedResizeEnabled',
+            'setEnhancedResizeEnabled',
+            'getPosition',
+            'setPosition',
+            'getRotateY',
+            'setRotateY',
+            'getRotateX',
+            'setRotateX',
+            'getRotateZ',
+            'setRotateZ',
+            'getCropping',
+            'setCropping',
+            'getCanvasRotate',
+            'setCanvasRotate',
+            'getEnhancedRotate',
+            'setEnhancedRotate',
+            'setCroppingEnhanced',
+            'bringForward',
+            'sendBackward',
+            'bringToFront',
+            'sendToBack'
+            ].join(','));
+        });
+
+        it('should implement the iSource interface', function() {
+          expect(Item).hasMethods([
+            'setName',
+            'getName',
+            'setCustomName',
+            'getCustomName',
+            'getValue',
+            'setValue',
+            'getKeepLoaded',
+            'setKeepLoaded',
+            'refresh',
+            'getType'
+          ].join(','));
+        })
+      });
 });

@@ -8,6 +8,16 @@ import {Logger} from '../../internal/util/logger';
 
 export interface ISourceHtml {
   /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Allow this source to call a pre-exposed function within the HTML Source
+   */
+  call(func: string, arg: string): Promise<ISourceHtml>
+
+  /**
    * return: Promise<string>
    *
    * Gets the URL of this webpage source.
@@ -168,6 +178,34 @@ export class iSourceHtml implements ISourceHtml{
   private _updateId(id?: string, sceneId?: string) {
     this._id = id;
     this._sceneId = sceneId;
+  }
+
+  /**
+   * param: (func: string, arg: string)
+   * ```
+   * return: Promise<HtmlSource>
+   * ```
+   *
+   * Allow this item to call a pre-exposed function within the HTML Item
+   */
+  call(func: string, arg: string): Promise<iSourceHtml> {
+    return new Promise(resolve => {
+      let slot
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'call', true)
+        this._checkPromise = iItem.attach(this._id)
+      } else {
+        this._checkPromise = iItem.attach(this._id)
+      }
+      this._checkPromise.then(res => {
+        slot = res;
+        exec('CallInner' +
+          (String(slot) === '0' ? '' : slot + 1),
+          func,
+          arg);
+        resolve(this);
+      });
+    });
   }
 
   /**

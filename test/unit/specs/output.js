@@ -33,6 +33,20 @@ describe('Output ===', function() {
   ]);
   var exec = mixEnvironments.exec.bind(mixEnvironments);
 
+  var mix = new window.Mixin([
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 3.1.1707.3101 ';
+      });
+    }
+  ]);
+  var exec2 = mix.exec.bind(mix);
+
   beforeEach(function() {
     spyOn(external, 'PostMessageToParent')
     .and.callFake(function() {
@@ -226,13 +240,15 @@ describe('Output ===', function() {
     });
 
     it('starting and stopping broadcasts', function(done) {
-      otherOutput.startBroadcast().then(function() {
-        expect(broadcastObject[otherOutput._name]).toEqual('start');
-        return otherOutput.stopBroadcast();
-      }).then(function() {
-        expect(broadcastObject[otherOutput._name]).toEqual('stop');
-        done();
-      });
+      exec2(function(next) {
+        otherOutput.startBroadcast().then(function() {
+          expect(broadcastObject[otherOutput._name]).toEqual('start');
+          return otherOutput.stopBroadcast();
+        }).then(function() {
+          expect(broadcastObject[otherOutput._name]).toEqual('stop');
+          next();
+        });
+      }).then(done);
     });
 
     it('pausing and unpausing of local recording', function(done) {

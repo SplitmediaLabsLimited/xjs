@@ -192,7 +192,24 @@ describe('MediaItem', function() {
           'isEnhancedResizeEnabled',
           'setEnhancedResizeEnabled',
           'getPosition',
-          'setPosition'
+          'setPosition',
+          'getRotateY',
+          'setRotateY',
+          'getRotateX',
+          'setRotateX',
+          'getRotateZ',
+          'setRotateZ',
+          'getCropping',
+          'setCropping',
+          'getCanvasRotate',
+          'setCanvasRotate',
+          'getEnhancedRotate',
+          'setEnhancedRotate',
+          'setCroppingEnhanced',
+          'bringForward',
+          'sendBackward',
+          'bringToFront',
+          'sendToBack'
           ].join(','));
       }
     });
@@ -211,7 +228,9 @@ describe('MediaItem', function() {
           'getSaturation',
           'setSaturation',
           'getBorderColor',
-          'setBorderColor'
+          'setBorderColor',
+          'isFullDynamicColorRange',
+          'setFullDynamicColorRange'
           ].join(','));
       }
     });

@@ -53,7 +53,6 @@ describe('ScreenItem', function() {
         },10);
       break;
 
-      case 'prop:srcitem':
       case 'prop:item':
         if (local.hasOwnProperty('item')) {
           var irand = rand;
@@ -239,7 +238,24 @@ describe('ScreenItem', function() {
           'isEnhancedResizeEnabled',
           'setEnhancedResizeEnabled',
           'getPosition',
-          'setPosition'
+          'setPosition',
+          'getRotateY',
+          'setRotateY',
+          'getRotateX',
+          'setRotateX',
+          'getRotateZ',
+          'setRotateZ',
+          'getCropping',
+          'setCropping',
+          'getCanvasRotate',
+          'setCanvasRotate',
+          'getEnhancedRotate',
+          'setEnhancedRotate',
+          'setCroppingEnhanced',
+          'bringForward',
+          'sendBackward',
+          'bringToFront',
+          'sendToBack'
           ].join(','));
       }
     });
@@ -258,7 +274,9 @@ describe('ScreenItem', function() {
           'getSaturation',
           'setSaturation',
           'getBorderColor',
-          'setBorderColor'
+          'setBorderColor',
+          'isFullDynamicColorRange',
+          'setFullDynamicColorRange'
           ].join(','));
       }
     });

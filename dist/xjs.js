@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.3.0
+ * version: 2.4.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1860,9 +1860,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var internal_1 = require('../../internal/internal');
 var mixin_1 = require('../../internal/util/mixin');
-var item_1 = require('../../internal/item');
 var ilayout_1 = require('./ilayout');
 var icolor_1 = require('./icolor');
 var ichroma_1 = require('./ichroma');
@@ -1870,7 +1868,7 @@ var ieffects_1 = require('./ieffects');
 var itransition_1 = require('./itransition');
 var iconfig_1 = require('../source/iconfig');
 var iaudio_1 = require('../source/iaudio');
-var item_2 = require('./item');
+var item_1 = require('./item');
 var ihtml_1 = require('../source/ihtml');
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -1912,32 +1910,12 @@ var HtmlItem = (function (_super) {
     function HtmlItem() {
         _super.apply(this, arguments);
     }
-    /**
-     * param: (func: string, arg: string)
-     * ```
-     * return: Promise<HtmlItem>
-     * ```
-     *
-     * Allow this item to call a pre-exposed function within the HTML Item
-     */
-    HtmlItem.prototype.call = function (func, arg) {
-        var _this = this;
-        return new Promise(function (resolve) {
-            var slot;
-            item_1.Item.attach(_this._id).then(function (res) {
-                slot = res;
-                internal_1.exec('CallInner' +
-                    (String(slot) === '0' ? '' : slot + 1), func, arg);
-                resolve(_this);
-            });
-        });
-    };
     return HtmlItem;
-})(item_2.Item);
+})(item_1.Item);
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/internal":52,"../../internal/item":53,"../../internal/util/mixin":57,"../source/iaudio":29,"../source/iconfig":32,"../source/ihtml":35,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],11:[function(require,module,exports){
+},{"../../internal/util/mixin":57,"../source/iaudio":29,"../source/iconfig":32,"../source/ihtml":35,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],11:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var color_1 = require('../../util/color');
@@ -3049,6 +3027,7 @@ exports.ItemEffect = ItemEffect;
 },{"../../internal/item":53,"../../util/color":69}],14:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
+var scene_1 = require('../scene');
 var rectangle_1 = require('../../util/rectangle');
 var ItemLayout = (function () {
     function ItemLayout() {
@@ -3655,10 +3634,98 @@ var ItemLayout = (function () {
             }
         });
     };
+    ItemLayout.prototype.bringForward = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:zorder', '+', _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemLayout.prototype.sendBackward = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('prop:zorder', '-', _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemLayout.prototype.bringToFront = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var itemsLength = 0;
+            var itemIndex = -1;
+            var forwardStep = 0;
+            scene_1.Scene.searchScenesByItemId(_this._id).then(function (itemScene) {
+                return itemScene.getItems();
+            }).then(function (sceneItems) {
+                itemsLength = sceneItems.length;
+                for (var i = 0; i < itemsLength; ++i) {
+                    if (sceneItems[i]['_id'] === _this._id) {
+                        itemIndex = i;
+                        break;
+                    }
+                }
+                if (itemsLength > 0 && itemIndex > -1) {
+                    forwardStep = itemsLength - 1 - itemIndex;
+                }
+                var promiseArray = [];
+                var zorderPromise = function (itemId, idx) { return new Promise(function (zorderResolve) {
+                    item_1.Item.set('prop:zorder', '+', _this._id).then(function () {
+                        zorderResolve();
+                    });
+                }); };
+                for (var i = forwardStep - 1; i >= 0; i--) {
+                    promiseArray.push(zorderPromise(_this._id, i));
+                }
+                Promise.all(promiseArray).then(function () {
+                    resolve(_this);
+                });
+            });
+            // get index in scene
+            // call bring forward based on index
+        });
+    };
+    ItemLayout.prototype.sendToBack = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var itemsLength = 0;
+            var itemIndex = -1;
+            var backwardStep = 0;
+            scene_1.Scene.searchScenesByItemId(_this._id).then(function (itemScene) {
+                return itemScene.getItems();
+            }).then(function (sceneItems) {
+                itemsLength = sceneItems.length;
+                for (var i = 0; i < itemsLength; ++i) {
+                    if (sceneItems[i]['_id'] === _this._id) {
+                        itemIndex = i;
+                        break;
+                    }
+                }
+                if (itemsLength > 0 && itemIndex > -1) {
+                    backwardStep = itemIndex;
+                }
+                var promiseArray = [];
+                var zorderPromise = function (itemId, idx) { return new Promise(function (zorderResolve) {
+                    item_1.Item.set('prop:zorder', '-', _this._id).then(function () {
+                        zorderResolve();
+                    });
+                }); };
+                for (var i = backwardStep - 1; i >= 0; i--) {
+                    promiseArray.push(zorderPromise(_this._id, i));
+                }
+                Promise.all(promiseArray).then(function () {
+                    resolve(_this);
+                });
+            });
+            // get index in scene
+            // call bring forward based on index
+        });
+    };
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":53,"../../util/rectangle":73}],15:[function(require,module,exports){
+},{"../../internal/item":53,"../../util/rectangle":73,"../scene":22}],15:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4408,9 +4475,56 @@ var streaminfo_1 = require('./streaminfo');
 var json_1 = require('../internal/util/json');
 var item_1 = require('../internal/item');
 var remote_1 = require('../internal/remote');
+var version_1 = require('../internal/util/version');
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
+ *
+ * This can be used together with {@link #core/StreamInfo StreamInfo Class},
+ * where you can check the status of the outputs you start.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var streamName;
+ * xjs.Output.getOutputList()
+ * .then(function(outputs) {
+ *   outputs.map(output => {
+ *    output.getName()
+ *    .then(function(name) {
+ *      // You can also save the name on a variable to be able to use it
+ *      // when checking for the stream info.
+ *      if(name.includes('Twitch')) {
+ *        streamName = name
+ *        output.startBroadcast();
+ *      }
+ *    })
+ *  })
+ * })
+ * ```
+ *
+ * Once there's an active stream, StreamInfo class can be used at any time to
+ * check the stream status of that output.
+ *
+ * ```javascript
+ * xjs.StreamInfo.getActiveStreamChannels
+ * .then(function(channels) {
+ *   var stream = []
+ *   channels.forEach(function(channel){
+ *     channel.getName()
+ *     .then(name => {
+ *       if(name === streamName) {
+ *         stream.push(channel)
+ *       }
+ *     })
+ *   })
+ *   return stream
+ * }).then(function(stream) {
+ *   // Get any stream information you need here
+ *   return stream[0].getStreamRenderedFrames()
+ * })
+ * ```
  */
 var Output = (function () {
     function Output(props) {
@@ -4437,7 +4551,9 @@ var Output = (function () {
      *    output.getName()
      *    .then(function(name) {
      *      if(name.includes('Twitch')) {
-     *        output.startBroadcast();
+     *        output.startBroadcast({
+     *          suppressPrestreamDialog : true
+     *        });
      *      }
      *    })
      *  })
@@ -4490,15 +4606,32 @@ var Output = (function () {
         });
     };
     /**
+     * param: ([options]) -- see below
+     *
+     * ```
      * return: Promise<boolean>
+     * ```
      *
      * Start a broadcast of the provided channel.
+     *
+     * Accepts an optional JSON object argument,
+     * which can be used to indicate certain flags, such as (additional options may be added):
+     * - `suppressPrestreamDialog` : used to bypass the showing of the pre-stream dialog
+     *  of the outputs supporting it, will use last settings provided
      */
-    Output.prototype.startBroadcast = function () {
+    Output.prototype.startBroadcast = function (optionBag) {
         var _this = this;
         return new Promise(function (resolve) {
-            internal_1.exec('CallHost', 'startBroadcast', _this._name);
-            resolve(true);
+            if (version_1.versionCompare(version_1.getVersion()).is.greaterThanOrEqualTo(version_1.handlePreStreamDialogFixVersion) &&
+                typeof optionBag !== 'undefined' && optionBag !== null &&
+                optionBag['suppressPrestreamDialog']) {
+                internal_1.exec('CallHostFunc', 'startBroadcast', _this._name, 'suppressPrestreamDialog=1');
+                resolve(true);
+            }
+            else {
+                internal_1.exec('CallHost', 'startBroadcast', _this._name);
+                resolve(true);
+            }
         });
     };
     /**
@@ -4633,7 +4766,7 @@ window.SetBroadcastChannelList = function (channels) {
         oldSetBroadcastChannelList(channels);
     }
 };
-},{"../internal/internal":52,"../internal/item":53,"../internal/remote":54,"../internal/util/json":55,"./environment":4,"./extension":5,"./streaminfo":46}],22:[function(require,module,exports){
+},{"../internal/internal":52,"../internal/item":53,"../internal/remote":54,"../internal/util/json":55,"../internal/util/version":58,"./environment":4,"./extension":5,"./streaminfo":46}],22:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = require('../internal/util/json');
 var xml_1 = require('../internal/util/xml');
@@ -7212,6 +7345,33 @@ var iSourceHtml = (function () {
         this._sceneId = sceneId;
     };
     /**
+     * param: (func: string, arg: string)
+     * ```
+     * return: Promise<HtmlSource>
+     * ```
+     *
+     * Allow this item to call a pre-exposed function within the HTML Item
+     */
+    iSourceHtml.prototype.call = function (func, arg) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var slot;
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'call', true);
+                _this._checkPromise = item_1.Item.attach(_this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.attach(_this._id);
+            }
+            _this._checkPromise.then(function (res) {
+                slot = res;
+                internal_1.exec('CallInner' +
+                    (String(slot) === '0' ? '' : slot + 1), func, arg);
+                resolve(_this);
+            });
+        });
+    };
+    /**
      * return: Promise<string>
      *
      * Gets the URL of this webpage item.
@@ -9055,9 +9215,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = new __();
 };
 var mixin_1 = require('../../internal/util/mixin');
-var source_1 = require('../source/source');
+var source_1 = require('./source');
 var iplayback_1 = require('./iplayback');
-var iaudio_1 = require('../source/iaudio');
+var iaudio_1 = require('./iaudio');
 var imedia_1 = require('./imedia');
 /**
  * The MediaSource class represents the sources of the media items that
@@ -9098,7 +9258,7 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":57,"../source/iaudio":29,"../source/source":44,"./imedia":37,"./iplayback":38}],43:[function(require,module,exports){
+},{"../../internal/util/mixin":57,"./iaudio":29,"./imedia":37,"./iplayback":38,"./source":44}],43:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9107,6 +9267,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = new __();
 };
 var source_1 = require('../source/source');
+var mixin_1 = require('../../internal/util/mixin');
+var iscreen_1 = require('./iscreen');
 /**
  * The ScreenSource class represents the sources of the screen device items that
  * has been added to the stage. A single source could have multiple items linked
@@ -9145,7 +9307,8 @@ var ScreenSource = (function (_super) {
     return ScreenSource;
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
-},{"../source/source":44}],44:[function(require,module,exports){
+mixin_1.applyMixins(ScreenSource, [iscreen_1.iSourceScreen]);
+},{"../../internal/util/mixin":57,"../source/source":44,"./iscreen":39}],44:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = require('../../internal/util/mixin');
 var app_1 = require('../../internal/app');
@@ -9392,9 +9555,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 /// <reference path="../../../defs/es6-promise.d.ts" />
 ///
 var mixin_1 = require('../../internal/util/mixin');
-var source_1 = require('../source/source');
+var source_1 = require('./source');
 var iconfig_1 = require('./iconfig');
 var ivideoplaylist_1 = require('./ivideoplaylist');
+var iplayback_1 = require('./iplayback');
+var iaudio_1 = require('./iaudio');
 /**
  * The VideoPlaylistSource class represents the sources of the videoplaylist items that
  * has been added to the stage. A single source could have multiple items linked
@@ -9433,12 +9598,39 @@ var VideoPlaylistSource = (function (_super) {
     return VideoPlaylistSource;
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
-mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist]);
-},{"../../internal/util/mixin":57,"../source/source":44,"./iconfig":32,"./ivideoplaylist":41}],46:[function(require,module,exports){
+mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
+},{"../../internal/util/mixin":57,"./iaudio":29,"./iconfig":32,"./iplayback":38,"./ivideoplaylist":41,"./source":44}],46:[function(require,module,exports){
 var app_1 = require('../internal/app');
 /**
- * The StreamInfo class provides methods to monitor the current stream activity
- * and other details.
+ * The StreamInfo class provides methods to monitor the current active streams
+ *  activity and other details.
+ *
+ * This can be used together with {@link #core/Output Output Class} and check
+ * the details of the currently live outputs.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.ready()
+ * .then(xjs.StreamInfo.getActiveStreamChannels)
+ * .then(function(channels) {
+ *   var stream = []
+ *   channels.forEach(function(channel){
+ *     channel.getName()
+ *     .then(name => {
+ *       if(name.includes('Twitch')) {
+ *         stream.push(channel)
+ *       }
+ *     })
+ *   })
+ *   return stream
+ * }).then(function(stream) {
+ *   // Get any stream information you need here
+ *   return stream[0].getStreamRenderedFrames()
+ * })
+ * ```
  */
 var StreamInfo = (function () {
     /** StreamInfo constructor (only used internally) */
@@ -9557,14 +9749,19 @@ var StreamInfo = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var usage;
-            app_1.App.getGlobalProperty('bandwidthusage-all').then(function (result) {
-                usage = JSON.parse(result);
-                for (var i = 0; i < usage.length; i++) {
-                    if (usage[i].ChannelName === _this._name) {
-                        resolve(usage[i].AvgBitrate);
+            if (_this._name !== 'Local Recording') {
+                app_1.App.getGlobalProperty('bandwidthusage-all').then(function (result) {
+                    usage = JSON.parse(result);
+                    for (var i = 0; i < usage.length; i++) {
+                        if (usage[i].ChannelName === _this._name) {
+                            resolve(usage[i].AvgBitrate);
+                        }
                     }
-                }
-            });
+                });
+            }
+            else {
+                resolve(0);
+            }
         });
     };
     return StreamInfo;
@@ -10182,7 +10379,8 @@ var Item = (function () {
     function Item() {
     }
     /** Prepare an item for manipulation */
-    Item.attach = function (itemID) {
+    Item.attach = function (itemID, callBack) {
+        var _this = this;
         return new Promise(function (resolve) {
             var slot = Item.itemSlotMap.indexOf(itemID);
             if (slot === -1) {
@@ -10209,7 +10407,12 @@ var Item = (function () {
                         (String(slot) === '0' ? '' : (slot + 1)), itemID);
                 }
             }
-            resolve(slot);
+            if (callBack) {
+                callBack.call(_this, slot);
+            }
+            else {
+                resolve(slot);
+            }
         });
     };
     /** used for source plugins. lock an id to slot 0 */
@@ -10311,25 +10514,10 @@ var Item = (function () {
     /** Get an item's local property asynchronously */
     Item.get = function (name, id) {
         return new Promise(function (resolve) {
-            var slotPromise;
-            var slot;
-            if (id !== undefined && id !== null) {
-                slotPromise = new Promise(function (slotResolve) {
-                    Item.attach(id).then(function (res) {
-                        slotResolve(res);
-                    });
-                });
-            }
-            else {
-                slotPromise = new Promise(function (slotResolve) {
-                    slotResolve(-1);
-                });
-            }
-            slotPromise.then(function (newSlot) {
-                slot = newSlot;
-                var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
-                    .is
-                    .greaterThan(version_1.minVersion);
+            var hasGlobalSources = version_1.versionCompare(version_1.getVersion())
+                .is
+                .greaterThan(version_1.minVersion);
+            var execCallFunc = function (slot) {
                 if ((!environment_1.Environment.isSourcePlugin() && String(slot) === '0') ||
                     (environment_1.Environment.isSourcePlugin() &&
                         String(slot) === '0' &&
@@ -10337,10 +10525,19 @@ var Item = (function () {
                     slot = -1;
                 }
                 internal_1.exec('GetLocalPropertyAsync' +
-                    (String(slot) === '-1' ? '' : slot + 1), name, function (val) {
+                    (String(slot) === '-1' ? '' : Number(slot) + 1), name, function (val) {
                     resolve(val);
                 });
-            });
+            };
+            var checkSlot = function (recId) {
+                if (id) {
+                    Item.attach(id, execCallFunc);
+                }
+                else {
+                    execCallFunc(-1);
+                }
+            };
+            checkSlot(id);
         });
     };
     /**
@@ -10836,6 +11033,7 @@ exports.applyMixins = applyMixins;
 exports.minVersion = '2.8.1603.0401';
 exports.deleteSceneEventFixVersion = '2.8.1606.1601';
 exports.addSceneEventFixVersion = '2.8.1606.1701';
+exports.handlePreStreamDialogFixVersion = '3.1.1707.3101';
 exports.globalsrcMinVersion = '2.9';
 exports.itemSubscribeEventVersion = '2.9.1608.2301';
 exports.mockVersion = '';

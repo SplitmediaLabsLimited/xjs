@@ -10,9 +10,61 @@ import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
 
+import {
+  versionCompare,
+  getVersion,
+  handlePreStreamDialogFixVersion
+} from '../internal/util/version';
+
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
+ *
+ * This can be used together with {@link #core/StreamInfo StreamInfo Class},
+ * where you can check the status of the outputs you start.
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ * var streamName;
+ * xjs.Output.getOutputList()
+ * .then(function(outputs) {
+ *   outputs.map(output => {
+ *    output.getName()
+ *    .then(function(name) {
+ *      // You can also save the name on a variable to be able to use it
+ *      // when checking for the stream info.
+ *      if(name.includes('Twitch')) {
+ *        streamName = name
+ *        output.startBroadcast();
+ *      }
+ *    })
+ *  })
+ * })
+ * ```
+ *
+ * Once there's an active stream, StreamInfo class can be used at any time to
+ * check the stream status of that output.
+ *
+ * ```javascript
+ * xjs.StreamInfo.getActiveStreamChannels
+ * .then(function(channels) {
+ *   var stream = []
+ *   channels.forEach(function(channel){
+ *     channel.getName()
+ *     .then(name => {
+ *       if(name === streamName) {
+ *         stream.push(channel)
+ *       }
+ *     })
+ *   })
+ *   return stream
+ * }).then(function(stream) {
+ *   // Get any stream information you need here
+ *   return stream[0].getStreamRenderedFrames()
+ * })
+ * ```
  */
 
 export class Output {
@@ -51,7 +103,9 @@ export class Output {
    *    output.getName()
    *    .then(function(name) {
    *      if(name.includes('Twitch')) {
-   *        output.startBroadcast();
+   *        output.startBroadcast({
+   *          suppressPrestreamDialog : true
+   *        });
    *      }
    *    })
    *  })
@@ -103,14 +157,32 @@ export class Output {
   }
 
   /**
+   * param: ([options]) -- see below
+   *
+   * ```
    * return: Promise<boolean>
+   * ```
    *
    * Start a broadcast of the provided channel.
+   *
+   * Accepts an optional JSON object argument,
+   * which can be used to indicate certain flags, such as (additional options may be added):
+   * - `suppressPrestreamDialog` : used to bypass the showing of the pre-stream dialog
+   *  of the outputs supporting it, will use last settings provided
    */
-  startBroadcast(): Promise<boolean> {
+  startBroadcast(optionBag ?: {
+    suppressPrestreamDialog ?: boolean
+  }): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'startBroadcast', this._name);
-      resolve(true);
+      if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) &&
+        typeof optionBag !== 'undefined' && optionBag !== null &&
+        optionBag['suppressPrestreamDialog']) {
+        exec('CallHostFunc', 'startBroadcast', this._name, 'suppressPrestreamDialog=1');
+        resolve(true);
+      } else {
+        exec('CallHost', 'startBroadcast', this._name);
+        resolve(true);    
+      }
     })
   }
 

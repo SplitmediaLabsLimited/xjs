@@ -11,7 +11,7 @@ window.Environment = function(xjs) {
  *
  * ```
  * var env = new Environment(XJS);
- * env.set('html');
+ * env.set('plugin');
  * ```
  *
  * ###Valid Parameter Values
