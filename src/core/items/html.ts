@@ -59,29 +59,13 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
 export class HtmlItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, ISourceConfigurable, IAudio, IItemEffect,
   ISourceHtml {
-  /**
-   * param: (func: string, arg: string)
-   * ```
-   * return: Promise<HtmlItem>
-   * ```
-   *
-   * Allow this item to call a pre-exposed function within the HTML Item
-   */
-  call(func: string, arg: string): Promise<HtmlItem> {
-    return new Promise(resolve => {
-      let slot
-      iItem.attach(this._id).then(res => {
-        slot = res;
-        exec('CallInner' +
-          (String(slot) === '0' ? '' : slot + 1),
-          func,
-          arg);
-        resolve(this);
-      });
-    });
-  }
 
   //iSourceHtml
+  /**
+   * See: {@link #core/HtmlSource#call call}
+   */
+  call: () => Promise<HtmlItem>
+
   /**
    * See: {@link #core/HtmlSource#getURL getURL}
    */
@@ -111,7 +95,7 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/HtmlSource#enableBrowser60FPS enableBrowser60FPS}
    */
   enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
-  
+
   /**
    * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
    */
