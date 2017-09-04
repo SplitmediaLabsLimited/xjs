@@ -252,7 +252,7 @@ export class Source implements ISource{
                 if(key === '_srcId'){
                   uniqueObj[allSrc[h][key]] = allSrc[h];
                 }
-              }              
+              }
             }
           }
           for(var j in uniqueObj) {

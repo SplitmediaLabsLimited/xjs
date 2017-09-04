@@ -8,7 +8,6 @@ import {Source} from '../core/source/source'
 import {Scene} from '../core/scene'
 
 export class Item {
-
   private static baseID: string;
 
   private static MAX_SLOTS: number = 2;
@@ -17,7 +16,7 @@ export class Item {
   private static islockedSourceSlot: boolean = false;
 
   /** Prepare an item for manipulation */
-  static attach(itemID: string): Promise<Number> {
+  static attach(itemID: string, callBack?: Function): Promise<Number> {
     return new Promise(resolve => {
       let slot = Item.itemSlotMap.indexOf(itemID);
       if (slot === -1) {
@@ -50,7 +49,12 @@ export class Item {
           );
         }
       }
-      resolve(slot);
+
+      if (callBack) {
+        callBack.call(this, slot)
+      } else {
+        resolve(slot);
+      }
     })
   }
 
@@ -150,44 +154,38 @@ export class Item {
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-      let slotPromise;
-      let slot;
-      if (id !== undefined && id !== null) {
-        slotPromise = new Promise( slotResolve => {
-          Item.attach(id).then(res => {
-            slotResolve(res);
-          });
-        });
-      } else {
-        slotPromise = new Promise( slotResolve => {
-          slotResolve(-1);
-        });
-      }
-      slotPromise.then( newSlot => {
-        slot = newSlot;
+      let hasGlobalSources = versionCompare(getVersion())
+      .is
+      .greaterThan(minVersion);
 
-        let hasGlobalSources = versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion);
-
-        if (
-          (!Environment.isSourcePlugin() && String(slot) === '0') ||
+      const execCallFunc = (slot) => {
+        if ((!Environment.isSourcePlugin() && String(slot) === '0') ||
           (
             Environment.isSourcePlugin() &&
             String(slot) === '0' &&
             !hasGlobalSources
-          )
-        ) {
-          slot = -1;
-        }
+          )) {
+            slot = -1
+          }
+
         exec('GetLocalPropertyAsync' +
-          (String(slot) === '-1' ? '' : slot + 1),
+          (String(slot) === '-1' ? '' : Number(slot) + 1),
           name,
           val => {
             resolve(val);
           });
-      });
-    });
+      }
+
+      const checkSlot = (recId) => {
+        if (id) {
+          Item.attach(id, execCallFunc)
+        } else {
+          execCallFunc(-1)
+        }
+      }
+
+      checkSlot(id)
+    })
   }
 
   /**
