@@ -111,7 +111,7 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        
+
         ctr++;
         var asyncId = ctr;
 
@@ -212,7 +212,7 @@ describe('Scene ===', function() {
         });
       }).then(function() {
         expect(true).toBe(true);
-        done(); 
+        done();
       });
     });
   });
@@ -226,7 +226,7 @@ describe('Scene ===', function() {
         var asyncId = ctr;
         if (funcName === 'preset:0') {
           setTimeout(function() {
-            window.OnAsyncCallback(asyncId, global['preset']);
+            window.OnAsyncCallback(asyncId, global['preset:0']);
           },10);
         } else if (funcName === 'presetcount') {
           setTimeout(function() {
@@ -258,6 +258,13 @@ describe('Scene ===', function() {
           return asyncId;
         // }
       });
+
+      spyOn(window.external, 'GetGlobalProperty')
+      .and.callFake(function(val) {
+        if (val === 'splitmode') {
+          return '0';
+        }
+      })
     });
 
     afterAll(function() {
@@ -278,7 +285,8 @@ describe('Scene ===', function() {
         Scene.setActiveScene(index)
         .then(function() {
           return Scene.getActiveScene();
-        }).then(function(currentScene) {
+        })
+        .then(function(currentScene) {
           expect(currentScene._id).toEqual(index - 1);
           return Scene.setActiveScene(-1);
         }).then(function() {
@@ -457,7 +465,7 @@ describe('Scene ===', function() {
 
         return ctr;
       });
-      
+
       done();
     });
 
@@ -740,7 +748,7 @@ describe('Scene ===', function() {
           return ctr;
         });
       });
-          
+
       xit('from an array of sources or items', function(done) {
 
       });
