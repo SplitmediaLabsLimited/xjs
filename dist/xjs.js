@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.4.0
+ * version: 2.4.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -7919,6 +7919,21 @@ var iSourceHtml = (function () {
                 else {
                     resolve(_this);
                 }
+            });
+        });
+    };
+    iSourceHtml.prototype.isBrowserOptimized = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isBrowserOptimized', true);
+                _this._checkPromise = item_1.Item.get('prop:GameCapSurfSharingCurrent', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:GameCapSurfSharingCurrent', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
+                resolve(val === '1');
             });
         });
     };
