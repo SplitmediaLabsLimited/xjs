@@ -130,15 +130,18 @@ export class ExtensionWindow extends EventEmitter {
         //Just subscribe to the event. Emitter is already handled.
         if (['sources-list-highlight', 'sources-list-select',
         'sources-list-update'].indexOf(event) >= 0) {
-          try{
-            exec( 'SourcesListSubscribeEvents',
-              ViewTypes.MAIN.toString() ).then(res => {
-                resolve(this);
-              })
-          } catch (ex) {
-            // This exception most probably for older versions which
-            // would work without subscribing to source list events.
-          }
+          App.getGlobalProperty('splitmode').then(split => {
+            const view = split === '1' ? ViewTypes.PREVIEW : ViewTypes.MAIN
+            try{
+              exec( 'SourcesListSubscribeEvents',
+                view.toString() ).then(res => {
+                  resolve(this);
+                })
+            } catch (ex) {
+              // This exception most probably for older versions which
+              // would work without subscribing to source list events.
+            }
+          })
         } else {
           resolve(this);
         }
@@ -272,58 +275,70 @@ export class ExtensionWindow extends EventEmitter {
 // for extensions
 const oldSourcesListUpdate = window.SourcesListUpdate;
 window.SourcesListUpdate = (view, sources) => {
-  if (Number(view) === 0) { // main view {
-    let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
-          propsArr: JXON[] = [],
-          ids = [];
+  App.getGlobalProperty('splitmode').then(res => {
+    const checkSplit = res === '1' ? 1 : 0;
+    if (Number(view) === checkSplit) { // main view {
+      let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
+            propsArr: JXON[] = [],
+            ids = [];
 
-    if (propsJSON.children && propsJSON.children.length > 0) {
-       propsArr = propsJSON.children;
-       for(var i=0; i < propsArr.length; i++){
-         ids.push(propsArr[i]['id']);
-       }
+      if (propsJSON.children && propsJSON.children.length > 0) {
+         propsArr = propsJSON.children;
+         for(var i=0; i < propsArr.length; i++){
+           ids.push(propsArr[i]['id']);
+         }
+      }
+
+      ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
     }
-
-    ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
-  }
-  if (typeof oldSourcesListUpdate === 'function') {
-    oldSourcesListUpdate(view, sources);
-  }
+    if (typeof oldSourcesListUpdate === 'function') {
+      oldSourcesListUpdate(view, sources);
+    }
+  })
 };
 
 const oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = (view, id) => {
-  if (Number(view) === 0) { // main view {
-    ExtensionWindow.emit('sources-list-highlight', id === '' ?
-      null : id);
-  }
-  if (typeof oldSourcesListHighlight === 'function') {
-    oldSourcesListHighlight(view, id);
-  }
+  App.getGlobalProperty('splitmode').then(res => {
+    const checkSplit = res === '1' ? 1 : 0;
+    if (Number(view) === checkSplit) { // main view {
+      ExtensionWindow.emit('sources-list-highlight', id === '' ?
+        null : id);
+    }
+    if (typeof oldSourcesListHighlight === 'function') {
+      oldSourcesListHighlight(view, id);
+    }
+  })
 };
 
 const oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = (view, id) => {
-  if (Number(view) === 0) { // main view
-    ExtensionWindow.emit('sources-list-select', id === '' ?
-      null : id);
-  }
-  if (typeof oldSourcesListSelect === 'function') {
-    oldSourcesListSelect(view, id);
-  }
+  App.getGlobalProperty('splitmode').then(res => {
+    const checkSplit = res === '1' ? 1 : 0;
+    if (Number(view) === checkSplit) { // main view
+      ExtensionWindow.emit('sources-list-select', id === '' ?
+        null : id);
+    }
+    if (typeof oldSourcesListSelect === 'function') {
+      oldSourcesListSelect(view, id);
+    }
+  })
 };
 
 const oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
-  if (Environment.isExtension()) {
-    let view = args[0];
-    let scene = args[1];
-    if (Number(view) === 0) { // only emit events when main view is changing
-      ExtensionWindow.emit('scene-load', Number(scene));
+  App.getGlobalProperty('splitmode').then(res => {
+    if (Environment.isExtension()) {
+      let view = args[0];
+      let scene = args[1];
+      const checkSplit = res === '1' ? 1 : 0;
+      if (Number(view) === checkSplit) { // only emit events when main view is changing
+        ExtensionWindow.emit('scene-load', Number(scene));
+      }
     }
-  }
 
-  if (typeof oldOnSceneLoad === 'function') {
-    oldOnSceneLoad(...args);
-  }
+    if (typeof oldOnSceneLoad === 'function') {
+      oldOnSceneLoad(...args);
+    }
+  })
 }
