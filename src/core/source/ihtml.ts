@@ -166,6 +166,13 @@ export interface ISourceHtml {
    * Enables or disables application of custom CSS to the document
    */
   enableCustomCSS(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if browser instance is optimized via surface sharing
+   */
+  isBrowserOptimized(): Promise<boolean>
 }
 
 export class iSourceHtml implements ISourceHtml{
@@ -785,6 +792,21 @@ export class iSourceHtml implements ISourceHtml{
         } else {
           resolve(this);
         }
+      });
+    });
+  }
+
+  isBrowserOptimized(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isBrowserOptimized', true)
+        this._checkPromise = iItem.get('prop:GameCapSurfSharingCurrent', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:GameCapSurfSharingCurrent', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
+        resolve(val === '1');
       });
     });
   }

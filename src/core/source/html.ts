@@ -255,6 +255,13 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
    */
   enableCustomCSS: (value: boolean) => Promise<HtmlSource>
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if browser instance is optimized via surface sharing
+   */
+  isBrowserOptimized: () => Promise<boolean>
+
   // SourceConfigurable
   /**
    * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
