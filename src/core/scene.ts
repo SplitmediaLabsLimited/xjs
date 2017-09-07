@@ -200,11 +200,14 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        iApp.get('preset:0').then(id => {
-          return Scene.getById(Number(id) + 1);
-        }).then(scene => {
-          resolve(scene);
-        });
+        iApp.getGlobalProperty('splitmode').then(res => {
+          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          iApp.get(preset).then(id => {
+            return Scene.getById(Number(id) + 1);
+          }).then(scene => {
+            resolve(scene);
+          });
+        })
       }
     });
   }
@@ -222,21 +225,24 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        if (scene instanceof Scene) {
-            iApp.set('preset', String(scene._id)).then(res => {
-              resolve(res);
-            });
-        } else if (typeof scene === 'number') {
-          if (scene < 1 || !Number['isInteger'](Number(scene))) {
-            reject(Error('Invalid parameters. Valid range is greater than 0'));
+        iApp.getGlobalProperty('splitmode').then(res => {
+          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          if (scene instanceof Scene) {
+              iApp.set(preset, String(scene._id)).then(res => {
+                resolve(res);
+              });
+          } else if (typeof scene === 'number') {
+            if (scene < 1 || !Number['isInteger'](Number(scene))) {
+              reject(Error('Invalid parameters. Valid range is greater than 0'));
+            } else {
+              iApp.set(preset, String(scene - 1)).then(res => {
+                resolve(res);
+              });
+            }
           } else {
-            iApp.set('preset', String(scene - 1)).then(res => {
-              resolve(res);
-            });
+            reject(Error('Invalid parameters'));
           }
-        } else {
-          reject(Error('Invalid parameters'));
-        }
+        })
       }
     });
   }
