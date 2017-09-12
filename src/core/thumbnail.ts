@@ -11,8 +11,7 @@ export class Thumbnail {
    * return: Promise<string>
    * ```
    *
-   * Returns a data:image/png;base64, url of a specified scene
-   * or the current scene.
+   * Returns a base64 png url of a specified or current scene.
    *
    * #### Usage
    *
@@ -21,36 +20,40 @@ export class Thumbnail {
    *
    * Thumbnail.getSceneThumbnail().then(function(image) {
    *   sceneThumbnail = image;
+   *   // can be used as:
+   *   // div.style.backgroundImage = 'url(data:image/png;base64, image)'
    * })
    */
   static getSceneThumbnail(scene?: any): Promise<string> {
+    let scenePromise
     return new Promise((resolve, reject) => {
-      if (scene instanceof Scene) {
-        iApp.get(`presetthumbnail:${String(scene._id)}`)
-        .then(thumb => {
-          resolve('data:image/png;base64, '+ thumb)
-        })
-      } else if (typeof scene === 'number') {
-        if (scene < 0) {
-          reject(Error('Invalid parameters. Valid range is 0 or higher'))
+      scenePromise = new Promise(innerResolve => {
+        if (scene instanceof Scene) {
+          innerResolve(scene._id)
+        } else if (typeof scene === 'number') {
+          if (scene < 0) {
+            reject(Error('Invalid parameters. Valid range is 0 or higher'))
+          } else {
+            innerResolve(scene)
+          }
+        } else if (!scene) {
+          Scene.getActiveScene().then(currScene => {
+            return currScene.getSceneNumber() //replace with getSceneIndex
+          }).then(sceneNum => {
+            innerResolve(sceneNum - 1)
+          })
         } else {
-          iApp.get(`presetthumbnail:${String(scene)}`)
-          .then(thumb => {
-            resolve('data:image/png;base64, '+ thumb)
-          })
+          reject(Error('Invalid parameters. Valid parameter is scene or scene index'))
         }
-      } else if (!scene) {
-        Scene.getActiveScene().then(currScene => {
-          return currScene.getSceneNumber() //replace with getSceneIndex
-        }).then(sceneNum => {
-          iApp.get(`presetthumbnail:${String(sceneNum - 1)}`)
-          .then(thumb => {
-            resolve('data:image/png;base64, '+ thumb)
-          })
+      })
+
+      scenePromise.then(finalScene => {
+        iApp.get(`presetthumbnail:${String(finalScene)}`)
+        .then(thumb => {
+          resolve(thumb)
         })
-      } else {
-        reject(Error('Invalid parameters. Valid parameter is scene or scene index'))
-      }
+      })
     })
   }
+
 }
