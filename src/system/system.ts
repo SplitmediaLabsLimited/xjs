@@ -5,10 +5,12 @@ import {AudioDevice as AudioDevice} from './audio';
 import {MicrophoneDevice} from './microphone';
 import {CameraDevice} from './camera';
 import {Game as Game} from './game';
+import {Screen} from './screen';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {Scene} from '../core/scene';
+import {Dll} from '../core/dll';
 
 /**
  * This enum is used for {@link #system/System System Class} getAudioDevices
@@ -211,6 +213,47 @@ export class System{
         resolve(mics);
       });
     });
+  }
+
+  static getAvailableScreens(): Promise<any> {
+    return new Promise(resolve => {
+      let screens: Screen[] = [];
+      let devices = []
+      const getParentWindows = Dll.call('xsplit.EnumParentWindows')
+      getParentWindows.then(list => {
+        let processArray = list.split(',')
+        return Promise.all(processArray.map(process => {
+          return Promise.all([
+            Dll.call('xsplit.GetWindowTitle', process),
+            Dll.call('xsplit.GetWindowClassName', process),
+            Dll.call('xsplit.GetWindowProcessId', process),
+            Promise.resolve(process)
+          ])
+        }))
+      }).then(windowDetailsArr => {
+        let devices = windowDetailsArr
+          .filter(windowDetail => windowDetail[0] !== '')
+          .filter(windowDetail => windowDetail[0].indexOf('XSplit Broadcaster') !== 0)
+          .filter(windowDetail => windowDetail[1].indexOf('Shell_TrayWnd') !== 0)
+          .filter(windowDetail => windowDetail[1].indexOf('Button') !== 0)
+          .filter(windowDetail => windowDetail[1].indexOf('Windows.UI.Core.CoreWindow') !== 0)
+          .map(windowDetail => {
+            Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2])
+            .then(detail => {
+              let dev = {
+                'title': windowDetail[0],
+                'class': windowDetail[1],
+                'processDetail': detail.replace(/\\/g, '\\\\').toLocaleLowerCase(),
+                'hwnd': windowDetail[3]
+              }
+              return screens.push(Screen.parse(dev))
+            })
+          })
+          return devices
+      }).then(res => {
+        resolve(screens)
+      })
+    })
   }
 
 
