@@ -410,6 +410,25 @@ export class Item extends Source implements IItemLayout, ISource {
     })
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Removes selected item
+   *
+   * #### Usage
+   * ```javascript
+   * item.remove()
+   * ```
+   */
+  remove(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.set('remove', '', this._id)
+        .then(() => {
+        resolve(true)
+      })
+    })
+  }
+
   /** See: {@link #core/Source#getItemList getItemList} */
   getItemList: () => Promise<Item[]>
 
