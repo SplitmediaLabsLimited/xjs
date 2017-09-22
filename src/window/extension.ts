@@ -21,7 +21,7 @@ const _RESIZE = '2';
  *  for all events that the window should be able to handle.
  *
  *  Currently, the following events are available:
- *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number)
+ *    - `scene-load`: notifies in the event of a scene change. Handler is a function f(sceneNumber: number). For Split Mode `scene-load` listens to the changes on the preview window.
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-select`: notifies when a user clicks a source in the stage. Source id is also returned when source is selected from the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-update`: notifies when there are changes on list sources whether on stage or bottom panel. Handler is a function(ids: string) where ids are comma separated source ids.
@@ -332,7 +332,7 @@ window.OnSceneLoad = function(...args: any[]) {
       let view = args[0];
       let scene = args[1];
       const checkSplit = res === '1' ? 1 : 0;
-      if (Number(view) === checkSplit) { // only emit events when main view is changing
+      if (Number(view) === checkSplit && scene !== 'i12'){
         ExtensionWindow.emit('scene-load', Number(scene));
       }
     }
