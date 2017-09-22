@@ -215,6 +215,20 @@ export class System{
     });
   }
 
+  /**
+   * return: Promise<Screen[]>
+   *
+   * Gets all available screen/windows that may be added to the stage
+   * See also: {@link #system/Screen System/Screen}
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * System.getAvailableScreens().then(function(screens) {
+   *   screens[0].addToScene(); // add first screen to stage
+   * });
+   * ```
+   */
   static getAvailableScreens(): Promise<any> {
     return new Promise(resolve => {
       let screens: Screen[] = [];
