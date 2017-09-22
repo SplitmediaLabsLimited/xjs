@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.4.1
+ * version: 2.4.2
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -4159,6 +4159,25 @@ var Item = (function (_super) {
             item_1.Item.set('prop:globalsrc', '0', _this._id)
                 .then(function () {
                 resolve(_this);
+            });
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Removes selected item
+     *
+     * #### Usage
+     * ```javascript
+     * item.remove()
+     * ```
+     */
+    Item.prototype.remove = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.set('remove', '', _this._id)
+                .then(function () {
+                resolve(true);
             });
         });
     };
