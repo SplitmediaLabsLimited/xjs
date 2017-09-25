@@ -303,7 +303,7 @@ export class System{
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else if (typeof pos.x !== 'number' || typeof pos.y !== 'number') {
-        reject(Error('invalid parameters'));
+        reject(Error('Invalid parameters. Valid format is:: "JSON: {x: number, y: number}"'));
       } else {
         exec('SetCursorPos', String(pos.x), String(pos.y));
         resolve(true);

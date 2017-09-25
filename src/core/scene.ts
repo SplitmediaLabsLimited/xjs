@@ -125,12 +125,12 @@ export class Scene {
           if (Scene._scenePool[cnt]._id === 'i12') {
             resolve(Scene._scenePool[cnt]);
           } else {
-            reject(Error('Invalid parameter'));
+            reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
           }
         } else {
           try {
             if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined'){
-              reject(Error('Invalid parameter'));
+              reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
             } else {
               resolve(Scene._scenePool[sceneNum - 1]);
             }
@@ -228,14 +228,14 @@ export class Scene {
             });
         } else if (typeof scene === 'number') {
           if (scene < 1 || !Number['isInteger'](Number(scene))) {
-            reject(Error('Invalid parameters. Valid range is greater than 0'));
+            reject(Error('Invalid parameters. Valid range is greater than 0.'));
           } else {
             iApp.set('preset', String(scene - 1)).then(res => {
               resolve(res);
             });
           }
         } else {
-          reject(Error('Invalid parameters'));
+          reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
         }
       }
     });

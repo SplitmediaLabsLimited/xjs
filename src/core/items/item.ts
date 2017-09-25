@@ -113,7 +113,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -161,7 +161,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -353,7 +353,7 @@ export class Item extends Source implements IItemLayout, ISource {
                 });
               })
             } else {
-              reject(Error('Invalid parameters'));
+              reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
             }
           } else if(options.linked === undefined) {
             if(options.scene instanceof Scene) {
@@ -365,7 +365,7 @@ export class Item extends Source implements IItemLayout, ISource {
                 });
               })
             } else {
-              reject(Error('Invalid parameters'));
+              reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
             }
           } else if(options.scene === undefined) {
             iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
