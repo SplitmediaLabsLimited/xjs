@@ -7,6 +7,7 @@ export * from './core/app';
 export * from './core/streaminfo';
 export * from './core/output';
 export * from './core/channelmanager';
+export * from './core/languagemanager';
 export * from './core/scene';
 export * from './core/transition';
 export * from './core/dll';
