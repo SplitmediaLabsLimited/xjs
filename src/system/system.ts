@@ -257,7 +257,7 @@ export class System{
               let dev = {
                 'title': windowDetail[0],
                 'class': windowDetail[1],
-                'processDetail': detail.replace(/\\/g, '\\\\').toLocaleLowerCase(),
+                'processDetail': detail.toLocaleLowerCase(),
                 'hwnd': windowDetail[3]
               }
               return screens.push(Screen.parse(dev))
