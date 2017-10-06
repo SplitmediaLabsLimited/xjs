@@ -223,6 +223,37 @@ export class Item extends Source implements IItemLayout, ISource {
   getId: () => Promise<string>
 
   /**
+   * return: Promise<Number>
+   *
+   * Get the frames rendered per second
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getFPS().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getFPS(): Promise<number>{
+    return new Promise(resolve => {
+      let initial;
+      iItem.get('stats:frames', this._id).then(frames => {
+        initial = (frames === 'null' || frames === '') ? 0 : Number(frames);
+
+        return new Promise(innerResolve => {
+          setTimeout(innerResolve, 1000);
+        });
+      }).then( () => {
+        return iItem.get('stats:frames', this._id);
+      }).then(frames => {
+        let final = (frames === 'null' || frames === '') ? 0 : Number(frames);
+        resolve(final - initial);
+      });
+    });
+  }
+
+  /**
    * return: Promise<ViewTypes>
    *
    * Get the view type of the item
@@ -238,7 +269,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * })
    * ```
    */
-  getView() {
+  getView(): Promise<string> {
     return new Promise(resolve => {
       iItem.get('prop:viewid', this._id).then(viewId => {
         let view = ViewTypes.MAIN;
