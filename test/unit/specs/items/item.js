@@ -260,6 +260,14 @@ describe('Item ===', function() {
     expect(Item).hasMethods('toXML');
   });
 
+  it('should have getFPS method', function() {
+    expect(Item).hasMethods('getFPS');
+    Item.getFPS().then(function(val) {
+      expect(val).toBeTypeOf('number');
+      expect(val).not.toBeNaN();
+    })
+  });
+
   it('should have duplicate method', function() {
     expect(Item).hasMethods('duplicate');
   })

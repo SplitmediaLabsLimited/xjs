@@ -113,7 +113,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -161,7 +161,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -225,12 +225,12 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * return: Promise<Number>
    *
-   * Get the frames rendered per second
+   * Get the frames rendered per second of an item
    *
    * #### Usage
    *
    * ```javascript
-   * item.getFPS().then(function(id) {
+   * item.getFPS().then(function(fps) {
    *   // The rest of your code here
    * });
    * ```
