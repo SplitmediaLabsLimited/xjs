@@ -127,7 +127,7 @@ export class CameraDevice implements Addable {
             if (typeof value === 'number') {
               let int = Math.floor(value);
               if (int > sceneCount || int === 0) {
-                innerReject(new Error('Scene not existing.'));
+                innerReject(Error('Scene not existing.'));
               } else {
                 scenePrefix = 's:' + (int - 1) + '|';
                 innerResolve();
@@ -135,7 +135,7 @@ export class CameraDevice implements Addable {
             } else {
               value.getSceneNumber().then(int => {
                 if (int > sceneCount || int === 0) {
-                  innerReject(new Error('Scene not existing.'));
+                  innerReject(Error('Scene not existing.'));
                 } else {
                   scenePrefix = 's:' + (int - 1) + '|';
                   innerResolve();
@@ -147,7 +147,7 @@ export class CameraDevice implements Addable {
       } else if (typeof value === 'undefined') {
         scenePromise = Promise.resolve();
       } else {
-        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+        scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
       }
 
       scenePromise.then(() => {

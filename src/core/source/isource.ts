@@ -336,7 +336,7 @@ export class iSource implements ISource{
         resolve(this._id)
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          reject(new Error('Only available on versions above ' + minVersion));
+          reject(Error('Only available on versions above ' + minVersion));
         } else {
         iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
         .then(srcid => {

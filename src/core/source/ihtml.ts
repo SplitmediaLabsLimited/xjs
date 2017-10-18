@@ -258,7 +258,7 @@ export class iSourceHtml implements ISourceHtml{
           if (code) {
             resolve(this);
           } else {
-            reject('Invalid value');
+            reject(Error('Invalid value'));
           }
         });
     });
