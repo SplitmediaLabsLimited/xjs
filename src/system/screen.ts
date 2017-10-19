@@ -1,7 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {Addable} from './iaddable';
-import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {App as iApp} from '../internal/app';
 import {Scene} from '../core/scene';
