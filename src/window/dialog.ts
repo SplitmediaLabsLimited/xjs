@@ -36,10 +36,11 @@ let dialogProxy: any;
  *      .setTitle('ThisDialogReturnsAString')
  *      .setBorderOptions(true, false)
  *      .setButtons(true, true)
- *      .show()
- *      .getResult().then(function(result) {
- *        document.getElementById('input').value = result;
- *      });
+ *      .show(function(dialog) {
+ *        dialog.getResult().then(function(result) {
+ *          document.getElementById('input').value = result;
+ *        });
+ *      })
  *    });
  *  });
  *
@@ -140,7 +141,7 @@ export class Dialog{
    *  external.Close();
    *  ```
    */
-  static return(result ?: string):Promise<any> {
+  static return(result ?: string): Promise<any> {
     return new Promise(resolve => {
       if (result !== undefined) {
         exec('SetDialogResult', result).then(res => {
@@ -226,7 +227,7 @@ export class Dialog{
   }
 
   /**
-   *  return: Dialog
+   *  return: Promise<Dialog>
    *
    *  After configuring the dialog, call this function to spawn it.
    *
