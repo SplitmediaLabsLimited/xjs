@@ -37,8 +37,11 @@
 * OF SUCH DAMAGE.
 */
 
-var xjs = (function (exports) {
-'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global['xjs-framework'] = {})));
+}(this, (function (exports) { 'use strict';
 
 function __extends(d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -13264,6 +13267,6 @@ exports.ExtensionWindow = ExtensionWindow;
 exports.Dialog = Dialog;
 exports.Remote = Remote;
 
-return exports;
+Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
+})));

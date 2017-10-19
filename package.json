@@ -1,6 +1,6 @@
 {
   "name": "xjs-framework",
-  "version": "2.4.2",
+  "version": "3.0.0-alpha-0",
   "description": "XSplit JS Framework",
   "main": "src/index.ts",
   "devDependencies": {
@@ -64,17 +64,12 @@
     "test": "test"
   },
   "files": [
-    "defs/",
-    "dist/",
-    "src/",
-    "test/",
-    "gulpfile.js",
-    "karma.conf.js",
-    "tsconfig.json",
-    "rollup.congif.js"
+    "dist/"
   ],
   "scripts": {
     "test": "karma start --single-run --browsers Chrome",
-    "build": "rollup -c ./rollup.config-umd.js && rollup -c ./rollup.config-iife.js"
+    "build": "rollup -c ./rollup.config-umd.js && rollup -c ./rollup.config-iife.js",
+    "script": "rollup -c ./rollup.config-iife.js",
+    "stand-alone": "rollup -c ./rollup.config-umd.js"
   }
 }

@@ -12,8 +12,8 @@ export default {
   input: 'src/index.ts',
   name: 'xjs-framework',
   output: {
-    file: 'build/xjs.js',
-    format: 'umd',
+    file: 'dist/build/xjs.min.js',
+    format: 'umd'
   },
   plugins: [
     nodeResolve({
@@ -23,6 +23,7 @@ export default {
     typescript(),
     commonjs({
       ignoreGlobal: false,
+      sourceMap: false,
       ignore: ['conditional-runtime-dependency']
     }),
     babel({
@@ -41,7 +42,6 @@ export default {
             var text = comment.value;
             var type = comment.type;
             if (type == "comment2") {
-                // multiline comment
                 return /@preserve|@license|@cc_on/i.test(text);
             }
         }

@@ -12,8 +12,8 @@ export default {
   input: 'src/index.ts',
   name: 'xjs',
   output: {
-    file: 'build/xjs-script.js',
-    format: 'iife',
+    file: 'dist/build/xjs-script.min.js',
+    format: 'iife'
   },
   plugins: [
     nodeResolve({
@@ -21,15 +21,15 @@ export default {
       main: true
     }),
     typescript(),
-    babel({
-      plugins: ['external-helpers'],
-      externalHelpers: true,
-      exclude: 'node_modules/**'
-    }),
     commonjs({
       ignoreGlobal: false,
       sourceMap: false,
       ignore: ['conditional-runtime-dependency']
+    }),
+    babel({
+      plugins: ['external-helpers'],
+      externalHelpers: true,
+      exclude: 'node_modules/**'
     }),
     license({
       banner: {
