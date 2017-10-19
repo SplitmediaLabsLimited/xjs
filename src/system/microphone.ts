@@ -96,42 +96,59 @@ export class MicrophoneDevice implements Addable {
     return new Promise((resolve, reject) => {
       let scenePrefix = '';
       let scenePromise;
-      if (typeof value === 'number' || value instanceof Scene) {
-        scenePromise = new Promise((innerResolve, innerReject) => {
-          Scene.getSceneCount().then(sceneCount => {
-            if (typeof value === 'number') {
-              let int = Math.floor(value);
-              if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
-              } else {
-                scenePrefix = 's:' + (int - 1) + '|';
-                innerResolve();
-              }
-            } else {
-              value.getSceneNumber().then(int => {
+      let checkSplitMode;
+
+      checkSplitMode = new Promise(splitPromise => {
+        iApp.getGlobalProperty('splitmode').then(res => {
+          if (res === '1' && !value) {
+            Scene.getActiveScene().then(val => {
+              value = val
+              splitPromise(value)
+            })
+          } else {
+            splitPromise(value)
+          }
+        })
+      })
+
+      checkSplitMode.then(value => {
+        if (typeof value === 'number' || value instanceof Scene) {
+          scenePromise = new Promise((innerResolve, innerReject) => {
+            Scene.getSceneCount().then(sceneCount => {
+              if (typeof value === 'number') {
+                let int = Math.floor(value);
                 if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                innerReject(Error('Scene not existing.'));
                 } else {
                   scenePrefix = 's:' + (int - 1) + '|';
                   innerResolve();
                 }
-              });
-            }
+              } else {
+                value.getSceneNumber().then(int => {
+                  if (int > sceneCount || int === 0) {
+                  innerReject(Error('Scene not existing.'));
+                  } else {
+                    scenePrefix = 's:' + (int - 1) + '|';
+                    innerResolve();
+                  }
+                });
+              }
+            });
           });
-        });
-      } else if (typeof value === 'undefined') {
-        scenePromise = Promise.resolve();
-      } else {
+        } else if (typeof value === 'undefined') {
+          scenePromise = Promise.resolve();
+        } else {
         scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-      }
+        }
 
-      scenePromise.then(() => {
-        return iApp.callFunc(scenePrefix + 'additem', this.toXML().toString());
-      }).then(() => {
-        resolve(true);
-      }).catch(err => {
-        reject(err);
-      });
+        scenePromise.then(() => {
+          return iApp.callFunc(scenePrefix + 'additem', this.toXML().toString());
+        }).then(() => {
+          resolve(true);
+        }).catch(err => {
+          reject(err);
+        });
+      })
     });
   }
 }
