@@ -182,6 +182,56 @@ export class Scene {
   }
 
   /**
+   * return: Promise<Scene>
+   *
+   * Get a specific scene object given the scene unique Id.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var scene1;
+   * Scene.getBySceneUid('{056936DD-DFAA-4148-9D08-21C8E83CE37C}')
+   * .then(function(scene) {
+   *   scene1 = scene;
+   * });
+   * ```
+   */
+  static getBySceneUid(sceneUid: string): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      const getScene = new Promise(sceneResolve => {
+        iApp.getAsList('presetconfig')
+        .then(jsonArr => {
+          const lastVal = jsonArr.length
+          let check = false;
+          jsonArr.map((sceneJSON, idx) => {
+            if (sceneJSON['id'] === sceneUid) {
+              sceneResolve(sceneJSON)
+              check = true
+            }
+            if (idx === lastVal - 1 && !check) {
+              reject(Error('No matching Scene with the Unique ID provided.'))
+            }
+          })
+        })
+      })
+
+      getScene.then(sceneJSON => {
+        Scene.getByName(sceneJSON['name'])
+        .then(scenes => {
+          scenes.map(scene => {
+            scene.getSceneUid()
+            .then(uid => {
+              if(sceneUid === uid) {
+                resolve(scene)
+              }
+            })
+          })
+        })
+      })
+    })
+  }
+
+  /**
    * return: Promise<Scene[]>
    *
    * Asynchronous function to get a list of scene objects with a specific name.
