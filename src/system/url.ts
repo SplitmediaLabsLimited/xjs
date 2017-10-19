@@ -37,7 +37,7 @@ export class Url implements Addable {
       if (/^https?:\/\//i.test(this._url)) {
         resolve(this._url);
       } else if (/[a-z]+:\/\//i.test(this._url)) {
-        reject(new Error('You may only add HTTP or HTTPS URLs to the stage.'));
+        reject(Error('You may only add HTTP or HTTPS URLs to the stage.'));
       } else {
         resolve('http://' + this._url);
       }
@@ -66,7 +66,7 @@ export class Url implements Addable {
             if (typeof value === 'number') {
               let int = Math.floor(value);
               if (int > sceneCount || int === 0) {
-                innerReject(new Error('Scene not existing.'));
+                innerReject(Error('Scene not existing.'));
               } else {
                 scenePrefix = 's:' + (int - 1) + '|';
                 innerResolve();
@@ -74,7 +74,7 @@ export class Url implements Addable {
             } else {
               value.getSceneNumber().then(int => {
                 if (int > sceneCount || int === 0) {
-                  innerReject(new Error('Scene not existing.'));
+                  innerReject(Error('Scene not existing.'));
                 } else {
                   scenePrefix = 's:' + (int - 1) + '|';
                   innerResolve();
@@ -86,7 +86,7 @@ export class Url implements Addable {
       } else if (typeof value === 'undefined') {
         scenePromise = Promise.resolve();
       } else {
-        scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+        scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
       }
 
       scenePromise.then(() => {

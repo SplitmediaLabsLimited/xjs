@@ -86,7 +86,7 @@ export class Dll extends EventEmitter {
         if (retValue !== undefined) {
           resolve(retValue);
         } else {
-          reject('DLL call not accessible.');
+          reject(Error('DLL call not accessible.'));
         }
       });
     });
@@ -117,7 +117,7 @@ export class Dll extends EventEmitter {
         if (retValue !== undefined) {
           resolve(retValue);
         } else {
-          reject('DLL call not accessible.');
+          reject(Error('DLL call not accessible.'));
         }
       });
     });

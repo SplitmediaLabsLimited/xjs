@@ -701,8 +701,8 @@ export class ItemLayout implements IItemLayout {
           resolve(this);
         });
       } else {
-        reject('Error setting cropping,' +
-          ' insufficient properties (left, top, right, bottom)');
+        reject(Error('Error setting cropping,' +
+          ' insufficient properties (left, top, right, bottom)'));
       }
     });
   }
@@ -1206,8 +1206,8 @@ export class ItemLayout implements IItemLayout {
           });
         });
       } else {
-        reject('Error setting cropping,' +
-          ' insufficient properties (left, top, right, bottom)');
+        reject(Error('Error setting cropping,' +
+          ' insufficient properties (left, top, right, bottom)'));
       }
     });
   }

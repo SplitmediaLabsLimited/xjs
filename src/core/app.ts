@@ -627,7 +627,7 @@ export class App{
     return new Promise((resolve, reject) => {
 
       if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
-        reject(Error('Value can only 0, 1 or 255'));
+        reject(Error('Value can only be 0, 1 or 255'));
       }
 
       iApp.getAsList('microphonedev2').then(arr => {
@@ -1024,7 +1024,7 @@ export class App{
   clearBrowserCookies(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
-        reject(new Error('This method is not available to source plugins.'));
+        reject(Error('This method is not available to source plugins.'));
       } else {
         exec('CallHost', 'deletecookie:videoitemprop');
         resolve(true);

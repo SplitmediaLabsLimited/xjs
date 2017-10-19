@@ -179,7 +179,7 @@ export class IO {
             exec('GetVideoDuration', file);
           }
         } else {
-          reject(new Error('No file indicated.'))
+          reject(Error('No file indicated.'))
         }
       }
     });

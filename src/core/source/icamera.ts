@@ -175,7 +175,7 @@ export class SourceCamera implements ISourceCamera {
           return this.isAudioAvailable();
         }).then(val => {
           if (val === false && itemAudio === '') {
-            reject(new Error('Device has no audio'));
+            reject(Error('Device has no audio'));
           } else {
             return this.getDelay();
           }
@@ -212,7 +212,7 @@ export class SourceCamera implements ISourceCamera {
       }
       this._checkPromise.then(val => {
           if (val === '') {
-            reject(new Error('No tied audio input'));
+            reject(Error('No tied audio input'));
           } else {
             itemAudioId = val;
             return System.getMicrophones();
@@ -231,7 +231,7 @@ export class SourceCamera implements ISourceCamera {
           if (micDevice !== undefined) {
             resolve(micDevice);
           } else {
-            reject(new Error('Tied audio input not present'));
+            reject(Error('Tied audio input not present'));
           }
         });
     });
@@ -286,7 +286,7 @@ export class SourceCamera implements ISourceCamera {
             if (value === (val === ('1'))) {
               resolve(this);
             } else {
-              reject(new Error('Camera feed cannot be paused/resumed or is not present'));
+              reject(Error('Camera feed cannot be paused/resumed or is not present'));
             }
           });
     });
@@ -309,7 +309,7 @@ export class SourceCamera implements ISourceCamera {
               if (isActive) {
                 resolve(false);
               } else {
-                reject(new Error
+                reject(Error
                   ('Cannot check hardware encoding. Device not present'));
               }
             })
@@ -369,7 +369,7 @@ export class SourceCamera implements ISourceCamera {
       var isPositive, audioOffset;
       this.isHardwareEncoder().then(val => {
         if (val === true) {
-          reject(new Error('Cannot set delay to hardware encoder devices'));
+          reject(Error('Cannot set delay to hardware encoder devices'));
         } else {
           return this.getValue();
         }
@@ -378,7 +378,7 @@ export class SourceCamera implements ISourceCamera {
           var regex = new RegExp(
             this._delayExclusionObject[key].toLowerCase(), 'g');
           if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-            reject(new Error('Cannot set delay to specific device'));
+            reject(Error('Cannot set delay to specific device'));
             break;
           }
         }

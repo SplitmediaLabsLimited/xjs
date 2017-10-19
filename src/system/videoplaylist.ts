@@ -118,10 +118,10 @@ export class VideoPlaylist implements Addable {
             });
 
           } else {
-            reject(new Error('One or more files included are invalid.'));
+            reject(Error('One or more files included are invalid.'));
           }
         } else {
-          reject(new Error('No media file included.'));
+          reject(Error('No media file included.'));
         }
       });
     });
@@ -141,7 +141,7 @@ export class VideoPlaylist implements Addable {
   addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
-        reject(new Error('This function is not available to sources.'));
+        reject(Error('This function is not available to sources.'));
       } else {
         let scenePrefix = '';
         let scenePromise;
@@ -151,7 +151,7 @@ export class VideoPlaylist implements Addable {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
                 if (int > sceneCount || int === 0) {
-                  innerReject(new Error('Scene not existing.'));
+                  innerReject(Error('Scene not existing.'));
                 } else {
                   scenePrefix = 's:' + (int - 1) + '|';
                   innerResolve();
@@ -159,7 +159,7 @@ export class VideoPlaylist implements Addable {
               } else {
                 value.getSceneNumber().then(int => {
                   if (int > sceneCount || int === 0) {
-                    innerReject(new Error('Scene not existing.'));
+                    innerReject(Error('Scene not existing.'));
                   } else {
                     scenePrefix = 's:' + (int - 1) + '|';
                     innerResolve();
@@ -171,7 +171,7 @@ export class VideoPlaylist implements Addable {
         } else if (typeof value === 'undefined') {
           scenePromise = Promise.resolve();
         } else {
-          scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+          scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
         }
 
         scenePromise.then(() => {

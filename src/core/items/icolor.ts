@@ -132,7 +132,7 @@ export class ItemColor implements IItemColor {
   setTransparency(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
       if (value < 0 || value > 255) {
-        reject(RangeError('Transparency may only be in the range 0 to 255.'));
+        reject(RangeError('Transparency may only be in the range 0-255.'));
       } else {
         iItem.set('prop:alpha', String(value), this._id).then(() => {
           resolve(this);
