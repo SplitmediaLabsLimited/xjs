@@ -117,7 +117,7 @@ export class Scene {
    *   scene1 = scene;
    * });
    * ```
-   * For deprecation, please use getBySceneIndex instead.
+   * ** For deprecation, please use getBySceneIndex instead.
    */
   static getById(sceneNum: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
@@ -1012,7 +1012,7 @@ export class Scene {
    * });
    * ```
    *
-   * For deprecation, please use getSceneIndex instead.
+   * ** For deprecation, please use getSceneIndex instead.
    */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
