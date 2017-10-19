@@ -274,9 +274,10 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
+
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setValue', true)
-        iItem.set('prop:srcitem', val, this._id)
+        iItem.set(String(this._type) === '2' ? 'prop:item' : 'prop:srcitem' , val, this._id)
         .then(() => {
           resolve(this);
         });
