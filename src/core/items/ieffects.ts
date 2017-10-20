@@ -745,7 +745,7 @@ export class ItemEffect implements IItemEffect {
         } else if (val === '2' || val === '1') {
           resolve(false);
         } else {
-          reject(new Error('This method is not available if filemasking is not enabled.'));
+          reject(Error('This method is not available if filemasking is not enabled.'));
         }
       });
     });
@@ -759,7 +759,7 @@ export class ItemEffect implements IItemEffect {
         } else if (val === '2' || val === '4') {
           iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id);
         } else {
-          reject(new Error('This method is not available if filemasking is not enabled.'));
+          reject(Error('This method is not available if filemasking is not enabled.'));
         }
       })
     });

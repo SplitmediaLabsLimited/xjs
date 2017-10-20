@@ -113,7 +113,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -161,7 +161,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * let itemChange = function(...args) {
    *   console.log('Item has changed');
    * }
-   * 
+   *
    * let current;
    * let items;
    * xjs.Scene.getActiveScene()
@@ -223,6 +223,37 @@ export class Item extends Source implements IItemLayout, ISource {
   getId: () => Promise<string>
 
   /**
+   * return: Promise<Number>
+   *
+   * Get the frames rendered per second of an item
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getFPS().then(function(fps) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getFPS(): Promise<number>{
+    return new Promise(resolve => {
+      let initial;
+      iItem.get('stats:frames', this._id).then(frames => {
+        initial = (frames === 'null' || frames === '') ? 0 : Number(frames);
+
+        return new Promise(innerResolve => {
+          setTimeout(innerResolve, 1000);
+        });
+      }).then( () => {
+        return iItem.get('stats:frames', this._id);
+      }).then(frames => {
+        let final = (frames === 'null' || frames === '') ? 0 : Number(frames);
+        resolve(final - initial);
+      });
+    });
+  }
+
+  /**
    * return: Promise<ViewTypes>
    *
    * Get the view type of the item
@@ -238,7 +269,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * })
    * ```
    */
-  getView() {
+  getView(): Promise<string> {
     return new Promise(resolve => {
       iItem.get('prop:viewid', this._id).then(viewId => {
         let view = ViewTypes.MAIN;
@@ -353,7 +384,7 @@ export class Item extends Source implements IItemLayout, ISource {
                 });
               })
             } else {
-              reject(Error('Invalid parameters'));
+              reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
             }
           } else if(options.linked === undefined) {
             if(options.scene instanceof Scene) {
@@ -365,7 +396,7 @@ export class Item extends Source implements IItemLayout, ISource {
                 });
               })
             } else {
-              reject(Error('Invalid parameters'));
+              reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
             }
           } else if(options.scene === undefined) {
             iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
@@ -406,6 +437,25 @@ export class Item extends Source implements IItemLayout, ISource {
       iItem.set('prop:globalsrc', '0', this._id)
         .then(() => {
         resolve(this)
+      })
+    })
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Removes selected item
+   *
+   * #### Usage
+   * ```javascript
+   * item.remove()
+   * ```
+   */
+  remove(): Promise<boolean> {
+    return new Promise(resolve => {
+      iItem.set('remove', '', this._id)
+        .then(() => {
+        resolve(true)
       })
     })
   }

@@ -156,6 +156,11 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
    */
   enableCustomCSS: (value: boolean) => Promise<HtmlItem>
 
+  /**
+   * See: {@link #core/HtmlSource#isBrowserOptimized isBrowserOptimized}
+   */
+  isBrowserOptimized: () => Promise<boolean>
+
   // ItemLayout
 
   /**

@@ -106,7 +106,7 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
                 resolve(this);
               });
         } else {
-          reject(Error('Invalid value.'));
+          reject(Error('Invalid parameter. Value can only be either filename string or its index equivalent in the VideoPlaylist files array'));
         };
       })
     });

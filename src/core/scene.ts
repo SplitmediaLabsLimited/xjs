@@ -117,6 +117,7 @@ export class Scene {
    *   scene1 = scene;
    * });
    * ```
+   * ** For deprecation, please use getBySceneIndex instead.
    */
   static getById(sceneNum: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
@@ -125,12 +126,12 @@ export class Scene {
           if (Scene._scenePool[cnt]._id === 'i12') {
             resolve(Scene._scenePool[cnt]);
           } else {
-            reject(Error('Invalid parameter'));
+            reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
           }
         } else {
           try {
             if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined'){
-              reject(Error('Invalid parameter'));
+              reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
             } else {
               resolve(Scene._scenePool[sceneNum - 1]);
             }
@@ -140,6 +141,94 @@ export class Scene {
         }
       });
     });
+  }
+
+  /**
+   * return: Promise<Scene>
+   *
+   * Get a specific scene object given the scene index.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var scene1;
+   * Scene.getBySceneIndex(0).then(function(scene) {
+   *   scene1 = scene;
+   * });
+   * ```
+   */
+  static getBySceneIndex(sceneIndex: any): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      Scene._initializeScenePoolAsync().then(cnt => {
+        if (sceneIndex === 'i12') {
+          if (Scene._scenePool[cnt]._id === 'i12') {
+            resolve(Scene._scenePool[cnt]);
+          } else {
+            reject(Error('Invalid parameter'));
+          }
+        } else {
+          try {
+            if (sceneIndex > cnt || typeof Scene._scenePool[sceneIndex] === 'undefined'){
+              reject(Error('Invalid parameter'));
+            } else {
+              resolve(Scene._scenePool[sceneIndex]);
+            }
+          } catch(e) {
+            reject(Error('Parameter must be a number'));
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * return: Promise<Scene>
+   *
+   * Get a specific scene object given the scene unique Id.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var scene1;
+   * Scene.getBySceneUid('{056936DD-DFAA-4148-9D08-21C8E83CE37C}')
+   * .then(function(scene) {
+   *   scene1 = scene;
+   * });
+   * ```
+   */
+  static getBySceneUid(sceneUid: string): Promise<Scene> {
+    return new Promise((resolve, reject) => {
+      const getScene = new Promise(sceneResolve => {
+        iApp.getAsList('presetconfig')
+        .then(jsonArr => {
+          const lastVal = jsonArr.length
+          let check = false;
+          jsonArr.map((sceneJSON, idx) => {
+            if (sceneJSON['id'] === sceneUid) {
+              sceneResolve(sceneJSON)
+              check = true
+            }
+            if (idx === lastVal - 1 && !check) {
+              reject(Error('No matching Scene with the Unique ID provided.'))
+            }
+          })
+        })
+      })
+
+      getScene.then(sceneJSON => {
+        Scene.getByName(sceneJSON['name'])
+        .then(scenes => {
+          scenes.map(scene => {
+            scene.getSceneUid()
+            .then(uid => {
+              if(sceneUid === uid) {
+                resolve(scene)
+              }
+            })
+          })
+        })
+      })
+    })
   }
 
   /**
@@ -200,11 +289,14 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        iApp.get('preset:0').then(id => {
-          return Scene.getById(Number(id) + 1);
-        }).then(scene => {
-          resolve(scene);
-        });
+        iApp.getGlobalProperty('splitmode').then(res => {
+          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          iApp.get(preset).then(id => {
+            return Scene.getById(Number(id) + 1);
+          }).then(scene => {
+            resolve(scene);
+          });
+        })
       }
     });
   }
@@ -222,21 +314,24 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        if (scene instanceof Scene) {
-            iApp.set('preset', String(scene._id)).then(res => {
-              resolve(res);
-            });
-        } else if (typeof scene === 'number') {
-          if (scene < 1 || !Number['isInteger'](Number(scene))) {
-            reject(Error('Invalid parameters. Valid range is greater than 0'));
+        iApp.getGlobalProperty('splitmode').then(res => {
+          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          if (scene instanceof Scene) {
+              iApp.set(preset, String(scene._id)).then(res => {
+                resolve(res);
+              });
+          } else if (typeof scene === 'number') {
+            if (scene < 1 || !Number['isInteger'](Number(scene))) {
+            reject(Error('Invalid parameters. Valid range is greater than 0.'));
+            } else {
+              iApp.set(preset, String(scene - 1)).then(res => {
+                resolve(res);
+              });
+            }
           } else {
-            iApp.set('preset', String(scene - 1)).then(res => {
-              resolve(res);
-            });
+          reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
           }
-        } else {
-          reject(Error('Invalid parameters'));
-        }
+        })
       }
     });
   }
@@ -972,6 +1067,8 @@ export class Scene {
    *  console.log('My scene is scene number ' + num);
    * });
    * ```
+   *
+   * ** For deprecation, please use getSceneIndex instead.
    */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
@@ -981,6 +1078,59 @@ export class Scene {
         resolve(this._id)
       }
     });
+  }
+
+  /**
+   * return: number
+   *
+   * Get the 0-indexed scene number of this scene object.
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getSceneIndex().then(function(num) {
+   *  console.log('Scene index is ' + num);
+   * });
+   * ```
+   */
+  getSceneIndex(): Promise<number> {
+    return new Promise(resolve => {
+      if (typeof this._id !== 'number') {
+        resolve(Number(this._id));
+      } else {
+        resolve(this._id)
+      }
+    });
+  }
+
+  /**
+   * return: string
+   *
+   * Get the unique id of this scene object.
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getSceneUid().then(function(res) {
+   *  console.log('Scene unique id is  ' + res);
+   * });
+   * ```
+   */
+  getSceneUid(): Promise<string> {
+    let sceneName;
+    this.getName().then(name => sceneName = name)
+    return new Promise(resolve => {
+      iApp.getAsList('presetconfig')
+      .then(jsonArr => {
+        jsonArr.map(scene => {
+          if (scene['name'] === sceneName) {
+            resolve(scene['id'])
+          }
+        })
+      })
+    })
   }
 
   /**

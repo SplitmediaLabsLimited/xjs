@@ -274,9 +274,10 @@ export class iSource implements ISource{
       } else {
         this._value = val;
       }
+
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setValue', true)
-        iItem.set('prop:srcitem', val, this._id)
+        iItem.set(String(this._type) === '2' ? 'prop:item' : 'prop:srcitem' , val, this._id)
         .then(() => {
           resolve(this);
         });
@@ -336,7 +337,7 @@ export class iSource implements ISource{
         resolve(this._id)
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          reject(new Error('Only available on versions above ' + minVersion));
+          reject(Error('Only available on versions above ' + minVersion));
         } else {
         iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
         .then(srcid => {

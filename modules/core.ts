@@ -4,6 +4,7 @@ export * from '../src/core/scene';
 export * from '../src/core/transition';
 export * from '../src/core/streaminfo';
 export * from '../src/core/channelmanager';
+export * from '../src/core/languageinfo';
 export * from '../src/core/dll';
 export * from '../src/core/extension';
 export * from '../src/core/output';

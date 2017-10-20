@@ -656,7 +656,7 @@ export class SourcePlayback implements ISourcePlayback {
           resolve(this);
         });
       } else {
-        reject(new Error('You can only set the value to a valid media type'));
+        reject(Error('You can only set the value to a valid media type'));
       }
     });
   }
