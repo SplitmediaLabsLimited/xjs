@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "target": "es5",
+        "target": "ES5",
         "outDir": "dist/",
-        "module": "commonjs"
+        "module": "UMD"
     },
     "files": [
         "./src/index.ts"

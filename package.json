@@ -1,10 +1,10 @@
 {
   "name": "xjs-framework",
-  "version": "3.0.0-alpha-0",
+  "version": "3.0.0-alpha-1",
   "description": "XSplit JS Framework",
-  "main": "src/index.ts",
   "devDependencies": {
     "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-es2015-rollup": "^3.0.0",
     "bower": "^1.4.1",
@@ -28,6 +28,8 @@
     "karma-jasmine": "^0.3.6",
     "karma-jasmine-html-reporter": "^0.1.8",
     "lodash": "^3.10.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-clean": "^1.0.0",
     "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-filesize": "^1.4.2",
     "rollup-plugin-license": "^0.5.0",
@@ -63,13 +65,17 @@
     "doc": "docs",
     "test": "test"
   },
+  "main": "src/index.ts",
+  "browser": "dist/lib/xjs.js",
   "files": [
-    "dist/"
+    "dist/xjs.js"
   ],
   "scripts": {
     "test": "karma start --single-run --browsers Chrome",
-    "build": "rollup -c ./rollup.config-umd.js && rollup -c ./rollup.config-iife.js",
-    "script": "rollup -c ./rollup.config-iife.js",
-    "stand-alone": "rollup -c ./rollup.config-umd.js"
+    "clean": "del /S .\\dist\\*.js && if exist .\\dist\\build rd .\\dist\\build",
+    "build:iife": "rollup -c ./rollup.config.js --environment IIFE",
+    "build:umd": "rollup -c ./rollup.config.js --environment UMD",
+    "build": "rollup -c ./rollup.config.js --environment ALL",
+    "prepublish": "node version-update.js&&npm run clean&&npm run build:umd"
   }
 }

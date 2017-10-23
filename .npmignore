@@ -2,12 +2,7 @@ node_modules/
 *.sublime-project
 *.sublime-workspace
 docs/
-dist/api/
-dist/core/
-dist/internal/
-dist/system/
-dist/util/
-dist/window/
+dist/
 defs/
 modules/
 src/
