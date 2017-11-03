@@ -1,3 +1,4 @@
+// prepublish updates
 // used for incrementing package.json version
 // update the version on LICENSE
 

@@ -3,7 +3,8 @@
         "declaration": true,
         "target": "ES5",
         "outDir": "dist/",
-        "module": "UMD"
+        "module": "es2015",
+        "moduleResolution": "node"
     },
     "files": [
         "./src/index.ts"

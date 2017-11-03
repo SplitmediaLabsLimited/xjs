@@ -3,16 +3,19 @@ import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import license from 'rollup-plugin-license';
+import cjs from 'rollup-plugin-commonjs';
+import babel from 'rollup-plugin-babel';
 import { minify } from 'uglify-es';
 
 const defaultConfig = {
   input: 'src/index.ts',
   name: 'xjs',
   plugins: [nodeResolve({
-    jsnext: true,
-    main: true
+    jsnext: true
   }),
   typescript(),
+  babel(),
+  cjs(),
   license({
     banner: {
       file: ('./LICENSE')
@@ -61,6 +64,7 @@ const minifiedConfigs = activeConfigs.reduce(
   (minifiedConfigs, activeConfig) => minifiedConfigs.concat(
     Object.assign({}, activeConfig, {
       plugins: [
+        ...activeConfig.plugins,
         uglify({
           output: {
             comments: function(node, comment) {
@@ -75,8 +79,7 @@ const minifiedConfigs = activeConfigs.reduce(
           ie8: false
         },
         minify
-        ),
-        ...activeConfig.plugins
+        )
       ],
       output:  process.env.ALL ? {
         file: activeConfig.output.file.replace('.js', '.min.js'),
