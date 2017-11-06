@@ -130,7 +130,7 @@ export class Source implements ISource{
           }
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
+        Scene.searchItemById(iItem.getBaseId()).then(item => {
           return item.getSource();
         }).then(source => {
           resolve(source);
@@ -176,7 +176,7 @@ export class Source implements ISource{
           .is
           .lessThan(minVersion)
       ) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
+        Scene.searchItemById(iItem.getBaseId()).then(item => {
           const itemArray = [];
           itemArray.push(item);
           resolve(itemArray);
@@ -188,7 +188,7 @@ export class Source implements ISource{
 
           itemsArray.forEach(itemId => {
             promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
+              Scene.searchItemById(itemId).then(item => {
                 itemResolve(item);
               }).catch(() => itemResolve(null));
             }));
@@ -233,8 +233,7 @@ export class Source implements ISource{
         }
 
         let sourcePromise = srcid => new Promise(sourceResolve => {
-          Scene.searchSourcesById(srcid).then(result => {
-            allSrc = allSrc.concat(result);
+          Scene.searchSourceById(srcid).then(result => {
             sourceResolve(result);
           }).catch(err => {
             sourceResolve(null);
@@ -246,11 +245,11 @@ export class Source implements ISource{
           }
         }
         Promise.all(promiseArray).then(results => {
-          for(var h = 0; h< allSrc.length; h++) {
-            if (allSrc[h] !== null) {
-              for(var key in allSrc[h]){
+          for(var h = 0; h< results.length; h++) {
+            if (results[h] !== null) {
+              for(var key in results[h]){
                 if(key === '_srcId'){
-                  uniqueObj[allSrc[h][key]] = allSrc[h];
+                  uniqueObj[results[h][key]] = results[h];
                 }
               }
             }

@@ -441,7 +441,7 @@ describe('Source ===', function() {
               shouldAttach = true;
             }
             promise = new Promise(function(resolve) {
-              Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
+              Scene.searchItemById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
               .then(function(item) {
                 return item.getSource();
               }).then(function(source) {
@@ -451,7 +451,7 @@ describe('Source ===', function() {
           }
           promise.then(function(source) {
             testSource = source;
-            return Scene.searchItemsById('{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}');
+            return Scene.searchItemById('{5BCC247D-6E56-41AF-95CE-74FF14CBA5E8}');
           }).then(function(item) {
             return item.getSource();
           }).then(function(newSource) {
@@ -507,7 +507,7 @@ describe('Source ===', function() {
       });
       var testSource, testCustomName, newCustomName;
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -533,7 +533,7 @@ describe('Source ===', function() {
       });
       var testSource, testValue, newValue;
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -559,7 +559,7 @@ describe('Source ===', function() {
       });
       var testSource, testBoolean;
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -583,7 +583,7 @@ describe('Source ===', function() {
         return 'XSplit Broadcaster 2.9.1611.1623 ';
       });
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -604,7 +604,7 @@ describe('Source ===', function() {
         return 'XSplit Broadcaster 2.9.1611.1623 ';
       });
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -622,7 +622,7 @@ describe('Source ===', function() {
       });
       var testSource;
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -641,7 +641,7 @@ describe('Source ===', function() {
       });
       var testSource;
       var randomId = getRandomItemId(mockPresetConfig);
-      Scene.searchItemsById(randomId)
+      Scene.searchItemById(randomId)
       .then(function(item) {
         return item.getSource();
       }).then(function(source) {
@@ -676,7 +676,7 @@ describe('Source ===', function() {
           });
         } else {
           promise = new Promise(function(resolve) {
-            Scene.searchItemsById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
+            Scene.searchItemById('{C878A0BF-F03A-4274-9398-EBD638D07680}')
             .then(function(item) {
               return item.getSource();
             }).then(function(source) {

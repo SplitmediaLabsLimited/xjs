@@ -370,7 +370,7 @@ export class iSource implements ISource{
           .is
           .lessThan(minVersion)
       ) {
-        Scene.searchItemsById(this._id).then(item => {
+        Scene.searchItemById(this._id).then(item => {
           const itemArray = [];
           itemArray.push(item);
           resolve(itemArray);
@@ -388,7 +388,7 @@ export class iSource implements ISource{
 
           itemsArray.forEach(itemId => {
             promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
+              Scene.searchItemById(itemId).then(item => {
                 itemResolve(item);
               }).catch(() => itemResolve(null));
             }));

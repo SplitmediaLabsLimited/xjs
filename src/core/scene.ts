@@ -346,14 +346,14 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchItemsById('{10F04AE-6215-3A88-7899-950B12186359}')
+   * Scene.searchItemById('{10F04AE-6215-3A88-7899-950B12186359}')
    * .then(function(item) {
    *   // result is either an Item or null
    * });
    * ```
    *
    */
-  static searchItemsById(id: string): Promise<Item> {
+  static searchItemById(id: string): Promise<Item> {
     return new Promise((resolve, reject) => {
       let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
       if (!isID) {
@@ -629,14 +629,14 @@ export class Scene {
    * #### Usage
    *
    * ```javascript
-   * Scene.searchSourcesById('{10F04AE-6215-3A88-7899-950B12186359}')
-   * .then(function(sources) {
-   *   // result would return one instance of the source per scene
+   * Scene.searchSourceById('{10F04AE-6215-3A88-7899-950B12186359}')
+   * .then(function(source) {
+   *   // result is either a Source or null
    * });
    * ```
    *
    */
-  static searchSourcesById(srcId: string): Promise<Source[]> {
+  static searchSourceById(srcId: string): Promise<Source> {
     return new Promise((resolve, reject) => {
       let isID: boolean = /^{[A-F0-9\-]*}$/i.test(srcId);
       if (!isID) {
@@ -673,13 +673,7 @@ export class Scene {
             promiseArray.push(scenePromise(scene, idx, arr))
           })
           Promise.all(promiseArray).then(results => {
-            let finalResults = []
-            for (var i = 0; i < results.length; i++) {
-              if(results[i] !== null) {
-                finalResults.push(results[i])
-              }
-            }
-            resolve(finalResults)
+            resolve(match)
           })
         });
       }
