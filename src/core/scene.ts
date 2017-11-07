@@ -41,6 +41,11 @@ export class Scene {
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
 
+  private static _mediaExt: string[] = ['.mp3','.aac','.cda','.ogg','.m4a','.flac','.wma',
+                                        '.aiff','.aif','.wav','.mid','.midi','.rma','.avi',
+                                        '.flv','.mkv','.mp4','.mpg','.wmv','.3gp','.3g2',
+                                        '.asf','.f4v','.mov','.mpeg','.vob','.webm']
+
   constructor(sceneId: number | string) {
     if (typeof sceneId === 'number') {
       this._id = sceneId - 1;
@@ -1010,7 +1015,8 @@ export class Scene {
             typeResolve(new ImageSource(source));
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+              new RegExp(Scene._mediaExt.join('|')).test(source['item']) === true) {
             typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(

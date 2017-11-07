@@ -266,27 +266,42 @@ export class iSource implements ISource{
   }
 
   setValue(value: string | XML): Promise<Source> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      var prevVal
       var val: string = (typeof value === 'string') ?
-        <string>value : (<XML>value).toString();
+      <string>value : (<XML>value).toString();
       if (typeof value !== 'string') { // XML
         this._value = JXON.parse(val);
       } else {
         this._value = val;
       }
 
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setValue', true)
-        iItem.set(String(this._type) === '2' ? 'prop:item' : 'prop:srcitem' , val, this._id)
-        .then(() => {
-          resolve(this);
-        });
-      } else {
-        iItem.wrapSet('prop:srcitem', val, this._srcId, this._id, this._updateId.bind(this))
-        .then(() => {
-          resolve(this);
-        });
-      }
+      let typeCheck = this.getValue().then(origVal => {
+        return new Promise((typeRes, typeRej) => {
+          if (String(origVal).indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
+            val.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
+            this._type === ItemTypes.LIVE) {
+              typeRej(Error('Value is not a valid Audio source'))
+          } else {
+            typeRes(true)
+          }
+        })
+      })
+
+      typeCheck.then(() => {
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setValue', true)
+          iItem.set(String(this._type) === '2' ? 'prop:item' : 'prop:srcitem' , val, this._id)
+          .then(() => {
+            resolve(this);
+          });
+        } else {
+          iItem.wrapSet('prop:srcitem', val, this._srcId, this._id, this._updateId.bind(this))
+          .then(() => {
+            resolve(this);
+          });
+        }
+      })
     });
   }
 
