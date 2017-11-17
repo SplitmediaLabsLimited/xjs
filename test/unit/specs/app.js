@@ -8,7 +8,7 @@ describe('App ===', function() {
       stringCompared.toLowerCase();
   };
   var XJS = require('xjs');
-  var App = new XJS.App();
+  var App = XJS.App;
   var Transition = XJS.Transition;
   var env = new window.Environment(XJS);
   var environments = ['props', 'extension', 'plugin'];

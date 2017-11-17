@@ -21,7 +21,7 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  *
  * ```javascript
  * var xjs = require('xjs');
- * var App = new xjs.App();
+ * var App = xjs.App;
  *
  * App.getFrameTime().then(function(frametime) {
  *   window.frametime = frametime;
@@ -50,7 +50,7 @@ export class App{
    * });
    * ```
    */
-  getFrameTime(): Promise<number> {
+  static getFrameTime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
         resolve(Number(val));
@@ -74,7 +74,7 @@ export class App{
    * });
    * ```
    */
-  getResolution() : Promise<Rectangle> {
+  static getResolution() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('resolution').then(val => {
         var dimensions = val.split(',');
@@ -100,7 +100,7 @@ export class App{
    * });
    * ```
    */
-  getViewport() : Promise<Rectangle> {
+  static getViewport() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('viewport').then(val => {
         var dimensions = val.split(',');
@@ -123,7 +123,7 @@ export class App{
    * });
    * ```
    */
-  getVersion() : Promise<string> {
+  static getVersion() : Promise<string> {
     return new Promise((resolve, reject) => {
       var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
       var xbcMatch = navigator.appVersion.match(xbcPattern);
@@ -149,7 +149,7 @@ export class App{
    * });
    * ```
    */
-  getFramesRendered() : Promise<number> {
+  static getFramesRendered() : Promise<number> {
     return new Promise(resolve => {
       iApp.get('framesrendered').then(val => {
         resolve(Number(val));
@@ -174,7 +174,7 @@ export class App{
    * });
    * ```
    */
-  getPrimaryMic(): Promise<AudioDevice[]> {
+  static getPrimaryMic(): Promise<AudioDevice[]> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
@@ -205,7 +205,7 @@ export class App{
    * });
    * ```
    */
-  getPrimarySpeaker(): Promise<AudioDevice[]> {
+  static getPrimarySpeaker(): Promise<AudioDevice[]> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
@@ -237,7 +237,7 @@ export class App{
    * });
    * ```
    */
-  setPrimaryMicLevel(volume: number): Promise<boolean> {
+  static setPrimaryMicLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (volume < 0) {
         reject(Error('Volume can only be positive'));
@@ -285,7 +285,7 @@ export class App{
    * });
    * ```
    */
-  setPrimaryMicEnabled(enabled: boolean): Promise<boolean> {
+  static setPrimaryMicEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       iApp.getAsList('microphonedev2').then(arr => {
@@ -331,7 +331,7 @@ export class App{
    * });
    * ```
    */
-  setPrimaryMicSystemLevel(volume: number): Promise<boolean> {
+  static setPrimaryMicSystemLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (volume < 0) {
         reject(Error('Volume can only be positive'));
@@ -379,7 +379,7 @@ export class App{
    * });
    * ```
    */
-  setPrimaryMicSystemEnabled(hwenabled: number): Promise<boolean> {
+  static setPrimaryMicSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
@@ -429,7 +429,7 @@ export class App{
    * });
    * ```
    */
-  setPrimaryMicDelay(delay: number): Promise<boolean> {
+  static setPrimaryMicDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (delay < 0) {
@@ -479,7 +479,7 @@ export class App{
    * });
    * ```
    */
-  setPrimarySpeakerLevel(volume: number): Promise<boolean> {
+  static setPrimarySpeakerLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (volume < 0) {
@@ -528,7 +528,7 @@ export class App{
    * });
    * ```
    */
-  setPrimarySpeakerEnabled(enabled: boolean): Promise<boolean> {
+  static setPrimarySpeakerEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       iApp.getAsList('microphonedev2').then(arr => {
@@ -574,7 +574,7 @@ export class App{
    * });
    * ```
    */
-  setPrimarySpeakerSystemLevel(volume: number): Promise<boolean> {
+  static setPrimarySpeakerSystemLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (volume < 0) {
@@ -623,7 +623,7 @@ export class App{
    * });
    * ```
    */
-  setPrimarySpeakerSystemEnabled(hwenabled: number): Promise<boolean> {
+  static setPrimarySpeakerSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
@@ -673,7 +673,7 @@ export class App{
    * });
    * ```
    */
-  setPrimarySpeakerDelay(delay: number): Promise<boolean> {
+  static setPrimarySpeakerDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
       if (delay < 0) {
@@ -720,7 +720,7 @@ export class App{
    * });
    * ```
    */
-  isSilenceDetectionEnabled(): Promise<boolean> {
+  static isSilenceDetectionEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
         var micGainObj = JXON.parse(val);
@@ -745,7 +745,7 @@ export class App{
    * });
    * ```
    */
-  enableSilenceDetection(enabled: boolean): Promise<boolean> {
+  static enableSilenceDetection(enabled: boolean): Promise<boolean> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
         var silenceDetectionObj = JXON.parse(val);
@@ -772,7 +772,7 @@ export class App{
    * });
    * ```
    */
-  getSilenceDetectionPeriod(): Promise<number> {
+  static getSilenceDetectionPeriod(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
         var micGainObj = JXON.parse(val);
@@ -799,7 +799,7 @@ export class App{
    * });
    * ```
    */
-  setSilenceDetectionPeriod(sdPeriod: number): Promise<boolean> {
+  static setSilenceDetectionPeriod(sdPeriod: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (typeof sdPeriod !== 'number') {
         reject(Error('Silence detection period must be a number'));
@@ -833,7 +833,7 @@ export class App{
    * });
    * ```
    */
-  getSilenceDetectionThreshold(): Promise<number> {
+  static getSilenceDetectionThreshold(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
         var micGainObj = JXON.parse(val);
@@ -859,7 +859,7 @@ export class App{
    * });
    * ```
    */
-  setSilenceDetectionThreshold(sdThreshold: number): Promise<boolean> {
+  static setSilenceDetectionThreshold(sdThreshold: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (typeof sdThreshold !== 'number') {
         reject(Error('Silence detection threshold must be a number'));
@@ -896,7 +896,7 @@ export class App{
    * });
    * ```
    */
-  getTransition(): Promise<Transition> {
+  static getTransition(): Promise<Transition> {
     return new Promise(resolve => {
       iApp.get('transitionid').then(val => {
         if (val === '') { // NONE
@@ -954,7 +954,7 @@ export class App{
    * });
    * ```
    */
-  setTransition(transition: Transition): Promise<boolean> {
+  static setTransition(transition: Transition): Promise<boolean> {
     return new Promise(resolve => {
       iApp.set('transitionid', transition.toString()).then(val => {
         resolve(val);
@@ -975,7 +975,7 @@ export class App{
    * });
    * ```
    */
-  getTransitionTime(): Promise<Number> {
+  static getTransitionTime(): Promise<Number> {
     return new Promise(resolve => {
       iApp.get('transitiontime').then(val => {
         resolve(Number(val));
@@ -999,7 +999,7 @@ export class App{
    * });
    * ```
    */
-  setTransitionTime(time: number): Promise<boolean> {
+  static setTransitionTime(time: number): Promise<boolean> {
     return new Promise(resolve => {
       iApp.set('transitiontime', time.toString()).then(val => {
         resolve(val);
@@ -1021,7 +1021,7 @@ export class App{
    * });
    * ```
    */
-  clearBrowserCookies(): Promise<boolean> {
+  static clearBrowserCookies(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('This method is not available to source plugins.'));
@@ -1039,7 +1039,7 @@ export class App{
    * users. This will be useful in such cases as persisting data to be used by
    * certain XSplit users only.
    */
-  getUserIdHash(): Promise<string> {
+  static getUserIdHash(): Promise<string> {
     return new Promise(resolve => {
       iApp.getGlobalProperty('userid').then( res => {
         resolve(res);
