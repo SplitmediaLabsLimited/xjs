@@ -321,15 +321,15 @@ export class Scene {
                 resolve(res);
               });
           } else if (typeof scene === 'number') {
-            if (scene < 1 || !Number['isInteger'](Number(scene))) {
-            reject(Error('Invalid parameters. Valid range is greater than 0.'));
+            if (scene < 0 || !Number['isInteger'](Number(scene))) {
+            reject(Error('Invalid parameters. Valid range is 0 and greater.'));
             } else {
-              iApp.set(preset, String(scene - 1)).then(res => {
+              iApp.set(preset, String(scene)).then(res => {
                 resolve(res);
               });
             }
           } else {
-          reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+          reject(Error('Invalid parameters. Valid range is 0 and greater or a Scene object.'));
           }
         })
       }

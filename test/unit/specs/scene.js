@@ -326,7 +326,7 @@ describe('Scene ===', function() {
           return Scene.getActiveScene();
         })
         .then(function(currentScene) {
-          expect(currentScene._id).toEqual(index - 1);
+          expect(currentScene._id).toEqual(index);
           return Scene.setActiveScene(-1);
         }).then(function() {
           done.fail('setActiveScene should reject when index is lower than 1')

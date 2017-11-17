@@ -65,18 +65,18 @@ export class File implements Addable {
             Scene.getSceneCount().then(sceneCount => {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
+                if (int >= sceneCount || int < 0) {
+                innerReject(Error('Scene does not exist.'));
                 } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
+                  scenePrefix = 's:' + (int) + '|';
                   innerResolve();
                 }
               } else {
                 value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                  innerReject(Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 });

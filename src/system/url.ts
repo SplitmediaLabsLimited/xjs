@@ -51,8 +51,8 @@ export class Url implements Addable {
    * ```
    *
    * Adds this URL to the current scene as an HTML source by default.
-   * Accepts an optional parameter value, which, when supplied,
-   * points to the scene where item will be added instead.
+   * Accepts an optional parameter value, which, when supplied, points
+   * to the scene index or actual scene where the item will be added instead.
    *
    *  Will raise an error if URL is not http or https.
    */
@@ -81,18 +81,18 @@ export class Url implements Addable {
             Scene.getSceneCount().then(sceneCount => {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
+                if (int >= sceneCount || int < 0) {
+                innerReject(Error('Scene does not exist.'));
                 } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
+                  scenePrefix = 's:' + (int) + '|';
                   innerResolve();
                 }
               } else {
                 value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                  innerReject(Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 });

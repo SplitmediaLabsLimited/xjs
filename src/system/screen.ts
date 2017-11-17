@@ -48,8 +48,8 @@ export class Screen implements Addable {
    * ```
    *
    * Adds the prepared screen instance to the current screen by defualt.
-   * Accpets optional parameter value, whhich when supplied, points
-   * to the scene where the item will be added instead.
+   * Accpets optional parameter value, which when supplied, points
+   * to the scene index or actual scene where the item will be added instead.
    *
    */
   addToScene(value?:number | Scene): Promise<boolean> {
@@ -62,18 +62,18 @@ export class Screen implements Addable {
             Scene.getSceneCount().then(sceneCount => {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                  innerReject(new Error('Scene not existing.'));
+                if (int >= sceneCount || int < 0) {
+                  innerReject(new Error('Scene does not exist.'));
                 } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
+                  scenePrefix = 's:' + (int) + '|';
                   innerResolve();
                 }
               } else {
                 value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                    innerReject(new Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                    innerReject(new Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 });
@@ -109,8 +109,8 @@ export class Screen implements Addable {
    *
    * Initializes the screen region selector crosshair
    * so user may select a desktop region or a window to add to the stage in the current scene.
-   * Accepts an optional parameter value, which, when supplied,
-   * points to the scene where item will be added instead.
+   * Accepts an optional parameter value, which, when supplied, points
+   * to the scene index or actual scene where the item will be added instead.
    *
    */
   static addToScene(value?: number | Scene ): Promise<boolean> {
@@ -138,18 +138,18 @@ export class Screen implements Addable {
             Scene.getSceneCount().then(sceneCount => {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
+                if (int >= sceneCount || int < 0) {
+                innerReject(Error('Scene does not exist.'));
                 } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
+                  scenePrefix = 's:' + (int) + '|';
                   innerResolve();
                 }
               } else {
                 value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                  innerReject(Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 });

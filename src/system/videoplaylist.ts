@@ -134,8 +134,8 @@ export class VideoPlaylist implements Addable {
    * ```
    *
    * Adds the prepared video playlist to the current scene by default.
-   * Accepts an optional parameter value, which when supplied,
-   * points to the scene where item will be added instead.
+   * Accepts an optional parameter value, which when supplied, points
+   * to the scene index or actual scene where the item will be added instead.
    * This function is not available to sources.
    */
   addToScene(value?: number | Scene ): Promise<boolean> {
@@ -166,18 +166,18 @@ export class VideoPlaylist implements Addable {
               Scene.getSceneCount().then(sceneCount => {
                 if (typeof value === 'number') {
                   let int = Math.floor(value);
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                  innerReject(Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 } else {
                   value.getSceneNumber().then(int => {
-                    if (int > sceneCount || int === 0) {
-                    innerReject(Error('Scene not existing.'));
+                    if (int >= sceneCount || int < 0) {
+                    innerReject(Error('Scene does not exist.'));
                     } else {
-                      scenePrefix = 's:' + (int - 1) + '|';
+                      scenePrefix = 's:' + (int) + '|';
                       innerResolve();
                     }
                   });

@@ -114,8 +114,8 @@ export class CameraDevice implements Addable {
    * ```
    *
    * Adds this camera device to the current scene by default.
-   * Accepts an optional parameter value, which, when supplied,
-   * points to the scene where item will be added instead.
+   * Accepts an optional parameter value, which, when supplied, points
+   * to the scene index or actual scene where the item will be added instead.
    */
   addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -142,18 +142,18 @@ export class CameraDevice implements Addable {
             Scene.getSceneCount().then(sceneCount => {
               if (typeof value === 'number') {
                 let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
+                if (int >= sceneCount || int < 0) {
+                innerReject(Error('Scene does not exist.'));
                 } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
+                  scenePrefix = 's:' + (int) + '|';
                   innerResolve();
                 }
               } else {
                 value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
+                  if (int >= sceneCount || int < 0) {
+                  innerReject(Error('Scene does not exist.'));
                   } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
+                    scenePrefix = 's:' + (int) + '|';
                     innerResolve();
                   }
                 });

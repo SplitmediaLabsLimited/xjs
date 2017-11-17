@@ -25,8 +25,8 @@ const _RESIZE = '2';
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-select`: notifies when a user clicks a source in the stage. Source id is also returned when source is selected from the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-update`: notifies when there are changes on list sources whether on stage or bottom panel. Handler is a function(ids: string) where ids are comma separated source ids.
- *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
- *    - `scene-add` : notifies when a user adds a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
+ *    - `scene-delete` : notifies when a user deletes a scene returning the index of the deleted scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
+ *    - `scene-add` : notifies when a user adds a scene returning the indexof the added scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -102,7 +102,7 @@ export class ExtensionWindow extends EventEmitter {
           EventManager.subscribe('SceneDeleted', function(settingsObj) {
             if (Environment.isExtension()) {
               ExtensionWindow.emit(event, settingsObj['index'] === '' ?
-              null : Number(settingsObj['index']) + 1);
+              null : Number(settingsObj['index']));
             }
             resolve(this);
           });
@@ -115,7 +115,7 @@ export class ExtensionWindow extends EventEmitter {
           EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
             Scene.getSceneCount().then(function(count){
               if (Environment.isExtension()) {
-                ExtensionWindow.emit(event, count);
+                ExtensionWindow.emit(event, count - 1);
                 resolve(this);
               } else {
                 reject(Error('ExtensionWindow class is only available for extensions.'));
