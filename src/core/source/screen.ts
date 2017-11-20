@@ -122,7 +122,7 @@ export class ScreenSource extends Source implements ISourceScreen {
    * ShowMouse determine if you would want to display the mouse on your
    * screen captured area.
    */
-  getShowMouse: () => Promise<boolean>
+  isShowMouseEnabled: () => Promise<boolean>
 
   /**
    * param: (value: boolean)
@@ -135,7 +135,7 @@ export class ScreenSource extends Source implements ISourceScreen {
    * ShowMouse determine if you would want to display the mouse on your
    * screen captured area.
    */
-  setShowMouse: (value: boolean) => Promise<ScreenSource>
+  setShowMouseEnabled: (value: boolean) => Promise<ScreenSource>
 
   /**
    * return: Promise<Rectangle>

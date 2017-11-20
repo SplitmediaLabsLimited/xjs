@@ -87,7 +87,7 @@ export interface ISourceScreen {
    * Checks if the Show mouse is selected.
    *
    */
-  getShowMouse(): Promise<boolean>
+  isShowMouseEnabled(): Promise<boolean>
 
   /**
    * param: (value: boolean)
@@ -97,7 +97,7 @@ export interface ISourceScreen {
    *
    * Sets the Show Mouse.
    */
-  setShowMouse(value: boolean): Promise<ISourceScreen>
+  setShowMouseEnabled(value: boolean): Promise<ISourceScreen>
 
   /**
    * return: Promise<Rectangle>
@@ -276,7 +276,7 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  getShowMouse(): Promise<boolean> {
+  isShowMouseEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'getShowMouse', true)
@@ -291,7 +291,7 @@ export class iSourceScreen implements ISourceScreen {
     });
   }
 
-  setShowMouse(value: boolean): Promise<iSourceScreen> {
+  setShowMouseEnabled(value: boolean): Promise<iSourceScreen> {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setShowMouse', true)

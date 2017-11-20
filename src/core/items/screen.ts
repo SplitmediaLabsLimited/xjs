@@ -81,12 +81,12 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   /**
    * See {@link #core/ScreenSource#getShowMouse getShowMouse}
    */
-  getShowMouse: () => Promise<boolean>
+  isShowMouseEnabled: () => Promise<boolean>
 
   /**
    * See {@link #core/ScreenSource#setShowMouse setShowMouse}
    */
-  setShowMouse: (value: boolean) => Promise<ScreenItem>
+  setShowMouseEnabled: (value: boolean) => Promise<ScreenItem>
 
   /**
    * See {@link #core/ScreenSource#getCaptureArea getCaptureArea}
