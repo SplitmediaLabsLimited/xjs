@@ -9,17 +9,19 @@ let isReady: boolean = false;
 let isInit: boolean = false;
 let readyResolve;
 
-let readyPromise: Promise<any> = new Promise(resolve => {
-  if (typeof document !== 'undefined') {
-    document.addEventListener('xsplit-js-ready', () => {
-      resolve();
-    });
-  }
+function readyPromise(): Promise<any> {
+  return new Promise(resolve => {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('xsplit-js-ready', () => {
+        resolve();
+      });
+    }
 
-  if (isReady) {
-    resolve();
-  }
-});
+    if (isReady) {
+      resolve();
+    }
+  });
+}
 
 export function finishReady(config: Object): Promise<any> {
   return new Promise(resolve => {
