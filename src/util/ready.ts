@@ -3,15 +3,18 @@
 import {setMockVersion} from '../internal/util/version';
 import init from '../internal/init';
 import {Remote} from '../internal/remote'
+import {Environment} from '../core/environment';
 
 let isReady: boolean = false;
 let isInit: boolean = false;
 let readyResolve;
 
 let readyPromise: Promise<any> = new Promise(resolve => {
-  document.addEventListener('xsplit-js-ready', () => {
-    resolve();
-  });
+  if (typeof document !== 'undefined') {
+    document.addEventListener('xsplit-js-ready', () => {
+      resolve();
+    });
+  }
 
   if (isReady) {
     resolve();
@@ -40,6 +43,7 @@ export function finishReady(config: Object): Promise<any> {
 
 export function ready(config: Object): Promise<any> {
   return new Promise((resolve,reject) => {
+    Environment.initialize();
     if (config && config['remote'] !== undefined) {
       if(config['remote']['type'] !== undefined) {
         Remote.remoteType = config['remote']['type'];

@@ -1,4 +1,5 @@
 import {exec} from './internal'
+import window from '../util/window';
 
 /**
  * Usage:

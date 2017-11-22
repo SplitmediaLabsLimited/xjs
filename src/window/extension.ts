@@ -12,7 +12,8 @@ import {addSceneEventFixVersion,
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
-import {Extension} from '../core/extension'
+import {Extension} from '../core/extension';
+import window from '../util/window';
 
 const _RESIZE = '2';
 

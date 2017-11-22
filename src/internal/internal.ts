@@ -1,6 +1,7 @@
 /// <reference path="../../defs/window.d.ts" />
 
-import {Remote} from './remote'
+import {Remote} from './remote';
+import window from '../util/window';
 
 export var DEBUG: boolean = false;
 

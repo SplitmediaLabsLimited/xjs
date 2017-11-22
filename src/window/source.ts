@@ -7,6 +7,7 @@ import {EventManager} from '../internal/eventmanager';
 import {deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {Scene} from '../core/scene';
 import {exec} from '../internal/internal';
+import window from '../util/window';
 
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
