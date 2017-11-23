@@ -29,7 +29,7 @@ import {HtmlSource} from '../source/html';
 import {FlashSource} from '../source/flash';
 import {ScreenSource} from '../source/screen';
 import {ImageSource} from '../source/image';
-import {MediaSource} from '../source/media';
+import {MediaSource, MediaTypes} from '../source/media';
 
 /**
  * Used by items to determine the its view type.
@@ -523,7 +523,7 @@ export class Item extends Source implements IItemLayout, ISource {
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
               /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-              new RegExp(Scene._mediaExt.join('|')).test(source['item']) === true) {
+              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
             typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(

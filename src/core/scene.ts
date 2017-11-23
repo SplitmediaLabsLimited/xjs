@@ -15,7 +15,7 @@ import {HtmlSource} from './source/html';
 import {FlashSource} from './source/flash';
 import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
-import {MediaSource} from './source/media';
+import {MediaSource, MediaTypes} from './source/media';
 
 import {Item, ViewTypes} from './items/item';
 import {GameItem} from './items/game';
@@ -40,11 +40,6 @@ export class Scene {
 
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
-
-  private static _mediaExt: string[] = ['.mp3','.aac','.cda','.ogg','.m4a','.flac','.wma',
-                                        '.aiff','.aif','.wav','.mid','.midi','.rma','.avi',
-                                        '.flv','.mkv','.mp4','.mpg','.wmv','.3gp','.3g2',
-                                        '.asf','.f4v','.mov','.mpeg','.vob','.webm']
 
   constructor(sceneId: number | string) {
     if (typeof sceneId === 'number') {
@@ -1016,7 +1011,7 @@ export class Scene {
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
               /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-              new RegExp(Scene._mediaExt.join('|')).test(source['item']) === true) {
+              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
             typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
@@ -1223,7 +1218,7 @@ export class Scene {
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(item['item']) === false &&
               /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-              new RegExp(Scene._mediaExt.join('|')).test(item['item']) === true) {
+              new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
             typeResolve(new MediaItem(item));
           } else if (Number(item['type']) === ItemTypes.LIVE &&
             item['item'].indexOf(
