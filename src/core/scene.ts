@@ -1221,8 +1221,9 @@ export class Scene {
             /\.gif$/.test(item['item'])) {
             typeResolve(new ImageItem(item));
           } else if (type === ItemTypes.FILE &&
-            /\.(gif|xbs)$/.test(item['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
+              /\.(gif|xbs)$/.test(item['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+              new RegExp(Scene._mediaExt.join('|')).test(item['item']) === true) {
             typeResolve(new MediaItem(item));
           } else if (Number(item['type']) === ItemTypes.LIVE &&
             item['item'].indexOf(

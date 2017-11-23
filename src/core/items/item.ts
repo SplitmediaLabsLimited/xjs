@@ -522,8 +522,9 @@ export class Item extends Source implements IItemLayout, ISource {
             typeResolve(new ImageSource(params));
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-            typeResolve(new MediaSource(params));
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+              new RegExp(Scene._mediaExt.join('|')).test(source['item']) === true) {
+            typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
               '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
