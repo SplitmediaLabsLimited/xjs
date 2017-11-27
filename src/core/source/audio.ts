@@ -37,97 +37,105 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  */
 export class AudioSource extends Source implements ISourceAudio, IAudio {
   // SourceAudio
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if silence detection is on or off
-   */
-  isSilenceDetectionEnabled: () => Promise<boolean>
+  silenceDetection:(value?: boolean) => Promise<boolean|AudioSource>
+  silenceThreshold:(value?: number) => Promise<number|AudioSource>
+  silencePeriod:(value?: number)=> Promise<number|AudioSource>
+  audioOffset:(value?: number)=> Promise<number|AudioSource>
+  volume:(value?: number)=> Promise<number|AudioSource>
+  mute:(value?: boolean)=> Promise<boolean|AudioSource>
+  autoMute:(value?: boolean)=> Promise<boolean|AudioSource>
+  streamOnlyAudio:(value?: boolean)=> Promise<boolean|AudioSource>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if silence detection is on or off
+  //  */
+  // isSilenceDetectionEnabled: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set silence detection to ON or OFF
-   *
-   * *Chainable.*
-   */
-  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioSource>
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Set silence detection to ON or OFF
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setSilenceDetectionEnabled: (value: boolean) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection threshold.
-   * Amplitude less than threshold will be detected as silence.
-   */
-  getSilenceThreshold: () => Promise<number>
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets silenced detection threshold.
+  //  * Amplitude less than threshold will be detected as silence.
+  //  */
+  // getSilenceThreshold: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection threshold, min of 0, max of 128
-   *
-   * *Chainable.*
-   */
-  setSilenceThreshold: (value: number) => Promise<AudioSource>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets silence detection threshold, min of 0, max of 128
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setSilenceThreshold: (value: number) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection period in ms time unit.
-   * Reaction time before filter removes noice/sound less than threshold
-   */
-  getSilencePeriod: () => Promise<number>
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets silenced detection period in ms time unit.
+  //  * Reaction time before filter removes noice/sound less than threshold
+  //  */
+  // getSilencePeriod: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection period, min of 0, max of 10000
-   *
-   * *Chainable.*
-   */
-  setSilencePeriod: (value: number) => Promise<AudioSource>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets silence detection period, min of 0, max of 10000
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setSilencePeriod: (value: number) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets audio delay (1 unit = 100ns)
-   */
-  getAudioOffset: () => Promise<number>
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets audio delay (1 unit = 100ns)
+  //  */
+  // getAudioOffset: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets audio delay, accepts only positive delay
-   *
-   * *Chainable.*
-   */
-  setAudioOffset: (value: number) => Promise<SourceAudio>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets audio delay, accepts only positive delay
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setAudioOffset: (value: number) => Promise<SourceAudio>
 
   // General Audio
 
-  /** See: {@link #core/IAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
+  // /** See: {@link #core/IAudio#getVolume getVolume} */
+  // getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isMute isMute} */
+  // isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  isAutoMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  // isAutoMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<AudioSource>;
+  // /** See: {@link #core/IAudio#setVolume setVolume} */
+  // setVolume: (value: number) => Promise<AudioSource>;
 
-  /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<AudioSource>;
+  // /** See: {@link #core/IAudio#setMute setMute} */
+  // setMute: (value: boolean) => Promise<AudioSource>;
 
-  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<AudioSource>;
+  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  // setAutoMute: (value: boolean) => Promise<AudioSource>;
 
-  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  // isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<AudioSource>;
+  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  // setStreamOnlyAudio: (value: boolean) => Promise<AudioSource>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

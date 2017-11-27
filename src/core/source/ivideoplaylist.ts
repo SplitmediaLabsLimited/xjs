@@ -5,39 +5,41 @@ import {IO} from '../../util/io';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceVideoPlaylist {
-  /**
-   * return: Promise<string>
-   *
-   * Gets the now playing video of this VideoPlaylist item.
-   */
-  getVideoNowPlaying(): Promise<string>
+  nowPlaying(value?: string|number): Promise<string|number|ISourceVideoPlaylist>
+  playlist(fileItems?: string[]): Promise<string[]|ISourceVideoPlaylist>
+  // /**
+  //  * return: Promise<string>
+  //  *
+  //  * Gets the now playing video of this VideoPlaylist item.
+  //  */
+  // getVideoNowPlaying(): Promise<string>
 
-  /**
-   * param: (value: string|number)
-   *
-   * return: Promise<VideoPlaylistSource>
-   *
-   * Sets the now playing video of this VideoPlaylist item.
-   */
-  setVideoNowPlaying(value:string|number): Promise<SourceVideoPlaylist>
+  // /**
+  //  * param: (value: string|number)
+  //  *
+  //  * return: Promise<VideoPlaylistSource>
+  //  *
+  //  * Sets the now playing video of this VideoPlaylist item.
+  //  */
+  // setVideoNowPlaying(value:string|number): Promise<SourceVideoPlaylist>
 
-  /**
-   * return: Promise<string[]>
-   *
-   * Gets the file paths of the playlist of this VideoPlaylist item.
-   *
-   */
-  getVideoPlaylistSources(): Promise<string[]>
+  // /**
+  //  * return: Promise<string[]>
+  //  *
+  //  * Gets the file paths of the playlist of this VideoPlaylist item.
+  //  *
+  //  */
+  // getVideoPlaylistSources(): Promise<string[]>
 
-  /**
-   * param: (file: string[])
-   *
-   * return: Promise<string>
-   *
-   * Sets the playlist of this VideoPlaylist item according to the specified
-   * file paths.
-   */
-  setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist>
+  // /**
+  //  * param: (file: string[])
+  //  *
+  //  * return: Promise<string>
+  //  *
+  //  * Sets the playlist of this VideoPlaylist item according to the specified
+  //  * file paths.
+  //  */
+  // setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist>
 
 }
 
@@ -53,40 +55,37 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
     this._sceneId = sceneId;
   }
 
-  getVideoNowPlaying(): Promise<string> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getVideoNowPlaying', true)
+  nowPlaying(value?: string|number): Promise<string|number|SourceVideoPlaylist> {
+    return new Promise((resolve, reject) => {
+      let file: string;
+      let _playlist: string[];
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'nowPlaying',  true)
+      }
+
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.get('prop:FilePlaylist', this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapGet('prop:FilePlaylist', this._srcId,
+          this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:srcitem', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
           this._id, this._updateId.bind(this))
       }
-      this._checkPromise.then(playlist => {
-        let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
-        resolve(_playlist)
-      });
-    });
-  }
 
-  setVideoNowPlaying(value:string|number): Promise<SourceVideoPlaylist> {
-    let file: string;
-    let _playlist: string[];
-
-    return new Promise((resolve, reject) => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setVideoNowPlaying', true)
-        this._checkPromise = iItem.get('prop:FilePlaylist', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:FilePlaylist', this._srcId,
-          this._id, this._updateId.bind(this))
-      }
       this._checkPromise.then(playlist => {
-        _playlist = String(playlist).split('|');
-        for (var i = 0; i < _playlist.length; i++){
-          _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
-        };
-        return _playlist;
+        if (value) {
+          _playlist = String(playlist).split('|');
+          for (var i = 0; i < _playlist.length; i++){
+            _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
+          };
+          return _playlist;
+        } else {
+          let _playlist = String(playlist).slice(0,playlist.indexOf('*'))
+          resolve(_playlist)
+        }
       }).then(list => {
         if (typeof value === 'string') {
           if(_playlist.indexOf(value) === -1){
@@ -108,67 +107,64 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
         } else {
           reject(Error('Invalid parameter. Value can only be either filename string or its index equivalent in the VideoPlaylist files array'));
         };
-      })
+      });
     });
+  }
 
-  };
-
-  getVideoPlaylistSources(): Promise<string[]> {
+  playlist(fileItems?: string[]): Promise<string[]|SourceVideoPlaylist> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getVideoPlaylistSources', true)
+      let file: string;
+      let _playlist: string[];
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'playlist',  true)
+      }
+
+      if (this._isItemCall && !fileItems) {
         this._checkPromise = iItem.get('prop:FilePlaylist', this._id)
-      } else {
+      }  else if (!this._isItemCall && !fileItems) {
         this._checkPromise = iItem.wrapGet('prop:FilePlaylist', this._srcId,
           this._id, this._updateId.bind(this))
+      } else {
+        let fileString: string;
+        let filePromises = fileItems.map((filename) => {
+          return IO.getVideoDuration(filename);
+        });
+
+        Promise.all(filePromises).then(duration => {
+          for (var i = 0; i < fileItems.length; i++) {
+            if(fileString === undefined){
+              fileString = fileItems[i] + '*' + i + '*1*'
+              + duration[i] + '*100*0*0*0*0*0|';
+            } else {
+              fileString += fileItems[i] + '*' + i + '*1*'
+              + duration[i] + '*100*0*0*0*0*0';
+              if (i+1 < fileItems.length) {
+                fileString += '|';
+              };
+            };
+          };
+          if(this._isItemCall) {
+            iItem.set('prop:srcitem', fileItems[0] + '*0', this._id);
+          } else {
+            iItem.wrapSet('prop:srcitem', fileItems[0] + '*0', this._srcId,
+            this._id, this._updateId.bind(this));
+          }
+          return fileString;
+        }).then(fileString => {
+          iItem.set('prop:FilePlaylist', fileString, this._id)
+          .then(fileplaylist => {
+            resolve(this);
+          });
+        });
       }
+
       this._checkPromise.then(playlist => {
         let _playlist = String(playlist).split('|');
         for (var i = 0; i < _playlist.length; i++){
           _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf('*'));
         };
         resolve(_playlist);
-      });
+      })
     });
-  };
-
-  setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setVideoPlaylistSources', true)
-    }
-    let fileString: string;
-
-    let filePromises = fileItems.map((filename) => {
-      return IO.getVideoDuration(filename);
-    });
-
-    return new Promise((resolve, reject) => {
-      Promise.all(filePromises).then(duration => {
-        for (var i = 0; i < fileItems.length; i++) {
-          if(fileString === undefined){
-            fileString = fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0|';
-          } else {
-            fileString += fileItems[i] + '*' + i + '*1*'
-            + duration[i] + '*100*0*0*0*0*0';
-            if (i+1 < fileItems.length) {
-              fileString += '|';
-            };
-          };
-        };
-        if(this._isItemCall) {
-          iItem.set('prop:srcitem', fileItems[0] + '*0', this._id);
-        } else {
-          iItem.wrapSet('prop:srcitem', fileItems[0] + '*0', this._srcId,
-          this._id, this._updateId.bind(this));
-        }
-        return fileString;
-      }).then(fileString => {
-        iItem.set('prop:FilePlaylist', fileString, this._id)
-        .then(fileplaylist => {
-          resolve(this);
-        });
-      });
-    });
-  };
+  }
 }

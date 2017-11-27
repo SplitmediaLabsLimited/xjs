@@ -36,149 +36,156 @@ import {ISourceScreen, iSourceScreen} from './iscreen';
  *  instance.
  */
 export class ScreenSource extends Source implements ISourceScreen {
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item captures a window based on
-   * the window's title.
-   */
-  isStickToTitle: () => Promise<boolean>
+  stickToTitle: (value?: boolean) => Promise<boolean|ScreenSource>
+  captureLayered: (value?: boolean) => Promise<boolean|ScreenSource>
+  optimizedCapture: (value?: boolean) => Promise<boolean|ScreenSource>
+  showMouseClicks: (value?: boolean) => Promise<boolean|ScreenSource>
+  showMouse: (value?: boolean) => Promise<boolean|ScreenSource>
+  captureArea: (dimension?: Rectangle) => Promise<Rectangle|ScreenSource>
+  clientAreaOnly: (value?: boolean) => Promise<boolean|ScreenSource>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Screen Capture Item captures a window based on
+  //  * the window's title.
+  //  */
+  // isStickToTitle: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Set the Screen Capture to capture the window based on the window title.
-   * Useful when capturing programs with multiple tabs, for you to only
-   * capture a particular tab.
-   */
-  setStickToTitle: (value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: Promise<boolean>
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Set the Screen Capture to capture the window based on the window title.
+  //  * Useful when capturing programs with multiple tabs, for you to only
+  //  * capture a particular tab.
+  //  */
+  // setStickToTitle: (value: boolean) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture layered window is selected.
-   */
-  getCaptureLayered: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Screen Capture layered window is selected.
+  //  */
+  // getCaptureLayered: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Screen Capture Layered window
-   */
-  setCaptureLayered: (value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: (value: boolean)
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Sets the Screen Capture Layered window
+  //  */
+  // setCaptureLayered: (value: boolean) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Exclusive Window capture is selected.
-   */
-  getOptimizedCapture: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Exclusive Window capture is selected.
+  //  */
+  // getOptimizedCapture: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Exclusive Window capture.
-   */
-  setOptimizedCapture:(value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: (value: boolean)
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Sets the Exclusive Window capture.
+  //  */
+  // setOptimizedCapture:(value: boolean) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Show mouse clicks is selected.
-   *
-   * ShowMouseClicks determine if you would want to display the clicks
-   * you're doing inside your screen captured area.
-   */
-  getShowMouseClicks: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Show mouse clicks is selected.
+  //  *
+  //  * ShowMouseClicks determine if you would want to display the clicks
+  //  * you're doing inside your screen captured area.
+  //  */
+  // getShowMouseClicks: () => Promise<boolean>
 
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Show mouse clicks.
-   *
-   * ShowMouseClicks determine if you would want to display the clicks
-   * you're doing inside your screen captured area.
-   */
-  setShowMouseClicks: (value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: (value: boolean)
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Sets the Show mouse clicks.
+  //  *
+  //  * ShowMouseClicks determine if you would want to display the clicks
+  //  * you're doing inside your screen captured area.
+  //  */
+  // setShowMouseClicks: (value: boolean) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Show mouse is selected.
-   *
-   * ShowMouse determine if you would want to display the mouse on your
-   * screen captured area.
-   */
-  getShowMouse: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Show mouse is selected.
+  //  *
+  //  * ShowMouse determine if you would want to display the mouse on your
+  //  * screen captured area.
+  //  */
+  // getShowMouse: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Show Mouse.
-   *
-   * ShowMouse determine if you would want to display the mouse on your
-   * screen captured area.
-   */
-  setShowMouse: (value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: (value: boolean)
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Sets the Show Mouse.
+  //  *
+  //  * ShowMouse determine if you would want to display the mouse on your
+  //  * screen captured area.
+  //  */
+  // setShowMouse: (value: boolean) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
-   * object.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-   getCaptureArea: () => Promise<Rectangle>
+  // /**
+  //  * return: Promise<Rectangle>
+  //  *
+  //  * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
+  //  * object.
+  //  *
+  //  * See also: {@link #util/Rectangle Util/Rectangle}
+  //  */
+  //  getCaptureArea: () => Promise<Rectangle>
 
-  /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Sets the Window Capture Area of the Screen Capture Item.
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setCaptureArea: (dimension: Rectangle) => Promise<ScreenSource>
+  // /**
+  //  * param: Promise<Rectangle>
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Sets the Window Capture Area of the Screen Capture Item.
+  //  *
+  //  * *Chainable.*
+  //  *
+  //  * See also: {@link #util/Rectangle Util/Rectangle}
+  //  */
+  // setCaptureArea: (dimension: Rectangle) => Promise<ScreenSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if the Screen Capture Item only captures the
-   * Client area (does not capture the title bar, menu bar, window border, etc.)
-   */
-  isClientArea: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if the Screen Capture Item only captures the
+  //  * Client area (does not capture the title bar, menu bar, window border, etc.)
+  //  */
+  // isClientArea: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<ScreenSource>
-   * ```
-   *
-   * Set the Screen Capture to capture the Client area only or include
-   * the titlebar, menu bar, window border, etc.
-   */
-  setClientArea: (value: boolean) => Promise<ScreenSource>
+  // /**
+  //  * param: Promise<boolean>
+  //  * ```
+  //  * return: Promise<ScreenSource>
+  //  * ```
+  //  *
+  //  * Set the Screen Capture to capture the Client area only or include
+  //  * the titlebar, menu bar, window border, etc.
+  //  */
+  // setClientArea: (value: boolean) => Promise<ScreenSource>
 }
 
 applyMixins(ScreenSource, [iSourceScreen])

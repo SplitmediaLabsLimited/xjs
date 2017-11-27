@@ -55,36 +55,39 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemEffect, ISourceGame {
 
   // GameSource
+  specialOptimization:(value?: boolean) => Promise<boolean|GameItem>
+  showMouse:(value?: boolean) => Promise<boolean|GameItem>
+  offlineImage:(path?: string) => Promise<string|GameItem>
 
-  /**
-   * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
-   */
-  isSpecialOptimizationEnabled: () => Promise<boolean>
+  // /**
+  //  * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
+  //  */
+  // isSpecialOptimizationEnabled: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
-   */
-  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
+  // /**
+  //  * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
+  //  */
+  // setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
 
-  /**
-   * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
-   */
-  isShowMouseEnabled: () => Promise<boolean>
+  // /**
+  //  * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
+  //  */
+  // isShowMouseEnabled: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
-   */
-  setShowMouseEnabled: (value: boolean) => Promise<GameItem>
+  // /**
+  //  * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
+  //  */
+  // setShowMouseEnabled: (value: boolean) => Promise<GameItem>
 
-  /**
-   * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
-   */
-  setOfflineImage: (path: string) => Promise<GameItem>
+  // /**
+  //  * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
+  //  */
+  // setOfflineImage: (path: string) => Promise<GameItem>
 
-  /**
-   * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
-   */
-  getOfflineImage:() => Promise<string>
+  // /**
+  //  * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
+  //  */
+  // getOfflineImage:() => Promise<string>
 
   // ItemLayout
 
@@ -151,12 +154,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<GameItem>;  
+  sendBackward: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<GameItem>;  
+  sendToBack: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

@@ -8,26 +8,32 @@ import {System} from '../../system/system';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceCamera {
+
+  audioOffset(value?:number): Promise<number|ISourceCamera>
+  audioInput(value?:MicrophoneDevice): Promise<MicrophoneDevice|ISourceCamera>
+  delay(value?:number): Promise<number|ISourceCamera>
+  forceDeinterlace(value?:boolean): Promise<boolean|ISourceCamera>
+
   /**
    * return: Promise<string>
    *
    * Gets the device ID of the underlying camera device.
    */
-  getDeviceId(): Promise<string>
+  deviceId(): Promise<string>
 
   /**
    * return: Promise<number>
    *
    * Gets audio delay with respect to video feed in milliseconds
    */
-  getAudioOffset(): Promise<number>
+  // getAudioOffset(): Promise<number>
 
   /**
    * param: (value: number)
    *
    * Sets audio delay with respect to video feed in milliseconds
    */
-  setAudioOffset(value: number): Promise<ISourceCamera>
+  // setAudioOffset(value: number): Promise<ISourceCamera>
 
   /**
    * return: Promise<MicrophoneDevice>
@@ -35,28 +41,28 @@ export interface ISourceCamera {
    * Gets the microphone device tied as an audio input,
    * rejected if no microphone device is used
    */
-  getAudioInput(): Promise<MicrophoneDevice>
+  // getAudioInput(): Promise<MicrophoneDevice>
 
   /**
    * param: (value: number)
    *
    * Sets the microphone device to be tied as an audio input
    */
-  setAudioInput(value: MicrophoneDevice): Promise<ISourceCamera>
+  // setAudioInput(value: MicrophoneDevice): Promise<ISourceCamera>
 
   /**
    * return: Promise<boolean>
    *
    * Checks if camera feed is paused
    */
-  isStreamPaused(): Promise<boolean>
+  // isStreamPaused(): Promise<boolean>
 
   /**
    * param: (value: boolean)
    *
    * Sets whether camera feed is paused or not
    */
-  setStreamPaused(value: boolean): Promise<CameraSource>
+  // setStreamPaused(value: boolean): Promise<CameraSource>
 
   /**
    * return: Promise<boolean>
@@ -79,28 +85,28 @@ export interface ISourceCamera {
    *
    * Gets feed capture delay in milliseconds
    */
-  getDelay(): Promise<number>
+  // getDelay(): Promise<number>
 
   /**
    * param: (value: number)
    *
    * Sets feed capture delay in milliseconds, accepts only positive delay
    */
-  setDelay(value: number): Promise<CameraSource>
+  // setDelay(value: number): Promise<CameraSource>
 
   /**
    * return: Promise<boolean>
    *
    * Checks whether deinterlacing is enforced
    */
-  isForceDeinterlace(): Promise<boolean>
+  // isForceDeinterlace(): Promise<boolean>
 
   /**
    * param: (value: boolean)
    *
    * Enables or disables forcing of deinterlacing
    */
-  setForceDeinterlace(value: boolean): Promise<CameraSource>
+  // setForceDeinterlace(value: boolean): Promise<CameraSource>
 }
 
 export class SourceCamera implements ISourceCamera {
@@ -121,7 +127,7 @@ export class SourceCamera implements ISourceCamera {
     hauppauge2: "vid_2040&pid_e50[012a4]"
   };
 
-  getDeviceId(): Promise<string> {
+  deviceId(): Promise<string> {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'getDeviceId', true)
@@ -136,11 +142,19 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  getAudioOffset(): Promise<number> {
-    return new Promise(resolve => {
-      var streamDelay, audioDelay;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getAudioOffset', true)
+  audioOffset(value?: number): Promise<number|SourceCamera> {
+    return new Promise((resolve, reject) => {
+      var streamDelay, audioDelay, itemAudio, delay;
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'audioOffset',  true)
+      }
+
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.get('prop:itemaudio', this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
+        this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         iItem.get('prop:StreamDelay', this._id).then(val => {
           streamDelay = Number(val);
           return iItem.get('prop:AudioDelay', this._id);
@@ -148,7 +162,7 @@ export class SourceCamera implements ISourceCamera {
           audioDelay = Number(val);
           resolve((audioDelay - streamDelay) / 10000);
         });
-      } else {
+      } else if (!this._isItemCall && !value) {
         iItem.wrapGet('prop:StreamDelay', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           streamDelay = Number(val);
           return iItem.get('prop:AudioDelay', this._id);
@@ -157,139 +171,122 @@ export class SourceCamera implements ISourceCamera {
           resolve((audioDelay - streamDelay) / 10000);
         });
       }
-    });
-  }
 
-  setAudioOffset(value: number): Promise<SourceCamera> {
-    return new Promise((resolve, reject) => {
-      var itemAudio, delay;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAudioOffset', true)
-        this._checkPromise = iItem.get('prop:itemaudio', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
-          this._id, this._updateId.bind(this))
-      }
       this._checkPromise.then(val => {
-          itemAudio = val;
-          return this.isAudioAvailable();
-        }).then(val => {
-          if (val === false && itemAudio === '') {
-            reject(Error('Device has no audio'));
-          } else {
-            return this.getDelay();
-          }
-        }).then(val => {
-          delay = val;
-          if (value >= 0) {
-            return iItem.set('prop:StreamDelay', String(delay * 10000), this._id);
-          } else {
-            return iItem.set('prop:StreamDelay',
-              String((delay + (value * -1)) * 10000), this._id);
-          }
-        }).then(val => {
-          if (value >= 0) {
-            return iItem.set('prop:AudioDelay',
-              String((delay + value) * 10000), this._id);
-          } else {
-            return iItem.set('prop:AudioDelay', String(delay * 10000), this._id);
-          }
-        }).then(val => {
-          resolve(this);
-        });
-    });
+        itemAudio = val;
+        return this.isAudioAvailable();
+      }).then(val => {
+        if (val === false && itemAudio === '') {
+          reject(Error('Device has no audio'));
+        } else {
+          return this.delay();
+        }
+      }).then(val => {
+        delay = val;
+        if (value >= 0) {
+          return iItem.set('prop:StreamDelay', String(delay * 10000), this._id);
+        } else {
+          return iItem.set('prop:StreamDelay',
+            String((delay + (value * -1)) * 10000), this._id);
+        }
+      }).then(val => {
+        if (value >= 0) {
+          return iItem.set('prop:AudioDelay',
+            String((delay + value) * 10000), this._id);
+        } else {
+          return iItem.set('prop:AudioDelay', String(delay * 10000), this._id);
+        }
+      }).then(val => {
+        resolve(this);
+      });
+    })
   }
 
-  getAudioInput(): Promise<MicrophoneDevice> {
+  audioInput(value?: MicrophoneDevice): Promise<MicrophoneDevice|SourceCamera> {
     return new Promise((resolve, reject) => {
       var itemAudioId;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getAudioInput', true)
-        this._checkPromise = iItem.get('prop:itemaudio', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
-          this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'audioInput',  true)
       }
+
+      if (this._isItemCall && value) {
+        iItem.set('prop:itemaudio', value.getDisplayId(), this._id)
+        .then(val => {
+          resolve(this);
+        });
+      } else if (!this._isItemCall && value) {
+        iItem.wrapSet('prop:itemaudio', value.getDisplayId(),
+        this._srcId, this._id, this._updateId.bind(this))
+        .then(val => {
+          resolve(this);
+        });
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:itemaudio', this._id)
+      } else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:itemaudio', this._srcId,
+        this._id, this._updateId.bind(this))
+      }
+
       this._checkPromise.then(val => {
-          if (val === '') {
-            reject(Error('No tied audio input'));
-          } else {
-            itemAudioId = val;
-            return System.getMicrophones();
-          }
-        }).then(val => {
-          var micDevice;
-          if (val !== undefined) {
-            for (var i = 0; i < val.length; ++i) {
-              if (val[i].getDisplayId() === itemAudioId) {
-                micDevice = val[i];
-                break;
-              }
+        if (val === '') {
+          reject(Error('No tied audio input'));
+        } else {
+          itemAudioId = val;
+          return System.getMicrophones();
+        }
+      }).then(val => {
+        var micDevice;
+        if (val !== undefined) {
+          for (var i = 0; i < val.length; ++i) {
+            if (val[i].getDisplayId() === itemAudioId) {
+              micDevice = val[i];
+              break;
             }
           }
+        }
 
-          if (micDevice !== undefined) {
-            resolve(micDevice);
-          } else {
-            reject(Error('Tied audio input not present'));
-          }
-        });
-    });
+        if (micDevice !== undefined) {
+          resolve(micDevice);
+        } else {
+          reject(Error('Tied audio input not present'));
+        }
+      });
+    })
   }
 
-  setAudioInput(value: MicrophoneDevice): Promise<SourceCamera> {
+  streamPause(value?: boolean): Promise<boolean|SourceCamera> {
     return new Promise((resolve, reject) => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAudioInput', true)
-        iItem.set('prop:itemaudio', value.getDisplayId(), this._id)
-          .then(val => {
-            resolve(this);
-          });
-      } else {
-        iItem.wrapSet('prop:itemaudio', value.getDisplayId(),
-          this._srcId, this._id, this._updateId.bind(this))
-          .then(val => {
-            resolve(this);
-          });
+      var itemAudioId;
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'streamPause',  true)
       }
-    });
-  }
 
-  isStreamPaused(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isStreamPaused', true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:StreamPause', value ? '1' : '0',
+        this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:StreamPause', value ? '1' : '0',
+        this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         iItem.get('prop:StreamPause', this._id).then(val => {
           resolve(val === '1');
         });
-      } else {
+      } else if (!this._isItemCall && !value) {
         iItem.wrapGet('prop:StreamPause', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === '1');
         });
       }
-    });
-  }
 
-  setStreamPaused(value: boolean): Promise<CameraSource> {
-    return new Promise((resolve, reject) => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setStreamPaused', true)
-        this._checkPromise = iItem.set('prop:StreamPause', value ? '1' : '0',
-          this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:StreamPause', value ? '1' : '0',
-          this._srcId, this._id, this._updateId.bind(this))
-      }
       this._checkPromise.then(() => {
-            return iItem.get('prop:StreamPause', this._id);
-          }).then(val => {
-            if (value === (val === ('1'))) {
-              resolve(this);
-            } else {
-              reject(Error('Camera feed cannot be paused/resumed or is not present'));
-            }
-          });
-    });
+        return iItem.get('prop:StreamPause', this._id);
+      }).then(val => {
+        if (value === (val === ('1'))) {
+          resolve(this);
+        } else {
+          reject(Error('Camera feed cannot be paused/resumed or is not present'));
+        }
+      });
+    })
   }
 
   isHardwareEncoder(): Promise<boolean> {
@@ -333,109 +330,101 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  getDelay(): Promise<number> {
-    return new Promise(resolve => {
-      var streamDelay, audioDelay;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getDelay', true)
+  delay(value?: number): Promise<number|SourceCamera> {
+    return new Promise((resolve, reject) => {
+      var isPositive, audioOffset, streamDelay, audioDelay;
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'delay',  true)
+      }
+
+      if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:StreamDelay', this._id)
-      } else {
+      } else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:StreamDelay', this._srcId,
           this._id, this._updateId.bind(this)).then(val => {
           streamDelay = Number(val);
           return iItem.get('prop:AudioDelay', this._id);
         })
-      }
-      this._checkPromise.then(val => {
-          streamDelay = Number(val);
-          return iItem.get('prop:AudioDelay', this._id);
+      } else if (value) {
+        this.isHardwareEncoder().then(val => {
+          if (val === true) {
+            reject(Error('Cannot set delay to hardware encoder devices'));
+          } else {
+            return this.value();
+          }
         }).then(val => {
-          audioDelay = Number(val);
-
-          if (streamDelay < audioDelay) {
-            resolve(streamDelay / 10000);
+          for (var key in this._delayExclusionObject) {
+            var regex = new RegExp(
+              this._delayExclusionObject[key].toLowerCase(), 'g');
+            if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
+              reject(Error('Cannot set delay to specific device'));
+              break;
+            }
+          }
+          return this.audioOffset();
+        }).then(val => {
+          audioOffset = val;
+          if (audioOffset >= 0) {
+            isPositive = true;
+            if(this._isItemCall) {
+              return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
+            } else {
+              return iItem.wrapSet('prop:StreamDelay', String(value * 10000), this._srcId, this._id, this._updateId.bind(this));
+            }
           } else {
-            resolve(audioDelay / 10000);
+            isPositive = false;
+            return iItem.set('prop:StreamDelay',
+              String((value + (audioOffset * -1)) * 10000), this._id);
           }
-        });
-    });
-  }
-
-  setDelay(value: number): Promise<CameraSource> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setDelay', true)
-    }
-    return new Promise((resolve, reject) => {
-      var isPositive, audioOffset;
-      this.isHardwareEncoder().then(val => {
-        if (val === true) {
-          reject(Error('Cannot set delay to hardware encoder devices'));
-        } else {
-          return this.getValue();
-        }
-      }).then(val => {
-        for (var key in this._delayExclusionObject) {
-          var regex = new RegExp(
-            this._delayExclusionObject[key].toLowerCase(), 'g');
-          if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
-            reject(Error('Cannot set delay to specific device'));
-            break;
-          }
-        }
-        return this.getAudioOffset();
-      }).then(val => {
-        audioOffset = val;
-        if (audioOffset >= 0) {
-          isPositive = true;
-          if(this._isItemCall) {
-            return iItem.set('prop:StreamDelay', String(value * 10000), this._id);
+        }).then(val => {
+          if (isPositive) {
+            return iItem.set('prop:AudioDelay',
+              String((value + audioOffset) * 10000), this._id);
           } else {
-            return iItem.wrapSet('prop:StreamDelay', String(value * 10000), this._srcId, this._id, this._updateId.bind(this));
+            return iItem.set('prop:AudioDelay', String(value * 10000), this._id);
           }
-        } else {
-          isPositive = false;
-          return iItem.set('prop:StreamDelay',
-            String((value + (audioOffset * -1)) * 10000), this._id);
-        }
-      }).then(val => {
-        if (isPositive) {
-          return iItem.set('prop:AudioDelay',
-            String((value + audioOffset) * 10000), this._id);
-        } else {
-          return iItem.set('prop:AudioDelay', String(value * 10000), this._id);
-        }
-      }).then(val => {
-        resolve(this);
-      });
-    });
-  }
-
-  isForceDeinterlace(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isForceDeinterlace', true)
-        iItem.get('prop:fdeinterlace', this._id).then(val => {
-          resolve(val === '3');
-        });
-      } else {
-        iItem.wrapGet('prop:fdeinterlace', this._srcId, this._id, this._updateId.bind(this)).then(val => {
-          resolve(val === '3');
+        }).then(val => {
+          resolve(this);
         });
       }
-    });
+
+      this._checkPromise.then(val => {
+        streamDelay = Number(val);
+        return iItem.get('prop:AudioDelay', this._id);
+      }).then(val => {
+        audioDelay = Number(val);
+
+        if (streamDelay < audioDelay) {
+          resolve(streamDelay / 10000);
+        } else {
+          resolve(audioDelay / 10000);
+        }
+      });
+    })
   }
 
-  setForceDeinterlace(value: boolean): Promise<CameraSource> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setForceDeinterlace', true)
+  forceDeinterlace(value?: boolean): Promise<boolean|SourceCamera> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'forceDeinterlace',  true)
+      }
+
+      if (this._isItemCall && value) {
         iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id).then(() => {
           resolve(this);
         });
-      } else {
+      } else if (!this._isItemCall && value) {
         iItem.wrapSet('prop:fdeinterlace', (value ? '3' : '0'), this._srcId,
-          this._id, this._updateId.bind(this)).then(() => {
+        this._id, this._updateId.bind(this)).then(() => {
           resolve(this);
+        });
+      } else if (this._isItemCall && !value) {
+        iItem.get('prop:fdeinterlace', this._id).then(val => {
+          resolve(val === '3');
+        });
+      } else if (!this._isItemCall && !value) {
+        iItem.wrapGet('prop:fdeinterlace', this._srcId, this._id, this._updateId.bind(this)).then(val => {
+          resolve(val === '3');
         });
       }
     })
@@ -443,5 +432,5 @@ export class SourceCamera implements ISourceCamera {
 
   isAudioAvailable: () => Promise<boolean>;
 
-  getValue: () => Promise<string>;
+  value: () => Promise<string>;
 }

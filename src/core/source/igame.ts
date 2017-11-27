@@ -10,13 +10,16 @@ import {iSource, ISource, ItemTypes} from './isource';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceGame {
+  specialOptimization(value?: boolean): Promise<boolean|ISourceGame>
+  showMouse(value?: boolean): Promise<boolean|ISourceGame>
+  offlineImage(path?: string): Promise<string|ISourceGame>
 
   /**
    * return: Promise<boolean>
    *
    * Check if Game Special Optimization is currently enabled or not
    */
-  isSpecialOptimizationEnabled(): Promise<boolean>
+  // isSpecialOptimizationEnabled(): Promise<boolean>
 
   /**
    * param: Promise<boolean>
@@ -25,14 +28,14 @@ export interface ISourceGame {
    *
    * *Chainable.*
    */
-  setSpecialOptimizationEnabled(value: boolean): Promise<ISourceGame>
+  // setSpecialOptimizationEnabled(value: boolean): Promise<ISourceGame>
 
   /**
    * return: Promise<boolean>
    *
    * Check if Show Mouse is currently enabled or not
    */
-  isShowMouseEnabled(): Promise<boolean>
+  // isShowMouseEnabled(): Promise<boolean>
 
   /**
    * param: (value: boolean)
@@ -41,7 +44,7 @@ export interface ISourceGame {
    *
    * *Chainable.*
    */
-  setShowMouseEnabled(value: boolean): Promise<ISourceGame>
+  // setShowMouseEnabled(value: boolean): Promise<ISourceGame>
 
   /**
    * param: path<string>
@@ -50,14 +53,14 @@ export interface ISourceGame {
    *
    * *Chainable.*
    */
-  setOfflineImage(path: string): Promise<ISourceGame>
+  // setOfflineImage(path: string): Promise<ISourceGame>
 
   /**
    * return: Promise<string>
    *
    * Get the offline image of a game item
    */
-  getOfflineImage(): Promise<string>
+  // getOfflineImage(): Promise<string>
 }
 
 export class iSourceGame implements ISourceGame {
@@ -73,117 +76,97 @@ export class iSourceGame implements ISourceGame {
     this._sceneId = sceneId;
   }
 
-  isSpecialOptimizationEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isSpecialOptimizationEnabled', true)
+  specialOptimization(value?: boolean): Promise<boolean|iSourceGame> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'specialOptimization',  true)
+      }
+
+      if (this._isItemCall && value) {
+        iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
+        this._id).then(() => {
+          resolve(this);
+        });
+      } else if (!this._isItemCall && value) {
+        iItem.wrapSet('GameCapSurfSharing', (value ? '1' : '0'),
+        this._srcId, this._id, this._updateId.bind(this)).then(() => {
+          resolve(this);
+        });
+      } else if (this._isItemCall && !value) {
         iItem.get('GameCapSurfSharing', this._id).then(res => {
           resolve(res === '1');
         });
-      } else {
+      } else if (!this._isItemCall && !value) {
         iItem.wrapGet('GameCapSurfSharing', this._srcId, this._id, this._updateId.bind(this)).then(res => {
           resolve(res === '1');
         });
       }
-    });
+    })
   }
 
-  setSpecialOptimizationEnabled(value: boolean): Promise<iSourceGame> {
+  showMouse(value?: boolean): Promise<boolean|iSourceGame> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setSpecialOptimizationEnabled', true)
-        iItem.set('GameCapSurfSharing', (value ? '1' : '0'),
-          this._id).then(() => {
-            resolve(this);
-        });
-      } else {
-        iItem.wrapSet('GameCapSurfSharing', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve(this);
-        });
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'showMouse',  true)
       }
-    });
-  }
 
-  isShowMouseEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isShowMouseEnabled', true)
+      if (this._isItemCall && value) {
+        iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
+          resolve(this);
+        });
+      } else if (!this._isItemCall && !value) {
+        iItem.wrapSet('GameCapShowMouse', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this)).then(() => {
+          resolve(this);
+        });
+      } else if (this._isItemCall && !value) {
         iItem.get('GameCapShowMouse', this._id).then(res => {
           resolve(res === '1');
         });
-      } else {
+      }  else if (!this._isItemCall && !value) {
         iItem.wrapGet('GameCapShowMouse', this._srcId, this._id, this._updateId.bind(this)).then(res => {
           resolve(res === '1');
         });
       }
-    });
+    })
   }
 
-  setShowMouseEnabled(value: boolean): Promise<iSourceGame> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setShowMouseEnabled', true)
-        iItem.set('GameCapShowMouse', (value ? '1' : '0'), this._id).then(() => {
-          resolve(this);
-        });
-      } else {
-        iItem.wrapSet('GameCapShowMouse', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this)).then(() => {
-          resolve(this);
-        });
-      }
-    });
-  }
-
-  setOfflineImage(path: string): Promise<iSourceGame> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'setOfflineImage', true)
-    }
+  offlineImage(path?: string): Promise<string|iSourceGame> {
     return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'offlineImage',  true)
+      }
+
       if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game item'));
-      } else if (Environment.isSourcePlugin()) {
+      } else if (path && Environment.isSourcePlugin()) {
         reject(
           Error('Source plugins cannot update offline images of other items')
         );
-      } else if (!(this._value instanceof XML)) {
-        this.getValue().then(() => {
-          this.setOfflineImage(path).then(itemObj => {
+      } else if (path && !(this._value instanceof XML)) {
+        this.value().then(() => {
+          this.offlineImage(path).then(itemObj => {
             resolve(itemObj);
           });
         });
-      } else {
+      } else if (path) {
         var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
-          '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
+        '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
         if (regExp.test(path) || path === '') {
           var valueObj = JXON.parse(this._value.toString());
           valueObj['replace'] = path;
-          this.setValue(XML.parseJSON(valueObj)).then(() => {
+          this.value(XML.parseJSON(valueObj)).then(() => {
             resolve(this);
           });
         }
-      }
-    });
-  }
-
-  getOfflineImage(): Promise<string> {
-    if(this._isItemCall){
-      Logger.warn('sourceWarning', 'getOfflineImage', true)
-    }
-    return new Promise((resolve, reject) => {
-      if (this._type !== ItemTypes.GAMESOURCE) {
-        reject(Error('Current item should be a game item'));
-      } else {
-        this.getValue().then(() => {
+      } else if (!path) {
+        this.value().then(() => {
           var valueObj = JXON.parse(this._value.toString());
           resolve(valueObj['replace'] ? valueObj['replace'] : '');
         });
       }
-    });
+    })
   }
 
-  getValue: () => Promise<string | XML>
-
-  setValue: (value: string | XML) => Promise<iSourceGame>
+  value: (value?: string | XML) => Promise<string | XML | iSourceGame>
 
 }

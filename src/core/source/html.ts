@@ -45,6 +45,15 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   ISourceHtml {
 
   //iSourceHtml
+  url: (value?: string) => Promise<string|HtmlSource>
+  browserTransparency: (value?: boolean) => Promise<boolean|HtmlSource>
+  browser60FPS: (value?: boolean) => Promise<boolean|HtmlSource>
+  browserCustomSize: (value?: Rectangle) => Promise<Rectangle|HtmlSource>
+  allowRightClick: (value?: boolean) => Promise<boolean|HtmlSource>
+  browserJS: (value?: string) => Promise<string|HtmlSource>
+  browserJSEnabled:(value?: boolean) => Promise<boolean|HtmlSource>
+  customCSS: (value?: string) => Promise<string|HtmlSource>
+  customCSSEnabled: (value?: boolean) => Promise<boolean|HtmlSource>
 
   /**
    * param: (func: string, arg: string)
@@ -56,145 +65,145 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
    */
   call: () => Promise<HtmlSource>
 
-  /**
-   * return: Promise<string>
-   *
-   * Gets the URL of this webpage source.
-   */
-  getURL: () => Promise<string>
+  // /**
+  //  * return: Promise<string>
+  //  *
+  //  * Gets the URL of this webpage source.
+  //  */
+  // getURL: () => Promise<string>
 
-  /**
-   * param: (url: string)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Sets the URL of this webpage source.
-   *
-   * *Chainable.*
-   */
-  setURL: () => Promise<HtmlSource>
+  // /**
+  //  * param: (url: string)
+  //  * ```
+  //  * return: Promise<HtmlSource>
+  //  * ```
+  //  *
+  //  * Sets the URL of this webpage source.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setURL: () => Promise<HtmlSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if browser is rendered transparent
-   */
-  isBrowserTransparent: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if browser is rendered transparent
+  //  */
+  // isBrowserTransparent: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disable transparency of CEF browser
-   *
-   * *Chainable.*
-   */
-  enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>
+  // /**
+  //  * param: Promise<boolean>
+  //  * ```
+  //  * return: Promise<HtmlSource>
+  //  * ```
+  //  *
+  //  * Enable or disable transparency of CEF browser
+  //  *
+  //  * *Chainable.*
+  //  */
+  // enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if browser can render up to a maximum of 60FPS
-   */
-  isBrowser60FPS: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if browser can render up to a maximum of 60FPS
+  //  */
+  // isBrowser60FPS: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disable browser source to render up to a maximum of 60FPS
-   *
-   * *Chainable.*
-   */
-  enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>
+  // /**
+  //  * param: Promise<boolean>
+  //  * ```
+  //  * return: Promise<HtmlSource>
+  //  * ```
+  //  *
+  //  * Enable or disable browser source to render up to a maximum of 60FPS
+  //  *
+  //  * *Chainable.*
+  //  */
+  // enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom browser window size (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom size has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  getBrowserCustomSize: () => Promise<Rectangle>
+  // /**
+  //  * return: Promise<Rectangle>
+  //  *
+  //  * Gets the custom browser window size (in pixels) for the item, if set,
+  //  * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
+  //  * custom size has been set.
+  //  *
+  //  * See also: {@link #util/Rectangle Util/Rectangle}
+  //  */
+  // getBrowserCustomSize: () => Promise<Rectangle>
 
-  /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Sets the custom browser window size for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlSource>
+  // /**
+  //  * param: Promise<Rectangle>
+  //  * ```
+  //  * return: Promise<HtmlSource>
+  //  * ```
+  //  *
+  //  * Sets the custom browser window size for the item
+  //  * regardless of its layout on the mixer
+  //  *
+  //  * *Chainable.*
+  //  *
+  //  * See also: {@link #util/Rectangle Util/Rectangle}
+  //  */
+  // setBrowserCustomSize: (value: Rectangle) => Promise<HtmlSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
-  getAllowRightClick: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if right click events are sent to the item or not.
+  //  *
+  //  * #### Usage
+  //  *
+  //  * ```javascript
+  //  * item.getAllowRightClick().then(function(isRightClickAllowed) {
+  //  *   // The rest of your code here
+  //  * });
+  //  * ```
+  //  */
+  // getAllowRightClick: () => Promise<boolean>
 
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
-  setAllowRightClick: (value: boolean) => Promise<HtmlSource>
+  // /**
+  //  * param: (value:boolean)
+  //  * ```
+  //  * return: Promise<Source>
+  //  * ```
+  //  *
+  //  * Allow or disallow right click events to be sent to the item. Note that
+  //  * you can only catch right click events using `mouseup/mousedown`
+  //  *
+  //  * *Chainable*
+  //  *
+  //  * #### Usage
+  //  *
+  //  * ```javascript
+  //  * item.setAllowRightClick(true).then(function(item) {
+  //  *   // Promise resolves with the same Item instance
+  //  * });
+  //  * ```
+  //  */
+  // setAllowRightClick: (value: boolean) => Promise<HtmlSource>
 
-  /**
-   * return: Promise<string>
-   *
-   * Gets the javascript commands to be executed on item upon load
-   */
-  getBrowserJS: () => Promise<string>
+  // /**
+  //  * return: Promise<string>
+  //  *
+  //  * Gets the javascript commands to be executed on item upon load
+  //  */
+  // getBrowserJS: () => Promise<string>
 
-  /**
-   * param: (js: string, refresh: boolean = false)
-   * ```
-   * return: Promise<ISourceHtml>
-   * ```
-   *
-   * Sets the javascript commands to be executed on item
-   * right upon setting and on load. Optionally set second parameter
-   * to true to refresh item (needed to clean previously executed JS code.)
-   *
-   * *Chainable.*
-   */
-  setBrowserJS: () => Promise<HtmlSource>
+  // /**
+  //  * param: (js: string, refresh: boolean = false)
+  //  * ```
+  //  * return: Promise<ISourceHtml>
+  //  * ```
+  //  *
+  //  * Sets the javascript commands to be executed on item
+  //  * right upon setting and on load. Optionally set second parameter
+  //  * to true to refresh item (needed to clean previously executed JS code.)
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setBrowserJS: () => Promise<HtmlSource>
 
   /**
    * return: Promise<boolean>
@@ -285,30 +294,34 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   applyConfig: (configObj: any) => Promise<HtmlSource>;
 
   // ItemAudio
+  volume:(value?: number)=> Promise<number|HtmlSource>
+  mute:(value?: boolean)=> Promise<boolean|HtmlSource>
+  autoMute:(value?: boolean)=> Promise<boolean|HtmlSource>
+  streamOnlyAudio:(value?: boolean)=> Promise<boolean|HtmlSource>
 
-  /** See: {@link #core/IAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
+  // /** See: {@link #core/IAudio#getVolume getVolume} */
+  // getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isMute isMute} */
+  // isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  isAutoMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  // isAutoMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<HtmlSource>;
+  // /** See: {@link #core/IAudio#setVolume setVolume} */
+  // setVolume: (value: number) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<HtmlSource>;
+  // /** See: {@link #core/IAudio#setMute setMute} */
+  // setMute: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<HtmlSource>;
+  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  // setAutoMute: (value: boolean) => Promise<HtmlSource>;
 
-  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  // isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
+  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  // setStreamOnlyAudio: (value: boolean) => Promise<HtmlSource>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

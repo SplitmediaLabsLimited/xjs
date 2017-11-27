@@ -61,40 +61,45 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceCamera {
 
   // Shared with Camera Item
-  /**
-   * See: {@link #core/CameraSource#getDeviceId getDeviceId}
-   */
-  getDeviceId: () => Promise<string>
+  deviceId:() => Promise<string>
+  audioOffset:(value?:number) => Promise<number|CameraItem>
+  audioInput:(value?:MicrophoneDevice) => Promise<MicrophoneDevice|CameraItem>
+  delay:(value?:number) => Promise<number|CameraItem>
+  forceDeinterlace:(value?:boolean) => Promise<boolean|CameraItem>
+  // /**
+  //  * See: {@link #core/CameraSource#getDeviceId getDeviceId}
+  //  */
+  // getDeviceId: () => Promise<string>
 
-  /**
-   * See: {@link #core/CameraSource#getAudioOffset getAudioOffset}
-   */
-  getAudioOffset: () => Promise<number>
+  // /**
+  //  * See: {@link #core/CameraSource#getAudioOffset getAudioOffset}
+  //  */
+  // getAudioOffset: () => Promise<number>
 
-  /**
-   * See: {@link #core/CameraSource#setAudioOffset setAudioOffset}
-   */
-  setAudioOffset: (value: number) => Promise<ISourceCamera>
+  // /**
+  //  * See: {@link #core/CameraSource#setAudioOffset setAudioOffset}
+  //  */
+  // setAudioOffset: (value: number) => Promise<ISourceCamera>
 
-  /**
-   * See: {@link #core/CameraSource#getAudioInput getAudioInput}
-   */
-  getAudioInput: () => Promise<MicrophoneDevice>
+  // /**
+  //  * See: {@link #core/CameraSource#getAudioInput getAudioInput}
+  //  */
+  // getAudioInput: () => Promise<MicrophoneDevice>
 
-  /**
-   * See: {@link #core/CameraSource#setAudioInput setAudioInput}
-   */
-  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
+  // /**
+  //  * See: {@link #core/CameraSource#setAudioInput setAudioInput}
+  //  */
+  // setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
 
-  /**
-   * See: {@link #core/CameraSource#isStreamPaused isStreamPaused}
-   */
-  isStreamPaused: () => Promise<boolean>
+  // /**
+  //  * See: {@link #core/CameraSource#isStreamPaused isStreamPaused}
+  //  */
+  // isStreamPaused: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/CameraSource#setStreamPaused setStreamPaused}
-   */
-  setStreamPaused: (value: boolean) => Promise<CameraItem>
+  // /**
+  //  * See: {@link #core/CameraSource#setStreamPaused setStreamPaused}
+  //  */
+  // setStreamPaused: (value: boolean) => Promise<CameraItem>
 
   /**
    * See: {@link #core/CameraSource#isHardwareEncoder isHardwareEncoder}
@@ -106,37 +111,37 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    */
   isActive: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/CameraSource#getDelay getDelay}
-   */
-  getDelay: () => Promise<number>
+  // /**
+  //  * See: {@link #core/CameraSource#getDelay getDelay}
+  //  */
+  // getDelay: () => Promise<number>
 
-  /**
-   * See: {@link #core/CameraSource#setDelay setDelay}
-   */
-  setDelay: (value: number) => Promise<CameraItem>
+  // /**
+  //  * See: {@link #core/CameraSource#setDelay setDelay}
+  //  */
+  // setDelay: (value: number) => Promise<CameraItem>
 
-  /**
-   * See: {@link #core/CameraSource#isForceDeinterlace isForceDeinterlace}
-   */
-  isForceDeinterlace: () => Promise<boolean>
+  // /**
+  //  * See: {@link #core/CameraSource#isForceDeinterlace isForceDeinterlace}
+  //  */
+  // isForceDeinterlace: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/CameraSource#setForceDeinterlace setForceDeinterlace}
-   */
-  setForceDeinterlace: (value: boolean) => Promise<CameraItem>
+  // /**
+  //  * See: {@link #core/CameraSource#setForceDeinterlace setForceDeinterlace}
+  //  */
+  // setForceDeinterlace: (value: boolean) => Promise<CameraItem>
 
   // ItemLayout
 
   /**
    * See: {@link #core/IItemLayout#bringForward bringForward}
    */
-  bringForward: () => Promise<CameraItem>;  
+  bringForward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#bringToFront bringToFront}
    */
-  bringToFront: () => Promise<CameraItem>;  
+  bringToFront: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -191,12 +196,12 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<CameraItem>;  
+  sendBackward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<CameraItem>; 
+  sendToBack: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -573,30 +578,34 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   setTransitionTime: (value: number) => Promise<CameraItem>;
 
   // SourceAudio
+  volume:(value?: number)=> Promise<number|CameraItem>
+  mute:(value?: boolean)=> Promise<boolean|CameraItem>
+  autoMute:(value?: boolean)=> Promise<boolean|CameraItem>
+  streamOnlyAudio:(value?: boolean)=> Promise<boolean|CameraItem>
 
-  /** See: {@link #core/IAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
+  // /** See: {@link #core/IAudio#getVolume getVolume} */
+  // getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isMute isMute} */
+  // isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  isAutoMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  // isAutoMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<CameraItem>;
+  // /** See: {@link #core/IAudio#setVolume setVolume} */
+  // setVolume: (value: number) => Promise<CameraItem>;
 
-  /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<CameraItem>;
+  // /** See: {@link #core/IAudio#setMute setMute} */
+  // setMute: (value: boolean) => Promise<CameraItem>;
 
-  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<CameraItem>;
+  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  // setAutoMute: (value: boolean) => Promise<CameraItem>;
 
-  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  // isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<CameraItem>;
+  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  // setStreamOnlyAudio: (value: boolean) => Promise<CameraItem>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

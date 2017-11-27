@@ -38,75 +38,82 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemEffect, ISourceScreen {
 
   //Screen Source
-  /**
-   * See {@link #core/ScreenSource#isStickToTitle isStickToTitle}
-   */
-  isStickToTitle: () => Promise<boolean>
+  stickToTitle: (value?: boolean) => Promise<boolean|ScreenItem>
+  captureLayered: (value?: boolean) => Promise<boolean|ScreenItem>
+  optimizedCapture: (value?: boolean) => Promise<boolean|ScreenItem>
+  showMouseClicks: (value?: boolean) => Promise<boolean|ScreenItem>
+  showMouse: (value?: boolean) => Promise<boolean|ScreenItem>
+  captureArea: (dimension?: Rectangle) => Promise<Rectangle|ScreenItem>
+  clientAreaOnly: (value?: boolean) => Promise<boolean|ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#isStickToTitle isStickToTitle}
+  //  */
+  // isStickToTitle: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setStickToTitle setStickToTitle}
-   */
-  setStickToTitle: (value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setStickToTitle setStickToTitle}
+  //  */
+  // setStickToTitle: (value: boolean) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#getCaptureLayered getCaptureLayered}
-   */
-  getCaptureLayered: () => Promise<boolean>
+  // /**
+  //  * See {@link #core/ScreenSource#getCaptureLayered getCaptureLayered}
+  //  */
+  // getCaptureLayered: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setCaptureLayered setCaptureLayered}
-   */
-  setCaptureLayered: (value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setCaptureLayered setCaptureLayered}
+  //  */
+  // setCaptureLayered: (value: boolean) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#getOptimizedCapture getOptimizedCapture}
-   */
-  getOptimizedCapture: () => Promise<boolean>
+  // /**
+  //  * See {@link #core/ScreenSource#getOptimizedCapture getOptimizedCapture}
+  //  */
+  // getOptimizedCapture: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setOptimizedCapture setOptimizedCapture}
-   */
-  setOptimizedCapture:(value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setOptimizedCapture setOptimizedCapture}
+  //  */
+  // setOptimizedCapture:(value: boolean) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#getShowMouseClicks getShowMouseClicks}
-   */
-  getShowMouseClicks: () => Promise<boolean>
+  // /**
+  //  * See {@link #core/ScreenSource#getShowMouseClicks getShowMouseClicks}
+  //  */
+  // getShowMouseClicks: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setShowMouseClicks setShowMouseClicks}
-   */
-  setShowMouseClicks: (value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setShowMouseClicks setShowMouseClicks}
+  //  */
+  // setShowMouseClicks: (value: boolean) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#getShowMouse getShowMouse}
-   */
-  getShowMouse: () => Promise<boolean>
+  // /**
+  //  * See {@link #core/ScreenSource#getShowMouse getShowMouse}
+  //  */
+  // getShowMouse: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setShowMouse setShowMouse}
-   */
-  setShowMouse: (value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setShowMouse setShowMouse}
+  //  */
+  // setShowMouse: (value: boolean) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#getCaptureArea getCaptureArea}
-   */
-  getCaptureArea: () => Promise<Rectangle>
+  // /**
+  //  * See {@link #core/ScreenSource#getCaptureArea getCaptureArea}
+  //  */
+  // getCaptureArea: () => Promise<Rectangle>
 
-  /**
-   * See {@link #core/ScreenSource#setCaptureArea setCaptureArea}
-   */
-  setCaptureArea: (dimension: Rectangle) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setCaptureArea setCaptureArea}
+  //  */
+  // setCaptureArea: (dimension: Rectangle) => Promise<ScreenItem>
 
-  /**
-   * See {@link #core/ScreenSource#isClientArea isClientArea}
-   */
-  isClientArea: () => Promise<boolean>
+  // /**
+  //  * See {@link #core/ScreenSource#isClientArea isClientArea}
+  //  */
+  // isClientArea: () => Promise<boolean>
 
-  /**
-   * See {@link #core/ScreenSource#setClientArea setClientArea}
-   */
-  setClientArea: (value: boolean) => Promise<ScreenItem>
+  // /**
+  //  * See {@link #core/ScreenSource#setClientArea setClientArea}
+  //  */
+  // setClientArea: (value: boolean) => Promise<ScreenItem>
 
   // ItemLayout
 

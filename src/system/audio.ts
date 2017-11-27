@@ -2,6 +2,7 @@
 
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
+import {App as iApp} from '../internal/app';
 
 /**
  * The AudioDevice Class is the object returned by
@@ -75,6 +76,354 @@ export class AudioDevice{
     this._hwenable             = props['hwenable'] !== undefined? props['hwenable'] : 255;
     this._delay                = props['delay'] !== undefined? props['delay'] : 0;
     this._mix                  = props['mix'] !== undefined? props['mix'] : 0;
+  }
+
+  micLevel(volume?: number): Promise<number|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!volume) {
+        resolve(this._level);
+      } else {
+        if (volume < 0) {
+          reject(Error('Volume can only be positive'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 0) {
+            var micDevice = audioDevices[0];
+            this._level = volume
+            audioDevices[0] = micDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary microphone'));
+          }
+        });
+      }
+    });
+  }
+
+  micEnabled(enabled?: boolean): Promise<boolean|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if(!enabled) {
+        resolve(this._enable)
+      } else {
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 0) {
+            var micDevice = audioDevices[0];
+            micDevice._setEnabled(enabled);
+            audioDevices[0] = micDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary microphone'));
+          }
+        });
+      }
+    });
+  }
+
+  systemMicLevel(volume: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (volume < 0) {
+        reject(Error('Volume can only be positive'));
+      }
+      iApp.getAsList('microphonedev2').then(arr => {
+        var audioDevices = arr.map(val => {
+          return AudioDevice.parse(val);
+        });
+
+        if (audioDevices.length && audioDevices.length > 0) {
+          var micDevice = audioDevices[0];
+          micDevice._setSystemLevel(volume);
+          audioDevices[0] = micDevice;
+          var dev = '';
+          if (Array.isArray(audioDevices)) {
+              for (var i = 0; i < audioDevices.length; ++i) {
+                  dev += audioDevices[i].toString();
+              }
+          }
+          dev = '<devices>' + dev + '</devices>';
+          iApp.set('microphonedev2', dev).then(setVal => {
+            resolve(this);
+          });
+        } else {
+          reject(Error('No audio device is set as primary microphone'));
+        }
+      });
+    });
+  }
+
+  systemMicEnabled(hwenabled?: number): Promise<number|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!hwenabled) {
+        resolve(this._hwenable)
+      } else {
+        if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+          reject(Error('Value can only be 0, 1 or 255'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 0) {
+            var micDevice = audioDevices[0];
+            micDevice._setSystemEnabled(hwenabled);
+            audioDevices[0] = micDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary microphone'));
+          }
+        });
+      }
+    });
+  }
+
+  micDelay(delay?: number): Promise<boolean|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!delay) {
+        resolve(this._delay)
+      } else {
+        if (delay < 0) {
+          reject(Error('Delay can only be positive'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 0) {
+            var micDevice = audioDevices[0];
+            micDevice._setDelay(delay);
+            audioDevices[0] = micDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary microphone'));
+          }
+        });
+      }
+    });
+  }
+
+  speakerLevel(volume?: number): Promise<number|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!volume) {
+        resolve(this._level)
+      } else {
+        if (volume < 0) {
+          reject(Error('Volume can only be positive'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 1) {
+            var speakerDevice = audioDevices[1];
+            speakerDevice._setLevel(volume);
+            audioDevices[1] = speakerDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary speaker/audio render device'));
+          }
+        });
+      }
+    });
+  }
+
+  speakerEnabled(enabled?: boolean): Promise<boolean|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!enabled) {
+        resolve(this._enable)
+      } else {
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 1) {
+            var speakerDevice = audioDevices[1];
+            speakerDevice._setEnabled(enabled);
+            audioDevices[1] = speakerDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary speaker/audio render device'));
+          }
+
+        });
+      }
+    });
+  }
+
+  systemSpeakerLevel(volume?: number): Promise<boolean|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if(!volume) {
+        resolve(this._hwlevel)
+      } else {
+        if (volume < 0) {
+          reject(Error('Volume can only be positive'));
+        }
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 1) {
+            var speakerDevice = audioDevices[1];
+            speakerDevice._setSystemLevel(volume);
+            audioDevices[1] = speakerDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary speaker/audio render device'));
+          }
+        });
+      }
+    });
+  }
+
+  systemSpeakerEnabled(hwenabled?: number): Promise<number|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!hwenabled) {
+        resolve(this._hwenable)
+      } else {
+        if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
+          reject(Error('Value can only be 0, 1 or 255'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 1) {
+            var speakerDevice = audioDevices[1];
+            speakerDevice._setSystemEnabled(hwenabled);
+            audioDevices[1] = speakerDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary speaker/audio render device'));
+          }
+        });
+      }
+    });
+  }
+
+  speakerDelay(delay?: number): Promise<number|AudioDevice> {
+    return new Promise((resolve, reject) => {
+      if (!delay) {
+        resolve(this._delay)
+      } else {
+        if (delay < 0) {
+          reject(Error('Delay can only be positive'));
+        }
+
+        iApp.getAsList('microphonedev2').then(arr => {
+          var audioDevices = arr.map(val => {
+            return AudioDevice.parse(val);
+          });
+
+          if (audioDevices.length && audioDevices.length > 1) {
+            var speakerDevice = audioDevices[1];
+            speakerDevice._setDelay(delay);
+            audioDevices[1] = speakerDevice;
+            var dev = '';
+            if (Array.isArray(audioDevices)) {
+                for (var i = 0; i < audioDevices.length; ++i) {
+                    dev += audioDevices[i].toString();
+                }
+            }
+            dev = '<devices>' + dev + '</devices>';
+            iApp.set('microphonedev2', dev).then(setVal => {
+              resolve(this);
+            });
+          } else {
+            reject(Error('No audio device is set as primary speaker/audio render device'));
+          }
+
+        });
+      }
+    });
   }
 
   /**

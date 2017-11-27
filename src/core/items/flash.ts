@@ -41,18 +41,20 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceFlash {
 
   //Shared with Source
+  customResolution:(value?: Rectangle)=> Promise<Rectangle|FlashItem>
+  allowRightClick:(value?: boolean)=> Promise<boolean|FlashItem>
 
-  /** See: {@link #core/FlashSource#getCustomResolution getCustomResolution} */
-  getCustomResolution: () => Promise<Rectangle>
+  // /** See: {@link #core/FlashSource#getCustomResolution getCustomResolution} */
+  // getCustomResolution: () => Promise<Rectangle>
 
-  /** See: {@link #core/FlashSource#setCustomResolution setCustomResolution} */
-  setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
+  // /** See: {@link #core/FlashSource#setCustomResolution setCustomResolution} */
+  // setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
 
-  /** See: {@link #core/FlashSource#getAllowRightClick getAllowRightClick} */
-  getAllowRightClick: () => Promise<boolean>
+  // /** See: {@link #core/FlashSource#getAllowRightClick getAllowRightClick} */
+  // getAllowRightClick: () => Promise<boolean>
 
-  /** See: {@link #core/FlashSource#setAllowRightClick setAllowRightClick} */
-  setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
+  // /** See: {@link #core/FlashSource#setAllowRightClick setAllowRightClick} */
+  // setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
 
   // ItemLayout
 
@@ -119,12 +121,12 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<FlashItem>;  
+  sendBackward: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<FlashItem>; 
+  sendToBack: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -437,29 +439,33 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   setTransitionTime: (value: number) => Promise<FlashItem>;
 
   // ItemAudio
+  volume:(value?: number)=> Promise<number|FlashItem>
+  mute:(value?: boolean)=> Promise<boolean|FlashItem>
+  autoMute:(value?: boolean)=> Promise<boolean|FlashItem>
+  streamOnlyAudio:(value?: boolean)=> Promise<boolean|FlashItem>
 
-  /** See: {@link #core/IAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
+  // /** See: {@link #core/IAudio#getVolume getVolume} */
+  // getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isMute isMute} */
+  // isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  isAutoMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  // isAutoMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<FlashItem>;
+  // /** See: {@link #core/IAudio#setVolume setVolume} */
+  // setVolume: (value: number) => Promise<FlashItem>;
 
-  /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<FlashItem>;
+  // /** See: {@link #core/IAudio#setMute setMute} */
+  // setMute: (value: boolean) => Promise<FlashItem>;
 
-  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<FlashItem>;
-  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  // setAutoMute: (value: boolean) => Promise<FlashItem>;
+  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  // isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<FlashItem>;
+  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  // setStreamOnlyAudio: (value: boolean) => Promise<FlashItem>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

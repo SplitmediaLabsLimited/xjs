@@ -38,53 +38,56 @@ import {iSourceGame, ISourceGame} from './igame';
  */
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame
+  specialOptimization:(value?: boolean) => Promise<boolean|GameSource>
+  showMouse:(value?: boolean) => Promise<boolean|GameSource>
+  offlineImage:(path?: string) => Promise<string|GameSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
-   */
-  isSpecialOptimizationEnabled: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if Game Special Optimization is currently enabled or not
+  //  */
+  // isSpecialOptimizationEnabled: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
-   */
-  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>
+  // /**
+  //  * param: Promise<boolean>
+  //  *
+  //  * Set Game Special Optimization to on or off
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
-   */
-  isShowMouseEnabled: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check if Show Mouse is currently enabled or not
+  //  */
+  // isShowMouseEnabled: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
-   */
-  setShowMouseEnabled: (value: boolean) => Promise<GameSource>
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Set Show Mouse in game to on or off
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setShowMouseEnabled: (value: boolean) => Promise<GameSource>
 
-  /**
-   * param: path<string>
-   *
-   * Set the offline image of a game source
-   *
-   * *Chainable.*
-   */
-  setOfflineImage: (path: string) => Promise<GameSource>
+  // /**
+  //  * param: path<string>
+  //  *
+  //  * Set the offline image of a game source
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setOfflineImage: (path: string) => Promise<GameSource>
 
-  /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game source
-   */
-  getOfflineImage:() => Promise<string>
+  // /**
+  //  * return: Promise<string>
+  //  *
+  //  * Get the offline image of a game source
+  //  */
+  // getOfflineImage:() => Promise<string>
 }
 applyMixins(GameSource, [iSourceGame])

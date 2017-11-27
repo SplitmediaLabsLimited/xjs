@@ -5,6 +5,8 @@ import {Rectangle} from '../../util/rectangle';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceFlash {
+  customResolution(value?: Rectangle): Promise<Rectangle|ISourceFlash>
+  allowRightClick(value?: boolean): Promise<boolean|ISourceFlash>
   /**
    * return: Promise<Rectangle>
    *
@@ -12,7 +14,7 @@ export interface ISourceFlash {
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom resolution has been set.
    */
-  getCustomResolution(): Promise<Rectangle>
+  // getCustomResolution(): Promise<Rectangle>
 
   /**
    * param: (value: Rectangle)
@@ -23,13 +25,13 @@ export interface ISourceFlash {
    * Sets the custom resolution for the item
    * regardless of its layout on the mixer
    */
-  setCustomResolution(value: Rectangle): Promise<ISourceFlash>
+  // setCustomResolution(value: Rectangle): Promise<ISourceFlash>
   /**
    * return: Promise<boolean>
    *
    * Check if right click events are sent to the item or not.
    */
-  getAllowRightClick(): Promise<boolean>
+  // getAllowRightClick(): Promise<boolean>
 
   /**
    * param: (value:boolean)
@@ -40,7 +42,7 @@ export interface ISourceFlash {
    * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`
    */
-  setAllowRightClick(value: boolean): Promise<ISourceFlash>
+  // setAllowRightClick(value: boolean): Promise<ISourceFlash>
 }
 
 export class SourceFlash implements ISourceFlash {
@@ -55,77 +57,67 @@ export class SourceFlash implements ISourceFlash {
     this._sceneId = sceneId;
   }
 
-  getCustomResolution(): Promise<Rectangle> {
-    return new Promise(resolve => {
-      let customSize;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getCustomResolution', true)
-        this._checkPromise = iItem.get('prop:BrowserSize', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId,
-          this._id, this._updateId.bind(this))
+  customResolution(value?: Rectangle): Promise<Rectangle|SourceFlash> {
+    return new Promise((resolve, reject) => {
+      let customSize
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'customResolution',  true)
       }
-      this._checkPromise.then(val => {
-          if (val !== '') {
-            var [width, height] = decodeURIComponent(val).split(',');
-            customSize = Rectangle.fromDimensions(Number(width), Number(height));
-          } else {
-            customSize = Rectangle.fromDimensions(0, 0);
-          }
-          resolve(customSize);
-        });
 
-    });
-  }
-
-  setCustomResolution(value: Rectangle): Promise<SourceFlash> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setCustomResolution', true)
+      if (this._isItemCall && value) {
         iItem.set('prop:BrowserSize', value.toDimensionString(),
-          this._id).then(() => {
-            resolve(this);
+        this._id).then(() => {
+          resolve(this);
         });
-      } else {
+      } else if (!this._isItemCall && value) {
         iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
-          this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve(this);
+        this._srcId, this._id, this._updateId.bind(this)).then(() => {
+          resolve(this);
         });
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:BrowserSize', this._id)
+      } else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId,
+        this._id, this._updateId.bind(this))
       }
 
-    });
+      this._checkPromise.then(val => {
+        if (val !== '') {
+          var [width, height] = decodeURIComponent(val).split(',');
+          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+        } else {
+          customSize = Rectangle.fromDimensions(0, 0);
+        }
+        resolve(customSize);
+      });
+    })
   }
 
-  getAllowRightClick(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getAllowRightClick', true)
+  allowRightClick(value?: boolean): Promise<boolean|SourceFlash> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'allowRightClick',  true)
+      }
+
+      if (this._isItemCall && value) {
+        iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
+        .then(() => {
+          resolve(this);
+        });
+      } else if (!this._isItemCall && value) {
+        iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this))
+        .then(() => {
+          resolve(this);
+        });
+      } else if (this._isItemCall && !value) {
         iItem.get('prop:BrowserRightClick', this._id).then(val => {
           resolve(val === '1');
         });
-      } else {
+      } else if (!this._isItemCall && !value) {
         iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id, this._updateId.bind(this)).then(val => {
           resolve(val === '1');
         });
       }
-
-    });
-  }
-
-  setAllowRightClick(value: boolean): Promise<SourceFlash> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAllowRightClick', true)
-        iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-          .then(() => {
-            resolve(this);
-          });
-      } else {
-        iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this))
-          .then(() => {
-            resolve(this);
-          });
-      }
-    });
+    })
   }
 }

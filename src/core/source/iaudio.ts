@@ -5,13 +5,17 @@ import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
 
 export interface IAudio {
+  volume(value?: number): Promise<number|IAudio>;
+  mute(value?: boolean): Promise<boolean|IAudio>;
+  autoMute(value?: boolean): Promise<boolean|IAudio>;
+  streamOnlyAudio(value?: boolean): Promise<boolean|IAudio>;
 
   /**
    * return: Promise<number>
    *
    * Get source's volume level expressed as an integer from 0 to 100
    */
-  getVolume(): Promise<number>;
+  // getVolume(): Promise<number>;
 
   /**
    * param: (value: number)
@@ -20,14 +24,14 @@ export interface IAudio {
    *
    * *Chainable.*
    */
-  setVolume(value: number): Promise<IAudio>;
+  // setVolume(value: number): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
    *
    * Check if source's mute option is active
    */
-  isMute(): Promise<boolean>;
+  // isMute(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
@@ -36,14 +40,14 @@ export interface IAudio {
    *
    * *Chainable.*
    */
-  setMute(value: boolean): Promise<IAudio>;
+  // setMute(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
    *
    * Check if source is automatically being muted when hiding
    */
-  isAutoMute(): Promise<boolean>;
+  // isAutoMute(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
@@ -52,14 +56,14 @@ export interface IAudio {
    *
    * *Chainable.*
    */
-  setAutoMute(value: boolean): Promise<IAudio>;
+  // setAutoMute(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
    *
    * Checks if audio is also output to system sound
    */
-  isStreamOnlyAudio(): Promise<boolean>;
+  // isStreamOnlyAudio(): Promise<boolean>;
 
   /**
    * param: (value: boolean)
@@ -68,7 +72,7 @@ export interface IAudio {
    *
    * *Chainable.*
    */
-  setStreamOnlyAudio(value: boolean): Promise<IAudio>;
+  // setStreamOnlyAudio(value: boolean): Promise<IAudio>;
 
   /**
    * return: Promise<boolean>
@@ -90,125 +94,119 @@ export class Audio implements IAudio {
     this._sceneId = sceneId;
   }
 
-  getVolume(): Promise<number> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getVolume',  true)
-        this._checkPromise = iItem.get('prop:volume', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:volume', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+  volume(value?: number): Promise<number|Audio> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'volume',  true)
       }
-      this._checkPromise.then(val => {
-        resolve(Number(val));
-      });
-    });
-  }
+      if (value) {
+        value = value < 0 ? 0 : value > 100 ? 100 : value;
+      }
 
-  setVolume(value: number): Promise<Audio> {
-    return new Promise(resolve => {
-      value = value < 0 ? 0 : value > 100 ? 100 : value;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setVolume', true)
+      if (this._isItemCall && value) {
         this._checkPromise = iItem.set('prop:volume', String(value), this._id)
-      } else {
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:volume', this._id)
+      } else if (!this._isItemCall && value) {
         this._checkPromise = iItem.wrapSet('prop:volume', String(value),
-          this._srcId, this._id, this._updateId.bind(this))
+        this._srcId, this._id, this._updateId.bind(this))
+      }  else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:volume', this._srcId,
+        this._id, this._updateId.bind(this).bind(this))
       }
-      this._checkPromise.then(() => {
-        resolve(this);
+
+      this._checkPromise.then((val?) => {
+        if(val) {
+          resolve(Number(val));
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  isMute(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isMute',  true)
-        this._checkPromise = iItem.get('prop:mute', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:mute', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+  mute(value?: boolean): Promise<boolean|Audio> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'mute',  true)
       }
-      this._checkPromise.then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
 
-  setMute(value: boolean): Promise<Audio> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setMute', true)
+      if (this._isItemCall && value) {
         this._checkPromise = iItem.set('prop:mute', (value ? '1' : '0'), this._id)
-      } else {
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:mute', this._id)
+      } else if (!this._isItemCall && value) {
         this._checkPromise = iItem.wrapSet('prop:mute', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+        this._srcId, this._id, this._updateId.bind(this))
+      }  else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:mute', this._srcId,
+        this._id, this._updateId.bind(this).bind(this))
       }
-      this._checkPromise.then(() => {
-        resolve(this);
+
+      this._checkPromise.then((val?) => {
+        if(val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  isAutoMute(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isAutoMute',  true)
-        this._checkPromise = iItem.get('prop:keepaudio', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:keepaudio', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+  autoMute(value?: boolean): Promise<boolean|Audio> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'autoMute',  true)
       }
-      this._checkPromise.then(val => {
-        resolve(val !== '1');
-      });
-    });
-  }
 
-  setAutoMute(value: boolean): Promise<Audio> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAutoMute', true)
+      if (this._isItemCall && value) {
         this._checkPromise = iItem.set('prop:keepaudio', (value ? '0' : '1'), this._id)
-      } else {
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:keepaudio', this._id)
+      } else if (!this._isItemCall && value) {
         this._checkPromise = iItem.wrapSet('prop:keepaudio', (value ? '0' : '1'),
-          this._srcId, this._id, this._updateId.bind(this))
+        this._srcId, this._id, this._updateId.bind(this))
+      }  else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:keepaudio', this._srcId,
+        this._id, this._updateId.bind(this).bind(this))
       }
-      this._checkPromise.then(() => {
-        resolve(this);
+
+      this._checkPromise.then((val?) => {
+        if(val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  isStreamOnlyAudio(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isStreamOnlyAudio',  true)
-        this._checkPromise = iItem.get('prop:sounddev', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('prop:sounddev', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+  streamOnlyAudio(value?: boolean): Promise<boolean|Audio> {
+    return new Promise((resolve, reject) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'streamOnlyAudio',  true)
       }
-      this._checkPromise.then(val => {
-        resolve(val === '1');
-      });
-    });
-  }
 
-  setStreamOnlyAudio(value: boolean): Promise<Audio> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setStreamOnlyAudio', true)
+      if (this._isItemCall && value) {
         this._checkPromise = iItem.set('prop:sounddev', (value ? '1' : '0'), this._id)
-      } else {
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('prop:sounddev', this._id)
+      } else if (!this._isItemCall && value) {
         this._checkPromise = iItem.wrapSet('prop:sounddev', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+        this._srcId, this._id, this._updateId.bind(this))
+      }  else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('prop:sounddev', this._srcId,
+        this._id, this._updateId.bind(this).bind(this))
       }
-      this._checkPromise.then(() => {
-        resolve(this);
+
+      this._checkPromise.then((val?) => {
+        if(val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
   isAudioAvailable(): Promise<boolean> {

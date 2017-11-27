@@ -38,55 +38,60 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  */
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item
-    /**
-   * return: Promise<string>
-   *
-   * Gets the device ID of the underlying camera device.
-   */
-  getDeviceId: () => Promise<string>
+  deviceId:() => Promise<string>
+  audioOffset:(value?:number) => Promise<number|CameraSource>
+  audioInput:(value?:MicrophoneDevice) => Promise<MicrophoneDevice|CameraSource>
+  delay:(value?:number) => Promise<number|CameraSource>
+  forceDeinterlace:(value?:boolean) => Promise<boolean|CameraSource>
+  // /**
+  //  * return: Promise<string>
+  //  *
+  //  * Gets the device ID of the underlying camera device.
+  //  */
+  // getDeviceId: () => Promise<string>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets audio delay with respect to video feed in milliseconds
-   */
-  getAudioOffset: () => Promise<number>
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets audio delay with respect to video feed in milliseconds
+  //  */
+  // getAudioOffset: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets audio delay with respect to video feed in milliseconds
-   */
-  setAudioOffset: (value: number) => Promise<ISourceCamera>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets audio delay with respect to video feed in milliseconds
+  //  */
+  // setAudioOffset: (value: number) => Promise<ISourceCamera>
 
-  /**
-   * return: Promise<MicrophoneDevice>
-   *
-   * Gets the microphone device tied as an audio input,
-   * rejected if no microphone device is used
-   */
-  getAudioInput: () => Promise<MicrophoneDevice>
+  // /**
+  //  * return: Promise<MicrophoneDevice>
+  //  *
+  //  * Gets the microphone device tied as an audio input,
+  //  * rejected if no microphone device is used
+  //  */
+  // getAudioInput: () => Promise<MicrophoneDevice>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets the microphone device to be tied as an audio input
-   */
-  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets the microphone device to be tied as an audio input
+  //  */
+  // setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera feed is paused
-   */
-  isStreamPaused: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if camera feed is paused
+  //  */
+  // isStreamPaused: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether camera feed is paused or not
-   */
-  setStreamPaused: (value: boolean) => Promise<CameraSource>
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Sets whether camera feed is paused or not
+  //  */
+  // setStreamPaused: (value: boolean) => Promise<CameraSource>
 
   /**
    * return: Promise<boolean>
@@ -104,60 +109,64 @@ export class CameraSource extends Source implements IAudio, ISourceCamera {
    */
   isActive: () => Promise<boolean>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets feed capture delay in milliseconds
-   */
-  getDelay: () => Promise<number>
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets feed capture delay in milliseconds
+  //  */
+  // getDelay: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets feed capture delay in milliseconds, accepts only positive delay
-   */
-  setDelay: (value: number) => Promise<CameraSource>
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets feed capture delay in milliseconds, accepts only positive delay
+  //  */
+  // setDelay: (value: number) => Promise<CameraSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether deinterlacing is enforced
-   */
-  isForceDeinterlace: () => Promise<boolean>
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks whether deinterlacing is enforced
+  //  */
+  // isForceDeinterlace: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Enables or disables forcing of deinterlacing
-   */
-  setForceDeinterlace: (value: boolean) => Promise<CameraSource>
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Enables or disables forcing of deinterlacing
+  //  */
+  // setForceDeinterlace: (value: boolean) => Promise<CameraSource>
 
 
   // General Audio
+  volume:(value?: number)=> Promise<number|CameraSource>
+  mute:(value?: boolean)=> Promise<boolean|CameraSource>
+  autoMute:(value?: boolean)=> Promise<boolean|CameraSource>
+  streamOnlyAudio:(value?: boolean)=> Promise<boolean|CameraSource>
 
-  /** See: {@link #core/IAudio#getVolume getVolume} */
-  getVolume: () => Promise<number>;
+  // /** See: {@link #core/IAudio#getVolume getVolume} */
+  // getVolume: () => Promise<number>;
 
-  /** See: {@link #core/IAudio#isMute isMute} */
-  isMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isMute isMute} */
+  // isMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  isAutoMute: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  // isAutoMute: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setVolume setVolume} */
-  setVolume: (value: number) => Promise<CameraSource>;
+  // /** See: {@link #core/IAudio#setVolume setVolume} */
+  // setVolume: (value: number) => Promise<CameraSource>;
 
-  /** See: {@link #core/IAudio#setMute setMute} */
-  setMute: (value: boolean) => Promise<CameraSource>;
+  // /** See: {@link #core/IAudio#setMute setMute} */
+  // setMute: (value: boolean) => Promise<CameraSource>;
 
-  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  setAutoMute: (value: boolean) => Promise<CameraSource>;
+  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  // setAutoMute: (value: boolean) => Promise<CameraSource>;
 
-  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  isStreamOnlyAudio: () => Promise<boolean>;
+  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  // isStreamOnlyAudio: () => Promise<boolean>;
 
-  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  setStreamOnlyAudio: (value: boolean) => Promise<CameraSource>;
+  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  // setStreamOnlyAudio: (value: boolean) => Promise<CameraSource>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

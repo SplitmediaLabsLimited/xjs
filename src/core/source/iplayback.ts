@@ -21,6 +21,17 @@ const VIDEO_REGEX =
   /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
 
 export interface ISourcePlayback {
+  playbackPosition(value?: number): Promise<number|ISourcePlayback>
+  playbackDuration(): Promise<number>
+  playing(value?: boolean): Promise<boolean|ISourcePlayback>
+  playbackStartPostion(value?: number): Promise<number|ISourcePlayback>
+  playbackEndPosition(value?: number): Promise<number|ISourcePlayback>
+  actionAfterPlayback(value?: number): Promise<number|ISourcePlayback>
+  autoStartOnSceneLoad(value?: boolean): Promise<boolean|ISourcePlayback>
+  forceDeinterlace(value?: boolean): Promise<boolean|ISourcePlayback>
+  rememberPlaybackPosition(value?: boolean): Promise<boolean|ISourcePlayback>
+  showPlaybackPosition(value?: boolean): Promise<boolean|ISourcePlayback>
+  cuePoints(cuePoints?: CuePoint[]): Promise<CuePoint[]|ISourcePlayback>
 
   /**
    * return: Promise<boolean>
@@ -31,199 +42,199 @@ export interface ISourcePlayback {
    */
   isSeekable(): Promise<boolean>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the playback position of this source in seconds. The system can
-   * store precision up to 100ns.
-   */
-  getPlaybackPosition(): Promise<number>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets the playback position of this source in seconds. The system can
+  //  * store precision up to 100ns.
+  //  */
+  // getPlaybackPosition(): Promise<number>;
 
-  /**
-   * param: (value: number)
-   *
-   * Sets the playback position of this source. Parameter is in seconds, up to
-   * a precision level of 100ns.
-   *
-   * *Chainable.*
-   */
-  setPlaybackPosition(value: number): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: number)
+  //  *
+  //  * Sets the playback position of this source. Parameter is in seconds, up to
+  //  * a precision level of 100ns.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setPlaybackPosition(value: number): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the total playback duration of this source in seconds. Precision is up
-   * to 100ns units.
-   */
-  getPlaybackDuration(): Promise<number>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets the total playback duration of this source in seconds. Precision is up
+  //  * to 100ns units.
+  //  */
+  // getPlaybackDuration(): Promise<number>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if current source is playing.
-   */
-  isPlaying(): Promise<boolean>;
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if current source is playing.
+  //  */
+  // isPlaying(): Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Plays (or pauses playback for) this source.
-   *
-   * *Chainable.*
-   */
-  setPlaying(value: boolean): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Plays (or pauses playback for) this source.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setPlaying(value: boolean): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the specified start position in seconds for this source, with precision
-   * up to 100ns. If this source loops or is set to rewind, the playback position
-   * will return to the start position.
-   */
-  getPlaybackStartPosition(): Promise<number>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets the specified start position in seconds for this source, with precision
+  //  * up to 100ns. If this source loops or is set to rewind, the playback position
+  //  * will return to the start position.
+  //  */
+  // getPlaybackStartPosition(): Promise<number>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Sets the specified start position in seconds for this source, with precision
-   * up to 100ns. If this source loops or is set to rewind, the playback position
-   * will return to the start position.
-   *
-   * *Chainable.*
-   */
-  setPlaybackStartPosition(value: number): Promise<ISourcePlayback>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Sets the specified start position in seconds for this source, with precision
+  //  * up to 100ns. If this source loops or is set to rewind, the playback position
+  //  * will return to the start position.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setPlaybackStartPosition(value: number): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the specified end position in seconds for this source, with precision
-   * up to 100ns. If playback reaches the end position, this source will then
-   * execute the specified action after playback (rewind, loop, etc.)
-   */
-  getPlaybackEndPosition(): Promise<number>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Gets the specified end position in seconds for this source, with precision
+  //  * up to 100ns. If playback reaches the end position, this source will then
+  //  * execute the specified action after playback (rewind, loop, etc.)
+  //  */
+  // getPlaybackEndPosition(): Promise<number>;
 
-  /**
-   * return: Promise<number>
-   *
-   * Sets the specified end position in seconds for this source, with precision
-   * up to 100ns. If playback reaches the end position, this source will then
-   * execute the specified action after playback (rewind, loop, etc.)
-   *
-   * *Chainable.*
-   */
-  setPlaybackEndPosition(value: number): Promise<ISourcePlayback>;
+  // /**
+  //  * return: Promise<number>
+  //  *
+  //  * Sets the specified end position in seconds for this source, with precision
+  //  * up to 100ns. If playback reaches the end position, this source will then
+  //  * execute the specified action after playback (rewind, loop, etc.)
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setPlaybackEndPosition(value: number): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<ActionAfterPlayback>
-   *
-   * Gets the specified action after playback for this source is done (either
-   * playback reaches the end of the video, or the specified playback end
-   * position.)
-   *
-   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
-   */
-  getActionAfterPlayback(): Promise<ActionAfterPlayback>;
+  // /**
+  //  * return: Promise<ActionAfterPlayback>
+  //  *
+  //  * Gets the specified action after playback for this source is done (either
+  //  * playback reaches the end of the video, or the specified playback end
+  //  * position.)
+  //  *
+  //  * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+  //  */
+  // getActionAfterPlayback(): Promise<ActionAfterPlayback>;
 
-  /**
-   * param: (value: ActionAfterPlayback)
-   *
-   * Sets the action to be executed on this source once playback is done (either
-   * playback reaches the end of the video, or the specified playback end
-   * position.)
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
-   */
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: ActionAfterPlayback)
+  //  *
+  //  * Sets the action to be executed on this source once playback is done (either
+  //  * playback reaches the end of the video, or the specified playback end
+  //  * position.)
+  //  *
+  //  * *Chainable.*
+  //  *
+  //  * See also: {@link #core/ActionAfterPlayback Core/ActionAfterPlayback}
+  //  */
+  // setActionAfterPlayback(value: ActionAfterPlayback): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether this source is set to start playback when the application
-   * switches to this source's scene.
-   */
-  isAutostartOnSceneLoad(): Promise<boolean>;
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks whether this source is set to start playback when the application
+  //  * switches to this source's scene.
+  //  */
+  // isAutostartOnSceneLoad(): Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Specifies whether this source is set to start playback when the application
-   * switches to this source's scene.
-   *
-   * *Chainable.*
-   */
-  setAutostartOnSceneLoad(value: boolean): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Specifies whether this source is set to start playback when the application
+  //  * switches to this source's scene.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setAutostartOnSceneLoad(value: boolean): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether Force Deinterlace is active.
-   */
-  isForceDeinterlace(): Promise<boolean>;
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks whether Force Deinterlace is active.
+  //  */
+  // isForceDeinterlace(): Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets the Force Deinterlace setting.
-   *
-   * *Chainable.*
-   */
-  setForceDeinterlace(value: boolean): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Sets the Force Deinterlace setting.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setForceDeinterlace(value: boolean): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check whether this source should retain its playback position when switching
-   * scenes.
-   */
-  isRememberingPlaybackPosition(): Promise<boolean>;
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Check whether this source should retain its playback position when switching
+  //  * scenes.
+  //  */
+  // isRememberingPlaybackPosition(): Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether this source should retain its playback position when switching
-   * scenes.
-   *
-   * *Chainable.*
-   */
-  setRememberingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Sets whether this source should retain its playback position when switching
+  //  * scenes.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setRememberingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if this source is set to display its playback position.
-   */
-  isShowingPlaybackPosition(): Promise<boolean>;
+  // /**
+  //  * return: Promise<boolean>
+  //  *
+  //  * Checks if this source is set to display its playback position.
+  //  */
+  // isShowingPlaybackPosition(): Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether this source should display its playback position.
-   *
-   * *Chainable.*
-   */
-  setShowingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: boolean)
+  //  *
+  //  * Sets whether this source should display its playback position.
+  //  *
+  //  * *Chainable.*
+  //  */
+  // setShowingPlaybackPosition(value: boolean): Promise<ISourcePlayback>;
 
-  /**
-   * return: Promise<CuePoint[]>
-   *
-   * Gets the set of Cue Points created for this source.
-   *
-   * See also: {@link #core/CuePoint Core/CuePoint}
-   */
-  getCuePoints(): Promise<CuePoint[]>;
+  // /**
+  //  * return: Promise<CuePoint[]>
+  //  *
+  //  * Gets the set of Cue Points created for this source.
+  //  *
+  //  * See also: {@link #core/CuePoint Core/CuePoint}
+  //  */
+  // getCuePoints(): Promise<CuePoint[]>;
 
-  /**
-   * param: (value: CuePoint[])
-   *
-   * Assign the specified array of Cue Points for this source.
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #core/CuePoint Core/CuePoint}
-   */
-  setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
+  // /**
+  //  * param: (value: CuePoint[])
+  //  *
+  //  * Assign the specified array of Cue Points for this source.
+  //  *
+  //  * *Chainable.*
+  //  *
+  //  * See also: {@link #core/CuePoint Core/CuePoint}
+  //  */
+  // setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
 
   getValue(): Promise<string>;
   setValue(value: string): Promise<any>;
@@ -270,40 +281,38 @@ export class SourcePlayback implements ISourcePlayback {
     });
   }
 
-  getPlaybackPosition(): Promise<number> {
+  playbackPosition(value?: number): Promise<number|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getPlaybackPosition',  true)
-        this._checkPromise = iItem.get('sync:position', this._id)
-      } else {
-        this._checkPromise = iItem.wrapGet('sync:position', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'playbackPosition',  true)
       }
-      this._checkPromise.then(val => {
-        resolve(Number(val) / 10000000);
-      });
-    });
-  }
 
-  setPlaybackPosition(value: number): Promise<SourcePlayback> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setPlaybackPosition', true)
+      if (this._isItemCall && value) {
         this._checkPromise = iItem.set('sync:position', String(value * 10000000), this._id)
-      } else {
+      } else if (!this._isItemCall && value) {
         this._checkPromise = iItem.wrapSet('sync:position', String(value * 10000000),
-          this._srcId, this._id, this._updateId.bind(this))
+        this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
+        this._checkPromise = iItem.get('sync:position', this._id)
+      }  else if (!this._isItemCall && !value) {
+        this._checkPromise = iItem.wrapGet('sync:position', this._srcId,
+        this._id, this._updateId.bind(this).bind(this))
       }
-      this._checkPromise.then(() => {
-        resolve(this);
+
+      this._checkPromise.then(val => {
+        if (val) {
+          resolve(Number(val) / 10000000);
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  getPlaybackDuration(): Promise<number> {
+  playbackDuration(): Promise<number> {
     return new Promise(resolve => {
       if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getPlaybackDuration',  true)
+        Logger.warn('sourceWarning', 'playbackDuration',  true)
         this._checkPromise = iItem.get('sync:duration', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('sync:duration', this._srcId,
@@ -315,282 +324,264 @@ export class SourcePlayback implements ISourcePlayback {
     });
   }
 
-  isPlaying(): Promise<boolean> {
+  playing(value?: boolean): Promise<boolean|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isPlaying',  true)
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'playing',  true)
+      }
+
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('sync:state', value ? "running" : "stopped", this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('sync:state', value ? "running" : "stopped",
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('sync:state', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('sync:state', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(val === "running");
+        if (val) {
+          resolve(val === "running");
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setPlaying(value: boolean): Promise<SourcePlayback> {
+  playbackStartPostion(value?: number): Promise<number|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setPlaying', true)
-        this._checkPromise = iItem.set('sync:state', value ? "running" : "stopped", this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('sync:state', value ? "running" : "stopped",
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'playbackStartPostion',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  getPlaybackStartPosition(): Promise<number> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getPlaybackStartPosition',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:InPoint', String(value * 10000000), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:InPoint', String(value * 10000000),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:InPoint', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:InPoint', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(Number(val) / 10000000);
+        if (val) {
+          resolve(Number(val) / 10000000);
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setPlaybackStartPosition(value: number): Promise<SourcePlayback> {
+  playbackEndPosition(value?: number): Promise<number|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setPlaybackStartPosition', true)
-        this._checkPromise = iItem.set('prop:InPoint', String(value * 10000000), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:InPoint', String(value * 10000000),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'playbackEndPosition',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  getPlaybackEndPosition(): Promise<number> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getPlaybackEndPosition',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:OutPoint', String(value * 10000000), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:OutPoint', String(value * 10000000),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:OutPoint', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:OutPoint', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(Number(val) / 10000000);
+        if (val) {
+          resolve(Number(val) / 10000000);
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setPlaybackEndPosition(value: number): Promise<SourcePlayback> {
+  actionAfterPlayback(value?: ActionAfterPlayback): Promise<ActionAfterPlayback|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setPlaybackEndPosition', true)
-        this._checkPromise = iItem.set('prop:OutPoint', String(value * 10000000), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:OutPoint', String(value * 10000000),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'actionAfterPlayback',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  getActionAfterPlayback(): Promise<ActionAfterPlayback> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getActionAfterPlayback',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:OpWhenFinished', String(value), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:OpWhenFinished', String(value),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:OpWhenFinished', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:OpWhenFinished', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(Number(val));
+        if (val) {
+          resolve(Number(val));
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setActionAfterPlayback(value: ActionAfterPlayback): Promise<SourcePlayback> {
+  autoStartOnSceneLoad(value?: boolean): Promise<boolean|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setActionAfterPlayback', true)
-        this._checkPromise = iItem.set('prop:OpWhenFinished', String(value), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:OpWhenFinished', String(value),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'autoStartOnSceneLoad',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  isAutostartOnSceneLoad(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isAutostartOnSceneLoad',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:StartOnLoad', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:StartOnLoad', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:StartOnLoad', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(val === '1');
+        if (val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setAutostartOnSceneLoad(value: boolean): Promise<SourcePlayback> {
+  forceDeinterlace(value?: boolean): Promise<boolean|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
-        this._checkPromise = iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:StartOnLoad', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'forceDeinterlace',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  isForceDeinterlace(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isForceDeinterlace',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:fdeinterlace', (value ? '3' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:fdeinterlace', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:fdeinterlace', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(val === '3');
+        if (val) {
+          resolve(val === '3');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setForceDeinterlace(value: boolean): Promise<SourcePlayback> {
+  rememberPlaybackPosition(value?: boolean): Promise<boolean|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setForceDeinterlace', true)
-        this._checkPromise = iItem.set('prop:fdeinterlace', (value ? '3' : '0'), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:fdeinterlace', (value ? '3' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'rememberPlaybackPosition',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  isRememberingPlaybackPosition(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isRememberingPlaybackPosition',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:RememberPosition', (value ? '1' : '0'), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:RememberPosition', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:RememberPosition', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:RememberPosition', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(val === '1');
+        if (val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setRememberingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
+  showPlaybackPosition(value?: boolean): Promise<boolean|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setRememberingPlaybackPosition', true)
-        this._checkPromise = iItem.set('prop:RememberPosition', (value ? '1' : '0'), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:RememberPosition', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'showPlaybackPosition',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  isShowingPlaybackPosition(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isShowingPlaybackPosition',  true)
+      if (this._isItemCall && value) {
+        this._checkPromise = iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id)
+      } else if (!this._isItemCall && value) {
+        this._checkPromise = iItem.wrapSet('prop:ShowPosition', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !value) {
         this._checkPromise = iItem.get('prop:ShowPosition', this._id)
-      } else {
+      }  else if (!this._isItemCall && !value) {
         this._checkPromise = iItem.wrapGet('prop:ShowPosition', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(val => {
-        resolve(val === '1');
+        if (val) {
+          resolve(val === '1');
+        } else {
+          resolve(this);
+        }
       });
-    });
+    })
   }
 
-  setShowingPlaybackPosition(value: boolean): Promise<SourcePlayback> {
+  cuePoints(cuePoints?: CuePoint[]): Promise<CuePoint[]|SourcePlayback> {
     return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
-        this._checkPromise = iItem.set('prop:ShowPositio', (value ? '1' : '0'), this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:ShowPositio', (value ? '1' : '0'),
-          this._srcId, this._id, this._updateId.bind(this))
+      const cuePointString = cuePoints ? cuePoints.map(point => point.toString()).join(',') : undefined;
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'cuePoints',  true)
       }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
-  }
 
-  getCuePoints(): Promise<CuePoint[]> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getCuePoints',  true)
+      if (this._isItemCall && cuePoints) {
+        this._checkPromise = iItem.set('prop:CuePoints', cuePointString, this._id)
+      } else if (!this._isItemCall && cuePoints) {
+        this._checkPromise = iItem.wrapSet('prop:CuePoints', cuePointString,
+          this._srcId, this._id, this._updateId.bind(this))
+      } else if (this._isItemCall && !cuePoints) {
         this._checkPromise = iItem.get('prop:CuePoints', this._id)
-      } else {
+      }  else if (!this._isItemCall && !cuePoints) {
         this._checkPromise = iItem.wrapGet('prop:CuePoints', this._srcId,
           this._id, this._updateId.bind(this).bind(this))
       }
+
       this._checkPromise.then(cuePointString => {
-        if (cuePointString === '') {
-          resolve([]);
+        if (cuePoints) {
+          resolve(this);
         } else {
-          const cuePointStrings: string[] = cuePointString.split(',');
-          const cuePoints: CuePoint[] = cuePointStrings.map(
-            string => CuePoint._fromString(string));
-          resolve(cuePoints);
+          if (cuePointString === '') {
+            resolve([]);
+          } else {
+            const cuePointStrings: string[] = cuePointString.split(',');
+            const cuePoints: CuePoint[] = cuePointStrings.map(
+              string => CuePoint._fromString(string));
+            resolve(cuePoints);
+          }
         }
       });
-    });
-  }
-
-  setCuePoints(cuePoints: CuePoint[]): Promise<SourcePlayback> {
-    const cuePointString = cuePoints.map(point => point.toString()).join(',');
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setCuePoints', true)
-        this._checkPromise = iItem.set('prop:CuePoints', cuePointString, this._id)
-      } else {
-        this._checkPromise = iItem.wrapSet('prop:CuePoints', cuePointString,
-          this._srcId, this._id, this._updateId.bind(this))
-      }
-      this._checkPromise.then(() => {
-        resolve(this);
-      });
-    });
+    })
   }
 
   isAudio(): Promise<boolean> {
