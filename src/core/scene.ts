@@ -773,18 +773,20 @@ export class Scene {
   static searchSourcesByName(param: string): Promise<Source[]> {
     return new Promise(resolve => {
       this.filterSources((source: Source, filterResolve: any) => {
-        source.getCustomName().then(cname => {
-          if (cname.match(param)) {
-            filterResolve(true);
-          } else {
-            return source.getName();
+        source.customName().then(cname => {
+          if (cname !== undefined && typeof cname === 'string'){
+            if (cname.match(param)) {
+              filterResolve(true);
+            } else {
+              return source.name();
+            }
           }
         }).then(name => {
-          if (name !== undefined) {
+          if (name !== undefined && typeof name === 'string') {
             if (name.match(param)) {
               filterResolve(true);
             } else {
-              return source.getValue();
+              return source.value();
             }
           }
         }).then(value => {

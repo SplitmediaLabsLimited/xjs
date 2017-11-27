@@ -681,44 +681,24 @@ export class Item extends Source implements IItemLayout, ISource {
 
   // iSource
   /**
-   * See: {@link #core/Source#setName setName}
+   * See: {@link #core/Source#name name}
    */
-  setName: (value: string) => Promise<Item>
+  name: (value?: string) => Promise<string|Item>
 
   /**
-   * See: {@link #core/Source#getName getName}
+   * See: {@link #core/Source#customName customName}
    */
-  getName: () => Promise<string>
+  customName: (value?: string) => Promise<string|Item>
 
   /**
-   * See: {@link #core/Source#setCustomName setCustomName}
+   * See: {@link #core/Source#value value}
    */
-  setCustomName: () => Promise<Item>
+  value: () => Promise<string | XML | Item>
 
   /**
-   * See: {@link #core/Source#getCustomName getCustomName}
+   * See: {@link #core/Source#keepLoaded keepLoaded}
    */
-  getCustomName: ()  => Promise<string>
-
-  /**
-   * See: {@link #core/Source#getValue getValue}
-   */
-  getValue: () => Promise<string | XML>
-
-  /**
-   * See: {@link #core/Source#setValue setValue}
-   */
-  setValue: (value: string | XML) => Promise<Item>
-
-  /**
-   * See: {@link #core/Source#getKeepLoaded getKeepLoaded}
-   */
-  getKeepLoaded: () => Promise<boolean>
-
-  /**
-   * See: {@link #core/Source#setKeepLoaded setKeepLoaded}
-   */
-  setKeepLoaded: (value: boolean) => Promise<Item>
+  keepLoaded: (value?: boolean) => Promise<boolean|Item>
 
   /**
    * See: {@link #core/Source#refresh refresh}
@@ -726,7 +706,7 @@ export class Item extends Source implements IItemLayout, ISource {
   refresh: () => Promise<Source>
 
   /** See: {@link #core/Source#getType getType} */
-  getType: () => Promise<ItemTypes>
+  type: () => Promise<ItemTypes>
 }
 
 applyMixins(Item, [iSource, ItemLayout]);
