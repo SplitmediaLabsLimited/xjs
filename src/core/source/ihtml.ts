@@ -190,9 +190,9 @@ export interface ISourceHtml {
    * - 'NOT LOADED' -> HTML is not yet loaded
    * - 'LOAD ERROR' -> Error in loading HTML
    * - 'UNKNOWN' -> URL used is invalid or when status is checked right after adding new HTML source
-   * - 'UNAVAILABLE' -> Load status is unavailable for the XBC version
+   * - 'UNAVAILABLE' -> Method for getting load status is unavailable for the XBC version
    */
-  getBrowserLoadStatus(): Promise<string>
+    getBrowserLoadStatus: () => Promise<string>
 }
 
 export class iSourceHtml implements ISourceHtml{
