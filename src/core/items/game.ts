@@ -55,39 +55,21 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   IItemChroma, IItemTransition, IItemEffect, ISourceGame {
 
   // GameSource
+
+  /**
+   * See: {@link #core/GameSource#specialOptimization specialOptimization}
+   */
   specialOptimization:(value?: boolean) => Promise<boolean|GameItem>
+
+  /**
+   * See: {@link #core/GameSource#showMouse showMouse}
+   */
   showMouse:(value?: boolean) => Promise<boolean|GameItem>
+
+  /**
+   * See: {@link #core/GameSource#offlineImage offlineImage}
+   */
   offlineImage:(path?: string) => Promise<string|GameItem>
-
-  // /**
-  //  * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
-  //  */
-  // isSpecialOptimizationEnabled: () => Promise<boolean>
-
-  // /**
-  //  * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
-  //  */
-  // setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
-
-  // /**
-  //  * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
-  //  */
-  // isShowMouseEnabled: () => Promise<boolean>
-
-  // /**
-  //  * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
-  //  */
-  // setShowMouseEnabled: (value: boolean) => Promise<GameItem>
-
-  // /**
-  //  * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
-  //  */
-  // setOfflineImage: (path: string) => Promise<GameItem>
-
-  // /**
-  //  * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
-  //  */
-  // getOfflineImage:() => Promise<string>
 
   // ItemLayout
 

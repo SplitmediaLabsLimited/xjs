@@ -61,15 +61,6 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   ISourceHtml {
 
   //iSourceHtml
-  url: (value?: string) => Promise<string|ISourceHtml>
-  browserTransparency: (value?: boolean) => Promise<boolean|ISourceHtml>
-  browser60FPS: (value?: boolean) => Promise<boolean|ISourceHtml>
-  browserCustomSize: (value?: Rectangle) => Promise<Rectangle|ISourceHtml>
-  allowRightClick: (value?: boolean) => Promise<boolean|ISourceHtml>
-  browserJS: (value?: string) => Promise<string|ISourceHtml>
-  browserJSEnabled:(value?: boolean) => Promise<boolean|ISourceHtml>
-  customCSS: (value?: string) => Promise<string|ISourceHtml>
-  customCSSEnabled: (value?: boolean) => Promise<boolean|ISourceHtml>
 
   /**
    * See: {@link #core/HtmlSource#call call}
@@ -77,94 +68,49 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   call: () => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getURL getURL}
+   * See: {@link #core/HtmlSource#url url}
    */
-  // getURL: () => Promise<string>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#setURL setURL}
-  //  */
-  // setURL: () => Promise<HtmlItem>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#isBrowserTransparent isBrowserTransparent}
-  //  */
-  // isBrowserTransparent: () => Promise<boolean>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#enableBrowserTransparency enableBrowserTransparency}
-  //  */
-  // enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#isBrowser60FPS isBrowser60FPS}
-  //  */
-  // isBrowser60FPS: () => Promise<boolean>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#enableBrowser60FPS enableBrowser60FPS}
-  //  */
-  // enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
-  //  */
-  // getBrowserCustomSize: () => Promise<Rectangle>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#setBrowserCustomSize setBrowserCustomSize}
-  //  */
-  // setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#getAllowRightClick getAllowRightClick}
-  //  */
-  // getAllowRightClick: () => Promise<boolean>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#setAllowRightClick setAllowRightClick}
-  //  */
-  // setAllowRightClick: (value: boolean) => Promise<HtmlItem>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#getBrowserJS getBrowserJS}
-  //  */
-  // getBrowserJS: () => Promise<string>
-
-  // /**
-  //  * See: {@link #core/HtmlSource#setBrowserJS setBrowserJS}
-  //  */
-  // setBrowserJS: () => Promise<HtmlItem>
+  url: (value?: string) => Promise<string|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#isBrowserJSEnabled isBrowserJSEnabled}
+   * See: {@link #core/HtmlSource#browserTransparency browserTransparency}
    */
-  isBrowserJSEnabled: () => Promise<boolean>
+  browserTransparency: (value?: boolean) => Promise<boolean|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#enableBrowserJS enableBrowserJS}
+   * See: {@link #core/HtmlSource#browser60FPS browser60FPS}
    */
-  enableBrowserJS: (value: boolean) => Promise<HtmlItem>
+  browser60FPS: (value?: boolean) => Promise<boolean|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#getCustomCSS getCustomCSS}
+   * See: {@link #core/HtmlSource#browserCustomSize browserCustomSize}
    */
-  getCustomCSS: () => Promise<string>
+  browserCustomSize: (value?: Rectangle) => Promise<Rectangle|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#setCustomCSS setCustomCSS}
+   * See: {@link #core/HtmlSource#allowRightClick allowRightClick}
    */
-  setCustomCSS: (value: string) => Promise<HtmlItem>
+  allowRightClick: (value?: boolean) => Promise<boolean|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#isCustomCSSEnabled isCustomCSSEnabled}
+   * See: {@link #core/HtmlSource#browserJS browserJS}
    */
-  isCustomCSSEnabled: () => Promise<boolean>
+  browserJS: (value?: string) => Promise<string|ISourceHtml>
 
   /**
-   * See: {@link #core/HtmlSource#enableCustomCSS enableCustomCSS}
+   * See: {@link #core/HtmlSource#browserJSEnabled browserJSEnabled}
    */
-  enableCustomCSS: (value: boolean) => Promise<HtmlItem>
+  browserJSEnabled:(value?: boolean) => Promise<boolean|ISourceHtml>
+
+  /**
+   * See: {@link #core/HtmlSource#customCSS customCSS}
+   */
+  customCSS: (value?: string) => Promise<string|ISourceHtml>
+
+  /**
+   * See: {@link #core/HtmlSource#customCSSEnabled customCSSEnabled}
+   */
+  customCSSEnabled: (value?: boolean) => Promise<boolean|ISourceHtml>
 
   /**
    * See: {@link #core/HtmlSource#isBrowserOptimized isBrowserOptimized}
@@ -575,34 +521,18 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   applyConfig: (configObj: any) => Promise<HtmlItem>;
 
   // ItemAudio
+
+  /** See: {@link #core/IAudio#volume volume} */
   volume:(value?: number)=> Promise<number|HtmlItem>
+
+  /** See: {@link #core/IAudio#mute mute} */
   mute:(value?: boolean)=> Promise<boolean|HtmlItem>
+
+  /** See: {@link #core/IAudio#autoMute autoMute} */
   autoMute:(value?: boolean)=> Promise<boolean|HtmlItem>
+
+  /** See: {@link #core/IAudio#streamOnlyAudio streamOnlyAudio} */
   streamOnlyAudio:(value?: boolean)=> Promise<boolean|HtmlItem>
-
-  // /** See: {@link #core/IAudio#getVolume getVolume} */
-  // getVolume: () => Promise<number>;
-
-  // /** See: {@link #core/IAudio#isMute isMute} */
-  // isMute: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  // isAutoMute: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#setVolume setVolume} */
-  // setVolume: (value: number) => Promise<HtmlItem>;
-
-  // /** See: {@link #core/IAudio#setMute setMute} */
-  // setMute: (value: boolean) => Promise<HtmlItem>;
-
-  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  // setAutoMute: (value: boolean) => Promise<HtmlItem>;
-
-  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  // isStreamOnlyAudio: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  // setStreamOnlyAudio: (value: boolean) => Promise<HtmlItem>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

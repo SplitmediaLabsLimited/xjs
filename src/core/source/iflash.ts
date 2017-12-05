@@ -5,44 +5,20 @@ import {Rectangle} from '../../util/rectangle';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceFlash {
-  customResolution(value?: Rectangle): Promise<Rectangle|ISourceFlash>
-  allowRightClick(value?: boolean): Promise<boolean|ISourceFlash>
   /**
    * return: Promise<Rectangle>
    *
-   * Gets the custom resolution (in pixels) for the item, if set,
+   * Get/Set the custom resolution (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom resolution has been set.
    */
-  // getCustomResolution(): Promise<Rectangle>
-
-  /**
-   * param: (value: Rectangle)
-   * ```
-   * return: Promise<FlashSource>
-   * ```
-   *
-   * Sets the custom resolution for the item
-   * regardless of its layout on the mixer
-   */
-  // setCustomResolution(value: Rectangle): Promise<ISourceFlash>
+  customResolution(value?: Rectangle): Promise<Rectangle|ISourceFlash>
   /**
    * return: Promise<boolean>
    *
-   * Check if right click events are sent to the item or not.
+   * Check/Set if right click events are sent to the item or not.
    */
-  // getAllowRightClick(): Promise<boolean>
-
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   */
-  // setAllowRightClick(value: boolean): Promise<ISourceFlash>
+  allowRightClick(value?: boolean): Promise<boolean|ISourceFlash>
 }
 
 export class SourceFlash implements ISourceFlash {

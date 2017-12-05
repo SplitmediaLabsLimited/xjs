@@ -38,56 +38,37 @@ import {iSourceGame, ISourceGame} from './igame';
  */
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame
+
+  /**
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|GameSource>
+   * ```
+   *
+   * Check/Set if Game Special Optimization is currently enabled or not
+   */
   specialOptimization:(value?: boolean) => Promise<boolean|GameSource>
+
+  /**
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|GameSource>
+   * ```
+   *
+   * Check/Set if Show Mouse is currently enabled or not
+   */
   showMouse:(value?: boolean) => Promise<boolean|GameSource>
+
+  /**
+   * param: path<string>
+   * ```
+   * return: Promise<string|GameSource>
+   * ```
+   *
+   * Get/Set the offline image of a game source
+   *
+   * *Chainable.*
+   */
   offlineImage:(path?: string) => Promise<string|GameSource>
-
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Check if Game Special Optimization is currently enabled or not
-  //  */
-  // isSpecialOptimizationEnabled: () => Promise<boolean>
-
-  // /**
-  //  * param: Promise<boolean>
-  //  *
-  //  * Set Game Special Optimization to on or off
-  //  *
-  //  * *Chainable.*
-  //  */
-  // setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>
-
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Check if Show Mouse is currently enabled or not
-  //  */
-  // isShowMouseEnabled: () => Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  *
-  //  * Set Show Mouse in game to on or off
-  //  *
-  //  * *Chainable.*
-  //  */
-  // setShowMouseEnabled: (value: boolean) => Promise<GameSource>
-
-  // /**
-  //  * param: path<string>
-  //  *
-  //  * Set the offline image of a game source
-  //  *
-  //  * *Chainable.*
-  //  */
-  // setOfflineImage: (path: string) => Promise<GameSource>
-
-  // /**
-  //  * return: Promise<string>
-  //  *
-  //  * Get the offline image of a game source
-  //  */
-  // getOfflineImage:() => Promise<string>
 }
 applyMixins(GameSource, [iSourceGame])

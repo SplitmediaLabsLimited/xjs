@@ -37,6 +37,21 @@ var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
  */
 export class App{
 
+  /**
+   * return: Promise<AudioDevice[]>
+   *
+   * Gets the primary speaker device used in the application
+   *
+   * See also: {@link #system/AudioDevice System/AudioDevice}
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.primarySpeaker().then(function(audioDevice) {
+   *   var primarySpeaker = audioDevice;
+   * });
+   * ```
+   */
   primarySpeaker(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
@@ -53,6 +68,21 @@ export class App{
     });
   }
 
+  /**
+   * return: Promise<AudioDevice[]>
+   *
+   * Gets the primary microphone device used in the application
+   *
+   * See also: {@link #system/AudioDevice System/AudioDevice}
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.primaryMic().then(function(audioDevice) {
+   *   var primaryMic = audioDevice;
+   * });
+   * ```
+   */
   primaryMic(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
@@ -82,7 +112,7 @@ export class App{
    * });
    * ```
    */
-  getFrameTime(): Promise<number> {
+  frameTime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('frametime').then(val => {
         resolve(Number(val));
@@ -106,7 +136,7 @@ export class App{
    * });
    * ```
    */
-  getResolution() : Promise<Rectangle> {
+  resolution() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('resolution').then(val => {
         var dimensions = val.split(',');
@@ -132,7 +162,7 @@ export class App{
    * });
    * ```
    */
-  getViewport() : Promise<Rectangle> {
+  viewport() : Promise<Rectangle> {
     return new Promise(resolve => {
       iApp.get('viewport').then(val => {
         var dimensions = val.split(',');
@@ -155,7 +185,7 @@ export class App{
    * });
    * ```
    */
-  getVersion() : Promise<string> {
+  version() : Promise<string> {
     return new Promise((resolve, reject) => {
       var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
       var xbcMatch = navigator.appVersion.match(xbcPattern);
@@ -176,12 +206,12 @@ export class App{
    * #### Usage
    *
    * ```javascript
-   * App.getFramesRendered().then(function(res) {
+   * App.framesRendered().then(function(res) {
    *   var framesrendered = res;
    * });
    * ```
    */
-  getFramesRendered() : Promise<number> {
+  framesRendered() : Promise<number> {
     return new Promise(resolve => {
       iApp.get('framesrendered').then(val => {
         resolve(Number(val));
@@ -190,271 +220,6 @@ export class App{
   }
 
   // Audio Services
-
-  /**
-   * return: Promise<AudioDevice[]>
-   *
-   * Gets the primary microphone device used in the application
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.getPrimaryMic().then(function(audioDevice) {
-   *   var primaryMic = audioDevice;
-   * });
-   * ```
-   */
-  // getPrimaryMic(): Promise<AudioDevice[]> {
-  //   return new Promise((resolve, reject) => {
-  //     iApp.getAsList('microphonedev2').then(arr => {
-  //       var audioDevices = arr.map(val => {
-  //         return AudioDevice.parse(val);
-  //       });
-
-  //       if (audioDevices.length && audioDevices.length > 0) {
-  //         resolve(audioDevices[0]);
-  //       } else {
-  //         reject(Error('No audio device is set as primary microphone'));
-  //       }
-  //     });
-  //   });
-  // }setPrimaryMicLevel
-
-  /**
-   * return: Promise<AudioDevice[]>
-   *
-   * Gets the primary speaker/audio render device used in the application
-   *
-   * See also: {@link #system/AudioDevice System/AudioDevice}
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.getPrimarySpeaker().then(function(audioDevice) {
-   *   var primarySpeaker = audioDevice;
-   * });
-   * ```
-   */
-  // getPrimarySpeaker(): Promise<AudioDevice[]> {
-  //   return new Promise((resolve, reject) => {
-  //     iApp.getAsList('microphonedev2').then(arr => {
-  //       var audioDevices = arr.map(val => {
-  //         return AudioDevice.parse(val);
-  //       });
-
-  //       if (audioDevices.length && audioDevices.length > 1) {
-  //         resolve(audioDevices[1]);
-  //       } else {
-  //         reject(Error('No audio device is set as primary speaker'));
-  //       }
-  //     });
-  //   });
-  // }
-
-  /**
-   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the application audio level of the primary microphone set
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimaryMicLevel(volume).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: enabled<boolean>
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets whether the primary microphone set is enabled or disabled in the applicaation
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimaryMicEnabled(enabled).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: volume<number> (0 to 100)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the system audio level of the primary microphone set
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimaryMicSystemLevel(volume).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets whether the primary microphone set is enabled or disabled in the system
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimaryMicSystemEnabled(enabled).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: delay<number> (100 nanoseconds in units)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the loopback capture delay of the primary microphone set
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimaryMicDelay(delay).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the application audio level of the primary speaker/audio render device
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimarySpeakerLevel(volume).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: enabled<boolean>
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets whether the primary speaker/audio render device set is enabled or disabled in the applicaation
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimarySpeakerEnabled(enabled).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: volume<number> (0 to 100)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the system audio level of the primary speaker/audio render device set
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimarySpeakerSystemLevel(volume).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets whether the primary speaker/audio render device set is enabled or disabled in the system
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimarySpeakerSystemEnabled(enabled).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * param: delay<number> (100 nanoseconds in units)
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the loopback capture delay of the primary speaker/audio render device
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.setPrimarySpeakerDelay(delay).then(function(val) {
-   *   var isSet = val;
-   * });
-   * ```
-   */
-
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Gets whether silence detection is enabled
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.isSilenceDetectionEnabled().then(function(val) {
-   *   var isEnabled = val;
-   * });
-   * ```
-   */
-  // isSilenceDetectionEnabled(): Promise<boolean> {
-  //   return new Promise(resolve => {
-  //     iApp.get('microphonegain').then(val => {
-  //       var micGainObj = JXON.parse(val);
-  //       resolve(micGainObj['enable'] == '1');
-  //     });
-  //   });
-  // }
-
   /**
    * param: enabled<boolean>
    * ```
@@ -466,23 +231,11 @@ export class App{
    * ### Usage
    *
    * ```javascript
-   * App.enableSilenceDetection(enabled).then(function(val) {
+   * App.enableSilenceDetection().then(function(val) {
    *   var isSet = val;
    * });
    * ```
    */
-  // enableSilenceDetection(enabled: boolean): Promise<boolean> {
-  //   return new Promise(resolve => {
-  //     iApp.get('microphonegain').then(val => {
-  //       var silenceDetectionObj = JXON.parse(val);
-  //       silenceDetectionObj['enable'] = (enabled ? '1' : '0');
-  //       iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-  //       .then(setVal => {
-  //         resolve(setVal);
-  //       });
-  //     });
-  //   });
-  // }
   silenceDetection(enabled?: boolean): Promise<boolean|App> {
     return new Promise(resolve => {
       iApp.get('microphonegain').then(val => {
@@ -501,33 +254,9 @@ export class App{
   }
 
   /**
-   * return: Promise<number>
-   *
-   * Gets silence detection period,
-   * the length of time after voice detection before silence is again detected
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.getSilenceDetectionPeriod().then(function(val) {
-   *   var silenceDetectionPeriod = val;
-   * });
+   * param?: sdPeriod<number>
    * ```
-   */
-  // getSilenceDetectionPeriod(): Promise<number> {
-  //   return new Promise(resolve => {
-  //     iApp.get('microphonegain').then(val => {
-  //       var micGainObj = JXON.parse(val);
-  //       resolve(micGainObj['latency'] !== undefined ?
-  //         Number(micGainObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD);
-  //     });
-  //   });
-  // }
-
-  /**
-   * param: sdPeriod<number>
-   * ```
-   * return: Promise<boolean>
+   * return: Promise<number|App>
    * ```
    *
    * Sets silence detection period (0-60000 ms),
@@ -536,32 +265,11 @@ export class App{
    * ### Usage
    *
    * ```javascript
-   * App.setSilenceDetectionPeriod(sdPeriod).then(function(val) {
+   * App.silenceDetectionPeriod().then(function(val) {
    *   var isSet = val;
    * });
    * ```
    */
-  // setSilenceDetectionPeriod(sdPeriod: number): Promise<boolean> {
-  //   return new Promise((resolve, reject) => {
-  //     if (typeof sdPeriod !== 'number') {
-  //       reject(Error('Silence detection period must be a number'));
-  //     } else if (sdPeriod % 1 != 0) {
-  //       reject(Error('Silence detection period must be an integer'));
-  //     } else if (sdPeriod < 0 || sdPeriod > 60000) {
-  //       reject(Error('Silence detection must be in the range 0-60000.'));
-  //     }
-
-  //     iApp.get('microphonegain').then(val => {
-  //       var silenceDetectionObj = JXON.parse(val);
-  //       silenceDetectionObj['latency'] = (sdPeriod.toString());
-  //       iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-  //       .then(setVal => {
-  //         resolve(setVal);
-  //       });
-  //     });
-  //   });
-  // }
-
   silenceDetectionPeriod(sdPeriod?: number): Promise<number|App> {
     return new Promise((resolve, reject) => {
       if (typeof sdPeriod !== 'number') {
@@ -589,32 +297,9 @@ export class App{
   }
 
   /**
-   * return: Promise<number>
-   *
-   * Gets silence detection threshold/silence amplitude
-   *
-   * ### Usage
-   *
-   * ```javascript
-   * App.getSilenceDetectionThreshold().then(function(val) {
-   *   var silenceDetectionTfhreshold = val;
-   * });
+   * param?: sdThreshold<number>
    * ```
-   */
-  // getSilenceDetectionThreshold(): Promise<number> {
-  //   return new Promise(resolve => {
-  //     iApp.get('microphonegain').then(val => {
-  //       var micGainObj = JXON.parse(val);
-  //       resolve(micGainObj['gain'] !== undefined ?
-  //         Number(micGainObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
-  //     });
-  //   });
-  // }
-
-  /**
-   * param: sdThreshold<number>
-   * ```
-   * return: Promise<boolean>
+   * return: Promise<number|App>
    * ```
    *
    * Sets silence detection threshold/silence amplitude (values from 0-128)
@@ -622,31 +307,11 @@ export class App{
    * ### Usage
    *
    * ```javascript
-   * App.setSilenceDetectionThreshold(sdThreshold).then(function(val) {
+   * App.silenceDetectionThreshold().then(function(val) {
    *   var isSet = val;
    * });
    * ```
    */
-  // setSilenceDetectionThreshold(sdThreshold: number): Promise<boolean> {
-  //   return new Promise((resolve, reject) => {
-  //     if (typeof sdThreshold !== 'number') {
-  //       reject(Error('Silence detection threshold must be a number'));
-  //     } else if (sdThreshold % 1 != 0) {
-  //       reject(Error('Silence detection threshold must be an integer'));
-  //     } else if (sdThreshold < 0 || sdThreshold > 128) {
-  //       reject(Error('Silence detection threshold must be in the range 0-128.'));
-  //     }
-  //     iApp.get('microphonegain').then(val => {
-  //       var silenceDetectionObj = JXON.parse(val);
-  //       silenceDetectionObj['gain'] = (sdThreshold.toString());
-  //       iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-  //       .then(setVal => {
-  //         resolve(setVal);
-  //       });
-  //     });
-  //   });
-  // }
-
   silenceDetectionThreshold(sdThreshold?: number): Promise<number|App> {
     return new Promise((resolve, reject) => {
       if (typeof sdThreshold !== 'number') {
@@ -676,63 +341,12 @@ export class App{
   // Transition Services
 
   /**
-   * return: Promise<Transition>
-   *
-   * Gets the transition for scene changes
-   *
-   * See also: {@link #core/Transition Core/Transition}
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * App.getTransition().then(function(res) {
-   *   var transitionid = res;
-   * });
+   * param?: transition<Transition>
    * ```
-   */
-  // getTransition(): Promise<Transition> {
-  //   return new Promise(resolve => {
-  //     iApp.get('transitionid').then(val => {
-  //       if (val === '') { // NONE
-  //         resolve(Transition.NONE);
-  //       } else {
-  //         let currTransition = Transition[val.toUpperCase()];
-  //         if (typeof currTransition !== 'undefined') {
-  //           resolve(currTransition);
-  //         } else {
-  //           Transition.getSceneTransitions().then(transitions => {
-  //             let inTransition = false;
-  //             let transitionObj;
-  //             let i;
-
-  //             for (i = 0; i < transitions.length; i++) {
-  //               transitionObj = transitions[i];
-  //               if (transitionObj.toString() === val) {
-  //                 inTransition = true;
-  //                 break;
-  //               }
-  //             }
-  //             if (inTransition) {
-  //               resolve(transitionObj);
-  //             } else {
-  //               resolve(new Transition(val));
-  //             }
-  //           }).catch(err => {
-  //             resolve(new Transition(val));
-  //           });
-  //         }
-  //       }
-  //     });
-  //   });
-  // }
-
-  /**
-   * param: transition<Transition>
-   * ```
-   * return: Promise<boolean>
+   * return: Promise<Transition|App>
    * ```
    *
-   * Sets the transition for scene changes
+   * Get/Set the transition for scene changes
    *
    * See also: {@link #core/Transition Core/Transition}
    *
@@ -743,18 +357,11 @@ export class App{
    *     Transition = xjs.Transition,
    *     App = new xjs.App();
 
-   * App.setTransition(Transition.CLOCK).then(function(val) {
+   * App.transition().then(function(val) {
    *  var isSet = val;
    * });
    * ```
    */
-  // setTransition(transition: Transition): Promise<boolean> {
-  //   return new Promise(resolve => {
-  //     iApp.set('transitionid', transition.toString()).then(val => {
-  //       resolve(val);
-  //     });
-  //   });
-  // }
   transition(transition?: Transition): Promise<Transition|App> {
     return new Promise(resolve => {
       if (transition) {
@@ -798,49 +405,21 @@ export class App{
   }
 
   /**
-   * return: Promise<number>
+   * param?: time<number>
+   * ```
+   * return: Promise<number|App>
+   * ```
    *
-   * Gets the scene transition duration in milliseconds
+   * Get/Set the scene transition duration in milliseconds
    *
    * #### Usage
    *
    * ```javascript
-   * App.getTransitionTime().then(function(res) {
-   *   var transitiontime = res;
-   * });
-   * ```
-   */
-  // getTransitionTime(): Promise<Number> {
-  //   return new Promise(resolve => {
-  //     iApp.get('transitiontime').then(val => {
-  //       resolve(Number(val));
-  //     });
-  //   });
-  // }
-
-  /**
-   * param: time<number>
-   * ```
-   * return: Promise<boolean>
-   * ```
-   *
-   * Sets the scene transition duration in milliseconds
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * App.setTransitionTime(time).then(function(val) {
+   * App.transitionTime().then(function(val) {
    *  var isSet = val;
    * });
    * ```
    */
-  // setTransitionTime(time: number): Promise<boolean> {
-  //   return new Promise(resolve => {
-  //     iApp.set('transitiontime', time.toString()).then(val => {
-  //       resolve(val);
-  //     });
-  //   });
-  // }
   transitionTime(time?: number): Promise<number|App> {
     return new Promise(resolve => {
       if (time) {

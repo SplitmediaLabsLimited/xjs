@@ -52,27 +52,15 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   ISourceVideoPlaylist, ISourcePlayback {
 
   //Shared with VideoPlaylistSource
+  /**
+   * See: {@link #core/VideoPlaylistSource#nowPlaying nowPlaying}
+   */
   nowPlaying: (value?: string|number) => Promise<string|number|VideoPlaylistItem>
+
+  /**
+   * See: {@link #core/VideoPlaylistSource#playlist playlist}
+   */
   playlist: (fileItems?: string[]) => Promise<string[]|VideoPlaylistItem>
-  // /**
-  //  * See: {@link #core/VideoPlaylistSource#getVideoNowPlaying getVideoNowPlaying}
-  //  */
-  // getVideoNowPlaying: () => Promise<string>
-
-  // /**
-  //  * See: {@link #core/VideoPlaylistSource#setVideoNowPlaying setVideoNowPlaying}
-  //  */
-  // setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
-
-  // /**
-  //  * See: {@link #core/VideoPlaylistSource#getVideoPlaylistSources getVideoPlaylistSources}
-  //  */
-  // getVideoPlaylistSources: () => Promise<string[]>
-
-  // /**
-  //  * See: {@link #core/VideoPlaylistSource#setVideoPlaylistSources setVideoPlaylistSources}
-  //  */
-  // setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
   // ItemLayout
 
@@ -479,127 +467,65 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
 // SourcePlayback
-  playbackPosition: (value?: number) => Promise<number|ISourcePlayback>
-  playbackDuration: () => Promise<number>
-  playing: (value?: boolean) => Promise<boolean|ISourcePlayback>
-  playbackStartPostion: (value?: number) => Promise<number|ISourcePlayback>
-  playbackEndPosition: (value?: number) => Promise<number|ISourcePlayback>
-  actionAfterPlayback: (value?: number) => Promise<number|ISourcePlayback>
-  autoStartOnSceneLoad: (value?: boolean) => Promise<boolean|ISourcePlayback>
-  forceDeinterlace: (value?: boolean) => Promise<boolean|ISourcePlayback>
-  rememberPlaybackPosition: (value?: boolean) => Promise<boolean|ISourcePlayback>
-  showPlaybackPosition: (value?: boolean) => Promise<boolean|ISourcePlayback>
-  cuePoints: (cuePoints?: CuePoint[]) => Promise<CuePoint[]|ISourcePlayback>
-
   /**
    * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
    */
   isSeekable: () => Promise<boolean>;
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getPlaybackPosition getPlaybackPosition}
-  //  */
-  // getPlaybackPosition: () => Promise<number>;
+  /**
+   * See: {@link #core/ISourcePlayback#playbackPosition playbackPosition}
+   */
+  playbackPosition: (value?: number) => Promise<number|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setPlaybackPosition setPlaybackPosition}
-  //  */
-  // setPlaybackPosition: (value: number) => Promise<VideoPlaylistItem>;
+  /**
+   * See: {@link #core/ISourcePlayback#playbackDuration playbackDuration}
+   */
+  playbackDuration: () => Promise<number>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getPlaybackDuration getPlaybackDuration}
-  //  */
-  // getPlaybackDuration: () => Promise<number>;
+  /**
+   * See: {@link #core/ISourcePlayback#playing playing}
+   */
+  playing: (value?: boolean) => Promise<boolean|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#isPlaying isPlaying}
-  //  */
-  // isPlaying: () => Promise<boolean>;
+  /**
+   * See: {@link #core/ISourcePlayback#playbackStartPostion playbackStartPostion}
+   */
+  playbackStartPostion: (value?: number) => Promise<number|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setPlaying setPlaying}
-  //  */
-  // setPlaying: (value: boolean) => Promise<VideoPlaylistItem>;
+  /**
+   * See: {@link #core/ISourcePlayback#playbackEndPosition playbackEndPosition}
+   */
+  playbackEndPosition: (value?: number) => Promise<number|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getPlaybackStartPosition getPlaybackStartPosition}
-  //  */
-  // getPlaybackStartPosition: () => Promise<number>;
+  /**
+   * See: {@link #core/ISourcePlayback#actionAfterPlayback actionAfterPlayback}
+   */
+  actionAfterPlayback: (value?: number) => Promise<number|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setPlaybackStartPosition setPlaybackStartPosition}
-  //  */
-  // setPlaybackStartPosition: (value: number) => Promise<VideoPlaylistItem>;
+  /**
+   * See: {@link #core/ISourcePlayback#autoStartOnSceneLoad autoStartOnSceneLoad}
+   */
+  autoStartOnSceneLoad: (value?: boolean) => Promise<boolean|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getPlaybackEndPosition getPlaybackEndPosition}
-  //  */
-  // getPlaybackEndPosition: () => Promise<number>;
+  /**
+   * See: {@link #core/ISourcePlayback#forceDeinterlace forceDeinterlace}
+   */
+  forceDeinterlace: (value?: boolean) => Promise<boolean|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setPlaybackEndPosition setPlaybackEndPosition}
-  //  */
-  // setPlaybackEndPosition: (value: number) => Promise<VideoPlaylistItem>;
+  /**
+   * See: {@link #core/ISourcePlayback#rememberPlaybackPosition rememberPlaybackPosition}
+   */
+  rememberPlaybackPosition: (value?: boolean) => Promise<boolean|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getActionAfterPlayback getActionAfterPlayback}
-  //  */
-  // getActionAfterPlayback: () => Promise<ActionAfterPlayback>;
+  /**
+   * See: {@link #core/ISourcePlayback#showPlaybackPosition showPlaybackPosition}
+   */
+  showPlaybackPosition: (value?: boolean) => Promise<boolean|ISourcePlayback>
 
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setActionAfterPlayback setActionAfterPlayback}
-  //  */
-  // setActionAfterPlayback: (value: ActionAfterPlayback) => Promise<VideoPlaylistItem>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#isAutostartOnSceneLoad isAutostartOnSceneLoad}
-  //  */
-  // isAutostartOnSceneLoad: () => Promise<boolean>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setAutostartOnSceneLoad setAutostartOnSceneLoad}
-  //  */
-  // setAutostartOnSceneLoad: (value: boolean) => Promise<VideoPlaylistItem>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#isForceDeinterlace isForceDeinterlace}
-  //  */
-  // isForceDeinterlace: () => Promise<boolean>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setForceDeinterlace setForceDeinterlace}
-  //  */
-  // setForceDeinterlace: (value: boolean) => Promise<VideoPlaylistItem>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#isRememberingPlaybackPosition isRememberingPlaybackPosition}
-  //  */
-  // isRememberingPlaybackPosition: () => Promise<boolean>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setRememberingPlaybackPosition setRememberingPlaybackPosition}
-  //  */
-  // setRememberingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#isShowingPlaybackPosition isShowingPlaybackPosition}
-  //  */
-  // isShowingPlaybackPosition: () => Promise<boolean>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setShowingPlaybackPosition setShowingPlaybackPosition}
-  //  */
-  // setShowingPlaybackPosition: (value: boolean) => Promise<VideoPlaylistItem>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#getCuePoints getCuePoints}
-  //  */
-  // getCuePoints: () => Promise<CuePoint[]>;
-
-  // /**
-  //  * See: {@link #core/ISourcePlayback#setCuePoints setCuePoints}
-  //  */
-  // setCuePoints: (value: CuePoint[]) => Promise<VideoPlaylistItem>;
+  /**
+   * See: {@link #core/ISourcePlayback#cuePoints cuePoints}
+   */
+  cuePoints: (cuePoints?: CuePoint[]) => Promise<CuePoint[]|ISourcePlayback>
 
   // Inherited from base class, no need to redefine
   getValue: () => Promise<string>;

@@ -5,74 +5,45 @@ import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
 
 export interface IAudio {
-  volume(value?: number): Promise<number|IAudio>;
-  mute(value?: boolean): Promise<boolean|IAudio>;
-  autoMute(value?: boolean): Promise<boolean|IAudio>;
-  streamOnlyAudio(value?: boolean): Promise<boolean|IAudio>;
-
   /**
+   * param?: value<number|IAudio>
+   * ```
    * return: Promise<number>
+   * ```
    *
-   * Get source's volume level expressed as an integer from 0 to 100
+   * Get/Set source's volume level expressed as an integer from 0 to 100
    */
-  // getVolume(): Promise<number>;
+  volume(value?: number): Promise<number|IAudio>;
 
   /**
-   * param: (value: number)
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|IAudio>
+   * ```
    *
-   * Set volume level of source as an integer from 0 (muted) to 100 (maximum)
-   *
-   * *Chainable.*
+   * Get/Set source's mute option is active
    */
-  // setVolume(value: number): Promise<IAudio>;
+  mute(value?: boolean): Promise<boolean|IAudio>;
 
   /**
-   * return: Promise<boolean>
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|IAudio>
+   * ```
    *
-   * Check if source's mute option is active
+   * Get/Set if source is automatically being muted when hiding
    */
-  // isMute(): Promise<boolean>;
+  autoMute(value?: boolean): Promise<boolean|IAudio>;
 
   /**
-   * param: (value: boolean)
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|IAudio>
+   * ```
    *
-   * Set source's Mute property to ON or OFF
-   *
-   * *Chainable.*
+   * Get/Set if audio is also output to system sound
    */
-  // setMute(value: boolean): Promise<IAudio>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if source is automatically being muted when hiding
-   */
-  // isAutoMute(): Promise<boolean>;
-
-  /**
-   * param: (value: boolean)
-   *
-   * Set source to automatically mute when hiding
-   *
-   * *Chainable.*
-   */
-  // setAutoMute(value: boolean): Promise<IAudio>;
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if audio is also output to system sound
-   */
-  // isStreamOnlyAudio(): Promise<boolean>;
-
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether audio should also be output to system sound
-   *
-   * *Chainable.*
-   */
-  // setStreamOnlyAudio(value: boolean): Promise<IAudio>;
+  streamOnlyAudio(value?: boolean): Promise<boolean|IAudio>;
 
   /**
    * return: Promise<boolean>

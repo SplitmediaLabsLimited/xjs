@@ -8,146 +8,83 @@ import {iSource, ISource} from './isource';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceScreen {
+  /**
+   * param?: Promise<boolean>
+   * ```
+   * return: Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Set the Screen Capture to capture the window based on the window title.
+   * Useful when capturing programs with multiple tabs, for you to only
+   * capture a particular tab.
+   */
   stickToTitle(value?: boolean): Promise<boolean|ISourceScreen>
+
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Sets the Screen Capture Layered window
+   */
   captureLayered(value?: boolean): Promise<boolean|ISourceScreen>
+
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Sets the Exclusive Window capture.
+   */
   optimizedCapture(value?: boolean): Promise<boolean|ISourceScreen>
+
+
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Sets the Show mouse clicks.
+   */
   showMouseClicks(value?: boolean): Promise<boolean|ISourceScreen>
+
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Sets the Show Mouse.
+   */
   showMouse(value?: boolean): Promise<boolean|ISourceScreen>
+
+  /**
+   * param?: Promise<Rectangle>
+   * ```
+   * return: Promise<Rectangle|ISourceScreen>
+   * ```
+   *
+   * Sets the Window Capture Area of the Screen Capture Item.
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
   captureArea(dimension?: Rectangle): Promise<Rectangle|ISourceScreen>
+
+  /**
+   * param?: Promise<boolean>
+   * ```
+   * return: Promise<boolean|ISourceScreen>
+   * ```
+   *
+   * Set the Screen Capture to capture the Client area only or include
+   * the titlebar, menu bar, window border, etc.
+   */
   clientAreaOnly(value?: boolean): Promise<boolean|ISourceScreen>
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Checks if the Screen Capture Item captures a window based on
-  //  * the window's title.
-  //  */
-  // isStickToTitle(): Promise<boolean>
-
-  // /**
-  //  * param: Promise<boolean>
-  //  * ```
-  //  * return: Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Set the Screen Capture to capture the window based on the window title.
-  //  * Useful when capturing programs with multiple tabs, for you to only
-  //  * capture a particular tab.
-  //  */
-  // setStickToTitle(value: boolean): Promise<ISourceScreen>
-
-  // /**
-  //  * return Promise<boolean>
-  //  *
-  //  * Checks if the Screen Capture layered window is selected.
-  //  */
-  // getCaptureLayered(): Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  * ```
-  //  * return Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Sets the Screen Capture Layered window
-  //  */
-  // setCaptureLayered(value: boolean): Promise<ISourceScreen>
-
-  // /**
-  //  * return Promise<boolean>
-  //  *
-  //  * Checks if the Exclusive Window capture is selected.
-  //  */
-  // getOptimizedCapture(): Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  * ```
-  //  * return Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Sets the Exclusive Window capture.
-  //  */
-  // setOptimizedCapture(value: boolean): Promise<ISourceScreen>
-
-  // /**
-  //  * return Promise<boolean>
-  //  *
-  //  * Checks if the Show mouse clicks is selected.
-  //  *
-  //  */
-  // getShowMouseClicks(): Promise<boolean>
-
-
-  // /**
-  //  * param: (value: boolean)
-  //  * ```
-  //  * return Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Sets the Show mouse clicks.
-  //  */
-  // setShowMouseClicks(value: boolean): Promise<ISourceScreen>
-
-  // /**
-  //  * return Promise<boolean>
-  //  *
-  //  * Checks if the Show mouse is selected.
-  //  *
-  //  */
-  // getShowMouse(): Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  * ```
-  //  * return Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Sets the Show Mouse.
-  //  */
-  // setShowMouse(value: boolean): Promise<ISourceScreen>
-
-  // /**
-  //  * return: Promise<Rectangle>
-  //  *
-  //  * Gets the Capture Area of the Screen Capture Item. Returns a Rectangle
-  //  * object.
-  //  *
-  //  * See also: {@link #util/Rectangle Util/Rectangle}
-  //  */
-  //  getCaptureArea(): Promise<Rectangle>
-
-  // /**
-  //  * param: Promise<Rectangle>
-  //  * ```
-  //  * return: Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Sets the Window Capture Area of the Screen Capture Item.
-  //  *
-  //  * *Chainable.*
-  //  *
-  //  * See also: {@link #util/Rectangle Util/Rectangle}
-  //  */
-  // setCaptureArea(dimension: Rectangle): Promise<ISourceScreen>
-
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Checks if the Screen Capture Item only captures the
-  //  * Client area (does not capture the title bar, menu bar, window border, etc.)
-  //  */
-  // isClientArea(): Promise<boolean>
-
-  // /**
-  //  * param: Promise<boolean>
-  //  * ```
-  //  * return: Promise<ISourceScreen>
-  //  * ```
-  //  *
-  //  * Set the Screen Capture to capture the Client area only or include
-  //  * the titlebar, menu bar, window border, etc.
-  //  */
-  // setClientArea(value: boolean): Promise<ISourceScreen>
 }
 
 export class iSourceScreen implements ISourceScreen {

@@ -5,69 +5,45 @@ import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceAudio {
-
-  silenceDetection(value?: boolean): Promise<boolean|ISourceAudio>
-  silenceThreshold(value?: number): Promise<number|ISourceAudio>
-  silencePeriod(value?: number): Promise<number|ISourceAudio>
-  audioOffset(value?: number): Promise<number|ISourceAudio>
-
   /**
-   * return: Promise<boolean>
-   *
-   * Check if silence detection is on or off
-   */
-  // isSilenceDetectionEnabled(): Promise<boolean>;
-
-  /**
-   * param: (value: boolean)
+   * param?: (value: boolean)
+   * ```
+   * return: Promise<boolean|ISourceAudio>
+   * ```
    *
    * Set silence detection to ON or OFF
    */
-  // setSilenceDetectionEnabled(value: boolean): Promise<ISourceAudio>
+  silenceDetection(value?: boolean): Promise<boolean|ISourceAudio>
 
   /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection threshold.
-   * Amplitude less than threshold will be detected as silence.
-   */
-  // getSilenceThreshold(): Promise<number>
-
-  /**
-   * param: (value: number)
+   * param?: (value: number)
+   * ```
+   * return: Promise<number|ISourceAudio>
+   * ```
    *
    * Sets silence detection threshold, min of 0, max of 128
    */
-  // setSilenceThreshold(value: number): Promise<ISourceAudio>
+  silenceThreshold(value?: number): Promise<number|ISourceAudio>
 
   /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection period in ms time unit.
-   * Reaction time before filter removes noice/sound less than threshold
-   */
-  // getSilencePeriod(): Promise<number>
-
-  /**
-   * param: (value: number)
+   * param?: (value: number)
+   * ```
+   * return: Promise<boolean|ISourceAudio>
+   * ```
    *
    * Sets silence detection period, min of 0, max of 10000
    */
-  // setSilencePeriod(value: number): Promise<ISourceAudio>
+  silencePeriod(value?: number): Promise<number|ISourceAudio>
 
   /**
-   * return: Promise<number>
-   *
-   * Gets audio delay (1 unit = 100ns)
-   */
-  // getAudioOffset(): Promise<number>
-
-  /**
-   * param: (value: number)
+   * param?: (value: number)
+   * ```
+   * return: Promise<boolean|ISourceAudio>
+   * ```
    *
    * Sets audio delay, accepts only positive delay
    */
-  // setAudioOffset(value: number): Promise<ISourceAudio>
+  audioOffset(value?: number): Promise<number|ISourceAudio>
 }
 
 export class SourceAudio implements ISourceAudio {

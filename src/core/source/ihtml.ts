@@ -7,16 +7,6 @@ import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceHtml {
-  url(value?: string): Promise<string|ISourceHtml>
-  browserTransparency(value?: boolean): Promise<boolean|ISourceHtml>
-  browser60FPS(value?: boolean): Promise<boolean|ISourceHtml>
-  browserCustomSize(value?: Rectangle): Promise<Rectangle|ISourceHtml>
-  allowRightClick(value?: boolean): Promise<boolean|ISourceHtml>
-  browserJS(value?: string): Promise<string|ISourceHtml>
-  browserJSEnabled(value?: boolean): Promise<boolean|ISourceHtml>
-  customCSS(value?: string): Promise<string|ISourceHtml>
-  customCSSEnabled(value?: boolean): Promise<boolean|ISourceHtml>
-
   /**
    * param: (func: string, arg: string)
    * ```
@@ -27,155 +17,129 @@ export interface ISourceHtml {
    */
   call(func: string, arg: string): Promise<ISourceHtml>
 
-  // /**
-  //  * return: Promise<string>
-  //  *
-  //  * Gets the URL of this webpage source.
-  //  */
-  // getURL(): Promise<string>
+  /**
+   * param?: url<string>
+   * ```
+   * return: Promise<string|HtmlSource>
+   * ```
+   *
+   * Get/Set the URL of this webpage source.
+   *
+   * *Chainable.*
+   */
+  url(value?: string): Promise<string|ISourceHtml>
 
-  // /**
-  //  * param: (url: string)
-  //  * ```
-  //  * return: Promise<HtmlSource>
-  //  * ```
-  //  *
-  //  * Sets the URL of this webpage source.
-  //  *
-  //  * *Chainable.*
-  //  */
-  // setURL(value: string): Promise<ISourceHtml>
+  /**
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|HtmlSource>
+   * ```
+   *
+   * Get, Enable or disable transparency of CEF browser
+   *
+   * *Chainable on Set.*
+   */
+  browserTransparency(value?: boolean): Promise<boolean|ISourceHtml>
 
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Check if browser is rendered transparent
-  //  */
-  // isBrowserTransparent(): Promise<boolean>
+  /**
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|HtmlSource>
+   * ```
+   *
+   * Get, Enable or disable browser source to render up to a maximum of 60FPS
+   *
+   * *Chainable on Set.*
+   */
+  browser60FPS(value?: boolean): Promise<boolean|ISourceHtml>
 
-  // /**
-  //  * param: Promise<boolean>
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  */
-  // enableBrowserTransparency(value: boolean): Promise<ISourceHtml>
+  /**
+   * param?: value<Rectangle>
+   * ```
+   * return: Promise<Rectangle|HtmlSource>
+   * ```
+   *
+   * Get/Set the custom browser window size for the item
+   * regardless of its layout on the mixer
+   *
+   * *Chainable on Set.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
+   */
+  browserCustomSize(value?: Rectangle): Promise<Rectangle|ISourceHtml>
 
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Check if browser can render up to a maximum of 60FPS
-  //  */
-  // isBrowser60FPS(): Promise<boolean>
+  /**
+   * param?: value<boolean>
+   * ```
+   * return: Promise<boolean|HtmlSource>
+   * ```
+   *
+   * Get, Allow or disallow right click events to be sent to the item. Note that
+   * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable on Set*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.allowRightClick().then(function(allow) {
+   *   // Promise resolves with the same Item instance
+   * });
+   * ```
+   */
+  allowRightClick(value?: boolean): Promise<boolean|ISourceHtml>
 
-  // /**
-  //  * param: Promise<boolean>
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  */
-  // enableBrowser60FPS(value: boolean): Promise<ISourceHtml>
+  /**
+   * param?: (js: string, refresh: boolean = false)
+   * ```
+   * return: Promise<string|HtmlSource>
+   * ```
+   *
+   * Get/Set the javascript commands to be executed on item
+   * right upon setting and on load. Optionally set second parameter
+   * to true to refresh item (needed to clean previously executed JS code.)
+   *
+   * *Chainable on Set.*
+   */
+  browserJS(value?: string): Promise<string|ISourceHtml>
 
-  // /**
-  //  * return: Promise<Rectangle>
-  //  *
-  //  * Gets the custom browser window size (in pixels) for the item, if set,
-  //  * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-  //  * custom size has been set.
-  //  */
-  // getBrowserCustomSize(): Promise<Rectangle>
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return: Promise<boolean|HtmlSource>
+   * ```
+   *
+   * Get, Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require item to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable on Set.*
+   */
+  browserJSEnabled(value?: boolean): Promise<boolean|ISourceHtml>
 
-  // /**
-  //  * param: Promise<Rectangle>
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Set the custom brower window size (in pixels) for the item
-  //  */
-  // setBrowserCustomSize(value: Rectangle): Promise<ISourceHtml>
+  /**
+   * param?: (value: string)
+   * ```
+   * return: Promise<string|HtmlSource>
+   * ```
+   *
+   * Get/Set the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable on Set.*
+   */
+  customCSS(value?: string): Promise<string|ISourceHtml>
 
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Check if right click events are sent to the item or not.
-  //  */
-  // getAllowRightClick(): Promise<boolean>
-
-  // /**
-  //  * param: (value:boolean)
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Allow or disallow right click events to be sent to the item. Note that
-  //  * you can only catch right click events using `mouseup/mousedown`
-  //  */
-  // setAllowRightClick(value: boolean): Promise<ISourceHtml>
-
-  // /**
-  //  * return: Promise<string>
-  //  *
-  //  * Gets the javascript commands to be executed on item upon load
-  //  */
-  // getBrowserJS(): Promise<string>
-
-  // /**
-  //  * param: (js: string, refresh: boolean = false)
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Sets the javascript commands to be executed on item
-  //  * right upon setting and on load. Optionally set second parameter
-  //  * to true to refresh item (needed to clean previously executed JS code.)
-  //  *
-  //  * *Chainable.*
-  //  */
-  // setBrowserJS(value: string): Promise<ISourceHtml>
-
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Gets if BrowserJS is enabled and executed on load
-  //  */
-  // isBrowserJSEnabled(): Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Enables or disables execution of the set BrowserJs upon load.
-  //  */
-  // enableBrowserJS(value: boolean): Promise<ISourceHtml>
-
-  // /**
-  //  * return: Promise<string>
-  //  *
-  //  * Gets the custom CSS applied to the document upon loading
-  //  */
-  // getCustomCSS(): Promise<string>
-
-  // /**
-  //  * param: (value: string)
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Sets the custom CSS to be applied to the document upon loading
-  //  */
-  // setCustomCSS(value: string): Promise<ISourceHtml>
-
-  // /**
-  //  * return: Promise<boolean>
-  //  *
-  //  * Gets if custom CSS is enabled and applied to the document on load
-  //  */
-  // isCustomCSSEnabled(): Promise<boolean>
-
-  // /**
-  //  * param: (value: boolean)
-  //  *
-  //  * return: Promise<ISourceHtml>
-  //  *
-  //  * Enables or disables application of custom CSS to the document
-  //  */
-  // enableCustomCSS(value: boolean): Promise<ISourceHtml>
+  /**
+   * param?: (value: boolean)
+   * ```
+   * return: Promise<boolean|HtmlSource>
+   * ```
+   *
+   * Get, Enables or disables application of custom CSS to the document
+   *
+   * *Chainable on Set.*
+   */
+  customCSSEnabled(value?: boolean): Promise<boolean|ISourceHtml>
 
   /**
    * return: Promise<boolean>

@@ -78,6 +78,22 @@ export class AudioDevice{
     this._mix                  = props['mix'] !== undefined? props['mix'] : 0;
   }
 
+  /**
+   * param?: volume<number> (0 to 100 normal range, > 100 will boost volume level)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Set/Get the application audio level of the primary microphone set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.micLevel().then(function(val) {
+   *   var micLevel = val;
+   * });
+   * ```
+   */
   micLevel(volume?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!volume) {
@@ -114,6 +130,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param?: enabled<boolean>
+   * ```
+   * return: Promise<boolean|AudioDevice>
+   * ```
+   *
+   * Get/Set the primary microphone set is enabled or disabled in the application
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.micEnabled().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   micEnabled(enabled?: boolean): Promise<boolean|AudioDevice> {
     return new Promise((resolve, reject) => {
       if(!enabled) {
@@ -146,7 +178,23 @@ export class AudioDevice{
     });
   }
 
-  systemMicLevel(volume: number): Promise<boolean> {
+  /**
+   * param?: volume<number> (0 to 100)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the system audio level of the primary microphone set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.systemMicLevel().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  systemMicLevel(volume: number): Promise<boolean|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (volume < 0) {
         reject(Error('Volume can only be positive'));
@@ -177,6 +225,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the primary microphone set is enabled or disabled in the system
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.systemMicEnabled().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   systemMicEnabled(hwenabled?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!hwenabled) {
@@ -213,7 +277,23 @@ export class AudioDevice{
     });
   }
 
-  micDelay(delay?: number): Promise<boolean|AudioDevice> {
+  /**
+   * param?: delay<number> (100 nanoseconds in units)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the loopback capture delay of the primary microphone set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.micDelay().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  micDelay(delay?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!delay) {
         resolve(this._delay)
@@ -249,6 +329,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param?: volume<number> (0 to 100 normal range, > 100 will boost volume level)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the application audio level of the primary speaker/audio render device
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.speakerLevel().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   speakerLevel(volume?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!volume) {
@@ -285,6 +381,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param?: enabled<boolean>
+   * ```
+   * return: Promise<boolean|AudioDevice>
+   * ```
+   *
+   * Get/Set the primary speaker/audio render device set is enabled or disabled in the applicaation
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.speakerEnabled(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   speakerEnabled(enabled?: boolean): Promise<boolean|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!enabled) {
@@ -318,7 +430,23 @@ export class AudioDevice{
     });
   }
 
-  systemSpeakerLevel(volume?: number): Promise<boolean|AudioDevice> {
+  /**
+   * param?: volume<number> (0 to 100)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the system audio level of the primary speaker/audio render device set
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.systemSpeakerLevel().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  systemSpeakerLevel(volume?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if(!volume) {
         resolve(this._hwlevel)
@@ -353,6 +481,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param?: hwenabled<number> (0 or 1, or set to 255 to avoid mute change)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the primary speaker/audio render device set is enabled or disabled in the system
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * AudioDevice.systemSpeakerEnabled().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   systemSpeakerEnabled(hwenabled?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!hwenabled) {
@@ -389,6 +533,22 @@ export class AudioDevice{
     });
   }
 
+  /**
+   * param?: delay<number> (100 nanoseconds in units)
+   * ```
+   * return: Promise<number|AudioDevice>
+   * ```
+   *
+   * Get/Set the loopback capture delay of the primary speaker/audio render device
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.speakerDelay().then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
   speakerDelay(delay?: number): Promise<number|AudioDevice> {
     return new Promise((resolve, reject) => {
       if (!delay) {
@@ -498,7 +658,7 @@ export class AudioDevice{
    * var audioDeviceVolumeLevel = audioDevice.getLevel();
    * ```
    */
-  getLevel(): number {
+  _getLevel(): number {
     return this._level;
   }
 
@@ -533,7 +693,7 @@ export class AudioDevice{
    * var isAudioDeviceEnabled = audioDevice.isEnabled();
    * ```
    */
-  isEnabled(): boolean {
+  _isEnabled(): boolean {
     return this._enable;
   }
 
@@ -568,7 +728,7 @@ export class AudioDevice{
    * var systemVolumeLevel = audioDevice.getSystemLevel();
    * ```
    */
-  getSystemLevel(): number {
+  _getSystemLevel(): number {
     return this._hwlevel;
   }
 
@@ -603,7 +763,7 @@ export class AudioDevice{
    * var systemAudioDeviceEnabled = audioDevice.getSystemEnabled();
    * ```
    */
-  getSystemEnabled(): number {
+  _getSystemEnabled(): number {
     return this._hwenable;
   }
 
@@ -642,7 +802,7 @@ export class AudioDevice{
    * var audioDelay = audioDevice.getDelay();
    * ```
    */
-  getDelay(): number {
+  _getDelay(): number {
     return this._delay;
   }
 
@@ -682,11 +842,11 @@ export class AudioDevice{
     device.tag = 'dev';
     device.selfclosing = true;
     device['id']       = this.getId();
-    device['level']    = (this.getLevel()/100).toFixed(6);
-    device['enable']   = this.isEnabled() ? 1 : 0;
-    device['hwlevel']  = (this.getSystemLevel()/100).toFixed(6);
-    device['hwenable'] = this.getSystemEnabled();
-    device['delay']    = this.getDelay();
+    device['level']    = (this._getLevel()/100).toFixed(6);
+    device['enable']   = this._isEnabled() ? 1 : 0;
+    device['hwlevel']  = (this._getSystemLevel()/100).toFixed(6);
+    device['hwenable'] = this._getSystemEnabled();
+    device['delay']    = this._getDelay();
     device['mix']      = this._mix;
 
     return XML.parseJSON(device).toString();

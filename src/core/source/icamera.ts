@@ -13,6 +13,8 @@ export interface ISourceCamera {
   audioInput(value?:MicrophoneDevice): Promise<MicrophoneDevice|ISourceCamera>
   delay(value?:number): Promise<number|ISourceCamera>
   forceDeinterlace(value?:boolean): Promise<boolean|ISourceCamera>
+  streamPause(value?:boolean): Promise<boolean|ISourceCamera>
+
 
   /**
    * return: Promise<string>

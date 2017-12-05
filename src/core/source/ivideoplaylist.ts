@@ -5,41 +5,24 @@ import {IO} from '../../util/io';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceVideoPlaylist {
+  /**
+   * param?: (value: string|number)
+   *
+   * return: Promise<string|number|VideoPlaylistSource>
+   *
+   * Get/Set the now playing video of this VideoPlaylist item.
+   */
   nowPlaying(value?: string|number): Promise<string|number|ISourceVideoPlaylist>
+
+  /**
+   * param?: (file: string[])
+   *
+   * return: Promise<string[]|ISourceVideoPlaylist>
+   *
+   * Get/Set the playlist of this VideoPlaylist item according to the specified
+   * file paths.
+   */
   playlist(fileItems?: string[]): Promise<string[]|ISourceVideoPlaylist>
-  // /**
-  //  * return: Promise<string>
-  //  *
-  //  * Gets the now playing video of this VideoPlaylist item.
-  //  */
-  // getVideoNowPlaying(): Promise<string>
-
-  // /**
-  //  * param: (value: string|number)
-  //  *
-  //  * return: Promise<VideoPlaylistSource>
-  //  *
-  //  * Sets the now playing video of this VideoPlaylist item.
-  //  */
-  // setVideoNowPlaying(value:string|number): Promise<SourceVideoPlaylist>
-
-  // /**
-  //  * return: Promise<string[]>
-  //  *
-  //  * Gets the file paths of the playlist of this VideoPlaylist item.
-  //  *
-  //  */
-  // getVideoPlaylistSources(): Promise<string[]>
-
-  // /**
-  //  * param: (file: string[])
-  //  *
-  //  * return: Promise<string>
-  //  *
-  //  * Sets the playlist of this VideoPlaylist item according to the specified
-  //  * file paths.
-  //  */
-  // setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist>
 
 }
 

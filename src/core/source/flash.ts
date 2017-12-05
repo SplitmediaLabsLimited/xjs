@@ -39,98 +39,51 @@ import {Rectangle} from '../../util/rectangle';
 export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem
 
-  customResolution:(value?: Rectangle)=> Promise<Rectangle|FlashSource>
-  allowRightClick:(value?: boolean)=> Promise<boolean|FlashSource>
   /**
-   * return: Promise<Rectangle>
+   * param?: value<Rectangle>
+   * ```
+   * return: Promise<Rectangle|FlashSource>
+   * ```
    *
-   * Gets the custom resolution (in pixels) for the item, if set,
+   * Get/Set the custom resolution (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom resolution has been set.
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  // getCustomResolution: () => Promise<Rectangle>
+  customResolution:(value?: Rectangle)=> Promise<Rectangle|FlashSource>
 
   /**
-   * param: (value: Rectangle)
+   * param?: value<boolean>
    * ```
-   * return: Promise<FlashSource>
+   * return: Promise<boolean|FlashSource>
    * ```
    *
-   * Sets the custom resolution for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  // setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
+   * Check/Set if right click events are sent to the item or not.
    *
    * #### Usage
    *
    * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
+   * item.allowRightClick().then(function(isRightClickAllowed) {
    *   // The rest of your code here
    * });
    * ```
    */
-  // getAllowRightClick: () => Promise<boolean>
-
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
-  // setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
+  allowRightClick:(value?: boolean)=> Promise<boolean|FlashSource>
 
   // ItemAudio
+
+  /** See: {@link #core/IAudio#volume volume} */
   volume:(value?: number)=> Promise<number|FlashSource>
+
+  /** See: {@link #core/IAudio#mute mute} */
   mute:(value?: boolean)=> Promise<boolean|FlashSource>
+
+  /** See: {@link #core/IAudio#autoMute autoMute} */
   autoMute:(value?: boolean)=> Promise<boolean|FlashSource>
+
+  /** See: {@link #core/IAudio#streamOnlyAudio streamOnlyAudio} */
   streamOnlyAudio:(value?: boolean)=> Promise<boolean|FlashSource>
-
-  // /** See: {@link #core/IAudio#getVolume getVolume} */
-  // getVolume: () => Promise<number>;
-
-  // /** See: {@link #core/IAudio#isMute isMute} */
-  // isMute: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
-  // isAutoMute: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#setVolume setVolume} */
-  // setVolume: (value: number) => Promise<FlashSource>;
-
-  // /** See: {@link #core/IAudio#setMute setMute} */
-  // setMute: (value: boolean) => Promise<FlashSource>;
-
-  // /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
-  // setAutoMute: (value: boolean) => Promise<FlashSource>;
-
-  // /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
-  // isStreamOnlyAudio: () => Promise<boolean>;
-
-  // /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
-  // setStreamOnlyAudio: (value: boolean) => Promise<FlashSource>;
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;

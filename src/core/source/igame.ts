@@ -10,57 +10,27 @@ import {iSource, ISource, ItemTypes} from './isource';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceGame {
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check/Set if Game Special Optimization is currently enabled or not
+   */
   specialOptimization(value?: boolean): Promise<boolean|ISourceGame>
+  /**
+   * return: Promise<boolean>
+   *
+   * Check/Set if Show Mouse is currently enabled or not
+   */
   showMouse(value?: boolean): Promise<boolean|ISourceGame>
-  offlineImage(path?: string): Promise<string|ISourceGame>
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
-   */
-  // isSpecialOptimizationEnabled(): Promise<boolean>
-
-  /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
-   */
-  // setSpecialOptimizationEnabled(value: boolean): Promise<ISourceGame>
-
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
-   */
-  // isShowMouseEnabled(): Promise<boolean>
-
-  /**
-   * param: (value: boolean)
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
-   */
-  // setShowMouseEnabled(value: boolean): Promise<ISourceGame>
 
   /**
    * param: path<string>
    *
-   * Set the offline image of a game item
+   * Get/Set the offline image of a game item
    *
-   * *Chainable.*
    */
-  // setOfflineImage(path: string): Promise<ISourceGame>
-
-  /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game item
-   */
-  // getOfflineImage(): Promise<string>
+  offlineImage(path?: string): Promise<string|ISourceGame>
 }
 
 export class iSourceGame implements ISourceGame {
