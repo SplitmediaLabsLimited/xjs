@@ -109,7 +109,9 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
     let callback = _proxyCallbacks[asyncID];
-    callback.call(this, decodeURIComponent(result));
+    if (callback instanceof Function) {
+      callback.call(this, decodeURIComponent(result));
+    }
   } else {
     let callback = _callbacks[asyncID];
 
