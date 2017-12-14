@@ -90,7 +90,11 @@ export class Remote {
       }
 
       if (message !== undefined) {
-        messageObj = JSON.parse(decodeURIComponent(message))
+        try {
+          messageObj = JSON.parse(decodeURIComponent(message))
+        } catch(e) {
+          // ....
+        }
       }
 
       if (Object.keys(messageObj).length !== 0) {
