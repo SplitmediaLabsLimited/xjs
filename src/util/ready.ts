@@ -3,6 +3,7 @@
 import {setMockVersion} from '../internal/util/version';
 import init from '../internal/init';
 import {Remote} from '../internal/remote'
+import {_subscribeEventManager} from '../core/channelmanager'
 
 let isReady: boolean = false;
 let isInit: boolean = false;
@@ -26,6 +27,7 @@ export function finishReady(config: Object): Promise<any> {
 
     setReady();
     if (isReady && !isInit) {
+      _subscribeEventManager()
       setOnce();
       init();
     }
