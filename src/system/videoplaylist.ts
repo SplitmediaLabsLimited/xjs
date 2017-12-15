@@ -7,6 +7,7 @@ import {XML} from '../internal/util/xml';
 import {IO} from '../util/io';
 import {Environment} from '../core/environment';
 import {Scene} from '../core/scene';
+import{checkSplitmode} from '../internal/util/splitmode';
 
 /**
  *  Special class for adding a video playlist to the stage.
@@ -143,63 +144,17 @@ export class VideoPlaylist implements Addable {
       if (Environment.isSourcePlugin()) {
         reject(Error('This function is not available to sources.'));
       } else {
-        let scenePrefix = '';
-        let scenePromise;
-        let checkSplitMode;
-
-        checkSplitMode = new Promise(splitPromise => {
-          iApp.getGlobalProperty('splitmode').then(res => {
-            if (res === '1' && !value) {
-              Scene.getActiveScene().then(val => {
-                value = val
-                splitPromise(value)
-              })
-            } else {
-              splitPromise(value)
-            }
-          })
-        })
-
-        checkSplitMode.then(value => {
-          if (typeof value === 'number' || value instanceof Scene) {
-            scenePromise = new Promise((innerResolve, innerReject) => {
-              Scene.getSceneCount().then(sceneCount => {
-                if (typeof value === 'number') {
-                  let int = Math.floor(value);
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
-                  } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
-                    innerResolve();
-                  }
-                } else {
-                  value.getSceneNumber().then(int => {
-                    if (int > sceneCount || int === 0) {
-                    innerReject(Error('Scene not existing.'));
-                    } else {
-                      scenePrefix = 's:' + (int - 1) + '|';
-                      innerResolve();
-                    }
-                  });
-                }
-              });
-            });
-          } else if (typeof value === 'undefined') {
-            scenePromise = Promise.resolve();
-          } else {
-          scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-          }
-
-          scenePromise.then(() => {
-            return this.toXML();
-          }).then(fileItem => {
-            return iApp.callFunc(scenePrefix + 'additem', ' ' + fileItem);
-          }).then(() => {
-            resolve(true);
-          }).catch(err => {
-            reject(err);
-          });
-        })
+        let scenePrefix
+        checkSplitmode(value).then((prefix) => {
+          scenePrefix = prefix
+          return this.toXML();
+        }).then(fileItem => {
+          return iApp.callFunc(scenePrefix + 'additem', ' ' + fileItem);
+        }).then(() => {
+          resolve(true);
+        }).catch(err => {
+          reject(err);
+        });
       }
     });
   }
