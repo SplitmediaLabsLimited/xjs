@@ -5,6 +5,22 @@
 import {App as iApp} from '../app';
 import {Scene} from '../../core/scene';
 
+/**
+ * return: value<number>
+ *
+ * Returns splitmode value
+ */
+export function splitMode() {
+  return new Promise(resolve => {
+    iApp.getGlobalProperty('splitmode').then(mode => {
+      resolve(mode === '1' ? 1 : 0)
+    })
+  })
+}
+
+/**
+ * Used on addToScene methods
+ */
 export function checkSplitmode(value?: number | Scene): any {
   let scenePrefix = '';
   let scenePromise;

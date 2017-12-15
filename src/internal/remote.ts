@@ -72,74 +72,52 @@ export class Remote {
     let messageObj = {};
 
     return new Promise((resolve, reject) => {
-      if (Remote.remoteType === 'remote') {
+      if (Remote.remoteType === 'remote' && !Remote._isVersion && message.indexOf('setVersion') !== -1) {
         // Receive version on first message from proxy
-        if(!Remote._isVersion && message.indexOf('setVersion') !== -1) {
-          Remote._isVersion = true;
-          let mockVersion = message;
-          let msgArray = message.split("::");
-          if (typeof msgArray[1] !== 'undefined') {
-            mockVersion = msgArray[1];
-          }
-          resolve(finishReady({version: mockVersion}));
-        } else {
-          if (message.indexOf('setVersion') === -1) {
-            messageObj = JSON.parse(decodeURIComponent(message))
-            switch(messageObj['type']) {
-              case 'exec':
-                Remote._execHandler(message);
-                break;
-              case 'event-emitter':
-                Remote._eventEmitterHandler(message);
-                break;
-              case 'window':
-                Remote._allWindowHandler(message);
-                break;
-              case 'extWindow':
-                Remote._allWindowHandler(message);
-                break;
-              case 'broadcastChannels':
-                Remote._allWindowHandler(message);
-                break;
-              default:
-                reject(Error('Call type is undefined.'))
-                break;
-            }
-          }
+        Remote._isVersion = true;
+        let mockVersion = message;
+        let msgArray = message.split("::");
+        if (typeof msgArray[1] !== 'undefined') {
+          mockVersion = msgArray[1];
         }
-      } else if (Remote.remoteType === 'proxy') {
-        if (message !== undefined) {
-          if (message === 'getVersion') {
-            // First message to get and send version
-            Remote.sendMessage('setVersion::' + window.navigator.appVersion);
-            resolve(true);
-          } else {
-            // Succeeding messages from exec/event/emit
-            messageObj = JSON.parse(decodeURIComponent(message));
-            switch(messageObj['type']) {
-              case 'exec':
-                Remote._execHandler(message);
-                break;
-              case 'event-emitter':
-                Remote._eventEmitterHandler(message);
-                break;
-              case 'window':
-                Remote._allWindowHandler(message);
-                break;
-              case 'extWindow':
-                Remote._allWindowHandler(message);
-                break;
-              case 'broadcastChannels':
-                Remote._allWindowHandler(message);
-                break;
-              default:
-                reject(Error('Call type is undefined.'))
-                break;
-            }
-          }
-        }
+        resolve(finishReady({version: mockVersion}));
+      } else if (Remote.remoteType === 'proxy' && message !== undefined && message === 'getVersion') {
+        // First message to get and send version
+        Remote.sendMessage('setVersion::' + window.navigator.appVersion);
+        resolve(true);
       } else if (Remote.remoteType === 'local') {
         reject(Error('Remote calls do not work on local mode.'));
+      }
+
+      if (message !== undefined) {
+        try {
+          messageObj = JSON.parse(decodeURIComponent(message))
+        } catch(e) {
+          // ....
+        }
+      }
+
+      if (Object.keys(messageObj).length !== 0) {
+        switch(messageObj['type']) {
+          case 'exec':
+            Remote._execHandler(message);
+            break;
+          case 'event-emitter':
+            Remote._eventEmitterHandler(message);
+            break;
+          case 'window':
+            Remote._allWindowHandler(message);
+            break;
+          case 'extWindow':
+            Remote._allWindowHandler(message);
+            break;
+          case 'broadcastChannels':
+            Remote._allWindowHandler(message);
+            break;
+          default:
+            reject(Error('Call type is undefined.'))
+            break;
+        }
       }
     })
   }
