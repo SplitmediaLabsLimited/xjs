@@ -203,6 +203,7 @@ export class Item {
     return Item.baseID;
   }
 
+  /** Check if the supplied id on get/set method still exist */
   private static _checkItemId(srcId: string, id: string, updateId: Function): Promise<string> {
     return new Promise(resolve => {
       Item.get('itemlist', id).then(itemlist => {

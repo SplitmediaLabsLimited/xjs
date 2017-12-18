@@ -26,8 +26,8 @@ export function checkSplitmode(value?: number | Scene): any {
   let scenePromise;
   return new Promise((resolve,reject) => {
     scenePromise = new Promise(sceneResolve => {
-      iApp.getGlobalProperty('splitmode').then(res => {
-      if (res === '1' && !value) {
+      splitMode().then(res => {
+      if (res === 1 && !value) {
         Scene.getActiveScene().then(val => {
           value = val
           sceneResolve(value)
