@@ -302,7 +302,11 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   getSceneId(): Promise<number> {
     return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
+      if (String(this._sceneId) === 'i12') {
+        resolve('i12')
+      } else {
+        resolve(Number(this._sceneId) + 1);
+      }
     });
   }
 
