@@ -261,7 +261,19 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
    * Gets if browser instance is optimized via surface sharing
    */
   isBrowserOptimized: () => Promise<boolean>
-
+  /**
+   * return: Promise<string>
+   *
+   * Gets the load status of the html
+   * May return as any of the following:
+   * - 'LOADED' -> HTML is already loaded
+   * - 'NOT LOADED' -> HTML is not yet loaded
+   * - 'LOAD ERROR' -> Error in loading HTML
+   * - 'UNKNOWN' -> URL used is invalid or when status is checked right after adding new HTML source
+   * - 'UNAVAILABLE' -> Method for getting load status is unavailable for the XBC version
+   */
+  getBrowserLoadStatus: () => Promise<string>
+  
   // SourceConfigurable
   /**
    * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}

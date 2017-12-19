@@ -184,7 +184,8 @@ describe('HTML Source interface', function() {
       'getCustomCSS',
       'setCustomCSS',
       'isCustomCSSEnabled',
-      'enableCustomCSS'
+      'enableCustomCSS',
+      'getBrowserLoadStatus'
       ].join(',');
 
     expect(enumeratedSource[0]).hasMethods(methods);
