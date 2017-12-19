@@ -8,6 +8,13 @@ import {IAudio, Audio} from './iaudio';
 import {CuePoint} from './cuepoint';
 import {ISourceMedia, SourceMedia} from './imedia';
 
+export const MediaTypes = [
+    '.mp3','.aac','.cda','.ogg','.m4a','.flac','.wma',
+    '.aiff','.aif','.wav','.mid','.midi','.rma','.avi',
+    '.flv','.mkv','.mp4','.mpg','.wmv','.3gp','.3g2',
+    '.asf','.f4v','.mov','.mpeg','.vob','.webm'
+]
+
 /**
  * The MediaSource class represents the sources of the media items that
  * has been added to the stage. A single source could have multiple items linked

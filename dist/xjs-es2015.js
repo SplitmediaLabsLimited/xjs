@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.5.0
+ * version: 2.6.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1181,32 +1181,35 @@ var ChannelManager = (function (_super) {
     return ChannelManager;
 })(eventemitter_1.EventEmitter);
 exports.ChannelManager = ChannelManager;
-eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'], function (settingsObj) {
-    var eventString;
-    if (settingsObj.hasOwnProperty('event') &&
-        settingsObj.hasOwnProperty('info')) {
-        eventString = settingsObj['event'];
-        if (settingsObj['event'] === 'StreamStart') {
-            eventString = 'stream-start';
+function _subscribeEventManager() {
+    eventmanager_1.EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'], function (settingsObj) {
+        var eventString;
+        if (settingsObj.hasOwnProperty('event') &&
+            settingsObj.hasOwnProperty('info')) {
+            eventString = settingsObj['event'];
+            if (settingsObj['event'] === 'StreamStart') {
+                eventString = 'stream-start';
+            }
+            else if (settingsObj['event'] === 'StreamEnd') {
+                eventString = 'stream-end';
+            }
+            ChannelManager.emit(eventString, settingsObj['info']);
         }
-        else if (settingsObj['event'] === 'StreamEnd') {
-            eventString = 'stream-end';
+        if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+            && settingsObj.hasOwnProperty('new')) {
+            eventString = settingsObj['event'];
+            if (settingsObj['event'] === 'RecordingRenamed') {
+                eventString = 'recording-renamed';
+                var renameInfo = {
+                    old: settingsObj['old'],
+                    new: settingsObj['new']
+                };
+                ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+            }
         }
-        ChannelManager.emit(eventString, settingsObj['info']);
-    }
-    if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
-        && settingsObj.hasOwnProperty('new')) {
-        eventString = settingsObj['event'];
-        if (settingsObj['event'] === 'RecordingRenamed') {
-            eventString = 'recording-renamed';
-            var renameInfo = {
-                old: settingsObj['old'],
-                new: settingsObj['new']
-            };
-            ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
-        }
-    }
-});
+    });
+}
+exports._subscribeEventManager = _subscribeEventManager;
 },{"../internal/eventmanager":50,"../internal/util/json":56,"../util/eventemitter":71,"./environment":4,"./streaminfo":47}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1217,6 +1220,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var internal_1 = _require('../internal/internal');
 var eventemitter_1 = _require('../util/eventemitter');
+var window_1 = _require('../util/window');
 /**
  *  The Dll class allows access to functions in DLL files that are placed within
  *  the Scriptdlls folder.
@@ -1367,8 +1371,8 @@ var Dll = (function (_super) {
     return Dll;
 })(eventemitter_1.EventEmitter);
 exports.Dll = Dll;
-var oldUpdateLocalProperty = window.UpdateLocalProperty;
-window.UpdateLocalProperty = function (prop, value) {
+var oldUpdateLocalProperty = window_1.default.UpdateLocalProperty;
+window_1.default.UpdateLocalProperty = function (prop, value) {
     if (prop === 'prop:dlldogrant') {
         var granted = value === '1';
         if (granted) {
@@ -1382,8 +1386,8 @@ window.UpdateLocalProperty = function (prop, value) {
         oldUpdateLocalProperty(prop, value);
     }
 };
-var oldSetdlldogrant = window.Setdlldogrant;
-window.Setdlldogrant = function (value) {
+var oldSetdlldogrant = window_1.default.Setdlldogrant;
+window_1.default.Setdlldogrant = function (value) {
     var granted = value === '1';
     if (granted) {
         Dll.emit('access-granted');
@@ -1395,8 +1399,9 @@ window.Setdlldogrant = function (value) {
         oldSetdlldogrant(value);
     }
 };
-},{"../internal/internal":53,"../util/eventemitter":71}],4:[function(_require,module,exports){
+},{"../internal/internal":53,"../util/eventemitter":71,"../util/window":75}],4:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
+var window_1 = _require('../util/window');
 /**
  * This class allows detection of the context in which the HTML is located.
  */
@@ -1410,16 +1415,16 @@ var Environment = (function () {
         if (Environment._initialized) {
             return;
         }
-        Environment._isSourcePlugin = (window.external &&
-            window.external['GetConfiguration'] !== undefined);
-        Environment._isSourceProps = (window.external &&
-            window.external['GetConfiguration'] === undefined &&
-            window.external['GetViewId'] !== undefined &&
-            window.external['GetViewId']() !== undefined);
-        Environment._isExtension = (window.external &&
-            window.external['GetConfiguration'] === undefined &&
-            window.external['GetViewId'] !== undefined &&
-            window.external['GetViewId']() === undefined);
+        Environment._isSourcePlugin = (window_1.default.external &&
+            window_1.default.external['GetConfiguration'] !== undefined);
+        Environment._isSourceProps = (window_1.default.external &&
+            window_1.default.external['GetConfiguration'] === undefined &&
+            window_1.default.external['GetViewId'] !== undefined &&
+            window_1.default.external['GetViewId']() !== undefined);
+        Environment._isExtension = (window_1.default.external &&
+            window_1.default.external['GetConfiguration'] === undefined &&
+            window_1.default.external['GetViewId'] !== undefined &&
+            window_1.default.external['GetViewId']() === undefined);
         Environment._initialized = true;
     };
     /**
@@ -1454,17 +1459,17 @@ var Environment = (function () {
     return Environment;
 })();
 exports.Environment = Environment;
-Environment.initialize();
-},{"../internal/remote":55}],5:[function(_require,module,exports){
+},{"../internal/remote":55,"../util/window":75}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
 var app_1 = _require('../internal/app');
 var remote_1 = _require('../internal/remote');
+var window_1 = _require('../util/window');
 var Extension = (function () {
     function Extension() {
         if (environment_1.Environment.isExtension()) {
-            this._presName = window.location.href;
+            this._presName = window_1.default.location.href;
         }
         else {
             throw new Error('Extension class can only be used on Extension Plugins');
@@ -1560,9 +1565,11 @@ var Extension = (function () {
     return Extension;
 })();
 exports.Extension = Extension;
-var oldSetid = window.Setid;
-window.Setid = function (id) {
+var oldSetid = window_1.default.Setid;
+window_1.default.Setid = function (id) {
     if (remote_1.Remote.remoteType === 'proxy') {
+        if (Extension._proxyCallback['ExtensionWindowID'] === undefined)
+            return;
         Extension._proxyCallback['ExtensionWindowID'].call(this, id);
     }
     else {
@@ -1572,7 +1579,7 @@ window.Setid = function (id) {
         oldSetid(id);
     }
 };
-},{"../core/environment":4,"../internal/app":49,"../internal/internal":53,"../internal/remote":55}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":49,"../internal/internal":53,"../internal/remote":55,"../util/window":75}],6:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4056,7 +4063,12 @@ var Item = (function (_super) {
     Item.prototype.getSceneId = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(Number(_this._sceneId) + 1);
+            if (String(_this._sceneId) === 'i12') {
+                resolve('i12');
+            }
+            else {
+                resolve(Number(_this._sceneId) + 1);
+            }
         });
     };
     /**
@@ -4275,8 +4287,9 @@ var Item = (function (_super) {
                     }
                     else if (type === isource_1.ItemTypes.FILE &&
                         /\.(gif|xbs)$/.test(source['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-                        typeResolve(new media_1.MediaSource(params));
+                        /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+                        new RegExp(media_1.MediaTypes.join('|')).test(source['item']) === true) {
+                        typeResolve(new media_1.MediaSource(source));
                     }
                     else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
                         source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
@@ -4601,6 +4614,7 @@ var streaminfo_1 = _require('./streaminfo');
 var json_1 = _require('../internal/util/json');
 var item_1 = _require('../internal/item');
 var remote_1 = _require('../internal/remote');
+var window_1 = _require('../util/window');
 var version_1 = _require('../internal/util/version');
 /**
  * The Output class provides methods to start and stop a stream/recording
@@ -4880,8 +4894,8 @@ var Output = (function () {
     return Output;
 })();
 exports.Output = Output;
-var oldSetBroadcastChannelList = window.SetBroadcastChannelList;
-window.SetBroadcastChannelList = function (channels) {
+var oldSetBroadcastChannelList = window_1.default.SetBroadcastChannelList;
+window_1.default.SetBroadcastChannelList = function (channels) {
     if (remote_1.Remote.remoteType === 'proxy') {
         Output._proxyCallback[Output._id].call(this, channels);
     }
@@ -4892,7 +4906,7 @@ window.SetBroadcastChannelList = function (channels) {
         oldSetBroadcastChannelList(channels);
     }
 };
-},{"../internal/internal":53,"../internal/item":54,"../internal/remote":55,"../internal/util/json":56,"../internal/util/version":59,"./environment":4,"./extension":5,"./streaminfo":47}],23:[function(_require,module,exports){
+},{"../internal/internal":53,"../internal/item":54,"../internal/remote":55,"../internal/util/json":56,"../internal/util/version":59,"../util/window":75,"./environment":4,"./extension":5,"./streaminfo":47}],23:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -5912,7 +5926,8 @@ var Scene = (function () {
                     }
                     else if (type === isource_1.ItemTypes.FILE &&
                         /\.(gif|xbs)$/.test(source['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+                        /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+                        new RegExp(media_1.MediaTypes.join('|')).test(source['item']) === true) {
                         typeResolve(new media_1.MediaSource(source));
                     }
                     else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
@@ -6125,7 +6140,8 @@ var Scene = (function () {
                     }
                     else if (type === isource_1.ItemTypes.FILE &&
                         /\.(gif|xbs)$/.test(item['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
+                        /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+                        new RegExp(media_1.MediaTypes.join('|')).test(item['item']) === true) {
                         typeResolve(new media_2.MediaItem(item));
                     }
                     else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
@@ -7614,6 +7630,12 @@ var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
 var environment_1 = _require('../environment');
 var logger_1 = _require('../../internal/util/logger');
+var LoadStatus = {
+    loaded: 'LOADED',
+    not_loaded: 'NOT LOADED',
+    load_error: 'LOAD ERROR',
+    unknown: 'UNKNOWN'
+};
 var iSourceHtml = (function () {
     function iSourceHtml() {
     }
@@ -8211,6 +8233,26 @@ var iSourceHtml = (function () {
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
+            });
+        });
+    };
+    iSourceHtml.prototype.getBrowserLoadStatus = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getBrowserLoadStatus', true);
+                _this._checkPromise = item_1.Item.get('BrowserLoadStatus', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('BrowserLoadStatus', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (loadStatus) {
+                if (loadStatus === 'null') {
+                    resolve('UNAVAILABLE');
+                }
+                else {
+                    resolve(LoadStatus[loadStatus]);
+                }
             });
         });
     };
@@ -9203,7 +9245,8 @@ var iSource = (function () {
     };
     iSource.prototype.setValue = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
+            var prevVal;
             var val = (typeof value === 'string') ?
                 value : value.toString();
             if (typeof value !== 'string') {
@@ -9212,19 +9255,33 @@ var iSource = (function () {
             else {
                 _this._value = val;
             }
-            if (_this._isItemCall) {
-                logger_1.Logger.warn('sourceWarning', 'setValue', true);
-                item_1.Item.set(String(_this._type) === '2' ? 'prop:item' : 'prop:srcitem', val, _this._id)
-                    .then(function () {
-                    resolve(_this);
+            var typeCheck = _this.getValue().then(function (origVal) {
+                return new Promise(function (typeRes, typeRej) {
+                    if (String(origVal).indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
+                        val.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
+                        _this._type === ItemTypes.LIVE) {
+                        typeRej(Error('Value is not a valid Audio source'));
+                    }
+                    else {
+                        typeRes(true);
+                    }
                 });
-            }
-            else {
-                item_1.Item.wrapSet('prop:srcitem', val, _this._srcId, _this._id, _this._updateId.bind(_this))
-                    .then(function () {
-                    resolve(_this);
-                });
-            }
+            });
+            typeCheck.then(function () {
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                    item_1.Item.set(String(_this._type) === '2' ? 'prop:item' : 'prop:srcitem', val, _this._id)
+                        .then(function () {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:srcitem', val, _this._srcId, _this._id, _this._updateId.bind(_this))
+                        .then(function () {
+                        resolve(_this);
+                    });
+                }
+            });
         });
     };
     iSource.prototype.getKeepLoaded = function () {
@@ -9511,6 +9568,12 @@ var source_1 = _require('./source');
 var iplayback_1 = _require('./iplayback');
 var iaudio_1 = _require('./iaudio');
 var imedia_1 = _require('./imedia');
+exports.MediaTypes = [
+    '.mp3', '.aac', '.cda', '.ogg', '.m4a', '.flac', '.wma',
+    '.aiff', '.aif', '.wav', '.mid', '.midi', '.rma', '.avi',
+    '.flv', '.mkv', '.mp4', '.mpg', '.wmv', '.3gp', '.3g2',
+    '.asf', '.f4v', '.mov', '.mpeg', '.vob', '.webm'
+];
 /**
  * The MediaSource class represents the sources of the media items that
  * has been added to the stage. A single source could have multiple items linked
@@ -10298,6 +10361,8 @@ var App = (function () {
 exports.App = App;
 },{"./internal":53,"./util/json":56}],50:[function(_require,module,exports){
 var internal_1 = _require('./internal');
+var window_1 = _require('../util/window');
+var remote_1 = _require('./remote');
 /**
  * Usage:
  *
@@ -10314,14 +10379,19 @@ var internal_1 = _require('./internal');
 var EventManager = (function () {
     function EventManager() {
     }
-    EventManager.subscribe = function (event, _cb) {
+    EventManager.subscribe = function (event, _cb, id) {
         var _this = this;
         return new Promise(function (resolve) {
             event = event instanceof Array ? event : [event];
-            if (event instanceof Array) {
+            if (remote_1.Remote.remoteType === 'remote') {
+                var message = {
+                    event: event,
+                    id: id,
+                    type: 'event-manager'
+                };
                 event.forEach(function (_event) {
-                    if (EventManager.callbacks[_event] === undefined) {
-                        EventManager.callbacks[_event] = [];
+                    if (EventManager._remoteHandlers[_event] === undefined) {
+                        EventManager._remoteHandlers[_event] = [];
                     }
                     if (_event === 'OnSceneAddByUser') {
                         internal_1.exec('AppSubscribeEvents');
@@ -10330,18 +10400,75 @@ var EventManager = (function () {
                         var itemID = _event.split('_')[1];
                         internal_1.exec('ItemSubscribeEvents', itemID);
                     }
-                    EventManager.callbacks[_event].push(_cb);
+                    EventManager._remoteHandlers[_event].push(_cb);
+                });
+                remote_1.Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+            }
+            else if (remote_1.Remote.remoteType === 'proxy') {
+                event.forEach(function (_event) {
+                    if (EventManager._proxyHandlers[_event] === undefined) {
+                        EventManager._proxyHandlers[_event] = [];
+                    }
+                    if (_event === 'OnSceneAddByUser') {
+                        internal_1.exec('AppSubscribeEvents');
+                    }
+                    else if (_event.startsWith('itempropchange_')) {
+                        var itemID = _event.split('_')[1];
+                        internal_1.exec('ItemSubscribeEvents', itemID);
+                    }
+                    EventManager._proxyHandlers[_event].push(_cb);
                 });
             }
-            resolve(_this);
+            else {
+                if (event instanceof Array) {
+                    event.forEach(function (_event) {
+                        if (EventManager.callbacks[_event] === undefined) {
+                            EventManager.callbacks[_event] = [];
+                        }
+                        if (_event === 'OnSceneAddByUser') {
+                            internal_1.exec('AppSubscribeEvents');
+                        }
+                        else if (_event.startsWith('itempropchange_')) {
+                            var itemID = _event.split('_')[1];
+                            internal_1.exec('ItemSubscribeEvents', itemID);
+                        }
+                        EventManager.callbacks[_event].push(_cb);
+                    });
+                }
+                resolve(_this);
+            }
+        });
+    };
+    EventManager._setCallback = function (message) {
+        return new Promise(function (resolve) {
+            if (EventManager._proxyHandlers[message[0]] === undefined) {
+                EventManager._proxyHandlers[message[0]] = [];
+            }
+            resolve(EventManager._proxyHandlers[message[0]].push(message[1]));
+        });
+    };
+    EventManager._finalCallback = function (message) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            var result = JSON.parse(decodeURIComponent(message));
+            if (EventManager._remoteHandlers[result['event']] !== undefined) {
+                result['result']['id'] = result['id'];
+                for (var _i = 0, _a = EventManager._remoteHandlers[result['event']]; _i < _a.length; _i++) {
+                    var handler = _a[_i];
+                    handler.apply(_this, [result['result']]);
+                }
+            }
         });
     };
     EventManager.callbacks = {};
+    EventManager._remoteHandlers = {};
+    EventManager._proxyHandlers = {};
     return EventManager;
 })();
 exports.EventManager = EventManager;
-var oldSetEvent = window.SetEvent;
-window.SetEvent = function (args) {
+window_1.default.OnMetersUpdate = function (evt) { };
+var oldSetEvent = window_1.default.SetEvent;
+window_1.default.SetEvent = function (args) {
     var settings = [];
     settings = args.split('&');
     var settingsObj = {};
@@ -10349,42 +10476,69 @@ window.SetEvent = function (args) {
         var _split = el.split('=');
         settingsObj[_split[0]] = _split[1];
     });
-    if (EventManager.callbacks[settingsObj['event']] === undefined)
-        return;
-    EventManager.callbacks[settingsObj['event']].map(function (_cb) {
-        _cb(settingsObj);
-    });
+    if (remote_1.Remote.remoteType === 'proxy') {
+        if (EventManager._proxyHandlers[settingsObj['event']] === undefined)
+            return;
+        EventManager._proxyHandlers[settingsObj['event']].map(function (_cb) {
+            _cb(settingsObj);
+        });
+    }
+    else {
+        if (EventManager.callbacks[settingsObj['event']] === undefined)
+            return;
+        EventManager.callbacks[settingsObj['event']].map(function (_cb) {
+            _cb(settingsObj);
+        });
+    }
     if (typeof oldSetEvent === 'function') {
         oldSetEvent(args);
     }
 };
-var oldAppOnEvent = window.AppOnEvent;
-window.AppOnEvent = function (event) {
-    if (EventManager.callbacks[event] === undefined)
-        return;
-    EventManager.callbacks[event].map(function (_cb) {
-        _cb({ event: event });
-    });
+var oldAppOnEvent = window_1.default.AppOnEvent;
+window_1.default.AppOnEvent = function (event) {
+    if (remote_1.Remote.remoteType === 'proxy') {
+        if (EventManager._proxyHandlers[event] === undefined)
+            return;
+        EventManager._proxyHandlers[event].map(function (_cb) {
+            _cb({ event: event });
+        });
+    }
+    else {
+        if (EventManager.callbacks[event] === undefined)
+            return;
+        EventManager.callbacks[event].map(function (_cb) {
+            _cb({ event: event });
+        });
+    }
     if (typeof oldAppOnEvent === 'function') {
         oldAppOnEvent(event);
     }
 };
-var oldOnEvent = window.OnEvent;
-window.OnEvent = function (event, item) {
+var oldOnEvent = window_1.default.OnEvent;
+window_1.default.OnEvent = function (event, item) {
     var eventArgs = [];
     for (var _i = 2; _i < arguments.length; _i++) {
         eventArgs[_i - 2] = arguments[_i];
     }
-    if (EventManager.callbacks[event + '_' + item] === undefined)
-        return;
-    EventManager.callbacks[event + '_' + item].map(function (_cb) {
-        _cb.apply(void 0, eventArgs);
-    });
+    if (remote_1.Remote.remoteType === 'proxy') {
+        if (EventManager._proxyHandlers[event + '_' + item] === undefined)
+            return;
+        EventManager._proxyHandlers[event + '_' + item].map(function (_cb) {
+            _cb.apply(void 0, eventArgs);
+        });
+    }
+    else {
+        if (EventManager.callbacks[event + '_' + item] === undefined)
+            return;
+        EventManager.callbacks[event + '_' + item].map(function (_cb) {
+            _cb.apply(void 0, eventArgs);
+        });
+    }
     if (typeof oldOnEvent === 'function') {
         oldOnEvent(event);
     }
 };
-},{"./internal":53}],51:[function(_require,module,exports){
+},{"../util/window":75,"./internal":53,"./remote":55}],51:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -10538,9 +10692,10 @@ function init() {
     });
 }
 exports.default = init;
-},{"../core/environment":4,"../window/config":75,"./global":51,"./internal":53,"./item":54,"./util/version":59}],53:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":76,"./global":51,"./internal":53,"./item":54,"./util/version":59}],53:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 var remote_1 = _require('./remote');
+var window_1 = _require('../util/window');
 exports.DEBUG = false;
 var _callbacks = {};
 var _proxyCallbacks = {};
@@ -10593,10 +10748,10 @@ function exec(funcName) {
             }
             remote_1.Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
         }
-        if (window.external &&
-            window.external[funcName] &&
-            window.external[funcName] instanceof Function) {
-            ret = window.external[funcName].apply(_this, args);
+        if (window_1.default.external &&
+            window_1.default.external[funcName] &&
+            window_1.default.external[funcName] instanceof Function) {
+            ret = window_1.default.external[funcName].apply(_this, args);
         }
         // register callback if present
         if (callback !== null) {
@@ -10644,12 +10799,14 @@ function finalCallback(message) {
     });
 }
 exports.finalCallback = finalCallback;
-var asyncCallback = window.OnAsyncCallback;
-window.OnAsyncCallback = function (asyncID, result) {
+var asyncCallback = window_1.default.OnAsyncCallback;
+window_1.default.OnAsyncCallback = function (asyncID, result) {
     // Used by proxy to return Async calls
     if (remote_1.Remote.remoteType === 'proxy') {
         var callback = _proxyCallbacks[asyncID];
-        callback.call(this, decodeURIComponent(result));
+        if (callback instanceof Function) {
+            callback.call(this, decodeURIComponent(result));
+        }
     }
     else {
         var callback = _callbacks[asyncID];
@@ -10661,7 +10818,7 @@ window.OnAsyncCallback = function (asyncID, result) {
         asyncCallback(asyncID, result);
     }
 };
-},{"./remote":55}],54:[function(_require,module,exports){
+},{"../util/window":75,"./remote":55}],54:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -10972,6 +11129,7 @@ exports.Item = Item;
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var ready_1 = _require('../util/ready');
+var eventmanager_1 = _require('./eventmanager');
 var eventemitter_1 = _require('../util/eventemitter');
 var io_1 = _require('../util/io');
 var extension_1 = _require('../core/extension');
@@ -11022,78 +11180,55 @@ var Remote = (function () {
     Remote.receiveMessage = function (message) {
         var messageObj = {};
         return new Promise(function (resolve, reject) {
-            if (Remote.remoteType === 'remote') {
+            if (Remote.remoteType === 'remote' && !Remote._isVersion && message.indexOf('setVersion') !== -1) {
                 // Receive version on first message from proxy
-                if (!Remote._isVersion && message.indexOf('setVersion') !== -1) {
-                    Remote._isVersion = true;
-                    var mockVersion = message;
-                    var msgArray = message.split("::");
-                    if (typeof msgArray[1] !== 'undefined') {
-                        mockVersion = msgArray[1];
-                    }
-                    resolve(ready_1.finishReady({ version: mockVersion }));
+                Remote._isVersion = true;
+                var mockVersion = message;
+                var msgArray = message.split("::");
+                if (typeof msgArray[1] !== 'undefined') {
+                    mockVersion = msgArray[1];
                 }
-                else {
-                    if (message.indexOf('setVersion') === -1) {
-                        messageObj = JSON.parse(decodeURIComponent(message));
-                        switch (messageObj['type']) {
-                            case 'exec':
-                                Remote._execHandler(message);
-                                break;
-                            case 'event-emitter':
-                                Remote._eventEmitterHandler(message);
-                                break;
-                            case 'window':
-                                Remote._allWindowHandler(message);
-                                break;
-                            case 'extWindow':
-                                Remote._allWindowHandler(message);
-                                break;
-                            case 'broadcastChannels':
-                                Remote._allWindowHandler(message);
-                                break;
-                            default:
-                                reject(Error('Call type is undefined.'));
-                                break;
-                        }
-                    }
-                }
+                resolve(ready_1.finishReady({ version: mockVersion }));
             }
-            else if (Remote.remoteType === 'proxy') {
-                if (message !== undefined) {
-                    if (message === 'getVersion') {
-                        // First message to get and send version
-                        Remote.sendMessage('setVersion::' + window.navigator.appVersion);
-                        resolve(true);
-                    }
-                    else {
-                        // Succeeding messages from exec/event/emit
-                        messageObj = JSON.parse(decodeURIComponent(message));
-                        switch (messageObj['type']) {
-                            case 'exec':
-                                Remote._execHandler(message);
-                                break;
-                            case 'event-emitter':
-                                Remote._eventEmitterHandler(message);
-                                break;
-                            case 'window':
-                                Remote._allWindowHandler(message);
-                                break;
-                            case 'extWindow':
-                                Remote._allWindowHandler(message);
-                                break;
-                            case 'broadcastChannels':
-                                Remote._allWindowHandler(message);
-                                break;
-                            default:
-                                reject(Error('Call type is undefined.'));
-                                break;
-                        }
-                    }
-                }
+            else if (Remote.remoteType === 'proxy' && message !== undefined && message === 'getVersion') {
+                // First message to get and send version
+                Remote.sendMessage('setVersion::' + window.navigator.appVersion);
+                resolve(true);
             }
             else if (Remote.remoteType === 'local') {
                 reject(Error('Remote calls do not work on local mode.'));
+            }
+            if (message !== undefined) {
+                try {
+                    messageObj = JSON.parse(decodeURIComponent(message));
+                }
+                catch (e) {
+                }
+            }
+            if (Object.keys(messageObj).length !== 0) {
+                switch (messageObj['type']) {
+                    case 'exec':
+                        Remote._execHandler(message);
+                        break;
+                    case 'event-emitter':
+                        Remote._eventEmitterHandler(message);
+                        break;
+                    case 'event-manager':
+                        Remote._eventManagerHandler(message);
+                        break;
+                    case 'window':
+                        Remote._allWindowHandler(message);
+                        break;
+                    case 'extWindow':
+                        Remote._allWindowHandler(message);
+                        break;
+                    case 'broadcastChannels':
+                        Remote._allWindowHandler(message);
+                        break;
+                    default:
+                        reject(Error('Call type is undefined.'));
+                        break;
+                }
             }
         });
     };
@@ -11125,7 +11260,7 @@ var Remote = (function () {
             }
         });
     };
-    // Hanndle emit on/off events
+    // Handle emit on/off events
     Remote._eventEmitterHandler = function (message) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -11149,6 +11284,29 @@ var Remote = (function () {
             }
         });
     };
+    Remote._eventManagerHandler = function (message) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (Remote.remoteType === 'remote') {
+                eventmanager_1.EventManager._finalCallback(message);
+            }
+            else if (Remote.remoteType === 'proxy') {
+                var messageObj = JSON.parse(decodeURIComponent(message));
+                messageObj['callback'] = (function (result) {
+                    var retObj = {
+                        result: result,
+                        type: 'event-manager',
+                        id: messageObj['id'],
+                        event: messageObj['event']
+                    };
+                    resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+                });
+                var messageArr = [messageObj['event'],
+                    messageObj['callback'], messageObj['id']];
+                eventmanager_1.EventManager._setCallback.call(_this, messageArr);
+            }
+        });
+    };
     Remote._allWindowHandler = function (message) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -11162,6 +11320,9 @@ var Remote = (function () {
                 }
                 else if (messageObj['type'] === 'broadcastChannels') {
                     output_1.Output._finalCallback(message);
+                }
+                else if (messageObj['type'] === 'event-manager') {
+                    eventmanager_1.EventManager._finalCallback(message);
                 }
             }
             else if (Remote.remoteType === 'proxy') {
@@ -11186,6 +11347,9 @@ var Remote = (function () {
                 else if (messageObj['type'] === 'broadcastChannels') {
                     output_1.Output._getBroadcastChannels(messageObj['id'], messageObj['callback']);
                 }
+                else if (messageObj['type'] === 'event-manager') {
+                    eventmanager_1.EventManager._finalCallback(messageObj['event']);
+                }
             }
         });
     };
@@ -11201,7 +11365,7 @@ var Remote = (function () {
     return Remote;
 })();
 exports.Remote = Remote;
-},{"../core/extension":5,"../core/output":22,"../util/eventemitter":71,"../util/io":72,"../util/ready":73,"./internal":53}],56:[function(_require,module,exports){
+},{"../core/extension":5,"../core/output":22,"../util/eventemitter":71,"../util/io":72,"../util/ready":73,"./eventmanager":50,"./internal":53}],56:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -13649,25 +13813,25 @@ var EventEmitter = (function () {
         this._handlers = {};
     }
     /** This function attaches a handler to an event. Duplicate handlers are allowed. */
-    EventEmitter.prototype.on = function (event, handler, id) {
+    EventEmitter.prototype.on = function (event, handler, _id) {
         if (remote_1.Remote.remoteType === 'remote') {
-            var id_1 = new Date().getTime() + '_' + Math.floor(Math.random() * 1000);
+            var id = _id ? _id : new Date().getTime() + '_' + Math.floor(Math.random() * 1000);
             var message = {
                 event: event,
-                id: id_1,
+                id: id,
                 type: 'event-emitter'
             };
-            if (EventEmitter._remoteHandlers[id_1] === undefined) {
-                EventEmitter._remoteHandlers[id_1] = [];
+            if (EventEmitter._remoteHandlers[id] === undefined) {
+                EventEmitter._remoteHandlers[id] = [];
             }
-            EventEmitter._remoteHandlers[id_1].push(handler);
+            EventEmitter._remoteHandlers[id].push(handler);
             remote_1.Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
         }
         else if (remote_1.Remote.remoteType === 'proxy') {
-            if (EventEmitter._proxyHandlers[id] === undefined) {
-                EventEmitter._proxyHandlers[id] = [];
+            if (EventEmitter._proxyHandlers[_id] === undefined) {
+                EventEmitter._proxyHandlers[_id] = [];
             }
-            EventEmitter._proxyHandlers[id].push(handler);
+            EventEmitter._proxyHandlers[_id].push(handler);
         }
         else {
             if (this._handlers[event] === undefined) {
@@ -13721,12 +13885,20 @@ var EventEmitter = (function () {
                 handler.apply(this, params);
             }
         }
+        else if (remote_1.Remote.remoteType === 'remote') {
+            if (EventEmitter._remoteHandlers[event] === undefined)
+                return;
+            for (var _c = 0, _d = EventEmitter._remoteHandlers[event]; _c < _d.length; _c++) {
+                var handler = _d[_c];
+                handler.apply(this, params);
+            }
+        }
         else {
             if (this._handlers[event] === undefined) {
                 return;
             }
-            for (var _c = 0, _d = this._handlers[event]; _c < _d.length; _c++) {
-                var handler = _d[_c];
+            for (var _e = 0, _f = this._handlers[event]; _e < _f.length; _e++) {
+                var handler = _f[_e];
                 handler.apply(this, params);
             }
         }
@@ -13762,6 +13934,7 @@ exports.EventEmitter = EventEmitter;
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('../core/environment');
 var remote_1 = _require('../internal/remote');
+var window_1 = _require('./window');
 var IO = (function () {
     function IO() {
     }
@@ -13947,8 +14120,8 @@ var IO = (function () {
     return IO;
 })();
 exports.IO = IO;
-var oldOnGetVideoDuration = window.OnGetVideoDuration;
-window.OnGetVideoDuration = function (file, duration) {
+var oldOnGetVideoDuration = window_1.default.OnGetVideoDuration;
+window_1.default.OnGetVideoDuration = function (file, duration) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
     }
@@ -13962,8 +14135,8 @@ window.OnGetVideoDuration = function (file, duration) {
         oldOnGetVideoDuration(file, duration);
     }
 };
-var oldOnGetVideoDurationFailed = window.OnGetVideoDurationFailed;
-window.OnGetVideoDurationFailed = function (file) {
+var oldOnGetVideoDurationFailed = window_1.default.OnGetVideoDurationFailed;
+window_1.default.OnGetVideoDurationFailed = function (file) {
     if (remote_1.Remote.remoteType === 'proxy') {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
     }
@@ -13977,22 +14150,28 @@ window.OnGetVideoDurationFailed = function (file) {
         oldOnGetVideoDuration(file);
     }
 };
-},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55}],73:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"./window":75}],73:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
 var remote_1 = _require('../internal/remote');
+var environment_1 = _require('../core/environment');
+var channelmanager_1 = _require('../core/channelmanager');
 var isReady = false;
 var isInit = false;
 var readyResolve;
-var readyPromise = new Promise(function (resolve) {
-    document.addEventListener('xsplit-js-ready', function () {
-        resolve();
+function readyPromise() {
+    return new Promise(function (resolve) {
+        if (typeof document !== 'undefined') {
+            document.addEventListener('xsplit-js-ready', function () {
+                resolve();
+            });
+        }
+        if (isReady) {
+            resolve();
+        }
     });
-    if (isReady) {
-        resolve();
-    }
-});
+}
 function finishReady(config) {
     var _this = this;
     return new Promise(function (resolve) {
@@ -14001,6 +14180,7 @@ function finishReady(config) {
         }
         setReady();
         if (isReady && !isInit) {
+            channelmanager_1._subscribeEventManager();
             setOnce();
             init_1.default();
         }
@@ -14013,6 +14193,7 @@ function finishReady(config) {
 exports.finishReady = finishReady;
 function ready(config) {
     return new Promise(function (resolve, reject) {
+        environment_1.Environment.initialize();
         if (config && config['remote'] !== undefined) {
             if (config['remote']['type'] !== undefined) {
                 remote_1.Remote.remoteType = config['remote']['type'];
@@ -14045,7 +14226,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../internal/init":52,"../internal/remote":55,"../internal/util/version":59}],74:[function(_require,module,exports){
+},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":52,"../internal/remote":55,"../internal/util/version":59}],74:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -14263,6 +14444,23 @@ var Rectangle = (function () {
 })();
 exports.Rectangle = Rectangle;
 },{}],75:[function(_require,module,exports){
+(function (global){
+var win = {};
+if (typeof window !== 'undefined') {
+    win = window;
+}
+else if (typeof global !== 'undefined') {
+    win = global;
+}
+else if (typeof self !== 'undefined') {
+    win = self;
+}
+else {
+    win = {};
+}
+exports.default = win;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],76:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -14438,7 +14636,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/eventemitter":71}],76:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/eventemitter":71}],77:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -14446,6 +14644,7 @@ var rectangle_1 = _require('../util/rectangle');
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
 var remote_1 = _require('../internal/remote');
+var window_1 = _require('../util/window');
 var dialogProxy;
 /**
  *  This class is used to spawn new browser processes that can be used to open
@@ -14746,8 +14945,8 @@ var Dialog = (function () {
     return Dialog;
 })();
 exports.Dialog = Dialog;
-var oldOnDialogResult = window.OnDialogResult;
-window.OnDialogResult = function (result) {
+var oldOnDialogResult = window_1.default.OnDialogResult;
+window_1.default.OnDialogResult = function (result) {
     if (environment_1.Environment.isSourceProps() || environment_1.Environment.isExtension()) {
         document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
             detail: result }));
@@ -14756,7 +14955,7 @@ window.OnDialogResult = function (result) {
         oldOnDialogResult(result);
     }
 };
-},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/rectangle":74}],77:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/rectangle":74,"../util/window":75}],78:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -14774,6 +14973,7 @@ var internal_1 = _require('../internal/internal');
 var app_1 = _require('../internal/app');
 var item_1 = _require('../core/items/item');
 var extension_1 = _require('../core/extension');
+var window_1 = _require('../util/window');
 var _RESIZE = '2';
 /** This utility class represents the extension window. It allows manipulation
  *  of the window (e.g., resizing), and also serves as an event emitter
@@ -14850,7 +15050,8 @@ var ExtensionWindow = (function (_super) {
     ExtensionWindow.on = function (event, handler) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            ExtensionWindow.getInstance().on(event, handler);
+            var id = new Date().getTime() + '_' + Math.floor(Math.random() * 1000);
+            ExtensionWindow.getInstance().on(event, handler, id);
             var isDeleteSceneEventFixed = version_1.versionCompare(version_1.getVersion()).
                 is.greaterThanOrEqualTo(version_1.deleteSceneEventFixVersion);
             var isAddSceneEventFixed = version_1.versionCompare(version_1.getVersion()).
@@ -14860,11 +15061,11 @@ var ExtensionWindow = (function (_super) {
                     ExtensionWindow._subscriptions.push('SceneDeleted');
                     eventmanager_1.EventManager.subscribe('SceneDeleted', function (settingsObj) {
                         if (environment_1.Environment.isExtension()) {
-                            ExtensionWindow.emit(event, settingsObj['index'] === '' ?
+                            ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
                                 null : Number(settingsObj['index']) + 1);
                         }
                         resolve(this);
-                    });
+                    }, id);
                 }
                 else {
                     resolve(_this);
@@ -14876,14 +15077,14 @@ var ExtensionWindow = (function (_super) {
                     eventmanager_1.EventManager.subscribe('OnSceneAddByUser', function (settingsObj) {
                         scene_1.Scene.getSceneCount().then(function (count) {
                             if (environment_1.Environment.isExtension()) {
-                                ExtensionWindow.emit(event, count);
+                                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
                                 resolve(this);
                             }
                             else {
                                 reject(Error('ExtensionWindow class is only available for extensions.'));
                             }
                         });
-                    });
+                    }, id);
                 }
                 else {
                     resolve(_this);
@@ -15026,8 +15227,8 @@ var ExtensionWindow = (function (_super) {
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;
 // for extensions
-var oldSourcesListUpdate = window.SourcesListUpdate;
-window.SourcesListUpdate = function (view, sources) {
+var oldSourcesListUpdate = window_1.default.SourcesListUpdate;
+window_1.default.SourcesListUpdate = function (view, sources) {
     app_1.App.getGlobalProperty('splitmode').then(function (res) {
         var checkSplit = res === '1' ? 1 : 0;
         if (Number(view) === checkSplit) {
@@ -15045,8 +15246,8 @@ window.SourcesListUpdate = function (view, sources) {
         }
     });
 };
-var oldSourcesListHighlight = window.SourcesListHighlight;
-window.SourcesListHighlight = function (view, id) {
+var oldSourcesListHighlight = window_1.default.SourcesListHighlight;
+window_1.default.SourcesListHighlight = function (view, id) {
     app_1.App.getGlobalProperty('splitmode').then(function (res) {
         var checkSplit = res === '1' ? 1 : 0;
         if (Number(view) === checkSplit) {
@@ -15058,8 +15259,8 @@ window.SourcesListHighlight = function (view, id) {
         }
     });
 };
-var oldSourcesListSelect = window.SourcesListSelect;
-window.SourcesListSelect = function (view, id) {
+var oldSourcesListSelect = window_1.default.SourcesListSelect;
+window_1.default.SourcesListSelect = function (view, id) {
     app_1.App.getGlobalProperty('splitmode').then(function (res) {
         var checkSplit = res === '1' ? 1 : 0;
         if (Number(view) === checkSplit) {
@@ -15071,8 +15272,8 @@ window.SourcesListSelect = function (view, id) {
         }
     });
 };
-var oldOnSceneLoad = window.OnSceneLoad;
-window.OnSceneLoad = function () {
+var oldOnSceneLoad = window_1.default.OnSceneLoad;
+window_1.default.OnSceneLoad = function () {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i - 0] = arguments[_i];
@@ -15091,7 +15292,7 @@ window.OnSceneLoad = function () {
         }
     });
 };
-},{"../core/environment":4,"../core/extension":5,"../core/items/item":16,"../core/scene":23,"../internal/app":49,"../internal/eventmanager":50,"../internal/internal":53,"../internal/util/json":56,"../internal/util/version":59,"../util/eventemitter":71}],78:[function(_require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":16,"../core/scene":23,"../internal/app":49,"../internal/eventmanager":50,"../internal/internal":53,"../internal/util/json":56,"../internal/util/version":59,"../util/eventemitter":71,"../util/window":75}],79:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15104,6 +15305,7 @@ var environment_1 = _require('../core/environment');
 var eventemitter_1 = _require('../util/eventemitter');
 var eventmanager_1 = _require('../internal/eventmanager');
 var version_1 = _require('../internal/util/version');
+var window_1 = _require('../util/window');
 /** This utility class is used internally by the framework for certain important
  *  processes. This class also exposes certain important events that the source
  *  plugin may emit.
@@ -15228,10 +15430,10 @@ var SourcePluginWindow = (function (_super) {
 })(eventemitter_1.EventEmitter);
 exports.SourcePluginWindow = SourcePluginWindow;
 // for source plugins
-window.MessageSource = function (message) {
+window_1.default.MessageSource = function (message) {
     SourcePluginWindow.emit('message-source', JSON.parse(message));
 };
-window.SetConfiguration = function (configObj) {
+window_1.default.SetConfiguration = function (configObj) {
     try {
         var data = JSON.parse(configObj);
         SourcePluginWindow.emit('apply-config', data);
@@ -15242,11 +15444,11 @@ window.SetConfiguration = function (configObj) {
         return;
     }
 };
-window.setBackGroundColor = function (color) {
+window_1.default.setBackGroundColor = function (color) {
     SourcePluginWindow.emit('set-background-color', color);
 };
-var prevOnSceneLoad = window.OnSceneLoad;
-window.OnSceneLoad = function () {
+var prevOnSceneLoad = window_1.default.OnSceneLoad;
+window_1.default.OnSceneLoad = function () {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i - 0] = arguments[_i];
@@ -15258,7 +15460,7 @@ window.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":4,"../internal/eventmanager":50,"../internal/global":51,"../internal/util/version":59,"../util/eventemitter":71}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":50,"../internal/global":51,"../internal/util/version":59,"../util/eventemitter":71,"../util/window":75}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -15325,7 +15527,7 @@ __export(_require('./window/dialog'));
 __export(_require('./internal/remote'));
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/transition":48,"./internal/remote":55,"./system/audio":61,"./system/camera":62,"./system/file":63,"./system/game":64,"./system/microphone":65,"./system/screen":66,"./system/system":67,"./system/url":68,"./system/videoplaylist":69,"./util/color":70,"./util/io":72,"./util/ready":73,"./util/rectangle":74,"./window/config":75,"./window/dialog":76,"./window/extension":77,"./window/source":78}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/transition":48,"./internal/remote":55,"./system/audio":61,"./system/camera":62,"./system/file":63,"./system/game":64,"./system/microphone":65,"./system/screen":66,"./system/system":67,"./system/url":68,"./system/videoplaylist":69,"./util/color":70,"./util/io":72,"./util/ready":73,"./util/rectangle":74,"./window/config":76,"./window/dialog":77,"./window/extension":78,"./window/source":79}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();

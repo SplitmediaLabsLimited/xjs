@@ -1,4 +1,4 @@
-/* globals describe, it, expect, xdescribe, require, beforeEach, spyOn, jasmine, afterEach, afterAll */
+/* globals describe, it, expect, xdescribe, require, beforeAll, beforeEach, spyOn, jasmine, afterEach, afterAll */
 
 describe('App ===', function() {
   'use strict';
@@ -26,6 +26,12 @@ describe('App ===', function() {
     }
   ]);
   var exec = mix.exec.bind(mix);
+
+  beforeAll(function(done) {
+    XJS.ready().then(function() {
+      done();
+    });
+  })
 
   describe('should get frametime', function() {
     beforeEach(function() {

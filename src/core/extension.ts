@@ -4,6 +4,7 @@ import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {Remote} from '../internal/remote';
+import window from '../util/window';
 
 export class Extension {
   private static _instance: Extension;
@@ -113,6 +114,7 @@ export class Extension {
 const oldSetid = window.Setid;
 window.Setid = function(id) {
   if (Remote.remoteType === 'proxy') {
+    if (Extension._proxyCallback['ExtensionWindowID'] === undefined) return;
     Extension._proxyCallback['ExtensionWindowID'].call(this, id);
   } else {
     Extension._callback['ExtensionWindowID'].resolve(id);

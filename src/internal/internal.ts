@@ -1,6 +1,7 @@
 /// <reference path="../../defs/window.d.ts" />
 
-import {Remote} from './remote'
+import {Remote} from './remote';
+import window from '../util/window';
 
 export var DEBUG: boolean = false;
 
@@ -109,7 +110,9 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
     let callback = _proxyCallbacks[asyncID];
-    callback.call(this, decodeURIComponent(result));
+    if (callback instanceof Function) {
+      callback.call(this, decodeURIComponent(result));
+    }
   } else {
     let callback = _callbacks[asyncID];
 

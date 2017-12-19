@@ -29,7 +29,7 @@ import {HtmlSource} from '../source/html';
 import {FlashSource} from '../source/flash';
 import {ScreenSource} from '../source/screen';
 import {ImageSource} from '../source/image';
-import {MediaSource} from '../source/media';
+import {MediaSource, MediaTypes} from '../source/media';
 
 /**
  * Used by items to determine the its view type.
@@ -302,7 +302,11 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   getSceneId(): Promise<number> {
     return new Promise(resolve => {
-      resolve(Number(this._sceneId) + 1);
+      if (String(this._sceneId) === 'i12') {
+        resolve('i12')
+      } else {
+        resolve(Number(this._sceneId) + 1);
+      }
     });
   }
 
@@ -522,8 +526,9 @@ export class Item extends Source implements IItemLayout, ISource {
             typeResolve(new ImageSource(params));
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-            typeResolve(new MediaSource(params));
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
+            typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
               '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {

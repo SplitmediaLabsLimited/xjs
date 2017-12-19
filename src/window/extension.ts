@@ -12,7 +12,8 @@ import {addSceneEventFixVersion,
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
-import {Extension} from '../core/extension'
+import {Extension} from '../core/extension';
+import window from '../util/window';
 
 const _RESIZE = '2';
 
@@ -90,7 +91,8 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
-      ExtensionWindow.getInstance().on(event, handler);
+      let id = new Date().getTime() + '_' + Math.floor(Math.random()*1000)
+      ExtensionWindow.getInstance().on(event, handler, id);
       let isDeleteSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
       let isAddSceneEventFixed = versionCompare(getVersion()).
@@ -101,11 +103,11 @@ export class ExtensionWindow extends EventEmitter {
           ExtensionWindow._subscriptions.push('SceneDeleted');
           EventManager.subscribe('SceneDeleted', function(settingsObj) {
             if (Environment.isExtension()) {
-              ExtensionWindow.emit(event, settingsObj['index'] === '' ?
+              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
               null : Number(settingsObj['index']) + 1);
             }
             resolve(this);
-          });
+          }, id);
         } else {
           resolve(this);
         }
@@ -115,13 +117,13 @@ export class ExtensionWindow extends EventEmitter {
           EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
             Scene.getSceneCount().then(function(count){
               if (Environment.isExtension()) {
-                ExtensionWindow.emit(event, count);
+                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
                 resolve(this);
               } else {
                 reject(Error('ExtensionWindow class is only available for extensions.'));
               }
             });
-          });
+          }, id);
         } else {
           resolve(this);
         }

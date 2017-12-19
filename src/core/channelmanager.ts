@@ -128,29 +128,32 @@ export class ChannelManager extends EventEmitter {
   }
 }
 
-EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'],
-  (settingsObj: string) => {
-  let eventString;
-  if (settingsObj.hasOwnProperty('event') &&
-      settingsObj.hasOwnProperty('info')) {
-    eventString = settingsObj['event'];
-    if (settingsObj['event'] === 'StreamStart') {
-      eventString = 'stream-start';
-    } else if (settingsObj['event'] === 'StreamEnd') {
-      eventString = 'stream-end';
-    }
-    ChannelManager.emit(eventString, settingsObj['info']);
-  }
-  if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
-    && settingsObj.hasOwnProperty('new')) {
-    eventString = settingsObj['event'];
-    if (settingsObj['event'] === 'RecordingRenamed') {
-      eventString = 'recording-renamed';
-      const renameInfo = {
-        old: settingsObj['old'],
-        new: settingsObj['new']
+
+export function _subscribeEventManager() {
+  EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'],
+    (settingsObj: string) => {
+    let eventString;
+    if (settingsObj.hasOwnProperty('event') &&
+        settingsObj.hasOwnProperty('info')) {
+      eventString = settingsObj['event'];
+      if (settingsObj['event'] === 'StreamStart') {
+        eventString = 'stream-start';
+      } else if (settingsObj['event'] === 'StreamEnd') {
+        eventString = 'stream-end';
       }
-      ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+      ChannelManager.emit(eventString, settingsObj['info']);
     }
-  }
-});
+    if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
+      && settingsObj.hasOwnProperty('new')) {
+      eventString = settingsObj['event'];
+      if (settingsObj['event'] === 'RecordingRenamed') {
+        eventString = 'recording-renamed';
+        const renameInfo = {
+          old: settingsObj['old'],
+          new: settingsObj['new']
+        }
+        ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+      }
+    }
+  });
+}
