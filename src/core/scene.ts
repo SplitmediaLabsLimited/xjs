@@ -15,7 +15,7 @@ import {HtmlSource} from './source/html';
 import {FlashSource} from './source/flash';
 import {ScreenSource} from './source/screen';
 import {ImageSource} from './source/image';
-import {MediaSource} from './source/media';
+import {MediaSource, MediaTypes} from './source/media';
 
 import {Item, ViewTypes} from './items/item';
 import {GameItem} from './items/game';
@@ -1010,7 +1010,8 @@ export class Scene {
             typeResolve(new ImageSource(source));
           } else if (type === ItemTypes.FILE &&
               /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
             typeResolve(new MediaSource(source));
           } else if (Number(source['type']) === ItemTypes.LIVE &&
             source['item'].indexOf(
@@ -1215,8 +1216,9 @@ export class Scene {
             /\.gif$/.test(item['item'])) {
             typeResolve(new ImageItem(item));
           } else if (type === ItemTypes.FILE &&
-            /\.(gif|xbs)$/.test(item['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(item['item']) === false) {
+              /\.(gif|xbs)$/.test(item['item']) === false &&
+              /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+              new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
             typeResolve(new MediaItem(item));
           } else if (Number(item['type']) === ItemTypes.LIVE &&
             item['item'].indexOf(
