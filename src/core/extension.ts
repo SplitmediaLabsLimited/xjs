@@ -114,6 +114,7 @@ export class Extension {
 const oldSetid = window.Setid;
 window.Setid = function(id) {
   if (Remote.remoteType === 'proxy') {
+    if (Extension._proxyCallback['ExtensionWindowID'] === undefined) return;
     Extension._proxyCallback['ExtensionWindowID'].call(this, id);
   } else {
     Extension._callback['ExtensionWindowID'].resolve(id);
