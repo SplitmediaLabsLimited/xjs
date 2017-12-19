@@ -9,6 +9,7 @@ import {JSON as JXON} from '../internal/util/json';
 import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
+import window from '../util/window';
 
 import {
   versionCompare,

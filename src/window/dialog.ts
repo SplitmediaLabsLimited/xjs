@@ -7,6 +7,7 @@ import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {Remote} from '../internal/remote';
+import window from '../util/window';
 
 let dialogProxy: any;
 

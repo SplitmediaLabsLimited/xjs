@@ -1,4 +1,5 @@
 import {Remote} from '../internal/remote'
+import window from '../util/window';
 
 /**
  * This class allows detection of the context in which the HTML is located.
@@ -61,5 +62,3 @@ export class Environment {
     }
   }
 }
-
-Environment.initialize();

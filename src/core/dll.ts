@@ -2,6 +2,7 @@
 
 import {exec} from '../internal/internal';
 import {EventEmitter} from '../util/eventemitter';
+import window from '../util/window';
 
 /**
  *  The Dll class allows access to functions in DLL files that are placed within

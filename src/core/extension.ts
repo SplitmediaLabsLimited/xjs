@@ -4,6 +4,7 @@ import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {Remote} from '../internal/remote';
+import window from '../util/window';
 
 export class Extension {
   private static _instance: Extension;
