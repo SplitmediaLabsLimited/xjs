@@ -14,6 +14,8 @@ import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
 import {Extension} from '../core/extension';
 import window from '../util/window';
+import {splitMode} from '../internal/util/splitmode'
+
 
 const _RESIZE = '2';
 
@@ -301,8 +303,7 @@ window.SourcesListUpdate = (view, sources) => {
 
 const oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = (view, id) => {
-  App.getGlobalProperty('splitmode').then(res => {
-    const checkSplit = res === '1' ? 1 : 0;
+  splitMode().then(checkSplit => {
     if (Number(view) === checkSplit) { // main view {
       ExtensionWindow.emit('sources-list-highlight', id === '' ?
         null : id);
@@ -315,8 +316,7 @@ window.SourcesListHighlight = (view, id) => {
 
 const oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = (view, id) => {
-  App.getGlobalProperty('splitmode').then(res => {
-    const checkSplit = res === '1' ? 1 : 0;
+  splitMode().then(checkSplit => {
     if (Number(view) === checkSplit) { // main view
       ExtensionWindow.emit('sources-list-select', id === '' ?
         null : id);
@@ -329,11 +329,10 @@ window.SourcesListSelect = (view, id) => {
 
 const oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
-  App.getGlobalProperty('splitmode').then(res => {
+  splitMode().then(checkSplit => {
     if (Environment.isExtension()) {
       let view = args[0];
       let scene = args[1];
-      const checkSplit = res === '1' ? 1 : 0;
       if (Number(view) === checkSplit && scene !== 'i12'){
         ExtensionWindow.emit('scene-load', Number(scene));
       }

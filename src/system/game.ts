@@ -7,6 +7,7 @@ import {Addable} from './iaddable';
 import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
 import {Scene} from '../core/scene';
+import{checkSplitmode} from '../internal/util/splitmode';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class}
@@ -292,61 +293,13 @@ export class Game implements Addable {
    */
   addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let scenePrefix = '';
-      let scenePromise;
-      let checkSplitMode;
-
-      checkSplitMode = new Promise(splitPromise => {
-        iApp.getGlobalProperty('splitmode').then(res => {
-          if (res === '1' && !value) {
-            Scene.getActiveScene().then(val => {
-              value = val
-              splitPromise(value)
-            })
-          } else {
-            splitPromise(value)
-          }
-        })
-      })
-
-      checkSplitMode.then(value => {
-        if (typeof value === 'number' || value instanceof Scene) {
-          scenePromise = new Promise((innerResolve, innerReject) => {
-            Scene.getSceneCount().then(sceneCount => {
-              if (typeof value === 'number') {
-                let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
-                } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
-                  innerResolve();
-                }
-              } else {
-                value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
-                  } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
-                    innerResolve();
-                  }
-                });
-              }
-            });
-          });
-        } else if (typeof value === 'undefined') {
-          scenePromise = Promise.resolve();
-        } else {
-        scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-        }
-
-        scenePromise.then(() => {
-          return iApp.callFunc(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
-        }).then(() => {
-          resolve(true);
-        }).catch(err => {
-          reject(err);
-        });
-      })
+      checkSplitmode(value).then((scenePrefix) => {
+        return iApp.callFunc(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
+      }).then(() => {
+        resolve(true);
+      }).catch(err => {
+        reject(err);
+      });
     });
   }
 
@@ -385,98 +338,49 @@ export class Game implements Addable {
 
       Game._autoDetect.addToScene = function(value) {
         return new Promise((resolve, reject) => {
-          let scenePrefix = '';
-          let scenePromise;
-          let checkSplitMode;
-
-          checkSplitMode = new Promise(splitPromise => {
-            iApp.getGlobalProperty('splitmode').then(res => {
-              if (res === '1' && !value) {
-                Scene.getActiveScene().then(val => {
-                  value = val
-                  splitPromise(value)
-                })
-              } else {
-                splitPromise(value)
-              }
-            })
-          })
-
-          checkSplitMode.then(value => {
-            if (typeof value === 'number' || value instanceof Scene) {
-              scenePromise = new Promise((innerResolve, innerReject) => {
-                Scene.getSceneCount().then(sceneCount => {
-                  if (typeof value === 'number') {
-                    let int = Math.floor(value);
-                    if (int > sceneCount || int === 0) {
-                    innerReject(Error('Scene not existing.'));
-                    } else {
-                      scenePrefix = 's:' + (int - 1) + '|';
-                      innerResolve();
-                    }
-                  } else {
-                    value.getSceneNumber().then(int => {
-                      if (int > sceneCount || int === 0) {
-                      innerReject(Error('Scene not existing.'));
-                      } else {
-                        scenePrefix = 's:' + (int - 1) + '|';
-                        innerResolve();
-                      }
-                    });
-                  }
+          checkSplitmode(value).then((scenePrefix) => {
+            var defposPromise;
+            if (Environment.isSourcePlugin()) {
+              defposPromise = new Promise(defposResolve => {
+                iApp.get('presetconfig:-1').then(presetConfig => {
+                  let placementJSON = JXON.parse(presetConfig);
+                  defposResolve(placementJSON['defpos']);
                 });
               });
-            } else if (typeof value === 'undefined') {
-              scenePromise = Promise.resolve();
             } else {
-            scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+              defposPromise = new Promise(defposResolve => {
+                iApp.get('preset:0').then(main => {
+                  return iApp.get('presetconfig:' + main);
+                }).then(function(presetConfig) {
+                  let placementJSON = JXON.parse(presetConfig);
+                  defposResolve(placementJSON['defpos']);
+                });
+              });
             }
-            scenePromise.then(() => {
-              var defposPromise;
-              if (Environment.isSourcePlugin()) {
-                defposPromise = new Promise(defposResolve => {
-                  iApp.get('presetconfig:-1').then(presetConfig => {
-                    let placementJSON = JXON.parse(presetConfig);
-                    defposResolve(placementJSON['defpos']);
-                  });
-                });
+
+            defposPromise.then(defpos => {
+              let posString;
+              if (defpos === '0') {
+                posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+              } else if (defpos === '1') {
+                posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+              }  else if (defpos === '2') {
+                posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+              } else if (defpos === '3') {
+                posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
               } else {
-                defposPromise = new Promise(defposResolve => {
-                  iApp.get('preset:0').then(main => {
-                    return iApp.get('presetconfig:' + main);
-                  }).then(function(presetConfig) {
-                    let placementJSON = JXON.parse(presetConfig);
-                    defposResolve(placementJSON['defpos']);
-                  });
-                });
+                posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
               }
 
-              defposPromise.then(defpos => {
-                let posString;
-                if (defpos === '0') {
-                  posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
-                } else if (defpos === '1') {
-                  posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
-                }  else if (defpos === '2') {
-                  posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
-                } else if (defpos === '3') {
-                  posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
-                } else {
-                  posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
-                }
-
-                let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
-                return iApp.callFunc(scenePrefix + 'additem', adstring);
-              }).then(() => {
-                resolve(true);
-              });
-            }).catch(err => {
-              reject(err);
+              let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
+              return iApp.callFunc(scenePrefix + 'additem', adstring);
+            }).then(() => {
+              resolve(true);
             });
-          })
-
-
-        });
+          }).catch(err => {
+            reject(err);
+          });
+        })
       };
     }
     return Game._autoDetect;
