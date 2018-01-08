@@ -3,6 +3,7 @@
 import {Scene} from './scene';
 import {App as iApp} from '../internal/app';
 import {Render} from '../internal/render';
+import { exec } from '../internal/internal';
 
 export class Thumbnail {
   /**
@@ -74,12 +75,12 @@ export class Thumbnail {
 
   // Uses prepared canvas to dupworkspace
   // reject if no canvas was set
-  static renderSceneToTexture(scene: number) {
-    return new Promise((resolve, reject) => {
-      Render.drawToTexture(scene)
-      resolve()
-    })
-  }
+  // static renderSceneToTexture(scene: number) {
+  //   return new Promise((resolve, reject) => {
+  //     Render.drawToTexture(scene)
+  //     resolve()
+  //   })
+  // }
 
   // If there's an active render, set rendering to true or false
   static toggleRender(state?: boolean) {
@@ -96,6 +97,16 @@ export class Thumbnail {
   //     })
   //   })
   // }
+
+
+
+  static testCanvasToUse(canvasIndex, sceneId) {
+    return new Promise(resolve => {
+      Render.drawToTexture(canvasIndex, sceneId).then(res => {
+        resolve()
+      })
+    })
+  }
 
 
 }
