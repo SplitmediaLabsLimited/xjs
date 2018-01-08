@@ -37,50 +37,45 @@ import {
 
 export class Scene {
   private _id: number | string;
+  private _uid: string;
+  private _name: string;
+
 
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
 
-  constructor(sceneId: number | string) {
-    if (typeof sceneId === 'number') {
-      this._id = sceneId - 1;
-    } else if (typeof sceneId === 'string') {
-      this._id = sceneId;
-    }
+  constructor(sceneId: number | string, name?: string, uid?: string) {
+    this._id = sceneId;
+    this._uid = uid;
+    this._name = name;
   };
-
-  private static _initializeScenePool() {
-    if (Scene._scenePool.length === 0) {
-      for (var i = 0; i < Scene._maxScenes; i++) {
-        Scene._scenePool[i] = new Scene(i + 1);
-      }
-    }
-  }
 
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
-      iApp.get('presetcount').then(cnt => {
-        Scene._scenePool = [];
-        var count = Number(cnt);
+      iApp.getAsList('presetconfig')
+      .then(jsonArr => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          const count = jsonArr.length;
           (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
           for (var i = 0; i < Scene._maxScenes; i++) {
-            Scene._scenePool[i] = new Scene(i + 1);
+            Scene._scenePool[i] = new Scene(i);
           }
           // Add special scene for preview editor (i12)
           Scene._scenePool.push(new Scene('i12'));
           resolve(Scene._maxScenes);
         } else {
-          if ((count + 1) !== Scene._scenePool.length) {
-            for (var i = 0; i < count; i++) {
-              Scene._scenePool[i] = new Scene(i + 1);
+          let count = 0
+          jsonArr.map((scene, index) => {
+            if (scene['name'] && scene['id']) {
+              count++
+              Scene._scenePool[index] = new Scene(index, scene['name'], scene['id']);
             }
-            // Add special scene for preview editor (i12)
-            Scene._scenePool.push(new Scene('i12'));
-            resolve(count);
-          }
+          })
+          // Add special scene for preview editor (i12)
+          Scene._scenePool.push(new Scene('i12'));
+          resolve(count);
         }
-      });
+      })
     });
   }
 
@@ -985,7 +980,7 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
+      iApp.getAsList('presetconfig:' + this._uid).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];
@@ -1073,11 +1068,16 @@ export class Scene {
    */
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
-      if (typeof this._id === 'number') {
-        resolve(Number(this._id) + 1);
-      } else {
-        resolve(this._id)
-      }
+      let curUid = this._uid;
+      Scene._initializeScenePoolAsync().then(() => {
+        return Scene.getBySceneUid(curUid)
+      }).then(curScene => {
+        if (typeof curScene === 'number') {
+          resolve(Number(curScene._id) + 1)
+        } else {
+          resolve(curScene._id)
+        }
+      })
     });
   }
 
@@ -1097,11 +1097,12 @@ export class Scene {
    */
   getSceneIndex(): Promise<number> {
     return new Promise(resolve => {
-      if (typeof this._id !== 'number') {
-        resolve(Number(this._id));
-      } else {
-        resolve(this._id)
-      }
+      let curUid = this._uid;
+      Scene._initializeScenePoolAsync().then(() => {
+        return Scene.getBySceneUid(curUid)
+      }).then(curScene => {
+        resolve(curScene._id)
+      })
     });
   }
 
@@ -1120,18 +1121,9 @@ export class Scene {
    * ```
    */
   getSceneUid(): Promise<string> {
-    let sceneName;
-    this.getName().then(name => sceneName = name)
     return new Promise(resolve => {
-      iApp.getAsList('presetconfig')
-      .then(jsonArr => {
-        jsonArr.map(scene => {
-          if (scene['name'] === sceneName) {
-            resolve(scene['id'])
-          }
-        })
-      })
-    })
+        resolve(this._uid);
+    });
   }
 
   /**
@@ -1150,7 +1142,7 @@ export class Scene {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      iApp.get('presetname:' + this._id).then(val => {
+      iApp.get('presetname:' + this._uid).then(val => {
         resolve(val);
       });
     });
@@ -1171,7 +1163,7 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
-        iApp.set('presetname:' + this._id, name).then(value => {
+        iApp.set('presetname:' + this._uid, name).then(value => {
           resolve(value);
         });
       }
@@ -1194,7 +1186,7 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsList('presetconfig:' + this._id).then(jsonArr => {
+      iApp.getAsList('presetconfig:' + this._uid).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1268,7 +1260,7 @@ export class Scene {
   */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
-      iApp.get('presetisempty:' + this._id).then(val => {
+      iApp.get('presetisempty:' + this._uid).then(val => {
         resolve(val === '1');
       });
     });
@@ -1324,7 +1316,7 @@ export class Scene {
             let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
-              return iApp.getAsList('presetconfig:' + this._id);
+              return iApp.getAsList('presetconfig:' + this._uid);
             }).then(jsonArr => {
               let newOrder = new JXON();
               newOrder.children = [];
@@ -1344,7 +1336,7 @@ export class Scene {
                 }
 
                 iApp.set(
-                  'presetconfig:' + this._id,
+                  'presetconfig:' + this._uid,
                   //Revert back the formatting from json when transforming to xml
                   XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
