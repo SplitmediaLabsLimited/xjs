@@ -126,7 +126,6 @@ window.SetEvent = (args: string) => {
       _cb(settingsObj);
     });
   } else {
-    console.log('CALLBACK:: ', EventManager.callbacks[settingsObj['event']] === undefined)
     if (EventManager.callbacks[settingsObj['event']] === undefined) return;
 
     EventManager.callbacks[settingsObj['event']].map(_cb => {
