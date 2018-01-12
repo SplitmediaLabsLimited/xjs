@@ -31,7 +31,8 @@ import {MediaItem} from './items/media';
 import {
   minVersion,
   versionCompare,
-  getVersion
+  getVersion,
+  sceneUidMinVersion
 } from '../internal/util/version';
 
 
@@ -193,33 +194,12 @@ export class Scene {
    */
   static getBySceneUid(sceneUid: string): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      const getScene = new Promise(sceneResolve => {
-        iApp.getAsList('presetconfig')
-        .then(jsonArr => {
-          const lastVal = jsonArr.length
-          let check = false;
-          jsonArr.map((sceneJSON, idx) => {
-            if (sceneJSON['id'] === sceneUid) {
-              sceneResolve(sceneJSON)
-              check = true
+      this._initializeScenePoolAsync().then(() => {
+        this._scenePool.map(scene => {
+          scene.getSceneUid().then(uid => {
+            if(uid === sceneUid){
+              resolve(scene)
             }
-            if (idx === lastVal - 1 && !check) {
-              reject(Error('No matching Scene with the Unique ID provided.'))
-            }
-          })
-        })
-      })
-
-      getScene.then(sceneJSON => {
-        Scene.getByName(sceneJSON['name'])
-        .then(scenes => {
-          scenes.map(scene => {
-            scene.getSceneUid()
-            .then(uid => {
-              if(sceneUid === uid) {
-                resolve(scene)
-              }
-            })
           })
         })
       })
@@ -241,27 +221,20 @@ export class Scene {
    */
   static getByName(sceneName: string): Promise<Scene[]> {
     return new Promise(resolve => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        let namePromise = Promise.all(Scene._scenePool.map((scene, index) => {
-          return iApp.get('presetname:' + index).then(name => {
-            if (sceneName === name) {
-              return Scene._scenePool[index];
-            } else {
-              return null;
+      let sceneArr = [];
+      let totalScenes = Scene._scenePool.length;
+      this._initializeScenePoolAsync().then(() => {
+        this._scenePool.map((scene, idx) => {
+          scene.getName().then(name => {
+            if(name === sceneName) {
+              sceneArr.push(scene)
             }
-          });
-        }));
-
-        namePromise.then(results => {
-          let returnArray = [];
-          for (var j = 0; j < results.length; ++j) {
-            if (results[j] !== null) {
-              returnArray.push(results[j]);
+            if ((idx + 1) === totalScenes) {
+              resolve(sceneArr)
             }
-          };
-          resolve(returnArray);
-        });
-      });
+          })
+        })
+      })
     });
   }
 
@@ -287,7 +260,7 @@ export class Scene {
         iApp.getGlobalProperty('splitmode').then(res => {
           const preset = res === '1' ? 'preset:1' : 'preset:0'
           iApp.get(preset).then(id => {
-            return Scene.getById(Number(id) + 1);
+            return Scene.getBySceneIndex(Number(id));
           }).then(scene => {
             resolve(scene);
           });
@@ -1069,15 +1042,24 @@ export class Scene {
   getSceneNumber(): Promise<number> {
     return new Promise(resolve => {
       let curUid = this._uid;
-      Scene._initializeScenePoolAsync().then(() => {
-        return Scene.getBySceneUid(curUid)
-      }).then(curScene => {
-        if (typeof curScene === 'number') {
-          resolve(Number(curScene._id) + 1)
+      if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
+        if (typeof this._id === 'number') {
+          resolve(Number(this._id) + 1)
         } else {
-          resolve(curScene._id)
+          resolve(this._id)
         }
-      })
+      } else {
+        Scene._initializeScenePoolAsync().then(() => {
+          return Scene.getBySceneUid(curUid)
+        }).then(curScene => {
+          if (typeof curScene !== 'number') {
+            resolve(Number(curScene._id) + 1)
+          } else {
+            resolve(curScene._id)
+          }
+        })
+      }
+
     });
   }
 
@@ -1098,11 +1080,19 @@ export class Scene {
   getSceneIndex(): Promise<number> {
     return new Promise(resolve => {
       let curUid = this._uid;
-      Scene._initializeScenePoolAsync().then(() => {
-        return Scene.getBySceneUid(curUid)
-      }).then(curScene => {
-        resolve(curScene._id)
-      })
+      if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
+        if (typeof this._id !== 'number') {
+          resolve(Number(this._id))
+        } else {
+          resolve(this._id)
+        }
+      } else {
+        Scene._initializeScenePoolAsync().then(() => {
+          return Scene.getBySceneUid(curUid)
+        }).then(curScene => {
+          resolve(curScene._id)
+        })
+      }
     });
   }
 
@@ -1110,7 +1100,7 @@ export class Scene {
    * return: string
    *
    * Get the unique id of this scene object.
-   *
+   * Scenes unique id is only available for XBC v.3.0.1704.2101 or higher.
    *
    * #### Usage
    *
@@ -1142,7 +1132,8 @@ export class Scene {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      iApp.get('presetname:' + this._uid).then(val => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.get('presetname:' + _sceneId).then(val => {
         resolve(val);
       });
     });
@@ -1163,7 +1154,8 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
-        iApp.set('presetname:' + this._uid, name).then(value => {
+        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+        iApp.set('presetname:' + _sceneId, name).then(value => {
           resolve(value);
         });
       }
@@ -1186,7 +1178,8 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsList('presetconfig:' + this._uid).then(jsonArr => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.getAsList('presetconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1260,7 +1253,8 @@ export class Scene {
   */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
-      iApp.get('presetisempty:' + this._uid).then(val => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.get('presetisempty:' + _sceneId).then(val => {
         resolve(val === '1');
       });
     });
@@ -1281,6 +1275,7 @@ export class Scene {
         reject(Error('not available for source plugins'));
       } else {
         items.reverse();
+        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return (el instanceof Source || el instanceof Item) })) {
@@ -1316,7 +1311,7 @@ export class Scene {
             let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
-              return iApp.getAsList('presetconfig:' + this._uid);
+              return iApp.getAsList('presetconfig:' + _sceneId);
             }).then(jsonArr => {
               let newOrder = new JXON();
               newOrder.children = [];
@@ -1336,7 +1331,7 @@ export class Scene {
                 }
 
                 iApp.set(
-                  'presetconfig:' + this._uid,
+                  'presetconfig:' + _sceneId,
                   //Revert back the formatting from json when transforming to xml
                   XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
