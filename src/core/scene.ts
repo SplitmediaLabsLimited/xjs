@@ -953,7 +953,8 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsList('presetconfig:' + this._uid).then(jsonArr => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.getAsList('presetconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];

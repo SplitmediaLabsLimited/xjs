@@ -23,6 +23,7 @@ describe('ExtensionWindow ===', function() {
 
       spyOn(external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
+        console.log(funcName)
         if (funcName === 'presetcount') {
           global_asyncId++;
           var asyncId = new Date().getTime() + '_' + global_asyncId;
