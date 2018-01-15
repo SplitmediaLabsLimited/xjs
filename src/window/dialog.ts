@@ -3,7 +3,6 @@
 /// <reference path="../../defs/proxy.d.ts" />
 
 import {Rectangle} from '../util/rectangle';
-import {EventEmitter} from '../util/eventemitter';
 import {Environment} from '../core/environment';
 import {exec} from '../internal/internal';
 import {Remote} from '../internal/remote';

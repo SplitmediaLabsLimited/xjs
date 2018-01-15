@@ -2,8 +2,6 @@
 import {exec, finalCallback} from './internal';
 import {setMockVersion} from '../internal/util/version';
 import {finishReady} from '../util/ready';
-import {EventManager} from './eventmanager';
-import {ChannelManager} from '../core/channelmanager';
 import {EventEmitter} from '../util/eventemitter';
 import {IO} from '../util/io';
 import {Extension} from '../core/extension';

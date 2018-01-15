@@ -6,7 +6,6 @@ import {EventManager} from '../internal/eventmanager';
 import {StreamInfo} from './streaminfo';
 import {JSON as JXON} from '../internal/util/json';
 import {Environment} from './environment';
-import {Remote} from '../internal/remote';
 
 /**
  *  The ChannelManager class allows limited access to channels (also termed as outputs)

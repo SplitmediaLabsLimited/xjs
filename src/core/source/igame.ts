@@ -1,12 +1,10 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
-import {Source} from './source';
-import {iSource, ISource, ItemTypes} from './isource';
+import {ItemTypes} from './isource';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceGame {

@@ -4,9 +4,7 @@ import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Extension} from './extension';
 import {StreamInfo} from './streaminfo';
-import {XML} from '../internal/util/xml';
 import {JSON as JXON} from '../internal/util/json';
-import {Scene} from './scene';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
 
@@ -181,7 +179,7 @@ export class Output {
         resolve(true);
       } else {
         exec('CallHost', 'startBroadcast', this._name);
-        resolve(true);    
+        resolve(true);
       }
     })
   }

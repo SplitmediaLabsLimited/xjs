@@ -2,18 +2,14 @@
 import {applyMixins} from '../../internal/util/mixin';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
-import {Item as iItem} from '../../internal/item';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
   ChromaAntiAliasLevel} from './ichroma';
 import {ItemTransition, IItemTransition} from './itransition';
 import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
 import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {IO} from '../../util/io';
 import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
 import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from '../source/iplayback';
 import {CuePoint} from '../source/cuepoint';

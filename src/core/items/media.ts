@@ -1,9 +1,7 @@
 
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
@@ -17,8 +15,6 @@ import {Item} from './item';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {MediaSource}   from '../source/media';
 import {ISourceMedia, SourceMedia} from '../source/imedia';
 
 /**

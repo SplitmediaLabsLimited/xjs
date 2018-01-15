@@ -2,8 +2,6 @@
 ///
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from './source';
-import {Item as iItem} from '../../internal/item';
-import {IO} from '../../util/io';
 import {SourceConfigurable, ISourceConfigurable} from './iconfig';
 import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
 import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from './iplayback';

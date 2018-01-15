@@ -1,7 +1,7 @@
+/// <reference path="../../defs/es6-promise.d.ts" />
+
 import {App as iApp} from '../internal/app';
 import {JSON as JXON} from '../internal/util/json';
-import {exec} from '../internal/internal';
-import {XML} from '../internal/util/xml';
 
 /**
  * The StreamInfo class provides methods to monitor the current active streams

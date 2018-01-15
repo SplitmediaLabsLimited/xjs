@@ -1,7 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
 import {exec} from '../internal/internal';
-import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
 import {Remote} from '../internal/remote';
 

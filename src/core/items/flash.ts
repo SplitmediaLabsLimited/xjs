@@ -1,9 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
@@ -12,11 +9,9 @@ import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {Environment} from '../environment';
 import {ISourceFlash, SourceFlash} from '../source/iflash';
 
 /**
@@ -119,12 +114,12 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<FlashItem>;  
+  sendBackward: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<FlashItem>; 
+  sendToBack: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

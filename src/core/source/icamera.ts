@@ -1,7 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Item as iItem} from '../../internal/item';
-import {Environment} from '../environment';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';

@@ -1,12 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
 import {IAudio, Audio} from '../source/iaudio';
 import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
-import {Scene} from '../scene';
 import {Item} from './item';
-import {Environment} from '../environment';
 
 /**
  * The AudioItem class represents an audio device that has been added

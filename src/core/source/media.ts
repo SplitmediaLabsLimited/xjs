@@ -1,8 +1,6 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from './source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
 import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from './iplayback';
 import {IAudio, Audio} from './iaudio';
 import {CuePoint} from './cuepoint';

@@ -1,7 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
@@ -12,9 +11,6 @@ import {Transition} from '../transition';
 import {Item} from './item';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
-import {Environment} from '../environment';
 import {iSourceGame, ISourceGame} from '../source/igame';
 
 /**
@@ -151,12 +147,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<GameItem>;  
+  sendBackward: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<GameItem>;  
+  sendToBack: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

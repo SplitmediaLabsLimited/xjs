@@ -2,8 +2,6 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
 import {iSourceGame, ISourceGame} from './igame';
 
 /**

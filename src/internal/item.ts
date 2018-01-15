@@ -4,8 +4,6 @@ import {exec} from './internal';
 import {Environment} from '../core/environment';
 import {App as iApp} from '../internal/app';
 import {minVersion, versionCompare, getVersion} from './util/version';
-import {Source} from '../core/source/source'
-import {Scene} from '../core/scene'
 
 export class Item {
   private static baseID: string;

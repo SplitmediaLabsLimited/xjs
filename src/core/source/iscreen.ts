@@ -4,7 +4,6 @@ import {Item as iItem} from '../../internal/item';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Rectangle} from '../../util/rectangle';
-import {iSource, ISource} from './isource';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceScreen {

@@ -1,6 +1,5 @@
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
 import {XML} from '../../internal/util/xml';
 
 /**

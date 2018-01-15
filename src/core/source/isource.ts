@@ -1,7 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
 import {Source} from './source';
-import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
 import {
   minVersion,
@@ -11,7 +10,6 @@ import {
 } from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
-import {Environment} from '../environment';
 import {Scene} from '../scene';
 import {Logger} from '../../internal/util/logger';
 

@@ -2,7 +2,6 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
@@ -11,13 +10,10 @@ import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {CameraSource} from '../source/camera';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
-import {System} from '../../system/system';
 import {SourceCamera, ISourceCamera} from '../source/icamera';
 
 /**
@@ -131,12 +127,12 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#bringForward bringForward}
    */
-  bringForward: () => Promise<CameraItem>;  
+  bringForward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#bringToFront bringToFront}
    */
-  bringToFront: () => Promise<CameraItem>;  
+  bringToFront: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -191,12 +187,12 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<CameraItem>;  
+  sendBackward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<CameraItem>; 
+  sendToBack: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}

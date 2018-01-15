@@ -1,7 +1,7 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Source} from '../source/source';
 import {applyMixins} from '../../internal/util/mixin';
+import {Source} from '../source/source';
 import {Rectangle} from '../../util/rectangle';
 import {ISourceScreen, iSourceScreen} from './iscreen';
 

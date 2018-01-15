@@ -2,11 +2,7 @@
 
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
-import {exec} from '../../internal/internal';
-import {Environment} from '../environment';
-import {Item} from '../items/item';
 import {SourceConfigurable, ISourceConfigurable} from './iconfig';
 import {IAudio, Audio} from '../source/iaudio';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'

@@ -9,20 +9,10 @@ import {
   getVersion
 } from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
-import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
-import {Item, ViewTypes} from '../items/item';
+import {Item} from '../items/item';
 import {iSource, ISource, ItemTypes} from '../source/isource';
-import {GameSource} from './game';
-import {CameraSource} from './camera';
-import {AudioSource} from './audio';
-import {VideoPlaylistSource} from './videoplaylist'
-import {HtmlSource} from './html';
-import {FlashSource} from './flash';
-import {ScreenSource} from './screen';
-import {ImageSource} from './image';
-import {MediaSource} from './media';
 
 /**
  * A `Source` represents an object of an Item that is used on the stage.

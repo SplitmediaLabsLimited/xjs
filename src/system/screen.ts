@@ -5,8 +5,6 @@ import {exec} from '../internal/internal';
 import {App as iApp} from '../internal/app';
 import {Scene} from '../core/scene';
 import {Environment} from '../core/environment';
-import {JSON as JXON} from '../internal/util/json';
-import {XML} from '../internal/util/xml';
 import{checkSplitmode} from '../internal/util/splitmode';
 
 /**

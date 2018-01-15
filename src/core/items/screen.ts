@@ -1,9 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
 import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {ItemColor, IItemColor} from './icolor';
 import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
@@ -11,13 +8,9 @@ ChromaAntiAliasLevel} from './ichroma';
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
-import {Scene} from '../scene';
 import {Transition} from '../transition';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
 import {ISourceScreen, iSourceScreen} from '../source/iscreen';
 
 /**
