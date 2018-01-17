@@ -4,7 +4,6 @@ import {Global} from '../internal/global';
 import {Environment} from '../core/environment';
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
-import {deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
 import {Scene} from '../core/scene';
 import {exec} from '../internal/internal';
 
@@ -87,15 +86,13 @@ export class SourcePluginWindow extends EventEmitter {
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. 
+   *  Allows listening to events that this class emits.
    *
    */
   static on(event: string, handler: Function) {
     SourcePluginWindow.getInstance().on(event, handler);
-    
-    let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
 
-    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+    if(event === 'scene-delete') {
       if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
         EventManager.subscribe("SceneDeleted", function(settingsObj) {
           if (Environment.isSourcePlugin()) {
@@ -107,7 +104,7 @@ export class SourcePluginWindow extends EventEmitter {
       //Just register the events so not to throw warning. Emitter already created.
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
-    }  
+    }
   }
 
   static off(event: string, handler: Function) {

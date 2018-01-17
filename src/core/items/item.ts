@@ -11,13 +11,6 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
-import {
-  minVersion,
-  versionCompare,
-  getVersion,
-  itemSubscribeEventVersion,
-  globalsrcMinVersion
-} from '../../internal/util/version';
 
 import {iSource, ISource, ItemTypes} from '../source/isource';
 import {Source} from '../source/source'
@@ -131,16 +124,14 @@ export class Item extends Source implements IItemLayout, ISource {
   on(event: string, handler: Function) {
     Item._emitter.on(event + '_' + this._id, handler);
     // add additional functionality for events
-    let isItemSubscribeEventsSupported = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(itemSubscribeEventVersion);
 
-    if (event === 'item-changed' && isItemSubscribeEventsSupported &&
+    if (event === 'item-changed' &&
       !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
       Item._subscriptions.push('itempropchange_' + this._id);
       EventManager.subscribe('itempropchange_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-changed_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
+    } else if (event === 'item-destroyed' &&
       !Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
       Item._subscriptions.push('itemdestroyed_' + this._id);
       EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
@@ -363,54 +354,46 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(globalsrcMinVersion)) {
-        iApp.callFunc('additem', this.toXML().toString()).then(() => {
-          resolve(this)
-        })
-      } else {
-        if(options){
-          if(options.linked) {
-            iItem.set('prop:keeploaded', '1', this._id)
-          }
-          if(options.scene !== undefined && options.linked !== undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
-                this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-            }
-          } else if(options.linked === undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:0|s:${id}|additem`,
-                  this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-            }
-          } else if(options.scene === undefined) {
-            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
-            this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
-          }
-        } else {
-          iApp.callFunc('link:0|additem', this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
+      if(options){
+        if(options.linked) {
+          iItem.set('prop:keeploaded', '1', this._id)
         }
+        if(options.scene !== undefined && options.linked !== undefined) {
+          if(options.scene instanceof Scene) {
+            options.scene.getSceneNumber().then((id) => {
+              iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
+              this.toXML().toString())
+                .then(() => {
+                resolve(this);
+              });
+            })
+          } else {
+            reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
+          }
+        } else if(options.linked === undefined) {
+          if(options.scene instanceof Scene) {
+            options.scene.getSceneNumber().then((id) => {
+              iApp.callFunc(`link:0|s:${id}|additem`,
+                this.toXML().toString())
+                .then(() => {
+                resolve(this);
+              });
+            })
+          } else {
+            reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
+          }
+        } else if(options.scene === undefined) {
+          iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
+          this.toXML().toString())
+            .then(() => {
+            resolve(this);
+          });
+        }
+      } else {
+        iApp.callFunc('link:0|additem', this.toXML().toString())
+            .then(() => {
+            resolve(this);
+          });
       }
     });
   }

@@ -8,12 +8,6 @@ import {JSON as JXON} from '../internal/util/json';
 import {Item as iItem} from '../internal/item';
 import {Remote} from '../internal/remote'
 
-import {
-  versionCompare,
-  getVersion,
-  handlePreStreamDialogFixVersion
-} from '../internal/util/version';
-
 /**
  * The Output class provides methods to start and stop a stream/recording
  * and pause or unpause a Local Recording.
@@ -172,8 +166,7 @@ export class Output {
     suppressPrestreamDialog ?: boolean
   }): Promise<boolean> {
     return new Promise(resolve => {
-      if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) &&
-        typeof optionBag !== 'undefined' && optionBag !== null &&
+      if (typeof optionBag !== 'undefined' && optionBag !== null &&
         optionBag['suppressPrestreamDialog']) {
         exec('CallHostFunc', 'startBroadcast', this._name, 'suppressPrestreamDialog=1');
         resolve(true);

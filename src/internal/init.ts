@@ -5,7 +5,6 @@ import {Item} from './item';
 import {exec} from './internal';
 import {Global} from './global';
 import {SourcePropsWindow} from '../window/config';
-import {minVersion, versionCompare, getVersion} from './util/version';
 
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
@@ -83,33 +82,6 @@ function readMetaConfigUrl(): Promise<any> {
   });
 }
 
-function getCurrentSourceId(): Promise<any> {
-  return new Promise(resolve => {
-    if (
-      Environment.isSourceProps() ||
-      (
-        Environment.isSourcePlugin() &&
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      )
-    ) {
-      // initialize Item.getSource() functions
-      exec('GetLocalPropertyAsync', 'prop:id',
-        result => {
-          let id = result;
-          Item.setBaseId(id);
-          if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-            Item.lockSourceSlot(id);
-          }
-          resolve();
-        });
-    } else {
-      resolve();
-    }
-  });
-}
-
 function informWhenConfigLoaded(): Promise<any> {
   return new Promise(resolve => {
     if (Environment.isSourceProps()) {
@@ -129,7 +101,6 @@ function informWhenConfigLoaded(): Promise<any> {
 
 export default function init(): void {
   Global.addInitializationPromise(readMetaConfigUrl());
-  Global.addInitializationPromise(getCurrentSourceId());
   Global.addInitializationPromise(informWhenConfigLoaded());
 
   Promise.all(Global.getInitializationPromises()).then(() => {

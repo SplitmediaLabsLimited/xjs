@@ -2,12 +2,6 @@
 
 import {Source} from './source';
 import {Item as iItem} from '../../internal/item';
-import {
-  minVersion,
-  versionCompare,
-  getVersion,
-  globalsrcMinVersion
-} from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
 import {JSON as JXON} from '../../internal/util/json';
 import {Scene} from '../scene';
@@ -145,41 +139,30 @@ export class iSource implements ISource{
   setName(value: string): Promise <iSource> {
     return new Promise(resolve => {
       this._name = value;
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'setName', true)
+        this._checkPromise = iItem.get('itemlist', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('itemlist', this._srcId,
+        this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(itemlist => {
+        const promiseArray: Promise<boolean>[] = [];
+        const itemsArray = itemlist.split(',');
 
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        iItem.set('prop:name', this._name, this._id).then(() => {
+        itemsArray.forEach(itemId => {
+          promiseArray.push(new Promise(itemResolve => {
+            iItem.set('prop:name', this._name, itemId).then(() => {
+              itemResolve(true);
+            });
+              iItem.wrapSet('prop:name', this._name, this._srcId, itemId, this._updateId.bind(this))
+          }));
+        });
+
+        Promise.all(promiseArray).then(() => {
           resolve(this);
         });
-      } else {
-        if (this._isItemCall) {
-          Logger.warn('sourceWarning', 'setName', true)
-          this._checkPromise = iItem.get('itemlist', this._id)
-        } else {
-          this._checkPromise = iItem.wrapGet('itemlist', this._srcId,
-          this._id, this._updateId.bind(this))
-        }
-        this._checkPromise.then(itemlist => {
-          const promiseArray: Promise<boolean>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              iItem.set('prop:name', this._name, itemId).then(() => {
-                itemResolve(true);
-              });
-                iItem.wrapSet('prop:name', this._name, this._srcId, itemId, this._updateId.bind(this))
-            }));
-          });
-
-          Promise.all(promiseArray).then(() => {
-            resolve(this);
-          });
-        });
-      }
+      });
     });
   }
 
@@ -308,11 +291,6 @@ export class iSource implements ISource{
     return new Promise(resolve => {
       this._keepLoaded = value;
       this._globalsrc = value;
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(globalsrcMinVersion)) {
-        iItem.set('prop:globalsrc', (this._globalsrc ? '1' : '0'), this._id)
-      }
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setKeepLoaded', true)
         iItem.set('prop:keeploaded', (this._keepLoaded ? '1' : '0'), this._id)
@@ -334,14 +312,10 @@ export class iSource implements ISource{
       if (this._isItemCall) {
         resolve(this._id)
       } else {
-        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          reject(Error('Only available on versions above ' + minVersion));
-        } else {
         iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
         .then(srcid => {
-            resolve(srcid);
-          });
-        }
+          resolve(srcid);
+        });
       }
     });
   }
@@ -363,40 +337,28 @@ export class iSource implements ISource{
 
   getItemList(): Promise<iSource[]> {
     return new Promise((resolve, reject) => {
-      if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(this._id).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
+      if (this._isItemCall) {
+        this._checkPromise = iItem.get('itemlist', this._id)
       } else {
-        if (this._isItemCall) {
-          this._checkPromise = iItem.get('itemlist', this._id)
-        } else {
-          this._checkPromise = iItem.wrapGet('itemlist', this._srcId,
-            this._id, this._updateId.bind(this))
-        }
-        this._checkPromise.then(itemlist => {
-          const promiseArray: Promise<iSource>[] = [];
-          const itemsArray = String(itemlist).split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
-          });
-
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
-          });
-        });
+        this._checkPromise = iItem.wrapGet('itemlist', this._srcId,
+          this._id, this._updateId.bind(this))
       }
+      this._checkPromise.then(itemlist => {
+        const promiseArray: Promise<iSource>[] = [];
+        const itemsArray = String(itemlist).split(',');
+
+        itemsArray.forEach(itemId => {
+          promiseArray.push(new Promise(itemResolve => {
+            Scene.searchItemsById(itemId).then(item => {
+              itemResolve(item);
+            }).catch(() => itemResolve(null));
+          }));
+        });
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results.filter(res => res !== null));
+        });
+      });
     })
   }
 

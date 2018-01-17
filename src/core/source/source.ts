@@ -3,11 +3,6 @@
 import {applyMixins} from '../../internal/util/mixin';
 import {App as iApp} from '../../internal/app';
 import {Item as iItem} from '../../internal/item';
-import {
-  minVersion,
-  versionCompare,
-  getVersion
-} from '../../internal/util/version';
 import {XML} from '../../internal/util/xml';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
@@ -105,10 +100,7 @@ export class Source implements ISource{
         reject(Error('Extensions do not have sources ' +
           'associated with them.'));
       } else if (
-        (Environment.isSourcePlugin() || Environment.isSourceProps()) &&
-        versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion)
+        (Environment.isSourcePlugin() || Environment.isSourceProps())
       ) {
         Source.getItemList().then(items => {
           if (items.length > 0) {
@@ -118,12 +110,6 @@ export class Source implements ISource{
           } else {
             reject(Error('Cannot get item list'));
           }
-        });
-      } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          return item.getSource();
-        }).then(source => {
-          resolve(source);
         });
       }
     });
@@ -161,16 +147,6 @@ export class Source implements ISource{
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have default items associated with them.'));
-      } else if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          const itemArray = [];
-          itemArray.push(item);
-          resolve(itemArray);
-        });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
         iItem.get('itemlist').then(itemlist => {
           const promiseArray: Promise<Item>[] = [];

@@ -28,12 +28,6 @@ import {ScreenItem} from './items/screen';
 import {ImageItem} from './items/image';
 import {MediaItem} from './items/media';
 
-import {
-  minVersion,
-  versionCompare,
-  getVersion
-} from '../internal/util/version';
-
 
 export class Scene {
   private _id: number | string;
@@ -62,23 +56,13 @@ export class Scene {
       iApp.get('presetcount').then(cnt => {
         Scene._scenePool = [];
         var count = Number(cnt);
-        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
-          for (var i = 0; i < Scene._maxScenes; i++) {
+        if ((count + 1) !== Scene._scenePool.length) {
+          for (var i = 0; i < count; i++) {
             Scene._scenePool[i] = new Scene(i + 1);
           }
           // Add special scene for preview editor (i12)
           Scene._scenePool.push(new Scene('i12'));
-          resolve(Scene._maxScenes);
-        } else {
-          if ((count + 1) !== Scene._scenePool.length) {
-            for (var i = 0; i < count; i++) {
-              Scene._scenePool[i] = new Scene(i + 1);
-            }
-            // Add special scene for preview editor (i12)
-            Scene._scenePool.push(new Scene('i12'));
-            resolve(count);
-          }
+          resolve(count);
         }
       });
     });
@@ -944,22 +928,7 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else {
-        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          iApp.get('presetcount').then(cnt => {
-            if (Number(cnt) < 12) {
-              // Insert an empty scene for scene #12
-              iApp
-                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
-                .then(res => {
-                  resolve(res);
-                });
-            } else {
-              resolve(true);
-            }
-          });
-        } else {
-          resolve(true);
-        }
+        resolve(true);
       }
     });
   }

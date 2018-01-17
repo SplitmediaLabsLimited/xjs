@@ -3,7 +3,6 @@
 import {exec} from './internal';
 import {Environment} from '../core/environment';
 import {App as iApp} from '../internal/app';
-import {minVersion, versionCompare, getVersion} from './util/version';
 
 export class Item {
   private static baseID: string;
@@ -32,20 +31,9 @@ export class Item {
           itemID
         );
       } else {
-        let hasGlobalSources = versionCompare(getVersion())
-        .is
-        .greaterThan(minVersion);
-
-        if (hasGlobalSources) {
-          exec('AttachVideoItem' + (slot + 1),
-            itemID
-          );
-        } else {
-          exec('AttachVideoItem' +
-            (String(slot) === '0' ? '' : (slot + 1)),
-            itemID
-          );
-        }
+        exec('AttachVideoItem' + (slot + 1),
+          itemID
+        );
       }
 
       if (callBack) {
@@ -72,36 +60,19 @@ export class Item {
    */
   static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(minVersion)) {
-        Item.get(name, id).then(val => {
+      Item._checkItemId(srcId, id, updateId).then(resultId => {
+        Item.get(name, resultId).then(val => {
           resolve(val);
         });
-      } else {
-        Item._checkItemId(srcId, id, updateId).then(resultId => {
-          Item.get(name, resultId).then(val => {
-            resolve(val);
-          });
-        });
-      }
+      });
     });
   }
 
   /** Get an item's local property asynchronously */
   static get(name: string, id?: string): Promise<string> {
     return new Promise(resolve => {
-      let hasGlobalSources = versionCompare(getVersion())
-      .is
-      .greaterThan(minVersion);
-
       const execCallFunc = (slot) => {
-        if ((!Environment.isSourcePlugin() && String(slot) === '0') ||
-          (
-            Environment.isSourcePlugin() &&
-            String(slot) === '0' &&
-            !hasGlobalSources
-          )) {
+        if ((!Environment.isSourcePlugin() && String(slot) === '0')) {
             slot = -1
           }
 
@@ -131,19 +102,11 @@ export class Item {
   static wrapSet(name: string, value:string,
         srcId?:string, id?:string, updateId?: Function) {
     return new Promise(resolve => {
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(minVersion)) {
-        Item.set(name, value, id).then(val => {
+      Item._checkItemId(srcId, id, updateId).then(resultId => {
+        Item.set(name, value, resultId).then(val => {
           resolve(val);
         });
-      } else {
-        Item._checkItemId(srcId, id, updateId).then(resultId => {
-          Item.set(name, value, resultId).then(val => {
-            resolve(val);
-          });
-        });
-      }
+      });
     });
   }
 
@@ -166,17 +129,8 @@ export class Item {
       slotPromise.then( newSlot => {
         slot = newSlot;
 
-        let hasGlobalSources = versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion);
-
         if (
-          (!Environment.isSourcePlugin() && String(slot) === '0') ||
-          (
-            Environment.isSourcePlugin() &&
-            String(slot) === '0' &&
-            !hasGlobalSources
-          )
+          (!Environment.isSourcePlugin() && String(slot) === '0')
         ) {
           slot = -1;
         }

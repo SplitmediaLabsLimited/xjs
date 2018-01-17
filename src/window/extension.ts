@@ -5,10 +5,6 @@ import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
 import {JSON as JXON} from '../internal/util/json';
 import {Scene} from '../core/scene';
-import {addSceneEventFixVersion,
-        deleteSceneEventFixVersion,
-        versionCompare,
-        getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
@@ -92,12 +88,8 @@ export class ExtensionWindow extends EventEmitter {
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
       ExtensionWindow.getInstance().on(event, handler);
-      let isDeleteSceneEventFixed = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
-      let isAddSceneEventFixed = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(addSceneEventFixVersion);
 
-      if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+      if(event === 'scene-delete') {
         if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
           ExtensionWindow._subscriptions.push('SceneDeleted');
           EventManager.subscribe('SceneDeleted', function(settingsObj) {
@@ -110,7 +102,7 @@ export class ExtensionWindow extends EventEmitter {
         } else {
           resolve(this);
         }
-      } else if(event === 'scene-add' && isAddSceneEventFixed) {
+      } else if(event === 'scene-add') {
         if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
           ExtensionWindow._subscriptions.push('OnSceneAddByUser');
           EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
