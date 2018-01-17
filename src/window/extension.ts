@@ -32,33 +32,6 @@ export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
   static _subscriptions: string[] = [];
 
-/**
- * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
- * `** since an ExtensionWinow should technically have a single instance`
- *
- * Gets the instance of the window utility. Use this instead of the constructor.
- */
-  static getInstance() {
-    if (ExtensionWindow._instance === undefined) {
-      ExtensionWindow._instance = new ExtensionWindow();
-    }
-    return ExtensionWindow._instance;
-  }
-
-  /**
-   *  ** For Deprecation
-   *
-   *  Use getInstance()
-   */
-  constructor() {
-    super();
-    if (!Environment.isExtension()) {
-      throw new Error('ExtensionWindow class is only available for extensions');
-    }
-    ExtensionWindow._instance = this;
-    ExtensionWindow._subscriptions = [];
-  }
-
   /**
    *  param: (event: string, ...params: any[])
    *
@@ -68,7 +41,6 @@ export class ExtensionWindow extends EventEmitter {
     params.unshift(event);
     try {
       ExtensionWindow
-        .getInstance()
         .emit
         .apply(ExtensionWindow._instance, params);
     } catch(event) {
@@ -87,7 +59,7 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve,reject) => {
-      ExtensionWindow.getInstance().on(event, handler);
+      ExtensionWindow.on(event, handler);
 
       if(event === 'scene-delete') {
         if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
@@ -145,7 +117,7 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   static off(event: string, handler: Function) {
-    ExtensionWindow.getInstance().off(event, handler);
+    ExtensionWindow.off(event, handler);
   }
 
   /** param: (width: number, height: number)
@@ -153,13 +125,6 @@ export class ExtensionWindow extends EventEmitter {
    *  Resizes this extension's window.
    */
   static resize(width: number, height: number) {
-    App.postMessage(_RESIZE, String(width), String(height));
-  }
-
-  /**
-   * `** For deprecation, please use the static method instead`
-   */
-  resize(width: number, height: number) {
     App.postMessage(_RESIZE, String(width), String(height));
   }
 
@@ -171,21 +136,6 @@ export class ExtensionWindow extends EventEmitter {
    * Renames the extension window.
    */
   static setTitle(value: string):Promise<any> {
-    return new Promise(resolve => {
-      let ext = Extension.getInstance()
-      ext.getId().then(id => {
-        exec("CallHost", "setExtensionWindowTitle:" + id, value)
-        .then(res => {
-          resolve(res)
-        })
-      })
-    })
-  };
-
-  /**
-   * `** For deprecation, please use the static method instead`
-   */
-  setTitle(value: string):Promise<any> {
     return new Promise(resolve => {
       let ext = Extension.getInstance()
       ext.getId().then(id => {
@@ -216,23 +166,9 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   /**
-   * `** For deprecation, please use the static method instead`
-   * */
-  setBorder(flag: number){
-    App.postMessage('4', String(flag));
-  }
-
-  /**
    * Closes this extension window
    */
   static close() {
-    App.postMessage('1');
-  }
-
-  /**
-   * `** For deprecation, please use the static method instead`
-   * */
-  close() {
     App.postMessage('1');
   }
 
@@ -244,23 +180,9 @@ export class ExtensionWindow extends EventEmitter {
   }
 
   /**
-   * `** For deprecation, please use the static method instead`
-   * */
-  disableClose() {
-    App.postMessage('5','0')
-  }
-
-  /**
    * Enable Close Button on this extension's window
    */
   static enableClose() {
-    App.postMessage('5', '1')
-  }
-
-  /**
-   * `** For deprecation, please use the static method instead`
-   * */
-  enableClose() {
     App.postMessage('5', '1')
   }
 }

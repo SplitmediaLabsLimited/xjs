@@ -91,45 +91,6 @@ export class Scene {
   /**
    * return: Promise<Scene>
    *
-   * Get a specific scene object given the scene number.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * var scene1;
-   * Scene.getById(1).then(function(scene) {
-   *   scene1 = scene;
-   * });
-   * ```
-   * ** For deprecation, please use getBySceneIndex instead.
-   */
-  static getById(sceneNum: any): Promise<Scene> {
-    return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        if (sceneNum === 'i12') {
-          if (Scene._scenePool[cnt]._id === 'i12') {
-            resolve(Scene._scenePool[cnt]);
-          } else {
-            reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
-          }
-        } else {
-          try {
-            if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined'){
-              reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
-            } else {
-              resolve(Scene._scenePool[sceneNum - 1]);
-            }
-          } catch(e) {
-            reject(Error('Parameter must be a number'));
-          }
-        }
-      });
-    });
-  }
-
-  /**
-   * return: Promise<Scene>
-   *
    * Get a specific scene object given the scene index.
    *
    * #### Usage
@@ -276,7 +237,7 @@ export class Scene {
         iApp.getGlobalProperty('splitmode').then(res => {
           const preset = res === '1' ? 'preset:1' : 'preset:0'
           iApp.get(preset).then(id => {
-            return Scene.getById(Number(id) + 1);
+            return Scene.getBySceneIndex(Number(id));
           }).then(scene => {
             resolve(scene);
           });
@@ -1026,32 +987,6 @@ export class Scene {
   /**
    * return: number
    *
-   * Get the 1-indexed scene number of this scene object.
-   *
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * myScene.getSceneNumber().then(function(num) {
-   *  console.log('My scene is scene number ' + num);
-   * });
-   * ```
-   *
-   * ** For deprecation, please use getSceneIndex instead.
-   */
-  getSceneNumber(): Promise<number> {
-    return new Promise(resolve => {
-      if (typeof this._id === 'number') {
-        resolve(Number(this._id) + 1);
-      } else {
-        resolve(this._id)
-      }
-    });
-  }
-
-  /**
-   * return: number
-   *
    * Get the 0-indexed scene number of this scene object.
    *
    *
@@ -1273,17 +1208,17 @@ export class Scene {
               }
 
               Promise.all(promises).then(() => {
-                return scene.getSceneNumber();
+                return scene.getSceneIndex();
               }).then(id => {
                 resolve(id);
               });
             });
           } else {
             ids = items;
-            return scene.getSceneNumber();
+            return scene.getSceneIndex();
           }
         }).then(id => {
-          if ((Number(id) - 1) === this._id &&
+          if ((Number(id)) === this._id &&
             (Environment.isSourceProps() || (Environment.isExtension)) ) {
             exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
             resolve(this);

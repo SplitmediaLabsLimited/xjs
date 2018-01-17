@@ -360,7 +360,7 @@ export class Item extends Source implements IItemLayout, ISource {
         }
         if(options.scene !== undefined && options.linked !== undefined) {
           if(options.scene instanceof Scene) {
-            options.scene.getSceneNumber().then((id) => {
+            options.scene.getSceneIndex().then((id) => {
               iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
               this.toXML().toString())
                 .then(() => {
@@ -372,7 +372,7 @@ export class Item extends Source implements IItemLayout, ISource {
           }
         } else if(options.linked === undefined) {
           if(options.scene instanceof Scene) {
-            options.scene.getSceneNumber().then((id) => {
+            options.scene.getSceneIndex().then((id) => {
               iApp.callFunc(`link:0|s:${id}|additem`,
                 this.toXML().toString())
                 .then(() => {

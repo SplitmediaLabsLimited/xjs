@@ -27,43 +27,6 @@ export class SourcePluginWindow extends EventEmitter {
   static _subscriptions: string[] = [];
 
   /**
-   * ** For deprecation, the need for getting the instance of a SourcePluginWindow looks redundant,
-   * `** since a SourcePluginWindow should technically have a single instance`
-   *
-   * Gets the instance of the window utility. Use this instead of the constructor.
-   */
-  static getInstance() {
-    if (SourcePluginWindow._instance === undefined) {
-      SourcePluginWindow._instance = new SourcePluginWindow();
-    }
-    return SourcePluginWindow._instance;
-  }
-
-  /**
-   *  ** For Deprecation
-   *
-   *  Use getInstance()
-   */
-  constructor() {
-    super();
-    if (!Environment.isSourcePlugin()) {
-      throw new Error('SourcePluginWindow class is only available for source plugins');
-    }
-    this.on('message-source', function(message) {
-      if (message.request !== undefined) {
-        if (message.request === 'saveConfig') {
-          this.emit('save-config', this._hideGlobalConfig(message.data));
-        } else if (message.request === 'applyConfig') {
-          this.emit('apply-config', this._hideGlobalConfig(message.data));
-        }
-      }
-    });
-
-    SourcePluginWindow._instance = this;
-    SourcePluginWindow._subscriptions = [];
-  }
-
-  /**
    *  param: (event: string, ...params: any[])
    *
    *  Allows this class to emit an event.
@@ -72,7 +35,6 @@ export class SourcePluginWindow extends EventEmitter {
     params.unshift(event);
     try {
       SourcePluginWindow
-        .getInstance()
         .emit
         .apply(SourcePluginWindow._instance, params);
     } catch(event) {
@@ -90,7 +52,7 @@ export class SourcePluginWindow extends EventEmitter {
    *
    */
   static on(event: string, handler: Function) {
-    SourcePluginWindow.getInstance().on(event, handler);
+    SourcePluginWindow.on(event, handler);
 
     if(event === 'scene-delete') {
       if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
@@ -108,7 +70,7 @@ export class SourcePluginWindow extends EventEmitter {
   }
 
   static off(event: string, handler: Function) {
-    SourcePluginWindow.getInstance().off(event, handler);
+    SourcePluginWindow.off(event, handler);
   }
 
   // We modify the configuration sent from the source properties window
