@@ -451,8 +451,6 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * Gets the Source of an item, linked items would only have 1 source.
    *
-   * *Chainable*
-   *
    * #### Usage
    * ```javascript
    * item.getSource().then(function(source) {
@@ -462,76 +460,41 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
   getSource(): Promise<Source> {
-    let uniqueSource = [];
-    let uniqueObj = {};
-    let _xmlparams;
-    let _type;
-    let _srcId;
-    var promiseArray: Promise<Source>[] = [];
-    let _thisItem = this;
-
     return new Promise((resolve, reject) => {
-      this.getItemList().then((items) => {
-        for(var i=0; i< items.length; i++) {
-          for(var key in items[i]) {
-            if(key === '_srcId') {
-              uniqueObj[items[i][key]] = items[i]
-            }
-          }
-        }
-        for(var j in uniqueObj) {
-          if(uniqueObj.hasOwnProperty(j)) {
-            uniqueSource.push(uniqueObj[j])
-          }
-        }
-
-        let typePromise = index => new Promise(typeResolve => {
-          let source = uniqueSource[index];
-          let params = source['_xmlparams']
-          let type = Number(source['_type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameSource(params));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            source['_name'].indexOf('Video Playlist') === 0 &&
-            source['FilePlaylist'] !== ''){
-            typeResolve(new VideoPlaylistSource(params));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlSource(params));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenSource(params));
-          } else if (type === ItemTypes.BITMAP ||
-              type === ItemTypes.FILE &&
-              /\.gif$/.test(source['item'])) {
-            typeResolve(new ImageSource(params));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
-            typeResolve(new MediaSource(params));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraSource(params));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioSource(params));
-          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashSource(params));
-          } else {
-              typeResolve(new Source(params));
-          }
-        });
-
-        if (Array.isArray(uniqueSource)) {
-          for (var i = 0; i < uniqueSource.length; i++) {
-            promiseArray.push(typePromise(i));
-          }
-        }
-
-        Promise.all(promiseArray).then(results => {
-          resolve(results[0]);
-        });
-      })
+      let source = this;
+      let params = source['_xmlparams']
+      let type = Number(source['_type']);
+      if (type === ItemTypes.GAMESOURCE) {
+        resolve(new GameSource(params));
+      } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+        source['_name'].indexOf('Video Playlist') === 0 &&
+        source['FilePlaylist'] !== ''){
+        resolve(new VideoPlaylistSource(params));
+      } else if (type === ItemTypes.HTML) {
+        resolve(new HtmlSource(params));
+      } else if (type === ItemTypes.SCREEN) {
+        resolve(new ScreenSource(params));
+      } else if (type === ItemTypes.BITMAP ||
+          type === ItemTypes.FILE &&
+          /\.gif$/.test(source['item'])) {
+        resolve(new ImageSource(params));
+      } else if (type === ItemTypes.FILE &&
+          /\.(gif|xbs)$/.test(source['item']) === false &&
+          /^(rtsp|rtmp):\/\//.test(source['item']) === false) {
+        resolve(new MediaSource(params));
+      } else if (Number(source['type']) === ItemTypes.LIVE &&
+        source['item'].indexOf(
+          '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+        resolve(new CameraSource(params));
+      } else if (Number(source['type']) === ItemTypes.LIVE &&
+        source['item'].indexOf(
+          '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+        resolve(new AudioSource(params));
+      } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+        resolve(new FlashSource(params));
+      } else {
+          resolve(new Source(params));
+      }
     })
   }
 
