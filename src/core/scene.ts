@@ -47,12 +47,15 @@ export class Scene {
 
   constructor(sceneId: number | string, name?: string, uid?: string) {
     this._id = sceneId;
-    this._uid = uid;
-    this._name = name;
+    if (!versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
+      this._uid = uid;
+      this._name = name;
+    }
   };
 
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
+      Scene._scenePool = [];
       iApp.getAsList('presetconfig')
       .then(jsonArr => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
@@ -73,7 +76,7 @@ export class Scene {
             }
           })
           // Add special scene for preview editor (i12)
-          Scene._scenePool.push(new Scene('i12'));
+          Scene._scenePool.push(new Scene('i12', 'i12', 'i12'));
           resolve(count);
         }
       })
@@ -222,14 +225,13 @@ export class Scene {
   static getByName(sceneName: string): Promise<Scene[]> {
     return new Promise(resolve => {
       let sceneArr = [];
-      let totalScenes = Scene._scenePool.length;
-      this._initializeScenePoolAsync().then(() => {
+      this._initializeScenePoolAsync().then(count => {
         this._scenePool.map((scene, idx) => {
           scene.getName().then(name => {
             if(name === sceneName) {
               sceneArr.push(scene)
             }
-            if ((idx + 1) === totalScenes) {
+            if ((idx + 1) === count) {
               resolve(sceneArr)
             }
           })
@@ -1112,8 +1114,12 @@ export class Scene {
    * ```
    */
   getSceneUid(): Promise<string> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      if (!versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
         resolve(this._uid);
+      } else {
+        reject(Error('Scenes unique id is only available for XBC v.3.0.1704.2101 or higher'));
+      }
     });
   }
 
