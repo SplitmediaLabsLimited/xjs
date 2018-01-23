@@ -8,6 +8,7 @@ export const addSceneEventFixVersion = '2.8.1606.1701';
 export const handlePreStreamDialogFixVersion = '3.1.1707.3101';
 export const globalsrcMinVersion = '2.9'
 export const itemSubscribeEventVersion = '2.9.1608.2301';
+export const sceneUidAddDeleteVersion = '3.3.1801.1901';
 
 export let mockVersion = '';
 

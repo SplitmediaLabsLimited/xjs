@@ -1,6 +1,7 @@
 import {exec} from './internal'
 import window from '../util/window';
-import {Remote} from './remote'
+import {Remote} from './remote';
+import {sceneUidAddDeleteVersion, versionCompare, getVersion} from './util/version';
 
 /**
  * Usage:
@@ -159,6 +160,10 @@ window.AppOnEvent = event => {
 
 const oldOnEvent = window.OnEvent;
 window.OnEvent = (event, item, ...eventArgs ) => {
+  if(event === 'itemremovedfromscene' && versionCompare(getVersion()).
+  is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
+    event = 'itemdestroyed'
+  }
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;
 
