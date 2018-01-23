@@ -168,7 +168,7 @@ export class Output {
    */
   getDisplayName(): Promise<string> {
     return new Promise(resolve => {
-      Output._getBroadcastXML(Output._id, this._name).then(channelXML => {
+      Output._getBroadcastChannels(Output._id, this._name).then(channelXML => {
         const channelJXON = JXON.parse(channelXML);
         resolve(channelJXON['displayName']
           .replace(/&apos;/g, "'")
@@ -205,7 +205,7 @@ export class Output {
         resolve(true);
       } else {
         exec('CallHost', 'startBroadcast', this._name);
-        resolve(true);    
+        resolve(true);
       }
     })
   }
@@ -282,8 +282,27 @@ export class Output {
     })
   }
 
-  static _getBroadcastChannels(id:string, handler?:Function) {
-    Output._id = id;
+  static _getBroadcastChannels(id:string, ...args: any[]) {
+    let callback: Function = null;
+    let name;
+    if(args.length === 1){
+       if (typeof args[0] === 'string') {
+        Output._id = id+'_xml';
+        name = args[0]
+      }
+    } else if(args.length === 2) {
+      if (typeof args[0] === 'string') {
+        Output._id = id+'_xml';
+        name = args[0]
+      } else {
+        Output._id = id;
+      }
+      if (args[1] instanceof Function) {
+        callback = args[0]
+      }
+    } else {
+      Output._id = id;
+    }
     return new Promise((resolve, reject) => {
       if(Environment.isSourcePlugin()) {
         let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
@@ -294,7 +313,8 @@ export class Output {
       if (Remote.remoteType === 'remote') {
         let message = {
             type: 'broadcastChannels',
-            id: Output._id
+            id,
+            name: name ? name : undefined
           }
           Extension._remoteCallback[Output._id] = ({resolve});
           Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
@@ -302,49 +322,18 @@ export class Output {
         if (Output._proxyCallback[Output._id] === undefined){
           Output._proxyCallback[Output._id] = [];
         }
-        Output._proxyCallback[Output._id] = handler;
-        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
+        Output._proxyCallback[Output._id] = callback;
+        name ?
+          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
+          exec('CallHost', 'getBroadcastChannelList:'+ id);
       } else {
         if (Output._callback[Output._id] === undefined){
           Output._callback[Output._id] = [];
         }
         Output._callback[Output._id] = ({resolve});
-        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
-      }
-    })
-  }
-
-  // @TODO: possible area for simplification
-  // nearly same as above, just different function name, and extra parameter
-  static _getBroadcastXML(id:string, name, handler?:Function) {
-    Output._id = id;
-    return new Promise((resolve, reject) => {
-      if(Environment.isSourcePlugin()) {
-        let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
-        if (!isID) {
-          reject(Error('Not a valid ID format for items'));
-        }
-      }
-      if (Remote.remoteType === 'remote') {
-        let message = {
-            type: 'broadcastChannelXML',
-            id: Output._id + '_xml',
-            name: name
-          }
-          Extension._remoteCallback[Output._id + '_xml'] = ({resolve});
-          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
-      } else if (Remote.remoteType === 'proxy') {
-        if (Output._proxyCallback[Output._id + '_xml'] === undefined){
-          Output._proxyCallback[Output._id + '_xml'] = [];
-        }
-        Output._proxyCallback[Output._id + '_xml'] = handler;
-        exec('CallHost', 'getBroadcastChannelXml:'+ Output._id, name);
-      } else {
-        if (Output._callback[Output._id + '_xml'] === undefined){
-          Output._callback[Output._id + '_xml'] = [];
-        }
-        Output._callback[Output._id + '_xml'] = ({resolve});
-        exec('CallHost', 'getBroadcastChannelXml:'+ Output._id, name);
+        name ?
+          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
+          exec('CallHost', 'getBroadcastChannelList:'+ id);
       }
     })
   }
@@ -353,13 +342,6 @@ export class Output {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
       Extension._remoteCallback[Output._id].resolve(result['result'])
-    })
-  }
-
-  static _finalCallbackXML(message:string) {
-    return new Promise(resolve => {
-      const result = JSON.parse(decodeURIComponent(message))
-      Extension._remoteCallback[Output._id + '_xml'].resolve(result['result'])
     })
   }
 }
@@ -380,9 +362,9 @@ window.SetBroadcastChannelList = function(channels) {
 const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
 window.SetBroadcastChannelXml = function(channelXML) {
   if (Remote.remoteType === 'proxy') {
-    Output._proxyCallback[Output._id + '_xml'].call(this, channelXML)
+    Output._proxyCallback[Output._id].call(this, channelXML)
   } else {
-    Output._callback[Output._id + '_xml'].resolve(channelXML)
+    Output._callback[Output._id].resolve(channelXML)
   }
 
   if (typeof oldSetBroadcastChannelXml === 'function') {

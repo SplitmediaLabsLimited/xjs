@@ -117,9 +117,6 @@ export class Remote {
           case 'broadcastChannels':
             Remote._allWindowHandler(message);
             break;
-          case 'broadcastChannelXML':
-            Remote._allWindowHandler(message);
-            break;
           default:
             reject(Error('Call type is undefined.'))
             break;
@@ -220,8 +217,6 @@ export class Remote {
           Extension._finalCallback(message)
         } else if (messageObj['type'] === 'broadcastChannels') {
           Output._finalCallback(message)
-        } else if (messageObj['type'] === 'broadcastChannelXML') {
-          Output._finalCallbackXML(message)
         } else if (messageObj['type'] === 'event-manager') {
           EventManager._finalCallback(message)
         }
@@ -246,9 +241,7 @@ export class Remote {
           let Ext = messageObj['instance'] = new Extension()
           Ext.getId(messageObj['callback'])
         } else if (messageObj['type'] === 'broadcastChannels') {
-          Output._getBroadcastChannels(messageObj['id'], messageObj['callback'])
-        } else if (messageObj['type'] === 'broadcastChannelXML') {
-          Output._getBroadcastXML(messageObj['id'], messageObj['name'], messageObj['callback'])
+          Output._getBroadcastChannels(messageObj['id'], messageObj['name'], messageObj['callback'])
         } else if (messageObj['type'] === 'event-manager') {
           EventManager._finalCallback(messageObj['event'])
         }
