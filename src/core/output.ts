@@ -79,7 +79,6 @@ export class Output {
   protected _name: string;
 
   constructor(props?: {name: string}) {
-
     this._name = props.name;
   }
 
@@ -136,6 +135,11 @@ export class Output {
           for (var i=0; i< results.children.length; i++) {
             channels.push(new Output({
               name: results.children[i]['name']
+                .replace(/&apos;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&')
             }));
           }
           resolve(channels)
@@ -149,11 +153,30 @@ export class Output {
   /**
    *  return: Promise<string>
    *
-   *  Gets the name of the Output.
+   *  Gets the actual name of the Output.
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._name);
+    });
+  }
+
+  /**
+   *  return: Promise<string>
+   *
+   *  Gets the name of the Output as displayed in the Outputs menu.
+   */
+  getDisplayName(): Promise<string> {
+    return new Promise(resolve => {
+      Output._getBroadcastXML(Output._id, this._name).then(channelXML => {
+        const channelJXON = JXON.parse(channelXML);
+        resolve(channelJXON['displayName']
+          .replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&'));
+      });
     });
   }
 
@@ -291,10 +314,52 @@ export class Output {
     })
   }
 
+  // @TODO: possible area for simplification
+  // nearly same as above, just different function name, and extra parameter
+  static _getBroadcastXML(id:string, name, handler?:Function) {
+    Output._id = id;
+    return new Promise((resolve, reject) => {
+      if(Environment.isSourcePlugin()) {
+        let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
+        if (!isID) {
+          reject(Error('Not a valid ID format for items'));
+        }
+      }
+      if (Remote.remoteType === 'remote') {
+        let message = {
+            type: 'broadcastChannelXML',
+            id: Output._id + '_xml',
+            name: name
+          }
+          Extension._remoteCallback[Output._id + '_xml'] = ({resolve});
+          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+      } else if (Remote.remoteType === 'proxy') {
+        if (Output._proxyCallback[Output._id + '_xml'] === undefined){
+          Output._proxyCallback[Output._id + '_xml'] = [];
+        }
+        Output._proxyCallback[Output._id + '_xml'] = handler;
+        exec('CallHost', 'getBroadcastChannelXml:'+ Output._id, name);
+      } else {
+        if (Output._callback[Output._id + '_xml'] === undefined){
+          Output._callback[Output._id + '_xml'] = [];
+        }
+        Output._callback[Output._id + '_xml'] = ({resolve});
+        exec('CallHost', 'getBroadcastChannelXml:'+ Output._id, name);
+      }
+    })
+  }
+
   static _finalCallback(message:string) {
     return new Promise(resolve => {
       const result = JSON.parse(decodeURIComponent(message))
       Extension._remoteCallback[Output._id].resolve(result['result'])
+    })
+  }
+
+  static _finalCallbackXML(message:string) {
+    return new Promise(resolve => {
+      const result = JSON.parse(decodeURIComponent(message))
+      Extension._remoteCallback[Output._id + '_xml'].resolve(result['result'])
     })
   }
 }
@@ -309,5 +374,18 @@ window.SetBroadcastChannelList = function(channels) {
 
   if (typeof oldSetBroadcastChannelList === 'function') {
     oldSetBroadcastChannelList(channels)
+  }
+}
+
+const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
+window.SetBroadcastChannelXml = function(channelXML) {
+  if (Remote.remoteType === 'proxy') {
+    Output._proxyCallback[Output._id + '_xml'].call(this, channelXML)
+  } else {
+    Output._callback[Output._id + '_xml'].resolve(channelXML)
+  }
+
+  if (typeof oldSetBroadcastChannelXml === 'function') {
+    oldSetBroadcastChannelXml(channelXML)
   }
 }
