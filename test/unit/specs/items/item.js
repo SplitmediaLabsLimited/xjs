@@ -78,6 +78,12 @@ describe('Item ===', function() {
           );
         }, 10);
       break;
+
+      case 'stats:frames':
+        setTimeout(function() {
+          window.OnAsyncCallback(asyncId, parseInt(Date.now()/25));
+        }, 10);
+      break;
     }
 
     return asyncId;
@@ -259,12 +265,16 @@ describe('Item ===', function() {
     expect(Item).hasMethods('toXML');
   });
 
-  it('should have getFPS method', function() {
+  it('should have getFPS method', function(done) {
     expect(Item).hasMethods('getFPS');
-    Item.getFPS().then(function(val) {
-      expect(val).toBeTypeOf('number');
-      expect(val).not.toBeNaN();
-    })
+    exec(function(next) {
+      Item.getFPS().then(function(val) {
+        console.log(val);
+        expect(val).toBeTypeOf('number');
+        expect(val).not.toBeNaN();
+        next();
+      })
+    }).then(done);
   });
 
   it('should have duplicate method', function() {

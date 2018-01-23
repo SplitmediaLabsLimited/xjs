@@ -139,7 +139,6 @@ describe('Audio Source', function() {
       done();
     } else {
       Scene.getActiveScene().then(function(newScene) {
-        console.log(newScene)
         newScene.getSources().then(function(sources) {
           var sourcesArray = sources;
           var sourcesArrayLength = sourcesArray.length;

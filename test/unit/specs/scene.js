@@ -578,8 +578,17 @@ describe('Scene ===', function() {
       exec(function(next) {
         Scene.getActiveScene().then(function(scene) {
           return scene.getSceneUid();
-        }).then(function(id){
+        }).then(function(id) {
           expect(id).toBeTypeOf('string');
+
+          if (navigator.appVersion.indexOf('XSplit Broadcaster 2.7.1702.2231  ') > -1) {
+            done.fail('getSceneUid should reject if called on XBC lower than 3.0.1704.2101')
+          }
+          next();
+        }, function() {
+          if (navigator.appVersion.indexOf('XSplit Broadcaster 3.0.1704.2101 ') > -1) {
+            done.fail('getSceneUid should not reject if called on XBC equal or higher than 3.0.1704.2101')
+          }
           next();
         });
       }).then(done);
