@@ -70,10 +70,8 @@ export class Scene {
         } else {
           let count = 0
           jsonArr.map((scene, index) => {
-            if (scene['name'] && scene['id']) {
-              count++
-              Scene._scenePool[index] = new Scene(index, scene['name'], scene['id']);
-            }
+            count++
+            Scene._scenePool[index] = new Scene(index, scene['name'], scene['id'] );
           })
           // Add special scene for preview editor (i12)
           Scene._scenePool.push(new Scene('i12', 'i12', 'i12'));
