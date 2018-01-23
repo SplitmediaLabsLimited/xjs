@@ -69,7 +69,9 @@ export class Scene {
           resolve(Scene._maxScenes);
         } else {
           let count = 0
-          jsonArr.map((scene, index) => {
+          jsonArr
+          .filter(json => json['tag'] === 'placement')
+          .map((scene, index) => {
             count++
             Scene._scenePool[index] = new Scene(index, scene['name'], scene['id'] );
           })
