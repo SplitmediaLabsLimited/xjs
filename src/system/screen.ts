@@ -7,6 +7,7 @@ import {Scene} from '../core/scene';
 import {Environment} from '../core/environment';
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
+import{checkSplitmode} from '../internal/util/splitmode';
 
 /**
  * The Screen Class is the object returned by {@link #system/System System Class}
@@ -54,39 +55,10 @@ export class Screen implements Addable {
    */
   addToScene(value?:number | Scene): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      let scenePrefix = ''
       if (this instanceof Screen && !Environment.isSourcePlugin()) {
-        let scenePrefix = '';
-        let scenePromise;
-        if (typeof value === 'number' || value instanceof Scene) {
-          scenePromise = new Promise((innerResolve, innerReject) => {
-            Scene.getSceneCount().then(sceneCount => {
-              if (typeof value === 'number') {
-                let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                  innerReject(new Error('Scene not existing.'));
-                } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
-                  innerResolve();
-                }
-              } else {
-                value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                    innerReject(new Error('Scene not existing.'));
-                  } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
-                    innerResolve();
-                  }
-                });
-              }
-            });
-          });
-        } else if (typeof value === 'undefined') {
-          scenePromise = Promise.resolve();
-        } else {
-          scenePromise = Promise.reject(new Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-        }
-
-        scenePromise.then(() => {
+        checkSplitmode(value).then((prefix) => {
+          scenePrefix = prefix
           return `<screen module="${this._processDetail}" window="${this._title}" class="${this._class}" hwnd="${this._hwnd}" wclient="1" left="0" top="0" width="0" height="0" />`
         }).then(screen => {
           return iApp.callFunc(scenePrefix + 'addscreen', screen)
@@ -115,60 +87,12 @@ export class Screen implements Addable {
    */
   static addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let scenePrefix = '';
-      let scenePromise;
-      let checkSplitMode;
-
-      checkSplitMode = new Promise(splitPromise => {
-        iApp.getGlobalProperty('splitmode').then(res => {
-          if (res === '1' && !value) {
-            Scene.getActiveScene().then(val => {
-              value = val
-              splitPromise(value)
-            })
-          } else {
-            splitPromise(value)
-          }
-        })
-      })
-
-      checkSplitMode.then(value => {
-        if (typeof value === 'number' || value instanceof Scene) {
-          scenePromise = new Promise((innerResolve, innerReject) => {
-            Scene.getSceneCount().then(sceneCount => {
-              if (typeof value === 'number') {
-                let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
-                } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
-                  innerResolve();
-                }
-              } else {
-                value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
-                  } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
-                    innerResolve();
-                  }
-                });
-              }
-            });
-          });
-        } else if (typeof value === 'undefined') {
-          scenePromise = Promise.resolve();
-        } else {
-        scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-        }
-
-        scenePromise.then(() => {
-          exec('AppCallFunc', scenePrefix + 'addscreen');
-          resolve(true);
-        }).catch(err => {
-          reject(err);
-        });
-      })
+      checkSplitmode(value).then((scenePrefix) => {
+        exec('AppCallFunc', scenePrefix + 'addscreen');
+        resolve(true);
+      }).catch(err => {
+        reject(err);
+      });
     });
   }
 
