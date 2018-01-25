@@ -509,35 +509,24 @@ export class Item extends Source implements IItemLayout, ISource {
         let typePromise = index => new Promise(typeResolve => {
           let source = uniqueSource[index];
           let params = source['_xmlparams']
-          let type = Number(source['_type']);
-          if (type === ItemTypes.GAMESOURCE) {
+          let type = source.constructor.name;
+          if (type === 'GameItem') {
             typeResolve(new GameSource(params));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            source['_name'].indexOf('Video Playlist') === 0 &&
-            source['FilePlaylist'] !== ''){
+          } else if (type === 'VideoPlaylistItem'){
             typeResolve(new VideoPlaylistSource(params));
-          } else if (type === ItemTypes.HTML) {
+          } else if (type === 'HtmlItem') {
             typeResolve(new HtmlSource(params));
-          } else if (type === ItemTypes.SCREEN) {
+          } else if (type === 'ScreenItem') {
             typeResolve(new ScreenSource(params));
-          } else if (type === ItemTypes.BITMAP ||
-              type === ItemTypes.FILE &&
-              /\.gif$/.test(source['item'])) {
+          } else if (type === 'ImageItem') {
             typeResolve(new ImageSource(params));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
+          } else if (type === 'MediaItem') {
             typeResolve(new MediaSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+          } else if (type === 'CameraItem') {
             typeResolve(new CameraSource(params));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+          } else if (type === 'AudioItem') {
             typeResolve(new AudioSource(params));
-          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
+          } else if (type === 'FlashItem') {
             typeResolve(new FlashSource(params));
           } else {
               typeResolve(new Source(params));

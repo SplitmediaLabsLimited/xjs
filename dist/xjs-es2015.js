@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.6.1
+ * version: 2.6.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1044,7 +1044,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":50,"../internal/internal":54,"../internal/util/json":58,"../internal/util/version":61,"../internal/util/xml":62,"../system/audio":63,"../util/rectangle":76,"./environment":4,"./transition":49}],2:[function(_require,module,exports){
+},{"../internal/app":49,"../internal/internal":53,"../internal/util/json":56,"../internal/util/version":59,"../internal/util/xml":60,"../system/audio":61,"../util/rectangle":74,"./environment":4,"./transition":48}],2:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1210,7 +1210,7 @@ function _subscribeEventManager() {
     });
 }
 exports._subscribeEventManager = _subscribeEventManager;
-},{"../internal/eventmanager":51,"../internal/util/json":58,"../util/eventemitter":73,"./environment":4,"./streaminfo":47}],3:[function(_require,module,exports){
+},{"../internal/eventmanager":50,"../internal/util/json":56,"../util/eventemitter":71,"./environment":4,"./streaminfo":47}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1399,7 +1399,7 @@ window_1.default.Setdlldogrant = function (value) {
         oldSetdlldogrant(value);
     }
 };
-},{"../internal/internal":54,"../util/eventemitter":73,"../util/window":77}],4:[function(_require,module,exports){
+},{"../internal/internal":53,"../util/eventemitter":71,"../util/window":75}],4:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 var window_1 = _require('../util/window');
 /**
@@ -1459,7 +1459,7 @@ var Environment = (function () {
     return Environment;
 })();
 exports.Environment = Environment;
-},{"../internal/remote":56,"../util/window":77}],5:[function(_require,module,exports){
+},{"../internal/remote":55,"../util/window":75}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
@@ -1579,7 +1579,7 @@ window_1.default.Setid = function (id) {
         oldSetid(id);
     }
 };
-},{"../core/environment":4,"../internal/app":50,"../internal/internal":54,"../internal/remote":56,"../util/window":77}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":49,"../internal/internal":53,"../internal/remote":55,"../util/window":75}],6:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1628,7 +1628,7 @@ var AudioItem = (function (_super) {
 })(item_1.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/iaudiosource":31,"./item":16}],7:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/iaudiosource":31,"./item":16}],7:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1755,7 +1755,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [item_2.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, icamera_1.SourceCamera]);
-},{"../../internal/item":55,"../../internal/util/mixin":60,"../source/iaudio":30,"../source/icamera":32,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],8:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/mixin":58,"../source/iaudio":30,"../source/icamera":32,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1800,7 +1800,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/iflash":34,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],9:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/iflash":34,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],9:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1860,7 +1860,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igame_1.iSourceGame]);
-},{"../../internal/util/mixin":60,"../source/igame":35,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],10:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/igame":35,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],10:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1923,7 +1923,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/iconfig":33,"../source/ihtml":36,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],11:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/iconfig":33,"../source/ihtml":36,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2307,7 +2307,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":55,"../../util/color":72}],12:[function(_require,module,exports){
+},{"../../internal/item":54,"../../util/color":70}],12:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2474,7 +2474,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":55,"../../util/color":72}],13:[function(_require,module,exports){
+},{"../../internal/item":54,"../../util/color":70}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -3032,7 +3032,7 @@ var ItemEffect = (function () {
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":55,"../../util/color":72}],14:[function(_require,module,exports){
+},{"../../internal/item":54,"../../util/color":70}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var scene_1 = _require('../scene');
@@ -3733,7 +3733,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":55,"../../util/rectangle":76,"../scene":23}],15:[function(_require,module,exports){
+},{"../../internal/item":54,"../../util/rectangle":74,"../scene":23}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3771,7 +3771,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":60,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],16:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4323,7 +4323,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":50,"../../internal/eventmanager":51,"../../internal/item":55,"../../internal/util/json":58,"../../internal/util/mixin":60,"../../internal/util/version":61,"../../internal/util/xml":62,"../../util/eventemitter":73,"../environment":4,"../scene":23,"../source/audio":24,"../source/camera":25,"../source/flash":27,"../source/game":28,"../source/html":29,"../source/image":37,"../source/isource":41,"../source/media":43,"../source/screen":44,"../source/source":45,"../source/videoplaylist":46,"./ilayout":14}],17:[function(_require,module,exports){
+},{"../../internal/app":49,"../../internal/eventmanager":50,"../../internal/item":54,"../../internal/util/json":56,"../../internal/util/mixin":58,"../../internal/util/version":59,"../../internal/util/xml":60,"../../util/eventemitter":71,"../environment":4,"../scene":23,"../source/audio":24,"../source/camera":25,"../source/flash":27,"../source/game":28,"../source/html":29,"../source/image":37,"../source/isource":41,"../source/media":43,"../source/screen":44,"../source/source":45,"../source/videoplaylist":46,"./ilayout":14}],17:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -4391,7 +4391,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":55,"../transition":49}],18:[function(_require,module,exports){
+},{"../../internal/item":54,"../transition":48}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4434,7 +4434,7 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.SourcePlayback, iaudio_1.Audio, ieffects_1.ItemEffect, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/imedia":38,"../source/iplayback":39,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],19:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/imedia":38,"../source/iplayback":39,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4474,7 +4474,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":60,"../source/iscreen":40,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],20:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iscreen":40,"./ichroma":11,"./icolor":12,"./ieffects":13,"./ilayout":14,"./item":16,"./itransition":17}],20:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4529,7 +4529,7 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback]);
-},{"../../internal/util/mixin":60,"../source/iconfig":33,"../source/iplayback":39,"../source/ivideoplaylist":42,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],21:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iconfig":33,"../source/iplayback":39,"../source/ivideoplaylist":42,"./ichroma":11,"./icolor":12,"./ilayout":14,"./item":16,"./itransition":17}],21:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4605,7 +4605,7 @@ eventmanager_1.EventManager.subscribe(['LanguageChanged'], function (langObj) {
         LanguageInfo.emit(eventString, langObj['lang']);
     }
 });
-},{"../internal/eventmanager":51,"../util/eventemitter":73}],22:[function(_require,module,exports){
+},{"../internal/eventmanager":50,"../util/eventemitter":71}],22:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('./environment');
@@ -4906,7 +4906,7 @@ window_1.default.SetBroadcastChannelList = function (channels) {
         oldSetBroadcastChannelList(channels);
     }
 };
-},{"../internal/internal":54,"../internal/item":55,"../internal/remote":56,"../internal/util/json":58,"../internal/util/version":61,"../util/window":77,"./environment":4,"./extension":5,"./streaminfo":47}],23:[function(_require,module,exports){
+},{"../internal/internal":53,"../internal/item":54,"../internal/remote":55,"../internal/util/json":56,"../internal/util/version":59,"../util/window":75,"./environment":4,"./extension":5,"./streaminfo":47}],23:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -6287,7 +6287,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":50,"../internal/internal":54,"../internal/util/json":58,"../internal/util/version":61,"../internal/util/xml":62,"./environment":4,"./items/audio":6,"./items/camera":7,"./items/flash":8,"./items/game":9,"./items/html":10,"./items/image":15,"./items/item":16,"./items/media":18,"./items/screen":19,"./items/videoplaylist":20,"./source/audio":24,"./source/camera":25,"./source/flash":27,"./source/game":28,"./source/html":29,"./source/image":37,"./source/isource":41,"./source/media":43,"./source/screen":44,"./source/source":45,"./source/videoplaylist":46}],24:[function(_require,module,exports){
+},{"../internal/app":49,"../internal/internal":53,"../internal/util/json":56,"../internal/util/version":59,"../internal/util/xml":60,"./environment":4,"./items/audio":6,"./items/camera":7,"./items/flash":8,"./items/game":9,"./items/html":10,"./items/image":15,"./items/item":16,"./items/media":18,"./items/screen":19,"./items/videoplaylist":20,"./source/audio":24,"./source/camera":25,"./source/flash":27,"./source/game":28,"./source/html":29,"./source/image":37,"./source/isource":41,"./source/media":43,"./source/screen":44,"./source/source":45,"./source/videoplaylist":46}],24:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6338,7 +6338,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/iaudiosource":31,"../source/source":45}],25:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/iaudiosource":31,"../source/source":45}],25:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6389,7 +6389,7 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [iaudio_1.Audio, icamera_1.SourceCamera]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/icamera":32,"../source/source":45}],26:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/icamera":32,"../source/source":45}],26:[function(_require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -6506,7 +6506,7 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [iaudio_1.Audio, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/source":45,"./iflash":34}],28:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/source":45,"./iflash":34}],28:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6556,7 +6556,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [igame_1.iSourceGame]);
-},{"../../internal/util/mixin":60,"../source/source":45,"./igame":35}],29:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/source":45,"./igame":35}],29:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6608,7 +6608,7 @@ var HtmlSource = (function (_super) {
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurable, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":30,"../source/ihtml":36,"../source/source":45,"./iconfig":33}],30:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/iaudio":30,"../source/ihtml":36,"../source/source":45,"./iconfig":33}],30:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -6758,7 +6758,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":55,"../../internal/util/logger":59}],31:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57}],31:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -6930,7 +6930,7 @@ var SourceAudio = (function () {
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":55,"../../internal/util/logger":59}],32:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57}],32:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var system_1 = _require('../../system/system');
@@ -7279,7 +7279,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":55,"../../internal/util/logger":59,"../../system/system":69}],33:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57,"../../system/system":67}],33:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -7404,7 +7404,7 @@ var SourceConfigurable = (function () {
     return SourceConfigurable;
 })();
 exports.SourceConfigurable = SourceConfigurable;
-},{"../../internal/global":52,"../../internal/internal":54,"../../internal/item":55,"../../internal/util/logger":59,"../environment":4}],34:[function(_require,module,exports){
+},{"../../internal/global":51,"../../internal/internal":53,"../../internal/item":54,"../../internal/util/logger":57,"../environment":4}],34:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
@@ -7492,7 +7492,7 @@ var SourceFlash = (function () {
     return SourceFlash;
 })();
 exports.SourceFlash = SourceFlash;
-},{"../../internal/item":55,"../../internal/util/logger":59,"../../util/rectangle":76}],35:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57,"../../util/rectangle":74}],35:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var environment_1 = _require('../environment');
@@ -7623,7 +7623,7 @@ var iSourceGame = (function () {
     return iSourceGame;
 })();
 exports.iSourceGame = iSourceGame;
-},{"../../internal/item":55,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/xml":62,"../environment":4,"./isource":41}],36:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/json":56,"../../internal/util/logger":57,"../../internal/util/xml":60,"../environment":4,"./isource":41}],36:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../../internal/internal');
 var item_1 = _require('../../internal/item');
@@ -8259,7 +8259,7 @@ var iSourceHtml = (function () {
     return iSourceHtml;
 })();
 exports.iSourceHtml = iSourceHtml;
-},{"../../internal/internal":54,"../../internal/item":55,"../../internal/util/logger":59,"../../util/rectangle":76,"../environment":4}],37:[function(_require,module,exports){
+},{"../../internal/internal":53,"../../internal/item":54,"../../internal/util/logger":57,"../../util/rectangle":74,"../environment":4}],37:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8362,7 +8362,7 @@ var SourceMedia = (function () {
     return SourceMedia;
 })();
 exports.SourceMedia = SourceMedia;
-},{"../../internal/item":55,"../../internal/util/json":58,"../../internal/util/logger":59}],39:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/json":56,"../../internal/util/logger":57}],39:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var cuepoint_1 = _require('./cuepoint');
@@ -8798,7 +8798,7 @@ var SourcePlayback = (function () {
     return SourcePlayback;
 })();
 exports.SourcePlayback = SourcePlayback;
-},{"../../internal/item":55,"../../internal/util/logger":59,"./cuepoint":26}],40:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57,"./cuepoint":26}],40:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var xml_1 = _require('../../internal/util/xml');
@@ -9087,7 +9087,7 @@ var iSourceScreen = (function () {
     return iSourceScreen;
 })();
 exports.iSourceScreen = iSourceScreen;
-},{"../../internal/item":55,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/xml":62,"../../util/rectangle":76}],41:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/json":56,"../../internal/util/logger":57,"../../internal/util/xml":60,"../../util/rectangle":74}],41:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var version_1 = _require('../../internal/util/version');
@@ -9413,7 +9413,7 @@ var iSource = (function () {
     return iSource;
 })();
 exports.iSource = iSource;
-},{"../../internal/item":55,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/version":61,"../../internal/util/xml":62,"../scene":23}],42:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/json":56,"../../internal/util/logger":57,"../../internal/util/version":59,"../../internal/util/xml":60,"../scene":23}],42:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var io_1 = _require('../../util/io');
@@ -9556,7 +9556,7 @@ var SourceVideoPlaylist = (function () {
     return SourceVideoPlaylist;
 })();
 exports.SourceVideoPlaylist = SourceVideoPlaylist;
-},{"../../internal/item":55,"../../internal/util/logger":59,"../../util/io":74}],43:[function(_require,module,exports){
+},{"../../internal/item":54,"../../internal/util/logger":57,"../../util/io":72}],43:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9613,7 +9613,7 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":60,"./iaudio":30,"./imedia":38,"./iplayback":39,"./source":45}],44:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"./iaudio":30,"./imedia":38,"./iplayback":39,"./source":45}],44:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9663,7 +9663,7 @@ var ScreenSource = (function (_super) {
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
 mixin_1.applyMixins(ScreenSource, [iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":60,"../source/source":45,"./iscreen":40}],45:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"../source/source":45,"./iscreen":40}],45:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = _require('../../internal/util/mixin');
 var app_1 = _require('../../internal/app');
@@ -9900,7 +9900,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [isource_1.iSource]);
-},{"../../internal/app":50,"../../internal/item":55,"../../internal/util/mixin":60,"../../internal/util/version":61,"../environment":4,"../scene":23,"../source/isource":41}],46:[function(_require,module,exports){
+},{"../../internal/app":49,"../../internal/item":54,"../../internal/util/mixin":58,"../../internal/util/version":59,"../environment":4,"../scene":23,"../source/isource":41}],46:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9954,7 +9954,7 @@ var VideoPlaylistSource = (function (_super) {
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
 mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"./iaudio":30,"./iconfig":33,"./iplayback":39,"./ivideoplaylist":42,"./source":45}],47:[function(_require,module,exports){
+},{"../../internal/util/mixin":58,"./iaudio":30,"./iconfig":33,"./iplayback":39,"./ivideoplaylist":42,"./source":45}],47:[function(_require,module,exports){
 var app_1 = _require('../internal/app');
 /**
  * The StreamInfo class provides methods to monitor the current active streams
@@ -10122,102 +10122,7 @@ var StreamInfo = (function () {
     return StreamInfo;
 })();
 exports.StreamInfo = StreamInfo;
-},{"../internal/app":50}],48:[function(_require,module,exports){
-/// <reference path="../../defs/es6-promise.d.ts" />
-var scene_1 = _require('./scene');
-var app_1 = _require('../internal/app');
-var render_1 = _require('../internal/render');
-var Thumbnail = (function () {
-    function Thumbnail() {
-    }
-    /**
-     * param?: scene<number|Scene>
-     * ```
-     * return: Promise<string>
-     * ```
-     *
-     * Returns a base64 png url of a specified or current scene.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var sceneThumbnail
-     *
-     * Thumbnail.getSceneThumbnail().then(function(image) {
-     *   sceneThumbnail = image;
-     *   // can be used as:
-     *   // div.style.backgroundImage = 'url(data:image/png;base64, image)'
-     * })
-     */
-    Thumbnail.getSceneThumbnail = function (scene) {
-        var scenePromise;
-        return new Promise(function (resolve, reject) {
-            scenePromise = new Promise(function (innerResolve) {
-                if (scene instanceof scene_1.Scene) {
-                    scene.getSceneNumber()
-                        .then(function (num) { return innerResolve(num - 1); });
-                }
-                else if (typeof scene === 'number') {
-                    if (scene < 0) {
-                        reject(Error('Invalid parameters. Valid range is 0 or higher'));
-                    }
-                    else {
-                        innerResolve(scene);
-                    }
-                }
-                else if (!scene) {
-                    scene_1.Scene.getActiveScene().then(function (currScene) {
-                        return currScene.getSceneNumber(); //replace with getSceneIndex
-                    }).then(function (sceneNum) {
-                        innerResolve(sceneNum - 1);
-                    });
-                }
-                else {
-                    reject(Error('Invalid parameters. Valid parameter is scene or scene index'));
-                }
-            });
-            scenePromise.then(function (finalScene) {
-                app_1.App.get("presetthumbnail:" + String(finalScene))
-                    .then(function (thumb) {
-                    resolve(thumb);
-                });
-            });
-        });
-    };
-    // Assign a canvas and create necessary webgl context
-    Thumbnail.setTargetCanvas = function (canvas, fps) {
-        if (fps === void 0) { fps = 30; }
-        return new Promise(function (resolve, reject) {
-            if (canvas) {
-                render_1.Render.setCanvas(canvas, fps).then(function (res) {
-                    resolve(res);
-                });
-            }
-            else {
-                reject(Error('No canvas selected'));
-            }
-        });
-    };
-    // Uses prepared canvas to dupworkspace
-    // reject if no canvas was set
-    Thumbnail.renderSceneToTexture = function (scene) {
-        return new Promise(function (resolve, reject) {
-            render_1.Render.drawToTexture(scene);
-            resolve();
-        });
-    };
-    // If there's an active render, set rendering to true or false
-    Thumbnail.toggleRender = function (state) {
-        return new Promise(function (resolve) {
-            render_1.Render.startStopRender(state).then(function (res) {
-                resolve(res);
-            });
-        });
-    };
-    return Thumbnail;
-})();
-exports.Thumbnail = Thumbnail;
-},{"../internal/app":50,"../internal/render":57,"./scene":23}],49:[function(_require,module,exports){
+},{"../internal/app":49}],48:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -10365,7 +10270,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":50}],50:[function(_require,module,exports){
+},{"../internal/app":49}],49:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -10454,7 +10359,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":54,"./util/json":58}],51:[function(_require,module,exports){
+},{"./internal":53,"./util/json":56}],50:[function(_require,module,exports){
 var internal_1 = _require('./internal');
 var window_1 = _require('../util/window');
 var remote_1 = _require('./remote');
@@ -10633,7 +10538,7 @@ window_1.default.OnEvent = function (event, item) {
         oldOnEvent(event);
     }
 };
-},{"../util/window":77,"./internal":54,"./remote":56}],52:[function(_require,module,exports){
+},{"../util/window":75,"./internal":53,"./remote":55}],51:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -10655,7 +10560,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],53:[function(_require,module,exports){
+},{}],52:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var item_1 = _require('./item');
@@ -10787,7 +10692,7 @@ function init() {
     });
 }
 exports.default = init;
-},{"../core/environment":4,"../window/config":78,"./global":52,"./internal":54,"./item":55,"./util/version":61}],54:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":76,"./global":51,"./internal":53,"./item":54,"./util/version":59}],53:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 var remote_1 = _require('./remote');
 var window_1 = _require('../util/window');
@@ -10913,7 +10818,7 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
         asyncCallback(asyncID, result);
     }
 };
-},{"../util/window":77,"./remote":56}],55:[function(_require,module,exports){
+},{"../util/window":75,"./remote":55}],54:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -11220,7 +11125,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"../internal/app":50,"./internal":54,"./util/version":61}],56:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":49,"./internal":53,"./util/version":59}],55:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var ready_1 = _require('../util/ready');
@@ -11460,748 +11365,7 @@ var Remote = (function () {
     return Remote;
 })();
 exports.Remote = Remote;
-},{"../core/extension":5,"../core/output":22,"../util/eventemitter":73,"../util/io":74,"../util/ready":75,"./eventmanager":51,"./internal":54}],57:[function(_require,module,exports){
-/// <reference path="../../defs/es6-promise.d.ts" />
-var app_1 = _require('../internal/app');
-var internal_1 = _require('../internal/internal');
-var scene_1 = _require('../core/scene');
-var Render = (function () {
-    function Render() {
-    }
-    // static createView() {
-    //   exec('AppSetPropertyAsync', `enableview:${Render._VIEW_RENDER}`, '1')
-    // }
-    Render.setCanvas = function (canvas, fps) {
-        return new Promise(function (resolve) {
-            Render.canvases[Render._CANVAS_ACTIVE] = canvas;
-            Render.FPS = fps;
-            for (var i in Render.canvases) {
-                var canvasIndex = Number(i);
-                // initialize GL context with proper programs
-                Render.initializeCanvas(canvasIndex);
-            }
-            // Render.createView()
-            resolve();
-        });
-    };
-    Render.drawToTexture = function (scene) {
-        return new Promise(function (resolve) {
-            scene_1.Scene.getActiveScene().then(function (scene) {
-                return scene.getSceneNumber();
-            }).then(function (num) {
-                Render.then[Render._CANVAS_ACTIVE] = window.performance.now();
-                if (String(num) === String(scene + 1)) {
-                    console.log('Are we always here?', num, scene + 1);
-                    Render.setCanvasToUseView(Render._CANVAS_ACTIVE, Render._VIEW_MAIN);
-                    // no need to render for preview yet, so just start rendering ACTIVE canvas.
-                    Render.startStopRender(true, Render._CANVAS_ACTIVE);
-                    resolve();
-                }
-                else {
-                    app_1.App.set("preset:" + Render._VIEW_RENDER, String(scene)).then(function () {
-                        Render.setCanvasToUseView(Render._CANVAS_ACTIVE, Render._VIEW_RENDER);
-                        Render.startStopRender(true, Render._CANVAS_ACTIVE);
-                        resolve();
-                    });
-                }
-            });
-        });
-    };
-    Render.initializeCanvas = function (canvasIndex) {
-        var thisCanvas = Render.canvases[canvasIndex];
-        var thisGl = Render.initWebGL(thisCanvas);
-        Render.gl[canvasIndex] = thisGl;
-        thisGl.viewport(0, 0, thisCanvas.width, thisCanvas.height);
-        thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-        thisGl.clearDepth(1.0);
-        var vShader = thisGl.createShader(thisGl.VERTEX_SHADER);
-        thisGl.shaderSource(vShader, Render.vertexShaderCode);
-        thisGl.compileShader(vShader);
-        if (!thisGl.getShaderParameter(vShader, thisGl.COMPILE_STATUS)) {
-            throw 'could not compile shader:' + thisGl.getShaderInfoLog(vShader);
-        }
-        var fShader = thisGl.createShader(thisGl.FRAGMENT_SHADER);
-        thisGl.shaderSource(fShader, Render.fragmentShaderCode);
-        thisGl.compileShader(fShader);
-        if (!thisGl.getShaderParameter(fShader, thisGl.COMPILE_STATUS)) {
-            throw 'could not compile shader:' + thisGl.getShaderInfoLog(fShader);
-        }
-        Render.materialProg[canvasIndex] = thisGl.createProgram();
-        var thisProg = Render.materialProg[canvasIndex];
-        thisGl.attachShader(thisProg, vShader);
-        thisGl.attachShader(thisProg, fShader);
-        thisGl.linkProgram(thisProg);
-        if (!thisGl.getProgramParameter(thisProg, thisGl.LINK_STATUS)) {
-            throw ('program filed to link:' + thisGl.getProgramInfoLog(thisProg));
-        }
-        thisGl.useProgram(thisProg);
-        Render.materialPosAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aVertexPosition');
-        Render.materialUVAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aTextureCoord');
-        thisGl.enableVertexAttribArray(Render.materialPosAttr[canvasIndex]);
-        thisGl.enableVertexAttribArray(Render.materialUVAttr[canvasIndex]);
-        thisGl.uniform1i(thisGl.getUniformLocation(thisProg, 'uSampler'), 0);
-        Render.updateProjectionMatrix(canvasIndex);
-        Render.setViewMatrix(canvasIndex, Render.lookAt(0.0, 0.0, thisCanvas.width / 2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0));
-        Render.recreateSharedTexture(canvasIndex);
-    };
-    Render.setCanvasToUseView = function (canvasIndex, view) {
-        var sharedHandleWords = Render.getSharedTextureSharedHandle(canvasIndex);
-        return internal_1.exec('NewWindow', "texture_" + canvasIndex, "dupworkspace:" + view + ",1,1&d3dhandle:" + sharedHandleWords[0] + "," + sharedHandleWords[1]);
-    };
-    Render.startStopRender = function (shouldRender, canvasIndex) {
-        return new Promise(function (resolve) {
-            Render._isRunning[canvasIndex] = shouldRender;
-            if (shouldRender) {
-                requestAnimationFrame(function () {
-                    Render.maybeRender(canvasIndex);
-                });
-            }
-            resolve(shouldRender);
-        });
-    };
-    // we only directly call render() once, for initializing texture in memory.
-    // afterwards, we always check if we should render
-    Render.maybeRender = function (canvasIndex) {
-        if (Render._isRunning[canvasIndex]) {
-            requestAnimationFrame(function () {
-                Render.maybeRender(canvasIndex);
-            });
-            var now = window.performance.now();
-            var elapsed = now - Render.then[canvasIndex];
-            if (elapsed > Render.fpsInterval) {
-                Render.then[canvasIndex] = now - (elapsed % Render.fpsInterval);
-                Render.render(canvasIndex);
-            }
-        }
-    };
-    // Called whenever we need to repaint the scene. Usually called 60 times a second but can be called
-    // more or less as _required.
-    Render.render = function (canvasIndex) {
-        if (!Render.gl[canvasIndex])
-            return;
-        var thisGl = Render.gl[canvasIndex];
-        thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-        thisGl.clear(thisGl.COLOR_BUFFER_BIT | thisGl.DEPTH_BUFFER_BIT);
-        if (Render.sharedTexture[canvasIndex] == null ||
-            Render.modelVertPosBuf[canvasIndex] == null ||
-            Render.modelVertUVBuf[canvasIndex] == null ||
-            Render.materialProg[canvasIndex] == null) {
-            return; // Nothing to render
-        }
-        // Render model
-        thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
-        thisGl.vertexAttribPointer(Render.materialPosAttr[canvasIndex], 3, thisGl.FLOAT, false, 0, 0);
-        thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
-        thisGl.vertexAttribPointer(Render.materialUVAttr[canvasIndex], 2, thisGl.FLOAT, false, 0, 0);
-        thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-        thisGl.drawArrays(thisGl.TRIANGLE_STRIP, 0, Render.modelVertCount);
-    };
-    Render.initWebGL = function (canvas) {
-        var gl = null;
-        try {
-            gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }) || canvas.getContext('experimental-webgl', { preserveDrawingBuffer: true });
-        }
-        catch (e) { }
-        if (!gl) {
-            alert('Unable to initialize WebGL. Your browser may not support it.');
-            gl = null;
-        }
-        return gl;
-    };
-    Render.updateProjectionMatrix = function (canvasIndex) {
-        var canvas = Render.canvases[canvasIndex];
-        var width = canvas.width, height = canvas.height;
-        Render.setProjectionMatrix(canvasIndex, Render.ortho(width * -0.5, width * 0.5, height * -0.5, height * 0.5, width / 2, width));
-    };
-    Render.setViewMatrix = function (canvasIndex, mat) {
-        if (Render.materialProg[canvasIndex] == null)
-            return;
-        var thisGl = Render.gl[canvasIndex];
-        var loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uVMatrix');
-        thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
-    };
-    Render.setProjectionMatrix = function (canvasIndex, mat) {
-        if (Render.materialProg[canvasIndex] == null)
-            return;
-        var thisGl = Render.gl[canvasIndex];
-        var loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uPMatrix');
-        thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
-    };
-    Render.recreateSharedTexture = function (canvasIndex) {
-        if (!Render.gl[canvasIndex])
-            return null;
-        var thisGl = Render.gl[canvasIndex];
-        var _a = Render.canvases[canvasIndex], width = _a.width, height = _a.height;
-        if (Render.sharedTexture[canvasIndex] != null) {
-            thisGl.deleteTexture(Render.sharedTexture[canvasIndex]);
-            Render.sharedTexture[canvasIndex] = null;
-        }
-        Render.recreateModel(canvasIndex, width, height);
-        var thisTexture = thisGl.createTexture();
-        Render.sharedTexture[canvasIndex] = thisTexture;
-        thisGl.bindTexture(thisGl.TEXTURE_2D, thisTexture);
-        thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_S, thisGl.CLAMP_TO_EDGE);
-        thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_T, thisGl.CLAMP_TO_EDGE);
-        thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MIN_FILTER, thisGl.NEAREST);
-        thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MAG_FILTER, thisGl.NEAREST);
-        thisGl.texImage2D(thisGl.TEXTURE_2D, 0, thisGl.RGBA, width, height, 0, thisGl.RGBA, thisGl.UNSIGNED_BYTE, Render.createTestPattern(width, height));
-        thisGl.enable(thisGl.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
-        Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
-        thisGl.disable(thisGl.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
-    };
-    Render.recreateModel = function (canvasIndex, width, height) {
-        if (!Render.gl[canvasIndex])
-            return null;
-        var thisGl = Render.gl[canvasIndex];
-        if (Render.modelVertPosBuf[canvasIndex] != null) {
-            thisGl.deleteBuffer(Render.modelVertPosBuf[canvasIndex]);
-            Render.modelVertPosBuf[canvasIndex] = null;
-        }
-        if (Render.modelVertUVBuf[canvasIndex] != null) {
-            thisGl.deleteBuffer(Render.modelVertUVBuf[canvasIndex]);
-            Render.modelVertUVBuf[canvasIndex] = null;
-        }
-        // Vertex positions in world space. It's a flat XY plane centered on the origin where 1 texel
-        // equals 1 world unit.
-        Render.modelVertPosBuf[canvasIndex] = thisGl.createBuffer();
-        thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
-        var vertPos = [
-            width * -0.5, height * -0.5, 0.0,
-            width * 0.5, height * -0.5, 0.0,
-            width * -0.5, height * 0.5, 0.0,
-            width * 0.5, height * 0.5, 0.0
-        ];
-        thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertPos), thisGl.STATIC_DRAW);
-        // Vertex UV coordinates. Uses the WebGL convention of the texture origin being in the
-        // bottom-left corner.
-        Render.modelVertUVBuf[canvasIndex] = thisGl.createBuffer();
-        thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
-        // invert Y coordinates because of opposite conventions
-        var vertUV = [
-            0.0, 1.0,
-            1.0, 1.0,
-            0.0, 0.0,
-            1.0, 0.0
-        ];
-        thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertUV), thisGl.STATIC_DRAW);
-    };
-    /**********************************
-     * WEBGL SHARED TEXTURE FUNCTIONS *
-     **********************************/
-    Render.getSharedTextureSharedHandle = function (canvasIndex) {
-        if (Render.sharedTexture[canvasIndex] == null)
-            return [0, 0];
-        var thisGl = Render.gl[canvasIndex];
-        thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-        return thisGl.getParameter(thisGl.DXGI_SHARED_HANDLE_SPLITMEDIA);
-    };
-    /*
-    * necessary to create a test pattern for texImage2D; if we don't call that,
-    * then shared texture isn't allocated any space in memory, and will not
-    * get a shared handle.
-    */
-    Render.createTestPattern = function (width, height) {
-        var pattern = new Uint8Array(width * height * 4);
-        for (var y = 0; y < height; y++) {
-            for (var x = 0; x < width; x++) {
-                var i = (y * width + x) * 4;
-                pattern[i + 0] = 0; // R
-                pattern[i + 1] = 0; // G
-                pattern[i + 2] = 0; // B
-                pattern[i + 3] = 255; // A
-            }
-        }
-        return pattern;
-    };
-    // MVP functions
-    Render.lookAt = function (ex, ey, ez, cx, cy, cz, ux, uy, uz) {
-        var z = Render.vectorUnit([ex - cx, ey - cy, ez - cz]);
-        var x = Render.vectorUnit(Render.vectorCross([ux, uy, uz], z));
-        var y = Render.vectorUnit(Render.vectorCross(z, x));
-        // already flattened
-        var m = [
-            x[0], x[1], x[2], 0,
-            y[0], y[1], y[2], 0,
-            z[0], z[1], z[2], 0,
-            0, 0, 0, 1];
-        var t = [
-            1, 0, 0, -ex,
-            0, 1, 0, -ey,
-            0, 0, 1, -ez,
-            0, 0, 0, 1];
-        return Render.columnMajor(Render.matrixMult(m, t));
-    };
-    Render.ortho = function (left, right, bottom, top, znear, zfar) {
-        var tx = -(right + left) / (right - left);
-        var ty = -(top + bottom) / (top - bottom);
-        var tz = -(zfar + znear) / (zfar - znear);
-        return Render.columnMajor([
-            2 / (right - left), 0, 0, tx,
-            0, 2 / (top - bottom), 0, ty,
-            0, 0, -2 / (zfar - znear), tz,
-            0, 0, 0, 1
-        ]);
-    };
-    /*************************
-     * HELPER MATH FUNCTIONS *
-     *************************/
-    // Vector functions
-    // vectors of size 3 only
-    Render.vectorCross = function (_a, _b) {
-        var u1 = _a[0], u2 = _a[1], u3 = _a[2];
-        var v1 = _b[0], v2 = _b[1], v3 = _b[2];
-        return [u2 * v3 - u3 * v2, u3 * v1 - u1 * v3, u1 * v2 - u2 * v1];
-    };
-    Render.vectorUnit = function (v) {
-        // modulus
-        var mod = Math.sqrt(v.reduce(function (product, e) {
-            // dot product
-            return product + e * e;
-        }));
-        if (mod === 0) {
-            return v;
-        }
-        else {
-            return v.map(function (el) {
-                return el / mod;
-            });
-        }
-    };
-    // Matrix functions
-    // 4x4 only
-    Render.matrixMult = function (a, b) {
-        var mult = new Array(16);
-        for (var i = 0; i < 4; ++i) {
-            for (var j = 0; j < 4; ++j) {
-                // calc 4*i + j
-                mult[4 * i + j] = 0;
-                for (var k = 0; k < 4; ++k) {
-                    mult[4 * i + j] += a[4 * i + k] * b[4 * k + j];
-                }
-            }
-        }
-        return mult;
-    };
-    // 4x4 only
-    Render.columnMajor = function (mat) {
-        var maj = new Array(16);
-        for (var j = 0; j < 4; ++j) {
-            for (var i = 0; i < 4; ++i) {
-                maj[4 * j + i] = mat[4 * i + j];
-            }
-        }
-        return maj;
-    };
-    /***************************
-    * VARIABLES AND CONSTANTS *
-    ***************************/
-    Render._CANVAS_ACTIVE = 0;
-    // Two views. Sometimes, CANVAS_PREVIEW will use _VIEW_RENDER because two views cannot look at the same scene.
-    Render._VIEW_RENDER = 3;
-    Render._VIEW_MAIN = 0;
-    // GL variables
-    Render._isRunning = [false, true]; // Whether we render for this canvas.
-    Render.modelVertCount = 4; // Number of array indices for the model. staticant across WebGL contexts
-    Render.canvases = [null]; // Global variable for the 2 canvas elements
-    Render.gl = [null]; // A global variable for the WebGL context
-    Render.sharedTexture = [null]; // The texture that we are sharing between contexts
-    Render.modelVertPosBuf = [null]; // Vertex position data for the model
-    Render.modelVertUVBuf = [null]; // Vertex UV data for the model
-    Render.materialProg = [null]; // The shader program for rendering out model
-    Render.materialPosAttr = [null]; // Position attribute location in material program
-    Render.materialUVAttr = [null]; // UV attribute location in material program
-    Render.vertexShaderCode = "\n     attribute vec3 aVertexPosition;\n     attribute vec2 aTextureCoord;\n\n     uniform mat4 uVMatrix; // View matrix\n     uniform mat4 uPMatrix; // Projection matrix\n\n     varying highp vec2 vTextureCoord;\n\n     void main(void) {\n         gl_Position = uPMatrix * uVMatrix * vec4(aVertexPosition, 1.0);\n\n         vTextureCoord = aTextureCoord;\n     }\n ";
-    Render.fragmentShaderCode = "\n     varying highp vec2 vTextureCoord;\n\n     uniform sampler2D uSampler;\n\n     void main(void) {\n         gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));\n     }\n ";
-    // core-related variables
-    Render.FPS = 30;
-    Render.fpsInterval = 1000 / 30;
-    Render.then = [null, null]; // elapsed is now-then. then signifies last frame render. We keep separate then's for each canvas for sanity
-    return Render;
-})();
-exports.Render = Render; // end of code
-// export class Render {
-//   static gl = [null]
-//   static canvases = [null]
-//   static sharedTexture = [null]; // The texture that we are sharing between contexts
-//   static modelVertPosBuf = [null]; // Vertex position data for the model
-//   static modelVertUVBuf = [null]; // Vertex UV data for the model
-//   static materialProg = [null]; // The shader program for rendering out model
-//   static materialPosAttr = [null]; // Position attribute location in material program
-//   static materialUVAttr = [null]; // UV attribute location in material program
-//   static then = [null]
-//   static vertexShaderCode = `
-//     attribute vec3 aVertexPosition;
-//     attribute vec2 aTextureCoord;
-//     uniform mat4 uVMatrix; // View matrix
-//     uniform mat4 uPMatrix; // Projection matrix
-//     varying highp vec2 vTextureCoord;
-//     void main(void) {
-//         gl_Position = uPMatrix * uVMatrix * vec4(aVertexPosition, 1.0);
-//         vTextureCoord = aTextureCoord;
-//     }
-//   `;
-//   static fragmentShaderCode = `
-//     varying highp vec2 vTextureCoord;
-//     uniform sampler2D uSampler;
-//     void main(void) {
-//         gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-//     }
-//   `;
-//   static modelVertCount = 4; // Number of array indices for the model. Constant across WebGL contexts
-//   static fps = 30;
-//   static fpsInterval = 1000/Render.fps
-//   static isRendering = []
-//   static toggleRender(shouldRender) {
-//     return new Promise(resolve => {
-//       Render.startStopRender(0, shouldRender)
-//       resolve(shouldRender)
-//     })
-//   }
-//   static setCanvasToUseView() {
-//     let sharedHandleWords = Render.getSharedTextureSharedHandle(0);
-//     return new Promise(resolve => {
-//       exec('NewWindow', `texture_${0}`, `dupworkspace:${0},1,1&d3dhandle:${sharedHandleWords[0]},${sharedHandleWords[1]}`);
-//     })
-//   }
-//   private static getSharedTextureSharedHandle(canvasIndex) {
-//     if (Render.sharedTexture[canvasIndex] == null)
-//         return [0, 0];
-//     let thisGl = Render.gl[canvasIndex];
-//     thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-//     return thisGl.getParameter(thisGl.DXGI_SHARED_HANDLE_SPLITMEDIA);
-//   }
-//   // initializeCanvas -> getContext -> initializeCanvas ->
-//   // createShaders -> initializeCanvas -> render
-//   static initializeCanvas(canvas, fps): any {
-//     Render.fps = fps;
-//     const canvasIndex = 0;
-//     Render.canvases[canvasIndex] = canvas;
-//     Render.then[canvasIndex] = window.performance.now();
-//     return new Promise(resolve => {
-//       let webGL = Render.getContext(canvas)
-//       webGL.then(thisGL => {
-//         Render.gl[canvasIndex] = thisGL;
-//         let createShaders = Render.createShaders(canvasIndex)
-//         createShaders.then(index => {
-//           return Render.setCanvasToUseView()
-//         }).then(() => {
-//           Render.startStopRender(0, true)
-//         })
-//       })
-//     })
-//   }
-//   static setFPS(fps: number) {
-//     return new Promise(resolve => {
-//       Render.fps = fps
-//       resolve(true)
-//     })
-//   }
-//     // Called whenever we need to repaint the scene. Usually called 60 times a second but can be called
-//   // more or less as _required.
-//   static render(canvasIndex) {
-//     return new Promise(resolve => {
-//       if (!Render.gl[canvasIndex])
-//           return;
-//       let thisGl = Render.gl[canvasIndex];
-//       console.log('render got this >>>>>>', thisGl)
-//       thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-//       thisGl.clear(thisGl.COLOR_BUFFER_BIT | thisGl.DEPTH_BUFFER_BIT);
-//       if (Render.sharedTexture[canvasIndex] == null ||
-//           Render.modelVertPosBuf[canvasIndex] == null ||
-//           Render.modelVertUVBuf[canvasIndex] == null ||
-//           Render.materialProg[canvasIndex] == null) {
-//               return; // Nothing to render
-//       }
-//       // Render model
-//       thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
-//       thisGl.vertexAttribPointer(Render.materialPosAttr[canvasIndex], 3, thisGl.FLOAT, false, 0, 0);
-//       thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
-//       thisGl.vertexAttribPointer(Render.materialUVAttr[canvasIndex], 2, thisGl.FLOAT, false, 0, 0);
-//       thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-//       thisGl.drawArrays(thisGl.TRIANGLE_STRIP, 0, Render.modelVertCount);
-//     })
-//   }
-//   /**********************************************************
-//    * All supporting calls needed for creating all necessary *
-//    * objects and other supporting calls for calculations.   *
-//    **********************************************************/
-//   // To stop rendering, just set to false
-//   private static startStopRender(canvasIndex, shouldRender) {
-//     Render.isRendering[canvasIndex] = shouldRender;
-//     if (shouldRender) {
-//         requestAnimationFrame(() => {
-//           Render.maybeRender(canvasIndex);
-//         });
-//     }
-//   }
-//   // we only directly call render() once, for initializing texture in memory.
-//   // afterwards, we always check if we should render
-//   static maybeRender(canvasIndex) {
-//     if (Render.isRendering[canvasIndex]) {
-//       requestAnimationFrame(() => {
-//           Render.maybeRender(canvasIndex);
-//       });
-//       let now = window.performance.now();
-//       let elapsed = now - Render.then[canvasIndex];
-//       if (elapsed > Render.fpsInterval) {
-//         Render.then[canvasIndex] = now - (elapsed % Render.fpsInterval);
-//         Render.render(canvasIndex);
-//       }
-//     }
-//   }
-//   private static getContext(canvas: any): any {
-//     return new Promise(resolve => {
-//       let gl = null;
-//       try {
-//         gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }) || canvas.getContext('experimental-webgl', { preserveDrawingBuffer: true });
-//       }
-//       catch (e) { }
-//       if (!gl) {
-//         alert('Unable to initialize WebGL. Your browser may not support it.');
-//         gl = null;
-//       }
-//       resolve(gl);
-//     });
-//   }
-//   // createShaders -> shaderHelper -> recreateSharedTexture
-//   private static createShaders(canvasIndex: number): any {
-//     let thisGl = Render.gl[canvasIndex]
-//     let thisCanvas = Render.canvases[canvasIndex]
-//     return new Promise(resolve => {
-//         Render.shaderHelper(thisGl, thisCanvas, canvasIndex)
-//         .then(() => {
-//           Render.recreateSharedTexture(canvasIndex).then(ret => {
-//             resolve(ret)
-//           })
-//         })
-//     })
-//   }
-//   private static recreateModel(canvasIndex, width, height) {
-//     if (!Render.gl[canvasIndex])
-//         return null;
-//     let thisGl = Render.gl[canvasIndex];
-//     if (Render.modelVertPosBuf[canvasIndex] != null) {
-//         thisGl.deleteBuffer(Render.modelVertPosBuf[canvasIndex]);
-//         Render.modelVertPosBuf[canvasIndex] = null;
-//     }
-//     if (Render.modelVertUVBuf[canvasIndex] != null) {
-//         thisGl.deleteBuffer(Render.modelVertUVBuf[canvasIndex]);
-//         Render.modelVertUVBuf[canvasIndex] = null;
-//     }
-//     // Vertex positions in world space. It's a flat XY plane centered on the origin where 1 texel
-//     // equals 1 world unit.
-//     Render.modelVertPosBuf[canvasIndex] = thisGl.createBuffer();
-//     thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
-//     var vertPos = [
-//         width * -0.5, height * -0.5, 0.0,
-//         width *  0.5, height * -0.5, 0.0,
-//         width * -0.5, height *  0.5, 0.0,
-//         width *  0.5, height *  0.5, 0.0
-//     ];
-//     thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertPos), thisGl.STATIC_DRAW);
-//     // Vertex UV coordinates. Uses the WebGL convention of the texture origin being in the
-//     // bottom-left corner.
-//     Render.modelVertUVBuf[canvasIndex] = thisGl.createBuffer();
-//     thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
-//     // invert Y coordinates because of opposite conventions
-//     var vertUV = [
-//         0.0, 1.0,
-//         1.0, 1.0,
-//         0.0, 0.0,
-//         1.0, 0.0
-//     ]
-//     thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertUV), thisGl.STATIC_DRAW);
-//   }
-//   /*********************************
-//    * WEBGL MATRIX INITIALIZERS     *
-//    * These are one-time use for    *
-//    * initialization, do not touch! *
-//    *********************************/
-//   private static setViewMatrix(canvasIndex, mat) {
-//     if (Render.materialProg[canvasIndex] == null)
-//         return;
-//     let thisGl = Render.gl[canvasIndex];
-//     let loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uVMatrix');
-//     thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
-//   }
-//   private static setProjectionMatrix(canvasIndex, mat) {
-//     if (Render.materialProg[canvasIndex] == null)
-//         return;
-//     let thisGl = Render.gl[canvasIndex];
-//     let loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uPMatrix');
-//     thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
-//   }
-//   private static updateProjectionMatrix(canvasIndex) {
-//     let canvas = Render.canvases[canvasIndex]
-//     let {width, height} = canvas;
-//     Render.setProjectionMatrix(canvasIndex, Render.ortho(
-//         width * -0.5, width * 0.5,
-//         height * -0.5, height * 0.5,
-//         width/2, width
-//     ))
-//   }
-//   /*************************
-//    * HELPER MATH FUNCTIONS *
-//    *************************/
-//   // Vector functions
-//   // vectors of size 3 only
-//   private static vectorCross([u1, u2, u3], [v1,v2,v3]) {
-//     return [u2*v3 - u3*v2, u3*v1 - u1*v3, u1*v2 - u2*v1];
-//   }
-//   private static vectorUnit(v) {
-//     // modulus
-//     let mod = Math.sqrt(v.reduce((product, e) => {
-//         // dot product
-//         return product + e*e;
-//     }));
-//     if (mod === 0) {
-//         return v;
-//     } else {
-//         return v.map(el => {
-//             return el/mod;
-//         });
-//     }
-//   }
-//   // Matrix functions
-//   // 4x4 only
-//   private static matrixMult(a, b) {
-//     let mult = new Array(16);
-//     for (let i = 0; i < 4; ++i) {
-//         for (let j = 0; j < 4; ++j) {
-//             // calc 4*i + j
-//             mult[4*i + j] = 0;
-//             for (let k = 0; k < 4; ++k) {
-//                 mult[4*i + j] += a[4*i+k] * b[4*k+j];
-//             }
-//         }
-//     }
-//     return mult;
-//   }
-//   // 4x4 only
-//   private static columnMajor(mat) {
-//     let maj = new Array(16);
-//     for (let j = 0; j < 4; ++j) {
-//         for (let i = 0; i < 4; ++i) {
-//             maj[4*j+i] = mat[4*i+j];
-//         }
-//     }
-//     return maj;
-//   }
-//   // MVP functions
-//   private static lookAt(ex, ey, ez,
-//                 cx, cy, cz,
-//                 ux, uy, uz) {
-//     var z = Render.vectorUnit([ex - cx, ey - cy, ez - cz]);
-//     var x = Render.vectorUnit(Render.vectorCross([ux, uy, uz], z));
-//     var y = Render.vectorUnit(Render.vectorCross(z, x));
-//     // already flattened
-//     var m = [
-//         x[0], x[1], x[2], 0,
-//         y[0], y[1], y[2], 0,
-//         z[0], z[1], z[2], 0,
-//         0, 0, 0, 1];
-//     var t = [
-//         1, 0, 0, -ex,
-//         0, 1, 0, -ey,
-//         0, 0, 1, -ez,
-//         0, 0, 0, 1];
-//     return Render.columnMajor(Render.matrixMult(m, t));
-//   }
-//   private static ortho(left, right,
-//               bottom, top,
-//               znear, zfar) {
-//     var tx = -(right + left) / (right - left);
-//     var ty = -(top + bottom) / (top - bottom);
-//     var tz = -(zfar + znear) / (zfar - znear);
-//     return Render.columnMajor([
-//         2 / (right - left), 0, 0, tx,
-//         0, 2 / (top - bottom), 0, ty,
-//         0, 0, -2 / (zfar - znear), tz,
-//         0, 0, 0, 1
-//     ]);
-//   }
-//   private static shaderHelper(thisGl: any, thisCanvas: any, canvasIndex: number) {
-//     return new Promise(resolve => {
-//       thisGl.viewport(0, 0, thisCanvas.width, thisCanvas.height);
-//       thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-//       thisGl.clearDepth(1.0);
-//       let vShader = thisGl.createShader(thisGl.VERTEX_SHADER);
-//       thisGl.shaderSource(vShader, Render.vertexShaderCode);
-//       thisGl.compileShader(vShader);
-//       if(!thisGl.getShaderParameter(vShader, thisGl.COMPILE_STATUS)) {
-//         throw 'could not compile shader:' + thisGl.getShaderInfoLog(vShader);
-//       }
-//       let fShader = thisGl.createShader(thisGl.FRAGMENT_SHADER);
-//       thisGl.shaderSource(fShader, Render.fragmentShaderCode);
-//       thisGl.compileShader(fShader);
-//       if(!thisGl.getShaderParameter(fShader, thisGl.COMPILE_STATUS)) {
-//         throw 'could not compile shader:' + thisGl.getShaderInfoLog(fShader);
-//       }
-//       Render.materialProg[canvasIndex] = thisGl.createProgram();
-//       let thisProg = Render.materialProg[canvasIndex];
-//       thisGl.attachShader(thisProg, vShader);
-//       thisGl.attachShader(thisProg, fShader);
-//       thisGl.linkProgram(thisProg);
-//       if(!thisGl.getProgramParameter(thisProg, thisGl.LINK_STATUS)) {
-//         throw ('program filed to link:' + thisGl.getProgramInfoLog(thisProg));
-//       }
-//       thisGl.useProgram(thisProg);
-//       Render.materialPosAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aVertexPosition');
-//       Render.materialUVAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aTextureCoord');
-//       thisGl.enableVertexAttribArray(Render.materialPosAttr[canvasIndex]);
-//       thisGl.enableVertexAttribArray(Render.materialUVAttr[canvasIndex]);
-//       thisGl.uniform1i(thisGl.getUniformLocation(thisProg, 'uSampler'), 0);
-//       Render.updateProjectionMatrix(canvasIndex);
-//       Render.setViewMatrix(canvasIndex, Render.lookAt(0.0, 0.0, thisCanvas.width / 2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0));
-//       resolve()
-//     })
-//   }
-//   private static recreateSharedTexture(canvasIndex) {
-//     return new Promise(resolve => {
-//       if (!Render.gl[canvasIndex])
-//       return null;
-//       let thisGl = Render.gl[canvasIndex];
-//       let { width, height } = Render.canvases[canvasIndex];
-//       if (Render.sharedTexture[canvasIndex] != null) {
-//           thisGl.deleteTexture(Render.sharedTexture[canvasIndex]);
-//           Render.sharedTexture[canvasIndex] = null;
-//       }
-//       Render.recreateModel(canvasIndex, width, height);
-//       let thisTexture = thisGl.createTexture();
-//       Render.sharedTexture[canvasIndex] = thisTexture;
-//       thisGl.bindTexture(thisGl.TEXTURE_2D, thisTexture);
-//       thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_S, thisGl.CLAMP_TO_EDGE);
-//       thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_T, thisGl.CLAMP_TO_EDGE);
-//       thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MIN_FILTER, thisGl.NEAREST);
-//       thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MAG_FILTER, thisGl.NEAREST);
-//       thisGl.texImage2D(thisGl.TEXTURE_2D, 0, thisGl.RGBA, width, height, 0, thisGl.RGBA, thisGl.UNSIGNED_BYTE,
-//         Render.createTestPattern(width, height));
-//       thisGl.enable(thisGl.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
-//       Render.render(canvasIndex)
-//       thisGl.disable(thisGl.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
-//       resolve(canvasIndex);
-//     })
-//   }
-//   /*
-//   * necessary to create a test pattern for texImage2D; if we don't call that,
-//   * then shared texture isn't allocated any space in memory, and will not
-//   * get a shared handle.
-//   */
-//   private static createTestPattern(width, height) {
-//     var pattern = new Uint8Array(width * height * 4);
-//     for (let y = 0; y < height; y++) {
-//         for (let x = 0; x < width; x++) {
-//             var i = (y * width + x) * 4;
-//             pattern[i + 0] = 0; // R
-//             pattern[i + 1] = 0; // G
-//             pattern[i + 2] = 0; // B
-//             pattern[i + 3] = 255; // A
-//         }
-//     }
-//     return pattern;
-//   }
-// }
-},{"../core/scene":23,"../internal/app":50,"../internal/internal":54}],58:[function(_require,module,exports){
+},{"../core/extension":5,"../core/output":22,"../util/eventemitter":71,"../util/io":72,"../util/ready":73,"./eventmanager":50,"./internal":53}],56:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -12272,7 +11436,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":62}],59:[function(_require,module,exports){
+},{"./xml":60}],57:[function(_require,module,exports){
 var Logger = (function () {
     function Logger() {
     }
@@ -12306,7 +11470,7 @@ var Logger = (function () {
     return Logger;
 })();
 exports.Logger = Logger;
-},{}],60:[function(_require,module,exports){
+},{}],58:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -12318,7 +11482,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],61:[function(_require,module,exports){
+},{}],59:[function(_require,module,exports){
 /*
 * List here the versions where we would limit a functionality.
 */
@@ -12380,7 +11544,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],62:[function(_require,module,exports){
+},{}],60:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -12435,7 +11599,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],63:[function(_require,module,exports){
+},{}],61:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12774,7 +11938,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":58,"../internal/util/xml":62}],64:[function(_require,module,exports){
+},{"../internal/util/json":56,"../internal/util/xml":60}],62:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12948,7 +12112,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../core/scene":23,"../internal/app":50,"../internal/util/json":58,"../internal/util/xml":62}],65:[function(_require,module,exports){
+},{"../core/scene":23,"../internal/app":49,"../internal/util/json":56,"../internal/util/xml":60}],63:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var scene_1 = _require('../core/scene');
@@ -13050,7 +12214,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../core/scene":23,"../internal/app":50}],66:[function(_require,module,exports){
+},{"../core/scene":23,"../internal/app":49}],64:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
@@ -13507,7 +12671,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":4,"../core/scene":23,"../internal/app":50,"../internal/util/json":58,"../internal/util/xml":62,"../util/rectangle":76}],67:[function(_require,module,exports){
+},{"../core/environment":4,"../core/scene":23,"../internal/app":49,"../internal/util/json":56,"../internal/util/xml":60,"../util/rectangle":74}],65:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -13657,7 +12821,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../core/scene":23,"../internal/app":50,"../internal/util/json":58,"../internal/util/xml":62}],68:[function(_require,module,exports){
+},{"../core/scene":23,"../internal/app":49,"../internal/util/json":56,"../internal/util/xml":60}],66:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var app_1 = _require('../internal/app');
@@ -13855,7 +13019,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../core/environment":4,"../core/scene":23,"../internal/app":50,"../internal/internal":54}],69:[function(_require,module,exports){
+},{"../core/environment":4,"../core/scene":23,"../internal/app":49,"../internal/internal":53}],67:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -14224,7 +13388,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/dll":3,"../core/environment":4,"../internal/app":50,"../internal/internal":54,"./audio":63,"./camera":64,"./game":66,"./microphone":67,"./screen":68}],70:[function(_require,module,exports){
+},{"../core/dll":3,"../core/environment":4,"../internal/app":49,"../internal/internal":53,"./audio":61,"./camera":62,"./game":64,"./microphone":65,"./screen":66}],68:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var scene_1 = _require('../core/scene');
@@ -14346,7 +13510,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../core/scene":23,"../internal/app":50}],71:[function(_require,module,exports){
+},{"../core/scene":23,"../internal/app":49}],69:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
@@ -14547,7 +13711,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../core/scene":23,"../internal/app":50,"../internal/util/json":58,"../internal/util/xml":62,"../util/io":74}],72:[function(_require,module,exports){
+},{"../core/environment":4,"../core/scene":23,"../internal/app":49,"../internal/util/json":56,"../internal/util/xml":60,"../util/io":72}],70:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -14641,7 +13805,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],73:[function(_require,module,exports){
+},{}],71:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 // simple event emitter
 var EventEmitter = (function () {
@@ -14765,7 +13929,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{"../internal/remote":56}],74:[function(_require,module,exports){
+},{"../internal/remote":55}],72:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('../core/environment');
@@ -14986,7 +14150,7 @@ window_1.default.OnGetVideoDurationFailed = function (file) {
         oldOnGetVideoDuration(file);
     }
 };
-},{"../core/environment":4,"../internal/internal":54,"../internal/remote":56,"./window":77}],75:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"./window":75}],73:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
@@ -15062,7 +14226,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":53,"../internal/remote":56,"../internal/util/version":61}],76:[function(_require,module,exports){
+},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":52,"../internal/remote":55,"../internal/util/version":59}],74:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -15279,7 +14443,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],77:[function(_require,module,exports){
+},{}],75:[function(_require,module,exports){
 (function (global){
 var win = {};
 if (typeof window !== 'undefined') {
@@ -15296,7 +14460,7 @@ else {
 }
 exports.default = win;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],78:[function(_require,module,exports){
+},{}],76:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15472,7 +14636,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":4,"../internal/internal":54,"../internal/remote":56,"../util/eventemitter":73}],79:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/eventemitter":71}],77:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -15791,7 +14955,7 @@ window_1.default.OnDialogResult = function (result) {
         oldOnDialogResult(result);
     }
 };
-},{"../core/environment":4,"../internal/internal":54,"../internal/remote":56,"../util/rectangle":76,"../util/window":77}],80:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":53,"../internal/remote":55,"../util/rectangle":74,"../util/window":75}],78:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16128,7 +15292,7 @@ window_1.default.OnSceneLoad = function () {
         }
     });
 };
-},{"../core/environment":4,"../core/extension":5,"../core/items/item":16,"../core/scene":23,"../internal/app":50,"../internal/eventmanager":51,"../internal/internal":54,"../internal/util/json":58,"../internal/util/version":61,"../util/eventemitter":73,"../util/window":77}],81:[function(_require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":16,"../core/scene":23,"../internal/app":49,"../internal/eventmanager":50,"../internal/internal":53,"../internal/util/json":56,"../internal/util/version":59,"../util/eventemitter":71,"../util/window":75}],79:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16296,14 +15460,13 @@ window_1.default.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":4,"../internal/eventmanager":51,"../internal/global":52,"../internal/util/version":61,"../util/eventemitter":73,"../util/window":77}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":50,"../internal/global":51,"../internal/util/version":59,"../util/eventemitter":71,"../util/window":75}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(_require('./util/color'));
 __export(_require('./util/rectangle'));
 __export(_require('./util/io'));
-__export(_require('./core/thumbnail'));
 __export(_require('./core/environment'));
 __export(_require('./core/app'));
 __export(_require('./core/streaminfo'));
@@ -16364,7 +15527,7 @@ __export(_require('./window/dialog'));
 __export(_require('./internal/remote'));
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/thumbnail":48,"./core/transition":49,"./internal/remote":56,"./system/audio":63,"./system/camera":64,"./system/file":65,"./system/game":66,"./system/microphone":67,"./system/screen":68,"./system/system":69,"./system/url":70,"./system/videoplaylist":71,"./util/color":72,"./util/io":74,"./util/ready":75,"./util/rectangle":76,"./window/config":78,"./window/dialog":79,"./window/extension":80,"./window/source":81}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/transition":48,"./internal/remote":55,"./system/audio":61,"./system/camera":62,"./system/file":63,"./system/game":64,"./system/microphone":65,"./system/screen":66,"./system/system":67,"./system/url":68,"./system/videoplaylist":69,"./util/color":70,"./util/io":72,"./util/ready":73,"./util/rectangle":74,"./window/config":76,"./window/dialog":77,"./window/extension":78,"./window/source":79}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();
