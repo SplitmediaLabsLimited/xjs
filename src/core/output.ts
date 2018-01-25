@@ -79,7 +79,6 @@ export class Output {
   protected _name: string;
 
   constructor(props?: {name: string}) {
-
     this._name = props.name;
   }
 
@@ -136,6 +135,11 @@ export class Output {
           for (var i=0; i< results.children.length; i++) {
             channels.push(new Output({
               name: results.children[i]['name']
+                .replace(/&apos;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&')
             }));
           }
           resolve(channels)
@@ -149,11 +153,33 @@ export class Output {
   /**
    *  return: Promise<string>
    *
-   *  Gets the name of the Output.
+   *  Gets the actual name of the Output.
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
       resolve(this._name);
+    });
+  }
+
+  /**
+   *  return: Promise<string>
+   *
+   *  Gets the name of the Output as displayed in the Outputs menu.
+   */
+  getDisplayName(): Promise<string> {
+    return new Promise(resolve => {
+      if (this._name === 'XBC_NDIStream') {
+        resolve(this._name)
+      } else {
+        Output._getBroadcastChannels(Output._id, this._name).then(channelJXON => {
+          resolve(channelJXON['displayName']
+            .replace(/&apos;/g, "'")
+            .replace(/&quot;/g, '"')
+            .replace(/&gt;/g, '>')
+            .replace(/&lt;/g, '<')
+            .replace(/&amp;/g, '&'));
+        });
+      }
     });
   }
 
@@ -182,7 +208,7 @@ export class Output {
         resolve(true);
       } else {
         exec('CallHost', 'startBroadcast', this._name);
-        resolve(true);    
+        resolve(true);
       }
     })
   }
@@ -259,8 +285,30 @@ export class Output {
     })
   }
 
-  static _getBroadcastChannels(id:string, handler?:Function) {
-    Output._id = id;
+  static _getBroadcastChannels(id:string, ...args: any[]) {
+    let callback: Function = null;
+    let name;
+    let callbackName;
+    if(args.length === 1){
+       if (typeof args[0] === 'string') {
+        name = args[0];
+        callbackName = id+'_'+name;
+        Output._id = id;
+      }
+    } else if(args.length === 2) {
+      if (typeof args[0] === 'string') {
+        name = args[0];
+        callbackName = id+'_'+name;
+        Output._id = id;
+      } else {
+        Output._id = id;
+      }
+      if (args[1] instanceof Function) {
+        callback = args[0]
+      }
+    } else {
+      Output._id = id;
+    }
     return new Promise((resolve, reject) => {
       if(Environment.isSourcePlugin()) {
         let isID: boolean = /^{[A-F0-9\-]*}$/i.test(Output._id);
@@ -271,22 +319,27 @@ export class Output {
       if (Remote.remoteType === 'remote') {
         let message = {
             type: 'broadcastChannels',
-            id: Output._id
+            id,
+            name: name ? name : undefined
           }
-          Extension._remoteCallback[Output._id] = ({resolve});
+          Extension._remoteCallback[name ? callbackName : Output._id] = ({resolve});
           Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
       } else if (Remote.remoteType === 'proxy') {
-        if (Output._proxyCallback[Output._id] === undefined){
-          Output._proxyCallback[Output._id] = [];
+        if (Output._proxyCallback[name ? callbackName : Output._id] === undefined){
+          Output._proxyCallback[name ? callbackName : Output._id] = [];
         }
-        Output._proxyCallback[Output._id] = handler;
-        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
+        Output._proxyCallback[name ? callbackName : Output._id] = callback;
+        name ?
+          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
+          exec('CallHost', 'getBroadcastChannelList:'+ id);
       } else {
-        if (Output._callback[Output._id] === undefined){
-          Output._callback[Output._id] = [];
+        if (Output._callback[name ? callbackName : Output._id] === undefined){
+          Output._callback[name ? callbackName : Output._id] = [];
         }
-        Output._callback[Output._id] = ({resolve});
-        exec('CallHost', 'getBroadcastChannelList:'+Output._id);
+        Output._callback[name ? callbackName : Output._id] = ({resolve});
+        name ?
+          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
+          exec('CallHost', 'getBroadcastChannelList:'+ id);
       }
     })
   }
@@ -309,5 +362,24 @@ window.SetBroadcastChannelList = function(channels) {
 
   if (typeof oldSetBroadcastChannelList === 'function') {
     oldSetBroadcastChannelList(channels)
+  }
+}
+
+const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
+window.SetBroadcastChannelXml = function(channelXML) {
+  const channelJXON = JXON.parse(channelXML);
+  channelJXON['name'] = channelJXON['name'].replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
+  if (Remote.remoteType === 'proxy') {
+    Output._proxyCallback[Output._id+'_'+channelJXON['name']].call(this, channelXML)
+  } else {
+    Output._callback[Output._id+'_'+channelJXON['name']].resolve(channelJXON)
+  }
+
+  if (typeof oldSetBroadcastChannelXml === 'function') {
+    oldSetBroadcastChannelXml(channelXML)
   }
 }

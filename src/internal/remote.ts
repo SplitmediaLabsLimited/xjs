@@ -241,7 +241,7 @@ export class Remote {
           let Ext = messageObj['instance'] = new Extension()
           Ext.getId(messageObj['callback'])
         } else if (messageObj['type'] === 'broadcastChannels') {
-          Output._getBroadcastChannels(messageObj['id'], messageObj['callback'])
+          Output._getBroadcastChannels(messageObj['id'], messageObj['name'], messageObj['callback'])
         } else if (messageObj['type'] === 'event-manager') {
           EventManager._finalCallback(messageObj['event'])
         }
