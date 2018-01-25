@@ -20,6 +20,7 @@ export class EventManager {
   static callbacks = {};
   static _remoteHandlers = {};
   static _proxyHandlers = {};
+  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll'];
 
   static subscribe(event, _cb, id?) {
     return new Promise(resolve => {
@@ -35,7 +36,7 @@ export class EventManager {
             EventManager._remoteHandlers[_event] = [];
           }
 
-          if (_event === 'OnSceneAddByUser') {
+          if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
                      _event.startsWith('itemdestroyed_')) {
@@ -52,7 +53,7 @@ export class EventManager {
             EventManager._proxyHandlers[_event] = [];
           }
 
-          if (_event === 'OnSceneAddByUser') {
+          if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
                      _event.startsWith('itemdestroyed_')) {
@@ -69,8 +70,7 @@ export class EventManager {
               EventManager.callbacks[_event] = [];
             }
 
-            if (_event === 'OnSceneAddByUser' || _event === 'OnSceneAdd' ||
-            _event === 'OnSceneDelete' || _event === 'OnSceneDeleteAll') {
+            if (EventManager._appEventsList.indexOf(_event) > -1) {
               exec('AppSubscribeEvents');
             } else if (_event.startsWith('itempropchange_') ||
                        _event.startsWith('itemdestroyed_')) {
@@ -109,6 +109,7 @@ export class EventManager {
 }
 
 window.OnMetersUpdate = (evt) => {}
+window.AppOnShowSettings = (evt) => {}
 
 const oldSetEvent = window.SetEvent;
 window.SetEvent = (args: string) => {

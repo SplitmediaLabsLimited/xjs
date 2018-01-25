@@ -32,6 +32,7 @@ const _RESIZE = '2';
  *    - `scene-delete` : notifies when a scene is deleted. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1601 or higher.
  *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
  *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
+ *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -160,6 +161,34 @@ export class ExtensionWindow extends EventEmitter {
           EventManager.subscribe('OnSceneDeleteAll', function(settingsObj) {
             if (Environment.isExtension()) {
               ExtensionWindow.emit(event, settingsObj['args'][0]);
+            }
+            resolve(this);
+          }, id);
+        } else {
+          resolve(this);
+        }
+      } else if(event === 'bscn-load') {
+        if (ExtensionWindow._subscriptions.indexOf('OnPropertyChange') < 0) {
+          ExtensionWindow._subscriptions.push('OnPropertyChange');
+          EventManager.subscribe('OnPropertyChange', function(settingsObj) {
+            if (Environment.isExtension()) {
+              let property = settingsObj['args'][0];
+              let newValue = settingsObj['args'][1];
+
+              if (property.startsWith('presetconfign:') || property.startsWith('presetconfig:')) {
+                let changedIndex = property.split(":")[1];
+                Scene.getActiveScene().then(scene => {
+                  return scene.getSceneNumber();
+                }).then( sceneNumber => {
+                  if (typeof sceneNumber === 'number') {
+                    sceneNumber = (sceneNumber - 1);
+                  }
+                  if (changedIndex === String(sceneNumber)) {
+                    var placementJXON = JXON.parse(newValue);
+                    ExtensionWindow.emit(event, sceneNumber, placementJXON['id']);
+                  }
+                })
+              }
             }
             resolve(this);
           }, id);
