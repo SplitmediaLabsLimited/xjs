@@ -104,8 +104,8 @@ describe('Config interface', function() {
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'presetcount':
-          xCallback(asyncId, '12');
+        case 'presetconfig':
+        xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         case 'preset:0':
