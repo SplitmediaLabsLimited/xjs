@@ -69,7 +69,8 @@ export class EventManager {
               EventManager.callbacks[_event] = [];
             }
 
-            if (_event === 'OnSceneAddByUser') {
+            if (_event === 'OnSceneAddByUser' || _event === 'OnSceneAdd' ||
+            _event === 'OnSceneDelete' || _event === 'OnSceneDeleteAll') {
               exec('AppSubscribeEvents');
             } else if (_event.startsWith('itempropchange_') ||
                        _event.startsWith('itemdestroyed_')) {
@@ -140,7 +141,7 @@ window.SetEvent = (args: string) => {
 }
 
 const oldAppOnEvent = window.AppOnEvent;
-window.AppOnEvent = event => {
+window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
     EventManager._proxyHandlers[event].map(_cb => {
@@ -150,7 +151,7 @@ window.AppOnEvent = event => {
     if (EventManager.callbacks[event] === undefined) return;
 
     EventManager.callbacks[event].map(_cb => {
-      _cb({ event });
+      _cb({ event, args });
     });
   }
   if (typeof oldAppOnEvent === 'function') {
