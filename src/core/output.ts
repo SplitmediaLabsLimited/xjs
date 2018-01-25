@@ -368,6 +368,11 @@ window.SetBroadcastChannelList = function(channels) {
 const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
 window.SetBroadcastChannelXml = function(channelXML) {
   const channelJXON = JXON.parse(channelXML);
+  channelJXON['name'] = channelJXON['name'].replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
   if (Remote.remoteType === 'proxy') {
     Output._proxyCallback[Output._id+'_'+channelJXON['name']].call(this, channelXML)
   } else {
