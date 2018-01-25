@@ -36,7 +36,8 @@ export class EventManager {
 
           if (_event === 'OnSceneAddByUser') {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_')) {
+          } else if (_event.startsWith('itempropchange_') ||
+                     _event.startsWith('itemdestroyed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -52,7 +53,8 @@ export class EventManager {
 
           if (_event === 'OnSceneAddByUser') {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_')) {
+          } else if (_event.startsWith('itempropchange_') ||
+                     _event.startsWith('itemdestroyed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -68,7 +70,8 @@ export class EventManager {
 
             if (_event === 'OnSceneAddByUser') {
               exec('AppSubscribeEvents');
-            } else if (_event.startsWith('itempropchange_')) {
+            } else if (_event.startsWith('itempropchange_') ||
+                       _event.startsWith('itemdestroyed_')) {
               let itemID = _event.split('_')[1];
               exec('ItemSubscribeEvents', itemID);
             }
