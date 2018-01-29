@@ -60,6 +60,7 @@ export class Render {
     return new Promise((resolve) => {
 
       let canvasIndex;
+      console.log(canvas)
       Render.canvases[Render._CANVAS_ACTIVE] = canvas;
       Render.FPS = fps;
       for (let i in Render.canvases) {
@@ -128,11 +129,39 @@ export class Render {
     Render.recreateSharedTexture(canvasIndex);
   }
 
+  // dupscene
   static setCanvasToUseView(canvasIndex, sceneId) {
     let sharedHandle = Render.getSharedTextureSharedHandle(0);
     let upperBits = sharedHandle >> 32;
     let lowerBits = sharedHandle & 0xffffffff;
     console.log('Calling with:: ', `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+  }
+
+  // dupworkspace
+  static setCanvasToUseViewWorkspance(canvasIndex, sceneId) {
+    let sharedHandle = Render.getSharedTextureSharedHandle(0);
+    let upperBits = sharedHandle >> 32;
+    let lowerBits = sharedHandle & 0xffffffff;
+    console.log('Calling with:: ', `dupworkspace:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+  }
+
+  // dupvideoitem
+  static setCanvasToUseViewVideoItem(canvasIndex, sceneId) {
+    let sharedHandle = Render.getSharedTextureSharedHandle(0);
+    let upperBits = sharedHandle >> 32;
+    let lowerBits = sharedHandle & 0xffffffff;
+    console.log('Calling with:: ', `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+  }
+
+  // source
+  static setCanvasToUseViewSource(canvasIndex, sceneId) {
+    let sharedHandle = Render.getSharedTextureSharedHandle(0);
+    let upperBits = sharedHandle >> 32;
+    let lowerBits = sharedHandle & 0xffffffff;
+    console.log('Calling with:: ', `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
     return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
   }
 

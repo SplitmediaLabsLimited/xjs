@@ -47,7 +47,35 @@ export class Render {
     //   })
     // }
 
-    static testCanvasToUse(canvasIndex, sceneId) {
+    // use dupscene
+    static renderScene(canvasIndex, sceneId) {
+      return new Promise(resolve => {
+        iRender.drawToTexture(canvasIndex, sceneId).then(res => {
+          resolve()
+        })
+      })
+    }
+
+    // use dupvideoitem
+    static renderVideoItem(canvasIndex, sceneId) {
+      return new Promise(resolve => {
+        iRender.drawToTexture(canvasIndex, sceneId).then(res => {
+          resolve()
+        })
+      })
+    }
+
+    // use dupsource
+    static renderSource(canvasIndex, sceneId) {
+      return new Promise(resolve => {
+        iRender.drawToTexture(canvasIndex, sceneId).then(res => {
+          resolve()
+        })
+      })
+    }
+
+    // use dupworkspace
+    static renderWorkspace(canvasIndex, sceneId) {
       return new Promise(resolve => {
         iRender.drawToTexture(canvasIndex, sceneId).then(res => {
           resolve()
