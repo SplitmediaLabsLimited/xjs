@@ -197,15 +197,24 @@ export class Scene {
    */
   static getBySceneUid(sceneUid: string): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      this._initializeScenePoolAsync().then(() => {
-        this._scenePool.map(scene => {
-          scene.getSceneUid().then(uid => {
-            if(uid === sceneUid){
-              resolve(scene)
-            }
+      let isID: boolean = /^{[A-F0-9-]*}$/i.test(sceneUid);
+      if (!isID) {
+        reject(Error('Not a valid Unique ID format for a Scene'))
+      } else {
+        this._initializeScenePoolAsync().then(() => {
+          const sceneLength = this._scenePool.length;
+          this._scenePool.map((scene, idx) => {
+            scene.getSceneUid().then(uid => {
+              if(uid === sceneUid){
+                resolve(scene)
+              }
+              if (sceneLength - 1 === idx) {
+                reject(Error('No matching Scene with the Unique ID provided.'))
+              }
+            })
           })
         })
-      })
+      }
     })
   }
 
