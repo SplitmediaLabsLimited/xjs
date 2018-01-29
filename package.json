@@ -6,6 +6,7 @@
     "test": "karma start --single-run --browsers Chrome"
   },
   "main": "src/index.ts",
+  "types": "src/index.ts",
   "devDependencies": {
     "bower": "^1.4.1",
     "browser-sync": "2.18.2",
