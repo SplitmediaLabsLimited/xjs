@@ -2,6 +2,7 @@ export * from './util/color';
 export * from './util/rectangle';
 export * from './util/io';
 
+export * from './core/thumbnail';
 export * from './core/environment';
 export * from './core/app';
 export * from './core/streaminfo';

@@ -8,12 +8,15 @@ import {Scene} from '../core/scene';
 import {addSceneEventFixVersion,
         deleteSceneEventFixVersion,
         versionCompare,
+        sceneUidAddDeleteVersion,
         getVersion} from '../internal/util/version';
 import {exec} from '../internal/internal';
 import {App} from '../internal/app';
 import {ViewTypes} from '../core/items/item';
 import {Extension} from '../core/extension';
 import window from '../util/window';
+import {splitMode} from '../internal/util/splitmode'
+
 
 const _RESIZE = '2';
 
@@ -26,8 +29,10 @@ const _RESIZE = '2';
  *    - `sources-list-highlight`: notifies when a user hovers over a source in the stage, returning its source id, or when the mouse moves out of a source bounding box, returning null. Source id is also returned when hovering over the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-select`: notifies when a user clicks a source in the stage. Source id is also returned when source is selected from the bottom panel. Handler is a function f(id: string)
  *    - `sources-list-update`: notifies when there are changes on list sources whether on stage or bottom panel. Handler is a function(ids: string) where ids are comma separated source ids.
- *    - `scene-delete` : notifies when a user deletes a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1601 or higher.
- *    - `scene-add` : notifies when a user adds a scene. Handler is a function f(index: number). Works only on version 2.8.1606.1701 or higher.
+ *    - `scene-delete` : notifies when a scene is deleted. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1601 or higher.
+ *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
+ *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
+ *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -97,14 +102,27 @@ export class ExtensionWindow extends EventEmitter {
       is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
       let isAddSceneEventFixed = versionCompare(getVersion()).
       is.greaterThanOrEqualTo(addSceneEventFixVersion);
+      let isSceneUidParamAvailable = versionCompare(getVersion()).
+      is.greaterThanOrEqualTo(sceneUidAddDeleteVersion);
 
       if(event === 'scene-delete' && isDeleteSceneEventFixed) {
-        if (ExtensionWindow._subscriptions.indexOf('SceneDeleted') < 0) {
-          ExtensionWindow._subscriptions.push('SceneDeleted');
-          EventManager.subscribe('SceneDeleted', function(settingsObj) {
+        let eventSubscribe = isSceneUidParamAvailable ? 'OnSceneDelete' : 'SceneDeleted';
+        if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
+          ExtensionWindow._subscriptions.push(eventSubscribe);
+          EventManager.subscribe(eventSubscribe, function(settingsObj) {
             if (Environment.isExtension()) {
-              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
-              null : Number(settingsObj['index']) + 1);
+              if(isSceneUidParamAvailable) {
+                let returnObj = {};
+                const sceneId = settingsObj['args'][1].split('&')[1].split(':');
+                const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
+                returnObj[sceneId[0]] = sceneId[1];
+                returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
+
+                ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+              } else {
+                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
+                null : Number(settingsObj['index']) + 1);
+              }
             }
             resolve(this);
           }, id);
@@ -112,17 +130,67 @@ export class ExtensionWindow extends EventEmitter {
           resolve(this);
         }
       } else if(event === 'scene-add' && isAddSceneEventFixed) {
-        if (ExtensionWindow._subscriptions.indexOf('OnSceneAddByUser') < 0) {
-          ExtensionWindow._subscriptions.push('OnSceneAddByUser');
-          EventManager.subscribe('OnSceneAddByUser', function(settingsObj) {
-            Scene.getSceneCount().then(function(count){
-              if (Environment.isExtension()) {
-                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
-                resolve(this);
-              } else {
-                reject(Error('ExtensionWindow class is only available for extensions.'));
+        let eventSubscribe = isSceneUidParamAvailable ? 'OnSceneAdd' : 'OnSceneAddByUser';
+        if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
+          ExtensionWindow._subscriptions.push(eventSubscribe);
+          EventManager.subscribe(eventSubscribe, function(settingsObj) {
+            if(isSceneUidParamAvailable) {
+              let returnObj = {};
+              const sceneId = settingsObj['args'][1].split('&')[1].split(':');
+              const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
+              returnObj[sceneId[0]] = sceneId[1];
+              returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
+              ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+            } else {
+              Scene.getSceneCount().then(function(count){
+                if (Environment.isExtension()) {
+                  ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
+                  resolve(this);
+                } else {
+                  reject(Error('ExtensionWindow class is only available for extensions.'));
+                }
+              });
+            }
+          }, id);
+        } else {
+          resolve(this);
+        }
+      } else if(event === 'scene-delete-all' && isSceneUidParamAvailable) {
+        if (ExtensionWindow._subscriptions.indexOf('OnSceneDeleteAll') < 0) {
+          ExtensionWindow._subscriptions.push('OnSceneDeleteAll');
+          EventManager.subscribe('OnSceneDeleteAll', function(settingsObj) {
+            if (Environment.isExtension()) {
+              ExtensionWindow.emit(event, settingsObj['args'][0]);
+            }
+            resolve(this);
+          }, id);
+        } else {
+          resolve(this);
+        }
+      } else if(event === 'bscn-load') {
+        if (ExtensionWindow._subscriptions.indexOf('OnPropertyChange') < 0) {
+          ExtensionWindow._subscriptions.push('OnPropertyChange');
+          EventManager.subscribe('OnPropertyChange', function(settingsObj) {
+            if (Environment.isExtension()) {
+              let property = settingsObj['args'][0];
+              let newValue = settingsObj['args'][1];
+
+              if (property.startsWith('presetconfign:') || property.startsWith('presetconfig:')) {
+                let changedIndex = property.split(":")[1];
+                Scene.getActiveScene().then(scene => {
+                  return scene.getSceneNumber();
+                }).then( sceneNumber => {
+                  if (typeof sceneNumber === 'number') {
+                    sceneNumber = (sceneNumber - 1);
+                  }
+                  if (changedIndex === String(sceneNumber)) {
+                    var placementJXON = JXON.parse(newValue);
+                    ExtensionWindow.emit(event, sceneNumber, placementJXON['id']);
+                  }
+                })
               }
-            });
+            }
+            resolve(this);
           }, id);
         } else {
           resolve(this);
@@ -301,8 +369,7 @@ window.SourcesListUpdate = (view, sources) => {
 
 const oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = (view, id) => {
-  App.getGlobalProperty('splitmode').then(res => {
-    const checkSplit = res === '1' ? 1 : 0;
+  splitMode().then(checkSplit => {
     if (Number(view) === checkSplit) { // main view {
       ExtensionWindow.emit('sources-list-highlight', id === '' ?
         null : id);
@@ -315,8 +382,7 @@ window.SourcesListHighlight = (view, id) => {
 
 const oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = (view, id) => {
-  App.getGlobalProperty('splitmode').then(res => {
-    const checkSplit = res === '1' ? 1 : 0;
+  splitMode().then(checkSplit => {
     if (Number(view) === checkSplit) { // main view
       ExtensionWindow.emit('sources-list-select', id === '' ?
         null : id);
@@ -329,11 +395,10 @@ window.SourcesListSelect = (view, id) => {
 
 const oldOnSceneLoad = window.OnSceneLoad;
 window.OnSceneLoad = function(...args: any[]) {
-  App.getGlobalProperty('splitmode').then(res => {
+  splitMode().then(checkSplit => {
     if (Environment.isExtension()) {
       let view = args[0];
       let scene = args[1];
-      const checkSplit = res === '1' ? 1 : 0;
       if (Number(view) === checkSplit && scene !== 'i12'){
         ExtensionWindow.emit('scene-load', Number(scene));
       }

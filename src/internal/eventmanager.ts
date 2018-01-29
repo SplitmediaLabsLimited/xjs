@@ -1,6 +1,7 @@
 import {exec} from './internal'
 import window from '../util/window';
-import {Remote} from './remote'
+import {Remote} from './remote';
+import {sceneUidAddDeleteVersion, versionCompare, getVersion} from './util/version';
 
 /**
  * Usage:
@@ -19,6 +20,7 @@ export class EventManager {
   static callbacks = {};
   static _remoteHandlers = {};
   static _proxyHandlers = {};
+  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll'];
 
   static subscribe(event, _cb, id?) {
     return new Promise(resolve => {
@@ -34,9 +36,10 @@ export class EventManager {
             EventManager._remoteHandlers[_event] = [];
           }
 
-          if (_event === 'OnSceneAddByUser') {
+          if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_')) {
+          } else if (_event.startsWith('itempropchange_') ||
+                     _event.startsWith('itemdestroyed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -50,9 +53,10 @@ export class EventManager {
             EventManager._proxyHandlers[_event] = [];
           }
 
-          if (_event === 'OnSceneAddByUser') {
+          if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_')) {
+          } else if (_event.startsWith('itempropchange_') ||
+                     _event.startsWith('itemdestroyed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -66,9 +70,10 @@ export class EventManager {
               EventManager.callbacks[_event] = [];
             }
 
-            if (_event === 'OnSceneAddByUser') {
+            if (EventManager._appEventsList.indexOf(_event) > -1) {
               exec('AppSubscribeEvents');
-            } else if (_event.startsWith('itempropchange_')) {
+            } else if (_event.startsWith('itempropchange_') ||
+                       _event.startsWith('itemdestroyed_')) {
               let itemID = _event.split('_')[1];
               exec('ItemSubscribeEvents', itemID);
             }
@@ -104,6 +109,7 @@ export class EventManager {
 }
 
 window.OnMetersUpdate = (evt) => {}
+window.AppOnShowSettings = (evt) => {}
 
 const oldSetEvent = window.SetEvent;
 window.SetEvent = (args: string) => {
@@ -136,7 +142,7 @@ window.SetEvent = (args: string) => {
 }
 
 const oldAppOnEvent = window.AppOnEvent;
-window.AppOnEvent = event => {
+window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
     EventManager._proxyHandlers[event].map(_cb => {
@@ -146,7 +152,7 @@ window.AppOnEvent = event => {
     if (EventManager.callbacks[event] === undefined) return;
 
     EventManager.callbacks[event].map(_cb => {
-      _cb({ event });
+      _cb({ event, args });
     });
   }
   if (typeof oldAppOnEvent === 'function') {
@@ -156,6 +162,10 @@ window.AppOnEvent = event => {
 
 const oldOnEvent = window.OnEvent;
 window.OnEvent = (event, item, ...eventArgs ) => {
+  if(event === 'itemremovedfromscene' && versionCompare(getVersion()).
+  is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
+    event = 'itemdestroyed'
+  }
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;
 

@@ -3,6 +3,7 @@
 import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 import {Scene} from '../core/scene';
+import{checkSplitmode} from '../internal/util/splitmode';
 
 /**
  *  Class for adding files (such as images and media)
@@ -42,61 +43,13 @@ export class File implements Addable {
    */
   addToScene(value?: number | Scene ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      let scenePrefix = '';
-      let scenePromise;
-      let checkSplitMode;
-
-      checkSplitMode = new Promise(splitPromise => {
-        iApp.getGlobalProperty('splitmode').then(res => {
-          if (res === '1' && !value) {
-            Scene.getActiveScene().then(val => {
-              value = val
-              splitPromise(value)
-            })
-          } else {
-            splitPromise(value)
-          }
-        })
-      })
-
-      checkSplitMode.then(value => {
-        if (typeof value === 'number' || value instanceof Scene) {
-          scenePromise = new Promise((innerResolve, innerReject) => {
-            Scene.getSceneCount().then(sceneCount => {
-              if (typeof value === 'number') {
-                let int = Math.floor(value);
-                if (int > sceneCount || int === 0) {
-                innerReject(Error('Scene not existing.'));
-                } else {
-                  scenePrefix = 's:' + (int - 1) + '|';
-                  innerResolve();
-                }
-              } else {
-                value.getSceneNumber().then(int => {
-                  if (int > sceneCount || int === 0) {
-                  innerReject(Error('Scene not existing.'));
-                  } else {
-                    scenePrefix = 's:' + (int - 1) + '|';
-                    innerResolve();
-                  }
-                });
-              }
-            });
-          });
-        } else if (typeof value === 'undefined') {
-          scenePromise = Promise.resolve();
-        } else {
-        scenePromise = Promise.reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
-        }
-
-        scenePromise.then(() => {
-          return iApp.callFunc(scenePrefix + 'addfile', this._path);
-        }).then(() => {
-          resolve(true);
-        }).catch(err => {
-          reject(err);
-        });
-      })
-    });
+      checkSplitmode(value).then((scenePrefix) => {
+        return iApp.callFunc(scenePrefix + 'addfile', this._path);
+      }).then(() => {
+        resolve(true);
+      }).catch(err => {
+        reject(err);
+      });
+    })
   }
 }

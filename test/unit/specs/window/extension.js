@@ -12,6 +12,7 @@ describe('ExtensionWindow ===', function() {
   var sceneDeleteCounter = 0;
   var sceneAddCounter = 0;
   var ExtensionObj = {};
+  var mockPresetConfig = '<configuration cur="0"><placement name="Scene 1" id="{239DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="1"></placement><placement name="Scene 2" id="{219DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="4"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" pan="0" pan_config="R:1.000000&amp;la:0.000000&amp;fi:0.000000" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" trscenter="0" trscexit="0" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{A62E88ED-0A68-4243-BF5B-06CCD6D531C9}" srcid="{C14A3FCE-975F-43A5-88E7-A857FFB3E836}" type="8" name="https://www.google.com.ph/" cname="" item="https://www.googgle.com.ph/" custom=""/></placement><global/></configuration>';
 
   describe('should be able to listen to scene events', function() {
     var sceneLoadSpy, sceneLoadPreviewSpy;
@@ -29,6 +30,15 @@ describe('ExtensionWindow ===', function() {
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
+          }, 10);
+          return asyncId;
+        } else if (funcName === 'presetconfig') {
+          global_asyncId++;
+          var asyncId = new Date().getTime() + '_' + global_asyncId;
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
           }, 10);
           return asyncId;
         }

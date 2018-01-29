@@ -1,11 +1,12 @@
 {
   "name": "xjs-framework",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "XSplit JS Framework",
   "scripts": {
     "test": "karma start --single-run --browsers Chrome"
   },
   "main": "src/index.ts",
+  "types": "src/index.ts",
   "devDependencies": {
     "bower": "^1.4.1",
     "browser-sync": "2.18.2",

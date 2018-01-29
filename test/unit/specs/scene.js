@@ -15,13 +15,11 @@ describe('Scene ===', function() {
   var Item = XJS.Item;
   var Source = XJS.Source;
   var env = new window.Environment(XJS);
-  var mockPresetConfig = '<configuration cur="0"><placement name="DummyText" id="{219DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="4"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" pan="0" pan_config="R:1.000000&amp;la:0.000000&amp;fi:0.000000" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" trscenter="0" trscexit="0" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{A62E88ED-0A68-4243-BF5B-06CCD6D531C9}" srcid="{C14A3FCE-975F-43A5-88E7-A857FFB3E836}" type="8" name="https://www.google.com.ph/" cname="" item="https://www.googgle.com.ph/" custom=""/></placement><global/></configuration>'
+  var mockPresetConfig = '<configuration cur="0"><placement name="Scene 1" id="{239DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="1"></placement><placement name="Scene 2" id="{219DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="4"><item pos_left="0.000000" pos_top="0.000000" pos_right="0.500000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" alpha="255" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" pan="0" pan_config="R:1.000000&amp;la:0.000000&amp;fi:0.000000" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" trscenter="0" trscexit="0" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{A62E88ED-0A68-4243-BF5B-06CCD6D531C9}" srcid="{C14A3FCE-975F-43A5-88E7-A857FFB3E836}" type="8" name="https://www.google.com.ph/" cname="" item="https://www.googgle.com.ph/" custom=""/></placement><global/></configuration>'
   var environment = XJS.Environment;
   var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
   var global = {};
-
-  var MAX_SCENES = 12;
 
   var mix = new window.Mixin([
     function() {
@@ -31,7 +29,7 @@ describe('Scene ===', function() {
     },
     function() {
       navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.8.1603.0401 ';
+        return 'XSplit Broadcaster 3.0.1704.2101 ';
       });
     }
   ]);
@@ -47,16 +45,19 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
+        ctr++;
+        var asyncId = ctr;
         if (funcName === 'presetcount') {
-          ctr++;
-          var asyncId = ctr;
-
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
-
-          return asyncId;
+        } else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
+          },10);
         }
+        return asyncId;
       });
     });
 
@@ -74,16 +75,20 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
+        ctr++;
+        var asyncId = ctr;
         if (funcName === 'presetcount') {
-          ctr++;
-          var asyncId = ctr;
-
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
+        } else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
+          },10);
 
-          return asyncId;
         }
+        return asyncId;
       });
     });
 
@@ -112,16 +117,19 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
+        ctr++;
+        var asyncId = ctr;
         if (funcName === 'presetcount') {
-          ctr++;
-          var asyncId = ctr;
-
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
-
-          return asyncId;
+        }  else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
+          },10);
         }
+        return asyncId;
       });
     });
 
@@ -150,10 +158,8 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-
         ctr++;
         var asyncId = ctr;
-
         if (funcName === 'presetcount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
@@ -162,17 +168,23 @@ describe('Scene ===', function() {
         } else if (startsWith(funcName, 'presetname:')) {
           var sceneIndex = funcName.substring(11);
           var name;
-          if (sceneIndex === '0' || sceneIndex === '4') {
-            name = 'Test scene';
+          if (sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}' || sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}') {
+            name = 'Scene 1';
+          } else if (sceneIndex === '0' || sceneIndex === '4') {
+            name = 'Scene 1';
           } else {
             if (!isNaN(sceneIndex)) {
               sceneIndex = Number(sceneIndex) + 1;
             }
             name = 'Scene ' + sceneIndex;
           }
-
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, name);
+          },10);
+        } else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
           },10);
         }
 
@@ -182,7 +194,7 @@ describe('Scene ===', function() {
 
     it('and return as an array of Scene objects', function(done) {
       exec(function(next) {
-        Scene.getByName('Test scene')
+        Scene.getByName('Scene 1')
         .then(function(scene) {
           expect(scene.length).toEqual(2);
           expect(scene).eachToBeInstanceOf(Scene);
@@ -202,16 +214,20 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-
         ctr++;
         var asyncId = ctr;
         if (funcName === 'preset:0') {
           setTimeout(function() {
-            window.OnAsyncCallback(asyncId, '5');
+            window.OnAsyncCallback(asyncId, '0');
           },10);
         } else if (funcName === 'presetcount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
+          },10);
+        } else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
           },10);
         }
         return asyncId;
@@ -276,9 +292,21 @@ describe('Scene ===', function() {
           if (!isNaN(sceneIndex)) {
             sceneIndex = Number(funcName.substring(11)) + 1;
           }
+          if(sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}'){
+            sceneIndex = 1
+          }
+          if(sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}'){
+            sceneIndex = 2
+          }
+
           var name = 'Scene ' + sceneIndex;
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, name);
+          },10);
+        } else if (funcName === 'presetconfig') {
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId,
+              encodeURIComponent(mockPresetConfig));
           },10);
         }
         return asyncId;
@@ -320,7 +348,8 @@ describe('Scene ===', function() {
 
     it('from an integer', function(done) {
       exec(function(next) {
-        var index = Math.floor((Math.random() * 5) + 1);
+        var index = Math.floor((Math.random() * 2) + 1);
+
         Scene.setActiveScene(index)
         .then(function() {
           return Scene.getActiveScene();
@@ -342,8 +371,7 @@ describe('Scene ===', function() {
 
     it('from a Scene object', function(done) {
       exec(function(next) {
-        var index = Math.floor((Math.random() * 5) + 1);
-
+        var index = Math.floor((Math.random() * 2) + 1);
         Scene.getByName('Scene ' + index)
         .then(function(scene) {
           return Scene.setActiveScene(scene[0]);
@@ -411,7 +439,7 @@ describe('Scene ===', function() {
           }.bind(ctr),10);
         } else if (/^presetconfig:/.test(funcName)) {
           setTimeout(function() {
-            window.OnAsyncCallback(this, encodeURIComponent('<placement name="Work Scene" defpos="0"><item type="8" item="html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}" itemaudio="" name="Twitch IRC Chat Viewer" cname="" pos_left="0.500000" pos_top="0.000000" pos_right="1.000000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="0" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="1" alpha="255" border="-2147483648" cc_pin="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="1146995751" syncid1="1216762279" syncid2="2586188951" syncid3="410786723" id="{0B3B74C1-64A5-4E4A-9AB2-FEBB6E0B3F5E}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="1" GameCapPlSmoothness="1.000000" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" custom="{ &quot;connected&quot; : &quot;Not Connected&quot; }"/><item type="2" item="@DEVICE:PNP:\\\\?\\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\\GLOBAL" itemaudio="" name="HD Webcam C615" cname="" pos_left="0.010981" pos_top="0.000000" pos_right="0.385798" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="1" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="1" alpha="255" border="0" cc_pin="1" cc_brightness="0" cc_contrast="-8" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="3214440775" syncid1="1214254420" syncid2="2912452758" syncid3="3415282779" id="{75EF04AB-6915-4A88-8177-950B12186359}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="1" GameCapPlSmoothness="1.000000" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" custom=""/></placement>\n'));
+            window.OnAsyncCallback(this, encodeURIComponent('<placement name="Work Scene" id="{219DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="0"><item type="8" item="html:plugin:twitchchatplg*{&quot;manuallyConnected&quot;:&quot;Not Connected&quot;,&quot;connected&quot;:&quot;Not Connected&quot;,&quot;channel&quot;:&quot;&quot;,&quot;opacity&quot;:100,&quot;viewerColor&quot;:&quot;#627FFF&quot;,&quot;messageColor&quot;:&quot;#FFFFFF&quot;,&quot;viewerFont&quot;:&quot;Calibri&quot;,&quot;messageFont&quot;:&quot;Calibri&quot;,&quot;textSize&quot;:&quot;24&quot;}" itemaudio="" name="Twitch IRC Chat Viewer" cname="" pos_left="0.500000" pos_top="0.000000" pos_right="1.000000" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="0" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="0" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="1" alpha="255" border="-2147483648" cc_pin="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="0" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="1146995751" syncid1="1216762279" syncid2="2586188951" syncid3="410786723" id="{0B3B74C1-64A5-4E4A-9AB2-FEBB6E0B3F5E}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="1" GameCapPlSmoothness="1.000000" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" custom="{ &quot;connected&quot; : &quot;Not Connected&quot; }"/><item type="2" item="@DEVICE:PNP:\\\\?\\USB#VID_046D&amp;PID_082C&amp;MI_02#6&amp;16FD2F8D&amp;0&amp;0002#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\\GLOBAL" itemaudio="" name="HD Webcam C615" cname="" pos_left="0.010981" pos_top="0.000000" pos_right="0.385798" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="1" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="1" alpha="255" border="0" cc_pin="1" cc_brightness="0" cc_contrast="-8" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="3214440775" syncid1="1214254420" syncid2="2912452758" syncid3="3415282779" id="{75EF04AB-6915-4A88-8177-950B12186359}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="0" OutPoint="0" CuePoints="" FilePlaylist="" OpWhenFinished="0" StartOnLoad="1" RememberPosition="1" LastPosition="0" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="1" GameCapPlSmoothness="1.000000" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" custom=""/></placement>\n'));
           }.bind(ctr),10);
         } else if (/^presetconfig/.test(funcName)) {
           setTimeout(function() {
@@ -548,12 +576,19 @@ describe('Scene ===', function() {
 
     it('should be able to get the scene unique id', function(done) {
       exec(function(next) {
-        var scene;
-        Scene.getActiveScene().then(function(result) {
-          scene = result;
+        Scene.getActiveScene().then(function(scene) {
           return scene.getSceneUid();
-        }).then(function(id){
+        }).then(function(id) {
           expect(id).toBeTypeOf('string');
+
+          if (navigator.appVersion.indexOf('XSplit Broadcaster 2.7.1702.2231  ') > -1) {
+            done.fail('getSceneUid should reject if called on XBC lower than 3.0.1704.2101')
+          }
+          next();
+        }, function() {
+          if (navigator.appVersion.indexOf('XSplit Broadcaster 3.0.1704.2101 ') > -1) {
+            done.fail('getSceneUid should not reject if called on XBC equal or higher than 3.0.1704.2101')
+          }
           next();
         });
       }).then(done);
