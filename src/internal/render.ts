@@ -12,17 +12,18 @@ export class Render {
   // Two views. Sometimes, CANVAS_PREVIEW will use _VIEW_RENDER because two views cannot look at the same scene.
   private static _VIEW_RENDER = 3;
   private static _VIEW_MAIN = 0;
+  private static _time;
   // GL variables
   private static _isRunning = [false, true]; // Whether we render for this canvas.
   private static modelVertCount = 4; // Number of array indices for the model. staticant across WebGL contexts
-  private static canvases = [null]; // Global variable for the 2 canvas elements
-  private static gl = [null]; // A global variable for the WebGL context
-  private static sharedTexture = [null]; // The texture that we are sharing between contexts
-  private static modelVertPosBuf = [null]; // Vertex position data for the model
-  private static modelVertUVBuf = [null]; // Vertex UV data for the model
-  private static materialProg = [null]; // The shader program for rendering out model
-  private static materialPosAttr = [null]; // Position attribute location in material program
-  private static materialUVAttr = [null]; // UV attribute location in material program
+  private static canvas; // Global variable for the 2 canvas elements
+  private static gl; // A global variable for the WebGL context
+  private static sharedTexture; // The texture that we are sharing between contexts
+  private static modelVertPosBuf; // Vertex position data for the model
+  private static modelVertUVBuf; // Vertex UV data for the model
+  private static materialProg; // The shader program for rendering out model
+  private static materialPosAttr; // Position attribute location in material program
+  private static materialUVAttr; // UV attribute location in material program
   private static vertexShaderCode = `
      attribute vec3 aVertexPosition;
      attribute vec2 aTextureCoord;
@@ -50,32 +51,14 @@ export class Render {
   // core-related variables
   private static FPS = 30;
   private static fpsInterval = 1000 / 30;
-  static then = [null, null]; // elapsed is now-then. then signifies last frame render. We keep separate then's for each canvas for sanity
 
   // static createView() {
   //   exec('AppSetPropertyAsync', `enableview:${Render._VIEW_RENDER}`, '1')
   // }
 
-  static setCanvas(canvas, fps?) {
-    return new Promise((resolve) => {
-
-      let canvasIndex;
-      console.log(canvas)
-      Render.canvases[Render._CANVAS_ACTIVE] = canvas;
-      Render.FPS = fps;
-      for (let i in Render.canvases) {
-        canvasIndex = Number(i);
-        // initialize GL context with proper programs
-        Render.initializeCanvas(canvasIndex);
-      }
-      // Render.createView()
-      resolve(canvasIndex);
-    })
-  }
-
   static drawToTexture(canvasIndex, sceneIndex) {
     return new Promise(resolve => {
-      Render.then[Render._CANVAS_ACTIVE] = window.performance.now();
+      Render._time = window.performance.now();
       Render.setCanvasToUseView(canvasIndex, sceneIndex);
       // no need to render for preview yet, so just start rendering ACTIVE canvas.
       Render.startStopRender(true, Render._CANVAS_ACTIVE);
@@ -83,59 +66,58 @@ export class Render {
     })
   }
 
-  static initializeCanvas(canvasIndex) {
-    let thisCanvas = Render.canvases[canvasIndex];
-    let thisGl = Render.initWebGL(thisCanvas);
-    Render.gl[canvasIndex] = thisGl;
+  static initializeCanvas(thisCanvas, fps?) {
+    return new Promise(resolve => {
+      Render.canvas = thisCanvas;
+      Render.gl = Render.initWebGL(thisCanvas);
 
-    thisGl.viewport(0, 0, thisCanvas.width, thisCanvas.height);
-    thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-    thisGl.clearDepth(1.0);
+      Render.gl.viewport(0, 0, thisCanvas.width, thisCanvas.height);
+      Render.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      Render.gl.clearDepth(1.0);
 
-    let vShader = thisGl.createShader(thisGl.VERTEX_SHADER);
-    thisGl.shaderSource(vShader, Render.vertexShaderCode);
-    thisGl.compileShader(vShader);
-    if (!thisGl.getShaderParameter(vShader, thisGl.COMPILE_STATUS)) {
-      throw 'could not compile shader:' + thisGl.getShaderInfoLog(vShader);
-    }
-    let fShader = thisGl.createShader(thisGl.FRAGMENT_SHADER);
-    thisGl.shaderSource(fShader, Render.fragmentShaderCode);
-    thisGl.compileShader(fShader);
-    if (!thisGl.getShaderParameter(fShader, thisGl.COMPILE_STATUS)) {
-      throw 'could not compile shader:' + thisGl.getShaderInfoLog(fShader);
-    }
+      let vShader = Render.gl.createShader(Render.gl.VERTEX_SHADER);
+      Render.gl.shaderSource(vShader, Render.vertexShaderCode);
+      Render.gl.compileShader(vShader);
+      if (!Render.gl.getShaderParameter(vShader, Render.gl.COMPILE_STATUS)) {
+        throw 'could not compile shader:' + Render.gl.getShaderInfoLog(vShader);
+      }
+      let fShader = Render.gl.createShader(Render.gl.FRAGMENT_SHADER);
+      Render.gl.shaderSource(fShader, Render.fragmentShaderCode);
+      Render.gl.compileShader(fShader);
+      if (!Render.gl.getShaderParameter(fShader, Render.gl.COMPILE_STATUS)) {
+        throw 'could not compile shader:' + Render.gl.getShaderInfoLog(fShader);
+      }
 
-    Render.materialProg[canvasIndex] = thisGl.createProgram();
-    let thisProg = Render.materialProg[canvasIndex];
-    thisGl.attachShader(thisProg, vShader);
-    thisGl.attachShader(thisProg, fShader);
-    thisGl.linkProgram(thisProg);
-    if (!thisGl.getProgramParameter(thisProg, thisGl.LINK_STATUS)) {
-      throw ('program filed to link:' + thisGl.getProgramInfoLog(thisProg));
-    }
+      Render.materialProg = Render.gl.createProgram();
+      let thisProg = Render.materialProg;
+      Render.gl.attachShader(thisProg, vShader);
+      Render.gl.attachShader(thisProg, fShader);
+      Render.gl.linkProgram(thisProg);
+      if (!Render.gl.getProgramParameter(thisProg, Render.gl.LINK_STATUS)) {
+        throw ('program filed to link:' + Render.gl.getProgramInfoLog(thisProg));
+      }
 
-    thisGl.useProgram(thisProg);
+      Render.gl.useProgram(thisProg);
 
-    Render.materialPosAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aVertexPosition');
-    Render.materialUVAttr[canvasIndex] = thisGl.getAttribLocation(thisProg, 'aTextureCoord');
-    thisGl.enableVertexAttribArray(Render.materialPosAttr[canvasIndex]);
-    thisGl.enableVertexAttribArray(Render.materialUVAttr[canvasIndex]);
-    thisGl.uniform1i(thisGl.getUniformLocation(thisProg, 'uSampler'), 0);
-    Render.updateProjectionMatrix(canvasIndex);
-    Render.setViewMatrix(canvasIndex, Render.lookAt(0.0, 0.0, thisCanvas.width / 2,
-      0.0, 0.0, 0.0,
-      0.0, 1.0, 0.0));
+      Render.materialPosAttr = Render.gl.getAttribLocation(thisProg, 'aVertexPosition');
+      Render.materialUVAttr = Render.gl.getAttribLocation(thisProg, 'aTextureCoord');
+      Render.gl.enableVertexAttribArray(Render.materialPosAttr);
+      Render.gl.enableVertexAttribArray(Render.materialUVAttr);
+      Render.gl.uniform1i(Render.gl.getUniformLocation(thisProg, 'uSampler'), 0);
+      Render.updateProjectionMatrix(0);
+      Render.setViewMatrix(0, Render.lookAt(0.0, 0.0, thisCanvas.width / 2,
+        0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0));
 
-    Render.recreateSharedTexture(canvasIndex);
+      Render.recreateSharedTexture(0);
+      resolve(this)
+    })
   }
 
   // dupscene
   static setCanvasToUseView(canvasIndex, sceneId) {
     let sharedHandle = Render.getSharedTextureSharedHandle(0);
-    let upperBits = sharedHandle >> 32;
-    let lowerBits = sharedHandle & 0xffffffff;
-    console.log('Calling with:: ', `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${sharedHandle}`)
   }
 
   // dupworkspace
@@ -144,7 +126,7 @@ export class Render {
     let upperBits = sharedHandle >> 32;
     let lowerBits = sharedHandle & 0xffffffff;
     console.log('Calling with:: ', `dupworkspace:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupworkspace:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
   }
 
   // dupvideoitem
@@ -153,7 +135,7 @@ export class Render {
     let upperBits = sharedHandle >> 32;
     let lowerBits = sharedHandle & 0xffffffff;
     console.log('Calling with:: ', `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
   }
 
   // source
@@ -161,13 +143,13 @@ export class Render {
     let sharedHandle = Render.getSharedTextureSharedHandle(0);
     let upperBits = sharedHandle >> 32;
     let lowerBits = sharedHandle & 0xffffffff;
-    console.log('Calling with:: ', `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    console.log('Calling with:: ', `dupsource:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+    return exec('NewWindow', `texture_${canvasIndex}`, `dupsource:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
   }
 
   static startStopRender(shouldRender, canvasIndex?) {
     return new Promise(resolve => {
-      Render._isRunning[canvasIndex] = shouldRender;
+      Render._isRunning = shouldRender;
       if (shouldRender) {
         requestAnimationFrame(() => {
           Render.maybeRender(canvasIndex);
@@ -180,16 +162,16 @@ export class Render {
   // we only directly call render() once, for initializing texture in memory.
   // afterwards, we always check if we should render
   static maybeRender(canvasIndex) {
-    if (Render._isRunning[canvasIndex]) {
+    if (Render._isRunning) {
 
       requestAnimationFrame(() => {
         Render.maybeRender(canvasIndex);
       });
 
       let now = window.performance.now();
-      let elapsed = now - Render.then[canvasIndex];
+      let elapsed = now - Render._time;
       if (elapsed > Render.fpsInterval) {
-        Render.then[canvasIndex] = now - (elapsed % Render.fpsInterval);
+        Render._time = now - (elapsed % Render.fpsInterval);
 
         Render.render(canvasIndex);
       }
@@ -199,27 +181,26 @@ export class Render {
   // Called whenever we need to repaint the scene. Usually called 60 times a second but can be called
   // more or less as required.
   static render(canvasIndex) {
-    if (!Render.gl[canvasIndex])
+    if (!Render.gl)
       return;
 
-    let thisGl = Render.gl[canvasIndex];
-    thisGl.clearColor(0.0, 0.0, 0.0, 1.0);
-    thisGl.clear(thisGl.COLOR_BUFFER_BIT | thisGl.DEPTH_BUFFER_BIT);
+    Render.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    Render.gl.clear(Render.gl.COLOR_BUFFER_BIT | Render.gl.DEPTH_BUFFER_BIT);
 
-    if (Render.sharedTexture[canvasIndex] == null ||
-      Render.modelVertPosBuf[canvasIndex] == null ||
-      Render.modelVertUVBuf[canvasIndex] == null ||
-      Render.materialProg[canvasIndex] == null) {
+    if (Render.sharedTexture == null ||
+      Render.modelVertPosBuf == null ||
+      Render.modelVertUVBuf == null ||
+      Render.materialProg == null) {
       return; // Nothing to render
     }
 
     // Render model
-    thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
-    thisGl.vertexAttribPointer(Render.materialPosAttr[canvasIndex], 3, thisGl.FLOAT, false, 0, 0);
-    thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
-    thisGl.vertexAttribPointer(Render.materialUVAttr[canvasIndex], 2, thisGl.FLOAT, false, 0, 0);
-    thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-    thisGl.drawArrays(thisGl.TRIANGLE_STRIP, 0, Render.modelVertCount);
+    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertPosBuf);
+    Render.gl.vertexAttribPointer(Render.materialPosAttr, 3, Render.gl.FLOAT, false, 0, 0);
+    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertUVBuf);
+    Render.gl.vertexAttribPointer(Render.materialUVAttr, 2, Render.gl.FLOAT, false, 0, 0);
+    Render.gl.bindTexture(Render.gl.TEXTURE_2D, Render.sharedTexture);
+    Render.gl.drawArrays(Render.gl.TRIANGLE_STRIP, 0, Render.modelVertCount);
   }
 
   static initWebGL(canvas) {
@@ -235,7 +216,7 @@ export class Render {
   }
 
   static updateProjectionMatrix(canvasIndex) {
-    let canvas = Render.canvases[canvasIndex]
+    let canvas = Render.canvas
     let {width, height} = canvas;
     Render.setProjectionMatrix(canvasIndex, Render.ortho(
       width * -0.5, width * 0.5,
@@ -245,44 +226,41 @@ export class Render {
   }
 
   static setViewMatrix(canvasIndex, mat) {
-    if (Render.materialProg[canvasIndex] == null)
+    if (Render.materialProg == null)
       return;
-    let thisGl = Render.gl[canvasIndex];
-    let loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uVMatrix');
-    thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
+    let loc = Render.gl.getUniformLocation(Render.materialProg, 'uVMatrix');
+    Render.gl.uniformMatrix4fv(loc, false, new Float32Array(mat));
   }
 
   static setProjectionMatrix(canvasIndex, mat) {
-    if (Render.materialProg[canvasIndex] == null)
+    if (Render.materialProg == null)
       return;
-    let thisGl = Render.gl[canvasIndex];
-    let loc = thisGl.getUniformLocation(Render.materialProg[canvasIndex], 'uPMatrix');
-    thisGl.uniformMatrix4fv(loc, false, new Float32Array(mat));
+    let loc = Render.gl.getUniformLocation(Render.materialProg, 'uPMatrix');
+    Render.gl.uniformMatrix4fv(loc, false, new Float32Array(mat));
   }
 
   static recreateSharedTexture(canvasIndex) {
-    if (!Render.gl[canvasIndex])
+    if (!Render.gl)
       return null;
 
-    let thisGl = Render.gl[canvasIndex];
-    let { width, height } = Render.canvases[canvasIndex];
+    let { width, height } = Render.canvas;
 
-    if (Render.sharedTexture[canvasIndex] != null) {
-      thisGl.deleteTexture(Render.sharedTexture[canvasIndex]);
-      Render.sharedTexture[canvasIndex] = null;
+    if (Render.sharedTexture != null) {
+      Render.gl.deleteTexture(Render.sharedTexture);
+      Render.sharedTexture = null;
     }
-    let dxgiExt = thisGl.getExtension('SML_dxgi_shared_textures');
+    let dxgiExt = Render.gl.getExtension('SML_dxgi_shared_textures');
     Render.recreateModel(canvasIndex, width, height);
 
-    let thisTexture = thisGl.createTexture();
-    Render.sharedTexture[canvasIndex] = thisTexture;
-    thisGl.bindTexture(thisGl.TEXTURE_2D, thisTexture);
-    thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_S, thisGl.CLAMP_TO_EDGE);
-    thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_WRAP_T, thisGl.CLAMP_TO_EDGE);
-    thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MIN_FILTER, thisGl.NEAREST);
-    thisGl.texParameteri(thisGl.TEXTURE_2D, thisGl.TEXTURE_MAG_FILTER, thisGl.NEAREST);
+    let thisTexture = Render.gl.createTexture();
+    Render.sharedTexture = thisTexture;
+    Render.gl.bindTexture(Render.gl.TEXTURE_2D, thisTexture);
+    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_WRAP_S, Render.gl.CLAMP_TO_EDGE);
+    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_WRAP_T, Render.gl.CLAMP_TO_EDGE);
+    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_MIN_FILTER, Render.gl.NEAREST);
+    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_MAG_FILTER, Render.gl.NEAREST);
 
-    thisGl.texImage2D(thisGl.TEXTURE_2D, 0, thisGl.RGBA, width, height, 0, thisGl.RGBA, thisGl.UNSIGNED_BYTE,
+    Render.gl.texImage2D(Render.gl.TEXTURE_2D, 0, Render.gl.RGBA, width, height, 0, Render.gl.RGBA, Render.gl.UNSIGNED_BYTE,
       Render.createTestPattern(width, height));
     dxgiExt.setNewTexturesAreSharedSML(true);
     Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
@@ -290,36 +268,34 @@ export class Render {
   }
 
   static recreateModel(canvasIndex, width, height) {
-    if (!Render.gl[canvasIndex])
+    if (!Render.gl)
       return null;
 
-    let thisGl = Render.gl[canvasIndex];
-
-    if (Render.modelVertPosBuf[canvasIndex] != null) {
-      thisGl.deleteBuffer(Render.modelVertPosBuf[canvasIndex]);
-      Render.modelVertPosBuf[canvasIndex] = null;
+    if (Render.modelVertPosBuf != null) {
+      Render.gl.deleteBuffer(Render.modelVertPosBuf);
+      Render.modelVertPosBuf = null;
     }
-    if (Render.modelVertUVBuf[canvasIndex] != null) {
-      thisGl.deleteBuffer(Render.modelVertUVBuf[canvasIndex]);
-      Render.modelVertUVBuf[canvasIndex] = null;
+    if (Render.modelVertUVBuf != null) {
+      Render.gl.deleteBuffer(Render.modelVertUVBuf);
+      Render.modelVertUVBuf = null;
     }
 
     // Vertex positions in world space. It's a flat XY plane centered on the origin where 1 texel
     // equals 1 world unit.
-    Render.modelVertPosBuf[canvasIndex] = thisGl.createBuffer();
-    thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertPosBuf[canvasIndex]);
+    Render.modelVertPosBuf = Render.gl.createBuffer();
+    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertPosBuf);
     var vertPos = [
       width * -0.5, height * -0.5, 0.0,
       width * 0.5, height * -0.5, 0.0,
       width * -0.5, height * 0.5, 0.0,
       width * 0.5, height * 0.5, 0.0
     ];
-    thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertPos), thisGl.STATIC_DRAW);
+    Render.gl.bufferData(Render.gl.ARRAY_BUFFER, new Float32Array(vertPos), Render.gl.STATIC_DRAW);
 
     // Vertex UV coordinates. Uses the WebGL convention of the texture origin being in the
     // bottom-left corner.
-    Render.modelVertUVBuf[canvasIndex] = thisGl.createBuffer();
-    thisGl.bindBuffer(thisGl.ARRAY_BUFFER, Render.modelVertUVBuf[canvasIndex]);
+    Render.modelVertUVBuf = Render.gl.createBuffer();
+    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertUVBuf);
     // invert Y coordinates because of opposite conventions
     var vertUV = [
       0.0, 1.0,
@@ -327,7 +303,7 @@ export class Render {
       0.0, 0.0,
       1.0, 0.0
     ]
-    thisGl.bufferData(thisGl.ARRAY_BUFFER, new Float32Array(vertUV), thisGl.STATIC_DRAW);
+    Render.gl.bufferData(Render.gl.ARRAY_BUFFER, new Float32Array(vertUV), Render.gl.STATIC_DRAW);
   }
 
   /**********************************
@@ -335,11 +311,10 @@ export class Render {
    **********************************/
 
   static getSharedTextureSharedHandle(canvasIndex) {
-    if (Render.sharedTexture[canvasIndex] == null)
+    if (Render.sharedTexture == undefined)
       return 0x0;
-    let thisGl = Render.gl[canvasIndex];
-    thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTexture[canvasIndex]);
-    let dxgiExt = thisGl.getExtension('SML_dxgi_shared_textures');
+    Render.gl.bindTexture(Render.gl.TEXTURE_2D, Render.sharedTexture);
+    let dxgiExt = Render.gl.getExtension('SML_dxgi_shared_textures');
     let handle = dxgiExt.getSharedHandleSML();
     return handle
   }
