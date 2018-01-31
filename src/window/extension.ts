@@ -118,7 +118,7 @@ export class ExtensionWindow extends EventEmitter {
                 returnObj[sceneId[0]] = sceneId[1];
                 returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
 
-                ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
               } else {
                 ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
                 null : Number(settingsObj['index']) + 1);
@@ -140,7 +140,7 @@ export class ExtensionWindow extends EventEmitter {
               const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
               returnObj[sceneId[0]] = sceneId[1];
               returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
-              ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
             } else {
               Scene.getSceneCount().then(function(count){
                 if (Environment.isExtension()) {
