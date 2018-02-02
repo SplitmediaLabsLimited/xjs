@@ -304,7 +304,7 @@ export class Output {
         Output._id = id;
       }
       if (args[1] instanceof Function) {
-        callback = args[0]
+        callback = args[1]
       }
     } else {
       Output._id = id;
