@@ -160,7 +160,7 @@ export class ExtensionWindow extends EventEmitter {
           ExtensionWindow._subscriptions.push('OnSceneDeleteAll');
           EventManager.subscribe('OnSceneDeleteAll', function(settingsObj) {
             if (Environment.isExtension()) {
-              ExtensionWindow.emit(event, settingsObj['args'][0]);
+              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['args'][0]);
             }
             resolve(this);
           }, id);
@@ -185,7 +185,7 @@ export class ExtensionWindow extends EventEmitter {
                   }
                   if (changedIndex === String(sceneNumber)) {
                     var placementJXON = JXON.parse(newValue);
-                    ExtensionWindow.emit(event, sceneNumber, placementJXON['id']);
+                    ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneNumber, placementJXON['id']);
                   }
                 })
               }
