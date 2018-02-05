@@ -13,7 +13,7 @@ export class Render {
     fps: number = 30): Promise<any> {
       return new Promise((resolve, reject) => {
         if (canvas) {
-          iRender.setCanvas(canvas, fps).then(res => {
+          iRender.initializeCanvas(canvas, fps).then(res => {
             resolve(res)
           })
         } else {
