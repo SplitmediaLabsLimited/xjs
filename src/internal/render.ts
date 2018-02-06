@@ -8,22 +8,20 @@ export class Render {
   /***************************
   * VARIABLES AND CONSTANTS *
   ***************************/
-   private static _CANVAS_ACTIVE = 0;
-  // Two views. Sometimes, CANVAS_PREVIEW will use _VIEW_RENDER because two views cannot look at the same scene.
-  private static _VIEW_RENDER = 3;
-  private static _VIEW_MAIN = 0;
+  private static _CANVAS_ACTIVE = 0;
   private static _time;
+  private static _type;
   // GL variables
   private static _isRunning = [false, true]; // Whether we render for this canvas.
   private static modelVertCount = 4; // Number of array indices for the model. staticant across WebGL contexts
-  private static canvas; // Global variable for the 2 canvas elements
-  private static gl; // A global variable for the WebGL context
-  private static sharedTexture; // The texture that we are sharing between contexts
-  private static modelVertPosBuf; // Vertex position data for the model
-  private static modelVertUVBuf; // Vertex UV data for the model
-  private static materialProg; // The shader program for rendering out model
-  private static materialPosAttr; // Position attribute location in material program
-  private static materialUVAttr; // UV attribute location in material program
+  private static canvases = [];
+  private static gls = [];
+  private static sharedTextures = [];
+  private static modelVertPosBufs = [];
+  private static modelVertUVBufs = [];
+  private static materialProgs = [];
+  private static materialPosAttrs = [];
+  private static materialUVAttrs =[];
   private static vertexShaderCode = `
      attribute vec3 aVertexPosition;
      attribute vec2 aTextureCoord;
@@ -56,95 +54,71 @@ export class Render {
   //   exec('AppSetPropertyAsync', `enableview:${Render._VIEW_RENDER}`, '1')
   // }
 
-  static drawToTexture(canvasIndex, sceneIndex) {
+  static drawToTexture(canvasIndex, sceneId, type) {
     return new Promise(resolve => {
+      Render._type = type;
       Render._time = window.performance.now();
-      Render.setCanvasToUseView(canvasIndex, sceneIndex);
+      Render.setCanvasToUseView(canvasIndex, sceneId);
       // no need to render for preview yet, so just start rendering ACTIVE canvas.
-      Render.startStopRender(true, Render._CANVAS_ACTIVE);
+      Render.startStopRender(true, canvasIndex);
       resolve();
     })
   }
 
   static initializeCanvas(thisCanvas, fps?) {
     return new Promise(resolve => {
-      Render.canvas = thisCanvas;
-      Render.gl = Render.initWebGL(thisCanvas);
+      Render.canvases.push(thisCanvas);
+      const thisIndex = Render.canvases.indexOf(thisCanvas);
+      Render.gls[thisIndex] = Render.initWebGL(thisCanvas);
 
-      Render.gl.viewport(0, 0, thisCanvas.width, thisCanvas.height);
-      Render.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      Render.gl.clearDepth(1.0);
+      Render.gls[thisIndex].viewport(0, 0, thisCanvas.width, thisCanvas.height);
+      Render.gls[thisIndex].clearColor(0.0, 0.0, 0.0, 1.0);
+      Render.gls[thisIndex].clearDepth(1.0);
 
-      let vShader = Render.gl.createShader(Render.gl.VERTEX_SHADER);
-      Render.gl.shaderSource(vShader, Render.vertexShaderCode);
-      Render.gl.compileShader(vShader);
-      if (!Render.gl.getShaderParameter(vShader, Render.gl.COMPILE_STATUS)) {
-        throw 'could not compile shader:' + Render.gl.getShaderInfoLog(vShader);
-      }
-      let fShader = Render.gl.createShader(Render.gl.FRAGMENT_SHADER);
-      Render.gl.shaderSource(fShader, Render.fragmentShaderCode);
-      Render.gl.compileShader(fShader);
-      if (!Render.gl.getShaderParameter(fShader, Render.gl.COMPILE_STATUS)) {
-        throw 'could not compile shader:' + Render.gl.getShaderInfoLog(fShader);
+      let vShader = Render.gls[thisIndex].createShader(Render.gls[thisIndex].VERTEX_SHADER);
+      Render.gls[thisIndex].shaderSource(vShader, Render.vertexShaderCode);
+      Render.gls[thisIndex].compileShader(vShader);
+      if (!Render.gls[thisIndex].getShaderParameter(vShader, Render.gls[thisIndex].COMPILE_STATUS)) {
+        throw 'could not compile shader:' + Render.gls[thisIndex].getShaderInfoLog(vShader);
       }
 
-      Render.materialProg = Render.gl.createProgram();
-      let thisProg = Render.materialProg;
-      Render.gl.attachShader(thisProg, vShader);
-      Render.gl.attachShader(thisProg, fShader);
-      Render.gl.linkProgram(thisProg);
-      if (!Render.gl.getProgramParameter(thisProg, Render.gl.LINK_STATUS)) {
-        throw ('program filed to link:' + Render.gl.getProgramInfoLog(thisProg));
+      let fShader = Render.gls[thisIndex].createShader(Render.gls[thisIndex].FRAGMENT_SHADER);
+      Render.gls[thisIndex].shaderSource(fShader, Render.fragmentShaderCode);
+      Render.gls[thisIndex].compileShader(fShader);
+      if (!Render.gls[thisIndex].getShaderParameter(fShader, Render.gls[thisIndex].COMPILE_STATUS)) {
+        throw 'could not compile shader:' + Render.gls[thisIndex].getShaderInfoLog(fShader);
       }
 
-      Render.gl.useProgram(thisProg);
+      Render.materialProgs[thisIndex] = Render.gls[thisIndex].createProgram();
+      let thisProg = Render.materialProgs[thisIndex];
+      Render.gls[thisIndex].attachShader(thisProg, vShader);
+      Render.gls[thisIndex].attachShader(thisProg, fShader);
+      Render.gls[thisIndex].linkProgram(thisProg);
+      if (!Render.gls[thisIndex].getProgramParameter(thisProg, Render.gls[thisIndex].LINK_STATUS)) {
+        throw ('program filed to link:' + Render.gls[thisIndex].getProgramInfoLog(thisProg));
+      }
 
-      Render.materialPosAttr = Render.gl.getAttribLocation(thisProg, 'aVertexPosition');
-      Render.materialUVAttr = Render.gl.getAttribLocation(thisProg, 'aTextureCoord');
-      Render.gl.enableVertexAttribArray(Render.materialPosAttr);
-      Render.gl.enableVertexAttribArray(Render.materialUVAttr);
-      Render.gl.uniform1i(Render.gl.getUniformLocation(thisProg, 'uSampler'), 0);
-      Render.updateProjectionMatrix(0);
-      Render.setViewMatrix(0, Render.lookAt(0.0, 0.0, thisCanvas.width / 2,
+      Render.gls[thisIndex].useProgram(thisProg);
+
+      Render.materialPosAttrs[thisIndex] = Render.gls[thisIndex].getAttribLocation(thisProg, 'aVertexPosition');
+      Render.materialUVAttrs[thisIndex] = Render.gls[thisIndex].getAttribLocation(thisProg, 'aTextureCoord');
+      Render.gls[thisIndex].enableVertexAttribArray(Render.materialPosAttrs[thisIndex]);
+      Render.gls[thisIndex].enableVertexAttribArray(Render.materialUVAttrs[thisIndex]);
+      Render.gls[thisIndex].uniform1i(Render.gls[thisIndex].getUniformLocation(thisProg, 'uSampler'), 0);
+      Render.updateProjectionMatrix(thisIndex);
+      Render.setViewMatrix(thisIndex, Render.lookAt(0.0, 0.0, thisCanvas.width / 2,
         0.0, 0.0, 0.0,
         0.0, 1.0, 0.0));
 
-      Render.recreateSharedTexture(0);
-      resolve(this)
+      Render.recreateSharedTexture(thisIndex);
+      resolve(thisIndex)
     })
   }
 
-  // dupscene
-  static setCanvasToUseView(canvasIndex, sceneId) {
-    let sharedHandle = Render.getSharedTextureSharedHandle(0);
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupscene:${sceneId},1,1&d3dhandle:${sharedHandle}`)
-  }
-
-  // dupworkspace
-  static setCanvasToUseViewWorkspance(canvasIndex, sceneId) {
-    let sharedHandle = Render.getSharedTextureSharedHandle(0);
-    let upperBits = sharedHandle >> 32;
-    let lowerBits = sharedHandle & 0xffffffff;
-    console.log('Calling with:: ', `dupworkspace:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupworkspace:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-  }
-
-  // dupvideoitem
-  static setCanvasToUseViewVideoItem(canvasIndex, sceneId) {
-    let sharedHandle = Render.getSharedTextureSharedHandle(0);
-    let upperBits = sharedHandle >> 32;
-    let lowerBits = sharedHandle & 0xffffffff;
-    console.log('Calling with:: ', `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupvideoitem:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-  }
-
-  // source
-  static setCanvasToUseViewSource(canvasIndex, sceneId) {
-    let sharedHandle = Render.getSharedTextureSharedHandle(0);
-    let upperBits = sharedHandle >> 32;
-    let lowerBits = sharedHandle & 0xffffffff;
-    console.log('Calling with:: ', `dupsource:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
-    return exec('NewWindow', `texture_${canvasIndex}`, `dupsource:${sceneId},1,1&d3dhandle:${upperBits},${lowerBits}`)
+  // dup methods
+  static setCanvasToUseView(canvasIndex, id) {
+    let sharedHandle = Render.getSharedTextureSharedHandle(canvasIndex);
+    return exec('NewWindow', `texture_${canvasIndex}`, `${Render._type}:${id},1,1&d3dhandle:${sharedHandle}`)
   }
 
   static startStopRender(shouldRender, canvasIndex?) {
@@ -181,26 +155,26 @@ export class Render {
   // Called whenever we need to repaint the scene. Usually called 60 times a second but can be called
   // more or less as required.
   static render(canvasIndex) {
-    if (!Render.gl)
+    if (!Render.gls[canvasIndex])
       return;
 
-    Render.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    Render.gl.clear(Render.gl.COLOR_BUFFER_BIT | Render.gl.DEPTH_BUFFER_BIT);
+    Render.gls[canvasIndex].clearColor(0.0, 0.0, 0.0, 1.0);
+    Render.gls[canvasIndex].clear(Render.gls[canvasIndex].COLOR_BUFFER_BIT | Render.gls[canvasIndex].DEPTH_BUFFER_BIT);
 
-    if (Render.sharedTexture == null ||
-      Render.modelVertPosBuf == null ||
-      Render.modelVertUVBuf == null ||
-      Render.materialProg == null) {
+    if (Render.sharedTextures[canvasIndex] == null ||
+      Render.modelVertPosBufs[canvasIndex] == null ||
+      Render.modelVertUVBufs[canvasIndex] == null ||
+      Render.materialProgs[canvasIndex] == null) {
       return; // Nothing to render
     }
 
     // Render model
-    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertPosBuf);
-    Render.gl.vertexAttribPointer(Render.materialPosAttr, 3, Render.gl.FLOAT, false, 0, 0);
-    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertUVBuf);
-    Render.gl.vertexAttribPointer(Render.materialUVAttr, 2, Render.gl.FLOAT, false, 0, 0);
-    Render.gl.bindTexture(Render.gl.TEXTURE_2D, Render.sharedTexture);
-    Render.gl.drawArrays(Render.gl.TRIANGLE_STRIP, 0, Render.modelVertCount);
+    Render.gls[canvasIndex].bindBuffer(Render.gls[canvasIndex].ARRAY_BUFFER, Render.modelVertPosBufs[canvasIndex]);
+    Render.gls[canvasIndex].vertexAttribPointer(Render.materialPosAttrs[canvasIndex], 3, Render.gls[canvasIndex].FLOAT, false, 0, 0);
+    Render.gls[canvasIndex].bindBuffer(Render.gls[canvasIndex].ARRAY_BUFFER, Render.modelVertUVBufs[canvasIndex]);
+    Render.gls[canvasIndex].vertexAttribPointer(Render.materialUVAttrs[canvasIndex], 2, Render.gls[canvasIndex].FLOAT, false, 0, 0);
+    Render.gls[canvasIndex].bindTexture(Render.gls[canvasIndex].TEXTURE_2D, Render.sharedTextures[canvasIndex]);
+    Render.gls[canvasIndex].drawArrays(Render.gls[canvasIndex].TRIANGLE_STRIP, 0, Render.modelVertCount);
   }
 
   static initWebGL(canvas) {
@@ -216,7 +190,7 @@ export class Render {
   }
 
   static updateProjectionMatrix(canvasIndex) {
-    let canvas = Render.canvas
+    let canvas = Render.canvases[canvasIndex]
     let {width, height} = canvas;
     Render.setProjectionMatrix(canvasIndex, Render.ortho(
       width * -0.5, width * 0.5,
@@ -226,41 +200,41 @@ export class Render {
   }
 
   static setViewMatrix(canvasIndex, mat) {
-    if (Render.materialProg == null)
+    if (Render.materialProgs[canvasIndex] == null)
       return;
-    let loc = Render.gl.getUniformLocation(Render.materialProg, 'uVMatrix');
-    Render.gl.uniformMatrix4fv(loc, false, new Float32Array(mat));
+    let loc = Render.gls[canvasIndex].getUniformLocation(Render.materialProgs[canvasIndex], 'uVMatrix');
+    Render.gls[canvasIndex].uniformMatrix4fv(loc, false, new Float32Array(mat));
   }
 
   static setProjectionMatrix(canvasIndex, mat) {
-    if (Render.materialProg == null)
+    if (Render.materialProgs[canvasIndex] == null)
       return;
-    let loc = Render.gl.getUniformLocation(Render.materialProg, 'uPMatrix');
-    Render.gl.uniformMatrix4fv(loc, false, new Float32Array(mat));
+    let loc = Render.gls[canvasIndex].getUniformLocation(Render.materialProgs[canvasIndex], 'uPMatrix');
+    Render.gls[canvasIndex].uniformMatrix4fv(loc, false, new Float32Array(mat));
   }
 
   static recreateSharedTexture(canvasIndex) {
-    if (!Render.gl)
+    if (!Render.gls[canvasIndex])
       return null;
 
-    let { width, height } = Render.canvas;
+    let { width, height } = Render.canvases[canvasIndex];
 
-    if (Render.sharedTexture != null) {
-      Render.gl.deleteTexture(Render.sharedTexture);
-      Render.sharedTexture = null;
+    if (Render.sharedTextures[canvasIndex] != null) {
+      Render.gls[canvasIndex].deleteTexture(Render.sharedTextures[canvasIndex]);
+      Render.sharedTextures[canvasIndex] = null;
     }
-    let dxgiExt = Render.gl.getExtension('SML_dxgi_shared_textures');
+    let dxgiExt = Render.gls[canvasIndex].getExtension('SML_dxgi_shared_textures');
     Render.recreateModel(canvasIndex, width, height);
 
-    let thisTexture = Render.gl.createTexture();
-    Render.sharedTexture = thisTexture;
-    Render.gl.bindTexture(Render.gl.TEXTURE_2D, thisTexture);
-    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_WRAP_S, Render.gl.CLAMP_TO_EDGE);
-    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_WRAP_T, Render.gl.CLAMP_TO_EDGE);
-    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_MIN_FILTER, Render.gl.NEAREST);
-    Render.gl.texParameteri(Render.gl.TEXTURE_2D, Render.gl.TEXTURE_MAG_FILTER, Render.gl.NEAREST);
+    let thisTexture = Render.gls[canvasIndex].createTexture();
+    Render.sharedTextures[canvasIndex] = thisTexture;
+    Render.gls[canvasIndex].bindTexture(Render.gls[canvasIndex].TEXTURE_2D, thisTexture);
+    Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_WRAP_S, Render.gls[canvasIndex].CLAMP_TO_EDGE);
+    Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_WRAP_T, Render.gls[canvasIndex].CLAMP_TO_EDGE);
+    Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_MIN_FILTER, Render.gls[canvasIndex].NEAREST);
+    Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_MAG_FILTER, Render.gls[canvasIndex].NEAREST);
 
-    Render.gl.texImage2D(Render.gl.TEXTURE_2D, 0, Render.gl.RGBA, width, height, 0, Render.gl.RGBA, Render.gl.UNSIGNED_BYTE,
+    Render.gls[canvasIndex].texImage2D(Render.gls[canvasIndex].TEXTURE_2D, 0, Render.gls[canvasIndex].RGBA, width, height, 0, Render.gls[canvasIndex].RGBA, Render.gls[canvasIndex].UNSIGNED_BYTE,
       Render.createTestPattern(width, height));
     dxgiExt.setNewTexturesAreSharedSML(true);
     Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
@@ -268,34 +242,34 @@ export class Render {
   }
 
   static recreateModel(canvasIndex, width, height) {
-    if (!Render.gl)
+    if (!Render.gls[canvasIndex])
       return null;
 
-    if (Render.modelVertPosBuf != null) {
-      Render.gl.deleteBuffer(Render.modelVertPosBuf);
-      Render.modelVertPosBuf = null;
+    if (Render.modelVertPosBufs[canvasIndex] != null) {
+      Render.gls[canvasIndex].deleteBuffer(Render.modelVertPosBufs[canvasIndex]);
+      Render.modelVertPosBufs[canvasIndex] = null;
     }
-    if (Render.modelVertUVBuf != null) {
-      Render.gl.deleteBuffer(Render.modelVertUVBuf);
-      Render.modelVertUVBuf = null;
+    if (Render.modelVertUVBufs[canvasIndex] != null) {
+      Render.gls[canvasIndex].deleteBuffer(Render.modelVertUVBufs[canvasIndex]);
+      Render.modelVertUVBufs[canvasIndex] = null;
     }
 
     // Vertex positions in world space. It's a flat XY plane centered on the origin where 1 texel
     // equals 1 world unit.
-    Render.modelVertPosBuf = Render.gl.createBuffer();
-    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertPosBuf);
+    Render.modelVertPosBufs[canvasIndex] = Render.gls[canvasIndex].createBuffer();
+    Render.gls[canvasIndex].bindBuffer(Render.gls[canvasIndex].ARRAY_BUFFER, Render.modelVertPosBufs[canvasIndex]);
     var vertPos = [
       width * -0.5, height * -0.5, 0.0,
       width * 0.5, height * -0.5, 0.0,
       width * -0.5, height * 0.5, 0.0,
       width * 0.5, height * 0.5, 0.0
     ];
-    Render.gl.bufferData(Render.gl.ARRAY_BUFFER, new Float32Array(vertPos), Render.gl.STATIC_DRAW);
+    Render.gls[canvasIndex].bufferData(Render.gls[canvasIndex].ARRAY_BUFFER, new Float32Array(vertPos), Render.gls[canvasIndex].STATIC_DRAW);
 
     // Vertex UV coordinates. Uses the WebGL convention of the texture origin being in the
     // bottom-left corner.
-    Render.modelVertUVBuf = Render.gl.createBuffer();
-    Render.gl.bindBuffer(Render.gl.ARRAY_BUFFER, Render.modelVertUVBuf);
+    Render.modelVertUVBufs[canvasIndex] = Render.gls[canvasIndex].createBuffer();
+    Render.gls[canvasIndex].bindBuffer(Render.gls[canvasIndex].ARRAY_BUFFER, Render.modelVertUVBufs[canvasIndex]);
     // invert Y coordinates because of opposite conventions
     var vertUV = [
       0.0, 1.0,
@@ -303,7 +277,7 @@ export class Render {
       0.0, 0.0,
       1.0, 0.0
     ]
-    Render.gl.bufferData(Render.gl.ARRAY_BUFFER, new Float32Array(vertUV), Render.gl.STATIC_DRAW);
+    Render.gls[canvasIndex].bufferData(Render.gls[canvasIndex].ARRAY_BUFFER, new Float32Array(vertUV), Render.gls[canvasIndex].STATIC_DRAW);
   }
 
   /**********************************
@@ -311,10 +285,10 @@ export class Render {
    **********************************/
 
   static getSharedTextureSharedHandle(canvasIndex) {
-    if (Render.sharedTexture == undefined)
+    if (Render.sharedTextures[canvasIndex] == undefined)
       return 0x0;
-    Render.gl.bindTexture(Render.gl.TEXTURE_2D, Render.sharedTexture);
-    let dxgiExt = Render.gl.getExtension('SML_dxgi_shared_textures');
+    Render.gls[canvasIndex].bindTexture(Render.gls[canvasIndex].TEXTURE_2D, Render.sharedTextures[canvasIndex]);
+    let dxgiExt = Render.gls[canvasIndex].getExtension('SML_dxgi_shared_textures');
     let handle = dxgiExt.getSharedHandleSML();
     return handle
   }
