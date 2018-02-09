@@ -8,11 +8,10 @@ export class Render {
   /***************************
   * VARIABLES AND CONSTANTS *
   ***************************/
-  private static _CANVAS_ACTIVE = 0;
   private static _time = [];
   private static _type = [];
   // GL variables
-  private static _isRunning = [false, true]; // Whether we render for this canvas.
+  private static _isRunning = []; // Whether we render for this canvas.
   private static modelVertCount = 4; // Number of array indices for the model. staticant across WebGL contexts
   private static canvases = [];
   private static gls = [];
@@ -47,23 +46,18 @@ export class Render {
      }
  `;
   // core-related variables
-  private static FPS = 30;
   private static fpsInterval = 1000 / 30;
 
-  // static createView() {
-  //   exec('AppSetPropertyAsync', `enableview:${Render._VIEW_RENDER}`, '1')
-  // }
 
   static drawToTexture(canvasIndex, id, type) {
     return new Promise(resolve => {
       Render._type[canvasIndex] = type;
       Render._time[canvasIndex] = window.performance.now();
       Render.setCanvasToUseView(canvasIndex, id).then(() => {
-        Render.startStopRender(true, canvasIndex).then(res => {
+        Render.startStopRender(canvasIndex, true).then(res => {
           resolve(res);
         })
       })
-      // no need to render for preview yet, so just start rendering ACTIVE canvas.
     })
   }
 
@@ -71,7 +65,7 @@ export class Render {
     return new Promise(resolve => {
       Render.canvases.push(thisCanvas);
       const thisIndex = Render.canvases.indexOf(thisCanvas);
-      Render.gls[thisIndex] = Render.initWebGL(thisCanvas);
+      Render.gls[thisIndex] = Render.initWebGL(thisIndex);
 
       Render.gls[thisIndex].viewport(0, 0, thisCanvas.width, thisCanvas.height);
       Render.gls[thisIndex].clearColor(0.0, 0.0, 0.0, 1.0);
@@ -132,9 +126,18 @@ export class Render {
 
   }
 
-  static startStopRender(shouldRender, canvasIndex?) {
-    return new Promise(resolve => {
-      Render._isRunning = shouldRender;
+  static startStopRender(canvasIndex, shouldRender?) {
+    return new Promise((resolve, reject) => {
+      if (shouldRender === 'undefined') {
+        shouldRender = !Render._isRunning[canvasIndex];
+      }
+      if (canvasIndex instanceof HTMLCanvasElement) {
+        canvasIndex = Render.canvases.indexOf(canvasIndex)
+      }
+      if (Render.canvases[canvasIndex]) {
+        reject(Error('Provided canvas could not be found.'))
+      }
+      Render._isRunning[canvasIndex] = shouldRender;
       if (shouldRender) {
         requestAnimationFrame(() => {
           Render.maybeRender(canvasIndex);
@@ -147,7 +150,7 @@ export class Render {
   // we only directly call render() once, for initializing texture in memory.
   // afterwards, we always check if we should render
   static maybeRender(canvasIndex) {
-    if (Render._isRunning) {
+    if (Render._isRunning[canvasIndex]) {
 
       requestAnimationFrame(() => {
         Render.maybeRender(canvasIndex);
@@ -188,10 +191,10 @@ export class Render {
     Render.gls[canvasIndex].drawArrays(Render.gls[canvasIndex].TRIANGLE_STRIP, 0, Render.modelVertCount);
   }
 
-  static initWebGL(canvas) {
+  static initWebGL(canvasIndex) {
     let gl = null;
     try {
-      gl = canvas.getContext('webgl', { preserveDrawingBuffer: true }) || canvas.getContext('experimental-webgl', { preserveDrawingBuffer: true });
+      gl = Render.canvases[canvasIndex].getContext('webgl', { preserveDrawingBuffer: true }) || Render.canvases[canvasIndex].getContext('experimental-webgl', { preserveDrawingBuffer: true });
     } catch (e) { }
     if (!gl) {
       alert('Unable to initialize WebGL. Your browser may not support it.');

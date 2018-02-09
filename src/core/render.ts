@@ -9,33 +9,23 @@ import { exec } from '../internal/internal';
 
 export class Render {
 
+  /**
+   * param: (canvas: number | HTMLCanvasElement, state?: boolean)
+   *
+   * If there's an active render, set rendering to true or false, provided
+   * a canvasIndex.
+   */
+  static toggleRender(canvas: any, state?: boolean) {
+    return new Promise(resolve => {
+      iRender.startStopRender(canvas, state).then(res => {
+          resolve(res)
+        })
+      })
+    }
 
-  // If there's an active render, set rendering to true or false
-  // static toggleRender(state?: boolean) {
-    //   return new Promise(resolve => {
-      //     iRender.startStopRender(state).then(res => {
-        //       resolve(res)
-        //     })
-        //   })
-        // }
-
-  // Assign a canvas and create necessary webgl context
-  // static setTargetCanvas(canvas: HTMLCanvasElement,
-  //   fps: number = 30): Promise<any> {
-  //     return new Promise((resolve, reject) => {
-  //       if (canvas) {
-  //         iRender.initializeCanvas(canvas, fps).then(res => {
-  //           res
-  //         })
-  //       } else {
-  //         reject(Error('No canvas selected'))
-  //       }
-  //     })
-  //   }
-
-    // use dupscene
     /**
-     * params: (canvas: HTMLCanvasElement, scene: any, fps: number)
+     * params: (canvas: HTMLCanvasElement, scene: any, fps?: number)
+     * `return: canvasIndex`
      *
      * Renders the specified scene into the provided canvas element.
      * scene parameter can be Scene instance, scene index, or scene uid.
@@ -71,7 +61,7 @@ export class Render {
 
             scenePromise.then(finalScene => {
               iRender.drawToTexture(sceneIndex, finalScene, 'dupscene').then(res => {
-                resolve(res);
+                resolve(sceneIndex);
               })
             })
           })
@@ -81,7 +71,14 @@ export class Render {
       })
     }
 
-    // use dupvideoitem
+    /**
+     * params: (canvas: HTMLCanvasElement, item: any, fps?: number)
+     * `return: canvasIndex`
+     *
+     * Renders the specified item into the provided canvas element.
+     * item parameter can be Item instance, or item id.
+     *
+     */
     static renderVideoItem(canvas: HTMLCanvasElement, item: any, fps: number = 30) {
       return new Promise((resolve, reject) => {
         let itemIndex;
@@ -110,7 +107,14 @@ export class Render {
       })
     }
 
-    // use dupsource
+    /**
+     * params: (canvas: HTMLCanvasElement, source: any, fps?: number)
+     * `return: canvasIndex`
+     *
+     * Renders the specified source into the provided canvas element.
+     * source parameter can be Source instance, or source id.
+     *
+     */
     static renderVideoSource(canvas: HTMLCanvasElement, source: any, fps: number = 30) {
       return new Promise((resolve, reject) => {
         let index;
@@ -142,13 +146,20 @@ export class Render {
             })
           })
         } else {
-          reject(Error('Invalid parameters provided. Please check if the canvas/item is correct.'));
+          reject(Error('Invalid parameters provided. Please check if the canvas/source is correct.'));
         }
       })
     }
 
-    // use dupworkspace
-    static renderWorkspace(canvas: HTMLCanvasElement, view: number = 1, fps: number = 30) {
+    /**
+     * params: (canvas: HTMLCanvasElement, view: 0|1, fps?: number)
+     * `return: canvasIndex`
+     *
+     * Renders the specified view into the provided canvas element.
+     * view parameter can be 0 (Main view) or 1 (Preview).
+     *
+     */
+    static renderWorkspace(canvas: HTMLCanvasElement, view: number = 0, fps: number = 30) {
       return new Promise((resolve, reject) => {
         if (typeof view === 'number' && canvas) {
           iRender.initializeCanvas(canvas, fps).then(indx => {
