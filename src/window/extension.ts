@@ -33,6 +33,7 @@ const _RESIZE = '2';
  *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
  *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
  *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
+  *   - `push-to-live` : notifies when a particular scene was pushed to live by user. Handler is a function f(sceneIndex: number).
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -40,6 +41,7 @@ const _RESIZE = '2';
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
   static _subscriptions: string[] = [];
+  static _encounteredFirstSceneChange: boolean = false;
 
 /**
  * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
@@ -66,6 +68,7 @@ export class ExtensionWindow extends EventEmitter {
     }
     ExtensionWindow._instance = this;
     ExtensionWindow._subscriptions = [];
+    ExtensionWindow._encounteredFirstSceneChange = false;
   }
 
   /**
@@ -189,6 +192,39 @@ export class ExtensionWindow extends EventEmitter {
                   }
                 })
               }
+            }
+            resolve(this);
+          }, id);
+        } else {
+          resolve(this);
+        }
+      } else if(event === 'push-to-live') {
+        if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0) {
+          ExtensionWindow._subscriptions.push('scenedlg:1');
+          EventManager.subscribe('scenedlg:1', function() {
+            if (Environment.isExtension()) {
+              ExtensionWindow._encounteredFirstSceneChange = false;              
+              if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
+                ExtensionWindow._subscriptions.push('SceneChange');
+                EventManager.subscribe('SceneChange', function(settingsObj) {                  
+                  let isSplitMode = false;
+                  const viewId = parseInt(settingsObj['args'][0]);
+                  const sceneIndex = parseInt(settingsObj['args'][1]);                              
+                  App.getGlobalProperty('splitmode').then(split => {
+                    isSplitMode = split === '1' ? true : false;                 
+                    if(isSplitMode) {                      
+                      if(!ExtensionWindow._encounteredFirstSceneChange) {                        
+                        if(viewId === 1) {                          
+                          ExtensionWindow._encounteredFirstSceneChange = true;                                                    
+                          ExtensionWindow.emit(event, sceneIndex);
+                        }
+                      }
+                    } else {                      
+                      if(viewId === 0) ExtensionWindow.emit(event, sceneIndex);                      
+                    }
+                  })
+                }, id);                
+              }       
             }
             resolve(this);
           }, id);
