@@ -50,30 +50,39 @@ export class Render {
 
   // Call main function and immediately render
   static drawToTexture(canvasIndex, id, type) {
-    return new Promise(resolve => {
-      Render._type[canvasIndex] = type;
-      Render._time[canvasIndex] = window.performance.now();
-      Render.setCanvasToUseView(canvasIndex, id).then(() => {
-        Render.startStopRender(canvasIndex, true).then(res => {
-          resolve(res);
+
+    return new Promise((resolve, reject) => {
+      if (canvasIndex <= -1) {
+        reject(Error('Canvas was not prepared for rendering. Please prepare the canvas first.'))
+      } else {
+        Render._type[canvasIndex] = type;
+        Render._time[canvasIndex] = window.performance.now();
+        Render.setCanvasToUseView(canvasIndex, id).then(() => {
+          Render.startStopRender(canvasIndex, true).then(res => {
+            resolve(res);
+          })
         })
-      })
+      }
     })
   }
 
   // intialize canvas
   // prepare the canvas for rendering
-  static initializeCanvas(thisCanvas, fps?) {
+  static initializeCanvas(thisCanvas, thisIndex, fps) {
     return new Promise(resolve => {
-      Render.canvases.push(thisCanvas);
-      const thisIndex = Render.canvases.indexOf(thisCanvas);
+      Render.canvases = Render.canvases.filter(canvas => {
+        return canvas !== thisCanvas
+      })
+      Render.canvases[thisIndex] = thisCanvas;
       Render.initWebGL(thisIndex).then(gl => {
+        // if (Render.gls[thisIndex]) {
+        //   Render.gls[thisIndex].getExtension('WEBGL_lose_context').restoreContext();
+        // }
         Render.gls[thisIndex] = gl;
 
         Render.gls[thisIndex].viewport(0, 0, thisCanvas.width, thisCanvas.height);
         Render.gls[thisIndex].clearColor(0.0, 0.0, 0.0, 1.0);
         Render.gls[thisIndex].clearDepth(1.0);
-
         let vShader = Render.gls[thisIndex].createShader(Render.gls[thisIndex].VERTEX_SHADER);
         Render.gls[thisIndex].shaderSource(vShader, Render.vertexShaderCode);
         Render.gls[thisIndex].compileShader(vShader);
@@ -109,8 +118,8 @@ export class Render {
           0.0, 0.0, 0.0,
           0.0, 1.0, 0.0));
 
-        Render.recreateSharedTexture(thisIndex).then(() => {
-          resolve(thisIndex)
+        Render.recreateSharedTexture(thisIndex).then(res => {
+          resolve(true)
         })
       })
     })
@@ -118,12 +127,29 @@ export class Render {
 
   // call duplication methods
   static setCanvasToUseView(canvasIndex, id) {
+
     return new Promise(resolve => {
       Render.getSharedTextureSharedHandle(canvasIndex).then(sharedHandle => {
         exec('NewWindow', `texture_${canvasIndex}`, `${Render._type[canvasIndex]}:${id},1,1&d3dhandle:${sharedHandle}`)
         .then(res => {
           resolve(res)
         })
+      })
+    })
+  }
+
+  static stopCanvasToUseView(thisIndex) {
+    return new Promise(resolve => {
+      // Render.gls[thisIndex].getExtension('WEBGL_lose_context').loseContext();
+
+      exec('CloseWindow', `texture_${thisIndex}`).then(res => {
+        Render.startStopRender(thisIndex, false)
+        Render.gls[thisIndex].clearColor(0.0, 0.0, 0.0, 1.0);
+        Render.gls[thisIndex].clear(Render.gls[thisIndex].COLOR_BUFFER_BIT | Render.gls[thisIndex].DEPTH_BUFFER_BIT);
+        Render.gls[thisIndex].deleteTexture(Render.sharedTextures[thisIndex])
+        Render.gls.splice(thisIndex, 1);
+        Render.canvases.splice(thisIndex, 1);
+        resolve(thisIndex)
       })
     })
   }
@@ -245,6 +271,7 @@ export class Render {
           Render.gls[canvasIndex].deleteTexture(Render.sharedTextures[canvasIndex]);
           Render.sharedTextures[canvasIndex] = null;
         }
+
         let dxgiExt = Render.gls[canvasIndex].getExtension('SML_dxgi_shared_textures');
 
         let thisTexture = Render.gls[canvasIndex].createTexture();
