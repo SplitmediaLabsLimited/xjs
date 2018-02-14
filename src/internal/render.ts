@@ -75,9 +75,6 @@ export class Render {
       })
       Render.canvases[thisIndex] = thisCanvas;
       Render.initWebGL(thisIndex).then(gl => {
-        // if (Render.gls[thisIndex]) {
-        //   Render.gls[thisIndex].getExtension('WEBGL_lose_context').restoreContext();
-        // }
         Render.gls[thisIndex] = gl;
 
         Render.gls[thisIndex].viewport(0, 0, thisCanvas.width, thisCanvas.height);
@@ -127,7 +124,6 @@ export class Render {
 
   // call duplication methods
   static setCanvasToUseView(canvasIndex, id) {
-
     return new Promise(resolve => {
       Render.getSharedTextureSharedHandle(canvasIndex).then(sharedHandle => {
         exec('NewWindow', `texture_${canvasIndex}`, `${Render._type[canvasIndex]}:${id},1,1&d3dhandle:${sharedHandle}`)
@@ -140,8 +136,6 @@ export class Render {
 
   static stopCanvasToUseView(thisIndex) {
     return new Promise(resolve => {
-      // Render.gls[thisIndex].getExtension('WEBGL_lose_context').loseContext();
-
       exec('CloseWindow', `texture_${thisIndex}`).then(res => {
         Render.startStopRender(thisIndex, false)
         Render.gls[thisIndex].clearColor(0.0, 0.0, 0.0, 1.0);

@@ -175,6 +175,7 @@ export class Render {
      *
      */
     static renderVideoSource(canvas: HTMLCanvasElement, source: any) {
+      // dupsource doesnt work using the source id.
       return new Promise((resolve, reject) => {
         let index;
         if ((source instanceof Source ||  typeof source === 'string')) {
@@ -212,23 +213,19 @@ export class Render {
     }
 
     /**
-     * params: (view: 0|1)
+     * params: (canvas: HTMLCanvasElement)
      *
      * view parameter can be 0 (Main view) or 1 (Preview).
      *
      */
-    static renderWorkspace(canvas: HTMLCanvasElement, view: number = 0) {
-      return new Promise((resolve, reject) => {
-        if (typeof view === 'number') {
-          const match  = Render._canvasPool.filter(renObj => renObj['_canvas'] === canvas)
-          if (match.length === 1) {
-            match[0]._rendering = true;
-            iRender.drawToTexture(match[0]['_index'], view, 'dupworkspace').then(res => {
-              resolve(true);
-            })
-          }
-        } else {
-          reject(Error('Invalid parameters provided. Please check if the canvas/view is correct.'));
+    static renderWorkspace(canvas: HTMLCanvasElement) {
+      return new Promise((resolve) => {
+        const match  = Render._canvasPool.filter(renObj => renObj['_canvas'] === canvas)
+        if (match.length === 1) {
+          match[0]._rendering = true;
+          iRender.drawToTexture(match[0]['_index'], 0, 'dupworkspace').then(res => {
+            resolve(true);
+          })
         }
       })
     }
