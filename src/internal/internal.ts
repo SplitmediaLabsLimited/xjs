@@ -85,6 +85,8 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
       if (_proxyCallbacks[ret] !== undefined) {
         resolve(_proxyCallbacks[ret].call(this, decodeURIComponent(ret)));
+      } else {
+        resolve(ret);  
       }
     } else if (Remote.remoteType === 'local') {
       resolve(ret);
