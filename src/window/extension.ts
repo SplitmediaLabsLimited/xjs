@@ -215,12 +215,12 @@ export class ExtensionWindow extends EventEmitter {
                 if(isSplitMode) {                      
                   if(!ExtensionWindow._encounteredFirstSceneChange) {                        
                     if(viewId === 1) {                          
-                      ExtensionWindow._encounteredFirstSceneChange = true;                                                    
-                      ExtensionWindow.emit(event, sceneIndex);
+                      ExtensionWindow._encounteredFirstSceneChange = true;  
+                      ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
                     }
                   }
                 } else {                      
-                  if(viewId === 0) ExtensionWindow.emit(event, sceneIndex);                      
+                  if(viewId === 0) ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
                 }
               })
             }, id);                
