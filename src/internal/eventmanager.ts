@@ -20,7 +20,7 @@ export class EventManager {
   static callbacks = {};
   static _remoteHandlers = {};
   static _proxyHandlers = {};
-  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll'];
+  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll', 'scenedlg:1'];
 
   static subscribe(event, _cb, id?) {
     return new Promise(resolve => {

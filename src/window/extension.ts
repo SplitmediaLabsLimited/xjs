@@ -199,35 +199,33 @@ export class ExtensionWindow extends EventEmitter {
           resolve(this);
         }
       } else if(event === 'push-to-live') {
-        if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0) {
+        if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0 && Environment.isExtension()) {
           ExtensionWindow._subscriptions.push('scenedlg:1');
           EventManager.subscribe('scenedlg:1', function() {
-            if (Environment.isExtension()) {
-              ExtensionWindow._encounteredFirstSceneChange = false;              
-              if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
-                ExtensionWindow._subscriptions.push('SceneChange');
-                EventManager.subscribe('SceneChange', function(settingsObj) {                  
-                  let isSplitMode = false;
-                  const viewId = parseInt(settingsObj['args'][0]);
-                  const sceneIndex = parseInt(settingsObj['args'][1]);                              
-                  App.getGlobalProperty('splitmode').then(split => {
-                    isSplitMode = split === '1' ? true : false;                 
-                    if(isSplitMode) {                      
-                      if(!ExtensionWindow._encounteredFirstSceneChange) {                        
-                        if(viewId === 1) {                          
-                          ExtensionWindow._encounteredFirstSceneChange = true;                                                    
-                          ExtensionWindow.emit(event, sceneIndex);
-                        }
-                      }
-                    } else {                      
-                      if(viewId === 0) ExtensionWindow.emit(event, sceneIndex);                      
-                    }
-                  })
-                }, id);                
-              }       
-            }
-            resolve(this);
+            ExtensionWindow._encounteredFirstSceneChange = false;              
           }, id);
+          if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
+            ExtensionWindow._subscriptions.push('SceneChange');
+            EventManager.subscribe('SceneChange', function(settingsObj) {                  
+              let isSplitMode = false;
+              const viewId = parseInt(settingsObj['args'][0]);
+              const sceneIndex = parseInt(settingsObj['args'][1]);                              
+              App.getGlobalProperty('splitmode').then(split => {
+                isSplitMode = split === '1' ? true : false;                 
+                if(isSplitMode) {                      
+                  if(!ExtensionWindow._encounteredFirstSceneChange) {                        
+                    if(viewId === 1) {                          
+                      ExtensionWindow._encounteredFirstSceneChange = true;                                                    
+                      ExtensionWindow.emit(event, sceneIndex);
+                    }
+                  }
+                } else {                      
+                  if(viewId === 0) ExtensionWindow.emit(event, sceneIndex);                      
+                }
+              })
+            }, id);                
+          }
+          resolve(this);
         } else {
           resolve(this);
         }
