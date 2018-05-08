@@ -1,5 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
@@ -14,6 +15,13 @@ export interface ISourceCamera {
    * Gets the device ID of the underlying camera device.
    */
   getDeviceId(): Promise<string>
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the camera's native resolution.
+   */
+  getResolution(): Promise<Rectangle>
 
   /**
    * return: Promise<number>
@@ -133,6 +141,15 @@ export class SourceCamera implements ISourceCamera {
           resolve(val);
         });
       }
+    });
+  }
+
+  getResolution(): Promise<Rectangle> {
+    return new Promise(resolve => {
+      iItem.get('prop:resolution', this._id).then(val => {
+        const [width, height] = val.split(',').map(Number);
+        resolve(Rectangle.fromDimensions(width, height));
+      });
     });
   }
 

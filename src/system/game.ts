@@ -1,13 +1,13 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Rectangle as Rectangle} from '../util/rectangle';
+import {Rectangle} from '../util/rectangle';
 import {JSON as JXON} from '../internal/util/json';
-import {XML as XML} from '../internal/util/xml';
+import {XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
 import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
 import {Scene} from '../core/scene';
-import{checkSplitmode} from '../internal/util/splitmode';
+import {checkSplitmode} from '../internal/util/splitmode';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class}
