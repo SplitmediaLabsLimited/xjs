@@ -126,6 +126,10 @@ export class ChannelManager extends EventEmitter {
       }
     });
   }
+
+  static off(event: string, handler: Function) {
+    ChannelManager._emitter.off(event, handler);
+  }
 }
 
 
