@@ -84,7 +84,9 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
     // Sync calls end here for proxy and local
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
       if (_proxyCallbacks[ret] !== undefined) {
-        resolve(_proxyCallbacks[ret].call(this, decodeURIComponent(ret)));
+        let result = _proxyCallbacks[ret].call(this, decodeURIComponent(ret));
+        delete _proxyCallbacks[ret];
+        resolve(result);
       }
     } else if (Remote.remoteType === 'local') {
       resolve(ret);
@@ -99,6 +101,7 @@ export function finalCallback(message) {
     if (typeof(result['asyncId']) === 'number'
       && _remoteCallbacks[result['asyncId']] !== undefined) {
       _remoteCallbacks[result['asyncId']].apply(this, [result['result']]);
+      delete _remoteCallbacks[result['asyncId']];
     } else {
       resolve(result['result']);
     }
@@ -112,12 +115,14 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
     let callback = _proxyCallbacks[asyncID];
     if (callback instanceof Function) {
       callback.call(this, decodeURIComponent(result));
+      delete _proxyCallbacks[asyncID];
     }
   } else {
     let callback = _callbacks[asyncID];
 
     if (callback instanceof Function) {
       callback.call(this, decodeURIComponent(result));
+      delete _callbacks[asyncID];
     }
   }
 
