@@ -146,7 +146,7 @@ window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
     EventManager._proxyHandlers[event].map(_cb => {
-      _cb({ event });
+      _cb({ event, args });
     })
   } else {
     if (EventManager.callbacks[event] === undefined) return;
