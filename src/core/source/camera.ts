@@ -1,5 +1,6 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
+import {Rectangle} from '../../util/rectangle';
 import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {IAudio, Audio} from '../source/iaudio';
@@ -38,12 +39,19 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  */
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item
-    /**
+  /**
    * return: Promise<string>
    *
    * Gets the device ID of the underlying camera device.
    */
   getDeviceId: () => Promise<string>
+
+  /**
+   * return: Promise<Rectangle>
+   *
+   * Gets the camera's native resolution.
+   */
+  getResolution: () => Promise<Rectangle>
 
   /**
    * return: Promise<number>

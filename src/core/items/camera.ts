@@ -67,6 +67,11 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getDeviceId: () => Promise<string>
 
   /**
+   * See: {@link #core/CameraSource#getResolution getResolution}
+   */
+  getResolution: () => Promise<Rectangle>
+
+  /**
    * See: {@link #core/CameraSource#getAudioOffset getAudioOffset}
    */
   getAudioOffset: () => Promise<number>
@@ -131,12 +136,12 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#bringForward bringForward}
    */
-  bringForward: () => Promise<CameraItem>;  
+  bringForward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#bringToFront bringToFront}
    */
-  bringToFront: () => Promise<CameraItem>;  
+  bringToFront: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#isKeepAspectRatio isKeepAspectRatio}
@@ -191,12 +196,12 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<CameraItem>;  
+  sendBackward: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<CameraItem>; 
+  sendToBack: () => Promise<CameraItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
