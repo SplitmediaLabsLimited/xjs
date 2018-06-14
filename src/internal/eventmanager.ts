@@ -20,7 +20,7 @@ export class EventManager {
   static callbacks = {};
   static _remoteHandlers = {};
   static _proxyHandlers = {};
-  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll'];
+  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll', 'scenedlg:1'];
 
   static subscribe(event, _cb, id?) {
     return new Promise(resolve => {
@@ -146,7 +146,7 @@ window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
     EventManager._proxyHandlers[event].map(_cb => {
-      _cb({ event });
+      _cb({ event, args });
     })
   } else {
     if (EventManager.callbacks[event] === undefined) return;

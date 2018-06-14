@@ -27,7 +27,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     // We leave class members sorted in order of declaration
     sortClassMembers: false,
     // We can provide a collection of strings or regexes to ignore exports whose export names match
-    ignoreExportsMatching: ['___esModule'],
+    ignoreExportsMatching: ['___esModule', /^_/ig],
 
     $process: function(docs) {
 

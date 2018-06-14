@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.7.0
+ * version: 2.8.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1174,6 +1174,9 @@ var ChannelManager = (function (_super) {
                 handler.call(_this, { error: true });
             }
         });
+    };
+    ChannelManager.off = function (event, handler) {
+        ChannelManager._emitter.off(event, handler);
     };
     ChannelManager._emitter = new ChannelManager();
     ChannelManager._proxyCallbacks = {};
@@ -4892,7 +4895,7 @@ var Output = (function () {
                 Output._id = id;
             }
             if (args[1] instanceof Function) {
-                callback = args[0];
+                callback = args[1];
             }
         }
         else {
@@ -7009,6 +7012,7 @@ var SourceAudio = (function () {
 exports.SourceAudio = SourceAudio;
 },{"../../internal/item":55,"../../internal/util/logger":58}],32:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
+var rectangle_1 = _require('../../util/rectangle');
 var item_1 = _require('../../internal/item');
 var system_1 = _require('../../system/system');
 var logger_1 = _require('../../internal/util/logger');
@@ -7038,6 +7042,15 @@ var SourceCamera = (function () {
                     resolve(val);
                 });
             }
+        });
+    };
+    SourceCamera.prototype.getResolution = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:resolution', _this._id).then(function (val) {
+                var _a = val.split(',').map(Number), width = _a[0], height = _a[1];
+                resolve(rectangle_1.Rectangle.fromDimensions(width, height));
+            });
         });
     };
     SourceCamera.prototype.getAudioOffset = function () {
@@ -7356,7 +7369,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":55,"../../internal/util/logger":58,"../../system/system":69}],33:[function(_require,module,exports){
+},{"../../internal/item":55,"../../internal/util/logger":58,"../../system/system":69,"../../util/rectangle":76}],33:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -10612,7 +10625,7 @@ var EventManager = (function () {
     EventManager.callbacks = {};
     EventManager._remoteHandlers = {};
     EventManager._proxyHandlers = {};
-    EventManager._appEventsList = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll'];
+    EventManager._appEventsList = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll', 'scenedlg:1'];
     return EventManager;
 })();
 exports.EventManager = EventManager;
@@ -10655,7 +10668,7 @@ window_1.default.AppOnEvent = function (event) {
         if (EventManager._proxyHandlers[event] === undefined)
             return;
         EventManager._proxyHandlers[event].map(function (_cb) {
-            _cb({ event: event });
+            _cb({ event: event, args: args });
         });
     }
     else {
@@ -10934,7 +10947,12 @@ function exec(funcName) {
         // Sync calls end here for proxy and local
         if (remote_1.Remote.remoteType === 'proxy' && typeof (ret) !== 'number') {
             if (_proxyCallbacks[ret] !== undefined) {
-                resolve(_proxyCallbacks[ret].call(_this, decodeURIComponent(ret)));
+                var result = _proxyCallbacks[ret].call(_this, decodeURIComponent(ret));
+                delete _proxyCallbacks[ret];
+                resolve(result);
+            }
+            else {
+                resolve(ret);
             }
         }
         else if (remote_1.Remote.remoteType === 'local') {
@@ -10951,6 +10969,7 @@ function finalCallback(message) {
         if (typeof (result['asyncId']) === 'number'
             && _remoteCallbacks[result['asyncId']] !== undefined) {
             _remoteCallbacks[result['asyncId']].apply(_this, [result['result']]);
+            delete _remoteCallbacks[result['asyncId']];
         }
         else {
             resolve(result['result']);
@@ -10965,12 +10984,14 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
         var callback = _proxyCallbacks[asyncID];
         if (callback instanceof Function) {
             callback.call(this, decodeURIComponent(result));
+            delete _proxyCallbacks[asyncID];
         }
     }
     else {
         var callback = _callbacks[asyncID];
         if (callback instanceof Function) {
             callback.call(this, decodeURIComponent(result));
+            delete _callbacks[asyncID];
         }
     }
     if (typeof asyncCallback === 'function') {
@@ -11329,6 +11350,38 @@ var Remote = (function () {
     function Remote() {
     }
     /**
+     * param: (value: string) / remoteType
+     *
+     * Allows user to set the remoteType.
+     * May be used for instances that the extension may need to call a method locally.
+     *
+     * `Note: This may break handling of calls if the type is not returned to its original assignment`
+     */
+    Remote.setRemoteType = function (val) {
+        var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+        var isInXBC = navigator.appVersion.match(xbcPattern);
+        return new Promise(function (resolve, reject) {
+            if (Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
+                resolve(true);
+            }
+            else {
+                reject(Error('Unable to change the remoteType: Make sure the type is correct and the extension is in XBC.'));
+            }
+        });
+    };
+    /**
+     * param: (value: connection)
+     *
+     * Allows reassigning of `Remote.sendMessage` for instances when sending messages
+     * is replaced.
+     */
+    Remote.setSendMessage = function (newSendMessage) {
+        return new Promise(function (resolve) {
+            Remote.sendMessage = newSendMessage;
+            resolve(true);
+        });
+    };
+    /**
      * param: (value: string)
      *
      * Handles received messages to properly relay it to either the proxy
@@ -11513,6 +11566,7 @@ var Remote = (function () {
         });
     };
     Remote._isVersion = false;
+    Remote._RemoteTypes = ['local', 'remote', 'proxy'];
     /**
      * Initial assignment should be done on xjs.ready()
      * Types:
@@ -14789,6 +14843,7 @@ var _RESIZE = '2';
  *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
  *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
  *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
+  *   - `push-to-live` : notifies when a particular scene was pushed to live by user. Handler is a function f(sceneIndex: number).
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -14807,6 +14862,7 @@ var ExtensionWindow = (function (_super) {
         }
         ExtensionWindow._instance = this;
         ExtensionWindow._subscriptions = [];
+        ExtensionWindow._encounteredFirstSceneChange = false;
     }
     /**
      * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
@@ -14873,7 +14929,7 @@ var ExtensionWindow = (function (_super) {
                                 var sceneNum = settingsObj['args'][1].split('&')[2].split(':');
                                 returnObj[sceneId[0]] = sceneId[1];
                                 returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
-                                ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+                                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
                             }
                             else {
                                 ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
@@ -14898,7 +14954,7 @@ var ExtensionWindow = (function (_super) {
                             var sceneNum = settingsObj['args'][1].split('&')[2].split(':');
                             returnObj[sceneId[0]] = sceneId[1];
                             returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
-                            ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+                            ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
                         }
                         else {
                             scene_1.Scene.getSceneCount().then(function (count) {
@@ -14922,7 +14978,7 @@ var ExtensionWindow = (function (_super) {
                     ExtensionWindow._subscriptions.push('OnSceneDeleteAll');
                     eventmanager_1.EventManager.subscribe('OnSceneDeleteAll', function (settingsObj) {
                         if (environment_1.Environment.isExtension()) {
-                            ExtensionWindow.emit(event, settingsObj['args'][0]);
+                            ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['args'][0]);
                         }
                         resolve(this);
                     }, id);
@@ -14948,13 +15004,48 @@ var ExtensionWindow = (function (_super) {
                                     }
                                     if (changedIndex === String(sceneNumber)) {
                                         var placementJXON = json_1.JSON.parse(newValue);
-                                        ExtensionWindow.emit(event, sceneNumber, placementJXON['id']);
+                                        ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneNumber, placementJXON['id']);
                                     }
                                 });
                             }
                         }
                         resolve(this);
                     }, id);
+                }
+                else {
+                    resolve(_this);
+                }
+            }
+            else if (event === 'push-to-live') {
+                if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0 && environment_1.Environment.isExtension()) {
+                    ExtensionWindow._subscriptions.push('scenedlg:1');
+                    eventmanager_1.EventManager.subscribe('scenedlg:1', function () {
+                        ExtensionWindow._encounteredFirstSceneChange = false;
+                    }, id);
+                    if (ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
+                        ExtensionWindow._subscriptions.push('SceneChange');
+                        eventmanager_1.EventManager.subscribe('SceneChange', function (settingsObj) {
+                            var isSplitMode = false;
+                            var viewId = parseInt(settingsObj['args'][0]);
+                            var sceneIndex = parseInt(settingsObj['args'][1]);
+                            app_1.App.getGlobalProperty('splitmode').then(function (split) {
+                                isSplitMode = split === '1' ? true : false;
+                                if (isSplitMode) {
+                                    if (!ExtensionWindow._encounteredFirstSceneChange) {
+                                        if (viewId === 1) {
+                                            ExtensionWindow._encounteredFirstSceneChange = true;
+                                            ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (viewId === 0)
+                                        ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
+                                }
+                            });
+                        }, id);
+                    }
+                    resolve(_this);
                 }
                 else {
                     resolve(_this);
@@ -15093,6 +15184,7 @@ var ExtensionWindow = (function (_super) {
         app_1.App.postMessage('5', '1');
     };
     ExtensionWindow._subscriptions = [];
+    ExtensionWindow._encounteredFirstSceneChange = false;
     return ExtensionWindow;
 })(eventemitter_1.EventEmitter);
 exports.ExtensionWindow = ExtensionWindow;

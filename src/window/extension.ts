@@ -33,6 +33,7 @@ const _RESIZE = '2';
  *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
  *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
  *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
+  *   - `push-to-live` : notifies when a particular scene was pushed to live by user. Handler is a function f(sceneIndex: number).
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -40,6 +41,7 @@ const _RESIZE = '2';
 export class ExtensionWindow extends EventEmitter {
   private static _instance: ExtensionWindow;
   static _subscriptions: string[] = [];
+  static _encounteredFirstSceneChange: boolean = false;
 
 /**
  * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
@@ -66,6 +68,7 @@ export class ExtensionWindow extends EventEmitter {
     }
     ExtensionWindow._instance = this;
     ExtensionWindow._subscriptions = [];
+    ExtensionWindow._encounteredFirstSceneChange = false;
   }
 
   /**
@@ -118,7 +121,7 @@ export class ExtensionWindow extends EventEmitter {
                 returnObj[sceneId[0]] = sceneId[1];
                 returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
 
-                ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
               } else {
                 ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
                 null : Number(settingsObj['index']) + 1);
@@ -140,7 +143,7 @@ export class ExtensionWindow extends EventEmitter {
               const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
               returnObj[sceneId[0]] = sceneId[1];
               returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
-              ExtensionWindow.emit(event, returnObj['scene'], returnObj['sceneid']);
+              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
             } else {
               Scene.getSceneCount().then(function(count){
                 if (Environment.isExtension()) {
@@ -160,7 +163,7 @@ export class ExtensionWindow extends EventEmitter {
           ExtensionWindow._subscriptions.push('OnSceneDeleteAll');
           EventManager.subscribe('OnSceneDeleteAll', function(settingsObj) {
             if (Environment.isExtension()) {
-              ExtensionWindow.emit(event, settingsObj['args'][0]);
+              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['args'][0]);
             }
             resolve(this);
           }, id);
@@ -185,13 +188,44 @@ export class ExtensionWindow extends EventEmitter {
                   }
                   if (changedIndex === String(sceneNumber)) {
                     var placementJXON = JXON.parse(newValue);
-                    ExtensionWindow.emit(event, sceneNumber, placementJXON['id']);
+                    ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneNumber, placementJXON['id']);
                   }
                 })
               }
             }
             resolve(this);
           }, id);
+        } else {
+          resolve(this);
+        }
+      } else if(event === 'push-to-live') {
+        if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0 && Environment.isExtension()) {
+          ExtensionWindow._subscriptions.push('scenedlg:1');
+          EventManager.subscribe('scenedlg:1', function() {
+            ExtensionWindow._encounteredFirstSceneChange = false;              
+          }, id);
+          if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
+            ExtensionWindow._subscriptions.push('SceneChange');
+            EventManager.subscribe('SceneChange', function(settingsObj) {                  
+              let isSplitMode = false;
+              const viewId = parseInt(settingsObj['args'][0]);
+              const sceneIndex = parseInt(settingsObj['args'][1]);                              
+              App.getGlobalProperty('splitmode').then(split => {
+                isSplitMode = split === '1' ? true : false;                 
+                if(isSplitMode) {                      
+                  if(!ExtensionWindow._encounteredFirstSceneChange) {                        
+                    if(viewId === 1) {                          
+                      ExtensionWindow._encounteredFirstSceneChange = true;  
+                      ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
+                    }
+                  }
+                } else {                      
+                  if(viewId === 0) ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
+                }
+              })
+            }, id);                
+          }
+          resolve(this);
         } else {
           resolve(this);
         }

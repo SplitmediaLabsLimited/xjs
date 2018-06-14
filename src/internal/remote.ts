@@ -44,6 +44,7 @@ import {Output} from '../core/output';
 
 export class Remote {
   private static _isVersion = false;
+  private static _RemoteTypes: string[] = ['local', 'remote', 'proxy'];
 
   /**
    * Initial assignment should be done on xjs.ready()
@@ -59,6 +60,40 @@ export class Remote {
    *  - proxy
    */
   static remoteType = 'local';
+
+
+  /**
+   * param: (value: string) / remoteType
+   *
+   * Allows user to set the remoteType.
+   * May be used for instances that the extension may need to call a method locally.
+   *
+   * `Note: This may break handling of calls if the type is not returned to its original assignment`
+   */
+  static setRemoteType(val: string) {
+    let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+    const isInXBC = navigator.appVersion.match(xbcPattern);
+    return new Promise((resolve, reject) => {
+      if(Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
+        resolve(true)
+      } else {
+        reject(Error('Unable to change the remoteType: Make sure the type is correct and the extension is in XBC.'))
+      }
+    })
+  }
+
+  /**
+   * param: (value: connection)
+   *
+   * Allows reassigning of `Remote.sendMessage` for instances when sending messages
+   * is replaced.
+   */
+  static setSendMessage(newSendMessage) {
+    return new Promise(resolve => {
+      Remote.sendMessage = newSendMessage;
+      resolve(true)
+    })
+  }
 
   /**
    * param: (value: string)
