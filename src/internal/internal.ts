@@ -87,6 +87,8 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
         let result = _proxyCallbacks[ret].call(this, decodeURIComponent(ret));
         delete _proxyCallbacks[ret];
         resolve(result);
+      } else {
+        resolve(ret);  
       }
     } else if (Remote.remoteType === 'local') {
       resolve(ret);
