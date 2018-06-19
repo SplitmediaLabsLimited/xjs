@@ -10877,7 +10877,6 @@ var counter = 0;
 * Executes an external function
 */
 function exec(funcName) {
-    var _this = this;
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         args[_i - 1] = arguments[_i];
@@ -10923,7 +10922,7 @@ function exec(funcName) {
         if (window_1.default.external &&
             window_1.default.external[funcName] &&
             window_1.default.external[funcName] instanceof Function) {
-            ret = window_1.default.external[funcName].apply(_this, args);
+            ret = (_a = window_1.default.external)[funcName].apply(_a, args);
         }
         // register callback if present
         if (callback !== null) {
@@ -10947,7 +10946,7 @@ function exec(funcName) {
         // Sync calls end here for proxy and local
         if (remote_1.Remote.remoteType === 'proxy' && typeof (ret) !== 'number') {
             if (_proxyCallbacks[ret] !== undefined) {
-                var result = _proxyCallbacks[ret].call(_this, decodeURIComponent(ret));
+                var result = _proxyCallbacks[ret](decodeURIComponent(ret));
                 delete _proxyCallbacks[ret];
                 resolve(result);
             }
@@ -10958,17 +10957,17 @@ function exec(funcName) {
         else if (remote_1.Remote.remoteType === 'local') {
             resolve(ret);
         }
+        var _a;
     });
 }
 exports.exec = exec;
 // Only used by remote to use saved callback
 function finalCallback(message) {
-    var _this = this;
     return new Promise(function (resolve) {
         var result = JSON.parse(message);
         if (typeof (result['asyncId']) === 'number'
             && _remoteCallbacks[result['asyncId']] !== undefined) {
-            _remoteCallbacks[result['asyncId']].apply(_this, [result['result']]);
+            _remoteCallbacks[result['asyncId']](result['result']);
             delete _remoteCallbacks[result['asyncId']];
         }
         else {
@@ -10983,14 +10982,14 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
     if (remote_1.Remote.remoteType === 'proxy') {
         var callback = _proxyCallbacks[asyncID];
         if (callback instanceof Function) {
-            callback.call(this, decodeURIComponent(result));
+            callback(decodeURIComponent(result));
             delete _proxyCallbacks[asyncID];
         }
     }
     else {
         var callback = _callbacks[asyncID];
         if (callback instanceof Function) {
-            callback.call(this, decodeURIComponent(result));
+            callback(decodeURIComponent(result));
             delete _callbacks[asyncID];
         }
     }
