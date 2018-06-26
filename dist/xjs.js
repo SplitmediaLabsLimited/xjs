@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.8.0
+ * version: 2.8.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -10852,10 +10852,12 @@ function informWhenConfigLoaded() {
         }
     });
 }
-function init() {
+function init(config) {
     global_1.Global.addInitializationPromise(readMetaConfigUrl());
     global_1.Global.addInitializationPromise(getCurrentSourceId());
-    global_1.Global.addInitializationPromise(informWhenConfigLoaded());
+    if (!(config && config['deferLoad'] !== undefined)) {
+        global_1.Global.addInitializationPromise(informWhenConfigLoaded());
+    }
     Promise.all(global_1.Global.getInitializationPromises()).then(function () {
         document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
             bubbles: true
@@ -14034,7 +14036,7 @@ function finishReady(config) {
         if (isReady && !isInit) {
             channelmanager_1._subscribeEventManager();
             setOnce();
-            init_1.default();
+            init_1.default(config);
         }
         if (readyResolve !== undefined && remote_1.Remote.remoteType === 'remote') {
             readyResolve.call(_this, null);
@@ -14483,6 +14485,17 @@ var SourcePropsWindow = (function (_super) {
         });
     };
     ;
+    /**
+     *  param: show<boolean>
+     *
+     *  Toggles on/off the load indicator of the source properties dialog
+     */
+    SourcePropsWindow.prototype.showLoading = function (show) {
+        this._notify({
+            event: 'show-overlay',
+            value: show
+        });
+    };
     SourcePropsWindow._MODE_FULL = 'full';
     SourcePropsWindow._MODE_TABBED = 'embedded';
     return SourcePropsWindow;
