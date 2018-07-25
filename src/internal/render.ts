@@ -256,31 +256,39 @@ export class Render {
 
   static recreateSharedTexture(canvasIndex) {
     return new Promise(resolve => {
-      if (!Render.gls[canvasIndex])
+      let thisGL = Render.gls[canvasIndex];
+      if (!thisGL)
         resolve(null);
 
       let { width, height } = Render.canvases[canvasIndex];
       Render.recreateModel(canvasIndex, width, height).then(res => {
         if (Render.sharedTextures[canvasIndex] != null) {
-          Render.gls[canvasIndex].deleteTexture(Render.sharedTextures[canvasIndex]);
+          thisGL.deleteTexture(Render.sharedTextures[canvasIndex]);
           Render.sharedTextures[canvasIndex] = null;
         }
 
-        let dxgiExt = Render.gls[canvasIndex].getExtension('SML_dxgi_shared_textures');
+        let dxgiExt = thisGL.getExtension('SML_dxgi_shared_textures');
 
-        let thisTexture = Render.gls[canvasIndex].createTexture();
+        let thisTexture = thisGL.createTexture();
         Render.sharedTextures[canvasIndex] = thisTexture;
-        Render.gls[canvasIndex].bindTexture(Render.gls[canvasIndex].TEXTURE_2D, thisTexture);
-        Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_WRAP_S, Render.gls[canvasIndex].CLAMP_TO_EDGE);
-        Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_WRAP_T, Render.gls[canvasIndex].CLAMP_TO_EDGE);
-        Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_MIN_FILTER, Render.gls[canvasIndex].NEAREST);
-        Render.gls[canvasIndex].texParameteri(Render.gls[canvasIndex].TEXTURE_2D, Render.gls[canvasIndex].TEXTURE_MAG_FILTER, Render.gls[canvasIndex].NEAREST);
+        thisGL.bindTexture(thisGL.TEXTURE_2D, thisTexture);
+        thisGL.texParameteri(thisGL.TEXTURE_2D, thisGL.TEXTURE_WRAP_S, thisGL.CLAMP_TO_EDGE);
+        thisGL.texParameteri(thisGL.TEXTURE_2D, thisGL.TEXTURE_WRAP_T, thisGL.CLAMP_TO_EDGE);
+        thisGL.texParameteri(thisGL.TEXTURE_2D, thisGL.TEXTURE_MIN_FILTER, thisGL.NEAREST);
+        thisGL.texParameteri(thisGL.TEXTURE_2D, thisGL.TEXTURE_MAG_FILTER, thisGL.NEAREST);
 
-        Render.gls[canvasIndex].texImage2D(Render.gls[canvasIndex].TEXTURE_2D, 0, Render.gls[canvasIndex].RGBA, width, height, 0, Render.gls[canvasIndex].RGBA, Render.gls[canvasIndex].UNSIGNED_BYTE,
+        thisGL.texImage2D(thisGL.TEXTURE_2D, 0, thisGL.RGBA, width, height, 0, thisGL.RGBA, thisGL.UNSIGNED_BYTE,
           Render.createTestPattern(width, height));
-        dxgiExt.setNewTexturesAreSharedSML(true);
-        Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
-        dxgiExt.setNewTexturesAreSharedSML(false);
+        if (dxgiExt) {
+          dxgiExt.setNewTexturesAreSharedSML(true);  
+          Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
+          dxgiExt.setNewTexturesAreSharedSML(false);
+        } else {
+           thisGL.enable(thisGL.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
+           Render.render(canvasIndex); // Force ANGLE to commit the texture to something that can be bound to a shader
+           thisGL.disable(thisGL.DXGI_SHARED_TEXTURE_FLAG_SPLITMEDIA);
+        }
+
         resolve(true);
       })
     })
@@ -334,12 +342,19 @@ export class Render {
 
   static getSharedTextureSharedHandle(canvasIndex) {
     return new Promise(resolve => {
+      // or return [0,0], just needs to know if new or old implementation (3163 v 2987)
       if (Render.sharedTextures[canvasIndex] == undefined)
         return 0x0;
-      Render.gls[canvasIndex].bindTexture(Render.gls[canvasIndex].TEXTURE_2D, Render.sharedTextures[canvasIndex]);
-      let dxgiExt = Render.gls[canvasIndex].getExtension('SML_dxgi_shared_textures');
-      let handle = dxgiExt.getSharedHandleSML();
-      resolve(handle)
+      let thisGl = Render.gls[canvasIndex];
+      thisGl.bindTexture(thisGl.TEXTURE_2D, Render.sharedTextures[canvasIndex]);
+      let dxgiExt = thisGl.getExtension('SML_dxgi_shared_textures');
+      let handle;
+      if (dxgiExt) {
+        handle = dxgiExt.getSharedHandleSML();
+      } else {
+        handle = thisGl.getParameter(thisGl.DXGI_SHARED_HANDLE_SPLITMEDIA);
+      }
+      resolve(handle);
     })
   }
 
