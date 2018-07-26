@@ -83,7 +83,11 @@ export class StreamInfo {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      resolve(this._name);
+      resolve(this._name
+        .replace(/&quot;/g, '"')
+        .replace(/&gt;/g, '>')
+        .replace(/&lt;/g, '<')
+        .replace(/&amp;/g, '&'));
     });
   }
 
