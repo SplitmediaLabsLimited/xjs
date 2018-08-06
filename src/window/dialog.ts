@@ -37,6 +37,7 @@ let dialogProxy: any;
  *      .setTitle('ThisDialogReturnsAString')
  *      .setBorderOptions(true, false)
  *      .setButtons(true, true)
+        .setCookiePath('cookiePath')
  *      .show(function(dialog) {
  *        dialog.getResult().then(function(result) {
  *          document.getElementById('input').value = result;
@@ -62,6 +63,7 @@ export class Dialog{
   private _autoclose: boolean;
   private _minimize: boolean;
   private _maximize: boolean;
+  private _cookiePath: string;
 
   constructor() {
     if (Environment.isSourcePlugin()) {
@@ -228,6 +230,24 @@ export class Dialog{
   }
 
   /**
+   *  param: (cookiePath: string)
+   *
+   *  return: Dialog
+   *
+   *  Sets the cookie Path of the dialog.
+   *
+   * *Chainable.*
+   */
+  setCookiePath(cookiePath: string): Dialog {
+    if (this._autoclose) {
+      throw new Error('Autoclosing dialogs cannot use this method.');
+    }
+
+    this._cookiePath = cookiePath;
+    return this;
+  }
+
+  /**
    *  return: Promise<Dialog>
    *
    *  After configuring the dialog, call this function to spawn it.
@@ -248,7 +268,9 @@ export class Dialog{
         exec('NewDialog', this._url, '', this._size === undefined ?
         undefined : (this._size.toDimensionString()),
         this._calculateFlags(),
-        this._title).then(result => {
+        this._title,
+        this._cookiePath === undefined ? 
+        undefined : `<configuration cookiepath="${this._cookiePath}" />`).then(result => {
           resolve(this)
         })
       }
