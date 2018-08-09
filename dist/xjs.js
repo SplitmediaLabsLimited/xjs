@@ -975,18 +975,20 @@ var App = (function () {
      */
     App.prototype.clearBrowserCookies = function (cookiePath) {
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('This method is not available to source plugins.'));
-            }
-            else {
+            if (typeof window.external['CallHostFunc'] === 'function') {
                 if (cookiePath && cookiePath !== '') {
                     internal_1.exec('CallHostFunc', 'deleteCookie', cookiePath);
+                }
+            }
+            else {
+                if (environment_1.Environment.isSourcePlugin()) {
+                    reject(Error('This method is not available to source plugins.'));
                 }
                 else {
                     internal_1.exec('CallHost', 'deletecookie:videoitemprop');
                 }
-                resolve(true);
             }
+            resolve(true);
         });
     };
     /**
