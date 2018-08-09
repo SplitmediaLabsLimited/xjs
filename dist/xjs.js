@@ -1017,13 +1017,15 @@ var App = (function () {
      */
     App.prototype.clearBrowserCookies = function () {
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('This method is not available to source plugins.'));
+            if (typeof window.external['CallHostFunc'] === 'function') {
             }
             else {
+                if (environment_1.Environment.isSourcePlugin()) {
+                    reject(Error('This method is not available to source plugins.'));
+                }
                 internal_1.exec('CallHost', 'deletecookie:videoitemprop');
-                resolve(true);
             }
+            resolve(true);
         });
     };
     /**
