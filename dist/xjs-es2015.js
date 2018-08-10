@@ -1,3 +1,45 @@
+/**
+ * XSplit JS Framework
+ * version: 2.8.1
+ *
+ * XSplit Extensibility Framework and Plugin License
+ *
+ * Copyright (c) 2015, SplitmediaLabs Limited
+ * All rights reserved.
+ *
+ * Redistribution and use in source, minified or binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in minified or binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. This software, in source, minified and binary forms, and any derivatives
+ *    hereof, may be used only with the purpose to extend the functionality of the
+ *    XSplit products, developed and published by SplitmediaLabs Limited. It may
+ *    specifically not be used for extending the functionality of any other software
+ *    products which enables live streaming and/or recording functions.
+ *
+ * 4. This software may not be used to circumvent paid feature restrictions for
+ *    free and personal licensees of the XSplit products.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SPLITMEDIALABS LIMITED ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL SPLITMEDIALABS LIMITED BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ */
+
+
 (function() {
 _require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _require=="function"&&_require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _require=="function"&&_require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -974,15 +1016,14 @@ var App = (function () {
      * });
      * ```
      */
-    App.prototype.clearBrowserCookies = function (cookiePath) {
+    App.prototype.clearBrowserCookies = function () {
         return new Promise(function (resolve, reject) {
-            if (cookiePath && cookiePath !== '' && typeof window.external['CallHostFunc'] === 'function') {
-                internal_1.exec('CallHostFunc', 'deleteCookie', cookiePath);
-            }
-            else if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('This method is not available to source plugins.'));
+            if (typeof window.external['CallHostFunc'] === 'function') {
             }
             else {
+                if (environment_1.Environment.isSourcePlugin()) {
+                    reject(Error('This method is not available to source plugins.'));
+                }
                 internal_1.exec('CallHost', 'deletecookie:videoitemprop');
             }
             resolve(true);
@@ -9803,13 +9844,15 @@ var Source = (function () {
                 version_1.versionCompare(version_1.getVersion())
                     .is
                     .greaterThan(version_1.minVersion)) {
-                item_1.Item.get('itemlist').then(function (itemlist) {
-                    var itemId = itemlist.split(',')[0];
-                    scene_1.Scene.searchItemsById(itemId).then(function (item) {
-                        return item.getSource();
-                    }).then(function (source) {
-                        resolve(source);
-                    }).catch(function () { return resolve(null); });
+                Source.getItemList().then(function (items) {
+                    if (items.length > 0) {
+                        items[0].getSource().then(function (source) {
+                            resolve(source);
+                        });
+                    }
+                    else {
+                        reject(Error('Cannot get item list'));
+                    }
                 });
             }
             else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceProps()) {
@@ -10812,10 +10855,12 @@ function informWhenConfigLoaded() {
         }
     });
 }
-function init() {
+function init(config) {
     global_1.Global.addInitializationPromise(readMetaConfigUrl());
     global_1.Global.addInitializationPromise(getCurrentSourceId());
-    global_1.Global.addInitializationPromise(informWhenConfigLoaded());
+    if (!(config && config['deferLoad'] !== undefined)) {
+        global_1.Global.addInitializationPromise(informWhenConfigLoaded());
+    }
     Promise.all(global_1.Global.getInitializationPromises()).then(function () {
         document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
             bubbles: true
@@ -10836,7 +10881,6 @@ var counter = 0;
 * Executes an external function
 */
 function exec(funcName) {
-    var _this = this;
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         args[_i - 1] = arguments[_i];
@@ -10882,7 +10926,7 @@ function exec(funcName) {
         if (window_1.default.external &&
             window_1.default.external[funcName] &&
             window_1.default.external[funcName] instanceof Function) {
-            ret = window_1.default.external[funcName].apply(_this, args);
+            ret = (_a = window_1.default.external)[funcName].apply(_a, args);
         }
         // register callback if present
         if (callback !== null) {
@@ -10906,7 +10950,7 @@ function exec(funcName) {
         // Sync calls end here for proxy and local
         if (remote_1.Remote.remoteType === 'proxy' && typeof (ret) !== 'number') {
             if (_proxyCallbacks[ret] !== undefined) {
-                var result = _proxyCallbacks[ret].call(_this, decodeURIComponent(ret));
+                var result = _proxyCallbacks[ret](decodeURIComponent(ret));
                 delete _proxyCallbacks[ret];
                 resolve(result);
             }
@@ -10917,17 +10961,17 @@ function exec(funcName) {
         else if (remote_1.Remote.remoteType === 'local') {
             resolve(ret);
         }
+        var _a;
     });
 }
 exports.exec = exec;
 // Only used by remote to use saved callback
 function finalCallback(message) {
-    var _this = this;
     return new Promise(function (resolve) {
         var result = JSON.parse(message);
         if (typeof (result['asyncId']) === 'number'
             && _remoteCallbacks[result['asyncId']] !== undefined) {
-            _remoteCallbacks[result['asyncId']].apply(_this, [result['result']]);
+            _remoteCallbacks[result['asyncId']](result['result']);
             delete _remoteCallbacks[result['asyncId']];
         }
         else {
@@ -10942,14 +10986,14 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
     if (remote_1.Remote.remoteType === 'proxy') {
         var callback = _proxyCallbacks[asyncID];
         if (callback instanceof Function) {
-            callback.call(this, decodeURIComponent(result));
+            callback(decodeURIComponent(result));
             delete _proxyCallbacks[asyncID];
         }
     }
     else {
         var callback = _callbacks[asyncID];
         if (callback instanceof Function) {
-            callback.call(this, decodeURIComponent(result));
+            callback(decodeURIComponent(result));
             delete _callbacks[asyncID];
         }
     }
@@ -13995,7 +14039,7 @@ function finishReady(config) {
         if (isReady && !isInit) {
             channelmanager_1._subscribeEventManager();
             setOnce();
-            init_1.default();
+            init_1.default(config);
         }
         if (readyResolve !== undefined && remote_1.Remote.remoteType === 'remote') {
             readyResolve.call(_this, null);
@@ -14444,6 +14488,17 @@ var SourcePropsWindow = (function (_super) {
         });
     };
     ;
+    /**
+     *  param: show<boolean>
+     *
+     *  Toggles on/off the load indicator of the source properties dialog
+     */
+    SourcePropsWindow.prototype.showLoading = function (show) {
+        this._notify({
+            event: 'show-overlay',
+            value: show
+        });
+    };
     SourcePropsWindow._MODE_FULL = 'full';
     SourcePropsWindow._MODE_TABBED = 'embedded';
     return SourcePropsWindow;
@@ -14485,7 +14540,6 @@ var dialogProxy;
  *      .setTitle('ThisDialogReturnsAString')
  *      .setBorderOptions(true, false)
  *      .setButtons(true, true)
-        .setCookiePath('cookiePath')
  *      .show(function(dialog) {
  *        dialog.getResult().then(function(result) {
  *          document.getElementById('input').value = result;
@@ -14658,22 +14712,6 @@ var Dialog = (function () {
         return this;
     };
     /**
-     *  param: (cookiePath: string)
-     *
-     *  return: Dialog
-     *
-     *  Sets the cookie Path of the dialog.
-     *
-     * *Chainable.*
-     */
-    Dialog.prototype.setCookiePath = function (cookiePath) {
-        if (this._autoclose) {
-            throw new Error('Autoclosing dialogs cannot use this method.');
-        }
-        this._cookiePath = cookiePath;
-        return this;
-    };
-    /**
      *  return: Promise<Dialog>
      *
      *  After configuring the dialog, call this function to spawn it.
@@ -14693,8 +14731,7 @@ var Dialog = (function () {
             }
             else {
                 internal_1.exec('NewDialog', _this._url, '', _this._size === undefined ?
-                    undefined : (_this._size.toDimensionString()), _this._calculateFlags(), _this._title, _this._cookiePath === undefined ?
-                    undefined : "<configuration cookiepath=\"" + _this._cookiePath + "\" />").then(function (result) {
+                    undefined : (_this._size.toDimensionString()), _this._calculateFlags(), _this._title).then(function (result) {
                     resolve(_this);
                 });
             }
@@ -15462,9 +15499,11 @@ __export(_require('./window/source'));
 __export(_require('./window/extension'));
 __export(_require('./window/dialog'));
 __export(_require('./internal/remote'));
+var internal_1 = _require('./internal/internal');
+exports.exec = internal_1.exec;
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/thumbnail":48,"./core/transition":49,"./internal/remote":56,"./system/audio":63,"./system/camera":64,"./system/file":65,"./system/game":66,"./system/microphone":67,"./system/screen":68,"./system/system":69,"./system/url":70,"./system/videoplaylist":71,"./util/color":72,"./util/io":74,"./util/ready":75,"./util/rectangle":76,"./window/config":78,"./window/dialog":79,"./window/extension":80,"./window/source":81}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":10,"./core/items/ichroma":11,"./core/items/ieffects":13,"./core/items/image":15,"./core/items/item":16,"./core/items/media":18,"./core/items/screen":19,"./core/items/videoplaylist":20,"./core/languageinfo":21,"./core/output":22,"./core/scene":23,"./core/source/audio":24,"./core/source/camera":25,"./core/source/cuepoint":26,"./core/source/flash":27,"./core/source/game":28,"./core/source/html":29,"./core/source/image":37,"./core/source/iplayback":39,"./core/source/isource":41,"./core/source/media":43,"./core/source/screen":44,"./core/source/source":45,"./core/source/videoplaylist":46,"./core/streaminfo":47,"./core/thumbnail":48,"./core/transition":49,"./internal/internal":54,"./internal/remote":56,"./system/audio":63,"./system/camera":64,"./system/file":65,"./system/game":66,"./system/microphone":67,"./system/screen":68,"./system/system":69,"./system/url":70,"./system/videoplaylist":71,"./util/color":72,"./util/io":74,"./util/ready":75,"./util/rectangle":76,"./window/config":78,"./window/dialog":79,"./window/extension":80,"./window/source":81}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();

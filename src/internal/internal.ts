@@ -61,7 +61,7 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
       window.external[funcName] &&
       window.external[funcName] instanceof Function
     ) {
-      ret = window.external[funcName].apply(this, args);
+      ret = window.external[funcName](...args);
     }
 
     // register callback if present
@@ -84,7 +84,7 @@ export function exec(funcName: string, ...args: any[]): Promise<any> {
     // Sync calls end here for proxy and local
     if (Remote.remoteType === 'proxy' && typeof(ret) !== 'number') {
       if (_proxyCallbacks[ret] !== undefined) {
-        let result = _proxyCallbacks[ret].call(this, decodeURIComponent(ret));
+        let result = _proxyCallbacks[ret](decodeURIComponent(ret));
         delete _proxyCallbacks[ret];
         resolve(result);
       } else {
@@ -102,7 +102,7 @@ export function finalCallback(message) {
     const result = JSON.parse(message);
     if (typeof(result['asyncId']) === 'number'
       && _remoteCallbacks[result['asyncId']] !== undefined) {
-      _remoteCallbacks[result['asyncId']].apply(this, [result['result']]);
+      _remoteCallbacks[result['asyncId']](result['result']);
       delete _remoteCallbacks[result['asyncId']];
     } else {
       resolve(result['result']);
@@ -116,14 +116,14 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
   if (Remote.remoteType === 'proxy') {
     let callback = _proxyCallbacks[asyncID];
     if (callback instanceof Function) {
-      callback.call(this, decodeURIComponent(result));
+      callback(decodeURIComponent(result));
       delete _proxyCallbacks[asyncID];
     }
   } else {
     let callback = _callbacks[asyncID];
 
     if (callback instanceof Function) {
-      callback.call(this, decodeURIComponent(result));
+      callback(decodeURIComponent(result));
       delete _callbacks[asyncID];
     }
   }
