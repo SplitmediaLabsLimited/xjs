@@ -10080,7 +10080,12 @@ var StreamInfo = (function () {
     StreamInfo.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(_this._name);
+            resolve(_this._name
+                .replace(/&apos;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&'));
         });
     };
     /**
