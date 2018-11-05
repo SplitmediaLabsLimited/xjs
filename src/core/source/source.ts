@@ -122,7 +122,6 @@ export class Source implements ISource{
       ) {
         iItem.get('itemlist').then(itemlist => {
           const itemId = itemlist.split(',')[0];
-
           Scene.searchItemsById(itemId).then(item => {
             return item.getSource();
           }).then(source => {

@@ -483,66 +483,46 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
   getSource(): Promise<Source> {
-    let uniqueSource = [];
-    let uniqueObj = {};
-    let _xmlparams;
-    let _type;
-    let _srcId;
-    var promiseArray: Promise<Source>[] = [];
-    let _thisItem = this;
-
     return new Promise((resolve, reject) => {
-      this.getItemList().then((items) => {
-        for(var i=0; i< items.length; i++) {
-          for(var key in items[i]) {
-            if(key === '_srcId') {
-              uniqueObj[items[i][key]] = items[i]
-            }
-          }
+      iItem.get('config', this._id)
+      .then(config => {
+        let item = JXON.parse(config);
+        let type = Number(item['type']);
+        if (type === ItemTypes.GAMESOURCE) {
+          resolve(new GameSource(item));
+        } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
+          item['name'].indexOf('Video Playlist') === 0 &&
+          item['FilePlaylist'] !== '') {
+          resolve(new VideoPlaylistSource(item));
+        } else if (type === ItemTypes.HTML) {
+          resolve(new HtmlSource(item));
+        } else if (type === ItemTypes.SCREEN) {
+          resolve(new ScreenSource(item));
+        } else if (type === ItemTypes.BITMAP ||
+          type === ItemTypes.FILE &&
+          /\.gif$/.test(item['item'])) {
+          resolve(new ImageSource(item));
+        } else if (type === ItemTypes.FILE &&
+            /\.(gif|xbs)$/.test(item['item']) === false &&
+            /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+            new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
+          resolve(new MediaSource(item));
+        } else if (Number(item['type']) === ItemTypes.LIVE &&
+          item['item'].indexOf(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+          resolve(new CameraSource(item));
+        } else if (Number(item['type']) === ItemTypes.LIVE &&
+          item['item'].indexOf(
+            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+          resolve(new AudioSource(item));
+        } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
+          resolve(new FlashSource(item));
+        } else {
+          resolve(new Source(item));
         }
-        for(var j in uniqueObj) {
-          if(uniqueObj.hasOwnProperty(j)) {
-            uniqueSource.push(uniqueObj[j])
-          }
-        }
-
-        let typePromise = index => new Promise(typeResolve => {
-          let source = uniqueSource[index];
-          let params = source['_xmlparams']
-          let type = source.constructor.name;
-          if (type === 'GameItem') {
-            typeResolve(new GameSource(params));
-          } else if (type === 'VideoPlaylistItem'){
-            typeResolve(new VideoPlaylistSource(params));
-          } else if (type === 'HtmlItem') {
-            typeResolve(new HtmlSource(params));
-          } else if (type === 'ScreenItem') {
-            typeResolve(new ScreenSource(params));
-          } else if (type === 'ImageItem') {
-            typeResolve(new ImageSource(params));
-          } else if (type === 'MediaItem') {
-            typeResolve(new MediaSource(source));
-          } else if (type === 'CameraItem') {
-            typeResolve(new CameraSource(params));
-          } else if (type === 'AudioItem') {
-            typeResolve(new AudioSource(params));
-          } else if (type === 'FlashItem') {
-            typeResolve(new FlashSource(params));
-          } else {
-              typeResolve(new Source(params));
-          }
-        });
-
-        if (Array.isArray(uniqueSource)) {
-          for (var i = 0; i < uniqueSource.length; i++) {
-            promiseArray.push(typePromise(i));
-          }
-        }
-
-        Promise.all(promiseArray).then(results => {
-          resolve(results[0]);
-        });
-      })
+      }).catch(err => {
+        reject(err);
+      });
     })
   }
 

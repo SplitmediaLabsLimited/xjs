@@ -127,15 +127,22 @@ describe('Source ===', function() {
     } else {
       if (property === 'StreamPause') {
 
+
       } else {
         var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
         var secondary = '[id="{5E4279F7-BF64-448B-B953-A54F1315AFE1}"]';
         var itemSelected = placements.querySelector(selected);
+
         if (itemSelected === null) {
           itemSelected = placements.querySelector(secondary);
         }
-        xCallback(asyncId, itemSelected.getAttribute(property));
+
+        if (property === 'config') {
+          xCallback(asyncId, serializeXml(itemSelected));
+        } else {
+          xCallback(asyncId, itemSelected.getAttribute(property));
+        }
       }
     }
     return asyncId;
@@ -154,6 +161,11 @@ describe('Source ===', function() {
     if (attachedId === '') {
       if (property === 'itemlist') {
         xCallback(asyncId, '{C878A0BF-F03A-4274-9398-EBD638D07680}');
+      } else if (property === 'config') {
+        var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
+        var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
+        var itemSelected = placements.querySelector(selected);
+        xCallback(asyncId, serializeXml(itemSelected));        
       }
     } else if (typeof local[attachedId] !== 'undefined' &&
       local[attachedId].hasOwnProperty(property)) {
@@ -181,7 +193,12 @@ describe('Source ===', function() {
         var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="' + attachedId + '"]';
         var itemSelected = placements.querySelector(selected);
-        xCallback(asyncId, itemSelected.getAttribute(property));
+
+        if (property === 'config') {
+          xCallback(asyncId, serializeXml(itemSelected));
+        } else {
+          xCallback(asyncId, itemSelected.getAttribute(property));
+        }
       }
     }
     return asyncId;
@@ -422,6 +439,7 @@ describe('Source ===', function() {
     it('name', function(done) {
       execEnvironments(function(nextEnvironment) {
         exec(function(next) {
+
           var promise, testSource, otherSource, testName, otherName;
           var randomTest = '1_' + randomWord(15);
           var randomOther = '2_' + randomWord(15);
