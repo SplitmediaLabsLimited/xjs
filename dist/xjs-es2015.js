@@ -11823,7 +11823,7 @@ function setMockVersion(version) {
 }
 exports.setMockVersion = setMockVersion;
 function getVersion() {
-    var xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+    var xbcPattern = /(?:XSplit Broadcaster\s|XSplit\sBroadcaster\sPTR\s|XSplitBroadcaster\/|XSplitBroadcasterPTR\/)(.*?)\s/;
     var xbcMatch = navigator.appVersion.match(xbcPattern);
     xbcMatch = xbcMatch || exports.mockVersion.match(xbcPattern);
     if (xbcMatch !== null) {
