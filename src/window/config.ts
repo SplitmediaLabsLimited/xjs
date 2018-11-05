@@ -172,4 +172,16 @@ export class SourcePropsWindow extends EventEmitter {
       resolve(exec('Close'));
     })
   };
+
+  /**
+   *  param: show<boolean>
+   *
+   *  Toggles on/off the load indicator of the source properties dialog
+   */
+  showLoading(show: boolean) {
+    this._notify({
+      event: 'show-overlay',
+      value: show
+    }); 
+  }
 }
