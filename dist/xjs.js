@@ -1,45 +1,3 @@
-/**
- * XSplit JS Framework
- * version: 2.8.0
- *
- * XSplit Extensibility Framework and Plugin License
- *
- * Copyright (c) 2015, SplitmediaLabs Limited
- * All rights reserved.
- *
- * Redistribution and use in source, minified or binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in minified or binary form must reproduce the above
- *    copyright notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * 3. This software, in source, minified and binary forms, and any derivatives
- *    hereof, may be used only with the purpose to extend the functionality of the
- *    XSplit products, developed and published by SplitmediaLabs Limited. It may
- *    specifically not be used for extending the functionality of any other software
- *    products which enables live streaming and/or recording functions.
- *
- * 4. This software may not be used to circumvent paid feature restrictions for
- *    free and personal licensees of the XSplit products.
- *
- * THIS SOFTWARE IS PROVIDED BY SPLITMEDIALABS LIMITED ''AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
- * SHALL SPLITMEDIALABS LIMITED BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- *
- */
-
-
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
@@ -9841,15 +9799,13 @@ var Source = (function () {
                 version_1.versionCompare(version_1.getVersion())
                     .is
                     .greaterThan(version_1.minVersion)) {
-                Source.getItemList().then(function (items) {
-                    if (items.length > 0) {
-                        items[0].getSource().then(function (source) {
-                            resolve(source);
-                        });
-                    }
-                    else {
-                        reject(Error('Cannot get item list'));
-                    }
+                item_1.Item.get('itemlist').then(function (itemlist) {
+                    var itemId = itemlist.split(',')[0];
+                    scene_1.Scene.searchItemsById(itemId).then(function (item) {
+                        return item.getSource();
+                    }).then(function (source) {
+                        resolve(source);
+                    }).catch(function () { return resolve(null); });
                 });
             }
             else if (environment_1.Environment.isSourcePlugin() || environment_1.Environment.isSourceProps()) {
@@ -10120,7 +10076,12 @@ var StreamInfo = (function () {
     StreamInfo.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            resolve(_this._name);
+            resolve(_this._name
+                .replace(/&apos;/g, "'")
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&'));
         });
     };
     /**
