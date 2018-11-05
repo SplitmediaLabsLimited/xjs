@@ -486,7 +486,7 @@ export class Item extends Source implements IItemLayout, ISource {
     return new Promise((resolve, reject) => {
       iItem.get('config', this._id)
       .then(config => {
-        let item = JXON.parse(config)
+        let item = JXON.parse(config);
         let type = Number(item['type']);
         if (type === ItemTypes.GAMESOURCE) {
           resolve(new GameSource(item));
