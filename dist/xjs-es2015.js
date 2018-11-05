@@ -1,3 +1,45 @@
+/**
+ * XSplit JS Framework
+ * version: 2.9.0
+ *
+ * XSplit Extensibility Framework and Plugin License
+ *
+ * Copyright (c) 2015, SplitmediaLabs Limited
+ * All rights reserved.
+ *
+ * Redistribution and use in source, minified or binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in minified or binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. This software, in source, minified and binary forms, and any derivatives
+ *    hereof, may be used only with the purpose to extend the functionality of the
+ *    XSplit products, developed and published by SplitmediaLabs Limited. It may
+ *    specifically not be used for extending the functionality of any other software
+ *    products which enables live streaming and/or recording functions.
+ *
+ * 4. This software may not be used to circumvent paid feature restrictions for
+ *    free and personal licensees of the XSplit products.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SPLITMEDIALABS LIMITED ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL SPLITMEDIALABS LIMITED BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ *
+ */
+
+
 (function() {
 _require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _require=="function"&&_require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _require=="function"&&_require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
@@ -4205,70 +4247,52 @@ var Item = (function (_super) {
      */
     Item.prototype.getSource = function () {
         var _this = this;
-        var uniqueSource = [];
-        var uniqueObj = {};
-        var _xmlparams;
-        var _type;
-        var _srcId;
-        var promiseArray = [];
-        var _thisItem = this;
         return new Promise(function (resolve, reject) {
-            _this.getItemList().then(function (items) {
-                for (var i = 0; i < items.length; i++) {
-                    for (var key in items[i]) {
-                        if (key === '_srcId') {
-                            uniqueObj[items[i][key]] = items[i];
-                        }
-                    }
+            item_1.Item.get('config', _this._id)
+                .then(function (config) {
+                var item = json_1.JSON.parse(config);
+                var type = Number(item['type']);
+                if (type === isource_1.ItemTypes.GAMESOURCE) {
+                    resolve(new game_1.GameSource(item));
                 }
-                for (var j in uniqueObj) {
-                    if (uniqueObj.hasOwnProperty(j)) {
-                        uniqueSource.push(uniqueObj[j]);
-                    }
+                else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
+                    item['name'].indexOf('Video Playlist') === 0 &&
+                    item['FilePlaylist'] !== '') {
+                    resolve(new videoplaylist_1.VideoPlaylistSource(item));
                 }
-                var typePromise = function (index) { return new Promise(function (typeResolve) {
-                    var source = uniqueSource[index];
-                    var params = source['_xmlparams'];
-                    var type = source.constructor.name;
-                    if (type === 'GameItem') {
-                        typeResolve(new game_1.GameSource(params));
-                    }
-                    else if (type === 'VideoPlaylistItem') {
-                        typeResolve(new videoplaylist_1.VideoPlaylistSource(params));
-                    }
-                    else if (type === 'HtmlItem') {
-                        typeResolve(new html_1.HtmlSource(params));
-                    }
-                    else if (type === 'ScreenItem') {
-                        typeResolve(new screen_1.ScreenSource(params));
-                    }
-                    else if (type === 'ImageItem') {
-                        typeResolve(new image_1.ImageSource(params));
-                    }
-                    else if (type === 'MediaItem') {
-                        typeResolve(new media_1.MediaSource(source));
-                    }
-                    else if (type === 'CameraItem') {
-                        typeResolve(new camera_1.CameraSource(params));
-                    }
-                    else if (type === 'AudioItem') {
-                        typeResolve(new audio_1.AudioSource(params));
-                    }
-                    else if (type === 'FlashItem') {
-                        typeResolve(new flash_1.FlashSource(params));
-                    }
-                    else {
-                        typeResolve(new source_1.Source(params));
-                    }
-                }); };
-                if (Array.isArray(uniqueSource)) {
-                    for (var i = 0; i < uniqueSource.length; i++) {
-                        promiseArray.push(typePromise(i));
-                    }
+                else if (type === isource_1.ItemTypes.HTML) {
+                    resolve(new html_1.HtmlSource(item));
                 }
-                Promise.all(promiseArray).then(function (results) {
-                    resolve(results[0]);
-                });
+                else if (type === isource_1.ItemTypes.SCREEN) {
+                    resolve(new screen_1.ScreenSource(item));
+                }
+                else if (type === isource_1.ItemTypes.BITMAP ||
+                    type === isource_1.ItemTypes.FILE &&
+                        /\.gif$/.test(item['item'])) {
+                    resolve(new image_1.ImageSource(item));
+                }
+                else if (type === isource_1.ItemTypes.FILE &&
+                    /\.(gif|xbs)$/.test(item['item']) === false &&
+                    /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+                    new RegExp(media_1.MediaTypes.join('|')).test(item['item']) === true) {
+                    resolve(new media_1.MediaSource(item));
+                }
+                else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
+                    item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+                    resolve(new camera_1.CameraSource(item));
+                }
+                else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
+                    item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+                    resolve(new audio_1.AudioSource(item));
+                }
+                else if (Number(item['type']) === isource_1.ItemTypes.FLASHFILE) {
+                    resolve(new flash_1.FlashSource(item));
+                }
+                else {
+                    resolve(new source_1.Source(item));
+                }
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
@@ -9188,26 +9212,17 @@ var iSource = (function () {
             else {
                 if (_this._isItemCall) {
                     logger_1.Logger.warn('sourceWarning', 'setName', true);
-                    _this._checkPromise = item_1.Item.get('itemlist', _this._id);
-                }
-                else {
-                    _this._checkPromise = item_1.Item.wrapGet('itemlist', _this._srcId, _this._id, _this._updateId.bind(_this));
-                }
-                _this._checkPromise.then(function (itemlist) {
-                    var promiseArray = [];
-                    var itemsArray = itemlist.split(',');
-                    itemsArray.forEach(function (itemId) {
-                        promiseArray.push(new Promise(function (itemResolve) {
-                            item_1.Item.set('prop:name', _this._name, itemId).then(function () {
-                                itemResolve(true);
-                            });
-                            item_1.Item.wrapSet('prop:name', _this._name, _this._srcId, itemId, _this._updateId.bind(_this));
-                        }));
-                    });
-                    Promise.all(promiseArray).then(function () {
+                    item_1.Item.set('prop:name', _this._name, _this._id)
+                        .then(function () {
                         resolve(_this);
                     });
-                });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:name', _this._name, _this._srcId, _this._id, _this._updateId.bind(_this))
+                        .then(function () {
+                        resolve(_this);
+                    });
+                }
             }
         });
     };
@@ -15050,16 +15065,20 @@ var ExtensionWindow = (function (_super) {
                 //Just subscribe to the event. Emitter is already handled.
                 if (['sources-list-highlight', 'sources-list-select',
                     'sources-list-update'].indexOf(event) >= 0) {
-                    app_1.App.getGlobalProperty('splitmode').then(function (split) {
-                        var view = split === '1' ? item_1.ViewTypes.PREVIEW : item_1.ViewTypes.MAIN;
-                        try {
-                            internal_1.exec('SourcesListSubscribeEvents', view.toString()).then(function (res) {
-                                resolve(_this);
-                            });
-                        }
-                        catch (ex) {
-                        }
-                    });
+                    try {
+                        internal_1.exec('SourcesListSubscribeEvents', item_1.ViewTypes.MAIN.toString())
+                            .then(function (res) {
+                            return internal_1.exec('SourcesListSubscribeEvents', item_1.ViewTypes.PREVIEW.toString());
+                        })
+                            .then(function (res) {
+                            resolve(_this);
+                        })
+                            .catch(function (err) {
+                            resolve(_this);
+                        });
+                    }
+                    catch (ex) {
+                    }
                 }
                 else {
                     resolve(_this);
