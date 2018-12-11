@@ -2,12 +2,12 @@
 
 import {Addable} from './iaddable';
 import {exec} from '../internal/internal';
-import {App as iApp} from '../internal/app';
 import {Scene} from '../core/scene';
 import {Environment} from '../core/environment';
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import{checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  * The Screen Class is the object returned by {@link #system/System System Class}
@@ -53,7 +53,7 @@ export class Screen implements Addable {
    * to the scene where the item will be added instead.
    *
    */
-  addToScene(value?:number | Scene): Promise<boolean> {
+  addToScene(value?:number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
       let scenePrefix = ''
       if (this instanceof Screen && !Environment.isSourcePlugin()) {
@@ -61,9 +61,9 @@ export class Screen implements Addable {
           scenePrefix = prefix
           return `<screen module="${this._processDetail}" window="${this._title}" class="${this._class}" hwnd="${this._hwnd}" wclient="1" left="0" top="0" width="0" height="0" />`
         }).then(screen => {
-          return iApp.callFunc(scenePrefix + 'addscreen', screen)
-        }).then(() => {
-          resolve(true)
+          return addToSceneHandler(scenePrefix + 'addscreen', screen)
+        }).then(result => {
+          resolve(result);
         }).catch(err => {
           reject(err);
         });
@@ -85,11 +85,12 @@ export class Screen implements Addable {
    * points to the scene where item will be added instead.
    *
    */
-  static addToScene(value?: number | Scene ): Promise<boolean> {
+  static addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        exec('AppCallFunc', scenePrefix + 'addscreen');
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addscreen', null);
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });

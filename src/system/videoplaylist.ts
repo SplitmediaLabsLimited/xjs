@@ -8,6 +8,7 @@ import {IO} from '../util/io';
 import {Environment} from '../core/environment';
 import {Scene} from '../core/scene';
 import{checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  *  Special class for adding a video playlist to the stage.
@@ -139,7 +140,7 @@ export class VideoPlaylist implements Addable {
    * points to the scene where item will be added instead.
    * This function is not available to sources.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       let scenePrefix = ''
       if (Environment.isSourcePlugin()) {
@@ -149,9 +150,9 @@ export class VideoPlaylist implements Addable {
         scenePrefix = prefix
           return this.toXML();
         }).then(fileItem => {
-          return iApp.callFunc(scenePrefix + 'additem', ' ' + fileItem);
-        }).then(() => {
-          resolve(true);
+          return addToSceneHandler(scenePrefix + 'additem', ' ' + fileItem);
+        }).then(result => {
+          resolve(result);
         }).catch(err => {
           reject(err);
         });

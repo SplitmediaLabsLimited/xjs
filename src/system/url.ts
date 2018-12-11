@@ -1,9 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 import {Scene} from '../core/scene';
 import{checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  *  Class for adding a web source to the stage.
@@ -57,16 +57,16 @@ export class Url implements Addable {
    *
    *  Will raise an error if URL is not http or https.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       let scenePrefix = '';
       checkSplitmode(value).then((prefix) => {
         scenePrefix = prefix
         return this._getUrl();
       }).then(url => {
-        return iApp.callFunc(scenePrefix + 'addurl', url);
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addurl', url);
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });

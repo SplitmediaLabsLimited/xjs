@@ -3,9 +3,9 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
-import {App as iApp} from '../internal/app';
 import {Scene} from '../core/scene';
-import{checkSplitmode} from '../internal/util/splitmode';
+import {checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 
 /**
@@ -119,12 +119,12 @@ export class CameraDevice implements Addable {
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        return iApp.callFunc(scenePrefix + 'addcamera', 'dev:' + this._id);
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addcamera', 'dev:' + this._id);
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });

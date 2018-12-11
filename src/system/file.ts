@@ -1,9 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 import {Scene} from '../core/scene';
 import{checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  *  Class for adding files (such as images and media)
@@ -41,12 +41,12 @@ export class File implements Addable {
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        return iApp.callFunc(scenePrefix + 'addfile', this._path);
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addfile', this._path);
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });
