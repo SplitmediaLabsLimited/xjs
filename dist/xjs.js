@@ -12276,12 +12276,14 @@ var CameraDevice = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds this camera device to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      */
     CameraDevice.prototype.addToScene = function (value) {
         var _this = this;
@@ -12328,12 +12330,14 @@ var File = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds this file to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      */
     File.prototype.addToScene = function (value) {
         var _this = this;
@@ -12602,12 +12606,14 @@ var Game = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds this game to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      */
     Game.prototype.addToScene = function (value) {
         var _this = this;
@@ -12783,12 +12789,14 @@ var MicrophoneDevice = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds this microphone device to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      */
     MicrophoneDevice.prototype.addToScene = function (value) {
         var _this = this;
@@ -12840,12 +12848,14 @@ var Screen = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds the prepared screen instance to the current screen by defualt.
      * Accpets optional parameter value, whhich when supplied, points
      * to the scene where the item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      *
      */
     Screen.prototype.addToScene = function (value) {
@@ -12872,13 +12882,15 @@ var Screen = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Initializes the screen region selector crosshair
      * so user may select a desktop region or a window to add to the stage in the current scene.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      *
      */
     Screen.addToScene = function (value) {
@@ -13333,12 +13345,14 @@ var Url = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     * return: Promise<boolean>
+     * return: Promise<any>
      * ```
      *
      * Adds this URL to the current scene as an HTML source by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      *
      *  Will raise an error if URL is not http or https.
      */
@@ -13482,12 +13496,14 @@ var VideoPlaylist = (function () {
     /**
      * param: (value?: number | Scene)
      * ```
-     *  return: Promise<boolean>
+     *  return: Promise<any>
      * ```
      *
      * Adds the prepared video playlist to the current scene by default.
      * Accepts an optional parameter value, which when supplied,
      * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
      * This function is not available to sources.
      */
     VideoPlaylist.prototype.addToScene = function (value) {

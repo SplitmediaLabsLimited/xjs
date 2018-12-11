@@ -48,12 +48,14 @@ export class Url implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Adds this URL to the current scene as an HTML source by default.
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
    *
    *  Will raise an error if URL is not http or https.
    */

@@ -45,12 +45,14 @@ export class Screen implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Adds the prepared screen instance to the current screen by defualt.
    * Accpets optional parameter value, whhich when supplied, points
    * to the scene where the item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
    *
    */
   addToScene(value?:number | Scene): Promise<any> {
@@ -76,13 +78,15 @@ export class Screen implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Initializes the screen region selector crosshair
    * so user may select a desktop region or a window to add to the stage in the current scene.
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
    *
    */
   static addToScene(value?: number | Scene ): Promise<any> {

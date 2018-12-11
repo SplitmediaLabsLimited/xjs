@@ -132,12 +132,14 @@ export class VideoPlaylist implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   *  return: Promise<boolean>
+   *  return: Promise<any>
    * ```
    *
    * Adds the prepared video playlist to the current scene by default.
    * Accepts an optional parameter value, which when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
    * This function is not available to sources.
    */
   addToScene(value?: number | Scene ): Promise<any> {
