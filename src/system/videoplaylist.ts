@@ -141,6 +141,8 @@ export class VideoPlaylist implements Addable {
    * If ready config {listenToItemAdd: true} it returns item id,
    * else returns boolean.
    * This function is not available to sources.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
   addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {

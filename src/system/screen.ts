@@ -54,6 +54,7 @@ export class Screen implements Addable {
    * If ready config {listenToItemAdd: true} it returns item id,
    * else returns boolean.
    *
+   * Note: There is yet no way to detect error responses for this action.
    */
   addToScene(value?:number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -88,6 +89,7 @@ export class Screen implements Addable {
    * If ready config {listenToItemAdd: true} it returns item id,
    * else returns boolean.
    *
+   * Note: There is yet no way to detect error responses for this action.
    */
   static addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {

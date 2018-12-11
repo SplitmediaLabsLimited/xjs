@@ -12284,6 +12284,8 @@ var CameraDevice = (function () {
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     CameraDevice.prototype.addToScene = function (value) {
         var _this = this;
@@ -12338,6 +12340,8 @@ var File = (function () {
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     File.prototype.addToScene = function (value) {
         var _this = this;
@@ -12614,6 +12618,8 @@ var Game = (function () {
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     Game.prototype.addToScene = function (value) {
         var _this = this;
@@ -12797,6 +12803,8 @@ var MicrophoneDevice = (function () {
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     MicrophoneDevice.prototype.addToScene = function (value) {
         var _this = this;
@@ -12857,6 +12865,7 @@ var Screen = (function () {
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
      *
+     * Note: There is yet no way to detect error responses for this action.
      */
     Screen.prototype.addToScene = function (value) {
         var _this = this;
@@ -12892,6 +12901,7 @@ var Screen = (function () {
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
      *
+     * Note: There is yet no way to detect error responses for this action.
      */
     Screen.addToScene = function (value) {
         return new Promise(function (resolve, reject) {
@@ -13354,7 +13364,9 @@ var Url = (function () {
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
      *
-     *  Will raise an error if URL is not http or https.
+     * Will only raise an error if URL is not http or https.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     Url.prototype.addToScene = function (value) {
         var _this = this;
@@ -13505,6 +13517,8 @@ var VideoPlaylist = (function () {
      * If ready config {listenToItemAdd: true} it returns item id,
      * else returns boolean.
      * This function is not available to sources.
+     *
+     * Note: There is yet no way to detect error responses for this action.
      */
     VideoPlaylist.prototype.addToScene = function (value) {
         var _this = this;

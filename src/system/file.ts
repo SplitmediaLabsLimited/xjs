@@ -42,6 +42,8 @@ export class File implements Addable {
    * points to the scene where item will be added instead.
    * If ready config {listenToItemAdd: true} it returns item id,
    * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
   addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {

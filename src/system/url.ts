@@ -57,7 +57,9 @@ export class Url implements Addable {
    * If ready config {listenToItemAdd: true} it returns item id,
    * else returns boolean.
    *
-   *  Will raise an error if URL is not http or https.
+   * Will only raise an error if URL is not http or https.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
   addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
