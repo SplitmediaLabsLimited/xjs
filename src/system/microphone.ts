@@ -2,10 +2,10 @@
 
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
-import {App as iApp} from '../internal/app';
 import {Addable} from './iaddable';
 import {Scene} from '../core/scene';
 import{checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  * The MicrophoneDevice class provides you with methods to add a microphone
@@ -86,19 +86,23 @@ export class MicrophoneDevice implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Adds this microphone device to the current scene by default.
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        return iApp.callFunc(scenePrefix + 'additem', this.toXML().toString());
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'additem', this.toXML().toString());
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });

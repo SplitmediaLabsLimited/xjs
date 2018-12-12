@@ -3,9 +3,9 @@
 import {JSON as JXON} from '../internal/util/json';
 import {XML} from '../internal/util/xml';
 import {Addable} from './iaddable';
-import {App as iApp} from '../internal/app';
 import {Scene} from '../core/scene';
-import{checkSplitmode} from '../internal/util/splitmode';
+import {checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 
 /**
@@ -112,19 +112,23 @@ export class CameraDevice implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Adds this camera device to the current scene by default.
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        return iApp.callFunc(scenePrefix + 'addcamera', 'dev:' + this._id);
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addcamera', 'dev:' + this._id);
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });

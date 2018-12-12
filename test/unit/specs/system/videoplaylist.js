@@ -45,7 +45,7 @@ describe('Video Playlist', function() {
     spyOn(window.external, 'AppCallFuncAsync')
       .and.callFake(function(funcName, item) {
       var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-      if(funcName === 'additem') {
+      if(funcName.includes('additem')) {
         var itemXML = (new window.DOMParser()).parseFromString(item, "text/xml");
         var itemPlacement = itemXML.getElementsByTagName("item")[0];
 

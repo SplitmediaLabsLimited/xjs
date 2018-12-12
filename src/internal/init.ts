@@ -135,6 +135,10 @@ export default function init(config: Object): void {
     Global.addInitializationPromise(informWhenConfigLoaded());
   }
 
+  if (config && config['listenToItemAdd'] !== undefined) {    
+    Global.setListenToItemAdd();
+  }
+
   Promise.all(Global.getInitializationPromises()).then(() => {
     document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
       bubbles: true
