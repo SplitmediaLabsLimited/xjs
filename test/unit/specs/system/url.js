@@ -10,7 +10,7 @@ describe('Url', function() {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName) {
-          if(funcName === 'addurl') {
+          if(funcName.includes('addurl')) {
             var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
             setTimeout(function() {

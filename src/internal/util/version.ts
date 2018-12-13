@@ -52,7 +52,7 @@ export function setMockVersion(version: string) {
 }
 
 export function getVersion(): string {
-  let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+  let xbcPattern = /(?:XSplit Broadcaster\s|XSplit\sBroadcaster\sPTR\s|XSplitBroadcaster\/|XSplitBroadcasterPTR\/)(.*?)\s/;
   let xbcMatch = navigator.appVersion.match(xbcPattern);
   xbcMatch = xbcMatch || mockVersion.match(xbcPattern);
 

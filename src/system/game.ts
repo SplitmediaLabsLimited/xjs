@@ -8,6 +8,7 @@ import {App as iApp} from '../internal/app';
 import {Environment} from '../core/environment';
 import {Scene} from '../core/scene';
 import {checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class}
@@ -284,19 +285,23 @@ export class Game implements Addable {
   /**
    * param: (value?: number | Scene)
    * ```
-   * return: Promise<boolean>
+   * return: Promise<any>
    * ```
    *
    * Adds this game to the current scene by default.
    * Accepts an optional parameter value, which, when supplied,
    * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<boolean> {
+  addToScene(value?: number | Scene ): Promise<any> {
     return new Promise((resolve, reject) => {
       checkSplitmode(value).then((scenePrefix) => {
-        return iApp.callFunc(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
-      }).then(() => {
-        resolve(true);
+        return addToSceneHandler(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
+      }).then(result => {
+        resolve(result);
       }).catch(err => {
         reject(err);
       });
@@ -373,9 +378,9 @@ export class Game implements Addable {
               }
 
               let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
-              return iApp.callFunc(scenePrefix + 'additem', adstring);
-            }).then(() => {
-              resolve(true);
+              return addToSceneHandler(scenePrefix + 'additem', adstring);
+            }).then(result => {
+              resolve(result);
             });
           }).catch(err => {
             reject(err);

@@ -127,10 +127,17 @@ function informWhenConfigLoaded(): Promise<any> {
   });
 }
 
-export default function init(): void {
+export default function init(config: Object): void {
   Global.addInitializationPromise(readMetaConfigUrl());
   Global.addInitializationPromise(getCurrentSourceId());
-  Global.addInitializationPromise(informWhenConfigLoaded());
+
+  if (!(config && config['deferLoad'] !== undefined)) {
+    Global.addInitializationPromise(informWhenConfigLoaded());
+  }
+
+  if (config && config['listenToItemAdd'] !== undefined) {    
+    Global.setListenToItemAdd();
+  }
 
   Promise.all(Global.getInitializationPromises()).then(() => {
     document.dispatchEvent(new CustomEvent('xsplit-js-ready', {

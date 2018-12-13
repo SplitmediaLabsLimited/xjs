@@ -234,18 +234,21 @@ export class ExtensionWindow extends EventEmitter {
         //Just subscribe to the event. Emitter is already handled.
         if (['sources-list-highlight', 'sources-list-select',
         'sources-list-update'].indexOf(event) >= 0) {
-          App.getGlobalProperty('splitmode').then(split => {
-            const view = split === '1' ? ViewTypes.PREVIEW : ViewTypes.MAIN
-            try{
-              exec( 'SourcesListSubscribeEvents',
-                view.toString() ).then(res => {
-                  resolve(this);
-                })
-            } catch (ex) {
-              // This exception most probably for older versions which
-              // would work without subscribing to source list events.
-            }
-          })
+          try{
+            exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() )
+            .then(res => {
+              return exec( 'SourcesListSubscribeEvents', ViewTypes.PREVIEW.toString() );
+            })
+            .then(res => {
+              resolve(this);
+            })
+            .catch(err => {
+              resolve(this);
+            });
+          } catch (ex) {
+            // This exception most probably for older versions which
+            // would work without subscribing to source list events.
+          }
         } else {
           resolve(this);
         }

@@ -120,14 +120,13 @@ export class Source implements ISource{
           .is
           .greaterThan(minVersion)
       ) {
-        Source.getItemList().then(items => {
-          if (items.length > 0) {
-            items[0].getSource().then(source => {
-              resolve(source);
-            });
-          } else {
-            reject(Error('Cannot get item list'));
-          }
+        iItem.get('itemlist').then(itemlist => {
+          const itemId = itemlist.split(',')[0];
+          Scene.searchItemsById(itemId).then(item => {
+            return item.getSource();
+          }).then(source => {
+            resolve(source);
+          }).catch(() => resolve(null));
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
         Scene.searchItemsById(iItem.getBaseId()).then(item => {

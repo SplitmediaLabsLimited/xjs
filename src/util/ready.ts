@@ -34,7 +34,7 @@ export function finishReady(config: Object): Promise<any> {
     if (isReady && !isInit) {
       _subscribeEventManager()
       setOnce();
-      init();
+      init(config);
     }
 
     if (readyResolve !== undefined && Remote.remoteType === 'remote'){

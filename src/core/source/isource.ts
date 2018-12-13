@@ -159,28 +159,16 @@ export class iSource implements ISource{
       } else {
         if (this._isItemCall) {
           Logger.warn('sourceWarning', 'setName', true)
-          this._checkPromise = iItem.get('itemlist', this._id)
-        } else {
-          this._checkPromise = iItem.wrapGet('itemlist', this._srcId,
-          this._id, this._updateId.bind(this))
-        }
-        this._checkPromise.then(itemlist => {
-          const promiseArray: Promise<boolean>[] = [];
-          const itemsArray = itemlist.split(',');
-
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              iItem.set('prop:name', this._name, itemId).then(() => {
-                itemResolve(true);
-              });
-                iItem.wrapSet('prop:name', this._name, this._srcId, itemId, this._updateId.bind(this))
-            }));
-          });
-
-          Promise.all(promiseArray).then(() => {
+          iItem.set('prop:name', this._name, this._id)
+          .then(() => {
             resolve(this);
           });
-        });
+        } else {
+          iItem.wrapSet('prop:name', this._name, this._srcId, this._id, this._updateId.bind(this))
+          .then(() => {
+            resolve(this);
+          });
+        }
       }
     });
   }

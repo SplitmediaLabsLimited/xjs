@@ -58,5 +58,6 @@ export * from './window/extension';
 export * from './window/dialog';
 
 export * from './internal/remote';
+export {exec} from './internal/internal';
 
 export {ready} from './util/ready';

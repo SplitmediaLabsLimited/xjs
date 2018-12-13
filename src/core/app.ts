@@ -1021,14 +1021,16 @@ export class App{
    * });
    * ```
    */
-  clearBrowserCookies(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
+  clearBrowserCookies(cookiePath: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {      
+      if(cookiePath && cookiePath !== '' && typeof window.external['CallHostFunc'] === 'function') {
+        exec('CallHostFunc', 'deleteCookie', cookiePath);
+      } else if (Environment.isSourcePlugin()) {
         reject(Error('This method is not available to source plugins.'));
       } else {
         exec('CallHost', 'deletecookie:videoitemprop');
-        resolve(true);
-      }
+      }    
+      resolve(true);      
     });
   }
 
