@@ -177,7 +177,7 @@ describe('Output ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent('<stat></stat>'));
           },10);
-        return asyncId;        
+        return asyncId;
       }
     });
   });
@@ -185,7 +185,7 @@ describe('Output ===', function() {
   afterAll(function() {
     navigator.__defineGetter__('appVersion', function() {
       return appVersion;
-    });   
+    });
   });
 
   describe('should fetch all available outputs', function() {
@@ -268,6 +268,7 @@ describe('Output ===', function() {
       }).then(done);
     });
 
+    // @TODO: Remove this once we delete the deprecated instance methods
     it('pausing and unpausing of local recording', function(done) {
       otherOutput.pauseLocalRecording().then(function(source) {
         done.fail('pause should reject if called when  non-Local Recording');
@@ -290,6 +291,16 @@ describe('Output ===', function() {
         done();
       });
     });
+
+    it('pausing and unpausing of local recording should just work', function(done) {
+      Output.pauseLocalRecording()
+        .then(Output.unpauseLocalRecording)
+        .then(function() {
+          done();
+        }, function() {
+          done.fail('pause and unpause local recording should always work');
+        });
+    })
   });
 
 
