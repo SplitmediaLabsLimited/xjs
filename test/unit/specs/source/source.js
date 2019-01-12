@@ -306,12 +306,12 @@ describe('Source ===', function() {
           xCallback(asyncId, presetObj['count']);
           break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         default:
-          if (funcName.startsWith('presetconfig:')) {
+          if (funcName.startsWith('sceneconfig:')) {
             var sceneIndex = funcName.substring(13);
             if (typeof presetObj[sceneIndex] !== 'undefined') {
               xCallback(asyncId, encodeURIComponent(presetObj[sceneIndex]));
