@@ -14526,6 +14526,7 @@ else {
     win = {};
 }
 exports.default = win;
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],80:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
