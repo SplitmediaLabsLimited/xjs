@@ -1698,7 +1698,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (startsWith(funcName, 'presetname:')) {
+        } else if (startsWith(funcName, 'scenename:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
@@ -1776,7 +1776,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (startsWith(funcName, 'presetname:')) {
+        } else if (startsWith(funcName, 'scenename:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 

@@ -165,7 +165,7 @@ describe('Scene ===', function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
 
-        } else if (startsWith(funcName, 'presetname:')) {
+        } else if (startsWith(funcName, 'scenename:')) {
           var sceneIndex = funcName.substring(11);
           var name;
           if (sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}' || sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}') {
@@ -287,7 +287,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
-        } else if (startsWith(funcName, 'presetname:')) {
+        } else if (startsWith(funcName, 'scenename:')) {
           var sceneIndex = funcName.substring(11);
           if (!isNaN(sceneIndex)) {
             sceneIndex = Number(funcName.substring(11)) + 1;
@@ -429,7 +429,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);
-        } else if (/^presetname:/.test(funcName)) {
+        } else if (/^scenename:/.test(funcName)) {
           setTimeout(function() {
             window.OnAsyncCallback(this, 'DummyText');
           }.bind(ctr),10);
@@ -461,7 +461,7 @@ describe('Scene ===', function() {
       spyOn(window.external, 'AppSetPropertyAsync')
         .and.callFake(function(funcName) {
         ctr++;
-        if (/^presetname:/.test(funcName)) {
+        if (/^scenename:/.test(funcName)) {
           setTimeout(function() {
             window.OnAsyncCallback(this, '2');
           }.bind(ctr),10);

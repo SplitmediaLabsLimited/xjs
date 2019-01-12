@@ -1150,7 +1150,7 @@ export class Scene {
   getName(): Promise<string> {
     return new Promise(resolve => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetname:' + _sceneId).then(val => {
+      iApp.get('scenename:' + _sceneId).then(val => {
         resolve(val);
       });
     });
@@ -1172,7 +1172,7 @@ export class Scene {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
         let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('presetname:' + _sceneId, name).then(value => {
+        iApp.set('scenename:' + _sceneId, name).then(value => {
           resolve(value);
         });
       }
