@@ -445,7 +445,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, encodeURIComponent(mockPresetConfig));
           }.bind(ctr),10);
-        } else if (/^presetisempty:/.test(funcName)) {
+        } else if (/^sceneisempty:/.test(funcName)) {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);

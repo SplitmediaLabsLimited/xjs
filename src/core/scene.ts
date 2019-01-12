@@ -1271,7 +1271,7 @@ export class Scene {
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetisempty:' + _sceneId).then(val => {
+      iApp.get('sceneisempty:' + _sceneId).then(val => {
         resolve(val === '1');
       });
     });
