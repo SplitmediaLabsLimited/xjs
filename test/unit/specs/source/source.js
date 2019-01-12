@@ -302,7 +302,7 @@ describe('Source ===', function() {
       global_asyncId++;
       var asyncId = new Date().getTime() + '_' + global_asyncId;
       switch (funcName) {
-        case 'presetcount':
+        case 'scenecount':
           xCallback(asyncId, presetObj['count']);
           break;
 
