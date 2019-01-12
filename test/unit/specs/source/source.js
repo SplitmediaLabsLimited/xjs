@@ -165,7 +165,7 @@ describe('Source ===', function() {
         var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
         var itemSelected = placements.querySelector(selected);
-        xCallback(asyncId, serializeXml(itemSelected));        
+        xCallback(asyncId, serializeXml(itemSelected));
       }
     } else if (typeof local[attachedId] !== 'undefined' &&
       local[attachedId].hasOwnProperty(property)) {
@@ -312,7 +312,7 @@ describe('Source ===', function() {
 
         default:
           if (funcName.startsWith('sceneconfig:')) {
-            var sceneIndex = funcName.substring(13);
+            var sceneIndex = funcName.substring(12);
             if (typeof presetObj[sceneIndex] !== 'undefined') {
               xCallback(asyncId, encodeURIComponent(presetObj[sceneIndex]));
             } else {
