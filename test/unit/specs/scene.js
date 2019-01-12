@@ -166,7 +166,7 @@ describe('Scene ===', function() {
           },10);
 
         } else if (startsWith(funcName, 'scenename:')) {
-          var sceneIndex = funcName.substring(11);
+          var sceneIndex = funcName.substring(10);
           var name;
           if (sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}' || sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}') {
             name = 'Scene 1';
