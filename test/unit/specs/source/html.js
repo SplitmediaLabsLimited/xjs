@@ -317,7 +317,7 @@ describe('HtmlSource', function() {
             },10);
           break;
 
-          case 'presetconfig:0':
+          case 'sceneconfig:0':
             var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,
@@ -332,7 +332,7 @@ describe('HtmlSource', function() {
             },10);
           break;
 
-          case 'presetconfig':
+          case 'sceneconfig':
             var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,

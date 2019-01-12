@@ -32,7 +32,7 @@ describe('ExtensionWindow ===', function() {
             window.OnAsyncCallback(asyncId, '5');
           }, 10);
           return asyncId;
-        } else if (funcName === 'presetconfig') {
+        } else if (funcName === 'sceneconfig') {
           global_asyncId++;
           var asyncId = new Date().getTime() + '_' + global_asyncId;
 

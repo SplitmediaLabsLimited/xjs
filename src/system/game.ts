@@ -347,7 +347,7 @@ export class Game implements Addable {
             var defposPromise;
             if (Environment.isSourcePlugin()) {
               defposPromise = new Promise(defposResolve => {
-                iApp.get('presetconfig:-1').then(presetConfig => {
+                iApp.get('sceneconfig:-1').then(presetConfig => {
                   let placementJSON = JXON.parse(presetConfig);
                   defposResolve(placementJSON['defpos']);
                 });
@@ -355,7 +355,7 @@ export class Game implements Addable {
             } else {
               defposPromise = new Promise(defposResolve => {
                 iApp.get('preset:0').then(main => {
-                  return iApp.get('presetconfig:' + main);
+                  return iApp.get('sceneconfig:' + main);
                 }).then(function(presetConfig) {
                   let placementJSON = JXON.parse(presetConfig);
                   defposResolve(placementJSON['defpos']);

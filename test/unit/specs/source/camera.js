@@ -125,12 +125,12 @@ describe('Camera Source', function() {
           xCallback(asyncId, '0');
         break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
         break;
 
         default:
-          if (funcName.indexOf('presetconfig:') !== -1) {
+          if (funcName.indexOf('sceneconfig:') !== -1) {
             xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           }
       }

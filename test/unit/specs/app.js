@@ -967,7 +967,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (funcName == 'presetconfig') {
+        } else if (funcName == 'sceneconfig') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
@@ -1322,7 +1322,7 @@ describe('App ===', function() {
 
         // add these below only because each scene has separate getting of sources
         // this should be addressed to reuse the initial call for presetconfig
-        } else if (funcName == 'presetconfig:0') {
+        } else if (funcName == 'sceneconfig:0') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
@@ -1422,7 +1422,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (funcName == 'presetconfig:1') {
+        } else if (funcName == 'sceneconfig:1') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
@@ -1687,7 +1687,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (startsWith(funcName, 'presetconfig:')) {
+        } else if (startsWith(funcName, 'sceneconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
@@ -1750,7 +1750,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (funcName == 'presetconfig') {
+        } else if (funcName == 'sceneconfig') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
@@ -1765,7 +1765,7 @@ describe('App ===', function() {
 
         // add these below only because each scene has separate getting of sources,
         // this should be addressed to reuse the initial call for presetconfig
-        } else if (startsWith(funcName, 'presetconfig:')) {
+        } else if (startsWith(funcName, 'sceneconfig:')) {
           var sceneNumber = parseInt(funcName.substring(13)) + 1;
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
