@@ -76,7 +76,7 @@ export class VideoPlaylist implements Addable {
           }
           let _inner_this = this;
           if (!isError) {
-            iApp.get('preset:0').then(function(main) {
+            iApp.get('scene:0').then(function(main) {
               return iApp.get('sceneconfig:' + main);
             }).then(function(presetConfig) {
               let placementJSON = JXON.parse(presetConfig);

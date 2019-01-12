@@ -270,7 +270,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           iApp.get(preset).then(id => {
             return Scene.getBySceneIndex(Number(id));
           }).then(scene => {
@@ -295,7 +295,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           if (scene instanceof Scene) {
               iApp.set(preset, String(scene._id)).then(res => {
                 resolve(res);

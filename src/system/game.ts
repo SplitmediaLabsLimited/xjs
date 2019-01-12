@@ -354,7 +354,7 @@ export class Game implements Addable {
               });
             } else {
               defposPromise = new Promise(defposResolve => {
-                iApp.get('preset:0').then(main => {
+                iApp.get('scene:0').then(main => {
                   return iApp.get('sceneconfig:' + main);
                 }).then(function(presetConfig) {
                   let placementJSON = JXON.parse(presetConfig);

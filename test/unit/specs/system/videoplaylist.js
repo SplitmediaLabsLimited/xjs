@@ -16,7 +16,7 @@ describe('Video Playlist', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
       var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-      if (funcName === 'preset:0') {
+      if (funcName === 'scene:0') {
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, '0');
         }, 10);

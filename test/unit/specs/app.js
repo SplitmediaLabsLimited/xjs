@@ -959,7 +959,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (funcName == 'preset:0') {
+        } else if (funcName == 'scene:0') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {
@@ -1742,7 +1742,7 @@ describe('App ===', function() {
           },10);
           return asyncId;
 
-        } else if (funcName == 'preset:0') {
+        } else if (funcName == 'scene:0') {
           var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
 
           setTimeout(function() {

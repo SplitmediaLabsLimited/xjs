@@ -108,7 +108,7 @@ describe('Playback interface', function() {
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'preset:0':
+        case 'scene:0':
           xCallback(asyncId, '0');
           break;
       }

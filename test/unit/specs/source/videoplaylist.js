@@ -318,7 +318,7 @@ describe('VideoPlaylistSource', function() {
           },10);
         break;
 
-        case 'preset:0':
+        case 'scene:0':
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');

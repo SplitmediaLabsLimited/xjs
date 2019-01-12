@@ -34,7 +34,7 @@ describe('System', function() {
               ' fpsCapture="0.000000"/></configuration>\n'
             ));
           }, 10);
-        } else if (funcName === 'preset:0') {
+        } else if (funcName === 'scene:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
           }, 10);
