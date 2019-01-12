@@ -216,7 +216,7 @@ describe('Scene ===', function() {
         .and.callFake(function(funcName) {
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'preset:0') {
+        if (funcName === 'scene:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
           },10);
@@ -279,9 +279,9 @@ describe('Scene ===', function() {
 
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'preset:0') {
+        if (funcName === 'scene:0') {
           setTimeout(function() {
-            window.OnAsyncCallback(asyncId, global['preset:0']);
+            window.OnAsyncCallback(asyncId, global['scene:0']);
           },10);
         } else if (funcName === 'scenecount') {
           setTimeout(function() {
@@ -425,7 +425,7 @@ describe('Scene ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         ctr++;
-        if (funcName === 'preset:0') {
+        if (funcName === 'scene:0') {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);

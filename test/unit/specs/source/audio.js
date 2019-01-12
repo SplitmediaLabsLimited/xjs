@@ -102,14 +102,14 @@ describe('Audio Source', function() {
           },10);
           break;
 
-        case 'preset:0':
+        case 'scene:0':
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');
           },10);
           break;
 
-        case 'preset:1':
+        case 'scene:1':
           var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');
