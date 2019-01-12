@@ -5414,7 +5414,7 @@ var Scene = (function () {
             }
             else {
                 app_1.App.getGlobalProperty('splitmode').then(function (res) {
-                    var preset = res === '1' ? 'preset:1' : 'preset:0';
+                    var preset = res === '1' ? 'scene:1' : 'scene:0';
                     app_1.App.get(preset).then(function (id) {
                         return Scene.getBySceneIndex(Number(id));
                     }).then(function (scene) {
@@ -5439,7 +5439,7 @@ var Scene = (function () {
             }
             else {
                 app_1.App.getGlobalProperty('splitmode').then(function (res) {
-                    var preset = res === '1' ? 'preset:1' : 'preset:0';
+                    var preset = res === '1' ? 'scene:1' : 'scene:0';
                     if (scene instanceof Scene) {
                         app_1.App.set(preset, String(scene._id)).then(function (res) {
                             resolve(res);
@@ -6081,7 +6081,7 @@ var Scene = (function () {
             }
             else {
                 if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.minVersion)) {
-                    app_1.App.get('presetcount').then(function (cnt) {
+                    app_1.App.get('scenecount').then(function (cnt) {
                         if (Number(cnt) < 12) {
                             // Insert an empty scene for scene #12
                             app_1.App
@@ -6322,7 +6322,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('presetname:' + _sceneId).then(function (val) {
+            app_1.App.get('scenename:' + _sceneId).then(function (val) {
                 resolve(val);
             });
         });
@@ -6345,7 +6345,7 @@ var Scene = (function () {
             }
             else {
                 var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-                app_1.App.set('presetname:' + _sceneId, name).then(function (value) {
+                app_1.App.set('scenename:' + _sceneId, name).then(function (value) {
                     resolve(value);
                 });
             }
@@ -6452,7 +6452,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('presetisempty:' + _sceneId).then(function (val) {
+            app_1.App.get('sceneisempty:' + _sceneId).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -10576,7 +10576,7 @@ var Thumbnail = (function () {
                 }
             });
             scenePromise.then(function (sceneUid) {
-                app_1.App.get("presetthumbnail:" + sceneUid)
+                app_1.App.get("scenethumbnail:" + sceneUid)
                     .then(function (thumb) {
                     resolve(thumb);
                 });
@@ -13195,7 +13195,7 @@ var Game = (function () {
                         }
                         else {
                             defposPromise = new Promise(function (defposResolve) {
-                                app_1.App.get('preset:0').then(function (main) {
+                                app_1.App.get('scene:0').then(function (main) {
                                     return app_1.App.get('sceneconfig:' + main);
                                 }).then(function (presetConfig) {
                                     var placementJSON = json_1.JSON.parse(presetConfig);
@@ -13995,7 +13995,7 @@ var VideoPlaylist = (function () {
                     }
                     var _inner_this = _this;
                     if (!isError) {
-                        app_1.App.get('preset:0').then(function (main) {
+                        app_1.App.get('scene:0').then(function (main) {
                             return app_1.App.get('sceneconfig:' + main);
                         }).then(function (presetConfig) {
                             var placementJSON = json_1.JSON.parse(presetConfig);
