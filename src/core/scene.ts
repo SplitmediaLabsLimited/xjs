@@ -925,7 +925,7 @@ export class Scene {
         reject(Error('function is not available for source'));
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          iApp.get('presetcount').then(cnt => {
+          iApp.get('scenecount').then(cnt => {
             if (Number(cnt) < 12) {
               // Insert an empty scene for scene #12
               iApp

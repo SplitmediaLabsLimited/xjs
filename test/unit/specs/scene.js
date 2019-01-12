@@ -47,7 +47,7 @@ describe('Scene ===', function() {
         .and.callFake(function(funcName) {
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'presetcount') {
+        if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
@@ -77,7 +77,7 @@ describe('Scene ===', function() {
         .and.callFake(function(funcName) {
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'presetcount') {
+        if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
@@ -119,7 +119,7 @@ describe('Scene ===', function() {
         .and.callFake(function(funcName) {
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'presetcount') {
+        if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
@@ -160,7 +160,7 @@ describe('Scene ===', function() {
         .and.callFake(function(funcName) {
         ctr++;
         var asyncId = ctr;
-        if (funcName === 'presetcount') {
+        if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '5');
           },10);
@@ -220,7 +220,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
           },10);
-        } else if (funcName === 'presetcount') {
+        } else if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
@@ -283,7 +283,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, global['preset:0']);
           },10);
-        } else if (funcName === 'presetcount') {
+        } else if (funcName === 'scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
@@ -449,7 +449,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);
-        } else if ('presetcount') {
+        } else if ('scenecount') {
           setTimeout(function() {
             window.OnAsyncCallback(this, '12');
           }.bind(ctr),10);
@@ -465,7 +465,7 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, '2');
           }.bind(ctr),10);
-        } else if (/^presetconfig:/.test(funcName)) {
+        } else if (/^sceneconfig:/.test(funcName)) {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);
