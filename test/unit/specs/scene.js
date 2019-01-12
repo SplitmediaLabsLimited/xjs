@@ -158,38 +158,38 @@ describe('Scene ===', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        ctr++;
-        var asyncId = ctr;
-        if (funcName === 'scenecount') {
-          setTimeout(function() {
-            window.OnAsyncCallback(asyncId, '5');
-          },10);
+          ctr++;
+          var asyncId = ctr;
+          if (funcName === 'scenecount') {
+            setTimeout(function() {
+              window.OnAsyncCallback(asyncId, '5');
+            },10);
 
-        } else if (startsWith(funcName, 'scenename:')) {
-          var sceneIndex = funcName.substring(10);
-          var name;
-          if (sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}' || sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}') {
-            name = 'Scene 1';
-          } else if (sceneIndex === '0' || sceneIndex === '4') {
-            name = 'Scene 1';
-          } else {
-            if (!isNaN(sceneIndex)) {
-              sceneIndex = Number(sceneIndex) + 1;
+          } else if (startsWith(funcName, 'scenename:')) {
+            var sceneIndex = funcName.substring(10);
+            var name;
+            if (sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}' || sceneIndex === '{219DB767-BE5B-4389-90C2-E712F08EA2CC}') {
+              name = 'Scene 1';
+            } else if (sceneIndex === '0' || sceneIndex === '4') {
+              name = 'Scene 1';
+            } else {
+              if (!isNaN(sceneIndex)) {
+                sceneIndex = Number(sceneIndex) + 1;
+              }
+              name = 'Scene ' + sceneIndex;
             }
-            name = 'Scene ' + sceneIndex;
+            setTimeout(function() {
+              window.OnAsyncCallback(asyncId, name);
+            },10);
+          } else if (funcName === 'sceneconfig') {
+            setTimeout(function() {
+              window.OnAsyncCallback(asyncId,
+                encodeURIComponent(mockPresetConfig));
+            },10);
           }
-          setTimeout(function() {
-            window.OnAsyncCallback(asyncId, name);
-          },10);
-        } else if (funcName === 'sceneconfig') {
-          setTimeout(function() {
-            window.OnAsyncCallback(asyncId,
-              encodeURIComponent(mockPresetConfig));
-          },10);
-        }
 
-        return asyncId;
-      });
+          return asyncId;
+        });
     });
 
     it('and return as an array of Scene objects', function(done) {
@@ -288,9 +288,9 @@ describe('Scene ===', function() {
             window.OnAsyncCallback(asyncId, '12');
           },10);
         } else if (startsWith(funcName, 'scenename:')) {
-          var sceneIndex = funcName.substring(11);
+          var sceneIndex = funcName.substring(10);
           if (!isNaN(sceneIndex)) {
-            sceneIndex = Number(funcName.substring(11)) + 1;
+            sceneIndex = Number(funcName.substring(10)) + 1;
           }
           if(sceneIndex === '{239DB767-BE5B-4389-90C2-E712F08EA2CC}'){
             sceneIndex = 1
