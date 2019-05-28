@@ -27,6 +27,7 @@ import {FlashItem} from './items/flash';
 import {ScreenItem} from './items/screen';
 import {ImageItem} from './items/image';
 import {MediaItem} from './items/media';
+import {GenericItem} from './items/genericitem';
 
 import {
   minVersion,
@@ -1232,7 +1233,7 @@ export class Scene {
           } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
             typeResolve(new FlashItem(item));
           } else {
-            typeResolve(new Item(item));
+            typeResolve(new GenericItem(item));
           }
         });
 
