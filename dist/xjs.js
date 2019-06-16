@@ -5932,7 +5932,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsList('presetconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('presetconfig:' + _sceneId).then(function (jsonArr) {
                 var promiseArray = [];
                 var uniqueObj = {};
                 var uniqueSrc = [];
@@ -6173,7 +6173,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsList('presetconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('presetconfig:' + _sceneId).then(function (jsonArr) {
                 var promiseArray = [];
                 // type checking to return correct Source subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
@@ -9918,10 +9918,8 @@ var Source = (function () {
             var uniqueObj = {};
             var uniqueSrc = [];
             var promiseArray = [];
-            app_1.App.getAsList('presetconfig').then(function (jsonArr) {
-                for (var i = 0; i < jsonArr.length - 1; i++) {
-                    allJson = allJson.concat(jsonArr[i].children);
-                }
+            app_1.App.getAsItemList('presetconfig').then(function (jsonArr) {
+                allJson = jsonArr;
                 var sourcePromise = function (srcid) { return new Promise(function (sourceResolve) {
                     scene_1.Scene.searchSourcesById(srcid).then(function (result) {
                         allSrc = allSrc.concat(result);
@@ -10435,6 +10433,45 @@ var App = (function () {
                     var propsJSON = json_1.JSON.parse(xml), propsArr = [];
                     if (propsJSON.children && propsJSON.children.length > 0) {
                         propsArr = propsJSON.children;
+                    }
+                    resolve(propsArr);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            });
+        });
+    };
+    /** Gets all the items of the given scene as list */
+    App.getAsItemList = function (name) {
+        return new Promise(function (resolve, reject) {
+            App.get(name).then(function (xml) {
+                try {
+                    var propsJSON = json_1.JSON.parse(xml), propsArr = [];
+                    var recursion = function (children) {
+                        children.forEach(function (child) {
+                            if (child['tag'] === 'item')
+                                propsArr.push(child);
+                            if (child['type'] === '12' && child.children && child.children.length > 0) {
+                                //type 12 is considered as group and contains a wrapper placement for sub group items
+                                child.children.forEach(function (placement) {
+                                    if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
+                                        recursion(placement.children);
+                                    }
+                                });
+                            }
+                        });
+                    };
+                    //this is when it is actually getting from presetConfig
+                    if (propsJSON['tag'] === 'configuration' && propsJSON.children && propsJSON.children.length > 0) {
+                        propsJSON.children.forEach(function (placement) {
+                            if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
+                                recursion(placement.children);
+                            }
+                        });
+                    }
+                    else if (propsJSON.children && propsJSON.children.length > 0) {
+                        recursion(propsJSON.children);
                     }
                     resolve(propsArr);
                 }
