@@ -43,7 +43,7 @@ export class App {
     });
   }
 
-  /** Gets all the items of the given scene as list */
+  /** Gets all the items of the given condition as list */
   static getAsItemList(name: string): Promise<JXON[]> {
     return new Promise((resolve, reject) => {      
       App.get(name).then((xml: string) => {       
@@ -54,8 +54,8 @@ export class App {
           const recursion = children => {            
             children.forEach(child => {
               if(child['tag'] === 'item') propsArr.push(child);
+              //type 12 is considered as group and contains a wrapper placement for sub group items
               if(child['type'] === '12' && child.children && child.children.length > 0) {
-                //type 12 is considered as group and contains a wrapper placement for sub group items
                 child.children.forEach(placement => {
                   if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
                     recursion(placement.children);
@@ -67,12 +67,14 @@ export class App {
 
           //this is when it is actually getting from presetConfig
           if(propsJSON['tag'] === 'configuration' && propsJSON.children && propsJSON.children.length > 0) {
+            //this is actually getting from each scene
             propsJSON.children.forEach(placement => {
               if(placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
                 recursion(placement.children);
               }
             });
-          } else if (propsJSON.children && propsJSON.children.length > 0) {
+          //assuming getting from a scene
+          } else if (propsJSON['tag'] === 'placement' && propsJSON.children && propsJSON.children.length > 0) {
             recursion(propsJSON.children);
           }
 

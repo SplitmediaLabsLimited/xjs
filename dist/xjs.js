@@ -10442,7 +10442,7 @@ var App = (function () {
             });
         });
     };
-    /** Gets all the items of the given scene as list */
+    /** Gets all the items of the given condition as list */
     App.getAsItemList = function (name) {
         return new Promise(function (resolve, reject) {
             App.get(name).then(function (xml) {
@@ -10452,8 +10452,8 @@ var App = (function () {
                         children.forEach(function (child) {
                             if (child['tag'] === 'item')
                                 propsArr.push(child);
+                            //type 12 is considered as group and contains a wrapper placement for sub group items
                             if (child['type'] === '12' && child.children && child.children.length > 0) {
-                                //type 12 is considered as group and contains a wrapper placement for sub group items
                                 child.children.forEach(function (placement) {
                                     if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
                                         recursion(placement.children);
@@ -10464,13 +10464,14 @@ var App = (function () {
                     };
                     //this is when it is actually getting from presetConfig
                     if (propsJSON['tag'] === 'configuration' && propsJSON.children && propsJSON.children.length > 0) {
+                        //this is actually getting from each scene
                         propsJSON.children.forEach(function (placement) {
                             if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
                                 recursion(placement.children);
                             }
                         });
                     }
-                    else if (propsJSON.children && propsJSON.children.length > 0) {
+                    else if (propsJSON['tag'] === 'placement' && propsJSON.children && propsJSON.children.length > 0) {
                         recursion(propsJSON.children);
                     }
                     resolve(propsArr);
@@ -11101,7 +11102,7 @@ var Item = (function () {
                         }
                         else {
                             var idMatch, sceneMatch;
-                            app_1.App.getAsList('presetconfig')
+                            app_1.App.getAsItemList('presetconfig')
                                 .then(function (jsonArr) {
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     if (jsonArr[i].children !== undefined) {
@@ -11124,7 +11125,7 @@ var Item = (function () {
                                 }
                                 else {
                                     return new Promise(function (previewResolve, previewReject) {
-                                        app_1.App.getAsList('presetconfig:i12')
+                                        app_1.App.getAsItemList('presetconfig:i12')
                                             .then(function (previewJSONArr) {
                                             var previewMatch = '';
                                             for (var k = 0; k < previewJSONArr.length; ++k) {
@@ -11216,7 +11217,7 @@ var Item = (function () {
                         }
                         else {
                             var idMatch, sceneMatch;
-                            app_1.App.getAsList('presetconfig')
+                            app_1.App.getAsItemList('presetconfig')
                                 .then(function (jsonArr) {
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     if (jsonArr[i].children !== undefined) {
@@ -11239,7 +11240,7 @@ var Item = (function () {
                                 }
                                 else {
                                     return new Promise(function (previewResolve, previewReject) {
-                                        app_1.App.getAsList('presetconfig:i12')
+                                        app_1.App.getAsItemList('presetconfig:i12')
                                             .then(function (previewJSONArr) {
                                             var previewMatch = '';
                                             for (var k = 0; k < previewJSONArr.length; ++k) {
