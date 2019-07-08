@@ -1,45 +1,14 @@
 {
-  "name": "xjs-framework",
-  "version": "2.9.0",
+  "name": "xjs",
+  "version": "3.0.0",
   "description": "XSplit JS Framework",
+  "main": "index.js",
   "scripts": {
-    "test": "karma start --single-run --browsers Chrome"
-  },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "devDependencies": {
-    "bower": "^1.4.1",
-    "browser-sync": "2.18.2",
-    "browserify": "^10.2.6",
-    "canonical-path": "0.0.2",
-    "connect-history-api-fallback": "^1.1.0",
-    "del": "^1.2.0",
-    "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.18",
-    "glob": "^5.0.14",
-    "gulp": "^3.9.0",
-    "gulp-data": "^1.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^2.7.8",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.6",
-    "jasmine-core": "^2.3.4",
-    "karma": "^0.13.2",
-    "karma-chrome-launcher": "^0.2.0",
-    "karma-jasmine": "^0.3.6",
-    "karma-jasmine-html-reporter": "^0.1.8",
-    "lodash": "^3.10.0",
-    "run-sequence": "^1.1.5",
-    "string-to-comments": "^0.1.2",
-    "traceur": "0.0.87",
-    "tsify": "^0.11.2",
-    "typescript": "^1.6.2",
-    "vinyl-source-stream": "^1.1.0",
-    "yargs": "^3.29.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xjsframework/xjs.git"
+    "url": "git+https://github.com/xjsframework/xjs.git"
   },
   "keywords": [
     "xsplit",
@@ -49,21 +18,7 @@
   "author": "SplitmediaLabs, Ltd. <xjs@splitmedialabs.com>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/xjsframework/xjs/issues",
-    "email": "xjs@splitmedialabs.com"
+    "url": "https://github.com/xjsframework/xjs/issues"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme",
-  "directories": {
-    "doc": "docs",
-    "test": "test"
-  },
-  "files": [
-    "defs/",
-    "dist/",
-    "src/",
-    "test/",
-    "gulpfile.js",
-    "karma.conf.js",
-    "tsconfig.json"
-  ]
+  "homepage": "https://github.com/xjsframework/xjs#readme"
 }

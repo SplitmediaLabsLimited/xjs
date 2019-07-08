@@ -1,5 +1,2 @@
 node_modules/
-*.sublime-project
-*.sublime-workspace
-docs/bower_components/
-dist/api/
+.idea/
