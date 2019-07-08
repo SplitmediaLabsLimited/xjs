@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/xjsframework/xjs/issues"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme"
+  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
 }
