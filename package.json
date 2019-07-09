@@ -4,7 +4,9 @@
   "description": "XSplit JS Framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf ./dist & tsc -p .",
+    "build:system": "rimraf ./dist & tsc -p ./tsconfig.system.json"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,11 @@
   },
   "homepage": "https://github.com/xjsframework/xjs#readme",
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "rimraf": "^2.6.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.136",
+    "lodash": "^4.17.11"
   }
 }
