@@ -4,10 +4,21 @@
     "sourceMap": false,
     "noImplicitAny": false,
     "module": "es2015",
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "esModuleInterop": true
+    "target": "es6",
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "esModuleInterop": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

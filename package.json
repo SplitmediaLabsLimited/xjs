@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./dist & tsc -p .",
-    "build:system": "rimraf ./dist & tsc -p ./tsconfig.system.json"
+    "build:umd": "rimraf ./dist & rollup -c"
   },
   "repository": {
     "type": "git",
@@ -25,10 +25,14 @@
   "homepage": "https://github.com/xjsframework/xjs#readme",
   "devDependencies": {
     "prettier": "^1.18.2",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.3"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.136",
-    "lodash": "^4.17.11"
+    "@types/lodash-es": "^4.17.3",
+    "lodash-es": "^4.17.11"
   }
 }
