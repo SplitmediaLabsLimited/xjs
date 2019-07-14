@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf ./dist & tsc -p .",
-    "build:umd": "rimraf ./dist & rollup -c"
+    "build": "rimraf ./dist && tsc -p . && node tools/version.js",
+    "build:umd": "rimraf ./dist && rollup -c && node tools/version.js xjs.umd.js"
   },
   "repository": {
     "type": "git",
