@@ -1,5 +1,5 @@
 import Internal from 'internal';
-import Scene from 'scene';
+import Scene from 'core/scene';
 
 import { ViewConfig } from './types';
 
@@ -13,7 +13,6 @@ class View {
   }
 
   async getCurrentScene(): Promise<Scene> {
-    // @TODO: Return current Scene instance
     const currentSceneIndex = await this._internal.exec(
       'AppGetPropertyAsync',
       `preset:${this._index}`
