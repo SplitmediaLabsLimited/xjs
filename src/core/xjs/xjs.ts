@@ -3,6 +3,8 @@ import Internal from 'internal';
 import View from '../view';
 
 export class Xjs {
+  private _internal: Internal;
+
   type: XjsTypes;
 
   environment: XjsEnvironments;
@@ -29,9 +31,15 @@ export class Xjs {
     });
 
     // Initialize the internal methods and the view
-    const internal = new Internal();
+    this._internal = new Internal();
 
-    this.view = new View(internal);
-    this.exec = internal.exec;
+    this.exec = this._internal.exec;
+  }
+
+  getView(index: number) {
+    return new View({
+      internal: this._internal,
+      index,
+    });
   }
 }
