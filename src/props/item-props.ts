@@ -11,5 +11,8 @@ const props = {
     setTransformer: (param: any) => {
       return param;
     },
+    getValidator: (param: any) => {
+      return true;
+    },
   },
 };

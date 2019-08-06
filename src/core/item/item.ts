@@ -21,6 +21,11 @@ class Item {
       );
     }
   }
+
+  getProperty(prop: PropertyType): Promise<string> {
+    this._internal.exec('SearchVideoItem', this._attributes.id);
+    return this._internal.exec('GetLocalPropertyAsync', prop.key);
+  }
 }
 
 export default Item;
