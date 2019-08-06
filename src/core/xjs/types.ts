@@ -17,11 +17,11 @@ export enum LogVerbosity {
 }
 
 export interface Config {
-  type: XjsTypes;
-  environment: XjsEnvironments;
-  logVerbosity: LogVerbosity;
-  version: string;
-  sendMessage: (arg: any) => void; // @TODO: Maybe it makes sense to define a "sendMessage" arguments structure?
-  onMessageReceive: any;
-  logger: any;
+  type?: XjsTypes;
+  environment?: XjsEnvironments;
+  logVerbosity?: LogVerbosity;
+  version?: string;
+  sendMessage?: (arg: any) => void; // @TODO: Maybe it makes sense to define a "sendMessage" arguments structure?
+  onMessageReceive?: any;
+  logger?: any;
 }

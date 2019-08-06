@@ -23,13 +23,18 @@ class Scene {
       `presetconfig:${this._index}`
     );
 
-    const sceneObject = parser.parse(xmlString, { ignoreAttributes: false });
+    const sceneObject = parser.parse(xmlString, {
+      attributeNamePrefix: '',
+      ignoreAttributes: false,
+    });
     const items =
       sceneObject.placement.item instanceof Array
         ? sceneObject.placement.item
         : [sceneObject.placement.item];
 
-    return items.map(item => new Item({ internal: this._internal, ...item }));
+    return items.map(
+      item => new Item({ internal: this._internal, attributes: items })
+    );
   }
 }
 

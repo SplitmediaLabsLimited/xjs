@@ -8,9 +8,10 @@
     "target": "es6",
     "lib": ["es2015", "dom"],
     "esModuleInterop": true,
-    "typeRoots": ["node_modules/@types", "types"],
-    "moduleResolution": "node"
+    "typeRoots": ["node_modules/@types/", "./types/"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true
   },
-  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

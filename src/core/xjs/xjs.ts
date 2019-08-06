@@ -2,7 +2,9 @@ import { XjsTypes, XjsEnvironments, LogVerbosity, Config } from './types';
 import Internal from 'internal';
 import View from '../view';
 
-export class Xjs {
+export default class Xjs {
+  static version = '%XJS_VERSION%';
+
   private _internal: Internal;
 
   type: XjsTypes;
@@ -23,7 +25,7 @@ export class Xjs {
 
   view: View;
 
-  constructor(config: Config) {
+  constructor(config: Config = { type: XjsTypes.Local }) {
     Object.keys(config).forEach((key: string) => {
       if (this.hasOwnProperty(key)) {
         this[key] = config[key];
