@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ./dist && tsc -p . && node tools/version.js",
-    "build:umd": "rimraf ./dist && rollup -c && node tools/version.js xjs.umd.js"
+    "build:umd": "rimraf ./dist && rollup -c && node tools/version.js xjs.umd.js",
+    "docs": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript": "^1.0.1",
     "tslib": "^1.10.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.5.3"
   },
   "dependencies": {

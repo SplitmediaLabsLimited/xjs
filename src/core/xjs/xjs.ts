@@ -2,6 +2,9 @@ import { XjsTypes, XjsEnvironments, LogVerbosity, Config } from './types';
 import Internal from 'internal';
 import View from '../view';
 
+/**
+ * The Xjs class
+ */
 export default class Xjs {
   static version = '%XJS_VERSION%';
 
