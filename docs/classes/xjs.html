@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Xjs | xjs</title>
+	<title>Xjs | XJS API Reference</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">xjs</a>
+					<a href="../index.html" class="title">XJS API Reference</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -40,8 +40,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -69,8 +67,18 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The Xjs class</p>
+						<a href="#xjs-class" id="xjs-class" style="color: inherit; text-decoration: none;">
+							<h1>XJS Class</h1>
+						</a>
 					</div>
+					<p>The entry class that unlocks just about everything that you
+					can do in XJS Framework.</p>
+					<p>You need to control an item in a scene? You&#39;ll have to go through
+						this class. Want to programmatically modify the scene&#39;s name?
+					You&#39;ll need to go through this class.</p>
+					<p>To use this library using the recommended way (through npm/yarn),
+					you&#39;ll need to import this first.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> Xjs <span class="hljs-keyword">from</span> <span class="hljs-string">'xjs-framework'</span>;</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -94,17 +102,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="xjs.html#_internal" class="tsd-kind-icon">_internal</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#environment" class="tsd-kind-icon">environment</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#exec" class="tsd-kind-icon">exec</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#logverbosity" class="tsd-kind-icon">log<wbr>Verbosity</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#onmessagereceive" class="tsd-kind-icon">on<wbr>Message<wbr>Receive</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#sendmessage" class="tsd-kind-icon">send<wbr>Message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#type" class="tsd-kind-icon">type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#version" class="tsd-kind-icon">version</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="xjs.html#view" class="tsd-kind-icon">view</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="xjs.html#version-1" class="tsd-kind-icon">version</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="xjs.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -128,13 +126,24 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L29">core/xjs/xjs.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/dcefram/xjs/blob/e40f8c3/src/core/xjs/xjs.ts#L44">core/xjs/xjs.ts:44</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>XJS Constructor</p>
+								</div>
+								<p>Create an instance of Xjs</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <a href="../interfaces/config.html" class="tsd-signature-type">Config</a><span class="tsd-signature-symbol"> =&nbsp;{ type: XjsTypes.Local }</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Config</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="xjs.html" class="tsd-signature-type">Xjs</a></h4>
@@ -144,115 +153,20 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="_internal" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _internal</h3>
-					<div class="tsd-signature tsd-kind-icon">_internal<span class="tsd-signature-symbol">:</span> <a href="internal.html" class="tsd-signature-type">Internal</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L11">core/xjs/xjs.ts:11</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="environment" class="tsd-anchor"></a>
-					<h3>environment</h3>
-					<div class="tsd-signature tsd-kind-icon">environment<span class="tsd-signature-symbol">:</span> <a href="../enums/xjsenvironments.html" class="tsd-signature-type">XjsEnvironments</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L15">core/xjs/xjs.ts:15</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="exec" class="tsd-anchor"></a>
-					<h3>exec</h3>
-					<div class="tsd-signature tsd-kind-icon">exec<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L27">core/xjs/xjs.ts:27</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="logverbosity" class="tsd-anchor"></a>
-					<h3>log<wbr>Verbosity</h3>
-					<div class="tsd-signature tsd-kind-icon">log<wbr>Verbosity<span class="tsd-signature-symbol">:</span> <a href="../enums/logverbosity.html" class="tsd-signature-type">LogVerbosity</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L17">core/xjs/xjs.ts:17</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3>logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L25">core/xjs/xjs.ts:25</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="onmessagereceive" class="tsd-anchor"></a>
-					<h3>on<wbr>Message<wbr>Receive</h3>
-					<div class="tsd-signature tsd-kind-icon">on<wbr>Message<wbr>Receive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L23">core/xjs/xjs.ts:23</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="sendmessage" class="tsd-anchor"></a>
-					<h3>send<wbr>Message</h3>
-					<div class="tsd-signature tsd-kind-icon">send<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L21">core/xjs/xjs.ts:21</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="type" class="tsd-anchor"></a>
-					<h3>type</h3>
-					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <a href="../enums/xjstypes.html" class="tsd-signature-type">XjsTypes</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L13">core/xjs/xjs.ts:13</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="version" class="tsd-anchor"></a>
-					<h3>version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L19">core/xjs/xjs.ts:19</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="view" class="tsd-anchor"></a>
-					<h3>view</h3>
-					<div class="tsd-signature tsd-kind-icon">view<span class="tsd-signature-symbol">:</span> <a href="view.html" class="tsd-signature-type">View</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L29">core/xjs/xjs.ts:29</a></li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="version-1" class="tsd-anchor"></a>
+					<a name="version" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> version</h3>
 					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;%XJS_VERSION%&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L9">core/xjs/xjs.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/dcefram/xjs/blob/e40f8c3/src/core/xjs/xjs.ts#L26">core/xjs/xjs.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The version number of Xjs</p>
+						</div>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -261,22 +175,34 @@
 					<a name="getview" class="tsd-anchor"></a>
 					<h3>get<wbr>View</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>View<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="view.html" class="tsd-signature-type">View</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>View<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">View</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/dcefram/xjs/blob/875c756/src/core/xjs/xjs.ts#L44">core/xjs/xjs.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/dcefram/xjs/blob/e40f8c3/src/core/xjs/xjs.ts#L77">core/xjs/xjs.ts:77</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get an instance of a view based on the index.</p>
+								</div>
+								<p>The usual &quot;main&quot; view that is used by both the stream and the XSplit Broadcaster Stage
+								is <code>0</code>.</p>
+								<p>If you want to control an item in, let&#39;s say, the projector, you&#39;ll have to
+								access a view with a greater index.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>index: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="view.html" class="tsd-signature-type">View</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">View</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -301,18 +227,6 @@
 					<li class=" tsd-kind-enum">
 						<a href="../enums/xjstypes.html" class="tsd-kind-icon">Xjs<wbr>Types</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="internal.html" class="tsd-kind-icon">Internal</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="item.html" class="tsd-kind-icon">Item</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="scene.html" class="tsd-kind-icon">Scene</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="view.html" class="tsd-kind-icon">View</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
@@ -321,38 +235,8 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="xjs.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="xjs.html#_internal" class="tsd-kind-icon">_internal</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#environment" class="tsd-kind-icon">environment</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#exec" class="tsd-kind-icon">exec</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#logverbosity" class="tsd-kind-icon">log<wbr>Verbosity</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#onmessagereceive" class="tsd-kind-icon">on<wbr>Message<wbr>Receive</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#sendmessage" class="tsd-kind-icon">send<wbr>Message</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#type" class="tsd-kind-icon">type</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#version" class="tsd-kind-icon">version</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="xjs.html#view" class="tsd-kind-icon">view</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="xjs.html#version-1" class="tsd-kind-icon">version</a>
+								<a href="xjs.html#version" class="tsd-kind-icon">version</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="xjs.html#getview" class="tsd-kind-icon">get<wbr>View</a>
@@ -361,9 +245,6 @@
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-is-not-exported">
-						<a href="../interfaces/callbacktype.html" class="tsd-kind-icon">Callback<wbr>Type</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/config.html" class="tsd-kind-icon">Config</a>
 					</li>
@@ -373,21 +254,15 @@
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/propertytype.html" class="tsd-kind-icon">Property<wbr>Type</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-not-exported">
-						<a href="../interfaces/sceneconfig.html" class="tsd-kind-icon">Scene<wbr>Config</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/viewconfig.html" class="tsd-kind-icon">View<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-object-literal tsd-is-not-exported">
-						<a href="../globals.html#props" class="tsd-kind-icon">props</a>
 					</li>
 				</ul>
 			</nav>
 		</div>
 	</div>
 </div>
-<footer class="with-border-bottom">
+<footer>
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
@@ -447,9 +322,6 @@
 		</div>
 	</div>
 </footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
 <script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
