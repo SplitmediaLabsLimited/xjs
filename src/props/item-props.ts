@@ -1,3 +1,7 @@
+/**
+ * ItemProps testing the documentation tool
+ * @type {Object}
+ */
 const ItemProps = {
   /**
    * Set or Get the custom name of the item
@@ -81,6 +85,17 @@ const ItemProps = {
     },
   },
 
+  /**
+   * Set or Get the visibility state of an item
+   *
+   * ### GET
+   *
+   * @returns              A boolean value, where true would be returned if item is visible
+   *
+   * ### SET
+   *
+   * @params  visibility  The visibility state. `true` for visible, `false` for hidden
+   */
   visibility: {
     key: 'prop:visible',
     setValidator: (isVisible: any) => {
@@ -95,7 +110,13 @@ const ItemProps = {
     getTransformer: (isVisible: any) => isVisible === '1',
   },
 
-  // @TODO: Talk with @miyb if this property key would make sense for developers @_@
+  /**
+   * Set or Get the `item` property for "custom" data
+   *
+   * @TODO: for discussion as to what exactly would this be used for...
+   *
+   * ### GET
+   */
   item: {
     key: 'prop:item',
     setValidator: (value: any) => true,
@@ -104,6 +125,13 @@ const ItemProps = {
     getTransformer: (value: any) => value,
   },
 
+  /**
+   * Get the item type
+   *
+   * ### GET
+   *
+   * @returns     Returns a string. @TODO Not sure if this is final
+   */
   type: {
     key: 'prop:type',
     // @TODO: Verify with @mikey if we would want to prevent users from setting item type...
