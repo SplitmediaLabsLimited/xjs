@@ -1,6 +1,7 @@
 import { XjsTypes, XjsEnvironments, LogVerbosity, Config } from './types';
 import Internal from 'internal';
-import View from '../view';
+import App from 'core/app';
+import View from 'core/view';
 
 /**
  * # XJS Class
@@ -43,6 +44,8 @@ export default class Xjs {
 
   private exec: any;
 
+  app: App;
+
   /**
    * XJS Constructor
    *
@@ -61,6 +64,8 @@ export default class Xjs {
     this._internal = new Internal();
 
     this.exec = this._internal.exec;
+
+    this.app = new App({ internal: this._internal });
   }
 
   /**
