@@ -2,7 +2,7 @@
  * ItemProps testing the documentation tool
  * @type {Object}
  */
-const ItemProps = {
+class ItemProps {
   /**
    * Set or Get the custom name of the item
    *
@@ -14,7 +14,7 @@ const ItemProps = {
    *
    * @param  name  The value that would be used as the custom name of the target item
    */
-  customName: {
+  static customName = {
     key: 'prop:cname',
     setValidator: (name: any) => {
       if (typeof name !== 'string') {
@@ -26,7 +26,7 @@ const ItemProps = {
     setTransformer: (name: any) => name,
     getValidator: (name: any) => true,
     getTransformer: (name: any) => name,
-  },
+  };
 
   /**
    * Set or Get the position of an item
@@ -39,7 +39,7 @@ const ItemProps = {
    *
    * @param  pos    An object that should contain the percent coordinates of the target item
    */
-  position: {
+  static position = {
     key: 'prop:pos',
     setValidator: (pos: any) => {
       if (typeof pos !== 'object') {
@@ -83,7 +83,7 @@ const ItemProps = {
         };
       }, {});
     },
-  },
+  };
 
   /**
    * Set or Get the visibility state of an item
@@ -96,7 +96,7 @@ const ItemProps = {
    *
    * @params  visibility  The visibility state. `true` for visible, `false` for hidden
    */
-  visibility: {
+  static visibility = {
     key: 'prop:visible',
     setValidator: (isVisible: any) => {
       if (typeof isVisible !== 'boolean') {
@@ -108,7 +108,7 @@ const ItemProps = {
     setTransformer: (isVisible: any) => (isVisible ? '1' : '0'),
     getValidator: () => true,
     getTransformer: (isVisible: any) => isVisible === '1',
-  },
+  };
 
   /**
    * Set or Get the `item` property for "custom" data
@@ -117,13 +117,13 @@ const ItemProps = {
    *
    * ### GET
    */
-  item: {
+  static item = {
     key: 'prop:item',
     setValidator: (value: any) => true,
     setTransformer: (value: any) => value,
     getValidator: () => true,
     getTransformer: (value: any) => value,
-  },
+  };
 
   /**
    * Get the item type
@@ -132,7 +132,7 @@ const ItemProps = {
    *
    * @returns     Returns a string. @TODO Not sure if this is final
    */
-  type: {
+  static type = {
     key: 'prop:type',
     // @TODO: Verify with @mikey if we would want to prevent users from setting item type...
     setValidator: (invalid: any) => {
@@ -163,7 +163,7 @@ const ItemProps = {
 
       return types[type];
     },
-  },
-};
+  };
+}
 
 export default ItemProps;
