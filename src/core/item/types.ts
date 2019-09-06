@@ -10,4 +10,5 @@ export interface PropertyType {
   setValidator: (param: any) => boolean;
   setTransformer: (param: any) => any;
   getValidator: (param: any) => boolean;
+  getTransformer: (param: any) => any;
 }

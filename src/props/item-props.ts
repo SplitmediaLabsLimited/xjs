@@ -3,17 +3,6 @@
  * @type {Object}
  */
 class ItemProps {
-  /**
-   * Set or Get the custom name of the item
-   *
-   * ### GET
-   *
-   * @returns      The current custom name of the target item
-   *
-   * ### SET
-   *
-   * @param  name  The value that would be used as the custom name of the target item
-   */
   static customName = {
     key: 'prop:cname',
     setValidator: (name: any) => {
@@ -28,17 +17,6 @@ class ItemProps {
     getTransformer: (name: any) => name,
   };
 
-  /**
-   * Set or Get the position of an item
-   *
-   * ### GET
-   *
-   * @returns        An object that contains the coordinates of
-   *
-   * ### SET
-   *
-   * @param  pos    An object that should contain the percent coordinates of the target item
-   */
   static position = {
     key: 'prop:pos',
     setValidator: (pos: any) => {
@@ -85,17 +63,6 @@ class ItemProps {
     },
   };
 
-  /**
-   * Set or Get the visibility state of an item
-   *
-   * ### GET
-   *
-   * @returns              A boolean value, where true would be returned if item is visible
-   *
-   * ### SET
-   *
-   * @params  visibility  The visibility state. `true` for visible, `false` for hidden
-   */
   static visibility = {
     key: 'prop:visible',
     setValidator: (isVisible: any) => {
@@ -110,13 +77,6 @@ class ItemProps {
     getTransformer: (isVisible: any) => isVisible === '1',
   };
 
-  /**
-   * Set or Get the `item` property for "custom" data
-   *
-   * @TODO: for discussion as to what exactly would this be used for...
-   *
-   * ### GET
-   */
   static item = {
     key: 'prop:item',
     setValidator: (value: any) => true,
@@ -125,13 +85,6 @@ class ItemProps {
     getTransformer: (value: any) => value,
   };
 
-  /**
-   * Get the item type
-   *
-   * ### GET
-   *
-   * @returns     Returns a string. @TODO Not sure if this is final
-   */
   static type = {
     key: 'prop:type',
     // @TODO: Verify with @mikey if we would want to prevent users from setting item type...

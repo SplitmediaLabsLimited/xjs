@@ -22,9 +22,10 @@ class Item {
     }
   }
 
-  getProperty(prop: PropertyType): Promise<string> {
+  async getProperty(prop: PropertyType): Promise<any> {
     this._internal.exec('SearchVideoItem', this._attributes.id);
-    return this._internal.exec('GetLocalPropertyAsync', prop.key);
+    const ret = await this._internal.exec('GetLocalPropertyAsync', prop.key);
+    return prop.getTransformer(ret);
   }
 }
 
