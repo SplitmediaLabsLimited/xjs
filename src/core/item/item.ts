@@ -23,9 +23,11 @@ class Item {
   }
 
   async getProperty(prop: PropertyType): Promise<any> {
-    this._internal.exec('SearchVideoItem', this._attributes.id);
-    const ret = await this._internal.exec('GetLocalPropertyAsync', prop.key);
-    return prop.getTransformer(ret);
+    if (prop.getValidator(prop)) {
+      this._internal.exec('SearchVideoItem', this._attributes.id);
+      const ret = await this._internal.exec('GetLocalPropertyAsync', prop.key);
+      return prop.getTransformer(ret);
+    }
   }
 }
 
