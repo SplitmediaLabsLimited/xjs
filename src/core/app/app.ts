@@ -1,6 +1,6 @@
 import Internal from 'internal';
 
-import { AppConfig } from './types';
+import { AppConfig, PropertyType } from './types';
 
 class App {
   private _internal: Internal;
@@ -9,12 +9,21 @@ class App {
     this._internal = config.internal;
   }
 
-  setProperty(prop: string, params: string): Promise<string> {
-    return this._internal.exec('AppSetPropertyAsync', prop, params);
+  setProperty(prop: PropertyType, params: any): Promise<any> {
+    if (prop.setValidator(params)) {
+      return this._internal.exec(
+        'AppSetPropertyAsync',
+        prop.key,
+        prop.setTransformer(params)
+      );
+    }
   }
 
-  getProperty(prop: string): Promise<string> {
-    return this._internal.exec('AppGetPropertyAsync', prop);
+  async getProperty(prop: PropertyType): Promise<any> {
+    if (prop.getValidator(prop)) {
+      const ret = await this._internal.exec('AppGetPropertyAsync', prop.key);
+      return prop.getTransformer(ret);
+    }
   }
 }
 

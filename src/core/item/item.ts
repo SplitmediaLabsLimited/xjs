@@ -11,10 +11,10 @@ class Item {
     this._attributes = config.attributes;
   }
 
-  setProperty(prop: PropertyType, param: any): void {
+  setProperty(prop: PropertyType, param: any): Promise<any> {
     if (prop.setValidator(param)) {
       this._internal.exec('SearchVideoItem', this._attributes.id);
-      this._internal.exec(
+      return this._internal.exec(
         'SetLocalPropertyAsync',
         prop.key,
         prop.setTransformer(param)
