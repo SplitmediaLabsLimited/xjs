@@ -20,10 +20,8 @@ class App {
   }
 
   async getProperty(prop: PropertyType): Promise<any> {
-    if (prop.getValidator(prop)) {
-      const ret = await this._internal.exec('AppGetPropertyAsync', prop.key);
-      return prop.getTransformer(ret);
-    }
+    const ret = await this._internal.exec('AppGetPropertyAsync', prop.key);
+    return prop.getTransformer(ret);
   }
 }
 

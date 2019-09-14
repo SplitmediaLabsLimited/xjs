@@ -1,19 +1,40 @@
-import parser from 'fast-xml-parser';
-
 class AppProps {
   static scenes = {
-    key: 'presetconfig',
-    getTransformer: (xml: string) => {
-      const sceneObject = parser.parse(xml, {
-        attributeNamePrefix: '',
-        ignoreAttributes: false,
-      });
-      const scenes =
-        sceneObject.placement.item instanceof Array
-          ? sceneObject.placement.item
-          : [sceneObject.placement.item];
-
-      return scenes;
-    },
+    key: 'sceneconfig',
+    getTransformer: (xml: string) => xml,
+    setValidator: (param: any) => true,
+    setTransformer: (value: any) => value,
   };
+
+  static scenePreset = {
+    key: 'scenepreset',
+    getTransformer: (xml: string) => xml,
+    setValidator: (param: any) => true,
+    setTransformer: (value: any) => value,
+  };
+
+  static scenePresetList = {
+    key: 'scenepresetlist',
+    getTransformer: (xml: string) => xml,
+    setValidator: (param: any) => true,
+    setTransformer: (value: any) => value,
+  };
+
+  static microphoneDev2 = {
+    key: 'microphonedev2',
+    getTransformer: (xml: string) => xml,
+    setValidator: (param: any) => true,
+    setTransformer: (value: any) => value,
+  };
+
+  static wasapiEnum = {
+    key: 'wasapienum',
+    getTransformer: (xml: string) => xml,
+    setValidator: (param: any) => true,
+    setTransformer: (value: any) => value,
+  };
+
+  static audioDevices = AppProps.microphoneDev2;
+
+  static audioDevicesWASAPI = AppProps.wasapiEnum;
 }
