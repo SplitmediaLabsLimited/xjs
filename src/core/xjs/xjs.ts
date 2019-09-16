@@ -81,6 +81,7 @@ export default class Xjs {
    */
   getView(index: number) {
     return new View({
+      app: this.app,
       internal: this._internal,
       index,
     });
