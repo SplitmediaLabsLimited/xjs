@@ -38,7 +38,7 @@ class Scene {
         : [sceneObject.placement.item];
 
     return items.map(
-      item => new Item({ internal: this._internal, attributes: items })
+      item => new Item({ internal: this._internal, attributes: item })
     );
   }
 }
