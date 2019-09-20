@@ -20,14 +20,18 @@ class Item {
         prop.setTransformer(param)
       );
     }
+
+    throw new Error(`Params "${param}" validation failed`);
   }
 
-  async getProperty(prop: PropertyType): Promise<any> {
-    if (prop.getValidator(prop)) {
+  async getProperty(prop: PropertyType, param: any): Promise<any> {
+    if (prop.getValidator(param)) {
       this._internal.exec('SearchVideoItem', this._attributes.id);
       const ret = await this._internal.exec('GetLocalPropertyAsync', prop.key);
       return prop.getTransformer(ret);
     }
+
+    throw new Error(`Params "${param}" validation failed`);
   }
 }
 

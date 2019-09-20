@@ -1,8 +1,9 @@
+import parser from 'fast-xml-parser';
+
 import Internal from 'internal';
 import Item from 'core/item';
 import App from 'core/app';
-
-import parser from 'fast-xml-parser';
+import AppProps from 'props/app-props';
 
 interface SceneConfig {
   app: App;
@@ -22,9 +23,9 @@ class Scene {
   }
 
   async getItems(): Promise<Item[]> {
-    const xmlString = await this._internal.exec(
-      'AppGetPropertyAsync',
-      `sceneconfig:${this._index}`
+    const xmlString = await this._app.getProperty(
+      AppProps.sceneItems,
+      this._index
     );
 
     const sceneObject = parser.parse(xmlString, {
