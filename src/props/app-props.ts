@@ -49,6 +49,15 @@ class AppProps {
     setTransformer: (value: any) => value,
   };
 
+  static sceneName = {
+    key: 'scenename:{scene}',
+    getValidator: (param: any) => typeof param.scene !== 'undefined',
+    getTransformer: (name: string) => name,
+    setValidator: (param: any) =>
+      typeof param.scene !== 'undefined' && param.name !== 'undefined',
+    setTransformer: (value: any) => value,
+  };
+
   static audioDevices = AppProps.microphoneDev2;
 
   static audioDevicesWASAPI = AppProps.wasapiEnum;
