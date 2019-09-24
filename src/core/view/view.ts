@@ -18,7 +18,7 @@ class View {
   async getCurrentScene(): Promise<Scene> {
     const currentSceneIndex = await this._internal.exec(
       'AppGetPropertyAsync',
-      `preset:${this._index}`
+      `scene:${this._index}`
     );
 
     return new Scene({
