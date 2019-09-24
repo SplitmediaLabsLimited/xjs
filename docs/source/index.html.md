@@ -94,4 +94,230 @@ Note that the usual "main" view that is used by both the stream and the XSplit B
 
 ### Returns
 
-A [View]() instance
+A [View](#view-class) instance
+
+# App Class
+
+```javascript
+import Xjs from 'xjs-framework';
+
+const xjs = new Xjs();
+const app = xjs.app;
+```
+
+<aside class="warning">
+This class is still up for discussion. I'm quite conflicted on having this class or just adding a `getAppProperty` and a `setAppProperty` method to the main Xjs class.
+</aside>
+
+## getProperty
+
+> The example below demonstrate how to use `getProperty` with the built-in app properties object.
+
+```javascript
+import AppProps from 'xjs-framework/props/app-props.ts';
+
+app.getProperty(AppProps.sceneName, { scene: 0 });
+```
+
+> The example below demonstrates how to use `getProperty` with your own custom property object. This is useful when trying out new underlying API even before XJS officially supports it. More info in the [AppProps]() section.
+
+```javascript
+const customProps = {
+  key: 'customprops',
+  getValidator: () => true,
+  getTransformer: params => params,
+  setValidator: () => true,
+  setTransformer: params => params.value,
+};
+
+app.getProperty(customProps);
+```
+
+This method gets the [application level properties](). XJS provides a list of application properties that you can use, and also allows you to create your own.
+
+### Parameters
+
+| Parameter | Type             | Required | Default   | Description                                                                                                                                                                                                 |
+| --------- | ---------------- | -------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| prop      | [PropertyType]() | true     | undefined | Pass in the information about the underlying property key to be used, the validators, and how to transform the data received.                                                                               |
+| param     | shape            | false    | undefined | If the property key has a **variable** in it, you should pass in the value of the variable here. Information about what variable to pass are in the corresponding [application properties' documentation]() |
+
+### Returns
+
+A Promise with the datatype depending on the application property's `getTransformer` method's return type. More information on this is on the [application properties' documentation]().
+
+## setProperty
+
+> The example below demonstrate how to use `setProperty` with the built-in app properties object.
+
+```javascript
+import AppProps from 'xjs-framework/props/app-props.ts';
+
+app.setProperty(AppProps.sceneName, { scene: 0, name: 'Game Scene' });
+```
+
+> The example below demonstrates how to use `setProperty` with your own custom property object. This is useful when trying out new underlying API even before XJS officially supports it. More info in the [AppProps]() section.
+
+```javascript
+const customProps = {
+  key: 'customprops',
+  getValidator: () => true,
+  getTransformer: params => params,
+  setValidator: () => true,
+  setTransformer: params => params.value,
+};
+
+app.setProperty(customProps, { value: 'some value here' });
+```
+
+This method sets the [application level properties](). XJS provides a list of application properties that you can use, and also allows you to create your own.
+
+### Parameters
+
+| Parameter | Type                    | Required | Default   | Description                                                                                                                                                                                                                                                                                                                        |
+| --------- | ----------------------- | -------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| prop      | [PropertyType]()        | true     | undefined | Pass in the information about the underlying property key to be used, the validators, and how to transform the data received.                                                                                                                                                                                                      |
+| param     | { value: any, ...rest } | true     | undefined | Pass in a variable that has at the very least, a `value` property (ie. `{ value: <any> }`). As with the `getProperty` counterpart, we should also pass in here the required **variables** based on the property's keys. Information about what variable to pass are in the corresponding [application properties' documentation]() |
+
+### Returns
+
+A Promise which resolves a string. The string value depends on the response of the underlying core API.
+
+# View Class
+
+## getCurrentScene
+
+> Get the active scene of the selected view
+
+```javascript
+xjs.getView(0).then(view => {
+  return view.getCurrentScene();
+});
+```
+
+> Each view could have different current scenes
+
+```javascript
+const myViews = {
+  main: xjs.getView(0),
+  preview: xjs.getView(1),
+  projectorX: xjs.getView(10),
+};
+
+Object.entries(myViews).map(([label, view]) => {
+  return (
+    <button
+      onClick={() => {
+        view.getCurrentScene().then(scene => console.log(scene));
+      }}
+    >
+      label
+    </button>
+  );
+});
+```
+
+Get the active scene of the selected view. This would most likely be different across different views.
+
+### Returns
+
+A [Scene](#scene-class) instance
+
+# Scene Class
+
+## getItems
+
+```javascript
+const scene = await view.getCurrentScene();
+const items = await scene.getItems();
+
+console.log(items);
+```
+
+Get the items of the scene instance.
+
+### Returns
+
+A [Item](#item-class) instance
+
+# Item Class
+
+## getProperty
+
+> The example below demonstrate how to use `getProperty` with the built-in item properties object.
+
+```javascript
+import ItemProps from 'xjs-framework/props/item-props.ts';
+
+const cname = await item.getProperty(ItemProps.customName);
+
+console.log(cname);
+```
+
+> The example below demonstrates how to use `getProperty` with your own custom property object. This is useful when trying out new underlying API even before XJS officially supports it. More info in the [ItemProps]() section.
+
+```javascript
+const customProps = {
+  key: 'prop:customprops',
+  getValidator: () => true,
+  getTransformer: params => params,
+  setValidator: () => true,
+  setTransformer: params => params,
+};
+
+item.getProperty(customProps);
+```
+
+This method gets the [item level properties](). XJS provides a list of item properties that you can use, and also allows you to create your own.
+
+### Parameters
+
+| Parameter | Type             | Required | Default   | Description                                                                                                                   |
+| --------- | ---------------- | -------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| prop      | [PropertyType]() | true     | undefined | Pass in the information about the underlying property key to be used, the validators, and how to transform the data received. |
+| param     | shape            | false    | undefined | Information about what variable to pass are in the corresponding [item properties' documentation]()                           |
+
+### Returns
+
+A Promise with the datatype depending on the item property's `getTransformer` method's return type. More information on this is on the [item properties' documentation]().
+
+## setProperty
+
+<aside class="warning">
+Confirm with the team if it makes sense to align the `setTransformer` with App Property's `setTransformer`. That is, the second parameter should always be an object?
+</aside>
+
+> The example below demonstrate how to use `setProperty` with the built-in item properties object.
+
+```javascript
+import ItemProps from 'xjs-framework/props/item-props.ts';
+
+item.setProperty(ItemProps.customName, 'Main Camera Feed');
+```
+
+> The example below demonstrates how to use `setProperty` with your own custom property object. This is useful when trying out new underlying API even before XJS officially supports it. More info in the [ItemProps]() section.
+
+```javascript
+const customProps = {
+  key: 'prop:customprops',
+  getValidator: () => true,
+  getTransformer: params => params,
+  setValidator: () => true,
+  setTransformer: params => params,
+};
+
+item.setProperty(customProps, 'some string here');
+```
+
+This method sets the [item level properties](). XJS provides a list of item properties that you can use, and also allows you to create your own.
+
+### Parameters
+
+| Parameter | Type             | Required | Default   | Description                                                                                                                                                                                            |
+| --------- | ---------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| prop      | [PropertyType]() | true     | undefined | Pass in the information about the underlying property key to be used, the validators, and how to transform the data received.                                                                          |
+| param     | value: any       | true     | undefined | Value to pass to the underlying item property. The datatype depends on the validator and transformer of the item property. Please refer to the [item properties' documentation]() for more information |
+
+### Returns
+
+A Promise which resolves a string. The string value depends on the response of the underlying core API.

@@ -13,7 +13,7 @@ class ItemProps {
       return true;
     },
     setTransformer: (name: any) => name,
-    getValidator: (name: any) => true,
+    getValidator: () => true,
     getTransformer: (name: any) => name,
   };
 
