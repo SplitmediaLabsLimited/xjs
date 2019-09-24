@@ -1,16 +1,14 @@
 class AppProps {
   static scenes = {
     key: 'sceneconfig',
-    setValidator: (param: any) => {
-      if (typeof param !== 'object' || typeof param.value === 'undefined') {
-        throw new Error(
-          'Parameter should be an object with a `value` property'
-        );
+    setValidator: (xml: string) => {
+      if (typeof xml !== 'string') {
+        throw new Error('Parameter should be a string');
       }
 
       return true;
     },
-    setTransformer: (value: any) => value.value,
+    setTransformer: (xml: string) => xml,
     getValidator: () => true,
     getTransformer: (xml: string) => xml,
   };
@@ -45,64 +43,56 @@ class AppProps {
 
   static scenePreset = {
     key: 'scenepreset',
-    setValidator: (param: any) => {
-      if (typeof param !== 'object' || typeof param.value === 'undefined') {
-        throw new Error(
-          'Parameter should be an object with a `value` property'
-        );
+    setValidator: (xml: string) => {
+      if (typeof xml !== 'string') {
+        throw new Error('Parameter should be a string');
       }
 
       return true;
     },
-    setTransformer: (value: any) => value.value,
+    setTransformer: (xml: string) => xml,
     getValidator: () => true,
     getTransformer: (xml: string) => xml,
   };
 
   static scenePresetList = {
     key: 'scenepresetlist',
-    setValidator: (param: any) => {
-      if (typeof param !== 'object' || typeof param.value === 'undefined') {
-        throw new Error(
-          'Parameter should be an object with a `value` property'
-        );
+    setValidator: (xml: string) => {
+      if (typeof xml !== 'string') {
+        throw new Error('Parameter should be a string');
       }
 
       return true;
     },
-    setTransformer: (value: any) => value.value,
+    setTransformer: (xml: string) => xml,
     getValidator: () => true,
     getTransformer: (xml: string) => xml,
   };
 
   static microphoneDev2 = {
     key: 'microphonedev2',
-    setValidator: (param: any) => {
-      if (typeof param !== 'object' || typeof param.value === 'undefined') {
-        throw new Error(
-          'Parameter should be an object with a `value` property'
-        );
+    setValidator: (xml: string) => {
+      if (typeof xml !== 'string') {
+        throw new Error('Parameter should be a string');
       }
 
       return true;
     },
-    setTransformer: (value: any) => value.value,
+    setTransformer: (xml: string) => xml,
     getValidator: () => true,
     getTransformer: (xml: string) => xml,
   };
 
   static wasapiEnum = {
     key: 'wasapienum',
-    setValidator: (param: any) => {
-      if (typeof param !== 'object' || typeof param.value === 'undefined') {
-        throw new Error(
-          'Parameter should be an object with a `value` property'
-        );
+    setValidator: (xml: string) => {
+      if (typeof xml !== 'string') {
+        throw new Error('Parameter should be a string');
       }
 
       return true;
     },
-    setTransformer: (value: any) => value.value,
+    setTransformer: (xml: string) => xml,
     getValidator: () => true,
     getTransformer: (xml: string) => xml,
   };
