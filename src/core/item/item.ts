@@ -1,10 +1,34 @@
+import parser from 'fast-xml-parser';
+
 import Internal from 'internal';
+import Xjs from 'core/xjs';
 
 import { ItemConfig, PropertyType } from './types';
 
 class Item {
   private _internal: Internal;
   private _attributes: any;
+
+  static fromXMLString(xmlString: string, xjs: Xjs) {
+    const itemObject = parser.parse(xmlString, {
+      attributeNamePrefix: '',
+      ignoreAttributes: false,
+    });
+
+    // Check if valid XML... we consider it valid if it has an id :D
+    if (
+      itemObject &&
+      itemObject.item &&
+      typeof itemObject.item.id !== 'undefined'
+    ) {
+      return new Item({
+        internal: xjs._internal,
+        attributes: itemObject.item,
+      });
+    }
+
+    throw new Error('Invalid XML passed to `fromXMLString`');
+  }
 
   constructor(config: ItemConfig) {
     this._internal = config.internal;
