@@ -2,4 +2,5 @@
 export { default } from './core/xjs';
 export * from './props/item-props';
 export * from './props/app-props';
-import { default as Scene } from './core/scene';
+export { default as Scene } from './core/scene';
+export { default as Item } from './core/item';
