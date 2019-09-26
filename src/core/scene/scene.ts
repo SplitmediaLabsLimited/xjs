@@ -1,5 +1,6 @@
 import parser from 'fast-xml-parser';
 
+import Xjs from 'core/xjs';
 import Internal from 'internal';
 import Item from 'core/item';
 import App from 'core/app';
@@ -8,25 +9,63 @@ import AppProps from 'props/app-props';
 interface SceneConfig {
   app: App;
   internal: Internal;
-  index: number;
+  index?: number;
+  xml?: string;
+  uid?: string;
 }
 
 class Scene {
   private _app: App;
   private _internal: Internal;
   private _index: number;
+  private _uid: string;
+  private _items: Item[];
+
+  static fromXMLString(xmlString: string, xjs: Xjs) {
+    const sceneObject = parser.parse(xmlString, {
+      attributeNamePrefix: '',
+      ignoreAttributes: false,
+    });
+
+    // Check if valid XML... we consider it valid if it has an id :D
+    if (
+      sceneObject &&
+      sceneObject.placement &&
+      typeof sceneObject.placement.id !== 'undefined'
+    ) {
+      return new Scene({
+        app: xjs.app,
+        internal: xjs._internal,
+        uid: sceneObject.placement.id,
+      });
+    }
+
+    throw new Error('Invalid XML passed to `fromXMLString`');
+  }
 
   constructor(config: SceneConfig) {
     this._app = config.app;
     this._internal = config.internal;
     this._index = config.index;
+    this._uid = config.uid;
   }
 
-  async getItems(): Promise<Item[]> {
-    const xmlString = await this._app.getProperty(
-      AppProps.sceneItems,
-      this._index
-    );
+  /**
+   * Get the items of the scene.
+   *
+   * Passing false on the first parameter will get the latest XML String, and save it to
+   * the internal private property of this instance.
+   *
+   * Returns an array of Item instances
+   */
+  async getItems(useCache = true): Promise<Item[]> {
+    if (useCache && this._items instanceof Array && this._items.length > 0) {
+      return this._items;
+    }
+
+    const xmlString = await this._app.getProperty(AppProps.sceneItems, {
+      scene: this._uid || this._index,
+    });
 
     const sceneObject = parser.parse(xmlString, {
       attributeNamePrefix: '',
@@ -37,9 +76,15 @@ class Scene {
         ? sceneObject.placement.item
         : [sceneObject.placement.item];
 
-    return items.map(
+    if (!this._uid) {
+      this._uid = sceneObject.placement.id;
+    }
+
+    this._items = items.map(
       item => new Item({ internal: this._internal, attributes: item })
     );
+
+    return this._items;
   }
 }
 

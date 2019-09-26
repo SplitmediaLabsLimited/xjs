@@ -26,8 +26,6 @@ export default class Xjs {
    */
   static version = '%XJS_VERSION%';
 
-  private _internal: Internal;
-
   private type: XjsTypes;
 
   private environment: XjsEnvironments;
@@ -45,6 +43,8 @@ export default class Xjs {
   private exec: any;
 
   app: App;
+
+  _internal: Internal;
 
   /**
    * XJS Constructor
