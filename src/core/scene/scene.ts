@@ -1,10 +1,10 @@
 import parser from 'fast-xml-parser';
 
-import Xjs from 'core/xjs';
-import Internal from 'internal';
-import Item from 'core/item';
-import App from 'core/app';
-import AppProps from 'props/app-props';
+import Xjs from '../xjs';
+import Internal from '../../internal';
+import Item from '../item';
+import App from '../app';
+import AppProps from '../../props/app-props';
 
 interface SceneConfig {
   app: App;

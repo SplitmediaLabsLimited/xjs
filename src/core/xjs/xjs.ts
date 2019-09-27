@@ -1,7 +1,7 @@
 import { XjsTypes, XjsEnvironments, LogVerbosity, Config } from './types';
-import Internal from 'internal';
-import App from 'core/app';
-import View from 'core/view';
+import Internal from '../../internal';
+import App from '../app';
+import View from '../view';
 
 /**
  * # XJS Class

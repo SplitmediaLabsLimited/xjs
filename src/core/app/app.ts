@@ -1,5 +1,5 @@
-import Internal from 'internal';
-import sprintf from 'helpers/sprintf';
+import Internal from '../../internal';
+import sprintf from '../../helpers/sprintf';
 
 import { AppConfig, PropertyType } from './types';
 

@@ -1,4 +1,4 @@
-import Internal from 'internal';
+import Internal from '../../internal';
 
 export interface ItemConfig {
   internal: Internal;

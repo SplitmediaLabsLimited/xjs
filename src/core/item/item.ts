@@ -1,7 +1,7 @@
 import parser from 'fast-xml-parser';
 
-import Internal from 'internal';
-import Xjs from 'core/xjs';
+import Internal from '../../internal';
+import Xjs from '../xjs';
 
 import { ItemConfig, PropertyType } from './types';
 

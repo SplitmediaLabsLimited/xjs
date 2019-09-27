@@ -1,6 +1,6 @@
-import Internal from 'internal';
-import Scene from 'core/scene';
-import App from 'core/app';
+import Internal from '../../internal';
+import Scene from '../scene';
+import App from '../app';
 
 import { ViewConfig } from './types';
 
