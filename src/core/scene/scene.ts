@@ -6,13 +6,7 @@ import Item from '../item';
 import App from '../app';
 import AppProps from '../../props/app-props';
 
-interface SceneConfig {
-  app: App;
-  internal: Internal;
-  index?: number;
-  xml?: string;
-  uid?: string;
-}
+import { SceneConfig } from './types';
 
 class Scene {
   private _app: App;
@@ -50,14 +44,6 @@ class Scene {
     this._uid = config.uid;
   }
 
-  /**
-   * Get the items of the scene.
-   *
-   * Passing false on the first parameter will get the latest XML String, and save it to
-   * the internal private property of this instance.
-   *
-   * Returns an array of Item instances
-   */
   async getItems(useCache = true): Promise<Item[]> {
     if (useCache && this._items instanceof Array && this._items.length > 0) {
       return this._items;
