@@ -1,6 +1,6 @@
 {
   "name": "xjs-framework",
-  "version": "3.0.0-alpha.3",
+  "version": "3.1.0-alpha.4",
   "description": "XSplit JS Framework",
   "main": "dist/index.js",
   "files": [
