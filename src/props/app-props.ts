@@ -14,7 +14,7 @@ class AppProps {
   };
 
   static sceneIndex = {
-    key: 'scene:{view}',
+    key: 'scene:${view}',
     setValidator: (param: any) => {
       if (
         typeof param !== 'object' ||
@@ -98,7 +98,7 @@ class AppProps {
   };
 
   static sceneItems = {
-    key: 'sceneconfig:{scene}',
+    key: 'sceneconfig:${scene}',
     setValidator: (param: any) => {
       if (
         typeof param !== 'object' ||
@@ -128,7 +128,7 @@ class AppProps {
   };
 
   static sceneName = {
-    key: 'scenename:{scene}',
+    key: 'scenename:${scene}',
     setValidator: (param: any) => {
       if (
         typeof param !== 'object' ||
