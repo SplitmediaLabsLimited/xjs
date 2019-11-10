@@ -14886,6 +14886,27 @@ var Dialog = (function () {
         });
     };
     /**
+     *  param: (script: string)
+  
+     *  return: Promise<Dialog>
+     *
+     *  After configuring the dialog, call this function to spawn it.
+     *  A javascript string parameter can be passed to have more control over the dialog
+     *
+     * *Chainable.*
+     */
+    Dialog.prototype.showWithJS = function (script) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            _this._result = null;
+            var windowParams = _this._size ? "cx:" + _this._size.getWidth() + "&cy:" + _this._size.getHeight() : '';
+            windowParams = _this._calculateFlags() !== '0' ? windowParams + "&flags:" + _this._calculateFlags() : windowParams;
+            internal_1.exec('NewDialog2', _this._url, '', windowParams, _this._title ? _this._title : '', _this._cookiePath ? "<configuration cookiepath=\"" + _this._cookiePath + "\" />" : '', script ? script : '').then(function (result) {
+                resolve(_this);
+            });
+        });
+    };
+    /**
      *  return: Promise<string>
      *
      *  Gets the string result returned from the spawned dialog.
