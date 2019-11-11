@@ -14901,7 +14901,8 @@ var Dialog = (function () {
             _this._result = null;
             var windowParams = _this._size ? "cx:" + _this._size.getWidth() + "&cy:" + _this._size.getHeight() : '';
             windowParams = _this._calculateFlags() !== '0' ? windowParams + "&flags:" + _this._calculateFlags() : windowParams;
-            internal_1.exec('NewDialog2', _this._url, '', windowParams, _this._title ? _this._title : '', _this._cookiePath ? "<configuration cookiepath=\"" + _this._cookiePath + "\" />" : '', script ? script : '').then(function (result) {
+            internal_1.exec('NewDialog2', _this._url, '', windowParams, _this._title ? _this._title : '', _this._cookiePath ? "<configuration cookiepath=\"" + _this._cookiePath + "\" />" : '', script ? script : '', function (result) {
+                _this._result = result;
                 resolve(_this);
             });
         });

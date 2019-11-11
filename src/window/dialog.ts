@@ -298,10 +298,11 @@ export class Dialog{
       windowParams,
       this._title ? this._title : '',
       this._cookiePath ? `<configuration cookiepath="${this._cookiePath}" />` : '',
-      script ? script : '').then(result => {
-        resolve(this)
-      })
-      
+      script ? script : '', 
+      result => {        
+        this._result = result;        
+        resolve(this);
+      })   
     })
   }
 
