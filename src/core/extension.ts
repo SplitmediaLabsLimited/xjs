@@ -67,11 +67,45 @@ export class Extension {
    * Get the saved configuration from the presentation
    */
   loadConfig(): Promise<any> {
-    return new Promise(resolve => {
-      exec('GetPresProperty', this._presName, config => {
-        let configObj = config === '' ? {} : JSON.parse(config);
-        resolve(configObj);
-      });
+    return new Promise(resolve => {      
+      const getConfig = mapId => {
+        return new Promise(resolveConfig => {
+          exec('GetPresProperty', mapId, configData => {
+            let configObj = null;
+            //make sure that parse error is caught
+            try {
+              if (configData) {
+                configObj = JSON.parse(configData);
+              }
+            } catch (err) {
+              console.error('Error on load config', err);
+            }
+            resolveConfig(configObj);           
+          });
+        });
+      };
+
+      //default config is an empty object
+      const defaultConfig = {};      
+
+      //try to get first from current location
+      getConfig(this._presName)
+      .then(config => {       
+        //if no config try on original location if its using the new file protocol prefix
+        if (!config && this._presName.indexOf('file:///') > -1) {          
+          return getConfig(this._presName.replace('file:///', 'file://'));
+        //anything else just return it
+        } else {
+          return Promise.resolve(config);
+        }
+      })
+      .then(config => {
+        if (config) {
+          resolve(config);
+        } else {
+          resolve(defaultConfig);
+        }
+      });      
     });
   }
 

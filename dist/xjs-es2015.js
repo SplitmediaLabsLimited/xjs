@@ -1480,9 +1480,43 @@ var Extension = (function () {
     Extension.prototype.loadConfig = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            internal_1.exec('GetPresProperty', _this._presName, function (config) {
-                var configObj = config === '' ? {} : JSON.parse(config);
-                resolve(configObj);
+            var getConfig = function (mapId) {
+                return new Promise(function (resolveConfig) {
+                    internal_1.exec('GetPresProperty', mapId, function (configData) {
+                        var configObj = null;
+                        //make sure that parse error is caught
+                        try {
+                            if (configData) {
+                                configObj = JSON.parse(configData);
+                            }
+                        }
+                        catch (err) {
+                            console.error('Error on load config', err);
+                        }
+                        resolveConfig(configObj);
+                    });
+                });
+            };
+            //default config is an empty object
+            var defaultConfig = {};
+            //try to get first from current location
+            getConfig(_this._presName)
+                .then(function (config) {
+                //if no config try on original location if its using the new file protocol prefix
+                if (!config && _this._presName.indexOf('file:///') > -1) {
+                    return getConfig(_this._presName.replace('file:///', 'file://'));
+                }
+                else {
+                    return Promise.resolve(config);
+                }
+            })
+                .then(function (config) {
+                if (config) {
+                    resolve(config);
+                }
+                else {
+                    resolve(defaultConfig);
+                }
             });
         });
     };
