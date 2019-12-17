@@ -1,0 +1,9 @@
+{
+  "mode": "file",
+  "out": "docs",
+  "name": "XJS API Reference",
+  "readme": "./APIREADME.md",
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "hideGenerator": true
+}

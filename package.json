@@ -1,10 +1,15 @@
 {
-  "name": "xjs",
-  "version": "3.0.0",
+  "name": "xjs-framework",
+  "version": "3.0.0-alpha.4",
   "description": "XSplit JS Framework",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf ./dist && tsc -p . && node tools/version.js",
+    "build:umd": "rimraf ./dist && rollup -c && node tools/version.js xjs.umd.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +25,22 @@
   "bugs": {
     "url": "https://github.com/xjsframework/xjs/issues"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme"
+  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.21.4",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.10.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/lodash-es": "^4.17.3",
+    "fast-xml-parser": "^3.12.19",
+    "lodash-es": "^4.17.11"
+  }
 }
