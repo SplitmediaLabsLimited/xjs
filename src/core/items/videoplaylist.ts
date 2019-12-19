@@ -16,6 +16,7 @@ import {Environment} from '../environment';
 import {IO} from '../../util/io';
 import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
 import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from '../source/iplayback';
+import {IAudio, Audio} from '../source/iaudio';
 import {CuePoint} from '../source/cuepoint';
 
 /**
@@ -28,7 +29,8 @@ import {CuePoint} from '../source/cuepoint';
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable},
+ * {@link #core/IAudio Core/IAudio}
  *
  * ### Basic Usage
  *
@@ -49,7 +51,7 @@ import {CuePoint} from '../source/cuepoint';
 
 export class VideoPlaylistItem extends Item implements IItemLayout,
   IItemColor, IItemChroma, IItemTransition, ISourceConfigurable,
-  ISourceVideoPlaylist, ISourcePlayback {
+  ISourceVideoPlaylist, ISourcePlayback, IAudio {
 
   //Shared with VideoPlaylistSource
   /**
@@ -601,7 +603,36 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    * See: {@link #core/ISourcePlayback#isVideo isVideo}
    */
   isVideo: () => Promise<boolean>;
+
+  // General Audio
+
+  /** See: {@link #core/IAudio#getVolume getVolume} */
+  getVolume: () => Promise<number>;
+
+  /** See: {@link #core/IAudio#isMute isMute} */
+  isMute: () => Promise<boolean>;
+
+  /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+  isAutoMute: () => Promise<boolean>;
+
+  /** See: {@link #core/IAudio#setVolume setVolume} */
+  setVolume: (value: number) => Promise<VideoPlaylistItem>;
+
+  /** See: {@link #core/IAudio#setMute setMute} */
+  setMute: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+  setAutoMute: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+  isStreamOnlyAudio: () => Promise<boolean>;
+
+  /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+  setStreamOnlyAudio: (value: boolean) => Promise<VideoPlaylistItem>;
+
+  /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
+  isAudioAvailable: () => Promise<boolean>;
 }
 
 applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  SourceConfigurable, SourceVideoPlaylist, SourcePlayback])
+  SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio])

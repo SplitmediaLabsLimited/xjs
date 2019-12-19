@@ -4501,6 +4501,7 @@ var iconfig_1 = _require('../source/iconfig');
 var item_1 = _require('./item');
 var ivideoplaylist_1 = _require('../source/ivideoplaylist');
 var iplayback_1 = _require('../source/iplayback');
+var iaudio_1 = _require('../source/iaudio');
 /**
  * The VideoPlaylistItem class represents the VideoPlaylist item that has been
  * added to the stage.
@@ -4511,7 +4512,8 @@ var iplayback_1 = _require('../source/iplayback');
  * {@link #core/IItemColor Core/IItemColor},
  * {@link #core/IItemLayout Core/IItemLayout},
  * {@link #core/IItemTransition Core/IItemTransition},
- * {@link #core/ISourceConfigurable Core/ISourceConfigurable}
+ * {@link #core/ISourceConfigurable Core/ISourceConfigurable},
+ * {@link #core/IAudio Core/IAudio}
  *
  * ### Basic Usage
  *
@@ -4538,8 +4540,8 @@ var VideoPlaylistItem = (function (_super) {
 })(item_1.Item);
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
-    iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback]);
-},{"../../internal/util/mixin":60,"../source/iconfig":34,"../source/iplayback":40,"../source/ivideoplaylist":43,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],22:[function(_require,module,exports){
+    iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
+},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iconfig":34,"../source/iplayback":40,"../source/ivideoplaylist":43,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],22:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
