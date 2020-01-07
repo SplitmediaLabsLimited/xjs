@@ -123,8 +123,13 @@ window.OnAsyncCallback = function(asyncID: number, result: string) {
     let callback = _callbacks[asyncID];
 
     if (callback instanceof Function) {
-      callback(decodeURIComponent(result));
-      delete _callbacks[asyncID];
+      try {
+        callback(decodeURIComponent(result));
+        delete _callbacks[asyncID];
+      } catch(e) {
+        callback(result);
+        delete _callbacks[asyncID];
+      }
     }
   }
 
