@@ -26,13 +26,56 @@ export class App {
   /** Gets the value of the given property as list */
   static getAsList(name: string): Promise<JXON[]> {
     return new Promise((resolve, reject) => {
-      App.get(name).then((xml: string) => {
+      App.get(name).then((xml: string) => {        
         try {
           let propsJSON: JXON = JXON.parse(xml),
-            propsArr: JXON[] = [];
-
+            propsArr: JXON[] = [];         
+          
           if (propsJSON.children && propsJSON.children.length > 0) {
             propsArr = propsJSON.children;
+          }
+
+          resolve(propsArr);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  /** Gets all the items of the given condition as list */
+  static getAsItemList(name: string): Promise<JXON[]> {
+    return new Promise((resolve, reject) => {      
+      App.get(name).then((xml: string) => {       
+        try {
+          let propsJSON: JXON = JXON.parse(xml),
+            propsArr: JXON[] = [];  
+        
+          const recursion = children => {            
+            children.forEach(child => {
+              if(child['tag'] === 'item') propsArr.push(child);
+              //type 12 is considered as group and contains a wrapper placement for sub group items
+              if(child['type'] === '12' && child.children && child.children.length > 0) {
+                child.children.forEach(placement => {
+                  if (placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
+                    recursion(placement.children);
+                  }
+                });
+              }
+            });           
+          };
+
+          //this is when it is actually getting from presetConfig
+          if(propsJSON['tag'] === 'configuration' && propsJSON.children && propsJSON.children.length > 0) {
+            //this is actually getting from each scene
+            propsJSON.children.forEach(placement => {
+              if(placement['tag'] === 'placement' && placement.children && placement.children.length > 0) {
+                recursion(placement.children);
+              }
+            });
+          //assuming getting from a scene
+          } else if (propsJSON['tag'] === 'placement' && propsJSON.children && propsJSON.children.length > 0) {
+            recursion(propsJSON.children);
           }
 
           resolve(propsArr);

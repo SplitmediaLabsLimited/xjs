@@ -10,6 +10,7 @@ export * from './core/output';
 export * from './core/channelmanager';
 export * from './core/languageinfo';
 export * from './core/scene';
+export * from './core/render';
 export * from './core/transition';
 export * from './core/dll';
 export * from './core/extension';

@@ -27,6 +27,7 @@ import {FlashItem} from './items/flash';
 import {ScreenItem} from './items/screen';
 import {ImageItem} from './items/image';
 import {MediaItem} from './items/media';
+import {GenericItem} from './items/genericitem';
 
 import {
   minVersion,
@@ -965,7 +966,7 @@ export class Scene {
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];
@@ -1195,7 +1196,7 @@ export class Scene {
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1232,7 +1233,7 @@ export class Scene {
           } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
             typeResolve(new FlashItem(item));
           } else {
-            typeResolve(new Item(item));
+            typeResolve(new GenericItem(item));
           }
         });
 

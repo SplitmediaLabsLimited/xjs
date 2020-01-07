@@ -278,6 +278,35 @@ export class Dialog{
   }
 
   /**
+   *  param: (script: string)
+
+   *  return: Promise<Dialog>
+   *
+   *  After configuring the dialog, call this function to spawn it.
+   *  A javascript string parameter can be passed to have more control over the dialog
+   *
+   * *Chainable.*
+   */
+  showWithJS(script: string): Promise<Dialog> {
+    return new Promise(resolve => {
+      this._result = null;
+
+      let windowParams = this._size ? `cx:${this._size.getWidth()}&cy:${this._size.getHeight()}` : '';
+      windowParams = this._calculateFlags() !== '0' ? `${windowParams}&flags:${this._calculateFlags()}` : windowParams;    
+      
+      exec('NewDialog2', this._url, '',
+      windowParams,
+      this._title ? this._title : '',
+      this._cookiePath ? `<configuration cookiepath="${this._cookiePath}" />` : '',
+      script ? script : '', 
+      result => {        
+        this._result = result;        
+        resolve(this);
+      })   
+    })
+  }
+
+  /**
    *  return: Promise<string>
    *
    *  Gets the string result returned from the spawned dialog.
