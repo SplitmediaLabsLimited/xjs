@@ -75,9 +75,23 @@ describe('Output ===', function() {
       }
     });
 
+    spyOn(external, 'CallHostFunc')
+    .and.callFake(function() {
+      var funcName = arguments[0];
+      if (funcName.startsWith('getBroadcastChannelList')) {
+        global_asyncId++;
+        var asyncId = new Date().getTime() + '_' + global_asyncId;
+        setTimeout(function() {
+          window.OnAsyncCallback(asyncId, mockOutputList);
+        }, 10);
+        return asyncId;
+      }
+    });
+
     spyOn(window.external, 'GetLocalPropertyAsync')
     .and.callFake(function(funcName) {
       if (funcName === 'itemlist') {
+        global_asyncId++;
         var asyncId = new Date().getTime() + '_' + global_asyncId;
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, '{76D1C7FC-4CF2-4D7C-88F7-AABC6EE40705},{B438A6F2-2035-4F58-B011-131BBA706F31}');
@@ -89,6 +103,7 @@ describe('Output ===', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
       if (funcName === 'recstat' && !emptyRecstat) {
+        global_asyncId++;
         var asyncId = new Date().getTime() + '_' + global_asyncId;
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -157,6 +172,7 @@ describe('Output ===', function() {
           },10);
         return asyncId;
       } else if (funcName === 'recstat') {
+        global_asyncId++;
         var asyncId = new Date().getTime() + '_' + global_asyncId;
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent('<stat></stat>'));
@@ -183,7 +199,8 @@ describe('Output ===', function() {
 
     it('that returns an array of Outputs', function(done) {
       exec(function(next) {
-        Output.getOutputList().then(function(outputs) {
+        Output.getOutputList()
+        .then(function(outputs) {
           expect(outputs).toBeInstanceOf(Array);
           expect(outputs).eachToBeInstanceOf(Output);
           next();

@@ -328,18 +328,19 @@ export class Output {
         if (Output._proxyCallback[name ? callbackName : Output._id] === undefined){
           Output._proxyCallback[name ? callbackName : Output._id] = [];
         }
+
         Output._proxyCallback[name ? callbackName : Output._id] = callback;
         name ?
-          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
-          exec('CallHost', 'getBroadcastChannelList:'+ id);
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       } else {
         if (Output._callback[name ? callbackName : Output._id] === undefined){
           Output._callback[name ? callbackName : Output._id] = [];
         }
         Output._callback[name ? callbackName : Output._id] = ({resolve});
         name ?
-          exec('CallHost', 'getBroadcastChannelXml:'+ id, name) :
-          exec('CallHost', 'getBroadcastChannelList:'+ id);
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       }
     })
   }
