@@ -92,13 +92,11 @@ export class Item {
               iApp.getAsItemList('presetconfig')
               .then(jsonArr => {
                 for (var i = 0; i < jsonArr.length; i++) {
-                  if (jsonArr[i].children !== undefined) {
-                    for (var j = 0; j <  jsonArr[i].children.length; j++) {
-                      if (jsonArr[i].children[j]['srcid'] === srcId) {
-                        sceneMatch = i;
-                        idMatch = jsonArr[i].children[j]['id'];
-                        break;
-                      }
+                  if (jsonArr[i] !== undefined) {
+                    if (jsonArr[i]['srcid'] === srcId) {
+                      sceneMatch = i;
+                      idMatch = jsonArr[i]['id'];
+                      break;
                     }
                   }
                   if (idMatch !== undefined) {
@@ -213,13 +211,11 @@ export class Item {
               iApp.getAsItemList('presetconfig')
               .then(jsonArr => {
                 for (var i = 0; i < jsonArr.length; i++) {
-                  if (jsonArr[i].children !== undefined) {
-                    for (var j = 0; j <  jsonArr[i].children.length; j++) {
-                      if (jsonArr[i].children[j]['srcid'] === srcId) {
-                        sceneMatch = i;
-                        idMatch = jsonArr[i].children[j]['id'];
-                        break;
-                      }
+                  if (jsonArr[i] !== undefined) {
+                    if (jsonArr[i]['srcid'] === srcId) {
+                      sceneMatch = i;
+                      idMatch = jsonArr[i]['id'];
+                      break;
                     }
                   }
                   if (idMatch !== undefined) {
