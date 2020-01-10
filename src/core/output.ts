@@ -337,7 +337,6 @@ export class Output {
         if (Output._callback[name ? callbackName : Output._id] === undefined){
           Output._callback[name ? callbackName : Output._id] = [];
         }
-        console.log('CALLHOST ==> ', name ? 'getBroadcastChannelXml' : 'getBroadcastChannelList');
         Output._callback[name ? callbackName : Output._id] = ({resolve});
         name ?
           exec('CallHostFunc', 'getBroadcastChannelXml', name, window.SetBroadcastChannelXml) :

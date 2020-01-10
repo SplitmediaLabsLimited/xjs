@@ -91,6 +91,13 @@
 		/**
 		 * source|config|window
 		 */
+		CallHostFunc: function(name) {
+
+		},
+
+		/**
+		 * source|config|window
+		 */
 		CallInner: function(name) {
 
 		},

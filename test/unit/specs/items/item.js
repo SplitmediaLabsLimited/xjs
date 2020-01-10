@@ -278,7 +278,6 @@ describe('Item ===', function() {
     expect(Item).hasMethods('getFPS');
     exec(function(next) {
       Item.getFPS().then(function(val) {
-        console.log(val);
         expect(val).toBeTypeOf('number');
         expect(val).not.toBeNaN();
         next();
