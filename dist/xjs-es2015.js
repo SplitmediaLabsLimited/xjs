@@ -4983,7 +4983,7 @@ var Output = (function () {
                 }
                 Output._proxyCallback[name ? callbackName : Output._id] = callback;
                 name ?
-                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, window_1.default.SetBroadcastChannelXml) :
+                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', '0', name, window_1.default.SetBroadcastChannelXml) :
                     internal_1.exec('CallHostFunc', 'getBroadcastChannelList', window_1.default.SetBroadcastChannelList);
             }
             else {
@@ -4992,7 +4992,7 @@ var Output = (function () {
                 }
                 Output._callback[name ? callbackName : Output._id] = ({ resolve: resolve });
                 name ?
-                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, window_1.default.SetBroadcastChannelXml) :
+                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', window_1.default.SetBroadcastChannelXml) :
                     internal_1.exec('CallHostFunc', 'getBroadcastChannelList', window_1.default.SetBroadcastChannelList);
             }
         });
