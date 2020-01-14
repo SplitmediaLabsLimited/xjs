@@ -331,7 +331,7 @@ export class Output {
 
         Output._proxyCallback[name ? callbackName : Output._id] = callback;
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', '0', name, window.SetBroadcastChannelXml) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       } else {
         if (Output._callback[name ? callbackName : Output._id] === undefined){
@@ -339,7 +339,7 @@ export class Output {
         }
         Output._callback[name ? callbackName : Output._id] = ({resolve});
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', window.SetBroadcastChannelXml) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       }
     })
