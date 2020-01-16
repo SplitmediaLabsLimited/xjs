@@ -4794,6 +4794,28 @@ var Output = (function () {
         });
     };
     /**
+     * return: Promise<boolean>
+     *
+     * Pause a local recording.
+     */
+    Output.pauseLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'pauseRecording', 'Local Recording');
+            resolve(true);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Unpause a local recording.
+     */
+    Output.unpauseLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'unpauseRecording', 'Local Recording');
+            resolve(true);
+        });
+    };
+    /**
      *  return: Promise<string>
      *
      *  Gets the actual name of the Output.
@@ -4869,6 +4891,8 @@ var Output = (function () {
         });
     };
     /**
+     * ** For Deprecation, please use the static method instead
+     *
      * return: Promise<boolean>
      *
      * Pause a local recording.
@@ -4900,6 +4924,8 @@ var Output = (function () {
         });
     };
     /**
+     * ** For Deprecation, please use the static method instead
+     *
      * return: Promise<boolean>
      *
      * Unpause a local recording.
