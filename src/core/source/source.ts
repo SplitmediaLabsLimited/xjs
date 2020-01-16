@@ -226,7 +226,7 @@ export class Source implements ISource{
       let uniqueObj = {};
       let uniqueSrc = [];
       let promiseArray = [];
-      iApp.getAsItemList('presetconfig').then(jsonArr => {        
+      iApp.getAsItemList('sceneconfig').then(jsonArr => {        
         allJson = jsonArr;      
         let sourcePromise = srcid => new Promise(sourceResolve => {
           Scene.searchSourcesById(srcid).then(result => {

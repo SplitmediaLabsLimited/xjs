@@ -165,7 +165,7 @@ describe('Source ===', function() {
         var placements = parseXml(mockPresetConfig).getElementsByTagName('configuration')[0];
         var selected = '[id="{C878A0BF-F03A-4274-9398-EBD638D07680}"]';
         var itemSelected = placements.querySelector(selected);
-        xCallback(asyncId, serializeXml(itemSelected));        
+        xCallback(asyncId, serializeXml(itemSelected));
       }
     } else if (typeof local[attachedId] !== 'undefined' &&
       local[attachedId].hasOwnProperty(property)) {
@@ -302,17 +302,17 @@ describe('Source ===', function() {
       global_asyncId++;
       var asyncId = new Date().getTime() + '_' + global_asyncId;
       switch (funcName) {
-        case 'presetcount':
+        case 'scenecount':
           xCallback(asyncId, presetObj['count']);
           break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         default:
-          if (funcName.startsWith('presetconfig:')) {
-            var sceneIndex = funcName.substring(13);
+          if (funcName.startsWith('sceneconfig:')) {
+            var sceneIndex = funcName.substring(12);
             if (typeof presetObj[sceneIndex] !== 'undefined') {
               xCallback(asyncId, encodeURIComponent(presetObj[sceneIndex]));
             } else {

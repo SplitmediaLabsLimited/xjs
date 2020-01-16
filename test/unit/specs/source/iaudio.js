@@ -99,15 +99,15 @@ describe('Audio interface', function() {
     .and.callFake(function(funcName) {
       var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
       switch (funcName) {
-        case 'presetconfig:0':
+        case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'preset:0':
+        case 'scene:0':
           xCallback(asyncId, '0');
           break;
       }

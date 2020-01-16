@@ -57,7 +57,7 @@ export class Scene {
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
       Scene._scenePool = [];
-      iApp.getAsList('presetconfig')
+      iApp.getAsList('sceneconfig')
       .then(jsonArr => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           const count = jsonArr.length;
@@ -270,7 +270,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           iApp.get(preset).then(id => {
             return Scene.getBySceneIndex(Number(id));
           }).then(scene => {
@@ -295,7 +295,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           if (scene instanceof Scene) {
               iApp.set(preset, String(scene._id)).then(res => {
                 resolve(res);
@@ -925,11 +925,11 @@ export class Scene {
         reject(Error('function is not available for source'));
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          iApp.get('presetcount').then(cnt => {
+          iApp.get('scenecount').then(cnt => {
             if (Number(cnt) < 12) {
               // Insert an empty scene for scene #12
               iApp
-                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                .set('sceneconfig:11', '<placement name="Scene 12" defpos="0" />')
                 .then(res => {
                   resolve(res);
                 });
@@ -966,7 +966,7 @@ export class Scene {
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];
@@ -1150,7 +1150,7 @@ export class Scene {
   getName(): Promise<string> {
     return new Promise(resolve => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetname:' + _sceneId).then(val => {
+      iApp.get('scenename:' + _sceneId).then(val => {
         resolve(val);
       });
     });
@@ -1172,7 +1172,7 @@ export class Scene {
         reject(Error('Scene names are readonly for source plugins.'));
       } else {
         let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('presetname:' + _sceneId, name).then(value => {
+        iApp.set('scenename:' + _sceneId, name).then(value => {
           resolve(value);
         });
       }
@@ -1196,7 +1196,7 @@ export class Scene {
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + _sceneId).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1271,7 +1271,7 @@ export class Scene {
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetisempty:' + _sceneId).then(val => {
+      iApp.get('sceneisempty:' + _sceneId).then(val => {
         resolve(val === '1');
       });
     });
@@ -1328,7 +1328,7 @@ export class Scene {
             let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
-              return iApp.getAsList('presetconfig:' + _sceneId);
+              return iApp.getAsList('sceneconfig:' + _sceneId);
             }).then(jsonArr => {
               let newOrder = new JXON();
               newOrder.children = [];
@@ -1348,7 +1348,7 @@ export class Scene {
                 }
 
                 iApp.set(
-                  'presetconfig:' + _sceneId,
+                  'sceneconfig:' + _sceneId,
                   //Revert back the formatting from json when transforming to xml
                   XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
