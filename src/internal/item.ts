@@ -89,7 +89,7 @@ export class Item {
               resolveInner(itemsArray[0]);
             } else {
               let idMatch, sceneMatch;
-              iApp.getAsItemList('presetconfig')
+              iApp.getAsItemList('sceneconfig')
               .then(jsonArr => {
                 for (var i = 0; i < jsonArr.length; i++) {
                   if (jsonArr[i] !== undefined) {
@@ -109,7 +109,7 @@ export class Item {
                   });
                 } else {
                   return new Promise<string>( (previewResolve, previewReject) => {
-                    iApp.getAsItemList('presetconfig:i12')
+                    iApp.getAsItemList('sceneconfig:i12')
                     .then(previewJSONArr => {
                       let previewMatch = '';
                       for (var k = 0; k < previewJSONArr.length; ++k) {
@@ -208,7 +208,7 @@ export class Item {
               resolveInner(itemsArray[0]);
             } else {
               let idMatch, sceneMatch;
-              iApp.getAsItemList('presetconfig')
+              iApp.getAsItemList('sceneconfig')
               .then(jsonArr => {
                 for (var i = 0; i < jsonArr.length; i++) {
                   if (jsonArr[i] !== undefined) {
@@ -228,7 +228,7 @@ export class Item {
                   });
                 } else {
                   return new Promise<string>( (previewResolve, previewReject) => {
-                    iApp.getAsItemList('presetconfig:i12')
+                    iApp.getAsItemList('sceneconfig:i12')
                     .then(previewJSONArr => {
                       let previewMatch = '';
                       for (var k = 0; k < previewJSONArr.length; ++k) {

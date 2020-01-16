@@ -34,11 +34,11 @@ describe('System', function() {
               ' fpsCapture="0.000000"/></configuration>\n'
             ));
           }, 10);
-        } else if (funcName === 'preset:0') {
+        } else if (funcName === 'scene:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
           }, 10);
-        } else if (funcName === 'presetconfig:0') {
+        } else if (funcName === 'sceneconfig:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent('<placement name="Scene 1" defpos="' + defpos + '" />'));
           }, 10);
