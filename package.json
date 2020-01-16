@@ -28,7 +28,7 @@
     "karma-chrome-launcher": "^0.2.0",
     "karma-jasmine": "^0.3.6",
     "karma-jasmine-html-reporter": "^0.1.8",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.13",
     "run-sequence": "^1.1.5",
     "string-to-comments": "^0.1.2",
     "traceur": "0.0.87",
