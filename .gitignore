@@ -3,4 +3,4 @@ node_modules/
 *.sublime-workspace
 docs/bower_components/
 dist/api/
-package-lock.json
+*.vscode

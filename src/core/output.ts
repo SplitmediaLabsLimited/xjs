@@ -151,6 +151,30 @@ export class Output {
   }
 
   /**
+   * return: Promise<boolean>
+   *
+   * Pause a local recording.
+   */
+  static pauseLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'pauseRecording', 'Local Recording');
+      resolve(true);
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Unpause a local recording.
+   */
+  static unpauseLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'unpauseRecording', 'Local Recording');
+      resolve(true);
+    })
+  }
+
+  /**
    *  return: Promise<string>
    *
    *  Gets the actual name of the Output.
@@ -226,6 +250,8 @@ export class Output {
   }
 
   /**
+   * ** For Deprecation, please use the static method instead
+   *
    * return: Promise<boolean>
    *
    * Pause a local recording.
@@ -256,6 +282,8 @@ export class Output {
   }
 
   /**
+   * ** For Deprecation, please use the static method instead
+   *
    * return: Promise<boolean>
    *
    * Unpause a local recording.

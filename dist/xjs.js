@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.9.1
+ * version: 2.10.0
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -4793,6 +4793,28 @@ var Output = (function () {
         });
     };
     /**
+     * return: Promise<boolean>
+     *
+     * Pause a local recording.
+     */
+    Output.pauseLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'pauseRecording', 'Local Recording');
+            resolve(true);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Unpause a local recording.
+     */
+    Output.unpauseLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'unpauseRecording', 'Local Recording');
+            resolve(true);
+        });
+    };
+    /**
      *  return: Promise<string>
      *
      *  Gets the actual name of the Output.
@@ -4868,6 +4890,8 @@ var Output = (function () {
         });
     };
     /**
+     * ** For Deprecation, please use the static method instead
+     *
      * return: Promise<boolean>
      *
      * Pause a local recording.
@@ -4899,6 +4923,8 @@ var Output = (function () {
         });
     };
     /**
+     * ** For Deprecation, please use the static method instead
+     *
      * return: Promise<boolean>
      *
      * Unpause a local recording.
@@ -5081,7 +5107,7 @@ var Scene = (function () {
     Scene._initializeScenePoolAsync = function () {
         return new Promise(function (resolve) {
             Scene._scenePool = [];
-            app_1.App.getAsList('presetconfig')
+            app_1.App.getAsList('sceneconfig')
                 .then(function (jsonArr) {
                 if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.minVersion)) {
                     var count = jsonArr.length;
@@ -5300,7 +5326,7 @@ var Scene = (function () {
             }
             else {
                 app_1.App.getGlobalProperty('splitmode').then(function (res) {
-                    var preset = res === '1' ? 'preset:1' : 'preset:0';
+                    var preset = res === '1' ? 'scene:1' : 'scene:0';
                     app_1.App.get(preset).then(function (id) {
                         return Scene.getBySceneIndex(Number(id));
                     }).then(function (scene) {
@@ -5325,7 +5351,7 @@ var Scene = (function () {
             }
             else {
                 app_1.App.getGlobalProperty('splitmode').then(function (res) {
-                    var preset = res === '1' ? 'preset:1' : 'preset:0';
+                    var preset = res === '1' ? 'scene:1' : 'scene:0';
                     if (scene instanceof Scene) {
                         app_1.App.set(preset, String(scene._id)).then(function (res) {
                             resolve(res);
@@ -5967,11 +5993,11 @@ var Scene = (function () {
             }
             else {
                 if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.minVersion)) {
-                    app_1.App.get('presetcount').then(function (cnt) {
+                    app_1.App.get('scenecount').then(function (cnt) {
                         if (Number(cnt) < 12) {
                             // Insert an empty scene for scene #12
                             app_1.App
-                                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                                .set('sceneconfig:11', '<placement name="Scene 12" defpos="0" />')
                                 .then(function (res) {
                                 resolve(res);
                             });
@@ -6010,7 +6036,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsItemList('presetconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('sceneconfig:' + _sceneId).then(function (jsonArr) {
                 var promiseArray = [];
                 var uniqueObj = {};
                 var uniqueSrc = [];
@@ -6204,7 +6230,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('presetname:' + _sceneId).then(function (val) {
+            app_1.App.get('scenename:' + _sceneId).then(function (val) {
                 resolve(val);
             });
         });
@@ -6227,7 +6253,7 @@ var Scene = (function () {
             }
             else {
                 var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-                app_1.App.set('presetname:' + _sceneId, name).then(function (value) {
+                app_1.App.set('scenename:' + _sceneId, name).then(function (value) {
                     resolve(value);
                 });
             }
@@ -6251,7 +6277,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsItemList('presetconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('sceneconfig:' + _sceneId).then(function (jsonArr) {
                 var promiseArray = [];
                 // type checking to return correct Source subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
@@ -6330,7 +6356,7 @@ var Scene = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('presetisempty:' + _sceneId).then(function (val) {
+            app_1.App.get('sceneisempty:' + _sceneId).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -6389,7 +6415,7 @@ var Scene = (function () {
                         var sceneName;
                         _this.getName().then(function (name) {
                             sceneName = name;
-                            return app_1.App.getAsList('presetconfig:' + _sceneId);
+                            return app_1.App.getAsList('sceneconfig:' + _sceneId);
                         }).then(function (jsonArr) {
                             var newOrder = new json_1.JSON();
                             newOrder.children = [];
@@ -6407,7 +6433,7 @@ var Scene = (function () {
                                     }
                                     newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                                 }
-                                app_1.App.set('presetconfig:' + _sceneId, 
+                                app_1.App.set('sceneconfig:' + _sceneId, 
                                 //Revert back the formatting from json when transforming to xml
                                 xml_1.XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')).then(function () {
                                     resolve(_this);
@@ -9996,7 +10022,7 @@ var Source = (function () {
             var uniqueObj = {};
             var uniqueSrc = [];
             var promiseArray = [];
-            app_1.App.getAsItemList('presetconfig').then(function (jsonArr) {
+            app_1.App.getAsItemList('sceneconfig').then(function (jsonArr) {
                 allJson = jsonArr;
                 var sourcePromise = function (srcid) { return new Promise(function (sourceResolve) {
                     scene_1.Scene.searchSourcesById(srcid).then(function (result) {
@@ -10322,7 +10348,7 @@ var Thumbnail = (function () {
                 }
             });
             scenePromise.then(function (sceneUid) {
-                app_1.App.get("presetthumbnail:" + sceneUid)
+                app_1.App.get("scenethumbnail:" + sceneUid)
                     .then(function (thumb) {
                     resolve(thumb);
                 });
@@ -11186,7 +11212,7 @@ var Item = (function () {
                         }
                         else {
                             var idMatch, sceneMatch;
-                            app_1.App.getAsItemList('presetconfig')
+                            app_1.App.getAsItemList('sceneconfig')
                                 .then(function (jsonArr) {
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     if (jsonArr[i] !== undefined) {
@@ -11207,7 +11233,7 @@ var Item = (function () {
                                 }
                                 else {
                                     return new Promise(function (previewResolve, previewReject) {
-                                        app_1.App.getAsItemList('presetconfig:i12')
+                                        app_1.App.getAsItemList('sceneconfig:i12')
                                             .then(function (previewJSONArr) {
                                             var previewMatch = '';
                                             for (var k = 0; k < previewJSONArr.length; ++k) {
@@ -11299,7 +11325,7 @@ var Item = (function () {
                         }
                         else {
                             var idMatch, sceneMatch;
-                            app_1.App.getAsItemList('presetconfig')
+                            app_1.App.getAsItemList('sceneconfig')
                                 .then(function (jsonArr) {
                                 for (var i = 0; i < jsonArr.length; i++) {
                                     if (jsonArr[i] !== undefined) {
@@ -11320,7 +11346,7 @@ var Item = (function () {
                                 }
                                 else {
                                     return new Promise(function (previewResolve, previewReject) {
-                                        app_1.App.getAsItemList('presetconfig:i12')
+                                        app_1.App.getAsItemList('sceneconfig:i12')
                                             .then(function (previewJSONArr) {
                                             var previewMatch = '';
                                             for (var k = 0; k < previewJSONArr.length; ++k) {
@@ -12827,7 +12853,7 @@ var Game = (function () {
                         var defposPromise;
                         if (environment_1.Environment.isSourcePlugin()) {
                             defposPromise = new Promise(function (defposResolve) {
-                                app_1.App.get('presetconfig:-1').then(function (presetConfig) {
+                                app_1.App.get('sceneconfig:-1').then(function (presetConfig) {
                                     var placementJSON = json_1.JSON.parse(presetConfig);
                                     defposResolve(placementJSON['defpos']);
                                 });
@@ -12835,8 +12861,8 @@ var Game = (function () {
                         }
                         else {
                             defposPromise = new Promise(function (defposResolve) {
-                                app_1.App.get('preset:0').then(function (main) {
-                                    return app_1.App.get('presetconfig:' + main);
+                                app_1.App.get('scene:0').then(function (main) {
+                                    return app_1.App.get('sceneconfig:' + main);
                                 }).then(function (presetConfig) {
                                     var placementJSON = json_1.JSON.parse(presetConfig);
                                     defposResolve(placementJSON['defpos']);
@@ -13610,8 +13636,8 @@ var VideoPlaylist = (function () {
                     }
                     var _inner_this = _this;
                     if (!isError) {
-                        app_1.App.get('preset:0').then(function (main) {
-                            return app_1.App.get('presetconfig:' + main);
+                        app_1.App.get('scene:0').then(function (main) {
+                            return app_1.App.get('sceneconfig:' + main);
                         }).then(function (presetConfig) {
                             var placementJSON = json_1.JSON.parse(presetConfig);
                             var defpos = placementJSON['defpos'];
@@ -15257,7 +15283,7 @@ var ExtensionWindow = (function (_super) {
                         if (environment_1.Environment.isExtension()) {
                             var property = settingsObj['args'][0];
                             var newValue = settingsObj['args'][1];
-                            if (property.startsWith('presetconfign:') || property.startsWith('presetconfig:')) {
+                            if (property.startsWith('sceneconfign:') || property.startsWith('sceneconfig:')) {
                                 var changedIndex = property.split(":")[1];
                                 scene_1.Scene.getActiveScene().then(function (scene) {
                                     return scene.getSceneNumber();

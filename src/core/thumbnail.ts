@@ -52,7 +52,7 @@ export class Thumbnail {
       })
 
       scenePromise.then(sceneUid => {
-        iApp.get(`presetthumbnail:${sceneUid}`)
+        iApp.get(`scenethumbnail:${sceneUid}`)
         .then(thumb => {
           resolve(thumb)
         })
