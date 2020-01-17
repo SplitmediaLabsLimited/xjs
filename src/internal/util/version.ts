@@ -10,6 +10,7 @@ export const globalsrcMinVersion = '2.9'
 export const itemSubscribeEventVersion = '2.9.1608.2301';
 export const sceneUidMinVersion = '3.0.1704.2101';
 export const sceneUidAddDeleteVersion = '3.3.1801.1901';
+export const scenePresetsVersion = '3.8.1905.2118';
 
 export let mockVersion = '';
 
