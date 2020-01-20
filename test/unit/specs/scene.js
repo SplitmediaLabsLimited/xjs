@@ -8,6 +8,19 @@ describe('Scene ===', function() {
       stringCompared.toLowerCase();
   };
 
+  var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+  var getNewUID = function()
+  {
+    var d0 = Math.random()*0xffffffff|0;
+    var d1 = Math.random()*0xffffffff|0;
+    var d2 = Math.random()*0xffffffff|0;
+    var d3 = Math.random()*0xffffffff|0;
+    return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
+    lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
+    lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
+    lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+  }
+
   var ctr = 0;
 
   var XJS = require('xjs');
@@ -422,6 +435,9 @@ describe('Scene ===', function() {
   describe('object instance', function() {
     beforeAll(function(done) {
       var ctr = 0;
+      global['scenepresetlist'] = [];
+      global['activepreset'] = '{00000000-0000-0000-0000-000000000000}';
+      global['presettransitiontime'] = '0';
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         ctr++;
@@ -449,17 +465,41 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);
-        } else if ('scenecount') {
+        } else if (/^scenecount/.test(funcName)) {
           setTimeout(function() {
             window.OnAsyncCallback(this, '12');
           }.bind(ctr),10);
+        } else if (/^scenepresetlist:/.test(funcName)) {
+          setTimeout(function() {
+            window.OnAsyncCallback(this, global['scenepresetlist'].join(','));
+          }.bind(ctr),10);
+        } else if (/^scenenewpreset:/.test(funcName)) {
+          // get new uid
+          var newUID = '{' + getNewUID() + '}';
+          // add to array
+          global['scenepresetlist'].push(newUID);
+          // return
+          setTimeout(function() {
+            window.OnAsyncCallback(this, global['scenepresetlist'].join(','));
+          }.bind(ctr),10);
+        } else if (/^scenepreset:/.test(funcName)) {
+          setTimeout(function() {
+            window.OnAsyncCallback(this, global['activepreset']);
+          }.bind(ctr),10);
+        } else if (/^scenepresettransitionfunc:/.test(funcName)) {
+          setTimeout(function() {
+            window.OnAsyncCallback(this, global['scenepreseteasing']);
+          }.bind(ctr),10);
+        } else if (/^scenepresettransitiontime:/.test(funcName)) {
+          setTimeout(function() {
+            window.OnAsyncCallback(this, global['presettransitiontime']);
+          }.bind(ctr),10);
         }
-
         return ctr;
       });
 
       spyOn(window.external, 'AppSetPropertyAsync')
-        .and.callFake(function(funcName) {
+        .and.callFake(function(funcName, ...args) {
         ctr++;
         if (/^scenename:/.test(funcName)) {
           setTimeout(function() {
@@ -469,8 +509,29 @@ describe('Scene ===', function() {
           setTimeout(function() {
             window.OnAsyncCallback(this, '0');
           }.bind(ctr),10);
+        } else if (/^sceneremovepreset:/.test(funcName)) {
+          var presetIndex = global['scenepresetlist'].indexOf(args[0]);
+          global['scenepresetlist'].splice(presetIndex, 1);
+          setTimeout(function() {
+            window.OnAsyncCallback(this, "0");
+          }.bind(ctr),10);
+        } else if (/^scenepreset:/.test(funcName)) {
+          global['activepreset'] = args[0];
+          setTimeout(function() {
+            window.OnAsyncCallback(this, "0");
+          }.bind(ctr),10);
+        } else if (/^scenepresettransitionfunc:/.test(funcName)) {
+          global['scenepreseteasing'] = args[0];
+          setTimeout(function() {
+            window.OnAsyncCallback(this, "0");
+          }.bind(ctr),10);
+        } else if (/^scenepresettransitiontime:/.test(funcName)) {
+          global['presettransitiontime'] = args[0];
+          setTimeout(function() {
+            window.OnAsyncCallback(this, "0");
+          }.bind(ctr),10);
         }
-
+ 
         return ctr;
       });
 
@@ -803,43 +864,397 @@ describe('Scene ===', function() {
       }).then(done);
     });
 
-    it('should be able to set the scene name', function(done) {
-      var rand;
-      var string = '';
+    describe('should be able to get available presets', function(done) {
       var scene;
-
-      for (var i = 0; i < 5; i++) {
-        rand = Math.floor(Math.random() * 25) + 65;
-        string += String.fromCharCode(rand);
-      }
-
-      navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      beforeEach(function(done) {
+        env.set(environments[1]);
+        navigator.__defineGetter__('appVersion', function() {
+          return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+        });
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          done();
+        });
       });
 
-      Scene.getActiveScene().then(function(result) {
-        scene = result;
-        return scene.setName(string);
-      }).then(function(success) {
-        navigator.__defineGetter__('appVersion', function() {
-          return appVersion;
-        });
-        if (XJS.Environment.isSourcePlugin()) {
-          done.fail('setName should throw an error on source plugin');
-        } else {
-          expect(success).toBeBoolean();
+      it('and return as an array', function(done) {
+        scene.getPresets().then(function(presets) {
+          expect(presets).toBeArray();
           done();
-        }
-      }).catch(function(err) {
-        navigator.__defineGetter__('appVersion', function() {
-          return appVersion;
         });
-        if (XJS.Environment.isSourcePlugin()) {
+      });
+
+      it('that has a default value', function(done) {
+        scene.getPresets().then(function(presets) {
+          expect(presets[0]).toEqual('{00000000-0000-0000-0000-000000000000}');
+          done();
+        })
+      });
+
+      it('that fails in source plugins', function(done) {
+        env.set(environments[2]);
+        scene.getPresets().then(function(presets) {
+          done.fail('getPresets should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      });
+
+      it('that fails for lower versions', function(done) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
+        scene.getPresets().then(function(presets) {
+          done.fail('getPresets should throw an error for lower XBC versions');
+        }).catch(function(err) {
           expect(err).toEqual(jasmine.any(Error));
           done();
-        } else {
-          done.fail(err);
-        }
+        });
+      });
+    });
+
+    describe('should be able to add and remove a preset', function(done) {
+      var scene;
+      beforeEach(function(done) {
+        env.set(environments[1]);
+        navigator.__defineGetter__('appVersion', function() {
+          return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+        });
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          done();
+        });
+      });
+
+      it('by returning/needing a preset UID string', function(done) {
+        var newPresetUID;
+        var originalPresetList;
+        scene.getPresets()
+        .then(function(presetArray) {
+          originalPresetList = JSON.stringify(presetArray);
+          return scene.addPreset();
+        })        
+        .then(function(preset) {
+          newPresetUID = preset;
+          return scene.getPresets();
+        }).then(function(presetArray) {
+          expect(presetArray[presetArray.length - 1] === newPresetUID);
+          return scene.removePreset(newPresetUID);
+        }).then(function(removeRet) {
+          expect(removeRet).toBeBoolean;
+          return scene.getPresets();
+        }).then(function(presetArray) {
+          expect(originalPresetList).toEqual(JSON.stringify(presetArray));
+          return scene.removePreset('{00000000-0000-0000-0000-000000000000}');
+        }).then(function() {
+          done.fail('removePrest cannot remove default preset');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        })
+      });
+
+      it('via methods that fail in source plugins', function(done) {
+        env.set(environments[2]);
+        scene.addPreset()
+        .then(function(preset) {
+          done.fail('addPreset should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            env.set(environments[1]);
+            return scene.addPreset()
+          } else {
+            done.fail(err);
+          }
+        }).then(function(newPreset) {
+          env.set(environments[2]);
+          return scene.removePreset(newPreset);
+        }).then(function(preset) {
+          done.fail('removePreset should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      });
+
+      it('via methods that fail for lower versions', function(done) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
+        scene.addPreset()
+        .then(function(preset) {
+          done.fail('addPreset should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          navigator.__defineGetter__('appVersion', function() {
+            return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+          });
+          return scene.addPreset();
+        }).then(function(newPreset) {
+          navigator.__defineGetter__('appVersion', function() {
+            return 'XSplit Broadcaster 2.7.1702.2231 ';
+          });
+          return scene.removePreset(newPreset);
+        }).then(function(preset) {
+          done.fail('removePreset should throw an error on source plugin');
+        }).catch(function(err) {
+          done();
+        });
+      });
+    });
+
+    describe('should be able to get and set the active preset', function(done) {
+      var scene;
+      beforeEach(function(done) {
+        env.set(environments[1]);
+        navigator.__defineGetter__('appVersion', function() {
+          return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+        });
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          global['scenepresetlist'] = [];
+          done();
+        });
+      });
+
+      it('by returning/needing a preset UID string', function(done) {
+        var secondPreset;
+        scene.getActivePreset().then(function(activePreset) {
+          expect(activePreset).toEqual('{00000000-0000-0000-0000-000000000000}');
+          return scene.addPreset();
+        }).then(function(newPreset) {
+          secondPreset = newPreset;
+          return scene.switchToPreset(secondPreset);
+        }).then(function(activePreset) {
+          return scene.getActivePreset();
+        }).then(function(activePreset) {
+          expect(activePreset).toEqual(secondPreset);
+          done();
+        });
+      });
+
+      it('via methods that fail in source plugins', function(done) {
+        env.set(environments[2]);
+        scene.getActivePreset()
+        .then(function(preset) {
+          done.fail('getActivePreset should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            return scene.switchToPreset('{00000000-0000-0000-0000-000000000000}');
+          } else {
+            done.fail(err);
+          }
+        }).then(function(currentPreset) {
+          done.fail('switchToPreset should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      });
+
+      it('via methods that fail for lower versions', function(done) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
+        scene.getActivePreset()
+        .then(function(preset) {
+          done.fail('getActivePreset should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          return scene.switchToPreset('{00000000-0000-0000-0000-000000000000}');
+        }).then(function(currentPreset) {
+          done.fail('switchToPreset should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe('should be able to get and set the preset transition easing function', function(done) {
+      var suppEasing = [
+        'easeInCubic',
+        'easeOutCubic',
+        'easeInOutCubic'
+      ];
+
+      var scene;
+      beforeEach(function(done) {
+        env.set(environments[1]);
+        navigator.__defineGetter__('appVersion', function() {
+          return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+        });
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          global['scenepreseteasing'] = 'easeInCubic';
+          done();
+        });
+      });
+
+      it('by returning/needing a preset transition string', function(done) {
+        var randomEasing;
+        scene.getPresetTransitionEasing()
+        .then(function(easing) {
+          expect(easing).toBeTypeOf('string');
+          randomEasing = suppEasing[Math.floor(Math.random()*suppEasing.length)];
+          return scene.setPresetTransitionEasing(randomEasing);
+        }).then(function(setResult) {
+          expect(setResult).toBeBoolean();
+          return scene.getPresetTransitionEasing();
+        }).then(function(easing) {
+          expect(easing).toEqual(randomEasing);
+          done();
+        })
+      });
+
+      it('which accepts interprets blank as `none` and validates other values', function(done) {
+        scene.setPresetTransitionEasing('')
+        .then(function(isSet) {
+          return scene.getPresetTransitionEasing();
+        }).then(function(easing) {
+          expect(easing).toEqual('none');
+          return scene.setPresetTransitionEasing('someRandomWord');
+        }).then(function() {
+          done.fail('setPresetTransitionEasing should throw an error when easing transition string supplied is not supported');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });      
+
+      it('via methods that fail in source plugins', function(done) {
+        env.set(environments[2]);
+        scene.getPresetTransitionEasing()
+        .then(function(preset) {
+          done.fail('getPresetTransitionEasing should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            return scene.setPresetTransitionEasing('');
+          } else {
+            done.fail(err);
+          }
+        }).then(function(currentPreset) {
+          done.fail('setPresetTransitionEasing should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      });
+
+      it('via methods that fail for lower versions', function(done) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
+        scene.getPresetTransitionEasing()
+        .then(function(preset) {
+          done.fail('getPresetTransitionEasing should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          return scene.setPresetTransitionEasing('');
+        }).then(function(currentPreset) {
+          done.fail('setPresetTransitionEasing should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
+
+    describe('should be able to get and set the preset transition time', function(done) {
+      var scene;
+      beforeEach(function(done) {
+        env.set(environments[1]);
+        navigator.__defineGetter__('appVersion', function() {
+          return '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 XSplitBroadcaster/3.9.1923.0602 Safari/537.36';
+        });
+        Scene.getActiveScene().then(function(result) {
+          scene = result;
+          global['scenepreseteasing'] = 'easeInCubic';
+          done();
+        });
+      });
+
+      it('as a number', function(done) {
+        // get number from 0 to 1000
+        var randomNumber = Math.floor(Math.random() * (1000))
+        scene.getPresetTransitionTime()
+        .then(function(transitionTime) {
+          expect(transitionTime).toBeTypeOf('number');
+          return scene.setPresetTransitionTime(randomNumber);
+        }).then(function(setResult) {
+          expect(setResult).toBeBoolean();
+          return scene.getPresetTransitionTime();
+        }).then(function(transitionTime) {
+          expect(transitionTime).toEqual(randomNumber);
+          return scene.setPresetTransitionTime('someRandomWord');
+        }).then(function() {
+          done.fail('setPresetTransitionTime should throw an error when parameter supplied is not a number');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        })
+      });
+
+      it('via methods that fail in source plugins', function(done) {
+        env.set(environments[2]);
+        scene.getPresetTransitionTime()
+        .then(function(preset) {
+          done.fail('getPresetTransitionTime should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            return scene.setPresetTransitionTime(100);
+          } else {
+            done.fail(err);
+          }
+        }).then(function(currentPreset) {
+          done.fail('setPresetTransitionTime should throw an error on source plugin');
+        }).catch(function(err) {
+          if (XJS.Environment.isSourcePlugin()) {
+            expect(err).toEqual(jasmine.any(Error));
+            done();
+          } else {
+            done.fail(err);
+          }
+        });
+      });
+
+      it('via methods that fail for lower versions', function(done) {
+        navigator.__defineGetter__('appVersion', function() {
+          return 'XSplit Broadcaster 2.7.1702.2231 ';
+        });
+        scene.getPresetTransitionTime()
+        .then(function(preset) {
+          done.fail('getPresetTransitionTime should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          return scene.setPresetTransitionTime(100);
+        }).then(function(currentPreset) {
+          done.fail('setPresetTransitionTime should throw an error on lower XBC versions');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
@@ -869,8 +1284,6 @@ describe('Scene ===', function() {
       xit('but rejects when called from the source', function(done) {
 
       });
-
-
     });
 
   });

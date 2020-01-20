@@ -1431,34 +1431,6 @@ export class Scene {
   }
 
   /**
-   * return: Promise<string>
-   *
-   * Add a new preset to the scene, returns the UID of the new preset
-   * Does not work on source plugins.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * myScene.addPreset().then(function(preset) {
-   *  console.log('New preset UID is ' + preset);
-   * });
-   * ```
-   */
-  addPreset(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Not supported on source plugins'));
-      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-        reject(Error('Not supported in this XBC version'));
-      } else {
-        iApp.get('scenenewpreset:' + this._uid).then(value => {
-          resolve(value);
-        });
-      }
-    });
-  }
-
-  /**
    * param: (preset: string)
    * ```
    * return: Promise<boolean>
@@ -1491,6 +1463,34 @@ export class Scene {
         });
       }
     })
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Add a new preset to the scene, returns the UID of the new preset
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.addPreset().then(function(preset) {
+   *  console.log('New preset UID is ' + preset);
+   * });
+   * ```
+   */
+  addPreset(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.get('scenenewpreset:' + this._uid).then(value => {
+          resolve(value);
+        });
+      }
+    });
   }
 
   /**
