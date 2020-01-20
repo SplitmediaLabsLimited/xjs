@@ -864,7 +864,7 @@ describe('Scene ===', function() {
       }).then(done);
     });
 
-    describe('should be able to get available presets', function(done) {
+    describe('should be able to get available presets', function() {
       var scene;
       beforeEach(function(done) {
         env.set(environments[1]);
@@ -918,7 +918,7 @@ describe('Scene ===', function() {
       });
     });
 
-    describe('should be able to add and remove a preset', function(done) {
+    describe('should be able to add and remove a preset', function() {
       var scene;
       beforeEach(function(done) {
         env.set(environments[1]);
@@ -1013,7 +1013,7 @@ describe('Scene ===', function() {
       });
     });
 
-    describe('should be able to get and set the active preset', function(done) {
+    describe('should be able to get and set the active preset', function() {
       var scene;
       beforeEach(function(done) {
         env.set(environments[1]);
@@ -1086,7 +1086,7 @@ describe('Scene ===', function() {
       });
     });
 
-    describe('should be able to get and set the preset transition easing function', function(done) {
+    describe('should be able to get and set the preset transition easing function', function() {
       var suppEasing = [
         'easeInCubic',
         'easeOutCubic',
@@ -1180,7 +1180,7 @@ describe('Scene ===', function() {
       });
     });
 
-    describe('should be able to get and set the preset transition time', function(done) {
+    describe('should be able to get and set the preset transition time', function() {
       var scene;
       beforeEach(function(done) {
         env.set(environments[1]);
