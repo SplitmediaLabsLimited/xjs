@@ -5095,6 +5095,13 @@ var image_2 = require('./items/image');
 var media_2 = require('./items/media');
 var genericitem_1 = require('./items/genericitem');
 var version_1 = require('../internal/util/version');
+var supportedPresetTransitionEasingFunctions = [
+    '',
+    'none',
+    'easeInCubic',
+    'easeOutCubic',
+    'easeInOutCubic'
+];
 var Scene = (function () {
     function Scene(sceneId, name, uid) {
         this._id = sceneId;
@@ -6111,7 +6118,7 @@ var Scene = (function () {
         });
     };
     /**
-     * return: number
+     * return: Promise<number>
      *
      * Get the 1-indexed scene number of this scene object.
      *
@@ -6153,7 +6160,7 @@ var Scene = (function () {
         });
     };
     /**
-     * return: number
+     * return: Promise<number>
      *
      * Get the 0-indexed scene number of this scene object.
      *
@@ -6188,7 +6195,7 @@ var Scene = (function () {
         });
     };
     /**
-     * return: string
+     * return: Promise<string>
      *
      * Get the unique id of this scene object.
      * Scenes unique id is only available for XBC v.3.0.1704.2101 or higher.
@@ -6213,7 +6220,7 @@ var Scene = (function () {
         });
     };
     /**
-     * return: number
+     * return: Promise<string>
      *
      * Get the name of this scene object.
      *
@@ -6362,14 +6369,14 @@ var Scene = (function () {
         });
     };
     /**
-   * param: Array<Item> | Array<string> (item IDs)
-   * ```
-   * return: Promise<Scene>
-   * ```
-   *
-   * Sets the item order of the current scene. The first item in the array
-   * will be on top (will cover items below it).
-   */
+     * param: Array<Item> | Array<string> (item IDs)
+     * ```
+     * return: Promise<Scene>
+     * ```
+     *
+     * Sets the item order of the current scene. The first item in the array
+     * will be on top (will cover items below it).
+     */
     Scene.prototype.setItemOrder = function (items) {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -6444,6 +6451,303 @@ var Scene = (function () {
                             }
                         });
                     }
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string[]>
+     *
+     * Get all presets for the scene, returns an array of preset UIDs
+     * Does not work on source plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getPresets().then(function(presets) {
+     *  // do something to each preset UID in UIDs array
+     * });
+     * ```
+     */
+    Scene.prototype.getPresets = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                var presetArray = ['{00000000-0000-0000-0000-000000000000}'];
+                app_1.App.get('scenepresetlist:' + _this._uid).then(function (presetlist) {
+                    if (presetlist !== '') {
+                        presetArray.push.apply(presetArray, (presetlist.split(',')));
+                    }
+                    resolve(presetArray);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Get the UID of the active preset
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getActivePreset().then(function(preset) {
+     *  console.log('Active preset UID is ' + preset);
+     * });
+     * ```
+     */
+    Scene.prototype.getActivePreset = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                app_1.App.get('scenepreset:' + _this._uid).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * param: (preset: string)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     * Switch to the specified preset for the scene
+     *
+     * #### Usage
+     *
+     * ```javascript
+     *
+     * myScene.getPresets()
+     * .then(presets => {
+     *   const lastPreset = presets.pop()
+     *   return myScene.switchToPreset(lastPreset);
+     * })
+     * .then(isSwitched => {
+     *   console.log('switched to preset : ' + isSwitched)
+     * });
+     * ```
+     */
+    Scene.prototype.switchToPreset = function (preset) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                app_1.App.set('scenepreset:' + _this._uid, preset).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Add a new preset to the scene, returns the UID of the new preset
+     * Does not work on source plugins.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.addPreset().then(function(preset) {
+     *  console.log('New preset UID is ' + preset);
+     * });
+     * ```
+     */
+    Scene.prototype.addPreset = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                app_1.App.get('scenenewpreset:' + _this._uid).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * param: (preset: string)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     * Remove the specified preset for the scene
+     *
+     * #### Usage
+     *
+     * ```javascript
+     *
+     * myScene.removePreset(lastPreset)
+     * .then(isRemoved => {
+     *   console.log('preset is removed : ' + isRemoved)
+     * });
+     * ```
+     */
+    Scene.prototype.removePreset = function (preset) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else if (preset === '{00000000-0000-0000-0000-000000000000}') {
+                reject(Error('Cannot delete the default preset'));
+            }
+            else {
+                app_1.App.set('sceneremovepreset:' + _this._uid, preset).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Get the preset transition easing function for the scene
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getPresetTransition().then(function(presetTransition) {
+     *  console.log('Preset transition is ' + presetTransition);
+     * });
+     * ```
+     */
+    Scene.prototype.getPresetTransitionEasing = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                app_1.App.get('scenepresettransitionfunc:' + _this._uid).then(function (value) {
+                    if (value === '') {
+                        value = 'none';
+                    }
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * param: (presetTransitionEasing: string)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     * Switch to the specified preset transition easing function for the scene
+     * Possible values ('' or 'none', 'easeInCubic', 'easeOutCubic', 'easeInOutCubic')
+     *
+     * #### Usage
+     *
+     * ```javascript
+     *
+     * myScene.setPresetTransitionEasing().then(function(presetTransition) {
+     *  console.log('Preset transition is ' + presetTransition);
+     * });
+     * ```
+     */
+    Scene.prototype.setPresetTransitionEasing = function (presetTransitionEasing) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else if (supportedPresetTransitionEasingFunctions.indexOf(presetTransitionEasing) < 0) {
+                reject(Error('Easing function not supported for preset transitions'));
+            }
+            else {
+                presetTransitionEasing = presetTransitionEasing === 'none' ? '' : presetTransitionEasing;
+                app_1.App.set('scenepresettransitionfunc:' + _this._uid, presetTransitionEasing).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Get the preset transition time for the scene, in ms
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getPresetTransitionTime().then(function(presetTransitionTime) {
+     *  console.log('Preset transition time is ' + presetTransitionTime);
+     * });
+     * ```
+     */
+    Scene.prototype.getPresetTransitionTime = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else {
+                app_1.App.get('scenepresettransitiontime:' + _this._uid).then(function (value) {
+                    resolve(Number(value));
+                });
+            }
+        });
+    };
+    /**
+     * param: (presetTransitionTime: number)
+     * ```
+     * return: Promise<boolean>
+     * ```
+     * Set the preset transition time for the scene, in ms
+     *
+     * #### Usage
+     *
+     * ```javascript
+     *
+     * myScene.setPresetTransitionTime(500);
+     * ```
+     */
+    Scene.prototype.setPresetTransitionTime = function (presetTransitionTime) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Not supported on source plugins'));
+            }
+            else if (version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.scenePresetsVersion)) {
+                reject(Error('Not supported in this XBC version'));
+            }
+            else if (typeof presetTransitionTime !== 'number') {
+                reject(Error('Parameter must be a number'));
+            }
+            else {
+                app_1.App.set('scenepresettransitiontime:' + _this._uid, String(presetTransitionTime)).then(function (value) {
+                    resolve(value);
                 });
             }
         });
@@ -11913,6 +12217,7 @@ exports.globalsrcMinVersion = '2.9';
 exports.itemSubscribeEventVersion = '2.9.1608.2301';
 exports.sceneUidMinVersion = '3.0.1704.2101';
 exports.sceneUidAddDeleteVersion = '3.3.1801.1901';
+exports.scenePresetsVersion = '3.8.1905.2118';
 exports.mockVersion = '';
 function versionCompare(version) {
     var parts = version.split('.');
