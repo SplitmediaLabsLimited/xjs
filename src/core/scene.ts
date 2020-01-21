@@ -316,7 +316,7 @@ export class Scene {
               });
             }
           } else {
-          reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+            reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
           }
         })
       }
@@ -1406,7 +1406,8 @@ export class Scene {
   /**
    * return: Promise<string>
    *
-   * Get the UID of the active preset
+   * Get the UID of the active preset.
+   * Does not work on source plugins.
    *
    * #### Usage
    *
@@ -1435,7 +1436,8 @@ export class Scene {
    * ```
    * return: Promise<boolean>
    * ```
-   * Switch to the specified preset for the scene
+   * Switch to the specified preset for the scene.
+   * Does not work on source plugins.
    *
    * #### Usage
    *
@@ -1459,7 +1461,11 @@ export class Scene {
         reject(Error('Not supported in this XBC version'));
       } else {
         iApp.set('scenepreset:' + this._uid, preset).then(value => {
-          resolve(value);
+          if (value) {
+            resolve(value);
+          } else {
+            reject(Error('Cannot switch to preset or preset non-existent'));
+          }
         });
       }
     })
@@ -1498,7 +1504,8 @@ export class Scene {
    * ```
    * return: Promise<boolean>
    * ```
-   * Remove the specified preset for the scene
+   * Remove the specified preset for the scene.
+   * Does not work on source plugins.
    *
    * #### Usage
    *
@@ -1520,7 +1527,11 @@ export class Scene {
         reject(Error('Cannot delete the default preset'));
       } else {
         iApp.set('sceneremovepreset:' + this._uid, preset).then(value => {
-          resolve(value);
+          if (value) {
+            resolve(value);
+          } else {
+            reject(Error('Cannot delete preset or preset non-existent'));
+          }
         });
       }
     })
@@ -1529,7 +1540,8 @@ export class Scene {
   /**
    * return: Promise<string>
    *
-   * Get the preset transition easing function for the scene
+   * Get the preset transition easing function for the scene.
+   * Does not work on source plugins.
    *
    * #### Usage
    *
@@ -1563,14 +1575,13 @@ export class Scene {
    * ```
    * Switch to the specified preset transition easing function for the scene
    * Possible values ('' or 'none', 'easeInCubic', 'easeOutCubic', 'easeInOutCubic')
+   * Does not work on source plugins.
    *
    * #### Usage
    *
    * ```javascript
    *
-   * myScene.setPresetTransitionEasing().then(function(presetTransition) {
-   *  console.log('Preset transition is ' + presetTransition);
-   * });
+   * myScene.setPresetTransitionEasing('easeInCubic');
    * ```
    */
   setPresetTransitionEasing(presetTransitionEasing: string): Promise<boolean> {
@@ -1594,6 +1605,7 @@ export class Scene {
    * return: Promise<number>
    *
    * Get the preset transition time for the scene, in ms
+   * Does not work on source plugins.
    *
    * #### Usage
    *
@@ -1623,6 +1635,7 @@ export class Scene {
    * return: Promise<boolean>
    * ```
    * Set the preset transition time for the scene, in ms
+   * Does not work on source plugins.
    *
    * #### Usage
    *
