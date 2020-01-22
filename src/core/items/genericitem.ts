@@ -13,6 +13,7 @@ import {ItemTransition, IItemTransition} from './itransition';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
+import {Filter} from '../filter';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
@@ -496,6 +497,21 @@ export class GenericItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
   showFileMaskingGuide: (value: boolean) => Promise<GenericItem>;
+
+  /** See: {@link #core/IItemEffect#getFilter getFilter} */
+  getFilter: () => Promise<Filter>;
+
+  /** See: {@link #core/IItemEffect#setFilter setFilter} */
+  setFilter: (value: any, config?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }) => Promise<GenericItem>;
+
+  /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
+  removeFilter: () => Promise<GenericItem>;
+
+  /** See: {@link #core/IItemEffect#getFilterConfig getFilterConfig} */
+  getFilterConfig: () => Promise<Object>;
 }
 
 applyMixins(GenericItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,

@@ -13,6 +13,7 @@ import {IAudio, Audio} from '../source/iaudio';
 import {Item} from './item';
 import {Scene} from '../scene';
 import {Transition} from '../transition';
+import {Filter} from '../filter';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {CameraSource} from '../source/camera';
@@ -685,6 +686,21 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
   showFileMaskingGuide: (value: boolean) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getFilter getFilter} */
+  getFilter: () => Promise<Filter>;
+
+  /** See: {@link #core/IItemEffect#setFilter setFilter} */
+  setFilter: (value: any, config?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }) => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
+  removeFilter: () => Promise<CameraItem>;
+
+  /** See: {@link #core/IItemEffect#getFilterConfig getFilterConfig} */
+  getFilterConfig: () => Promise<Object>;
 }
 
 applyMixins(CameraItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
