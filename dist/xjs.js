@@ -1,16 +1,3 @@
-<<<<<<< refs/remotes/origin/master
-<<<<<<< refs/remotes/origin/master
-<<<<<<< refs/remotes/origin/master
-<<<<<<< refs/remotes/origin/master
-=======
-<<<<<<< 2.10.0
-=======
->>>>>>> chore: build
-=======
-<<<<<<< 2.10.0
->>>>>>> chore: update unit test
-=======
->>>>>>> chore: build
 /**
  * XSplit JS Framework
  * version: 2.10.0
@@ -53,20 +40,6 @@
  */
 
 
-<<<<<<< refs/remotes/origin/master
-<<<<<<< refs/remotes/origin/master
-<<<<<<< refs/remotes/origin/master
-=======
->>>>>>> wip: convert presetconfig to sceneconfig
->>>>>>> wip: convert presetconfig to sceneconfig
-=======
->>>>>>> chore: build
-=======
-=======
->>>>>>> chore: update unit test
->>>>>>> chore: update unit test
-=======
->>>>>>> chore: build
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = require('../internal/app');
@@ -6519,7 +6492,8 @@ var Scene = (function () {
     /**
      * return: Promise<string>
      *
-     * Get the UID of the active preset
+     * Get the UID of the active preset.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6550,7 +6524,8 @@ var Scene = (function () {
      * ```
      * return: Promise<boolean>
      * ```
-     * Switch to the specified preset for the scene
+     * Switch to the specified preset for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6577,7 +6552,12 @@ var Scene = (function () {
             }
             else {
                 app_1.App.set('scenepreset:' + _this._uid, preset).then(function (value) {
-                    resolve(value);
+                    if (value) {
+                        resolve(value);
+                    }
+                    else {
+                        reject(Error('Cannot switch to preset or preset non-existent'));
+                    }
                 });
             }
         });
@@ -6617,7 +6597,8 @@ var Scene = (function () {
      * ```
      * return: Promise<boolean>
      * ```
-     * Remove the specified preset for the scene
+     * Remove the specified preset for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6643,7 +6624,12 @@ var Scene = (function () {
             }
             else {
                 app_1.App.set('sceneremovepreset:' + _this._uid, preset).then(function (value) {
-                    resolve(value);
+                    if (value) {
+                        resolve(value);
+                    }
+                    else {
+                        reject(Error('Cannot delete preset or preset non-existent'));
+                    }
                 });
             }
         });
@@ -6651,7 +6637,8 @@ var Scene = (function () {
     /**
      * return: Promise<string>
      *
-     * Get the preset transition easing function for the scene
+     * Get the preset transition easing function for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6687,14 +6674,13 @@ var Scene = (function () {
      * ```
      * Switch to the specified preset transition easing function for the scene
      * Possible values ('' or 'none', 'easeInCubic', 'easeOutCubic', 'easeInOutCubic')
+     * Does not work on source plugins.
      *
      * #### Usage
      *
      * ```javascript
      *
-     * myScene.setPresetTransitionEasing().then(function(presetTransition) {
-     *  console.log('Preset transition is ' + presetTransition);
-     * });
+     * myScene.setPresetTransitionEasing('easeInCubic');
      * ```
      */
     Scene.prototype.setPresetTransitionEasing = function (presetTransitionEasing) {
@@ -6721,6 +6707,7 @@ var Scene = (function () {
      * return: Promise<number>
      *
      * Get the preset transition time for the scene, in ms
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6752,6 +6739,7 @@ var Scene = (function () {
      * return: Promise<boolean>
      * ```
      * Set the preset transition time for the scene, in ms
+     * Does not work on source plugins.
      *
      * #### Usage
      *

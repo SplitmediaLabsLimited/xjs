@@ -6493,7 +6493,8 @@ var Scene = (function () {
     /**
      * return: Promise<string>
      *
-     * Get the UID of the active preset
+     * Get the UID of the active preset.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6524,7 +6525,8 @@ var Scene = (function () {
      * ```
      * return: Promise<boolean>
      * ```
-     * Switch to the specified preset for the scene
+     * Switch to the specified preset for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6551,7 +6553,12 @@ var Scene = (function () {
             }
             else {
                 app_1.App.set('scenepreset:' + _this._uid, preset).then(function (value) {
-                    resolve(value);
+                    if (value) {
+                        resolve(value);
+                    }
+                    else {
+                        reject(Error('Cannot switch to preset or preset non-existent'));
+                    }
                 });
             }
         });
@@ -6591,7 +6598,8 @@ var Scene = (function () {
      * ```
      * return: Promise<boolean>
      * ```
-     * Remove the specified preset for the scene
+     * Remove the specified preset for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6617,7 +6625,12 @@ var Scene = (function () {
             }
             else {
                 app_1.App.set('sceneremovepreset:' + _this._uid, preset).then(function (value) {
-                    resolve(value);
+                    if (value) {
+                        resolve(value);
+                    }
+                    else {
+                        reject(Error('Cannot delete preset or preset non-existent'));
+                    }
                 });
             }
         });
@@ -6625,7 +6638,8 @@ var Scene = (function () {
     /**
      * return: Promise<string>
      *
-     * Get the preset transition easing function for the scene
+     * Get the preset transition easing function for the scene.
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6661,14 +6675,13 @@ var Scene = (function () {
      * ```
      * Switch to the specified preset transition easing function for the scene
      * Possible values ('' or 'none', 'easeInCubic', 'easeOutCubic', 'easeInOutCubic')
+     * Does not work on source plugins.
      *
      * #### Usage
      *
      * ```javascript
      *
-     * myScene.setPresetTransitionEasing().then(function(presetTransition) {
-     *  console.log('Preset transition is ' + presetTransition);
-     * });
+     * myScene.setPresetTransitionEasing('easeInCubic');
      * ```
      */
     Scene.prototype.setPresetTransitionEasing = function (presetTransitionEasing) {
@@ -6695,6 +6708,7 @@ var Scene = (function () {
      * return: Promise<number>
      *
      * Get the preset transition time for the scene, in ms
+     * Does not work on source plugins.
      *
      * #### Usage
      *
@@ -6726,6 +6740,7 @@ var Scene = (function () {
      * return: Promise<boolean>
      * ```
      * Set the preset transition time for the scene, in ms
+     * Does not work on source plugins.
      *
      * #### Usage
      *
