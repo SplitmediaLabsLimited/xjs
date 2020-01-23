@@ -84,14 +84,9 @@ export class Filter {
    */
   static getFilters(): Promise<Filter[]> {
     return new Promise(resolve => {
-      var filters: Filter[] = [];
-      let transitionString;
       // pending a core change,
       // we should override hardcoded filter list from a listing from core
-      const filterKeys = Object.keys(Filter._filterMap);
-      for (var i = 0; i < filterKeys.length; ++i) {
-        filters.push(new Filter(Filter._filterMap[filterKeys[i]]))
-      }
+      var filters: Filter[] = Object.keys(Filter._filterMap).map(key => new Filter(key));
       resolve(filters);
     });
   }

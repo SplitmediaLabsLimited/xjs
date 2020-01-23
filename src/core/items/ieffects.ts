@@ -794,9 +794,13 @@ export class ItemEffect implements IItemEffect {
     return new Promise((resolve, reject) => {
       iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
         if (val === '1' || val === '3') {
-          iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id);
+          iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id).then(() => {
+            resolve(this);
+          });
         } else if (val === '2' || val === '4') {
-          iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id);
+          iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id).then(() => {
+            resolve(this);
+          });
         } else {
           reject(Error('This method is not available if filemasking is not enabled.'));
         }
@@ -831,8 +835,8 @@ export class ItemEffect implements IItemEffect {
       if (!filterValue || Object.keys(Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
         reject('Filter non-existent');
       } else {
-        let configString = '';
-        let effectString = '';
+        var configString = '';
+        var effectString = '';
 
         if (filterValue === 'cool') {
           configString = `${intensityConfig}|1,0.0,0.0,0.0,0.0|2,0.53,0.95,0.95,1.0|3,0.0,0.0,0.1,1.0`;
@@ -851,14 +855,18 @@ export class ItemEffect implements IItemEffect {
         }
 
         const effect = `<effects>${effectString}</effects>`
-        iItem.set('prop:effects', effect, this._id);
+        iItem.set('prop:effects', effect, this._id).then(() => {
+          resolve(this);
+        });
       }
     });
   }
 
   removeFilter(): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
-      iItem.set('prop:effects', '<effects/>', this._id);
+      iItem.set('prop:effects', '<effects/>', this._id).then(() => {
+        resolve(this);
+      });
     });
   }
 
