@@ -11,6 +11,7 @@ export * from './core/channelmanager';
 export * from './core/languageinfo';
 export * from './core/scene';
 export * from './core/transition';
+export * from './core/filter';
 export * from './core/dll';
 export * from './core/extension';
 export * from './core/source/source';

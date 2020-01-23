@@ -17,6 +17,7 @@ import {Item} from './item';
 import {Source} from '../source/source'
 import {Scene} from '../scene';
 import {Transition} from '../transition';
+import {Filter} from '../filter';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'
@@ -685,6 +686,21 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getFilter getFilter} */
+  getFilter: () => Promise<Filter>;
+
+  /** See: {@link #core/IItemEffect#setFilter setFilter} */
+  setFilter: (value: any, config?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
+  removeFilter: () => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getFilterConfig getFilterConfig} */
+  getFilterConfig: () => Promise<Object>;
 }
 
 applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,

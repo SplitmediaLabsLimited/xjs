@@ -1047,7 +1047,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":51,"../internal/internal":55,"../internal/util/json":58,"../internal/util/version":62,"../internal/util/xml":63,"../system/audio":64,"../util/rectangle":78,"./environment":4,"./transition":50}],2:[function(_require,module,exports){
+},{"../internal/app":52,"../internal/internal":56,"../internal/util/json":59,"../internal/util/version":63,"../internal/util/xml":64,"../system/audio":65,"../util/rectangle":79,"./environment":4,"./transition":51}],2:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1216,7 +1216,7 @@ function _subscribeEventManager() {
     });
 }
 exports._subscribeEventManager = _subscribeEventManager;
-},{"../internal/eventmanager":52,"../internal/util/json":58,"../util/eventemitter":75,"./environment":4,"./streaminfo":48}],3:[function(_require,module,exports){
+},{"../internal/eventmanager":53,"../internal/util/json":59,"../util/eventemitter":76,"./environment":4,"./streaminfo":49}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1405,7 +1405,7 @@ window_1.default.Setdlldogrant = function (value) {
         oldSetdlldogrant(value);
     }
 };
-},{"../internal/internal":55,"../util/eventemitter":75,"../util/window":79}],4:[function(_require,module,exports){
+},{"../internal/internal":56,"../util/eventemitter":76,"../util/window":80}],4:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 var window_1 = _require('../util/window');
 /**
@@ -1465,7 +1465,7 @@ var Environment = (function () {
     return Environment;
 })();
 exports.Environment = Environment;
-},{"../internal/remote":57,"../util/window":79}],5:[function(_require,module,exports){
+},{"../internal/remote":58,"../util/window":80}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
@@ -1619,7 +1619,94 @@ window_1.default.Setid = function (id) {
         oldSetid(id);
     }
 };
-},{"../core/environment":4,"../internal/app":51,"../internal/internal":55,"../internal/remote":57,"../util/window":79}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":52,"../internal/internal":56,"../internal/remote":58,"../util/window":80}],6:[function(_require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+/**
+ * The Filter class represents a post-processing shader used within XSplit Broadcaster.
+ * This can be used to apply effects to videoitems.
+ *
+ * Simply use one of the available Filter objects such as Filter.BLUR or
+ * Filter.SKETCHPENCILSTROKE as the parameter to the `setFilter()` method of an Item instance
+ */
+var Filter = (function () {
+    function Filter(key) {
+        var value = Filter._filterMap[key];
+        if (typeof value !== 'undefined') {
+            this._key = key; // retain key so that NONE is readable
+            this._value = value;
+        }
+        else {
+            this._key = key; // retain key so that NONE is readable
+            this._value = key.toLowerCase();
+        }
+    }
+    /**
+     * Converts this transition object to the underlying string representation to be read by XSplit Broadcaster.
+     */
+    Filter.prototype.toString = function () {
+        return this._value;
+    };
+    /**
+     * Converts this transition object to a easily identifiable string such as 'NONE'.
+     */
+    Filter.prototype.toFilterKey = function () {
+        return this._key;
+    };
+    /**
+     * return: Promise<Filter[]>
+     *
+     * Get all available filters for use in videoitems
+     *
+     * ** MINIMUM XBC _requireMENT **
+     * _requires XBC v.3.9.1912.1002 and above
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * Filter.getFilters()
+     * .then(function(filters) {
+     *   for (var i = 0; i < filters.length; i++) {
+     *     console.log(filters[i].toString(); // Returns the value of the filter
+     *   }
+     * })
+     * ```
+     */
+    Filter.getFilters = function () {
+        return new Promise(function (resolve) {
+            // pending a core change,
+            // we should override hardcoded filter list from a listing from core
+            var filters = Object.keys(Filter._filterMap).map(function (key) { return new Filter(key); });
+            resolve(filters);
+        });
+    };
+    Filter._filterMap = {
+        NONE: 'none',
+        COOL: 'cool',
+        WARM: 'warm',
+        BLOOM: 'bloom',
+        MONOCHROME: 'monochrome',
+        INVERTCOLOR: 'invertcolor',
+        OLDMOVIE: 'oldmovie',
+        SKETCHPENCILSTROKE: 'sketchpencilstroke',
+        MAGNIFYSMOOTH: 'magnifysmooth',
+        BLUR: 'blur',
+        LUT: 'lut',
+    };
+    Filter.NONE = new Filter('NONE');
+    Filter.COOL = new Filter('COOL');
+    Filter.WARM = new Filter('WARM');
+    Filter.BLOOM = new Filter('BLOOM');
+    Filter.MONOCHROME = new Filter('MONOCHROME');
+    Filter.INVERTCOLOR = new Filter('INVERTCOLOR');
+    Filter.OLDMOVIE = new Filter('OLDMOVIE');
+    Filter.SKETCHPENCILSTROKE = new Filter('SKETCHPENCILSTROKE');
+    Filter.MAGNIFYSMOOTH = new Filter('MAGNIFYSMOOTH');
+    Filter.BLUR = new Filter('BLUR');
+    Filter.LUT = new Filter('LUT');
+    return Filter;
+})();
+exports.Filter = Filter;
+},{}],7:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1668,7 +1755,7 @@ var AudioItem = (function (_super) {
 })(item_1.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iaudiosource":32,"./item":17}],7:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iaudiosource":33,"./item":18}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1795,7 +1882,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [item_2.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, icamera_1.SourceCamera]);
-},{"../../internal/item":56,"../../internal/util/mixin":60,"../source/iaudio":31,"../source/icamera":33,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],8:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/mixin":61,"../source/iaudio":32,"../source/icamera":34,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],9:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1840,7 +1927,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iflash":35,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],9:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iflash":36,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],10:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1900,7 +1987,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igame_1.iSourceGame]);
-},{"../../internal/util/mixin":60,"../source/igame":36,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],10:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/igame":37,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1939,7 +2026,7 @@ var GenericItem = (function (_super) {
 exports.GenericItem = GenericItem;
 mixin_1.applyMixins(GenericItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":60,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],11:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],12:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2002,7 +2089,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iconfig":34,"../source/ihtml":37,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],12:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iconfig":35,"../source/ihtml":38,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2386,7 +2473,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":56,"../../util/color":74}],13:[function(_require,module,exports){
+},{"../../internal/item":57,"../../util/color":75}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2553,10 +2640,12 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":56,"../../util/color":74}],14:[function(_require,module,exports){
+},{"../../internal/item":57,"../../util/color":75}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
+var json_1 = _require('../../internal/util/json');
+var filter_1 = _require('../filter');
 /**
  *  Used by sources that implement the Effect interface.
  *  Check `getMaskEffect()`/`setMaskEffect()` method of
@@ -3097,10 +3186,14 @@ var ItemEffect = (function () {
         return new Promise(function (resolve, reject) {
             item_1.Item.get('prop:edgeeffectmaskmode', _this._id).then(function (val) {
                 if (val === '1' || val === '3') {
-                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '3' : '1', _this._id);
+                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '3' : '1', _this._id).then(function () {
+                        resolve(_this);
+                    });
                 }
                 else if (val === '2' || val === '4') {
-                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '4' : '2', _this._id);
+                    item_1.Item.set('prop:edgeeffectmaskmode', value ? '4' : '2', _this._id).then(function () {
+                        resolve(_this);
+                    });
                 }
                 else {
                     reject(Error('This method is not available if filemasking is not enabled.'));
@@ -3108,10 +3201,91 @@ var ItemEffect = (function () {
             });
         });
     };
+    ItemEffect.prototype.getFilter = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            item_1.Item.get('prop:effects', _this._id)
+                .then(function (val) {
+                try {
+                    var effectsJXON = json_1.JSON.parse(val);
+                    resolve(new filter_1.Filter(effectsJXON['children'][0]['id']));
+                }
+                catch (e) {
+                    resolve(filter_1.Filter.NONE);
+                }
+            });
+        });
+    };
+    ItemEffect.prototype.setFilter = function (value, config) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            config = config ? config : {};
+            var intensity = config['intensity'] ? config['intensity'] / 100 : 1;
+            var intensityConfig = "0," + intensity + ",0,0,0";
+            var filterValue = value instanceof filter_1.Filter ? value.toString() : value;
+            if (!filterValue || Object.keys(filter_1.Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
+                reject('Filter non-existent');
+            }
+            else {
+                var configString = '';
+                var effectString = '';
+                if (filterValue === 'cool') {
+                    configString = intensityConfig + "|1,0.0,0.0,0.0,0.0|2,0.53,0.95,0.95,1.0|3,0.0,0.0,0.1,1.0";
+                }
+                else if (filterValue === 'warm') {
+                    configString = intensityConfig + "|1,0.0,0.0,0.0,0.0|2,1,0.91,0.77,1.0|3,0.1,0.05,0,1.0";
+                }
+                else if (filterValue !== 'none') {
+                    configString = intensityConfig;
+                }
+                if (filterValue === 'lut') {
+                    var resourceFile = config['resourceFile'] ? config['resourceFile'] : '';
+                    var resourceString = "<resource file=\"" + resourceFile + "\" />";
+                    effectString = "<effect id=\"" + filterValue + "\" cfg=\"" + configString + "\">" + resourceString + "</effect>";
+                }
+                else {
+                    effectString = "<effect id=\"" + filterValue + "\" cfg=\"" + configString + "\" />";
+                }
+                var effect = "<effects>" + effectString + "</effects>";
+                item_1.Item.set('prop:effects', effect, _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    ItemEffect.prototype.removeFilter = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.set('prop:effects', '<effects/>', _this._id).then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    ItemEffect.prototype.getFilterConfig = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            item_1.Item.get('prop:effects', _this._id).then(function (val) {
+                var configObj = {};
+                try {
+                    var effectsJXON = json_1.JSON.parse(val);
+                    if (effectsJXON['children'][0]['cfg']) {
+                        var cfgArray = effectsJXON['children'][0]['cfg'].split(',');
+                        configObj['intensity'] = Number(cfgArray[1]) * 100;
+                    }
+                    if (effectsJXON['children'][0]['children'] && effectsJXON['children'][0]['children'][0]['file']) {
+                        configObj['resourceFile'] = effectsJXON['children'][0]['children'][0]['file'];
+                    }
+                }
+                catch (e) {
+                }
+                resolve(configObj);
+            });
+        });
+    };
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":56,"../../util/color":74}],15:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/json":59,"../../util/color":75,"../filter":6}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var scene_1 = _require('../scene');
@@ -3812,7 +3986,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":56,"../../util/rectangle":78,"../scene":24}],16:[function(_require,module,exports){
+},{"../../internal/item":57,"../../util/rectangle":79,"../scene":25}],17:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -3850,7 +4024,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":60,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],17:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4375,7 +4549,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":51,"../../internal/eventmanager":52,"../../internal/item":56,"../../internal/util/json":58,"../../internal/util/mixin":60,"../../internal/util/version":62,"../../internal/util/xml":63,"../../util/eventemitter":75,"../environment":4,"../scene":24,"../source/audio":25,"../source/camera":26,"../source/flash":28,"../source/game":29,"../source/html":30,"../source/image":38,"../source/isource":42,"../source/media":44,"../source/screen":45,"../source/source":46,"../source/videoplaylist":47,"./ilayout":15}],18:[function(_require,module,exports){
+},{"../../internal/app":52,"../../internal/eventmanager":53,"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/mixin":61,"../../internal/util/version":63,"../../internal/util/xml":64,"../../util/eventemitter":76,"../environment":4,"../scene":25,"../source/audio":26,"../source/camera":27,"../source/flash":29,"../source/game":30,"../source/html":31,"../source/image":39,"../source/isource":43,"../source/media":45,"../source/screen":46,"../source/source":47,"../source/videoplaylist":48,"./ilayout":16}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -4443,7 +4617,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":56,"../transition":50}],19:[function(_require,module,exports){
+},{"../../internal/item":57,"../transition":51}],20:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4486,7 +4660,7 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.SourcePlayback, iaudio_1.Audio, ieffects_1.ItemEffect, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/imedia":39,"../source/iplayback":40,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],20:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/imedia":40,"../source/iplayback":41,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],21:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4526,7 +4700,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":60,"../source/iscreen":41,"./ichroma":12,"./icolor":13,"./ieffects":14,"./ilayout":15,"./item":17,"./itransition":18}],21:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iscreen":42,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],22:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4583,7 +4757,7 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iconfig":34,"../source/iplayback":40,"../source/ivideoplaylist":43,"./ichroma":12,"./icolor":13,"./ilayout":15,"./item":17,"./itransition":18}],22:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iconfig":35,"../source/iplayback":41,"../source/ivideoplaylist":44,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":18,"./itransition":19}],23:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4659,7 +4833,7 @@ eventmanager_1.EventManager.subscribe(['LanguageChanged'], function (langObj) {
         LanguageInfo.emit(eventString, langObj['lang']);
     }
 });
-},{"../internal/eventmanager":52,"../util/eventemitter":75}],23:[function(_require,module,exports){
+},{"../internal/eventmanager":53,"../util/eventemitter":76}],24:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('./environment');
@@ -5066,7 +5240,7 @@ window_1.default.SetBroadcastChannelXml = function (channelXML) {
         oldSetBroadcastChannelXml(channelXML);
     }
 };
-},{"../internal/internal":55,"../internal/item":56,"../internal/remote":57,"../internal/util/json":58,"../internal/util/version":62,"../util/window":79,"./environment":4,"./extension":5,"./streaminfo":48}],24:[function(_require,module,exports){
+},{"../internal/internal":56,"../internal/item":57,"../internal/remote":58,"../internal/util/json":59,"../internal/util/version":63,"../util/window":80,"./environment":4,"./extension":5,"./streaminfo":49}],25:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -6773,7 +6947,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":51,"../internal/internal":55,"../internal/util/json":58,"../internal/util/version":62,"../internal/util/xml":63,"./environment":4,"./items/audio":6,"./items/camera":7,"./items/flash":8,"./items/game":9,"./items/genericitem":10,"./items/html":11,"./items/image":16,"./items/item":17,"./items/media":19,"./items/screen":20,"./items/videoplaylist":21,"./source/audio":25,"./source/camera":26,"./source/flash":28,"./source/game":29,"./source/html":30,"./source/image":38,"./source/isource":42,"./source/media":44,"./source/screen":45,"./source/source":46,"./source/videoplaylist":47}],25:[function(_require,module,exports){
+},{"../internal/app":52,"../internal/internal":56,"../internal/util/json":59,"../internal/util/version":63,"../internal/util/xml":64,"./environment":4,"./items/audio":7,"./items/camera":8,"./items/flash":9,"./items/game":10,"./items/genericitem":11,"./items/html":12,"./items/image":17,"./items/item":18,"./items/media":20,"./items/screen":21,"./items/videoplaylist":22,"./source/audio":26,"./source/camera":27,"./source/flash":29,"./source/game":30,"./source/html":31,"./source/image":39,"./source/isource":43,"./source/media":45,"./source/screen":46,"./source/source":47,"./source/videoplaylist":48}],26:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6824,7 +6998,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/iaudiosource":32,"../source/source":46}],26:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iaudiosource":33,"../source/source":47}],27:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6875,7 +7049,7 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [iaudio_1.Audio, icamera_1.SourceCamera]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/icamera":33,"../source/source":46}],27:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/icamera":34,"../source/source":47}],28:[function(_require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -6941,7 +7115,7 @@ var CuePoint = (function () {
     return CuePoint;
 })();
 exports.CuePoint = CuePoint;
-},{}],28:[function(_require,module,exports){
+},{}],29:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6992,7 +7166,7 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [iaudio_1.Audio, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/source":46,"./iflash":35}],29:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/source":47,"./iflash":36}],30:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7042,7 +7216,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [igame_1.iSourceGame]);
-},{"../../internal/util/mixin":60,"../source/source":46,"./igame":36}],30:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/source":47,"./igame":37}],31:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7094,7 +7268,7 @@ var HtmlSource = (function (_super) {
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurable, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"../source/iaudio":31,"../source/ihtml":37,"../source/source":46,"./iconfig":34}],31:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/ihtml":38,"../source/source":47,"./iconfig":35}],32:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -7244,7 +7418,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":56,"../../internal/util/logger":59}],32:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60}],33:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -7416,7 +7590,7 @@ var SourceAudio = (function () {
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":56,"../../internal/util/logger":59}],33:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60}],34:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../../util/rectangle');
 var item_1 = _require('../../internal/item');
@@ -7775,7 +7949,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":56,"../../internal/util/logger":59,"../../system/system":70,"../../util/rectangle":78}],34:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60,"../../system/system":71,"../../util/rectangle":79}],35:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -7900,7 +8074,7 @@ var SourceConfigurable = (function () {
     return SourceConfigurable;
 })();
 exports.SourceConfigurable = SourceConfigurable;
-},{"../../internal/global":53,"../../internal/internal":55,"../../internal/item":56,"../../internal/util/logger":59,"../environment":4}],35:[function(_require,module,exports){
+},{"../../internal/global":54,"../../internal/internal":56,"../../internal/item":57,"../../internal/util/logger":60,"../environment":4}],36:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
@@ -7988,7 +8162,7 @@ var SourceFlash = (function () {
     return SourceFlash;
 })();
 exports.SourceFlash = SourceFlash;
-},{"../../internal/item":56,"../../internal/util/logger":59,"../../util/rectangle":78}],36:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60,"../../util/rectangle":79}],37:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var environment_1 = _require('../environment');
@@ -8119,7 +8293,7 @@ var iSourceGame = (function () {
     return iSourceGame;
 })();
 exports.iSourceGame = iSourceGame;
-},{"../../internal/item":56,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/xml":63,"../environment":4,"./isource":42}],37:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/xml":64,"../environment":4,"./isource":43}],38:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../../internal/internal');
 var item_1 = _require('../../internal/item');
@@ -8755,7 +8929,7 @@ var iSourceHtml = (function () {
     return iSourceHtml;
 })();
 exports.iSourceHtml = iSourceHtml;
-},{"../../internal/internal":55,"../../internal/item":56,"../../internal/util/logger":59,"../../util/rectangle":78,"../environment":4}],38:[function(_require,module,exports){
+},{"../../internal/internal":56,"../../internal/item":57,"../../internal/util/logger":60,"../../util/rectangle":79,"../environment":4}],39:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8801,7 +8975,7 @@ var ImageSource = (function (_super) {
     return ImageSource;
 })(source_1.Source);
 exports.ImageSource = ImageSource;
-},{"../source/source":46}],39:[function(_require,module,exports){
+},{"../source/source":47}],40:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var json_1 = _require('../../internal/util/json');
@@ -8858,7 +9032,7 @@ var SourceMedia = (function () {
     return SourceMedia;
 })();
 exports.SourceMedia = SourceMedia;
-},{"../../internal/item":56,"../../internal/util/json":58,"../../internal/util/logger":59}],40:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60}],41:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var cuepoint_1 = _require('./cuepoint');
@@ -9294,7 +9468,7 @@ var SourcePlayback = (function () {
     return SourcePlayback;
 })();
 exports.SourcePlayback = SourcePlayback;
-},{"../../internal/item":56,"../../internal/util/logger":59,"./cuepoint":27}],41:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60,"./cuepoint":28}],42:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var xml_1 = _require('../../internal/util/xml');
@@ -9583,7 +9757,7 @@ var iSourceScreen = (function () {
     return iSourceScreen;
 })();
 exports.iSourceScreen = iSourceScreen;
-},{"../../internal/item":56,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/xml":63,"../../util/rectangle":78}],42:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/xml":64,"../../util/rectangle":79}],43:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var version_1 = _require('../../internal/util/version');
@@ -9900,7 +10074,7 @@ var iSource = (function () {
     return iSource;
 })();
 exports.iSource = iSource;
-},{"../../internal/item":56,"../../internal/util/json":58,"../../internal/util/logger":59,"../../internal/util/version":62,"../../internal/util/xml":63,"../scene":24}],43:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/version":63,"../../internal/util/xml":64,"../scene":25}],44:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var io_1 = _require('../../util/io');
@@ -10043,7 +10217,7 @@ var SourceVideoPlaylist = (function () {
     return SourceVideoPlaylist;
 })();
 exports.SourceVideoPlaylist = SourceVideoPlaylist;
-},{"../../internal/item":56,"../../internal/util/logger":59,"../../util/io":76}],44:[function(_require,module,exports){
+},{"../../internal/item":57,"../../internal/util/logger":60,"../../util/io":77}],45:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10100,7 +10274,7 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":60,"./iaudio":31,"./imedia":39,"./iplayback":40,"./source":46}],45:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"./iaudio":32,"./imedia":40,"./iplayback":41,"./source":47}],46:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -10150,7 +10324,7 @@ var ScreenSource = (function (_super) {
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
 mixin_1.applyMixins(ScreenSource, [iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":60,"../source/source":46,"./iscreen":41}],46:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"../source/source":47,"./iscreen":42}],47:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = _require('../../internal/util/mixin');
 var app_1 = _require('../../internal/app');
@@ -10383,7 +10557,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [isource_1.iSource]);
-},{"../../internal/app":51,"../../internal/item":56,"../../internal/util/mixin":60,"../../internal/util/version":62,"../environment":4,"../scene":24,"../source/isource":42}],47:[function(_require,module,exports){
+},{"../../internal/app":52,"../../internal/item":57,"../../internal/util/mixin":61,"../../internal/util/version":63,"../environment":4,"../scene":25,"../source/isource":43}],48:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10437,7 +10611,7 @@ var VideoPlaylistSource = (function (_super) {
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
 mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":60,"./iaudio":31,"./iconfig":34,"./iplayback":40,"./ivideoplaylist":43,"./source":46}],48:[function(_require,module,exports){
+},{"../../internal/util/mixin":61,"./iaudio":32,"./iconfig":35,"./iplayback":41,"./ivideoplaylist":44,"./source":47}],49:[function(_require,module,exports){
 var app_1 = _require('../internal/app');
 /**
  * The StreamInfo class provides methods to monitor the current active streams
@@ -10610,7 +10784,7 @@ var StreamInfo = (function () {
     return StreamInfo;
 })();
 exports.StreamInfo = StreamInfo;
-},{"../internal/app":51}],49:[function(_require,module,exports){
+},{"../internal/app":52}],50:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var scene_1 = _require('./scene');
 var app_1 = _require('../internal/app');
@@ -10678,7 +10852,7 @@ var Thumbnail = (function () {
     return Thumbnail;
 })();
 exports.Thumbnail = Thumbnail;
-},{"../internal/app":51,"./scene":24}],50:[function(_require,module,exports){
+},{"../internal/app":52,"./scene":25}],51:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -10826,7 +11000,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":51}],51:[function(_require,module,exports){
+},{"../internal/app":52}],52:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -10955,7 +11129,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":55,"./util/json":58}],52:[function(_require,module,exports){
+},{"./internal":56,"./util/json":59}],53:[function(_require,module,exports){
 var internal_1 = _require('./internal');
 var window_1 = _require('../util/window');
 var remote_1 = _require('./remote');
@@ -11148,7 +11322,7 @@ window_1.default.OnEvent = function (event, item) {
         oldOnEvent(event);
     }
 };
-},{"../util/window":79,"./internal":55,"./remote":57,"./util/version":62}],53:[function(_require,module,exports){
+},{"../util/window":80,"./internal":56,"./remote":58,"./util/version":63}],54:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -11177,7 +11351,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],54:[function(_require,module,exports){
+},{}],55:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var item_1 = _require('./item');
@@ -11314,7 +11488,7 @@ function init(config) {
     });
 }
 exports.default = init;
-},{"../core/environment":4,"../window/config":80,"./global":53,"./internal":55,"./item":56,"./util/version":62}],55:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":81,"./global":54,"./internal":56,"./item":57,"./util/version":63}],56:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 var remote_1 = _require('./remote');
 var window_1 = _require('../util/window');
@@ -11453,7 +11627,7 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
         asyncCallback(asyncID, result);
     }
 };
-},{"../util/window":79,"./remote":57}],56:[function(_require,module,exports){
+},{"../util/window":80,"./remote":58}],57:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -11756,7 +11930,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"../internal/app":51,"./internal":55,"./util/version":62}],57:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":52,"./internal":56,"./util/version":63}],58:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var ready_1 = _require('../util/ready');
@@ -12029,7 +12203,7 @@ var Remote = (function () {
     return Remote;
 })();
 exports.Remote = Remote;
-},{"../core/extension":5,"../core/output":23,"../util/eventemitter":75,"../util/io":76,"../util/ready":77,"./eventmanager":52,"./internal":55}],58:[function(_require,module,exports){
+},{"../core/extension":5,"../core/output":24,"../util/eventemitter":76,"../util/io":77,"../util/ready":78,"./eventmanager":53,"./internal":56}],59:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -12100,7 +12274,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":63}],59:[function(_require,module,exports){
+},{"./xml":64}],60:[function(_require,module,exports){
 var Logger = (function () {
     function Logger() {
     }
@@ -12134,7 +12308,7 @@ var Logger = (function () {
     return Logger;
 })();
 exports.Logger = Logger;
-},{}],60:[function(_require,module,exports){
+},{}],61:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -12146,7 +12320,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],61:[function(_require,module,exports){
+},{}],62:[function(_require,module,exports){
 /**
  * Check if splitmode is active
  */
@@ -12221,7 +12395,7 @@ function checkSplitmode(value) {
     });
 }
 exports.checkSplitmode = checkSplitmode;
-},{"../../core/scene":24,"../app":51}],62:[function(_require,module,exports){
+},{"../../core/scene":25,"../app":52}],63:[function(_require,module,exports){
 /*
 * List here the versions where we would limit a functionality.
 */
@@ -12286,7 +12460,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],63:[function(_require,module,exports){
+},{}],64:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -12341,7 +12515,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],64:[function(_require,module,exports){
+},{}],65:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12680,7 +12854,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":58,"../internal/util/xml":63}],65:[function(_require,module,exports){
+},{"../internal/util/json":59,"../internal/util/xml":64}],66:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12808,7 +12982,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/util/json":58,"../internal/util/splitmode":61,"../internal/util/xml":63,"../util/addtosceneutil":73}],66:[function(_require,module,exports){
+},{"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74}],67:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -12863,7 +13037,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/util/splitmode":61,"../util/addtosceneutil":73}],67:[function(_require,module,exports){
+},{"../internal/util/splitmode":62,"../util/addtosceneutil":74}],68:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
@@ -13223,7 +13397,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":4,"../internal/app":51,"../internal/util/json":58,"../internal/util/splitmode":61,"../internal/util/xml":63,"../util/addtosceneutil":73,"../util/rectangle":78}],68:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":52,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74,"../util/rectangle":79}],69:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -13326,7 +13500,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/util/json":58,"../internal/util/splitmode":61,"../internal/util/xml":63,"../util/addtosceneutil":73}],69:[function(_require,module,exports){
+},{"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74}],70:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var splitmode_1 = _require('../internal/util/splitmode');
@@ -13446,7 +13620,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../core/environment":4,"../internal/util/splitmode":61,"../util/addtosceneutil":73}],70:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/util/splitmode":62,"../util/addtosceneutil":74}],71:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -13815,7 +13989,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/dll":3,"../core/environment":4,"../internal/app":51,"../internal/internal":55,"./audio":64,"./camera":65,"./game":67,"./microphone":68,"./screen":69}],71:[function(_require,module,exports){
+},{"../core/dll":3,"../core/environment":4,"../internal/app":52,"../internal/internal":56,"./audio":65,"./camera":66,"./game":68,"./microphone":69,"./screen":70}],72:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -13892,7 +14066,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/util/splitmode":61,"../util/addtosceneutil":73}],72:[function(_require,module,exports){
+},{"../internal/util/splitmode":62,"../util/addtosceneutil":74}],73:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
@@ -14049,7 +14223,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../internal/app":51,"../internal/util/json":58,"../internal/util/splitmode":61,"../internal/util/xml":63,"../util/addtosceneutil":73,"../util/io":76}],73:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":52,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74,"../util/io":77}],74:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -14124,7 +14298,7 @@ function addToSceneHandler(cmd, args) {
     });
 }
 exports.addToSceneHandler = addToSceneHandler;
-},{"../internal/app":51,"../internal/global":53,"../internal/internal":55,"./eventemitter":75,"./window":79}],74:[function(_require,module,exports){
+},{"../internal/app":52,"../internal/global":54,"../internal/internal":56,"./eventemitter":76,"./window":80}],75:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -14218,7 +14392,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],75:[function(_require,module,exports){
+},{}],76:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 // simple event emitter
 var EventEmitter = (function () {
@@ -14342,7 +14516,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{"../internal/remote":57}],76:[function(_require,module,exports){
+},{"../internal/remote":58}],77:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('../core/environment');
@@ -14563,7 +14737,7 @@ window_1.default.OnGetVideoDurationFailed = function (file) {
         oldOnGetVideoDuration(file);
     }
 };
-},{"../core/environment":4,"../internal/internal":55,"../internal/remote":57,"./window":79}],77:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"./window":80}],78:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
@@ -14639,7 +14813,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":54,"../internal/remote":57,"../internal/util/version":62}],78:[function(_require,module,exports){
+},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":55,"../internal/remote":58,"../internal/util/version":63}],79:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -14856,7 +15030,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],79:[function(_require,module,exports){
+},{}],80:[function(_require,module,exports){
 (function (global){
 var win = {};
 if (typeof window !== 'undefined') {
@@ -14873,7 +15047,7 @@ else {
 }
 exports.default = win;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(_require,module,exports){
+},{}],81:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15060,7 +15234,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":4,"../internal/internal":55,"../internal/remote":57,"../util/eventemitter":75}],81:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"../util/eventemitter":76}],82:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -15419,7 +15593,7 @@ window_1.default.OnDialogResult = function (result) {
         oldOnDialogResult(result);
     }
 };
-},{"../core/environment":4,"../internal/internal":55,"../internal/remote":57,"../util/rectangle":78,"../util/window":79}],82:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"../util/rectangle":79,"../util/window":80}],83:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15865,7 +16039,7 @@ window_1.default.OnSceneLoad = function () {
         }
     });
 };
-},{"../core/environment":4,"../core/extension":5,"../core/items/item":17,"../core/scene":24,"../internal/app":51,"../internal/eventmanager":52,"../internal/internal":55,"../internal/util/json":58,"../internal/util/splitmode":61,"../internal/util/version":62,"../util/eventemitter":75,"../util/window":79}],83:[function(_require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":18,"../core/scene":25,"../internal/app":52,"../internal/eventmanager":53,"../internal/internal":56,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/version":63,"../util/eventemitter":76,"../util/window":80}],84:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16033,7 +16207,7 @@ window_1.default.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":4,"../internal/eventmanager":52,"../internal/global":53,"../internal/util/version":62,"../util/eventemitter":75,"../util/window":79}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":53,"../internal/global":54,"../internal/util/version":63,"../util/eventemitter":76,"../util/window":80}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -16049,6 +16223,7 @@ __export(_require('./core/channelmanager'));
 __export(_require('./core/languageinfo'));
 __export(_require('./core/scene'));
 __export(_require('./core/transition'));
+__export(_require('./core/filter'));
 __export(_require('./core/dll'));
 __export(_require('./core/extension'));
 __export(_require('./core/source/source'));
@@ -16103,7 +16278,7 @@ var internal_1 = _require('./internal/internal');
 exports.exec = internal_1.exec;
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/items/audio":6,"./core/items/camera":7,"./core/items/flash":8,"./core/items/game":9,"./core/items/html":11,"./core/items/ichroma":12,"./core/items/ieffects":14,"./core/items/image":16,"./core/items/item":17,"./core/items/media":19,"./core/items/screen":20,"./core/items/videoplaylist":21,"./core/languageinfo":22,"./core/output":23,"./core/scene":24,"./core/source/audio":25,"./core/source/camera":26,"./core/source/cuepoint":27,"./core/source/flash":28,"./core/source/game":29,"./core/source/html":30,"./core/source/image":38,"./core/source/iplayback":40,"./core/source/isource":42,"./core/source/media":44,"./core/source/screen":45,"./core/source/source":46,"./core/source/videoplaylist":47,"./core/streaminfo":48,"./core/thumbnail":49,"./core/transition":50,"./internal/internal":55,"./internal/remote":57,"./system/audio":64,"./system/camera":65,"./system/file":66,"./system/game":67,"./system/microphone":68,"./system/screen":69,"./system/system":70,"./system/url":71,"./system/videoplaylist":72,"./util/color":74,"./util/io":76,"./util/ready":77,"./util/rectangle":78,"./window/config":80,"./window/dialog":81,"./window/extension":82,"./window/source":83}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/html":12,"./core/items/ichroma":13,"./core/items/ieffects":15,"./core/items/image":17,"./core/items/item":18,"./core/items/media":20,"./core/items/screen":21,"./core/items/videoplaylist":22,"./core/languageinfo":23,"./core/output":24,"./core/scene":25,"./core/source/audio":26,"./core/source/camera":27,"./core/source/cuepoint":28,"./core/source/flash":29,"./core/source/game":30,"./core/source/html":31,"./core/source/image":39,"./core/source/iplayback":41,"./core/source/isource":43,"./core/source/media":45,"./core/source/screen":46,"./core/source/source":47,"./core/source/videoplaylist":48,"./core/streaminfo":49,"./core/thumbnail":50,"./core/transition":51,"./internal/internal":56,"./internal/remote":58,"./system/audio":65,"./system/camera":66,"./system/file":67,"./system/game":68,"./system/microphone":69,"./system/screen":70,"./system/system":71,"./system/url":72,"./system/videoplaylist":73,"./util/color":75,"./util/io":77,"./util/ready":78,"./util/rectangle":79,"./window/config":81,"./window/dialog":82,"./window/extension":83,"./window/source":84}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();
