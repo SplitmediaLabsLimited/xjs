@@ -20,16 +20,8 @@ import {
 } from '../../internal/util/version';
 
 import {iSource, ISource, ItemTypes} from '../source/isource';
-import {Source} from '../source/source'
-import {GameSource} from '../source/game';
-import {CameraSource} from '../source/camera';
-import {AudioSource} from '../source/audio';
-import {VideoPlaylistSource} from '../source/videoplaylist'
-import {HtmlSource} from '../source/html';
-import {FlashSource} from '../source/flash';
-import {ScreenSource} from '../source/screen';
-import {ImageSource} from '../source/image';
-import {MediaSource, MediaTypes} from '../source/media';
+import {Source} from '../source/source';
+import {SourceTypeResolve} from '../../util/sourcetyperesolve';
 
 /**
  * Used by items to determine the its view type.
@@ -487,39 +479,42 @@ export class Item extends Source implements IItemLayout, ISource {
       iItem.get('config', this._id)
       .then(config => {
         let item = JXON.parse(config);
-        let type = Number(item['type']);
-        if (type === ItemTypes.GAMESOURCE) {
-          resolve(new GameSource(item));
-        } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-          item['name'].indexOf('Video Playlist') === 0 &&
-          item['FilePlaylist'] !== '') {
-          resolve(new VideoPlaylistSource(item));
-        } else if (type === ItemTypes.HTML) {
-          resolve(new HtmlSource(item));
-        } else if (type === ItemTypes.SCREEN) {
-          resolve(new ScreenSource(item));
-        } else if (type === ItemTypes.BITMAP ||
-          type === ItemTypes.FILE &&
-          /\.gif$/.test(item['item'])) {
-          resolve(new ImageSource(item));
-        } else if (type === ItemTypes.FILE &&
-            /\.(gif|xbs)$/.test(item['item']) === false &&
-            /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-            new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
-          resolve(new MediaSource(item));
-        } else if (Number(item['type']) === ItemTypes.LIVE &&
-          item['item'].indexOf(
-            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-          resolve(new CameraSource(item));
-        } else if (Number(item['type']) === ItemTypes.LIVE &&
-          item['item'].indexOf(
-            '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-          resolve(new AudioSource(item));
-        } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
-          resolve(new FlashSource(item));
+        let srcType = SourceTypeResolve(item);
+        resolve(srcType);
+      }).catch(err => {
+        reject(err);
+      });
+    })
+  }
+
+  isChildItem(): Promise<boolean> {
+    return new Promise(resolve => {
+      Scene.searchScenesByItemId(this._id)
+      .then(scene => {
+        return scene.getSceneIndex();
+      }).then(sceneIndex => {
+        return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
+      }).then(groupID => {
+        resolve(groupID !== '' && groupID !== null);
+      });
+    })
+  }
+
+  getParentItem(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      Scene.searchScenesByItemId(this._id)
+      .then(scene => {
+        return scene.getSceneIndex();
+      }).then(sceneIndex => {
+        return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
+      }).then(groupID => {
+        if (groupID.trim() === '' || groupID === null) {
+          reject('Item is not a child item or non-existent');
         } else {
-          resolve(new Source(item));
+          return Scene.searchItemsById(groupID);
         }
+      }).then(groupItem => {
+        resolve(groupItem);
       }).catch(err => {
         reject(err);
       });

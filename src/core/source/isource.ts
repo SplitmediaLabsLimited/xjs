@@ -29,7 +29,12 @@ export enum ItemTypes {
   SCREEN,
   FLASHFILE,
   GAMESOURCE,
-  HTML
+  HTML,
+  THREEDS,
+  PPTFILE,
+  SCENE,
+  GROUP,
+  REPLAY
 }
 
 export interface ISource {

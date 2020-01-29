@@ -6,28 +6,9 @@ import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source} from './source/source';
-import {ItemTypes} from './source/isource';
-import {GameSource} from './source/game';
-import {CameraSource} from './source/camera';
-import {AudioSource} from './source/audio';
-import {VideoPlaylistSource} from './source/videoplaylist'
-import {HtmlSource} from './source/html';
-import {FlashSource} from './source/flash';
-import {ScreenSource} from './source/screen';
-import {ImageSource} from './source/image';
-import {MediaSource, MediaTypes} from './source/media';
-
 import {Item, ViewTypes} from './items/item';
-import {GameItem} from './items/game';
-import {CameraItem} from './items/camera';
-import {AudioItem} from './items/audio';
-import {VideoPlaylistItem} from './items/videoplaylist'
-import {HtmlItem} from './items/html';
-import {FlashItem} from './items/flash';
-import {ScreenItem} from './items/screen';
-import {ImageItem} from './items/image';
-import {MediaItem} from './items/media';
-import {GenericItem} from './items/genericitem';
+import {ItemTypeResolve} from '../util/itemtyperesolve';
+import {SourceTypeResolve} from '../util/sourcetyperesolve';
 
 import {
   minVersion,
@@ -981,39 +962,8 @@ export class Scene {
         // type checking to return correct Source subtype
         let typePromise = index => new Promise(typeResolve => {
           let source = jsonArr[index];
-          let type = Number(source['type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameSource(source));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            source['name'].indexOf('Video Playlist') === 0 &&
-            source['FilePlaylist'] !== ''){
-            typeResolve(new VideoPlaylistSource(source));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlSource(source));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenSource(source));
-          } else if (type === ItemTypes.BITMAP ||
-              type === ItemTypes.FILE &&
-              /\.gif$/.test(source['item'])) {
-            typeResolve(new ImageSource(source));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
-            typeResolve(new MediaSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioSource(source));
-          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashSource(source));
-          } else {
-              typeResolve(new Source(source));
-          }
+          let srcType = SourceTypeResolve(source);
+          typeResolve(srcType);
         });
 
         if (Array.isArray(jsonArr)) {
@@ -1209,39 +1159,37 @@ export class Scene {
         // type checking to return correct Source subtype
         let typePromise = index => new Promise(typeResolve => {
           let item = jsonArr[index];
-          let type = Number(item['type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameItem(item));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            item['name'].indexOf('Video Playlist') === 0 &&
-            item['FilePlaylist'] !== '') {
-            typeResolve(new VideoPlaylistItem(item));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlItem(item));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenItem(item));
-          } else if (type === ItemTypes.BITMAP ||
-            type === ItemTypes.FILE &&
-            /\.gif$/.test(item['item'])) {
-            typeResolve(new ImageItem(item));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(item['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-              new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
-            typeResolve(new MediaItem(item));
-          } else if (Number(item['type']) === ItemTypes.LIVE &&
-            item['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraItem(item));
-          } else if (Number(item['type']) === ItemTypes.LIVE &&
-            item['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioItem(item));
-          } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashItem(item));
-          } else {
-            typeResolve(new GenericItem(item));
+          let itemType = ItemTypeResolve(item);
+          typeResolve(itemType);
+        });
+
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneId'] = this._id;
+            promiseArray.push(typePromise(i));
           }
+        }
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results);
+        });
+      }).catch(err => {
+        reject(err)
+      });
+    });
+  }
+
+  getTopLevelItems(): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.getAsList('sceneconfig:' + _sceneId).then(jsonArr => {
+        var promiseArray: Promise<Source>[] = [];
+
+        // type checking to return correct Source subtype
+        let typePromise = index => new Promise(typeResolve => {
+          let item = jsonArr[index];
+          let itemType = ItemTypeResolve(item);
+          typeResolve(itemType);
         });
 
         if (Array.isArray(jsonArr)) {

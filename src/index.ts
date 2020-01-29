@@ -34,6 +34,7 @@ export * from './core/items/flash';
 export * from './core/items/screen';
 export * from './core/items/image';
 export * from './core/items/media';
+export * from './core/items/group';
 export * from './core/items/videoplaylist';
 
 export {MaskEffect} from './core/items/ieffects';
@@ -51,7 +52,8 @@ export * from './system/microphone';
 export * from './system/url';
 export * from './system/screen';
 export * from './system/file';
-export * from './system/videoplaylist'
+export * from './system/videoplaylist';
+export * from './system/group';
 
 export * from './window/config';
 export * from './window/source';
