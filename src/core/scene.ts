@@ -1179,6 +1179,20 @@ export class Scene {
     });
   }
 
+  /**
+   * return: Promise<Item[]>
+   *
+   * Gets all non-child Items (not belonging to a group) in a specific scene
+   * See also: {@link #core/Item Core/Item}
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTopLevelItems().then(function(items) {
+   *  // do something to each item in items array
+   * });
+   * ```
+   */
   getTopLevelItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;

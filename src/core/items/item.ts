@@ -487,6 +487,19 @@ export class Item extends Source implements IItemLayout, ISource {
     })
   }
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if item is part of a group
+   *
+   * #### Usage
+   * ```javascript
+   * item.isChildItem()
+   * .then(function(isChild) {
+   *   console.log(isChild);
+   * });
+   * ```
+   */
   isChildItem(): Promise<boolean> {
     return new Promise(resolve => {
       Scene.searchScenesByItemId(this._id)
@@ -500,7 +513,21 @@ export class Item extends Source implements IItemLayout, ISource {
     })
   }
 
-  getParentItem(): Promise<boolean> {
+  /**
+   * return: Promise<boolean>
+   *
+   * Get the GroupItem that contains this item.
+   * This rejects if item is not a child item or non-existent
+   *
+   * #### Usage
+   * ```javascript
+   * item.getParentItem()
+   * .then(function(parentItem) {
+   *   console.log(parentItem);
+   * });
+   * ```
+   */
+  getParentItem(): Promise<Item> {
     return new Promise((resolve, reject) => {
       Scene.searchScenesByItemId(this._id)
       .then(scene => {
