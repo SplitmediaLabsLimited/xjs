@@ -20,7 +20,6 @@ const findItem = (presetArray, id) => {
     }
     return result !== undefined;
   });
-  const groupItem = itemViaID
   return itemViaID;
 }
 
@@ -155,7 +154,7 @@ export class ItemGroup implements IItemGroup {
       .then(jsonArray => {
         // get group item here
         const groupItem = findItem(jsonArray, this._id);
-        const children = (groupItem.children[0].children) ? groupItem.children[0].children : [];
+        const children = (groupItem && groupItem.children[0].children) ? groupItem.children[0].children : [];
         const childItems = children.map(item => ItemTypeResolve(item));
         resolve(childItems);
       }).catch(err => {
