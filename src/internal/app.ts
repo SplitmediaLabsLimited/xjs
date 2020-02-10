@@ -107,9 +107,9 @@ export class App {
   }
 
   /** Calls an application method asynchronously */
-  static callFunc(func: string, arg: string): Promise<string> {
+  static callFunc(func: string, ...args: string[]): Promise<string> {
     return new Promise(resolve => {
-      exec('AppCallFuncAsync', func, arg, (ret) => {
+      exec('AppCallFuncAsync', func, ...args, (ret) => {
           resolve(ret);
       });
     });

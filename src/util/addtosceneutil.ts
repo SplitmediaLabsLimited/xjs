@@ -40,7 +40,7 @@ export function guid(a: any): string {
     : ('' + 1e7 + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, guid);
 }
 
-export function addToSceneHandler(cmd: string, args: any): Promise<any> {
+export function addToSceneHandler(cmd: string, ...args: string[]): Promise<any> {
   return new Promise((resolve, reject) => {
     const eventId = 'EVENT-XJS-CREATE-' + guid(null) + '-' + Date.now();
     if (Global.isListenToItemAdd()) {
@@ -53,7 +53,7 @@ export function addToSceneHandler(cmd: string, args: any): Promise<any> {
     }
     //actual creation of item
     iApp
-      .callFunc('e:' + eventId + '|' + cmd, args)
+      .callFunc('e:' + eventId + '|' + cmd, ...args)
       .then(() => {
         if (!Global.isListenToItemAdd()) resolve(true);
       })

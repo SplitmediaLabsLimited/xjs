@@ -10,7 +10,7 @@ import {Scene} from '../../core/scene';
  *
  * Returns splitmode value
  */
-export function splitMode() {
+export function splitMode(): Promise<number> {
   return new Promise(resolve => {
     iApp.getGlobalProperty('splitmode').then(mode => {
       resolve(mode === '1' ? 1 : 0)
@@ -27,15 +27,15 @@ export function checkSplitmode(value?: number | Scene): any {
   return new Promise((resolve,reject) => {
     scenePromise = new Promise(sceneResolve => {
       splitMode().then(res => {
-      if (res === 1 && !value) {
-        Scene.getActiveScene().then(val => {
-          value = val
+        if (res === 1 && !value) {
+          Scene.getActiveScene().then(val => {
+            value = val
+            sceneResolve(value)
+          })
+        } else {
           sceneResolve(value)
-        })
-      } else {
-        sceneResolve(value)
-      }
-    })
+        }
+      })
     })
 
     scenePromise.then(val => {
