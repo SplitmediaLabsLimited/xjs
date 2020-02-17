@@ -9,6 +9,7 @@ import {Source} from './source/source';
 import {Item, ViewTypes} from './items/item';
 import {ItemTypeResolve} from '../util/itemtyperesolve';
 import {SourceTypeResolve} from '../util/sourcetyperesolve';
+import {Transition} from './transition';
 
 import {
   minVersion,
@@ -1130,6 +1131,139 @@ export class Scene {
       } else {
         let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
         iApp.set('scenename:' + _sceneId, name).then(value => {
+          resolve(value);
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the transition override of this scene object.
+   * Transition overrides take priority over the more generic one from App.GetTransition
+   * See also: {@link #core/Transition Core/Transition} and {@link #core/App#getTransition getTransition}
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionOverride().then(function(transition) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionOverride(): Promise<Transition> {
+    return new Promise(resolve => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.get('scenetransitionid:' + _sceneId).then(val => {
+        if (val === '') { // NONE
+          resolve(Transition.NONE);
+        } else {
+          let currTransition = Transition[val.toUpperCase()];
+          if (typeof currTransition !== 'undefined') {
+            resolve(currTransition);
+          } else {
+            Transition.getSceneTransitions().then(transitions => {
+              let inTransition = false;
+              let transitionObj;
+              let i;
+
+              for (i = 0; i < transitions.length; i++) {
+                transitionObj = transitions[i];
+                if (transitionObj.toString() === val) {
+                  inTransition = true;
+                  break;
+                }
+              }
+              if (inTransition) {
+                resolve(transitionObj);
+              } else {
+                resolve(new Transition(val));
+              }
+            }).catch(err => {
+              resolve(new Transition(val));
+            });
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * param: (value: string)
+   * Set the transition override of this scene object.
+   * Transition overrides take priority over the more generic one from App.GetTransition
+   * See also: {@link #core/Transition Core/Transition} and {@link #core/App#setTransition setTransition}
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionOverride('xjs.Transition.CLOCK');
+   * ```
+   */
+  setTransitionOverride(value: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+        iApp.set('scenetransitionid:' + _sceneId, value instanceof Transition ? value.toString() : value)
+        .then(value => {
+          resolve(value);
+        }).catch(err => {
+          reject(Error('Invalid parameter. Only Transition objects or transition strings are allowed.'))
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the transition time override of this scene object.
+   * The scene transition time override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionTime().then(function(time) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionTime(): Promise<string> {
+    return new Promise(resolve => {
+      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+      iApp.get('scenetransitiontime:' + _sceneId).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  /**
+   * param: (value: string)
+   *
+   * Set the transition time override of this scene object.
+   * The scene transition time override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionTime(1000);
+   * ```
+   */
+  setTransitionTime(time: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
+        iApp.set('scenetransitiontime:' + _sceneId, String(time)).then(value => {
           resolve(value);
         });
       }
