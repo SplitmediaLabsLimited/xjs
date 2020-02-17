@@ -25,6 +25,7 @@ export * from './core/source/image';
 export * from './core/source/media';
 export * from './core/source/videoplaylist';
 export * from './core/source/replay';
+export * from './core/source/scenesource';
 
 export * from './core/items/item';
 export * from './core/items/camera';

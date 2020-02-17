@@ -70,7 +70,7 @@ export class Source implements ISource{
   protected _value: any;
   protected _name: string;
   protected _cname: string;
-  protected _sceneId: number;
+  protected _sceneId: string;
   protected _keepLoaded: boolean;
 
   protected _xmlparams: {};

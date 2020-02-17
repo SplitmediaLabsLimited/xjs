@@ -8,6 +8,7 @@ import {FlashItem} from '../core/items/flash';
 import {ScreenItem} from '../core/items/screen';
 import {ImageItem} from '../core/items/image';
 import {MediaItem} from '../core/items/media';
+import {SceneItem} from '../core/items/scene';
 import {GenericItem} from '../core/items/genericitem';
 import {GroupItem} from '../core/items/group';
 import {ReplayItem} from '../core/items/replay';
@@ -46,6 +47,8 @@ export function ItemTypeResolve(item: Object): any {
     itemType = new AudioItem(item);
   } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
     itemType = new FlashItem(item);
+  } else if (Number(item['type']) === ItemTypes.SCENE || Number(item['type']) === ItemTypes.VIEW) {
+    itemType = new SceneItem(item);
   } else if (Number(item['type']) === ItemTypes.GROUP) {
     itemType = new GroupItem(item);
   } else if (Number(item['type']) === ItemTypes.REPLAY) {
