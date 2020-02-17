@@ -5,9 +5,21 @@ import {XML} from '../../internal/util/xml';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceScene {
-
+  /**
+   * return: Promise<Scene>
+   *
+   * Gets the scene that is being displayed by the source
+   */
   getScene(): Promise<Scene> 
 
+  /**
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<SourceScene>
+   * ```
+   *
+   * Sets the scene to be displayed displayed by the source
+   */
   setScene(scene?: number | Scene): Promise<SourceScene>
 }
 

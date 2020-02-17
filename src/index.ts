@@ -38,6 +38,7 @@ export * from './core/items/image';
 export * from './core/items/media';
 export * from './core/items/group';
 export * from './core/items/replay';
+export * from './core/items/scene';
 export * from './core/items/videoplaylist';
 
 export {MaskEffect} from './core/items/ieffects';

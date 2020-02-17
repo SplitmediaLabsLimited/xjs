@@ -1152,6 +1152,20 @@ export class Scene {
     return Scene._liveScene;
   }
 
+  /**
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<any>
+   * ```
+   *
+   * Adds this scene as a source to the current scene by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
+   */
   addAsSource(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
