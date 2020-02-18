@@ -5007,19 +5007,15 @@ var Output = (function () {
     Output.prototype.getDisplayName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            if (_this._name === 'XBC_NDIStream') {
-                resolve(_this._name);
-            }
-            else {
-                Output._getBroadcastChannels(Output._id, _this._name).then(function (channelJXON) {
-                    resolve(channelJXON['displayName']
-                        .replace(/&apos;/g, "'")
-                        .replace(/&quot;/g, '"')
-                        .replace(/&gt;/g, '>')
-                        .replace(/&lt;/g, '<')
-                        .replace(/&amp;/g, '&'));
-                });
-            }
+            Output._getBroadcastChannels(Output._id, _this._name).then(function (channelJXON) {
+                channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName']
+                    .replace(/&apos;/g, "'")
+                    .replace(/&quot;/g, '"')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&amp;/g, '&') : _this._name;
+                resolve(channelJXON['displayName']);
+            });
         });
     };
     /**
@@ -5182,7 +5178,7 @@ var Output = (function () {
                 }
                 Output._proxyCallback[name ? callbackName : Output._id] = callback;
                 name ?
-                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', '0', name, window_1.default.SetBroadcastChannelXml) :
+                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', function (channelXML) { window_1.default.SetBroadcastChannelXml(channelXML, name); }) :
                     internal_1.exec('CallHostFunc', 'getBroadcastChannelList', window_1.default.SetBroadcastChannelList);
             }
             else {
@@ -5191,7 +5187,7 @@ var Output = (function () {
                 }
                 Output._callback[name ? callbackName : Output._id] = ({ resolve: resolve });
                 name ?
-                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', window_1.default.SetBroadcastChannelXml) :
+                    internal_1.exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', function (channelXML) { window_1.default.SetBroadcastChannelXml(channelXML, name); }) :
                     internal_1.exec('CallHostFunc', 'getBroadcastChannelList', window_1.default.SetBroadcastChannelList);
             }
         });
@@ -5222,8 +5218,10 @@ window_1.default.SetBroadcastChannelList = function (channels) {
     }
 };
 var oldSetBroadcastChannelXml = window_1.default.SetBroadcastChannelXml;
-window_1.default.SetBroadcastChannelXml = function (channelXML) {
+window_1.default.SetBroadcastChannelXml = function (channelXML, name) {
     var channelJXON = json_1.JSON.parse(channelXML);
+    channelJXON['name'] = channelJXON['name'] ? channelJXON['name'] : name;
+    channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName'] : name;
     channelJXON['name'] = channelJXON['name'].replace(/&apos;/g, "'")
         .replace(/&quot;/g, '"')
         .replace(/&gt;/g, '>')
