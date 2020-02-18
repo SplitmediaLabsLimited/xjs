@@ -167,19 +167,16 @@ export class Output {
    *  Gets the name of the Output as displayed in the Outputs menu.
    */
   getDisplayName(): Promise<string> {
-    return new Promise(resolve => {
-      if (this._name === 'XBC_NDIStream') {
-        resolve(this._name)
-      } else {
-        Output._getBroadcastChannels(Output._id, this._name).then(channelJXON => {
-          resolve(channelJXON['displayName']
-            .replace(/&apos;/g, "'")
-            .replace(/&quot;/g, '"')
-            .replace(/&gt;/g, '>')
-            .replace(/&lt;/g, '<')
-            .replace(/&amp;/g, '&'));
-        });
-      }
+    return new Promise(resolve => {      
+      Output._getBroadcastChannels(Output._id, this._name).then(channelJXON => {
+        channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName']            
+          .replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&') : this._name;
+        resolve(channelJXON['displayName']);
+      });      
     });
   }
 
@@ -331,7 +328,7 @@ export class Output {
 
         Output._proxyCallback[name ? callbackName : Output._id] = callback;
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', '0', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', channelXML => { window.SetBroadcastChannelXml(channelXML, name); }) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       } else {
         if (Output._callback[name ? callbackName : Output._id] === undefined){
@@ -339,7 +336,7 @@ export class Output {
         }
         Output._callback[name ? callbackName : Output._id] = ({resolve});
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', channelXML => { window.SetBroadcastChannelXml(channelXML, name); }) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       }
     })
@@ -366,9 +363,11 @@ window.SetBroadcastChannelList = function(channels) {
   }
 }
 
-const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
-window.SetBroadcastChannelXml = function(channelXML) {
-  const channelJXON = JXON.parse(channelXML);
+const oldSetBroadcastChannelXml = window.SetBroadcastChannelXml;
+window.SetBroadcastChannelXml = function(channelXML, name) { 
+  const channelJXON = JXON.parse(channelXML); 
+  channelJXON['name'] = channelJXON['name'] ? channelJXON['name'] : name;
+  channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName'] : name;
   channelJXON['name'] = channelJXON['name'].replace(/&apos;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&gt;/g, '>')
