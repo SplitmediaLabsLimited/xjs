@@ -62,7 +62,7 @@ export class SourceScene implements ISourceScene {
   getScene(): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getURL', true)
+        Logger.warn('sourceWarning', 'getScene', true)
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId, this._id,
