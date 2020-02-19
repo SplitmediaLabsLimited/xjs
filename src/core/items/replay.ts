@@ -26,49 +26,59 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   //Shared with Source
 
   /**
-   * See: {@link #core/ReplaySource#getChannel getChannel}
+   * See: {@link #core/ISourceReplay#getChannel getChannel}
    */
   getChannel: () => Promise<string>
 
   /**
-   * See: {@link #core/ReplaySource#setChannel setChannel}
+   * See: {@link #core/ISourceReplay#setChannel setChannel}
    */
   setChannel: (channel: string) => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ReplaySource#getHotkey getHotkey}
+   * See: {@link #core/ISourceReplay#getHotkey getHotkey}
    */
   getHotkey: () => Promise<number>
 
   /**
-   * See: {@link #core/ReplaySource#setHotkey setHotkey}
+   * See: {@link #core/ISourceReplay#setHotkey setHotkey}
    */
   setHotkey: (hotkey: number) => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ReplaySource#getReplaytime getReplaytime}
+   * See: {@link #core/ISourceReplay#getReplaytime getReplaytime}
    */
   getReplaytime: () => Promise<number>
 
   /**
-   * See: {@link #core/ReplaySource#setReplaytime setReplaytime}
+   * See: {@link #core/ISourceReplay#setReplaytime setReplaytime}
    */
   setReplaytime: (buffer: number) => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ReplaySource#startReplay startReplay}
+   * See: {@link #core/ISourceReplay#startReplay startReplay}
    */
   startReplay: () => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ReplaySource#stopReplay stopReplay}
+   * See: {@link #core/ISourceReplay#stopReplay stopReplay}
    */
   stopReplay: () => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ReplaySource#getReplayState getReplayState}
+   * See: {@link #core/ISourceReplay#getReplayState getReplayState}
    */
   getReplayState: () => Promise<number>
+
+  /**
+   * See: {@link #core/ISourceReplay#isAutostartOnSceneLoad isAutostartOnSceneLoad}
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+
+  /**
+   * See: {@link #core/ISourceReplay#setAutostartOnSceneLoad setAutostartOnSceneLoad}
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<ISourceReplay>;  
 
   // ItemLayout
 

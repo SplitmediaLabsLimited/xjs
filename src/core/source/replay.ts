@@ -118,6 +118,24 @@ export class ReplaySource extends Source implements IAudio, ISourceReplay {
    */
   getReplayState: () => Promise<number>
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether this source is set to start playback when the application
+   * switches to this source's scene.
+   */
+  isAutostartOnSceneLoad: () => Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Specifies whether this source is set to start playback when the application
+   * switches to this source's scene.
+   *
+   * *Chainable.*
+   */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<ISourceReplay>;
+
   // ItemAudio
 
   /** See: {@link #core/IAudio#getVolume getVolume} */

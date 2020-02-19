@@ -86,6 +86,24 @@ export interface ISourceReplay {
    * -2 - stream exists but cannot be tied to a replay
    */
   getReplayState(): Promise<number>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks whether this source is set to start playback when the application
+   * switches to this source's scene.
+   */
+  isAutostartOnSceneLoad(): Promise<boolean>;
+
+  /**
+   * param: (value: boolean)
+   *
+   * Specifies whether this source is set to start playback when the application
+   * switches to this source's scene.
+   *
+   * *Chainable.*
+   */
+  setAutostartOnSceneLoad(value: boolean): Promise<ISourceReplay>;
 }
 
 export class SourceReplay implements ISourceReplay {
@@ -263,5 +281,36 @@ export class SourceReplay implements ISourceReplay {
       .then(activeState => resolve(Number(activeState)))
       .catch(err => reject(err));
     })
+  }
+
+
+  isAutostartOnSceneLoad(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isAutostartOnSceneLoad',  true)
+        this._checkPromise = iItem.get('prop:StartOnLoad', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:StartOnLoad', this._srcId,
+          this._id, this._updateId.bind(this).bind(this))
+      }
+      this._checkPromise.then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  setAutostartOnSceneLoad(value: boolean): Promise<SourceReplay> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true)
+        this._checkPromise = iItem.set('prop:StartOnLoad', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:StartOnLoad', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
+      });
+    });
   }
 }
