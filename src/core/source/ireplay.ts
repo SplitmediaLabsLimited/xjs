@@ -7,24 +7,85 @@ import {XML} from '../../internal/util/xml';
 import {Logger} from '../../internal/util/logger';
 
 export interface ISourceReplay {
+  /**
+   * return: Promise<string>
+   *
+   * Gets the name of the stream/channel tied to the replay.
+   */
+  getChannel(): Promise<string> 
 
-  getChannelName(): Promise<string> 
+  /**
+   * param: (channel: string)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the stream/channel tied to the replay via its name.
+   */
+  setChannel(channel: string): Promise<ISourceReplay>
 
-  setChannelName(channel: string): Promise<ISourceReplay>
-
+  /**
+   * return: Promise<number>
+   *
+   * Gets the hotkey, in numerical value, used to toggle start/stop of the replay.
+   *
+   * See conversion from keycode: {@link #system/Replay Replay Class}
+   */
   getHotkey(): Promise<number> 
 
+  /**
+   * param: (hotkey: number)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the hotkey, in numerical value, used to toggle start/stop of the replay.
+   *
+   * See conversion from keycode: {@link #system/Replay Replay Class}
+   */
   setHotkey(hotkey: number): Promise<ISourceReplay>
 
+  /**
+   * return: Promise<number>
+   *
+   * Gets the duration, or buffer time for the replay
+   */
   getReplaytime(): Promise<number> 
 
+  /**
+   * param: (time: number)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the duration, or buffer time for the replay
+   */
   setReplaytime(buffer: number): Promise<ISourceReplay>
 
+  /**
+   * return: Promise<ISourceReplay>
+   *
+   * Start playing of the buffered replay
+   */
   startReplay(): Promise<ISourceReplay>
 
+  /**
+   * return: Promise<ISourceReplay>
+   *
+   * Stop playing of the buffered replay
+   */
   stopReplay(): Promise<ISourceReplay>
 
-  getReplayState(): Promise<string>
+  /**
+   * return: Promise<number>
+   *
+   * Gets the replay state, may return any of the following:
+   * 0 - playing
+   * 1 - not playing
+   * -1 - no stream exists
+   * -2 - stream exists but cannot be tied to a replay
+   */
+  getReplayState(): Promise<number>
 }
 
 export class SourceReplay implements ISourceReplay {
@@ -39,7 +100,7 @@ export class SourceReplay implements ISourceReplay {
     this._sceneId = sceneId;
   }
 
-  getChannelName(): Promise<string> {
+  getChannel(): Promise<string> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'getChannelName', true)
@@ -55,7 +116,7 @@ export class SourceReplay implements ISourceReplay {
     })
   }
 
-  setChannelName(channel: string): Promise<SourceReplay> {
+  setChannel(channel: string): Promise<SourceReplay> {
     return new Promise((resolve, reject) => {
       if (typeof channel === 'string') {
         if(this._isItemCall){
@@ -189,7 +250,7 @@ export class SourceReplay implements ISourceReplay {
     })
   }
 
-  getReplayState(): Promise<string> {
+  getReplayState(): Promise<number> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'getReplayState', true)
@@ -199,7 +260,7 @@ export class SourceReplay implements ISourceReplay {
           this._updateId.bind(this))
       }
       this._checkPromise
-      .then(activeState => resolve(activeState))
+      .then(activeState => resolve(Number(activeState)))
       .catch(err => reject(err));
     })
   }

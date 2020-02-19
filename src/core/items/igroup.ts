@@ -7,9 +7,6 @@ import {Scene} from '../../core/scene';
 
 import {Item} from './item';
 
-// import {Scene} from '../scene';
-// import {Rectangle} from '../../util/rectangle';
-
 const findItem = (presetArray, id) => {
   let itemViaID = undefined;
   presetArray.find(item => {

@@ -5,25 +5,118 @@ import {Source} from '../source/source';
 import {IAudio, Audio} from '../source/iaudio';
 import {ISourceReplay, SourceReplay} from './ireplay';
 
+/**
+ * The ReplaySource class represents the sources of the replay items that
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
+ *
+ * Each item is represented by the ReplayItem class.
+ * See: {@link #core/ReplayItem Core/ReplayItem}
+ *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.ReplaySource) {
+ *         // Manipulate your game source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `ReplaySource`
+ * instance.
+ */
 export class ReplaySource extends Source implements IAudio, ISourceReplay {
   //Shared with ReplayItem
-  getChannelName: () => Promise<string>
 
-  setChannelName: (channel: string) => Promise<ISourceReplay>
+  /**
+   * return: Promise<string>
+   * 
+   * Gets the name of the stream/channel tied to the replay.
+   */ 
+  getChannel: () => Promise<string>
 
+  /**
+   * param: (channel: string)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the stream/channel tied to the replay via its name.
+   */
+  setChannel: (channel: string) => Promise<ISourceReplay>
+
+  /**
+   * return: Promise<number>
+   *
+   * Gets the hotkey, in numerical value, used to toggle start/stop of the replay.
+   *
+   * See conversion from keycode: {@link #system/Replay Replay Class}
+   */
   getHotkey: () => Promise<number>
 
+  /**
+   * param: (hotkey: number)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the hotkey, in numerical value, used to toggle start/stop of the replay.
+   *
+   * See conversion from keycode: {@link #system/Replay Replay Class}
+   */
   setHotkey: (hotkey: number) => Promise<ISourceReplay>
 
+  /**
+   * return: Promise<number>
+   *
+   * Gets the duration, or buffer time for the replay
+   */
   getReplaytime: () => Promise<number>
 
+  /**
+   * param: (time: number)
+   * ```
+   * return: Promise<ISourceReplay>
+   * ```
+   *
+   * Sets the duration, or buffer time for the replay
+   */
   setReplaytime: (buffer: number) => Promise<ISourceReplay>
 
+  /**
+   * return: Promise<ISourceReplay>
+   *
+   * Start playing of the buffered replay
+   */
   startReplay: () => Promise<ISourceReplay>
 
+  /**
+   * return: Promise<ISourceReplay>
+   *
+   * Stop playing of the buffered replay
+   */
   stopReplay: () => Promise<ISourceReplay>
 
-  getReplayState: () => Promise<string>
+  /**
+   * return: Promise<number>
+   *
+   * Gets the replay state, may return any of the following:
+   * 0 - playing
+   * 1 - not playing
+   * -1 - no stream exists
+   * -2 - stream exists but cannot be tied to a replay
+   */
+  getReplayState: () => Promise<number>
 
   // ItemAudio
 

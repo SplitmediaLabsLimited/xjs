@@ -25,23 +25,50 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
 
   //Shared with Source
 
-  getChannelName: () => Promise<string>
+  /**
+   * See: {@link #core/ReplaySource#getChannel getChannel}
+   */
+  getChannel: () => Promise<string>
 
-  setChannelName: (channel: string) => Promise<ISourceReplay>
+  /**
+   * See: {@link #core/ReplaySource#setChannel setChannel}
+   */
+  setChannel: (channel: string) => Promise<ISourceReplay>
 
+  /**
+   * See: {@link #core/ReplaySource#getHotkey getHotkey}
+   */
   getHotkey: () => Promise<number>
 
+  /**
+   * See: {@link #core/ReplaySource#setHotkey setHotkey}
+   */
   setHotkey: (hotkey: number) => Promise<ISourceReplay>
 
+  /**
+   * See: {@link #core/ReplaySource#getReplaytime getReplaytime}
+   */
   getReplaytime: () => Promise<number>
 
+  /**
+   * See: {@link #core/ReplaySource#setReplaytime setReplaytime}
+   */
   setReplaytime: (buffer: number) => Promise<ISourceReplay>
 
+  /**
+   * See: {@link #core/ReplaySource#startReplay startReplay}
+   */
   startReplay: () => Promise<ISourceReplay>
 
+  /**
+   * See: {@link #core/ReplaySource#stopReplay stopReplay}
+   */
   stopReplay: () => Promise<ISourceReplay>
 
-  getReplayState: () => Promise<string>
+  /**
+   * See: {@link #core/ReplaySource#getReplayState getReplayState}
+   */
+  getReplayState: () => Promise<number>
 
   // ItemLayout
 
