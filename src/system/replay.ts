@@ -90,7 +90,6 @@ export class Replay implements Addable {
     return XML.parseJSON(replay);
   }
 
-
   /**
    * param: (value?: number | Scene)
    * ```

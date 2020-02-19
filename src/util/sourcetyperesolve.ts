@@ -9,6 +9,7 @@ import {HtmlSource} from '../core/source/html';
 import {FlashSource} from '../core/source/flash';
 import {ScreenSource} from '../core/source/screen';
 import {ImageSource} from '../core/source/image';
+import {ReplaySource} from '../core/source/replay';
 import {ItemTypes} from '../core/source/isource';
 import {MediaSource, MediaTypes} from '../core/source/media';
 
@@ -44,6 +45,8 @@ export function SourceTypeResolve(source: Object): any {
     srcType = new AudioSource(source);
   } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
     srcType = new FlashSource(source);
+  } else if (Number(source['type']) === ItemTypes.REPLAY) {
+    srcType = new ReplaySource(source);
   } else {
     srcType = new Source(source);
   }
