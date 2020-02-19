@@ -54,6 +54,7 @@ export * from './system/screen';
 export * from './system/file';
 export * from './system/videoplaylist';
 export * from './system/group';
+export * from './system/replay';
 
 export * from './window/config';
 export * from './window/source';
