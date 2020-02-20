@@ -6,6 +6,7 @@ import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source} from './source/source';
+import {ItemTypes} from './source/isource';
 import {Item, ViewTypes} from './items/item';
 import {ItemTypeResolve} from '../util/itemtyperesolve';
 import {SourceTypeResolve} from '../util/sourcetyperesolve';
@@ -936,6 +937,23 @@ export class Scene {
     });
   }
 
+  /**
+   * return: Scene
+   *
+   * Returns a special `liveScene` object that may be added as a source to the stage.
+   * The Scene.liveScene object whenever called upon,
+   * gives access to the current active scene.
+   * This is made possible because the liveScene object does not pertain to a real scene
+   * in the context of XBC, but the actual view,
+   * or at least the scene which is currently loaded in that view.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Scene.liveScene().addAsSource();
+   * ```
+   */
   static liveScene(): Scene {
     if (Scene._liveScene === undefined) {
       Scene._liveScene = new Scene('LIVE', 'Live Scene', '0');
@@ -1170,15 +1188,13 @@ export class Scene {
     return new Promise((resolve, reject) => {
       if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
         checkSplitmode(value).then((scenePrefix) => {
-
-        const sceneToAdd = new JXON();
-        sceneToAdd.tag = 'item';
-        sceneToAdd['item'] = this._uid;
-        sceneToAdd['name'] = this._name;
-        sceneToAdd['type'] = '14'; // type LIVE
-        sceneToAdd['selfclosing'] = true;
-        const sceneXML = XML.parseJSON(sceneToAdd);
-
+          const sceneToAdd = new JXON();
+          sceneToAdd.tag = 'item';
+          sceneToAdd['item'] = this._uid;
+          sceneToAdd['name'] = this._name;
+          sceneToAdd['type'] = (this._uid === '0') ? ItemTypes.VIEW : ItemTypes.SCENE; // type LIVE
+          sceneToAdd['selfclosing'] = true;
+          const sceneXML = XML.parseJSON(sceneToAdd);
           return addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
         }).then(result => {
           resolve(result);

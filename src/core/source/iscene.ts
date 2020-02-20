@@ -1,6 +1,7 @@
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {Scene} from '../scene';
+import {ItemTypes} from '../source/isource';
 import {XML} from '../../internal/util/xml';
 import {Logger} from '../../internal/util/logger';
 
@@ -89,7 +90,7 @@ export class SourceScene implements ISourceScene {
           if (scene instanceof Scene) {
             var sceneUID = scene['_uid'];
             var name = scene['_name'];
-            itemType = (sceneUID === "0") ? '14' : '11';
+            itemType = (sceneUID === "0") ? String(ItemTypes.VIEW) : String(ItemTypes.SCENE);
             this._setScene(itemType, sceneUID, name, resolve, reject);
           } else if (typeof scene === 'number') {
             var name = '';
