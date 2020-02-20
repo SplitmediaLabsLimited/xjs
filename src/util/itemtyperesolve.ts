@@ -10,6 +10,7 @@ import {ImageItem} from '../core/items/image';
 import {MediaItem} from '../core/items/media';
 import {GenericItem} from '../core/items/genericitem';
 import {GroupItem} from '../core/items/group';
+import {ReplayItem} from '../core/items/replay';
 import {ItemTypes} from '../core/source/isource';
 import {MediaTypes} from '../core/source/media';
 
@@ -47,6 +48,8 @@ export function ItemTypeResolve(item: Object): any {
     itemType = new FlashItem(item);
   } else if (Number(item['type']) === ItemTypes.GROUP) {
     itemType = new GroupItem(item);
+  } else if (Number(item['type']) === ItemTypes.REPLAY) {
+    itemType = new ReplayItem(item);
   } else {
   	itemType = new GenericItem(item);
   }
