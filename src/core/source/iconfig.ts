@@ -65,7 +65,7 @@ export class SourceConfigurable {
         this._checkPromise = iItem.get('prop:BrowserConfiguration', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:BrowserConfiguration', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(
         config => {

@@ -97,7 +97,7 @@ export class Audio implements IAudio {
         this._checkPromise = iItem.get('prop:volume', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:volume', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val));
@@ -128,7 +128,7 @@ export class Audio implements IAudio {
         this._checkPromise = iItem.get('prop:mute', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:mute', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -158,7 +158,7 @@ export class Audio implements IAudio {
         this._checkPromise = iItem.get('prop:keepaudio', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:keepaudio', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val !== '1');
@@ -188,7 +188,7 @@ export class Audio implements IAudio {
         this._checkPromise = iItem.get('prop:sounddev', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:sounddev', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -218,7 +218,7 @@ export class Audio implements IAudio {
         this._checkPromise = iItem.get('prop:audioavail', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:audioavail', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');

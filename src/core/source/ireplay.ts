@@ -291,7 +291,7 @@ export class SourceReplay implements ISourceReplay {
         this._checkPromise = iItem.get('prop:StartOnLoad', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:StartOnLoad', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
