@@ -151,6 +151,63 @@ export class Output {
   }
 
   /**
+   * param: scene<number|Scene>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets a scene to record. Set to live scene or blank string to reset
+   */
+  static setSceneToRecord(scene: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (scene === '' || scene === Scene.liveScene()) {
+        exec('CallHostFunc', 'setSceneToRecord', '-1');
+        resolve(true);
+      } else if (scene instanceof Scene) {
+        scene.getSceneIndex().then(sceneIndex => {
+          exec('CallHostFunc', 'setSceneToRecord', Number(sceneIndex));
+          resolve(true);
+        }).catch(err => {
+          reject(err);
+        })
+      } else if (typeof scene === 'number') {
+        if (scene < 1 || !Number['isInteger'](Number(scene))) {
+          reject(Error('Invalid parameters. Valid range is greater than 0.'));
+        } else {
+          exec('CallHostFunc', 'setSceneToRecord', String(scene - 1));
+          resolve(true);
+        }
+      } else {
+        reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+      }
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Start a local recording.
+   */
+  static startLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1');
+      resolve(true);
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Unpause a local recording.
+   */
+  static stopLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'stopBroadcast', 'Local Recording');
+      resolve(true);
+    })
+  }
+
+  /**
    * return: Promise<boolean>
    *
    * Pause a local recording.
