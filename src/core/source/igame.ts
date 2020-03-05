@@ -258,14 +258,10 @@ export class iSourceGame implements ISourceGame {
         this._checkPromise = iItem.wrapGet('prop:GameCapFrameTimeLimit', this._srcId, this._id, this._updateId.bind(this));
       }
       this._checkPromise.then(res => {
-        console.log('INIT FPS', res)
         if (res === '0' || res === '') {
           resolve(0);
         } else {
           let fps = Math.floor(10000000/Number(res));
-          console.log('COMPUTED FPS', fps);
-          console.log('MAX', Math.max(fps, MIN_FPS));
-          console.log('MIN', Math.min(Math.max(fps, MIN_FPS), MAX_FPS));
           fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
           resolve(fps);
         }
