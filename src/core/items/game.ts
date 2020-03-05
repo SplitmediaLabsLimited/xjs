@@ -87,6 +87,26 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
    */
   getOfflineImage:() => Promise<string>
 
+  /**
+   * See: {@link #core/GameSource#isTransparent isTransparent}
+   */
+  isTransparent:() => Promise<boolean>
+
+  /**
+   * See: {@link #core/GameSource#setTransparent setTransparent}
+   */
+  setTransparent: (value: boolean) => Promise<GameItem>
+
+  /**
+   * See: {@link #core/GameSource#getGameFPSCap getGameFPSCap}
+   */
+  getGameFPSCap:() => Promise<number>
+
+  /**
+   * See: {@link #core/GameSource#setGameFPSCap setGameFPSCap}
+   */
+  setGameFPSCap: (fps: number) => Promise<GameItem>
+
   // ItemLayout
 
   /**

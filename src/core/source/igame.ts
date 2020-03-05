@@ -9,6 +9,9 @@ import {Source} from './source';
 import {iSource, ISource, ItemTypes} from './isource';
 import {Logger} from '../../internal/util/logger';
 
+const MIN_FPS = 24;
+const MAX_FPS = 300;
+
 export interface ISourceGame {
 
   /**
@@ -58,6 +61,41 @@ export interface ISourceGame {
    * Get the offline image of a game item
    */
   getOfflineImage(): Promise<string>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Get the transparency of a game item.
+   * Please note that game transparency only works if Game Special Optimization is also enabled.
+   */
+  isTransparent(): Promise<boolean>
+
+  /**
+   * param: value<boolean>
+   *
+   * Set the transparency of a game item
+   * Please note that game transparency only works if Game Special Optimization is also enabled.
+   *
+   * *Chainable.*
+   */
+  setTransparent(value: boolean): Promise<ISourceGame>
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the maximum number of frames per second the game is being limited to by XBC
+   */
+  getGameFPSCap(): Promise<number>
+
+  /**
+   * param: path<string>
+   *
+   * Set the maximum number of frames per second the game is being limited to by XBC.
+   * Accepter values are either 0 (disable capping) or within the range of 24 to 300 fps
+   *
+   * *Chainable.*
+   */
+  setGameFPSCap(fps: number): Promise<ISourceGame>
 }
 
 export class iSourceGame implements ISourceGame {
@@ -66,6 +104,7 @@ export class iSourceGame implements ISourceGame {
   private _value: any;
   private _srcId: string;
   private _isItemCall: boolean;
+  private _checkPromise;
   private _sceneId: string;
 
   private _updateId(id?: string, sceneId?: string) {
@@ -178,6 +217,80 @@ export class iSourceGame implements ISourceGame {
           var valueObj = JXON.parse(this._value.toString());
           resolve(valueObj['replace'] ? valueObj['replace'] : '');
         });
+      }
+    });
+  }
+
+  isTransparent(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isTransparent', true)
+        this._checkPromise = iItem.get('prop:GameCapAlpha', this._id);
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:GameCapAlpha', this._srcId, this._id, this._updateId.bind(this));
+      }
+      this._checkPromise.then(res => {
+        resolve(res === '1');
+      });
+    });
+  }
+
+  setTransparent(value: boolean): Promise<iSourceGame> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'setTransparent', true)
+        this._checkPromise = iItem.set('prop:GameCapAlpha', (value ? '1' : '0'), this._id);
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:GameCapAlpha', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this));
+      }
+      this._checkPromise.then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  getGameFPSCap(): Promise<number> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getGameFPSCap', true)
+        this._checkPromise = iItem.get('prop:GameCapFrameTimeLimit', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:GameCapFrameTimeLimit', this._srcId, this._id, this._updateId.bind(this));
+      }
+      this._checkPromise.then(res => {
+        console.log('INIT FPS', res)
+        if (res === '0' || res === '') {
+          resolve(0);
+        } else {
+          let fps = Math.floor(10000000/Number(res));
+          console.log('COMPUTED FPS', fps);
+          console.log('MAX', Math.max(fps, MIN_FPS));
+          console.log('MIN', Math.min(Math.max(fps, MIN_FPS), MAX_FPS));
+          fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
+          resolve(fps);
+        }
+      });
+    });
+  }
+
+  setGameFPSCap(value: number): Promise<iSourceGame> {
+    return new Promise((resolve, reject) => {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value !== 0 && (Number(value) < MIN_FPS || Number(value) > MAX_FPS)) {
+        reject(RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS} .`));
+      } else {
+        let frametime = Math.floor(10000000/Number(value));
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setGameFPSCap', true)
+          iItem.set('prop:GameCapFrameTimeLimit', String(frametime), this._id).then(() => {
+            resolve(this);
+          });
+        } else {
+          iItem.wrapSet('prop:GameCapFrameTimeLimit', String(frametime), this._srcId, this._id, this._updateId.bind(this)).then(() => {
+            resolve(this);
+          });
+        }
       }
     });
   }

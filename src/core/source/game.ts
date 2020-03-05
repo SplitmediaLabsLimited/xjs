@@ -86,5 +86,40 @@ export class GameSource extends Source implements ISourceGame{
    * Get the offline image of a game source
    */
   getOfflineImage:() => Promise<string>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Get the transparency of a game item.
+   * Please note that game transparency only works if Game Special Optimization is also enabled.
+   */
+  isTransparent:() => Promise<boolean>
+
+  /**
+   * param: value<boolean>
+   *
+   * Set the transparency of a game item
+   * Please note that game transparency only works if Game Special Optimization is also enabled.
+   *
+   * *Chainable.*
+   */
+  setTransparent:(value: boolean) => Promise<GameSource>
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the maximum number of frames per second the game is being limited to by XBC
+   */
+  getGameFPSCap:() => Promise<number>
+
+  /**
+   * param: path<string>
+   *
+   * Set the maximum number of frames per second the game is being limited to by XBC.
+   * Accepter values are either 0 (disable capping) or within the range of 24 to 300 fps
+   *
+   * *Chainable.*
+   */
+  setGameFPSCap:(fps: number) => Promise<GameSource>
 }
 applyMixins(GameSource, [iSourceGame])
