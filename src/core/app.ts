@@ -13,6 +13,16 @@ import {mockVersion} from '../internal/util/version';
 var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
 
+const arrayToObj = function(array, separator) {
+  var obj = {};
+  array.map(function(el) {
+    var separatorIndex = el.indexOf(separator);
+    var key = el.substring(0, separatorIndex);
+    obj[key] = el.substring(separatorIndex + 1);
+  });
+  return obj;
+};
+
 /**
  * The App Class provides you methods to get and set application-related
  * functionalities.
@@ -875,6 +885,53 @@ export class App{
         .then(setVal => {
           resolve(setVal);
         });
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets whether noise suppression is enabled
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.isNoiseSuppressionEnabled().then(function(val) {
+   *   var isEnabled = val;
+   * });
+   * ```
+   */
+  isNoiseSuppressionEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      exec('CallHostFunc', 'getProperty', 'sound_ns', queryString => {
+        var queryParams = queryString.split('&');
+        var queryObj = arrayToObj(queryParams, '=');
+        resolve(queryObj['Enabled'] === '1');
+      });
+    });
+  }
+
+  /**
+   * param: enabled<boolean>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Enables or disables noise suppression
+   *
+   * ### Usage
+   *
+   * ```javascript
+   * App.enableNoiseSuppression(enabled).then(function(val) {
+   *   var isSet = val;
+   * });
+   * ```
+   */
+  enableNoiseSuppression(enabled: boolean): Promise<boolean> {
+    return new Promise(resolve => {
+      exec('CallHostFunc', 'setProperty', 'sound_ns', `Enabled=${Number(enabled)}`, setVal => {
+        resolve(setVal);
       });
     });
   }
