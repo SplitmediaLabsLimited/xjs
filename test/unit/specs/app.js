@@ -829,6 +829,91 @@ describe('App ===', function() {
     });
   });
 
+  describe ('should be able to get and set noise suppression support', function() {
+    var arrayToObj = function(array, separator) {
+      var obj = {};
+      array.map(function(el) {
+        var separatorIndex = el.indexOf(separator);
+        var key = el.substring(0, separatorIndex);
+        obj[key] = el.substring(separatorIndex + 1);
+      });
+      return obj;
+    };
+
+    var promise;
+    var nsEnabled = false;
+    beforeEach(function() {
+      spyOn(window.external, 'CallHostFunc')
+        .and.callFake(function(funcName, ...param) {
+        if (funcName == 'getProperty' && param[0] === 'sound_ns') {
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, `Enabled=${Number(nsEnabled)}`);
+          },10);
+
+          return asyncId;
+        } else if (funcName == 'setProperty' && param[0] === 'sound_ns') {
+          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+
+          var queryParams = param[1].split('&');
+          var queryObj = arrayToObj(queryParams, '=');
+          nsEnabled = queryObj['Enabled'] === '1';
+
+          setTimeout(function() {
+            window.OnAsyncCallback(asyncId, `Enabled=${Number(nsEnabled)}`);
+          },10);
+
+          return asyncId;
+        }
+      });
+    });
+
+    describe ('get if noise suppression is enabled', function() {
+      beforeEach(function() {
+        promise = App.isNoiseSuppressionEnabled();
+      });
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('that returns as a boolean', function(done) {
+        promise.then(function(isEnabled) {
+          expect(isEnabled).toBeTypeOf('boolean');
+          done();
+        });
+      });
+    });
+
+    describe ('enable/disable noise suppression', function() {
+      var promise;
+      beforeEach(function() {
+        promise = App.enableNoiseSuppression(true);
+      });
+
+      it('through a promise', function() {
+        expect(promise).toBeInstanceOf(Promise);
+      });
+
+      it('as a boolean', function(done) {
+        promise.then(function() {
+          expect(nsEnabled).toBe(true);
+          done();
+        });
+      });
+
+      it('and is correctly set', function(done) {
+        promise.then(function() {
+          expect(nsEnabled).toBe(true);
+          return App.enableNoiseSuppression(false);
+        }).then(function() {
+          expect(nsEnabled).toBe(false);
+          done();
+        });
+      });
+    });
+  })
+
   describe('should get transition', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')

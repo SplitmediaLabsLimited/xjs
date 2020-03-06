@@ -10,7 +10,7 @@ describe('Output ===', function() {
   var appVersion = navigator.appVersion;
   var emptyRecstat = false;
 
-  var mockOutputList = '<channels><channel name="Local Recording" /><channel name="Local Streaming" /><channel name="Twitch - TwitchChannel" /></channels>';
+  var mockOutputList = '<channels><channel name="Local Recording" /><channel name="Local Streaming" displayName="Local Streaming"/><channel name="Twitch - TwitchChannel" displayName="Twitch - TwitchChannel" /></channels>';
   var mixEnvironments = new window.Mixin([
     function() {
       navigator.__defineGetter__('appVersion', function() {
@@ -78,11 +78,21 @@ describe('Output ===', function() {
     spyOn(external, 'CallHostFunc')
     .and.callFake(function() {
       var funcName = arguments[0];
+      global_asyncId++;
       if (funcName.startsWith('getBroadcastChannelList')) {
-        global_asyncId++;
         var asyncId = new Date().getTime() + '_' + global_asyncId;
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, mockOutputList);
+        }, 10);
+        return asyncId;
+      } else if (funcName.startsWith('getBroadcastChannelXml')) {
+        var asyncId = new Date().getTime() + '_' + global_asyncId;
+        var xmlDocument = (new DOMParser()).parseFromString(mockOutputList, 'application/xml');
+        var selector = "channel[name='" + arguments[1] + "']";
+        var channel = xmlDocument.querySelector(selector);
+        var channelDetails = channel.outerHTML
+        setTimeout(function() {
+          window.OnAsyncCallback(asyncId, channelDetails ? channelDetails : '');
         }, 10);
         return asyncId;
       }
@@ -249,6 +259,17 @@ describe('Output ===', function() {
       localRecording.getName().then(function(name) {
         expect(name).toEqual('Local Recording');
         return otherOutput.getName();
+      }).then(function(otherName) {
+        expect(otherName).toBeTypeOf('string');
+        expect(otherName).not.toEqual('Local Recording');
+        done();
+      });
+    });
+
+    it('such as getting output display name', function(done) {
+      localRecording.getDisplayName().then(function(name) {
+        expect(name).toEqual('Local Recording');
+        return otherOutput.getDisplayName();
       }).then(function(otherName) {
         expect(otherName).toBeTypeOf('string');
         expect(otherName).not.toEqual('Local Recording');
