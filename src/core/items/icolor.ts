@@ -159,7 +159,6 @@ export class ItemColor implements IItemColor {
         });
       }
     });
-
   }
 
   getContrast(): Promise<number> {
