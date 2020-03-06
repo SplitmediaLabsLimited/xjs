@@ -6,17 +6,21 @@ import {App as iApp} from '../internal/app';
 import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source} from './source/source';
+import {ItemTypes} from './source/isource';
 import {Item, ViewTypes} from './items/item';
 import {ItemTypeResolve} from '../util/itemtyperesolve';
 import {SourceTypeResolve} from '../util/sourcetyperesolve';
 import {Transition} from './transition';
+import {checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 import {
   minVersion,
   versionCompare,
   getVersion,
   sceneUidMinVersion,
-  scenePresetsVersion
+  scenePresetsVersion,
+  sceneSourceVersion
 } from '../internal/util/version';
 
 const supportedPresetTransitionEasingFunctions = [
@@ -32,9 +36,9 @@ export class Scene {
   private _uid: string;
   private _name: string;
 
-
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
+  private static _liveScene: Scene;
 
   constructor(sceneId: number | string, name?: string, uid?: string) {
     this._id = sceneId;
@@ -934,6 +938,276 @@ export class Scene {
   }
 
   /**
+   * return: Scene
+   *
+   * Returns a special `liveScene` object that may be added as a source to the stage.
+   * The Scene.liveScene object whenever called upon,
+   * gives access to the current active scene.
+   * This is made possible because the liveScene object does not pertain to a real scene
+   * in the context of XBC, but the actual view,
+   * or at least the scene which is currently loaded in that view.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Scene.liveScene().addAsSource();
+   * ```
+   */
+  static liveScene(): Scene {
+    if (Scene._liveScene === undefined) {
+      Scene._liveScene = new Scene('LIVE', 'Live Scene', '0');
+
+      Scene._liveScene.getSources = (): Promise<Source[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSources();
+          }).then(sources => {
+            resolve(sources);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneNumber = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneNumber();
+          }).then(sceneNumber => {
+            resolve(sceneNumber);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneIndex = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneIndex();
+          }).then(sceneIndex => {
+            resolve(sceneIndex);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneUid = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneUid();
+          }).then(sceneUID => {
+            resolve(sceneUID);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getName = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getName();
+          }).then(name => {
+            resolve(name);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setName = (name: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setName(name);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getItems = (): Promise<Item[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getItems();
+          }).then(items => {
+            resolve(items);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getTopLevelItems = (): Promise<Item[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getTopLevelItems();
+          }).then(items => {
+            resolve(items);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.isEmpty = (): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.isEmpty();
+          }).then(empty => {
+            resolve(empty);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setItemOrder = (items: Array<any>): Promise<Scene> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setItemOrder(items);
+          }).then(sources => {
+            resolve(this);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresets = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresets();
+          }).then(presets => {
+            resolve(presets);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getActivePreset = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getActivePreset();
+          }).then(preset => {
+            resolve(preset);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.switchToPreset = (preset: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.switchToPreset(preset);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.addPreset = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.addPreset();
+          }).then(preset => {
+            resolve(preset);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.removePreset = (preset: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.removePreset(preset);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresetTransitionEasing = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresetTransitionEasing();
+          }).then(easing => {
+            resolve(easing);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setPresetTransitionEasing = (presetTransitionEasing: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setPresetTransitionEasing(presetTransitionEasing);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresetTransitionTime = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresetTransitionTime();
+          }).then(time => {
+            resolve(time);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setPresetTransitionTime = (presetTransitionTime: number): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setPresetTransitionTime(presetTransitionTime);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+    }
+    return Scene._liveScene;
+  }
+
+  /**
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<any>
+   * ```
+   *
+   * Adds this scene as a source to the current scene by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
+   */
+  addAsSource(value?: number | Scene): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
+        checkSplitmode(value).then((scenePrefix) => {
+          const sceneToAdd = new JXON();
+          sceneToAdd.tag = 'item';
+          sceneToAdd['item'] = this._uid;
+          sceneToAdd['name'] = this._name;
+          sceneToAdd['type'] = (this._uid === '0') ? ItemTypes.VIEW : ItemTypes.SCENE; // type LIVE
+          sceneToAdd['selfclosing'] = true;
+          const sceneXML = XML.parseJSON(sceneToAdd);
+          return addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
+        }).then(result => {
+          resolve(result);
+        }).catch(err => {
+          reject(err);
+        });        
+      } else {
+        reject(Error('Not supported in this XBC version'));
+      }
+    });
+  }
+
+  /**
    * return: Promise<Source[]>
    *
    * Get all unique Sources from the current scene.
@@ -1126,8 +1400,8 @@ export class Scene {
    */
   setName(name: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Scene names are readonly for source plugins.'));
+      if (!Environment.isSourceProps()) {
+        reject(Error('Scene names are readonly for source plugins and extensions.'));
       } else {
         let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
         iApp.set('scenename:' + _sceneId, name).then(value => {

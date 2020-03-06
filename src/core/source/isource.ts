@@ -34,7 +34,8 @@ export enum ItemTypes {
   PPTFILE,
   SCENE,
   GROUP,
-  REPLAY
+  REPLAY,
+  VIEW
 }
 
 export interface ISource {
