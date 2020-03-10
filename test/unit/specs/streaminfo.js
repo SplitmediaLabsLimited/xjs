@@ -137,7 +137,7 @@ describe('StreamInfo ===', function() {
       spyOn(window.external, 'GetGlobalProperty')
         .and.callFake(function(funcName) {
           if (funcName === 'bandwidthusage-all') {
-            return '[{"ChannelName":"Local Streaming","AvgBitrate":167.0},{"ChannelName":"Local Recording","AvgBitrate":0.0}]';
+            return '[{"ChannelName":"Local Streaming","AvgBitrate":536.0,"Dropped":10,"NotDropped":946},{"ChannelName":"Local Recording","AvgBitrate":0.0}]';
           }
         })
       spyOn(window.external, 'AppGetPropertyAsync')
@@ -270,6 +270,15 @@ describe('StreamInfo ===', function() {
       });
     });
 
+    it('should be able to get GOP dropped frames', function(done) {
+      channelLocal.getGOPDrops()
+      .then(function(droppedFrames) {
+        expect(droppedFrames).toBeTypeOf('number');
+        expect(droppedFrames).toEqual(10);
+        done();
+      });
+    });
+
     it('should be able to get its frames rendered', function(done) {
       isEmpty = false;
       channelLocal.getStreamRenderedFrames()
@@ -313,7 +322,7 @@ describe('StreamInfo ===', function() {
       channelLocal.getBandwidthUsage()
       .then(function(usage) {
         expect(usage).toBeTypeOf('number');
-        expect(usage).toEqual(167);
+        expect(usage).toEqual(536);
         done();
       });
     });
