@@ -53,7 +53,7 @@ describe('Config interface', function() {
       property = property.substring(3);
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -78,7 +78,7 @@ describe('Config interface', function() {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };

@@ -36,7 +36,7 @@ describe('Layouts interface', function() {
       property = property.replace(/^prop:/, '');
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -61,7 +61,7 @@ describe('Layouts interface', function() {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
