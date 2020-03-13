@@ -798,6 +798,7 @@ describe('Scene ===', function() {
       }).then(done);
     });
 
+    // if this fails, please first check if the expected value corresponds to the supplied mock configuration
     it('should be able to get only the top-level items', function(done) {
       exec(function(next) {
         var scene;

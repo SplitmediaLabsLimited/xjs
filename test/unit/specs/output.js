@@ -255,6 +255,8 @@ describe('Output ===', function() {
       });
     });
 
+    // if this fails, please first check if the expected value corresponds to the supplied channel list
+    // Local Recording should always be first
     it('such as getting output name', function(done) {
       localRecording.getName().then(function(name) {
         expect(name).toEqual('Local Recording');
@@ -266,6 +268,8 @@ describe('Output ===', function() {
       });
     });
 
+    // if this fails, please first check if the expected value corresponds to the supplied channel list
+    // Local Recording should always be first
     it('such as getting output display name', function(done) {
       localRecording.getDisplayName().then(function(name) {
         expect(name).toEqual('Local Recording');

@@ -264,6 +264,7 @@ describe('App ===', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
+      // if this fails, please first check if the expected value corresponds to the supplied micDev2Mock
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
@@ -288,6 +289,7 @@ describe('App ===', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
+      // if this fails, please first check if the expected value corresponds to the supplied micDev2Mock
       it('as an audioDevice', function(done) {
         promise.then(function(audioDevice) {
           expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
