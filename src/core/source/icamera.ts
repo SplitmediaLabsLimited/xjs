@@ -8,6 +8,12 @@ import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';
 import {Logger} from '../../internal/util/logger';
 
+const _delayExclusionObject = {
+  roxio: "vid_1b80&pid_e0(01|11|12)",
+  hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
+  hauppauge2: "vid_2040&pid_e50[012a4]"
+};
+
 export interface ISourceCamera {
   /**
    * return: Promise<string>
@@ -122,12 +128,6 @@ export class SourceCamera implements ISourceCamera {
     this._id = id;
     this._sceneId = sceneId;
   }
-
-  protected _delayExclusionObject = {
-    roxio: "vid_1b80&pid_e0(01|11|12)",
-    hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
-    hauppauge2: "vid_2040&pid_e50[012a4]"
-  };
 
   getDeviceId(): Promise<string> {
     return new Promise(resolve => {
@@ -391,9 +391,9 @@ export class SourceCamera implements ISourceCamera {
           return this.getValue();
         }
       }).then(val => {
-        for (var key in this._delayExclusionObject) {
+        for (var key in _delayExclusionObject) {
           var regex = new RegExp(
-            this._delayExclusionObject[key].toLowerCase(), 'g');
+            _delayExclusionObject[key].toLowerCase(), 'g');
           if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
             reject(Error('Cannot set delay to specific device'));
             break;
