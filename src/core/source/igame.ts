@@ -66,14 +66,14 @@ export interface ISourceGame {
    * return: Promise<boolean>
    *
    * Get the transparency of a game item.
-   * Please note that game transparency only works if Game Special Optimization is also enabled.
+   * Please note that game source transparency only works if Game Special Optimization is also enabled.
    */
   isTransparent(): Promise<boolean>
 
   /**
    * param: value<boolean>
    *
-   * Set the transparency of a game item
+   * Set the transparency of a game source
    * Please note that game transparency only works if Game Special Optimization is also enabled.
    *
    * *Chainable.*
@@ -200,6 +200,10 @@ export class iSourceGame implements ISourceGame {
           this.setValue(XML.parseJSON(valueObj)).then(() => {
             resolve(this);
           });
+        } else {
+          reject(
+            Error('Invalid file path or type is provided.')
+          );
         }
       }
     });
@@ -213,7 +217,7 @@ export class iSourceGame implements ISourceGame {
       if (this._type !== ItemTypes.GAMESOURCE) {
         reject(Error('Current item should be a game item'));
       } else {
-        this.getValue().then(() => {
+        this.getValue().then(value => {
           var valueObj = JXON.parse(this._value.toString());
           resolve(valueObj['replace'] ? valueObj['replace'] : '');
         });
@@ -258,7 +262,7 @@ export class iSourceGame implements ISourceGame {
         this._checkPromise = iItem.wrapGet('prop:GameCapFrameTimeLimit', this._srcId, this._id, this._updateId.bind(this));
       }
       this._checkPromise.then(res => {
-        if (res === '0' || res === '') {
+        if (res === '0' || res === '' || res === 0) {
           resolve(0);
         } else {
           let fps = Math.floor(10000000/Number(res));
@@ -276,7 +280,7 @@ export class iSourceGame implements ISourceGame {
       } else if (value !== 0 && (Number(value) < MIN_FPS || Number(value) > MAX_FPS)) {
         reject(RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS} .`));
       } else {
-        let frametime = Math.floor(10000000/Number(value));
+        let frametime = (value > 0) ? Math.floor(10000000/Number(value)) : 0;
         if(this._isItemCall){
           Logger.warn('sourceWarning', 'setGameFPSCap', true)
           iItem.set('prop:GameCapFrameTimeLimit', String(frametime), this._id).then(() => {
