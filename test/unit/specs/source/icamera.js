@@ -16,7 +16,6 @@ describe('CameraSource interface', function() {
   var shouldFailHWCheck = false;
   var isCamActive = true;
 
-
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
     function() {
@@ -426,8 +425,6 @@ describe('CameraSource interface', function() {
       .then(function() {
         done.fail('It should reject if source is explicitly tagged not to support delay');   
       }).catch(function(err) {
-        console.log('ERR');
-        console.log(err);
         expect(err).toEqual(jasmine.any(Error));
         done();
       })
