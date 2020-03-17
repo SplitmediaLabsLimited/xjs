@@ -50,7 +50,7 @@ export interface ISourceReplay {
    *
    * Gets the duration, or buffer time for the replay
    */
-  getReplaytime(): Promise<number> 
+  getReplayTime(): Promise<number> 
 
   /**
    * param: (time: number)
@@ -60,7 +60,7 @@ export interface ISourceReplay {
    *
    * Sets the duration, or buffer time for the replay
    */
-  setReplaytime(buffer: number): Promise<ISourceReplay>
+  setReplayTime(buffer: number): Promise<ISourceReplay>
 
   /**
    * return: Promise<ISourceReplay>
@@ -194,10 +194,10 @@ export class SourceReplay implements ISourceReplay {
     })
   }
 
-  getReplaytime(): Promise<number> {
+  getReplayTime(): Promise<number> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getReplaytime', true)
+        Logger.warn('sourceWarning', 'getReplayTime', true)
         this._checkPromise = iItem.get('prop:presproperty:buffer', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:presproperty:buffer', this._srcId, this._id,
@@ -210,11 +210,11 @@ export class SourceReplay implements ISourceReplay {
     })
   }
 
-  setReplaytime(buffer: number): Promise<SourceReplay> {
+  setReplayTime(buffer: number): Promise<SourceReplay> {
     return new Promise((resolve, reject) => {
       if (typeof buffer === 'number') {
         if(this._isItemCall){
-          Logger.warn('sourceWarning', 'setReplaytime', true)
+          Logger.warn('sourceWarning', 'setReplayTime', true)
           iItem.set('prop:presproperty:buffer', String(buffer), this._id)
             .then(val => {
               resolve(this);
