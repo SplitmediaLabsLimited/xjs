@@ -328,13 +328,13 @@ describe('Audio Source interface', function() {
         return secondSource.setAudioOffset(secondRand);
       }).then(function() {
         return firstSource.getAudioOffset();
-      }).then(function(volume1) {
-        expect(volume1).toBeTypeOf('number');
-        expect(volume1).toEqual(firstRand);
+      }).then(function(audioOffset1) {
+        expect(audioOffset1).toBeTypeOf('number');
+        expect(audioOffset1).toEqual(firstRand);
         return secondSource.getAudioOffset();
-      }).then(function(volume2) {
-        expect(volume2).toBeTypeOf('number');
-        expect(volume2).toEqual(secondRand);
+      }).then(function(audioOffset2) {
+        expect(audioOffset2).toBeTypeOf('number');
+        expect(audioOffset2).toEqual(secondRand);
         done();
       })
     });

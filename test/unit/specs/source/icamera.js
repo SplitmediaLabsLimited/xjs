@@ -271,13 +271,13 @@ describe('CameraSource interface', function() {
         return secondSource.setAudioOffset(secondRand);
       }).then(function() {
         return firstSource.getAudioOffset();
-      }).then(function(volume1) {
-        expect(volume1).toBeTypeOf('number');
-        expect(volume1).toEqual(firstRand);
+      }).then(function(audioOffset1) {
+        expect(audioOffset1).toBeTypeOf('number');
+        expect(audioOffset1).toEqual(firstRand);
         return secondSource.getAudioOffset();
-      }).then(function(volume2) {
-        expect(volume2).toBeTypeOf('number');
-        expect(volume2).toEqual(secondRand);
+      }).then(function(audioOffset2) {
+        expect(audioOffset2).toBeTypeOf('number');
+        expect(audioOffset2).toEqual(secondRand);
         done();
       })
     });
@@ -405,13 +405,13 @@ describe('CameraSource interface', function() {
         return secondSource.setDelay(secondRand);
       }).then(function() {
         return firstSource.getDelay();
-      }).then(function(volume1) {
-        expect(volume1).toBeTypeOf('number');
-        expect(volume1).toEqual(firstRand);
+      }).then(function(delay1) {
+        expect(delay1).toBeTypeOf('number');
+        expect(delay1).toEqual(firstRand);
         return secondSource.getDelay();
-      }).then(function(volume2) {
-        expect(volume2).toBeTypeOf('number');
-        expect(volume2).toEqual(secondRand);
+      }).then(function(delay2) {
+        expect(delay2).toBeTypeOf('number');
+        expect(delay2).toEqual(secondRand);
         done();
       })
     });
@@ -443,13 +443,13 @@ describe('CameraSource interface', function() {
       firstSource.setForceDeinterlace(randomBoolean)
       .then(function() {
         return firstSource.isForceDeinterlace();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(randomBoolean);
+      }).then(function(isForcedDeinterlace) {
+        expect(isForcedDeinterlace).toBe(randomBoolean);
         return firstSource.setForceDeinterlace(!randomBoolean);
       }).then(function() {
         return firstSource.isForceDeinterlace();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(!randomBoolean);
+      }).then(function(isForcedDeinterlace) {
+        expect(isForcedDeinterlace).toBe(!randomBoolean);
         done();
       });
     });

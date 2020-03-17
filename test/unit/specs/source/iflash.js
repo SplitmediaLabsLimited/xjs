@@ -230,13 +230,13 @@ describe('Flash Source interface', function() {
         firstSource.setAllowRightClick(randomBoolean)
         .then(function() {
           return firstSource.getAllowRightClick();
-        }).then(function(isPaused) {
-          expect(isPaused).toBe(randomBoolean);
+        }).then(function(isAllowed) {
+          expect(isAllowed).toBe(randomBoolean);
           return firstSource.setAllowRightClick(!randomBoolean);
         }).then(function() {
           return firstSource.getAllowRightClick();
-        }).then(function(isPaused) {
-          expect(isPaused).toBe(!randomBoolean);
+        }).then(function(isAllowed) {
+          expect(isAllowed).toBe(!randomBoolean);
           done();
         });
       });

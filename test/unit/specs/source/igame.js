@@ -218,13 +218,13 @@ describe('Game Source interface', function() {
       firstSource.setSpecialOptimizationEnabled(randomBoolean)
       .then(function() {
         return firstSource.isSpecialOptimizationEnabled();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(randomBoolean);
+      }).then(function(isOptimized) {
+        expect(isOptimized).toBe(randomBoolean);
         return firstSource.setSpecialOptimizationEnabled(!randomBoolean);
       }).then(function() {
         return firstSource.isSpecialOptimizationEnabled();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(!randomBoolean);
+      }).then(function(isOptimized) {
+        expect(isOptimized).toBe(!randomBoolean);
         done();
       });
     });
@@ -242,13 +242,13 @@ describe('Game Source interface', function() {
       firstSource.setShowMouseEnabled(randomBoolean)
       .then(function() {
         return firstSource.isShowMouseEnabled();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(randomBoolean);
+      }).then(function(isShown) {
+        expect(isShown).toBe(randomBoolean);
         return firstSource.setShowMouseEnabled(!randomBoolean);
       }).then(function() {
         return firstSource.isShowMouseEnabled();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(!randomBoolean);
+      }).then(function(isShown) {
+        expect(isShown).toBe(!randomBoolean);
         done();
       });
     });
@@ -307,13 +307,13 @@ describe('Game Source interface', function() {
       firstSource.setTransparent(randomBoolean)
       .then(function() {
         return firstSource.isTransparent();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(randomBoolean);
+      }).then(function(isTransparent) {
+        expect(isTransparent).toBe(randomBoolean);
         return firstSource.setTransparent(!randomBoolean);
       }).then(function() {
         return firstSource.isTransparent();
-      }).then(function(isPaused) {
-        expect(isPaused).toBe(!randomBoolean);
+      }).then(function(isTransparent) {
+        expect(isTransparent).toBe(!randomBoolean);
         done();
       });
     });
@@ -336,20 +336,20 @@ describe('Game Source interface', function() {
         return secondSource.setGameFPSCap(secondRand * Number(randomBoolean));
       }).then(function() {
         return firstSource.getGameFPSCap();
-      }).then(function(volume1) {
-        expect(volume1).toBeTypeOf('number');
-        expect(volume1).toEqual(firstRand);
+      }).then(function(cap1) {
+        expect(cap1).toBeTypeOf('number');
+        expect(cap1).toEqual(firstRand);
         return secondSource.getGameFPSCap();
-      }).then(function(volume2) {
-        expect(volume2).toBeTypeOf('number');
-        expect(volume2).toEqual(secondRand * Number(randomBoolean));
+      }).then(function(cap2) {
+        expect(cap2).toBeTypeOf('number');
+        expect(cap2).toEqual(secondRand * Number(randomBoolean));
         done();
       })
     });
 
     it ('which rejects when setting not within the parameters ', function(done) {
       var randomBelowMin = Math.floor(Math.random() * (22)) + 1;
-      var randomAboveMax = Math.floor(Math.random() * (1000)) + 101;
+      var randomAboveMax = Math.floor(Math.random() * (1000)) + 301;
 
       firstSource.setGameFPSCap('SOME STRING')
       .then(function(filePath) {
