@@ -6,6 +6,8 @@ import {Scene} from '../scene';
 import {XML} from '../../internal/util/xml';
 import {Logger} from '../../internal/util/logger';
 
+const BUFFER_MAX = 120;
+
 export interface ISourceReplay {
   /**
    * return: Promise<string>
@@ -213,7 +215,9 @@ export class SourceReplay implements ISourceReplay {
   setReplayTime(buffer: number): Promise<SourceReplay> {
     return new Promise((resolve, reject) => {
       if (typeof buffer === 'number') {
-        if(this._isItemCall){
+        if (buffer > 120 || buffer < 0) {
+          reject(Error(`Invalid parameter. setReplaytime method only accepts numbers up to ${BUFFER_MAX}.`));
+        } else if(this._isItemCall){
           Logger.warn('sourceWarning', 'setReplayTime', true)
           iItem.set('prop:presproperty:buffer', String(buffer), this._id)
             .then(val => {
@@ -282,7 +286,6 @@ export class SourceReplay implements ISourceReplay {
       .catch(err => reject(err));
     })
   }
-
 
   isAutostartOnSceneLoad(): Promise<boolean> {
     return new Promise(resolve => {

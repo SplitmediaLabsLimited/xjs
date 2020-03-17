@@ -278,7 +278,7 @@ export class iSourceGame implements ISourceGame {
       if (typeof value !== 'number') {
         reject(TypeError('Use an integer as the parameter.'));
       } else if (value !== 0 && (Number(value) < MIN_FPS || Number(value) > MAX_FPS)) {
-        reject(RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS} .`));
+        reject(RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS}.`));
       } else {
         let frametime = (value > 0) ? Math.floor(10000000/Number(value)) : 0;
         if(this._isItemCall){
