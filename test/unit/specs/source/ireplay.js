@@ -117,7 +117,6 @@ describe('Replay interface', function() {
     .and.callFake(function(funcName) {
       ctr++;
       var asyncId = 'ireplay_' + ctr;
-      console.log('APP GET ', funcName);
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -128,7 +127,6 @@ describe('Replay interface', function() {
           break;
 
         case 'scene:0':
-          console.log('TAKTENG YAN', funcName === 'scene:0');
           xCallback(asyncId, '0');
           break;
       }
@@ -168,20 +166,12 @@ describe('Replay interface', function() {
     spyOn(window.external, 'SetLocalPropertyAsync2')
     .and.callFake(setLocal);
 
-    console.log(enumeratedSource);
     if (enumeratedSource.length !== 0) {
-      console.log('TAKTE NAMAN OH')
-      console.log(enumeratedSource.length)
       done();
     } else {
-      console.log('ANDITO');
       Scene.getActiveScene().then(function(newScene) {
-        console.log('HAHAY');
-        console.log(newScene)
         return newScene.getSources();
       }).then(function(sources) {
-        console.log('SOURCES');
-        console.log(sources);
         var sourceArray = sources;
         var sourceArrayLength = sourceArray.length;
 
@@ -259,65 +249,134 @@ describe('Replay interface', function() {
     });
   })
 
-  xdescribe('should be able to get and set volume', function() {
+  describe('should be able to get and set hotkey', function() {
     it ('through a promise', function(done) {
-      var promise = firstSource.getVolume();
+      var promise = firstSource.getHotkey();
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
-      firstSource.setVolume(firstRand)
+      var isShift = Math.random() < 0.5;
+      var isCtrl = Math.random() < 0.5;
+      var isAlt = Math.random() < 0.5;
+
+      // we randomize only a-z, arrow, numpad, and function keys
+      // var randomKey = Math.floor(Math.random() * (123 - 65 + 1)) + 65;
+      var randomKey = Math.floor(Math.random() * 59) + 65;
+      var keyCombination = randomKey | (isShift ? 65536 : 0) | (isCtrl ? 131072 : 0) | (isAlt ? 262144 : 0);
+      var keyCombination2 = randomKey | (!isShift ? 65536 : 0) | (!isCtrl ? 131072 : 0) | (!isAlt ? 262144 : 0);
+
+      firstSource.setHotkey(keyCombination)
       .then(function() {
-        return secondSource.setVolume(secondRand);
+        return secondSource.setHotkey(keyCombination2);
       }).then(function() {
-        return firstSource.getVolume();
-      }).then(function(volume1) {
-        expect(volume1).toBeTypeOf('number');
-        expect(volume1).toEqual(firstRand);
-        return secondSource.getVolume();
-      }).then(function(volume2) {
-        expect(volume2).toBeTypeOf('number');
-        expect(volume2).toEqual(secondRand);
+        return firstSource.getHotkey();
+      }).then(function(hotkey1) {
+        expect(hotkey1).toBeTypeOf('number');
+        expect(hotkey1).toEqual(keyCombination);
+        return secondSource.getHotkey();
+      }).then(function(hotkey2) {
+        expect(hotkey2).toBeTypeOf('number');
+        expect(hotkey2).toEqual(keyCombination2);
         done();
       })
     });
   });
 
-  xdescribe('should be able to get and set mute state', function() {
+  describe('should be able to get and set replay time', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.getReplayTime();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = Math.floor(Math.random() * (120))
+      var secondRand = Math.floor(Math.random() * (120))
+      firstSource.setReplayTime(firstRand)
+      .then(function() {
+        return secondSource.setReplayTime(secondRand);
+      }).then(function() {
+        return firstSource.getReplayTime();
+      }).then(function(audioOffset1) {
+        expect(audioOffset1).toBeTypeOf('number');
+        expect(audioOffset1).toEqual(firstRand);
+        return secondSource.getReplayTime();
+      }).then(function(audioOffset2) {
+        expect(audioOffset2).toBeTypeOf('number');
+        expect(audioOffset2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects when parameters are invalid', function(done) {
+      firstSource.setReplayTime(121)
+      .then(function(isSet) {
+        done.fail('Value accepted is higher than 120');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        return firstSource.setReplayTime(-1)
+      }).then(function(isSet) {
+        done.fail('Value accepted is lower than 0');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        return firstSource.setReplayTime('SOME STRING')
+      }).then(function(isSet) {
+        done.fail('Value accepted is not a number');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      });
+    });
+  });
+
+  describe('should be able to start, stop and get replay state', function() {
     it ('through a promise', function(done) {
       var promise = firstSource.isMute();
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
-    it ('as a boolean', function(done) {
-      var firstBoolean = true;
-      var secondBoolean = false;
-
-      firstSource.setMute(firstBoolean)
+    it ('as a number', function(done) {
+      firstSource.startReplay()
       .then(function() {
-        return secondSource.setMute(secondBoolean);
+        return firstSource.getReplayState()
+      }).then(function(replayState) {
+        expect(replayState).toBeTypeOf('number');
+        expect(replayState).toEqual(1);
+        return firstSource.stopReplay();
       }).then(function() {
-        return firstSource.isMute();
-      }).then(function(mute1) {
-        expect(mute1).toBeTypeOf('boolean');
-        expect(mute1).toEqual(firstBoolean);
-        return secondSource.isMute();
-      }).then(function(mute2) {
-        expect(mute2).toBeTypeOf('boolean');
-        expect(mute2).toEqual(secondBoolean);
-        return firstSource.setMute(!firstBoolean);
-      }).then(function() {
-        return firstSource.isMute();
-      }).then(function(mute3) {
-        expect(mute3).toEqual(!firstBoolean);
+        return firstSource.getReplayState()
+      }).then(function(replayState) {
+        expect(replayState).toBeTypeOf('number');
+        expect(replayState).toEqual(0);
         done();
-      })
+      });
     });
   });
 
+  describe('should be able to get and set auto start on scene load', function(done) {
+    var randomBoolean = Math.random() < 0.5;
+    it ('through a promise', function(done) {
+      var promise = firstSource.isAutostartOnSceneLoad();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
 
+    it ('as a boolean', function(done) {
+      firstSource.setAutostartOnSceneLoad(randomBoolean)
+      .then(function() {
+        return firstSource.isAutostartOnSceneLoad();
+      }).then(function(isAutostart) {
+        expect(isAutostart).toBe(randomBoolean);
+        return firstSource.setAutostartOnSceneLoad(!randomBoolean);
+      }).then(function() {
+        return firstSource.isAutostartOnSceneLoad();
+      }).then(function(isAutostart) {
+        expect(isAutostart).toBe(!randomBoolean);
+        done();
+      });
+    });
+  });
 });
