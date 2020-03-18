@@ -2,6 +2,7 @@
 
 import {EventEmitter} from '../util/eventemitter';
 import {EventManager} from '../internal/eventmanager';
+import {exec} from '../internal/internal';
 
 /**
  * The LanguageInfo class allows access to the change in language made in
@@ -47,6 +48,14 @@ export class LanguageInfo extends EventEmitter {
     LanguageInfo._emitter.on(event, (lang) => {
       handler.call(this, { lang })
     })
+  }
+
+  static getCode(): Promise<string> {
+    return new Promise(resolve => {
+      exec('CallHostFunc', 'getProperty', 'html:language', langCode => {
+        resolve(langCode);
+      });
+    });
   }
 }
 
