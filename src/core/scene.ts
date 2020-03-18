@@ -34,6 +34,7 @@ const supportedPresetTransitionEasingFunctions = [
 export class Scene {
   private _id: number | string;
   private _uid: string;
+  private _refID: number | string;
   private _name: string;
 
   private static _maxScenes: number = 12;
@@ -45,6 +46,9 @@ export class Scene {
     if (!versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
       this._uid = uid;
       this._name = name;
+      this._refID = uid;
+    } else {
+      this._refID = sceneId;
     }
   };
 
@@ -1228,8 +1232,7 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('sceneconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];
@@ -1381,8 +1384,7 @@ export class Scene {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('scenename:' + _sceneId).then(val => {
+      iApp.get('scenename:' + this._refID).then(val => {
         resolve(val);
       });
     });
@@ -1403,8 +1405,7 @@ export class Scene {
       if (!Environment.isSourceProps()) {
         reject(Error('Scene names are readonly for source plugins and extensions.'));
       } else {
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('scenename:' + _sceneId, name).then(value => {
+        iApp.set('scenename:' + this._refID, name).then(value => {
           resolve(value);
         });
       }
@@ -1429,8 +1430,7 @@ export class Scene {
    */
   getTransitionOverride(): Promise<Transition> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('scenetransitionid:' + _sceneId).then(val => {
+      iApp.get('scenetransitionid:' + this._refID).then(val => {
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
@@ -1482,8 +1482,7 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('scenetransitionid:' + _sceneId, value instanceof Transition ? value.toString() : value)
+        iApp.set('scenetransitionid:' + this._refID, value instanceof Transition ? value.toString() : value)
         .then(value => {
           resolve(value);
         }).catch(err => {
@@ -1511,8 +1510,7 @@ export class Scene {
    */
   getTransitionTime(): Promise<string> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('scenetransitiontime:' + _sceneId).then(val => {
+      iApp.get('scenetransitiontime:' + this._refID).then(val => {
         resolve(Number(val));
       });
     });
@@ -1536,8 +1534,7 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('scenetransitiontime:' + _sceneId, String(time)).then(value => {
+        iApp.set('scenetransitiontime:' + this._refID, String(time)).then(value => {
           resolve(value);
         });
       }
@@ -1560,8 +1557,7 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('sceneconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1603,8 +1599,7 @@ export class Scene {
    */
   getTopLevelItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsList('sceneconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsList('sceneconfig:' + this._refID).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
@@ -1647,8 +1642,7 @@ export class Scene {
    */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('sceneisempty:' + _sceneId).then(val => {
+      iApp.get('sceneisempty:' + this._refID).then(val => {
         resolve(val === '1');
       });
     });
@@ -1669,7 +1663,6 @@ export class Scene {
         reject(Error('not available for source plugins'));
       } else {
         items.reverse();
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return (el instanceof Source || el instanceof Item) })) {
@@ -1705,7 +1698,7 @@ export class Scene {
             let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
-              return iApp.getAsList('sceneconfig:' + _sceneId);
+              return iApp.getAsList('sceneconfig:' + this._refID);
             }).then(jsonArr => {
               let newOrder = new JXON();
               newOrder.children = [];
@@ -1725,7 +1718,7 @@ export class Scene {
                 }
 
                 iApp.set(
-                  'sceneconfig:' + _sceneId,
+                  'sceneconfig:' + this._refID,
                   //Revert back the formatting from json when transforming to xml
                   XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
