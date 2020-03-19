@@ -347,9 +347,6 @@ describe('ScreenSource Interface', function() {
         return firstSource.getCaptureArea();
       }).then(function(rec1) {
         expect(rec1).toBeInstanceOf(XJS.Rectangle);
-        console.log('REC 1');
-        console.log(rec1);
-        console.log(firstRec);
         expect(rec1.toCoordinateString()).toEqual(firstRec.toCoordinateString());
         done();
       })

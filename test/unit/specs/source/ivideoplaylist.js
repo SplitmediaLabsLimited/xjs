@@ -10,6 +10,7 @@ describe('VideoPlaylist Source interface', function() {
   var local = {};
   var attachedId;
   var enumeratedSource = [];
+  var failingVideo = 'F:\\Videos\\failingVideo.webm';
 
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
@@ -128,6 +129,19 @@ describe('VideoPlaylist Source interface', function() {
       return asyncId;
     });
 
+    spyOn(window.external, 'GetVideoDuration')
+      .and.callFake(function(file) {
+      if (file !== failingVideo) {
+        setTimeout(function() {
+          window.OnGetVideoDuration(file, randomInt(0, 999999999).toString());
+        },10);
+      } else {
+        setTimeout(function() {
+          window.OnGetVideoDurationFailed(file);
+        },10);
+      }
+    });
+
     spyOn(window.external, 'SearchVideoItem')
     .and.callFake(function(id) {
       attachedId = id;
@@ -168,9 +182,6 @@ describe('VideoPlaylist Source interface', function() {
         }
         firstSource = enumeratedSource[0];
         secondSource = enumeratedSource[1];
-        console.log('ENUMERATED :: ')
-        console.log(enumeratedSource);
-        console.log(secondSource);
         done();
       });
     }
@@ -230,12 +241,41 @@ describe('VideoPlaylist Source interface', function() {
         expect(setVideo).toEqual(video);
         done();
       })
-
-
-
-
-
     });
-  })
+  });
+
+  describe('should be able to get and set the video sources ', function() {
+    var filePath = 'F:\\Videos\\';
+    var filename = randomWord(5);
+    var videosOfFirst;
+
+    it ('through a promise', function(done) {
+      var promise = firstSource.getVideoPlaylistSources();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as an array of strings', function(done) {
+      firstSource.getVideoPlaylistSources()
+      .then(function(videos) {
+        expect(videos).toBeArray();
+        expect(videos).eachToBeTypeOf('string');
+        videosOfFirst = videos;
+        videosOfFirst.push(`${filePath}${filename}.mp4`);
+        return firstSource.setVideoPlaylistSources(videosOfFirst);
+      }).then(function() {
+        return firstSource.getVideoPlaylistSources();
+      }).then(function(videos) {
+        expect(videos.join(',')).toEqual(videosOfFirst.join(','));
+        videosOfFirst.push(failingVideo);
+        return firstSource.setVideoPlaylistSources(videosOfFirst);
+      }).then(function() {
+        done.fail('Failing to get duration should reject');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      });
+    });
+  });
 
 });
