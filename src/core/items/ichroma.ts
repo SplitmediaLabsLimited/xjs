@@ -595,14 +595,14 @@ export class ItemChroma implements IItemChroma {
 
   setChromaColorKeyColor(value: Color): Promise<ItemChroma> {
     return new Promise((resolve, reject) => {
-        if (!(value instanceof Color)) {
-          reject(TypeError('Use a Color object as the parameter.'));
-        } else {
-          iItem.set('prop:key_colorrgb', String(value.getIbgr()),
-            this._id).then(() => {
-              resolve(this);
-        }
-      });
+      if (!(value instanceof Color)) {
+        reject(TypeError('Use a Color object as the parameter.'));
+      } else {
+        iItem.set('prop:key_colorrgb', String(value.getIbgr()),
+          this._id).then(() => {
+            resolve(this);
+        });
+      }
     });
   }
 }
