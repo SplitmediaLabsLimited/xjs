@@ -193,7 +193,7 @@ export class IO {
         IO._remoteCallback[result['file']].shift().resolve(result['result'])
       } else {
         IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(
-          Error('Invalid file path.'));
+          Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(result['file'])}'`));
       }
     })
   }
@@ -221,7 +221,7 @@ window.OnGetVideoDurationFailed = function(file: string) {
     IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
   } else {
     IO._callback[decodeURIComponent(file)].shift().reject(
-      Error('Invalid file path.'));
+      Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(file)}'`));
     if(IO._callback[decodeURIComponent(file)].length === 0) {
       delete IO._callback[decodeURIComponent(file)];
     }
