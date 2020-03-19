@@ -562,7 +562,6 @@ export class ItemChroma implements IItemChroma {
     });
   }
 
-
   getChromaColorKeyExposure(): Promise<number> {
     return new Promise(resolve => {
         iItem.get('prop:key_colorranga', this._id).then(val => {

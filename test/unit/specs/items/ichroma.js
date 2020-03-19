@@ -19,6 +19,8 @@ describe('Chroma interface', function() {
     EXTENSION : 'extension'
   };
 
+  var ctr = 0;
+
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -30,10 +32,15 @@ describe('Chroma interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'ichroma_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
+    }
+
+    if (property.substring(0, 3) === 'src') {
+      property = property.substring(3);
     }
 
     if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
@@ -51,7 +58,8 @@ describe('Chroma interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'ichroma_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -65,6 +73,9 @@ describe('Chroma interface', function() {
     xCallback(asyncId, '0');
     return asyncId;
   };
+
+  var firstItem;
+  var secondItem;
 
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
@@ -81,7 +92,8 @@ describe('Chroma interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+	    ctr++;
+	    var asyncId = 'ichroma_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -125,6 +137,9 @@ describe('Chroma interface', function() {
       return newScene.getItems();
     }).then(function(items) {
       enumeratedItems = items;
+
+        firstItem = enumeratedItems[0];
+        secondItem = enumeratedItems[1];
       done();
     });
   });
@@ -171,4 +186,634 @@ describe('Chroma interface', function() {
       expect(currentItem).hasMethods(methods);
     });
   });
+
+  describe('should be able to get and set if chroma is enabled', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.isChromaEnabled();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = randomBoolean();
+      var secondBoolean = randomBoolean();
+
+      firstItem.setChromaEnabled(firstBoolean)
+      .then(function() {
+        return secondItem.setChromaEnabled(secondBoolean);
+      }).then(function() {
+        return firstItem.isChromaEnabled();
+      }).then(function(mute1) {
+        expect(mute1).toBeTypeOf('boolean');
+        expect(mute1).toEqual(firstBoolean);
+        return secondItem.isChromaEnabled();
+      }).then(function(mute2) {
+        expect(mute2).toBeTypeOf('boolean');
+        expect(mute2).toEqual(secondBoolean);
+        return firstItem.setChromaEnabled(!firstBoolean);
+      }).then(function() {
+        return firstItem.isChromaEnabled();
+      }).then(function(mute3) {
+        expect(mute3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set keying type', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getKeyingType();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var keyingType = [
+        XJS.KeyingType.LEGACY,
+        XJS.KeyingType.COLORKEY,
+        XJS.KeyingType.RGBKEY
+      ];
+
+      var firstRand = keyingType[randomInt(0,2)];
+      var secondRand = keyingType[randomInt(0,2)];
+
+      firstItem.setKeyingType(firstRand)
+      .then(function() {
+        return secondItem.setKeyingType(secondRand);
+      }).then(function() {
+        return firstItem.getKeyingType();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getKeyingType();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(3);
+
+      firstItem.setKeyingType(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setKeyingType(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma antialising level', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaAntiAliasLevel();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var ChromaAntiAliasLevel = [
+        XJS.ChromaAntiAliasLevel.NONE,
+        XJS.ChromaAntiAliasLevel.LOW,
+        XJS.ChromaAntiAliasLevel.HIGH
+      ];
+
+      var firstRand = ChromaAntiAliasLevel[randomInt(0,2)];
+      var secondRand = ChromaAntiAliasLevel[randomInt(0,2)];
+
+      firstItem.setChromaAntiAliasLevel(firstRand)
+      .then(function() {
+        return secondItem.setChromaAntiAliasLevel(secondRand);
+      }).then(function() {
+        return firstItem.getChromaAntiAliasLevel();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaAntiAliasLevel();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(3);
+
+      firstItem.setChromaAntiAliasLevel(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaAntiAliasLevel(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma legacy brightness', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaLegacyBrightness();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaLegacyBrightness(firstRand)
+      .then(function() {
+        return secondItem.setChromaLegacyBrightness(secondRand);
+      }).then(function() {
+        return firstItem.getChromaLegacyBrightness();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaLegacyBrightness();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaLegacyBrightness(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaLegacyBrightness(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma legacy saturation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaLegacySaturation();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaLegacySaturation(firstRand)
+      .then(function() {
+        return secondItem.setChromaLegacySaturation(secondRand);
+      }).then(function() {
+        return firstItem.getChromaLegacySaturation();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaLegacySaturation();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaLegacySaturation(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaLegacySaturation(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma legacy hue', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaLegacyHue();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,180);
+      var secondRand = randomInt(0,180);
+
+      firstItem.setChromaLegacyHue(firstRand)
+      .then(function() {
+        return secondItem.setChromaLegacyHue(secondRand);
+      }).then(function() {
+        return firstItem.getChromaLegacyHue();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaLegacyHue();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(181, 1000);
+
+      firstItem.setChromaLegacyHue(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaLegacyHue(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma legacy threshold', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaLegacyThreshold();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaLegacyThreshold(firstRand)
+      .then(function() {
+        return secondItem.setChromaLegacyThreshold(secondRand);
+      }).then(function() {
+        return firstItem.getChromaLegacyThreshold();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaLegacyThreshold();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaLegacyThreshold(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaLegacyThreshold(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma legacy alpha smoothing', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaLegacyAlphaSmoothing();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaLegacyAlphaSmoothing(firstRand)
+      .then(function() {
+        return secondItem.setChromaLegacyAlphaSmoothing(secondRand);
+      }).then(function() {
+        return firstItem.getChromaLegacyAlphaSmoothing();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaLegacyAlphaSmoothing();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaLegacyAlphaSmoothing(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaLegacyAlphaSmoothing(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set keying type', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaRGBKeyPrimaryColor();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var chromaPrimaryColors = [
+        XJS.ChromaPrimaryColors.RED,
+        XJS.ChromaPrimaryColors.GREEN,
+        XJS.ChromaPrimaryColors.BLUE
+      ];
+
+      var firstRand = chromaPrimaryColors[randomInt(0,2)];
+      var secondRand = chromaPrimaryColors[randomInt(0,2)];
+
+      firstItem.setChromaRGBKeyPrimaryColor(firstRand)
+      .then(function() {
+        return secondItem.setChromaRGBKeyPrimaryColor(secondRand);
+      }).then(function() {
+        return firstItem.getChromaRGBKeyPrimaryColor();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaRGBKeyPrimaryColor();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(3);
+
+      firstItem.setChromaRGBKeyPrimaryColor(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaRGBKeyPrimaryColor(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma rgb key threshold', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaRGBKeyThreshold();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaRGBKeyThreshold(firstRand)
+      .then(function() {
+        return secondItem.setChromaRGBKeyThreshold(secondRand);
+      }).then(function() {
+        return firstItem.getChromaRGBKeyThreshold();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaRGBKeyThreshold();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaRGBKeyThreshold(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaRGBKeyThreshold(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma rgb key exposure', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaRGBKeyExposure();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaRGBKeyExposure(firstRand)
+      .then(function() {
+        return secondItem.setChromaRGBKeyExposure(secondRand);
+      }).then(function() {
+        return firstItem.getChromaRGBKeyExposure();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaRGBKeyExposure();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaRGBKeyExposure(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaRGBKeyExposure(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma color key threshold', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaColorKeyThreshold();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaColorKeyThreshold(firstRand)
+      .then(function() {
+        return secondItem.setChromaColorKeyThreshold(secondRand);
+      }).then(function() {
+        return firstItem.getChromaColorKeyThreshold();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaColorKeyThreshold();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaColorKeyThreshold(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaColorKeyThreshold(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma color key exposure', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaColorKeyExposure();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setChromaColorKeyExposure(firstRand)
+      .then(function() {
+        return secondItem.setChromaColorKeyExposure(secondRand);
+      }).then(function() {
+        return firstItem.getChromaColorKeyExposure();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getChromaColorKeyExposure();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setChromaColorKeyExposure(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaColorKeyExposure(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set chroma color key color', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getChromaColorKeyColor();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a Color object', function(done) {
+      var randomColorKey = randomColor();
+      var colorObj = XJS.Color.fromRGBString(randomColorKey);
+
+      firstItem.setChromaColorKeyColor(randomColorKey)
+      .then(function() {
+        done.fail('Invalid type was accepted');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setChromaColorKeyColor(colorObj)
+      }).then(function() {
+      	return firstItem.getChromaColorKeyColor();
+      }).then(function(color) {
+        expect(color.getRgb()).toEqual(color.getRgb());
+        done();
+      })
+    });
+  });
+
 });

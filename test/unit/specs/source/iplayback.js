@@ -395,8 +395,6 @@ describe('Playback interface', function() {
       var firstRand = afterPlayback[Math.floor(Math.random() * afterPlayback.length)]
       var secondRand = afterPlayback[Math.floor(Math.random() * afterPlayback.length)]
 
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
       firstSource.setActionAfterPlayback(firstRand)
       .then(function() {
         return secondSource.setActionAfterPlayback(secondRand);
