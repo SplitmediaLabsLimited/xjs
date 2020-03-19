@@ -217,28 +217,28 @@ describe('Flash Source interface', function() {
         done();
       })
     });
+  });
 
-    describe('should be able to get and set if right click is allowed', function(done) {
-      var randomBoolean = Math.random() < 0.5;
-      it ('through a promise', function(done) {
-        var promise = firstSource.getAllowRightClick();
-        expect(promise).toBeInstanceOf(Promise);
+  describe('should be able to get and set if right click is allowed', function(done) {
+    var randomBoolean = Math.random() < 0.5;
+    it ('through a promise', function(done) {
+      var promise = firstSource.getAllowRightClick();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      firstSource.setAllowRightClick(randomBoolean)
+      .then(function() {
+        return firstSource.getAllowRightClick();
+      }).then(function(isAllowed) {
+        expect(isAllowed).toBe(randomBoolean);
+        return firstSource.setAllowRightClick(!randomBoolean);
+      }).then(function() {
+        return firstSource.getAllowRightClick();
+      }).then(function(isAllowed) {
+        expect(isAllowed).toBe(!randomBoolean);
         done();
-      });
-
-      it ('as a boolean', function(done) {
-        firstSource.setAllowRightClick(randomBoolean)
-        .then(function() {
-          return firstSource.getAllowRightClick();
-        }).then(function(isAllowed) {
-          expect(isAllowed).toBe(randomBoolean);
-          return firstSource.setAllowRightClick(!randomBoolean);
-        }).then(function() {
-          return firstSource.getAllowRightClick();
-        }).then(function(isAllowed) {
-          expect(isAllowed).toBe(!randomBoolean);
-          done();
-        });
       });
     });
   });
