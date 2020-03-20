@@ -131,7 +131,9 @@ export class ItemColor implements IItemColor {
 
   setTransparency(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      if (value < 0 || value > 255) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < 0 || value > 255) {
         reject(RangeError('Transparency may only be in the range 0-255.'));
       } else {
         iItem.set('prop:alpha', String(value), this._id).then(() => {
@@ -151,7 +153,9 @@ export class ItemColor implements IItemColor {
 
   setBrightness(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      if (value < -100 || value > 100) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -100 || value > 100) {
         reject(RangeError('Brightness may only be in the range -100 to 100.'));
       } else {
         iItem.set('prop:cc_brightness', String(value), this._id).then(() => {
@@ -171,7 +175,9 @@ export class ItemColor implements IItemColor {
 
   setContrast(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      if (value < -100 || value > 100) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -100 || value > 100) {
         reject(RangeError('Contrast may only be in the range -100 to 100.'));
       } else {
         iItem.set('prop:cc_contrast', String(value), this._id).then(() => {
@@ -191,7 +197,9 @@ export class ItemColor implements IItemColor {
 
   setHue(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      if (value < -180 || value > 180) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -180 || value > 180) {
         reject(RangeError('Contrast may only be in the range -180 to 180.'));
       } else {
         iItem.set('prop:cc_hue', String(value), this._id).then(() => {
@@ -211,7 +219,9 @@ export class ItemColor implements IItemColor {
 
   setSaturation(value: number): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      if (value < -100 || value > 100) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -100 || value > 100) {
         reject(RangeError('Saturation may only be in the range -100 to 100'));
       } else {
         iItem.set('prop:cc_saturation', String(value), this._id).then(() => {
@@ -239,15 +249,19 @@ export class ItemColor implements IItemColor {
 
   setBorderColor(value: Color): Promise<ItemColor> {
     return new Promise((resolve, reject) => {
-      var colorString: string;
-      if (value.isTransparent()) {
-        colorString = '0';
+      if (!(value instanceof Color)) {
+        reject(TypeError('Use a Color object as the parameter.'));
       } else {
-        colorString = String(value.getIbgr() - 0x80000000);
+        var colorString: string;
+        if (value.isTransparent()) {
+          colorString = '0';
+        } else {
+          colorString = String(value.getIbgr() - 0x80000000);
+        }
+        iItem.set('prop:border', colorString, this._id).then(() => {
+          resolve(this);
+        });
       }
-      iItem.set('prop:border', colorString, this._id).then(() => {
-        resolve(this);
-      });
     });
   }
 
