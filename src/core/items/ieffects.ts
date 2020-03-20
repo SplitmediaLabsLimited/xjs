@@ -560,8 +560,12 @@ export class ItemEffect implements IItemEffect {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 0;
       parameterObject['indIndex'] = [1, 2, 3];
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Color.fromRGBString('#' + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])));
+      this._getEdgeEffectValue(parameterObject)
+      .then(val => {
+        resolve(Color.fromRGBString(
+          '#' + this._convertToHex(val[0]) +
+          this._convertToHex(val[1]) +
+          this._convertToHex(val[2])));
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
       });
@@ -570,13 +574,18 @@ export class ItemEffect implements IItemEffect {
 
   setBorderEffectColor(value: Color): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
-      var parameterObject = {};
-      parameterObject['arrayIndex'] = 0;
-      parameterObject['indIndex'] = [1, 2, 3];
-      parameterObject['value'] = this._getRGBArray(value);
-      this._setEdgeEffectValue(parameterObject).then(() => {
-        resolve(this);
-      });
+      if (!(value instanceof Color)) {
+        reject(TypeError('Use a Color object as the parameter.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 0;
+        parameterObject['indIndex'] = [1, 2, 3];
+        parameterObject['value'] = this._getRGBArray(value);
+        this._setEdgeEffectValue(parameterObject)
+        .then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -833,7 +842,7 @@ export class ItemEffect implements IItemEffect {
       const filterValue = value instanceof Filter ? value.toString() : value;
 
       if (!filterValue || Object.keys(Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
-        reject('Filter non-existent');
+        reject(Error('Filter non-existent'));
       } else {
         var configString = '';
         var effectString = '';
