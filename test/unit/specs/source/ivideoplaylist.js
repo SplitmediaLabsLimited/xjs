@@ -174,7 +174,6 @@ describe('VideoPlaylist Source interface', function() {
         var sourceArrayLength = sourceArray.length;
         if (sourceArrayLength > 0) {
           for (var i = 0; i < sourceArrayLength; i++) {
-            debugger;
             if (sourceArray[i] instanceof XJS.VideoPlaylistSource) {
               enumeratedSource.push(sourceArray[i]);
             }

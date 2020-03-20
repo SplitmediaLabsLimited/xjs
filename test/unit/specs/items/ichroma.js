@@ -137,9 +137,8 @@ describe('Chroma interface', function() {
       return newScene.getItems();
     }).then(function(items) {
       enumeratedItems = items;
-
-        firstItem = enumeratedItems[0];
-        secondItem = enumeratedItems[1];
+      firstItem = enumeratedItems[0];
+      secondItem = enumeratedItems[1];
       done();
     });
   });
