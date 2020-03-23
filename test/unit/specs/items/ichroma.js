@@ -202,18 +202,18 @@ describe('Chroma interface', function() {
         return secondItem.setChromaEnabled(secondBoolean);
       }).then(function() {
         return firstItem.isChromaEnabled();
-      }).then(function(mute1) {
-        expect(mute1).toBeTypeOf('boolean');
-        expect(mute1).toEqual(firstBoolean);
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
         return secondItem.isChromaEnabled();
-      }).then(function(mute2) {
-        expect(mute2).toBeTypeOf('boolean');
-        expect(mute2).toEqual(secondBoolean);
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
         return firstItem.setChromaEnabled(!firstBoolean);
       }).then(function() {
         return firstItem.isChromaEnabled();
-      }).then(function(mute3) {
-        expect(mute3).toEqual(!firstBoolean);
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
         done();
       })
     });
@@ -241,13 +241,13 @@ describe('Chroma interface', function() {
         return secondItem.setKeyingType(secondRand);
       }).then(function() {
         return firstItem.getKeyingType();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(keying1) {
+        expect(keying1).toBeTypeOf('number');
+        expect(keying1).toEqual(firstRand);
         return secondItem.getKeyingType();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(keying2) {
+        expect(keying2).toBeTypeOf('number');
+        expect(keying2).toEqual(secondRand);
         done();
       })
     });
@@ -293,13 +293,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaAntiAliasLevel(secondRand);
       }).then(function() {
         return firstItem.getChromaAntiAliasLevel();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(aalevel1) {
+        expect(aalevel1).toBeTypeOf('number');
+        expect(aalevel1).toEqual(firstRand);
         return secondItem.getChromaAntiAliasLevel();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(aalevel2) {
+        expect(aalevel2).toBeTypeOf('number');
+        expect(aalevel2).toEqual(secondRand);
         done();
       })
     });
@@ -339,13 +339,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaLegacyBrightness(secondRand);
       }).then(function() {
         return firstItem.getChromaLegacyBrightness();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(brightness1) {
+        expect(brightness1).toBeTypeOf('number');
+        expect(brightness1).toEqual(firstRand);
         return secondItem.getChromaLegacyBrightness();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(brightness2) {
+        expect(brightness2).toBeTypeOf('number');
+        expect(brightness2).toEqual(secondRand);
         done();
       })
     });
@@ -385,13 +385,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaLegacySaturation(secondRand);
       }).then(function() {
         return firstItem.getChromaLegacySaturation();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(saturation1) {
+        expect(saturation1).toBeTypeOf('number');
+        expect(saturation1).toEqual(firstRand);
         return secondItem.getChromaLegacySaturation();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(saturation2) {
+        expect(saturation2).toBeTypeOf('number');
+        expect(saturation2).toEqual(secondRand);
         done();
       })
     });
@@ -431,13 +431,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaLegacyHue(secondRand);
       }).then(function() {
         return firstItem.getChromaLegacyHue();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(hue1) {
+        expect(hue1).toBeTypeOf('number');
+        expect(hue1).toEqual(firstRand);
         return secondItem.getChromaLegacyHue();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(hue2) {
+        expect(hue2).toBeTypeOf('number');
+        expect(hue2).toEqual(secondRand);
         done();
       })
     });
@@ -477,13 +477,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaLegacyThreshold(secondRand);
       }).then(function() {
         return firstItem.getChromaLegacyThreshold();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(threshold1) {
+        expect(threshold1).toBeTypeOf('number');
+        expect(threshold1).toEqual(firstRand);
         return secondItem.getChromaLegacyThreshold();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(threshold2) {
+        expect(threshold2).toBeTypeOf('number');
+        expect(threshold2).toEqual(secondRand);
         done();
       })
     });
@@ -523,13 +523,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaLegacyAlphaSmoothing(secondRand);
       }).then(function() {
         return firstItem.getChromaLegacyAlphaSmoothing();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(smoothing1) {
+        expect(smoothing1).toBeTypeOf('number');
+        expect(smoothing1).toEqual(firstRand);
         return secondItem.getChromaLegacyAlphaSmoothing();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(smoothing2) {
+        expect(smoothing2).toBeTypeOf('number');
+        expect(smoothing2).toEqual(secondRand);
         done();
       })
     });
@@ -575,13 +575,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaRGBKeyPrimaryColor(secondRand);
       }).then(function() {
         return firstItem.getChromaRGBKeyPrimaryColor();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(color1) {
+        expect(color1).toBeTypeOf('number');
+        expect(color1).toEqual(firstRand);
         return secondItem.getChromaRGBKeyPrimaryColor();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(color2) {
+        expect(color2).toBeTypeOf('number');
+        expect(color2).toEqual(secondRand);
         done();
       })
     });
@@ -621,13 +621,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaRGBKeyThreshold(secondRand);
       }).then(function() {
         return firstItem.getChromaRGBKeyThreshold();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(threshold1) {
+        expect(threshold1).toBeTypeOf('number');
+        expect(threshold1).toEqual(firstRand);
         return secondItem.getChromaRGBKeyThreshold();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(threshold2) {
+        expect(threshold2).toBeTypeOf('number');
+        expect(threshold2).toEqual(secondRand);
         done();
       })
     });
@@ -667,13 +667,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaRGBKeyExposure(secondRand);
       }).then(function() {
         return firstItem.getChromaRGBKeyExposure();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(exposure1) {
+        expect(exposure1).toBeTypeOf('number');
+        expect(exposure1).toEqual(firstRand);
         return secondItem.getChromaRGBKeyExposure();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(exposure2) {
+        expect(exposure2).toBeTypeOf('number');
+        expect(exposure2).toEqual(secondRand);
         done();
       })
     });
@@ -713,13 +713,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaColorKeyThreshold(secondRand);
       }).then(function() {
         return firstItem.getChromaColorKeyThreshold();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(threshold1) {
+        expect(threshold1).toBeTypeOf('number');
+        expect(threshold1).toEqual(firstRand);
         return secondItem.getChromaColorKeyThreshold();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(threshold2) {
+        expect(threshold2).toBeTypeOf('number');
+        expect(threshold2).toEqual(secondRand);
         done();
       })
     });
@@ -759,13 +759,13 @@ describe('Chroma interface', function() {
         return secondItem.setChromaColorKeyExposure(secondRand);
       }).then(function() {
         return firstItem.getChromaColorKeyExposure();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(exposure1) {
+        expect(exposure1).toBeTypeOf('number');
+        expect(exposure1).toEqual(firstRand);
         return secondItem.getChromaColorKeyExposure();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(exposure2) {
+        expect(exposure2).toBeTypeOf('number');
+        expect(exposure2).toEqual(secondRand);
         done();
       })
     });
@@ -814,5 +814,4 @@ describe('Chroma interface', function() {
       })
     });
   });
-
 });

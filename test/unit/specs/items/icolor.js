@@ -184,13 +184,13 @@ describe('Color interface', function() {
         return secondItem.setTransparency(secondRand);
       }).then(function() {
         return firstItem.getTransparency();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(transparency1) {
+        expect(transparency1).toBeTypeOf('number');
+        expect(transparency1).toEqual(firstRand);
         return secondItem.getTransparency();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(transparency2) {
+        expect(transparency2).toBeTypeOf('number');
+        expect(transparency2).toEqual(secondRand);
         done();
       })
     });
@@ -272,32 +272,28 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-    	var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
-    	var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
-
-      var firstRand = randomSignMultiplier1 * randomInt(0,100);
-      var secondRand = randomSignMultiplier2 * randomInt(0,100);
+      var firstRand = randomSignMultiplier() * randomInt(0,100);
+      var secondRand = randomSignMultiplier() * randomInt(0,100);
 
       firstItem.setContrast(firstRand)
       .then(function() {
         return secondItem.setContrast(secondRand);
       }).then(function() {
         return firstItem.getContrast();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(contrast1) {
+        expect(contrast1).toBeTypeOf('number');
+        expect(contrast1).toEqual(firstRand);
         return secondItem.getContrast();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(contrast2) {
+        expect(contrast2).toBeTypeOf('number');
+        expect(contrast2).toEqual(secondRand);
         done();
       })
     });
 
     it ('which rejects for invalid parameters', function(done) {
-    	var randomSignMultiplier = Math.round(Math.random()) * 2 - 1;
     	var randomString = randomWord(5);
-    	var randomNumber = randomSignMultiplier * randomInt(101, 1000);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
 
       firstItem.setContrast(randomString)
       .then(function() {
@@ -333,13 +329,13 @@ describe('Color interface', function() {
         return secondItem.setHue(secondRand);
       }).then(function() {
         return firstItem.getHue();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(hue1) {
+        expect(hue1).toBeTypeOf('number');
+        expect(hue1).toEqual(firstRand);
         return secondItem.getHue();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(hue2) {
+        expect(hue2).toBeTypeOf('number');
+        expect(hue2).toEqual(secondRand);
         done();
       })
     });
@@ -383,13 +379,13 @@ describe('Color interface', function() {
         return secondItem.setSaturation(secondRand);
       }).then(function() {
         return firstItem.getSaturation();
-      }).then(function(action1) {
-        expect(action1).toBeTypeOf('number');
-        expect(action1).toEqual(firstRand);
+      }).then(function(saturation1) {
+        expect(saturation1).toBeTypeOf('number');
+        expect(saturation1).toEqual(firstRand);
         return secondItem.getSaturation();
-      }).then(function(action2) {
-        expect(action2).toBeTypeOf('number');
-        expect(action2).toEqual(secondRand);
+      }).then(function(saturation2) {
+        expect(saturation2).toBeTypeOf('number');
+        expect(saturation2).toEqual(secondRand);
         done();
       })
     });
@@ -466,18 +462,18 @@ describe('Color interface', function() {
         return secondItem.setFullDynamicColorRange(secondBoolean);
       }).then(function() {
         return firstItem.isFullDynamicColorRange();
-      }).then(function(mute1) {
-        expect(mute1).toBeTypeOf('boolean');
-        expect(mute1).toEqual(firstBoolean);
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
         return secondItem.isFullDynamicColorRange();
-      }).then(function(mute2) {
-        expect(mute2).toBeTypeOf('boolean');
-        expect(mute2).toEqual(secondBoolean);
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
         return firstItem.setFullDynamicColorRange(!firstBoolean);
       }).then(function() {
         return firstItem.isFullDynamicColorRange();
-      }).then(function(mute3) {
-        expect(mute3).toEqual(!firstBoolean);
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
         done();
       })
     });
