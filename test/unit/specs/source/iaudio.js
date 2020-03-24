@@ -47,6 +47,7 @@ describe('Audio interface', function() {
 
   var getLocal = function(property) {
     ctr++;
+    var asyncId = 'iaudio_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -57,20 +58,21 @@ describe('Audio interface', function() {
 
     if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
-      xCallback(ctr, local[attachedId][property]);
+      xCallback(asyncId, local[attachedId][property]);
     } else {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
       var itemSelected = placement.querySelector(selected);
-      xCallback(ctr, itemSelected.getAttribute(property));
+      xCallback(asyncId, itemSelected.getAttribute(property));
     }
 
-    return ctr;
+    return asyncId;
   };
 
   var setLocal = function(property, value) {
     ctr++;
+    var asyncId = 'iaudio_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -81,8 +83,8 @@ describe('Audio interface', function() {
     }
 
     local[attachedId][property] = value;
-    xCallback(ctr, '0');
-    return ctr;
+    xCallback(asyncId, '0');
+    return asyncId;
   };
 
   var firstSource;
@@ -103,21 +105,22 @@ describe('Audio interface', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
       ctr++;
+      var asyncId = 'iaudio_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
-          xCallback(ctr, encodeURIComponent(mockPresetConfig));
+          xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         case 'sceneconfig':
-          xCallback(ctr, encodeURIComponent(mockPresetConfig));
+          xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
         case 'scene:0':
-          xCallback(ctr, '0');
+          xCallback(asyncId, '0');
           break;
       }
 
-      return ctr;
+      return asyncId;
     });
 
     spyOn(window.external, 'SearchVideoItem')
@@ -205,8 +208,8 @@ describe('Audio interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setVolume(firstRand)
       .then(function() {
         return secondSource.setVolume(secondRand);

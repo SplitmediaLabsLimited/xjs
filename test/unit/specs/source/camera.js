@@ -36,8 +36,11 @@ describe('Camera Source', function() {
     }, 10);
   };
 
+  var ctr = 0;
+
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'camera_source_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -76,7 +79,8 @@ describe('Camera Source', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'camera_source_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');

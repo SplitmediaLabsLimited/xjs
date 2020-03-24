@@ -194,10 +194,10 @@ describe('Flash Source interface', function() {
     });
 
     it ('as a Rectangle object', function(done) {
-      var firstRand = Math.floor(Math.random() * (1000));
-      var secondRand = Math.floor(Math.random() * (1000));
-      var thirdRand = Math.floor(Math.random() * (1000));
-      var fourthRand = Math.floor(Math.random() * (1000));
+      var firstRand = randomInt(0,1000);
+      var secondRand = randomInt(0,1000);
+      var thirdRand = randomInt(0,1000);
+      var fourthRand = randomInt(0,1000);
 
       var firstRec = XJS.Rectangle.fromDimensions(firstRand, secondRand);
       var secondRec = XJS.Rectangle.fromDimensions(thirdRand, fourthRand);
@@ -220,7 +220,7 @@ describe('Flash Source interface', function() {
   });
 
   describe('should be able to get and set if right click is allowed', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean()
     it ('through a promise', function(done) {
       var promise = firstSource.getAllowRightClick();
       expect(promise).toBeInstanceOf(Promise);
@@ -228,16 +228,16 @@ describe('Flash Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setAllowRightClick(randomBoolean)
+      firstSource.setAllowRightClick(randomBool)
       .then(function() {
         return firstSource.getAllowRightClick();
       }).then(function(isAllowed) {
-        expect(isAllowed).toBe(randomBoolean);
-        return firstSource.setAllowRightClick(!randomBoolean);
+        expect(isAllowed).toBe(randomBool);
+        return firstSource.setAllowRightClick(!randomBool);
       }).then(function() {
         return firstSource.getAllowRightClick();
       }).then(function(isAllowed) {
-        expect(isAllowed).toBe(!randomBoolean);
+        expect(isAllowed).toBe(!randomBool);
         done();
       });
     });

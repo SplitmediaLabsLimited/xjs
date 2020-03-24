@@ -32,7 +32,7 @@ describe('Color interface', function() {
   };
 
   var getLocal = function(property) {
-	ctr++;
+		ctr++;
     var asyncId = 'icolor_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
@@ -222,11 +222,8 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-			var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
-			var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
-
-      var firstRand = randomSignMultiplier1 * randomInt(0,100);
-      var secondRand = randomSignMultiplier2 * randomInt(0,100);
+      var firstRand = randomSignMultiplier() * randomInt(0,100);
+      var secondRand = randomSignMultiplier() * randomInt(0,100);
 
       firstItem.setBrightness(firstRand)
       .then(function() {
@@ -245,9 +242,8 @@ describe('Color interface', function() {
     });
 
     it ('which rejects for invalid parameters', function(done) {
-    	var randomSignMultiplier = Math.round(Math.random()) * 2 - 1;
     	var randomString = randomWord(5);
-    	var randomNumber = randomSignMultiplier * randomInt(101, 1000);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
 
       firstItem.setBrightness(randomString)
       .then(function() {
@@ -318,11 +314,8 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-    	var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
-    	var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
-
-      var firstRand = randomSignMultiplier1 * randomInt(0,180);
-      var secondRand = randomSignMultiplier2 * randomInt(0,180);
+      var firstRand = randomSignMultiplier() * randomInt(0,180);
+      var secondRand = randomSignMultiplier() * randomInt(0,180);
 
       firstItem.setHue(firstRand)
       .then(function() {
@@ -341,9 +334,8 @@ describe('Color interface', function() {
     });
 
     it ('which rejects for invalid parameters', function(done) {
-    	var randomSignMultiplier = Math.round(Math.random()) * 2 - 1;
     	var randomString = randomWord(5);
-    	var randomNumber = randomSignMultiplier * randomInt(181, 1000);
+    	var randomNumber = randomSignMultiplier() * randomInt(181, 1000);
 
       firstItem.setHue(randomString)
       .then(function() {
@@ -368,11 +360,8 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-    	var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
-    	var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
-
-      var firstRand = randomSignMultiplier1 * randomInt(0,100);
-      var secondRand = randomSignMultiplier2 * randomInt(0,100);
+      var firstRand = randomSignMultiplier() * randomInt(1,100);
+      var secondRand = randomSignMultiplier() * randomInt(1,100);
 
       firstItem.setSaturation(firstRand)
       .then(function() {
@@ -391,9 +380,8 @@ describe('Color interface', function() {
     });
 
     it ('which rejects for invalid parameters', function(done) {
-    	var randomSignMultiplier = Math.round(Math.random()) * 2 - 1;
     	var randomString = randomWord(5);
-    	var randomNumber = randomSignMultiplier * randomInt(101, 1000);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
 
       firstItem.setSaturation(randomString)
       .then(function() {

@@ -11,6 +11,8 @@ describe('Extension Class', function() {
     test : 'data'
   };
 
+  var ctr = 0;
+
   beforeEach(function(done) {
     env.set('extension');
     spyOn(window.external, 'SetPresProperty')
@@ -20,7 +22,8 @@ describe('Extension Class', function() {
 
     spyOn(window.external, 'GetPresProperty')
       .and.callFake(function(presName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'iextension_' + ctr;
 
       setTimeout(function() {
         window.OnAsyncCallback(asyncId, local[presName]);

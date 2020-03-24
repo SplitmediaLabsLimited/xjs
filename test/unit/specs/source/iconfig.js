@@ -37,6 +37,8 @@ describe('Config interface', function() {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
+  var ctr = 0;
+
   var xCallback = function(id, result) {
     setTimeout(function() {
       window.OnAsyncCallback(id, result);
@@ -44,7 +46,8 @@ describe('Config interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'iconfig_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -68,7 +71,8 @@ describe('Config interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'iconfig_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -98,7 +102,8 @@ describe('Config interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'iconfig_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));

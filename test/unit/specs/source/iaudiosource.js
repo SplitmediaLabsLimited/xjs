@@ -231,8 +231,8 @@ describe('Audio Source interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (128))
-      var secondRand = Math.floor(Math.random() * (128))
+      var firstRand = randomInt(0, 128);
+      var secondRand = randomInt(0, 128);
       firstSource.setSilenceThreshold(firstRand)
       .then(function() {
         return secondSource.setSilenceThreshold(secondRand);
@@ -276,8 +276,8 @@ describe('Audio Source interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (10000))
-      var secondRand = Math.floor(Math.random() * (10000))
+      var firstRand = randomInt(0, 10000);
+      var secondRand = randomInt(0, 10000);
       firstSource.setSilencePeriod(firstRand)
       .then(function() {
         return secondSource.setSilencePeriod(secondRand);
@@ -321,8 +321,8 @@ describe('Audio Source interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setAudioOffset(firstRand)
       .then(function() {
         return secondSource.setAudioOffset(secondRand);

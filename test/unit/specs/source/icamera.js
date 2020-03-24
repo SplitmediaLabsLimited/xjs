@@ -264,8 +264,8 @@ describe('CameraSource interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setAudioOffset(firstRand)
       .then(function() {
         return secondSource.setAudioOffset(secondRand);
@@ -328,24 +328,24 @@ describe('CameraSource interface', function() {
   });
 
   describe('should be able to get and set stream pause state', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
-      var promise = firstSource.setStreamPaused(randomBoolean);
+      var promise = firstSource.setStreamPaused(randomBool);
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setStreamPaused(randomBoolean)
+      firstSource.setStreamPaused(randomBool)
       .then(function() {
         return firstSource.isStreamPaused();
       }).then(function(isPaused) {
-        expect(isPaused).toBe(randomBoolean);
-        return firstSource.setStreamPaused(!randomBoolean);
+        expect(isPaused).toBe(randomBool);
+        return firstSource.setStreamPaused(!randomBool);
       }).then(function() {
         return firstSource.isStreamPaused();
       }).then(function(isPaused) {
-        expect(isPaused).toBe(!randomBoolean);
+        expect(isPaused).toBe(!randomBool);
         done();
       });
     });
@@ -398,8 +398,8 @@ describe('CameraSource interface', function() {
     it ('as a number', function(done) {
       shouldFailHWCheck = true;
       isCamActive = true;
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setDelay(firstRand)
       .then(function() {
         return secondSource.setDelay(secondRand);
@@ -420,7 +420,7 @@ describe('CameraSource interface', function() {
     it ('which rejects when setting to invalid sources', function(done) {
       shouldFailHWCheck = true;
       isCamActive = true;
-      var randomNumber = Math.floor(Math.random() * (100))
+      var randomNumber = randomInt();
       thirdSource.setDelay(randomNumber)
       .then(function() {
         done.fail('It should reject if source is explicitly tagged not to support delay');   
@@ -432,24 +432,24 @@ describe('CameraSource interface', function() {
   });
 
   describe('should be able to get and set forced deinterlace state', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
-      var promise = firstSource.setForceDeinterlace(randomBoolean);
+      var promise = firstSource.setForceDeinterlace(randomBool);
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setForceDeinterlace(randomBoolean)
+      firstSource.setForceDeinterlace(randomBool)
       .then(function() {
         return firstSource.isForceDeinterlace();
       }).then(function(isForcedDeinterlace) {
-        expect(isForcedDeinterlace).toBe(randomBoolean);
-        return firstSource.setForceDeinterlace(!randomBoolean);
+        expect(isForcedDeinterlace).toBe(randomBool);
+        return firstSource.setForceDeinterlace(!randomBool);
       }).then(function() {
         return firstSource.isForceDeinterlace();
       }).then(function(isForcedDeinterlace) {
-        expect(isForcedDeinterlace).toBe(!randomBoolean);
+        expect(isForcedDeinterlace).toBe(!randomBool);
         done();
       });
     });

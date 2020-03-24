@@ -207,7 +207,7 @@ describe('Game Source interface', function() {
   });
 
   describe('should be able to get and set special optimization', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isSpecialOptimizationEnabled();
       expect(promise).toBeInstanceOf(Promise);
@@ -215,23 +215,23 @@ describe('Game Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setSpecialOptimizationEnabled(randomBoolean)
+      firstSource.setSpecialOptimizationEnabled(randomBool)
       .then(function() {
         return firstSource.isSpecialOptimizationEnabled();
       }).then(function(isOptimized) {
-        expect(isOptimized).toBe(randomBoolean);
-        return firstSource.setSpecialOptimizationEnabled(!randomBoolean);
+        expect(isOptimized).toBe(randomBool);
+        return firstSource.setSpecialOptimizationEnabled(!randomBool);
       }).then(function() {
         return firstSource.isSpecialOptimizationEnabled();
       }).then(function(isOptimized) {
-        expect(isOptimized).toBe(!randomBoolean);
+        expect(isOptimized).toBe(!randomBool);
         done();
       });
     });
   })
 
   describe('should be able to get and set showing of mouse', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isShowMouseEnabled();
       expect(promise).toBeInstanceOf(Promise);
@@ -239,16 +239,16 @@ describe('Game Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setShowMouseEnabled(randomBoolean)
+      firstSource.setShowMouseEnabled(randomBool)
       .then(function() {
         return firstSource.isShowMouseEnabled();
       }).then(function(isShown) {
-        expect(isShown).toBe(randomBoolean);
-        return firstSource.setShowMouseEnabled(!randomBoolean);
+        expect(isShown).toBe(randomBool);
+        return firstSource.setShowMouseEnabled(!randomBool);
       }).then(function() {
         return firstSource.isShowMouseEnabled();
       }).then(function(isShown) {
-        expect(isShown).toBe(!randomBoolean);
+        expect(isShown).toBe(!randomBool);
         done();
       });
     });
@@ -296,7 +296,7 @@ describe('Game Source interface', function() {
   })
 
   describe('should be able to get and set game source transparency', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isTransparent();
       expect(promise).toBeInstanceOf(Promise);
@@ -304,16 +304,16 @@ describe('Game Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setTransparent(randomBoolean)
+      firstSource.setTransparent(randomBool)
       .then(function() {
         return firstSource.isTransparent();
       }).then(function(isTransparent) {
-        expect(isTransparent).toBe(randomBoolean);
-        return firstSource.setTransparent(!randomBoolean);
+        expect(isTransparent).toBe(randomBool);
+        return firstSource.setTransparent(!randomBool);
       }).then(function() {
         return firstSource.isTransparent();
       }).then(function(isTransparent) {
-        expect(isTransparent).toBe(!randomBoolean);
+        expect(isTransparent).toBe(!randomBool);
         done();
       });
     });
@@ -327,13 +327,13 @@ describe('Game Source interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (76)) + 24;
-      var secondRand = Math.floor(Math.random() * (76)) + 24;
-      var randomBoolean = Math.random() < 0.5;
+      var firstRand = randomInt(24, 100);
+      var secondRand = randomInt(24, 100);
+      var randomBool = randomBoolean();
 
       firstSource.setGameFPSCap(firstRand)
       .then(function() {
-        return secondSource.setGameFPSCap(secondRand * Number(randomBoolean));
+        return secondSource.setGameFPSCap(secondRand * Number(randomBool));
       }).then(function() {
         return firstSource.getGameFPSCap();
       }).then(function(cap1) {
@@ -342,7 +342,7 @@ describe('Game Source interface', function() {
         return secondSource.getGameFPSCap();
       }).then(function(cap2) {
         expect(cap2).toBeTypeOf('number');
-        expect(cap2).toEqual(secondRand * Number(randomBoolean));
+        expect(cap2).toEqual(secondRand * Number(randomBool));
         done();
       })
     });

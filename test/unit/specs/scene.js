@@ -21,17 +21,6 @@ describe('Scene ===', function() {
     lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
   }
 
-  var randomWord = function(length) {
-    var rand;
-    var str = '';
-
-    for (var i = 0; i < length; i++) {
-      rand = Math.floor(Math.random() * 25) + 65; // A ~ Z
-      str += String.fromCharCode(rand);
-    }
-    return str;
-  }
-
   var ctr = 0;
 
   var XJS = require('xjs');
@@ -1471,7 +1460,7 @@ describe('Scene ===', function() {
 
       it('as a number', function(done) {
         // get number from 0 to 1000
-        var randomNumber = Math.floor(Math.random() * (1000))
+        var randomNumber = randomInt(0,1000);
         scene.getPresetTransitionTime()
         .then(function(transitionTime) {
           expect(transitionTime).toBeTypeOf('number');
@@ -1635,7 +1624,7 @@ describe('Scene ===', function() {
 
       it('as a number', function(done) {
         // get number from 0 to 1000
-        var randomNumber = Math.floor(Math.random() * (1000))
+        var randomNumber = randomInt(0,1000);
         scene.getTransitionTime()
         .then(function(transitionTime) {
           expect(transitionTime).toBeTypeOf('number');

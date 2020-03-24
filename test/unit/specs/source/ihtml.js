@@ -48,7 +48,6 @@ describe('HTML Source interface', function() {
   var getLocal = function(property) {
     ctr++;
     var asyncId = 'ihtml_' + ctr;
-
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
@@ -58,14 +57,12 @@ describe('HTML Source interface', function() {
 
     if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
-
       xCallback(asyncId, local[attachedId][property]);
     } else {
       var placement = parseXml(mockPresetConfig)
         .getElementsByTagName('placement')[0];
       var selected = '[id="' + attachedId + '"]';
       var itemSelected = placement.querySelector(selected);
-
       xCallback(asyncId, itemSelected.getAttribute(property));
     }
 
@@ -75,7 +72,6 @@ describe('HTML Source interface', function() {
   var setLocal = function(property, value) {
     ctr++;
     var asyncId = 'ihtml_' + ctr;
-
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
@@ -237,7 +233,7 @@ describe('HTML Source interface', function() {
   })
 
   describe('should be able to get and set browser transparency', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isBrowserTransparent();
       expect(promise).toBeInstanceOf(Promise);
@@ -245,24 +241,24 @@ describe('HTML Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.enableBrowserTransparency(randomBoolean)
+      firstSource.enableBrowserTransparency(randomBool)
       .then(function() {
         return firstSource.isBrowserTransparent();
       }).then(function(isTransparent) {
-        expect(isTransparent).toBe(randomBoolean);
-        return firstSource.enableBrowserTransparency(!randomBoolean);
+        expect(isTransparent).toBe(randomBool);
+        return firstSource.enableBrowserTransparency(!randomBool);
       }).then(function() {
         return firstSource.isBrowserTransparent();
       }).then(function(isTransparent) {
-        expect(isTransparent).toBe(!randomBoolean);
+        expect(isTransparent).toBe(!randomBool);
         done();
       });
     });
   })
 
   describe('should be able to get and set usage of up to 60 fps', function() {
-    var randomBoolean = false;
-    // var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
+    // var randomBool = true;
     it ('through a promise', function(done) {
       var promise = firstSource.isBrowser60FPS();
       expect(promise).toBeInstanceOf(Promise);
@@ -270,16 +266,19 @@ describe('HTML Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.enableBrowser60FPS(randomBoolean)
+      firstSource.enableBrowser60FPS(randomBool)
       .then(function() {
-        return firstSource.isBrowser60FPS();
-      }).then(function(is60fps) {
-        expect(is60fps).toBe(randomBoolean);
-        return firstSource.enableBrowser60FPS(!randomBoolean);
+        // we put delay here to hack on enable also getting first the property
+        return new Promise(resolve => setTimeout(resolve, 0));
       }).then(function() {
         return firstSource.isBrowser60FPS();
       }).then(function(is60fps) {
-        expect(is60fps).toBe(!randomBoolean);
+        expect(is60fps).toBe(randomBool);
+        return firstSource.enableBrowser60FPS(!randomBool);
+      }).then(function() {
+        return firstSource.isBrowser60FPS();
+      }).then(function(is60fps) {
+        expect(is60fps).toBe(!randomBool);
         done();
       });
     });
@@ -293,10 +292,10 @@ describe('HTML Source interface', function() {
     });
 
     it ('as a Rectangle object', function(done) {
-      var firstRand = Math.floor(Math.random() * (1000));
-      var secondRand = Math.floor(Math.random() * (1000));
-      var thirdRand = Math.floor(Math.random() * (1000));
-      var fourthRand = Math.floor(Math.random() * (1000));
+      var firstRand = randomInt(0,1000);
+      var secondRand = randomInt(0,1000);
+      var thirdRand = randomInt(0,1000);
+      var fourthRand = randomInt(0,1000);
 
       var firstRec = XJS.Rectangle.fromDimensions(firstRand, secondRand);
       var secondRec = XJS.Rectangle.fromDimensions(thirdRand, fourthRand);
@@ -319,7 +318,7 @@ describe('HTML Source interface', function() {
   });
 
   describe('should be able to get and set if right click is allowed', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getAllowRightClick();
       expect(promise).toBeInstanceOf(Promise);
@@ -327,16 +326,16 @@ describe('HTML Source interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setAllowRightClick(randomBoolean)
+      firstSource.setAllowRightClick(randomBool)
       .then(function() {
         return firstSource.getAllowRightClick();
       }).then(function(isAllowed) {
-        expect(isAllowed).toBe(randomBoolean);
-        return firstSource.setAllowRightClick(!randomBoolean);
+        expect(isAllowed).toBe(randomBool);
+        return firstSource.setAllowRightClick(!randomBool);
       }).then(function() {
         return firstSource.getAllowRightClick();
       }).then(function(isAllowed) {
-        expect(isAllowed).toBe(!randomBoolean);
+        expect(isAllowed).toBe(!randomBool);
         done();
       });
     });
@@ -352,7 +351,7 @@ describe('HTML Source interface', function() {
     it ('which does not overwrite each other', function(done) {
       var firstJS = `console.log('READY')`;
       var secondJS = `alert('START')`;
-      var randomBoolean = Math.random() < 0.5;
+      var randomBool = randomBoolean();
       var firstCSS = 'body{ color: red }';
       var secondCSS = 'body{ background-color: blue }';
 
@@ -364,30 +363,30 @@ describe('HTML Source interface', function() {
       }).then(function() {
         return firstSource.setCustomCSS(firstCSS);
       }).then(function() {
-        return firstSource.enableCustomCSS(randomBoolean);
+        return firstSource.enableCustomCSS(randomBool);
       }).then(function() {
         return firstSource.isCustomCSSEnabled();
       }).then(function(isEnabled1) {
         expect(isEnabled1).toBeTypeOf('boolean');
-        expect(isEnabled1).toBe(randomBoolean);
-        return firstSource.enableCustomCSS(!randomBoolean);
+        expect(isEnabled1).toBe(randomBool);
+        return firstSource.enableCustomCSS(!randomBool);
       }).then(function() {
         return firstSource.isCustomCSSEnabled();
       }).then(function(isEnabled1) {
         expect(isEnabled1).toBeTypeOf('boolean');
-        expect(isEnabled1).toBe(!randomBoolean);
-        return secondSource.enableCustomCSS(!randomBoolean);
+        expect(isEnabled1).toBe(!randomBool);
+        return secondSource.enableCustomCSS(!randomBool);
       }).then(function() {
         return secondSource.isCustomCSSEnabled();
       }).then(function(isEnabled2) {
         expect(isEnabled2).toBeTypeOf('boolean');
-        expect(isEnabled2).toBe(!randomBoolean);
-        return secondSource.enableCustomCSS(randomBoolean);
+        expect(isEnabled2).toBe(!randomBool);
+        return secondSource.enableCustomCSS(randomBool);
       }).then(function() {
         return secondSource.isCustomCSSEnabled();
       }).then(function(isEnabled2) {
         expect(isEnabled2).toBeTypeOf('boolean');
-        expect(isEnabled2).toBe(randomBoolean);
+        expect(isEnabled2).toBe(randomBool);
         return firstSource.getCustomCSS();
       }).then(function(customCSS1) {
         expect(customCSS1).toBeTypeOf('string');
@@ -404,30 +403,30 @@ describe('HTML Source interface', function() {
       }).then(function(browserJS1) {
         expect(browserJS1).toBeTypeOf('string');
         expect(browserJS1).toEqual(firstJS);
-        return firstSource.enableBrowserJS(randomBoolean);
+        return firstSource.enableBrowserJS(randomBool);
       }).then(function() {
         return firstSource.isBrowserJSEnabled();
       }).then(function(isEnabled1) {
         expect(isEnabled1).toBeTypeOf('boolean');
-        expect(isEnabled1).toBe(randomBoolean);
-        return firstSource.enableBrowserJS(!randomBoolean);
+        expect(isEnabled1).toBe(randomBool);
+        return firstSource.enableBrowserJS(!randomBool);
       }).then(function() {
         return firstSource.isBrowserJSEnabled();
       }).then(function(isEnabled1) {
         expect(isEnabled1).toBeTypeOf('boolean');
-        expect(isEnabled1).toBe(!randomBoolean);
-        return secondSource.enableBrowserJS(!randomBoolean);
+        expect(isEnabled1).toBe(!randomBool);
+        return secondSource.enableBrowserJS(!randomBool);
       }).then(function() {
         return secondSource.isBrowserJSEnabled();
       }).then(function(isEnabled2) {
         expect(isEnabled2).toBeTypeOf('boolean');
-        expect(isEnabled2).toBe(!randomBoolean);
-        return secondSource.enableBrowserJS(randomBoolean);
+        expect(isEnabled2).toBe(!randomBool);
+        return secondSource.enableBrowserJS(randomBool);
       }).then(function() {
         return secondSource.isBrowserJSEnabled();
       }).then(function(isEnabled2) {
         expect(isEnabled2).toBeTypeOf('boolean');
-        expect(isEnabled2).toBe(randomBoolean);
+        expect(isEnabled2).toBe(randomBool);
         done();
       });
     });
