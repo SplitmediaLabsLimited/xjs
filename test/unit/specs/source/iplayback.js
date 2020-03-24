@@ -298,7 +298,7 @@ describe('Playback interface', function() {
     });
   });
 
-  describe('should be able to get and set playing state', function(done) {
+  describe('should be able to get and set playing state', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isPlaying();
@@ -412,7 +412,7 @@ describe('Playback interface', function() {
     });
   });
 
-  describe('should be able to get and set auto start on scene load', function(done) {
+  describe('should be able to get and set auto start on scene load', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isAutostartOnSceneLoad();
@@ -460,7 +460,7 @@ describe('Playback interface', function() {
     });
   });
 
-  describe('should be able to get and set to remember playback position', function(done) {
+  describe('should be able to get and set to remember playback position', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isRememberingPlaybackPosition();
@@ -484,7 +484,7 @@ describe('Playback interface', function() {
     });
   });
 
-  describe('should be able to get and set to show playback position', function(done) {
+  describe('should be able to get and set to show playback position', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isShowingPlaybackPosition();

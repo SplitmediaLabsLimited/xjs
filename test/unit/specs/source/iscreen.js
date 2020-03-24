@@ -205,7 +205,7 @@ describe('ScreenSource Interface', function() {
     expect(secondSource).hasMethods(methods);
   });
 
-  describe('should be able to get and set sticking to title', function(done) {
+  describe('should be able to get and set sticking to title', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isStickToTitle();
@@ -229,7 +229,7 @@ describe('ScreenSource Interface', function() {
     });
   });
 
-  describe('should be able to get and set capturing of layered windows', function(done) {
+  describe('should be able to get and set capturing of layered windows', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getCaptureLayered();
@@ -253,7 +253,7 @@ describe('ScreenSource Interface', function() {
     });
   });
 
-  describe('should be able to get and set capture optimization', function(done) {
+  describe('should be able to get and set capture optimization', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getOptimizedCapture();
@@ -277,7 +277,7 @@ describe('ScreenSource Interface', function() {
     });
   });
 
-  describe('should be able to get and set to show mouse clicks', function(done) {
+  describe('should be able to get and set to show mouse clicks', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getShowMouseClicks();
@@ -301,7 +301,7 @@ describe('ScreenSource Interface', function() {
     });
   });
 
-  describe('should be able to get and set to show mouse', function(done) {
+  describe('should be able to get and set to show mouse', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getShowMouse();
@@ -353,7 +353,7 @@ describe('ScreenSource Interface', function() {
     });
   });
 
-  describe('should be able to get and set to just include client area', function(done) {
+  describe('should be able to get and set to just include client area', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isClientArea();

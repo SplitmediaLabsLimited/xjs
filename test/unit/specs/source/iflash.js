@@ -219,7 +219,7 @@ describe('Flash Source interface', function() {
     });
   });
 
-  describe('should be able to get and set if right click is allowed', function(done) {
+  describe('should be able to get and set if right click is allowed', function() {
     var randomBool = randomBoolean()
     it ('through a promise', function(done) {
       var promise = firstSource.getAllowRightClick();

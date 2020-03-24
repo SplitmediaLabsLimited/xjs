@@ -375,7 +375,7 @@ describe('Group interface', function() {
     })
   })
 
-	describe('should be able to ungroup', function(done) {
+	describe('should be able to ungroup', function() {
 		it ('as a promise', function(done) {
 			var promise = firstItem.unGroup();
 			expect(promise).toBeInstanceOf(Promise);

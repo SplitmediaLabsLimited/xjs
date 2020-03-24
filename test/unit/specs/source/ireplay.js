@@ -355,7 +355,7 @@ describe('Replay interface', function() {
     });
   });
 
-  describe('should be able to get and set auto start on scene load', function(done) {
+  describe('should be able to get and set auto start on scene load', function() {
     var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isAutostartOnSceneLoad();
