@@ -155,7 +155,7 @@ export class ItemGroup implements IItemGroup {
         const childItems = children.map(item => ItemTypeResolve(item));
         resolve(childItems);
       }).catch(err => {
-        reject('Group item non-existent');
+        reject(Error('Group item non-existent'));
       })
     });
   }
@@ -166,14 +166,14 @@ export class ItemGroup implements IItemGroup {
       iItem.get('prop:scene', this._id)
       .then(sceneIndex => {
         if (sceneIndex === '') {
-          reject('Item is not a group item or non-existent');
+          reject(Error('Item is not a group item or non-existent'));
         }
         return iApp.get(`scenecanaddtogroup:${sceneIndex}:${this._id},${itemArrayString}`);
       }).then(canAdd => {
         if (canAdd === '1') {
           return iApp.callFunc('addtogroup', `${this._id},${itemArrayString}`);
         } else {
-          reject('One or more items provided cannot be added to the group');
+          reject(Error('One or more items provided cannot be added to the group'));
         }
       }).then(result => {
         resolve(this);
@@ -189,14 +189,14 @@ export class ItemGroup implements IItemGroup {
       iItem.get('prop:scene', this._id)
       .then(sceneIndex => {
         if (sceneIndex === '') {
-          reject('Item is not a group item or non-existent');
+          reject(Error('Item is not a group item or non-existent'));
         }
         return iApp.get(`scenecanremovefromgroup:${sceneIndex}:${this._id},${itemArrayString}`);
       }).then(canRemove => {
         if (canRemove === '1' || canRemove === '2') {
           return iApp.callFunc('removefromgroup', `${this._id},${itemArrayString}`);
         } else {
-          reject('One or more items provided cannot be removed from the group');
+          reject(Error('One or more items provided cannot be removed from the group'));
         }
       }).then(result => {
         resolve(this);
