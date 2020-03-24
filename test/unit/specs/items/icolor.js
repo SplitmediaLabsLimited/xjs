@@ -32,7 +32,7 @@ describe('Color interface', function() {
   };
 
   var getLocal = function(property) {
-		ctr++;
+	ctr++;
     var asyncId = 'icolor_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
