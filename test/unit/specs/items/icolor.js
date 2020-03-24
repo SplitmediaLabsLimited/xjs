@@ -222,8 +222,8 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-    	var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
-    	var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
+			var randomSignMultiplier1 = Math.round(Math.random()) * 2 - 1;
+			var randomSignMultiplier2 = Math.round(Math.random()) * 2 - 1;
 
       var firstRand = randomSignMultiplier1 * randomInt(0,100);
       var secondRand = randomSignMultiplier2 * randomInt(0,100);
