@@ -36,7 +36,7 @@ describe('LanguageInfo ===', function() {
     window.SetEvent('event=LanguageChanged&lang=es')
   })
 
-  describe('should be able to get the current language', function(done) {
+  describe('should be able to get the current language', function() {
     beforeEach(function() {
       promise = LanguageInfo.getCode()
     });
