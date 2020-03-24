@@ -206,7 +206,7 @@ describe('ScreenSource Interface', function() {
   });
 
   describe('should be able to get and set sticking to title', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isStickToTitle();
       expect(promise).toBeInstanceOf(Promise);
@@ -214,23 +214,23 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setStickToTitle(randomBoolean)
+      firstSource.setStickToTitle(randomBool)
       .then(function() {
         return firstSource.isStickToTitle();
       }).then(function(shouldStick) {
-        expect(shouldStick).toBe(randomBoolean);
-        return firstSource.setStickToTitle(!randomBoolean);
+        expect(shouldStick).toBe(randomBool);
+        return firstSource.setStickToTitle(!randomBool);
       }).then(function() {
         return firstSource.isStickToTitle();
       }).then(function(shouldStick) {
-        expect(shouldStick).toBe(!randomBoolean);
+        expect(shouldStick).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set capturing of layered windows', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getCaptureLayered();
       expect(promise).toBeInstanceOf(Promise);
@@ -238,23 +238,23 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setCaptureLayered(randomBoolean)
+      firstSource.setCaptureLayered(randomBool)
       .then(function() {
         return firstSource.getCaptureLayered();
       }).then(function(shouldCapture) {
-        expect(shouldCapture).toBe(randomBoolean);
-        return firstSource.setCaptureLayered(!randomBoolean);
+        expect(shouldCapture).toBe(randomBool);
+        return firstSource.setCaptureLayered(!randomBool);
       }).then(function() {
         return firstSource.getCaptureLayered();
       }).then(function(shouldCapture) {
-        expect(shouldCapture).toBe(!randomBoolean);
+        expect(shouldCapture).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set capture optimization', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getOptimizedCapture();
       expect(promise).toBeInstanceOf(Promise);
@@ -262,23 +262,23 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setOptimizedCapture(randomBoolean)
+      firstSource.setOptimizedCapture(randomBool)
       .then(function() {
         return firstSource.getOptimizedCapture();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(randomBoolean);
-        return firstSource.setOptimizedCapture(!randomBoolean);
+        expect(shouldOptimize).toBe(randomBool);
+        return firstSource.setOptimizedCapture(!randomBool);
       }).then(function() {
         return firstSource.getOptimizedCapture();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(!randomBoolean);
+        expect(shouldOptimize).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set to show mouse clicks', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getShowMouseClicks();
       expect(promise).toBeInstanceOf(Promise);
@@ -286,23 +286,23 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setShowMouseClicks(randomBoolean)
+      firstSource.setShowMouseClicks(randomBool)
       .then(function() {
         return firstSource.getShowMouseClicks();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(randomBoolean);
-        return firstSource.setShowMouseClicks(!randomBoolean);
+        expect(shouldOptimize).toBe(randomBool);
+        return firstSource.setShowMouseClicks(!randomBool);
       }).then(function() {
         return firstSource.getShowMouseClicks();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(!randomBoolean);
+        expect(shouldOptimize).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set to show mouse', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.getShowMouse();
       expect(promise).toBeInstanceOf(Promise);
@@ -310,16 +310,16 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setShowMouse(randomBoolean)
+      firstSource.setShowMouse(randomBool)
       .then(function() {
         return firstSource.getShowMouse();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(randomBoolean);
-        return firstSource.setShowMouse(!randomBoolean);
+        expect(shouldOptimize).toBe(randomBool);
+        return firstSource.setShowMouse(!randomBool);
       }).then(function() {
         return firstSource.getShowMouse();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(!randomBoolean);
+        expect(shouldOptimize).toBe(!randomBool);
         done();
       });
     });
@@ -333,10 +333,10 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a Rectangle object', function(done) {
-      var leftRand = Math.floor(Math.random() * (1000));
-      var topRand = Math.floor(Math.random() * (1000));
-      var rightRand = Math.floor(Math.random() * (1920) + leftRand);
-      var bottomRand = Math.floor(Math.random() * (1080) + topRand);
+      var leftRand = randomInt(0, 1000);
+      var topRand = randomInt(0, 1000);
+      var rightRand = randomInt(0, 1920) + leftRand;
+      var bottomRand = randomInt(0, 1080) + topRand;
 
       var firstRec = XJS.Rectangle.fromCoordinates(leftRand, topRand, rightRand, bottomRand);
       firstSource.getCaptureArea()
@@ -354,7 +354,7 @@ describe('ScreenSource Interface', function() {
   });
 
   describe('should be able to get and set to just include client area', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isClientArea();
       expect(promise).toBeInstanceOf(Promise);
@@ -362,16 +362,16 @@ describe('ScreenSource Interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setClientArea(randomBoolean)
+      firstSource.setClientArea(randomBool)
       .then(function() {
         return firstSource.isClientArea();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(randomBoolean);
-        return firstSource.setClientArea(!randomBoolean);
+        expect(shouldOptimize).toBe(randomBool);
+        return firstSource.setClientArea(!randomBool);
       }).then(function() {
         return firstSource.isClientArea();
       }).then(function(shouldOptimize) {
-        expect(shouldOptimize).toBe(!randomBoolean);
+        expect(shouldOptimize).toBe(!randomBool);
         done();
       });
     });

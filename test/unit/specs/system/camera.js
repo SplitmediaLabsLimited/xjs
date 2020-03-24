@@ -5,6 +5,7 @@ describe('Camera', function() {
 
   var XJS = require('xjs');
   var System = XJS.System;
+  var ctr = 0;
 
   describe('should list camera devices', function() {
     var promise;
@@ -13,7 +14,8 @@ describe('Camera', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'camera_' + ctr;
             if(funcName === 'dshowenum:vsrc') {
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, '<list>' +
@@ -88,7 +90,8 @@ describe('Camera', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'camera_' + ctr;
             if(funcName === 'dshowenum:vsrc') {
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, '<list>' +

@@ -279,8 +279,8 @@ describe('Playback interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setPlaybackPosition(firstRand)
       .then(function() {
         return secondSource.setPlaybackPosition(secondRand);
@@ -299,7 +299,7 @@ describe('Playback interface', function() {
   });
 
   describe('should be able to get and set playing state', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isPlaying();
       expect(promise).toBeInstanceOf(Promise);
@@ -307,16 +307,16 @@ describe('Playback interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setPlaying(randomBoolean)
+      firstSource.setPlaying(randomBool)
       .then(function() {
         return firstSource.isPlaying();
       }).then(function(isPlaying) {
-        expect(isPlaying).toBe(randomBoolean);
-        return firstSource.setPlaying(!randomBoolean);
+        expect(isPlaying).toBe(randomBool);
+        return firstSource.setPlaying(!randomBool);
       }).then(function() {
         return firstSource.isPlaying();
       }).then(function(isPlaying) {
-        expect(isPlaying).toBe(!randomBoolean);
+        expect(isPlaying).toBe(!randomBool);
         done();
       });
     });
@@ -330,8 +330,8 @@ describe('Playback interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setPlaybackStartPosition(firstRand)
       .then(function() {
         return secondSource.setPlaybackStartPosition(secondRand);
@@ -357,8 +357,8 @@ describe('Playback interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (100))
-      var secondRand = Math.floor(Math.random() * (100))
+      var firstRand = randomInt();
+      var secondRand = randomInt();
       firstSource.setPlaybackEndPosition(firstRand)
       .then(function() {
         return secondSource.setPlaybackEndPosition(secondRand);
@@ -413,7 +413,7 @@ describe('Playback interface', function() {
   });
 
   describe('should be able to get and set auto start on scene load', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isAutostartOnSceneLoad();
       expect(promise).toBeInstanceOf(Promise);
@@ -421,47 +421,47 @@ describe('Playback interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setAutostartOnSceneLoad(randomBoolean)
+      firstSource.setAutostartOnSceneLoad(randomBool)
       .then(function() {
         return firstSource.isAutostartOnSceneLoad();
       }).then(function(isAutostart) {
-        expect(isAutostart).toBe(randomBoolean);
-        return firstSource.setAutostartOnSceneLoad(!randomBoolean);
+        expect(isAutostart).toBe(randomBool);
+        return firstSource.setAutostartOnSceneLoad(!randomBool);
       }).then(function() {
         return firstSource.isAutostartOnSceneLoad();
       }).then(function(isAutostart) {
-        expect(isAutostart).toBe(!randomBoolean);
+        expect(isAutostart).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set forced deinterlace state', function() {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
-      var promise = firstSource.setForceDeinterlace(randomBoolean);
+      var promise = firstSource.setForceDeinterlace(randomBool);
       expect(promise).toBeInstanceOf(Promise);
       done();
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setForceDeinterlace(randomBoolean)
+      firstSource.setForceDeinterlace(randomBool)
       .then(function() {
         return firstSource.isForceDeinterlace();
       }).then(function(isForcedDeinterlace) {
-        expect(isForcedDeinterlace).toBe(randomBoolean);
-        return firstSource.setForceDeinterlace(!randomBoolean);
+        expect(isForcedDeinterlace).toBe(randomBool);
+        return firstSource.setForceDeinterlace(!randomBool);
       }).then(function() {
         return firstSource.isForceDeinterlace();
       }).then(function(isForcedDeinterlace) {
-        expect(isForcedDeinterlace).toBe(!randomBoolean);
+        expect(isForcedDeinterlace).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set to remember playback position', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isRememberingPlaybackPosition();
       expect(promise).toBeInstanceOf(Promise);
@@ -469,23 +469,23 @@ describe('Playback interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setRememberingPlaybackPosition(randomBoolean)
+      firstSource.setRememberingPlaybackPosition(randomBool)
       .then(function() {
         return firstSource.isRememberingPlaybackPosition();
       }).then(function(shouldRemember) {
-        expect(shouldRemember).toBe(randomBoolean);
-        return firstSource.setRememberingPlaybackPosition(!randomBoolean);
+        expect(shouldRemember).toBe(randomBool);
+        return firstSource.setRememberingPlaybackPosition(!randomBool);
       }).then(function() {
         return firstSource.isRememberingPlaybackPosition();
       }).then(function(shouldRemember) {
-        expect(shouldRemember).toBe(!randomBoolean);
+        expect(shouldRemember).toBe(!randomBool);
         done();
       });
     });
   });
 
   describe('should be able to get and set to show playback position', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isShowingPlaybackPosition();
       expect(promise).toBeInstanceOf(Promise);
@@ -493,16 +493,16 @@ describe('Playback interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setShowingPlaybackPosition(randomBoolean)
+      firstSource.setShowingPlaybackPosition(randomBool)
       .then(function() {
         return firstSource.isShowingPlaybackPosition();
       }).then(function(shouldShow) {
-        expect(shouldShow).toBe(randomBoolean);
-        return firstSource.setShowingPlaybackPosition(!randomBoolean);
+        expect(shouldShow).toBe(randomBool);
+        return firstSource.setShowingPlaybackPosition(!randomBool);
       }).then(function() {
         return firstSource.isShowingPlaybackPosition();
       }).then(function(shouldShow) {
-        expect(shouldShow).toBe(!randomBoolean);
+        expect(shouldShow).toBe(!randomBool);
         done();
       });
     });

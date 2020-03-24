@@ -7,7 +7,7 @@ var VideoPlaylist   = XJS.VideoPlaylist ;
 var env = new window.Environment(XJS);
 var environments = ['props', 'extension', 'plugin'];
 var newFile = 'C:\\movie.mov';
-
+var ctr = 0;
 describe('Video Playlist', function() {
   var defpos = 0;
   var itemPosition = '';
@@ -15,7 +15,8 @@ describe('Video Playlist', function() {
   beforeEach(function() {
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'videoplaylist_' + ctr;
       if (funcName === 'scene:0') {
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, '0');
@@ -44,7 +45,8 @@ describe('Video Playlist', function() {
 
     spyOn(window.external, 'AppCallFuncAsync')
       .and.callFake(function(funcName, item) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'videoplaylist_' + ctr;
       if(funcName.includes('additem')) {
         var itemXML = (new window.DOMParser()).parseFromString(item, "text/xml");
         var itemPlacement = itemXML.getElementsByTagName("item")[0];

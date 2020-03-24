@@ -257,13 +257,12 @@ describe('Replay interface', function() {
     });
 
     it ('as a number', function(done) {
-      var isShift = Math.random() < 0.5;
-      var isCtrl = Math.random() < 0.5;
-      var isAlt = Math.random() < 0.5;
+      var isShift = randomBoolean();
+      var isCtrl = randomBoolean();
+      var isAlt = randomBoolean();
 
       // we randomize only a-z, arrow, numpad, and function keys
-      // var randomKey = Math.floor(Math.random() * (123 - 65 + 1)) + 65;
-      var randomKey = Math.floor(Math.random() * 59) + 65;
+      var randomKey = randomInt(65, 123);
       var keyCombination = randomKey | (isShift ? 65536 : 0) | (isCtrl ? 131072 : 0) | (isAlt ? 262144 : 0);
       var keyCombination2 = randomKey | (!isShift ? 65536 : 0) | (!isCtrl ? 131072 : 0) | (!isAlt ? 262144 : 0);
 
@@ -292,8 +291,8 @@ describe('Replay interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = Math.floor(Math.random() * (120))
-      var secondRand = Math.floor(Math.random() * (120))
+      var firstRand = randomInt(0, 120);
+      var secondRand = randomInt(0, 120);
       firstSource.setReplayTime(firstRand)
       .then(function() {
         return secondSource.setReplayTime(secondRand);
@@ -357,7 +356,7 @@ describe('Replay interface', function() {
   });
 
   describe('should be able to get and set auto start on scene load', function(done) {
-    var randomBoolean = Math.random() < 0.5;
+    var randomBool = randomBoolean();
     it ('through a promise', function(done) {
       var promise = firstSource.isAutostartOnSceneLoad();
       expect(promise).toBeInstanceOf(Promise);
@@ -365,16 +364,16 @@ describe('Replay interface', function() {
     });
 
     it ('as a boolean', function(done) {
-      firstSource.setAutostartOnSceneLoad(randomBoolean)
+      firstSource.setAutostartOnSceneLoad(randomBool)
       .then(function() {
         return firstSource.isAutostartOnSceneLoad();
       }).then(function(isAutostart) {
-        expect(isAutostart).toBe(randomBoolean);
-        return firstSource.setAutostartOnSceneLoad(!randomBoolean);
+        expect(isAutostart).toBe(randomBool);
+        return firstSource.setAutostartOnSceneLoad(!randomBool);
       }).then(function() {
         return firstSource.isAutostartOnSceneLoad();
       }).then(function(isAutostart) {
-        expect(isAutostart).toBe(!randomBoolean);
+        expect(isAutostart).toBe(!randomBool);
         done();
       });
     });

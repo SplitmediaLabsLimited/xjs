@@ -6,12 +6,15 @@ describe('StreamInfo ===', function() {
   var XJS = require('xjs');
   var StreamInfo = XJS.StreamInfo;
 
+  var ctr = 0;
+
   describe('should be able to get active stream channels', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = 'stream_info_' + ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -107,7 +110,8 @@ describe('StreamInfo ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = 'stream_info_' + ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -142,7 +146,8 @@ describe('StreamInfo ===', function() {
         })
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);          
+        ctr++;
+        var asyncId = 'stream_info_' + ctr;
         if (funcName == 'recstat') {
 
           setTimeout(function() {
