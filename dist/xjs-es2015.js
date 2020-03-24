@@ -4,7 +4,7 @@
  *
  * XSplit Extensibility Framework and Plugin License
  *
- * Copyright (c) 2015, SplitmediaLabs Limited
+ * Copyright (c) 2020, SplitmediaLabs Limited
  * All rights reserved.
  *
  * Redistribution and use in source, minified or binary forms, with or without
@@ -54,6 +54,15 @@ var transition_1 = _require('./transition');
 var version_1 = _require('../internal/util/version');
 var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
 var DEFAULT_SILENCE_DETECTION_PERIOD = 1000;
+var arrayToObj = function (array, separator) {
+    var obj = {};
+    array.map(function (el) {
+        var separatorIndex = el.indexOf(separator);
+        var key = el.substring(0, separatorIndex);
+        obj[key] = el.substring(separatorIndex + 1);
+    });
+    return obj;
+};
 /**
  * The App Class provides you methods to get and set application-related
  * functionalities.
@@ -877,6 +886,51 @@ var App = (function () {
             });
         });
     };
+    /**
+     * return: Promise<boolean>
+     *
+     * Gets whether noise suppression is enabled
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.isNoiseSuppressionEnabled().then(function(val) {
+     *   var isEnabled = val;
+     * });
+     * ```
+     */
+    App.prototype.isNoiseSuppressionEnabled = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHostFunc', 'getProperty', 'sound_ns', function (queryString) {
+                var queryParams = queryString.split('&');
+                var queryObj = arrayToObj(queryParams, '=');
+                resolve(queryObj['Enabled'] === '1');
+            });
+        });
+    };
+    /**
+     * param: enabled<boolean>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Enables or disables noise suppression
+     *
+     * ### Usage
+     *
+     * ```javascript
+     * App.enableNoiseSuppression(enabled).then(function(val) {
+     *   var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.enableNoiseSuppression = function (enabled) {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHostFunc', 'setProperty', 'sound_ns', "Enabled=" + Number(enabled), function (setVal) {
+                resolve(setVal);
+            });
+        });
+    };
     // Transition Services
     /**
      * return: Promise<Transition>
@@ -1047,7 +1101,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":52,"../internal/internal":56,"../internal/util/json":59,"../internal/util/version":63,"../internal/util/xml":64,"../system/audio":65,"../util/rectangle":79,"./environment":4,"./transition":51}],2:[function(_require,module,exports){
+},{"../internal/app":60,"../internal/internal":64,"../internal/util/json":67,"../internal/util/version":71,"../internal/util/xml":72,"../system/audio":73,"../util/rectangle":90,"./environment":4,"./transition":59}],2:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1216,7 +1270,7 @@ function _subscribeEventManager() {
     });
 }
 exports._subscribeEventManager = _subscribeEventManager;
-},{"../internal/eventmanager":53,"../internal/util/json":59,"../util/eventemitter":76,"./environment":4,"./streaminfo":49}],3:[function(_require,module,exports){
+},{"../internal/eventmanager":61,"../internal/util/json":67,"../util/eventemitter":86,"./environment":4,"./streaminfo":57}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1405,7 +1459,7 @@ window_1.default.Setdlldogrant = function (value) {
         oldSetdlldogrant(value);
     }
 };
-},{"../internal/internal":56,"../util/eventemitter":76,"../util/window":80}],4:[function(_require,module,exports){
+},{"../internal/internal":64,"../util/eventemitter":86,"../util/window":92}],4:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 var window_1 = _require('../util/window');
 /**
@@ -1465,7 +1519,7 @@ var Environment = (function () {
     return Environment;
 })();
 exports.Environment = Environment;
-},{"../internal/remote":58,"../util/window":80}],5:[function(_require,module,exports){
+},{"../internal/remote":66,"../util/window":92}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
@@ -1619,7 +1673,7 @@ window_1.default.Setid = function (id) {
         oldSetid(id);
     }
 };
-},{"../core/environment":4,"../internal/app":52,"../internal/internal":56,"../internal/remote":58,"../util/window":80}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":60,"../internal/internal":64,"../internal/remote":66,"../util/window":92}],6:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /**
  * The Filter class represents a post-processing shader used within XSplit Broadcaster.
@@ -1755,7 +1809,7 @@ var AudioItem = (function (_super) {
 })(item_1.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iaudiosource":33,"./item":18}],8:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iaudiosource":37,"./item":20}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1882,7 +1936,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [item_2.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, icamera_1.SourceCamera]);
-},{"../../internal/item":57,"../../internal/util/mixin":61,"../source/iaudio":32,"../source/icamera":34,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],9:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/mixin":69,"../source/iaudio":36,"../source/icamera":38,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],9:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1927,7 +1981,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iflash":36,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],10:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iflash":40,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],10:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1987,7 +2041,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igame_1.iSourceGame]);
-},{"../../internal/util/mixin":61,"../source/igame":37,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],11:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/igame":41,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2026,7 +2080,47 @@ var GenericItem = (function (_super) {
 exports.GenericItem = GenericItem;
 mixin_1.applyMixins(GenericItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":61,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],12:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],12:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var igroup_1 = _require('./igroup');
+var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
+var itransition_1 = _require('./itransition');
+var item_1 = _require('./item');
+/**
+ * The GroupItem class represents a group item.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
+ * Implements: {@link #core/IItemChroma Core/IItemChroma},
+ * {@link #core/IItemColor Core/IItemColor},
+ * {@link #core/IItemLayout Core/IItemLayout},
+ * {@link #core/IItemTransition Core/IItemTransition},
+ * {@link #core/IItemEffect Core/IItemEffect}
+ *
+ *  All methods marked as *Chainable* resolve with the original `GroupItem`
+ *  instance.
+ */
+var GroupItem = (function (_super) {
+    __extends(GroupItem, _super);
+    function GroupItem() {
+        _super.apply(this, arguments);
+    }
+    return GroupItem;
+})(item_1.Item);
+exports.GroupItem = GroupItem;
+mixin_1.applyMixins(GroupItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    ieffects_1.ItemEffect, igroup_1.ItemGroup]);
+},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./igroup":17,"./ilayout":18,"./item":20,"./itransition":21}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2089,7 +2183,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iconfig":35,"../source/ihtml":38,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],13:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iconfig":39,"../source/ihtml":42,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2464,16 +2558,21 @@ var ItemChroma = (function () {
     };
     ItemChroma.prototype.setChromaColorKeyColor = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), _this._id).then(function () {
-                resolve(_this);
-            });
+        return new Promise(function (resolve, reject) {
+            if (!(value instanceof color_1.Color)) {
+                reject(TypeError('Use a Color object as the parameter.'));
+            }
+            else {
+                item_1.Item.set('prop:key_colorrgb', String(value.getIbgr()), _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
         });
     };
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":57,"../../util/color":75}],14:[function(_require,module,exports){
+},{"../../internal/item":65,"../../util/color":85}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2491,7 +2590,10 @@ var ItemColor = (function () {
     ItemColor.prototype.setTransparency = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < 0 || value > 255) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 255) {
                 reject(RangeError('Transparency may only be in the range 0-255.'));
             }
             else {
@@ -2512,7 +2614,10 @@ var ItemColor = (function () {
     ItemColor.prototype.setBrightness = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -100 || value > 100) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -100 || value > 100) {
                 reject(RangeError('Brightness may only be in the range -100 to 100.'));
             }
             else {
@@ -2533,7 +2638,10 @@ var ItemColor = (function () {
     ItemColor.prototype.setContrast = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -100 || value > 100) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -100 || value > 100) {
                 reject(RangeError('Contrast may only be in the range -100 to 100.'));
             }
             else {
@@ -2554,7 +2662,10 @@ var ItemColor = (function () {
     ItemColor.prototype.setHue = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -180 || value > 180) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -180 || value > 180) {
                 reject(RangeError('Contrast may only be in the range -180 to 180.'));
             }
             else {
@@ -2575,7 +2686,10 @@ var ItemColor = (function () {
     ItemColor.prototype.setSaturation = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -100 || value > 100) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -100 || value > 100) {
                 reject(RangeError('Saturation may only be in the range -100 to 100'));
             }
             else {
@@ -2604,16 +2718,21 @@ var ItemColor = (function () {
     ItemColor.prototype.setBorderColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var colorString;
-            if (value.isTransparent()) {
-                colorString = '0';
+            if (!(value instanceof color_1.Color)) {
+                reject(TypeError('Use a Color object as the parameter.'));
             }
             else {
-                colorString = String(value.getIbgr() - 0x80000000);
+                var colorString;
+                if (value.isTransparent()) {
+                    colorString = '0';
+                }
+                else {
+                    colorString = String(value.getIbgr() - 0x80000000);
+                }
+                item_1.Item.set('prop:border', colorString, _this._id).then(function () {
+                    resolve(_this);
+                });
             }
-            item_1.Item.set('prop:border', colorString, _this._id).then(function () {
-                resolve(_this);
-            });
         });
     };
     ItemColor.prototype.isFullDynamicColorRange = function () {
@@ -2640,7 +2759,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":57,"../../util/color":75}],15:[function(_require,module,exports){
+},{"../../internal/item":65,"../../util/color":85}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2940,8 +3059,11 @@ var ItemEffect = (function () {
             var parameterObject = {};
             parameterObject['arrayIndex'] = 0;
             parameterObject['indIndex'] = [1, 2, 3];
-            _this._getEdgeEffectValue(parameterObject).then(function (val) {
-                resolve(color_1.Color.fromRGBString('#' + _this._convertToHex(val[0]) + _this._convertToHex(val[1]) + _this._convertToHex(val[2])));
+            _this._getEdgeEffectValue(parameterObject)
+                .then(function (val) {
+                resolve(color_1.Color.fromRGBString('#' + _this._convertToHex(val[0]) +
+                    _this._convertToHex(val[1]) +
+                    _this._convertToHex(val[2])));
             }).catch(function (err) {
                 resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
             });
@@ -2950,13 +3072,19 @@ var ItemEffect = (function () {
     ItemEffect.prototype.setBorderEffectColor = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var parameterObject = {};
-            parameterObject['arrayIndex'] = 0;
-            parameterObject['indIndex'] = [1, 2, 3];
-            parameterObject['value'] = _this._getRGBArray(value);
-            _this._setEdgeEffectValue(parameterObject).then(function () {
-                resolve(_this);
-            });
+            if (!(value instanceof color_1.Color)) {
+                reject(TypeError('Use a Color object as the parameter.'));
+            }
+            else {
+                var parameterObject = {};
+                parameterObject['arrayIndex'] = 0;
+                parameterObject['indIndex'] = [1, 2, 3];
+                parameterObject['value'] = _this._getRGBArray(value);
+                _this._setEdgeEffectValue(parameterObject)
+                    .then(function () {
+                    resolve(_this);
+                });
+            }
         });
     };
     ItemEffect.prototype.getShadowEffectColor = function () {
@@ -3224,7 +3352,7 @@ var ItemEffect = (function () {
             var intensityConfig = "0," + intensity + ",0,0,0";
             var filterValue = value instanceof filter_1.Filter ? value.toString() : value;
             if (!filterValue || Object.keys(filter_1.Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
-                reject('Filter non-existent');
+                reject(Error('Filter non-existent'));
             }
             else {
                 var configString = '';
@@ -3285,7 +3413,119 @@ var ItemEffect = (function () {
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":57,"../../internal/util/json":59,"../../util/color":75,"../filter":6}],16:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/json":67,"../../util/color":85,"../filter":6}],17:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = _require('../../internal/item');
+var app_1 = _require('../../internal/app');
+var itemtyperesolve_1 = _require('../../util/itemtyperesolve');
+var item_2 = _require('./item');
+var findItem = function (presetArray, id) {
+    var itemViaID = undefined;
+    presetArray.find(function (item) {
+        var children = item.children || [];
+        var result = children.find(function (child) { return child['id'] === id; });
+        if (result) {
+            itemViaID = result;
+        }
+        return result !== undefined;
+    });
+    return itemViaID;
+};
+var getID = function (item) {
+    if (item instanceof item_2.Item) {
+        return item._id;
+    }
+    else {
+        return item;
+    }
+};
+var toItemString = function (items) {
+    if (!Array.isArray(items)) {
+        return getID(items);
+    }
+    var itemStringArray = items.map(function (item) {
+        return getID(item);
+    });
+    return itemStringArray.join(',');
+};
+var ItemGroup = (function () {
+    function ItemGroup() {
+    }
+    ItemGroup.prototype.getItems = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            app_1.App.getAsList('sceneconfig')
+                .then(function (jsonArray) {
+                // get group item here
+                var groupItem = findItem(jsonArray, _this._id);
+                var children = (groupItem && groupItem.children[0].children) ? groupItem.children[0].children : [];
+                var childItems = children.map(function (item) { return itemtyperesolve_1.ItemTypeResolve(item); });
+                resolve(childItems);
+            }).catch(function (err) {
+                reject(Error('Group item non-existent'));
+            });
+        });
+    };
+    ItemGroup.prototype.addItems = function (items) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var itemArrayString = toItemString(items);
+            item_1.Item.get('prop:scene', _this._id)
+                .then(function (sceneIndex) {
+                if (sceneIndex === '') {
+                    reject(Error('Item is not a group item or non-existent'));
+                }
+                return app_1.App.get("scenecanaddtogroup:" + sceneIndex + ":" + _this._id + "," + itemArrayString);
+            }).then(function (canAdd) {
+                if (canAdd === '1') {
+                    return app_1.App.callFunc('addtogroup', _this._id + "," + itemArrayString);
+                }
+                else {
+                    reject(Error('One or more items provided cannot be added to the group'));
+                }
+            }).then(function (result) {
+                resolve(_this);
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    ItemGroup.prototype.removeItems = function (items) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var itemArrayString = toItemString(items);
+            item_1.Item.get('prop:scene', _this._id)
+                .then(function (sceneIndex) {
+                if (sceneIndex === '') {
+                    reject(Error('Item is not a group item or non-existent'));
+                }
+                return app_1.App.get("scenecanremovefromgroup:" + sceneIndex + ":" + _this._id + "," + itemArrayString);
+            }).then(function (canRemove) {
+                if (canRemove === '1' || canRemove === '2') {
+                    return app_1.App.callFunc('removefromgroup', _this._id + "," + itemArrayString);
+                }
+                else {
+                    reject(Error('One or more items provided cannot be removed from the group'));
+                }
+            }).then(function (result) {
+                resolve(_this);
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    ItemGroup.prototype.unGroup = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.callFunc('removefromgroupall', _this._id).then(function (val) {
+                resolve(_this);
+            });
+        });
+    };
+    return ItemGroup;
+})();
+exports.ItemGroup = ItemGroup;
+},{"../../internal/app":60,"../../internal/item":65,"../../util/itemtyperesolve":88,"./item":20}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var scene_1 = _require('../scene');
@@ -3413,7 +3653,10 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setRotateY = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -360 || value > 360) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -360 || value > 360) {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
@@ -3434,7 +3677,10 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setRotateX = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -360 || value > 360) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -360 || value > 360) {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
@@ -3455,7 +3701,10 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setRotateZ = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -360 || value > 360) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -360 || value > 360) {
                 reject(Error('Invalid value. Min: -360, Max: 360'));
             }
             else {
@@ -3542,7 +3791,10 @@ var ItemLayout = (function () {
     ItemLayout.prototype.setEnhancedRotate = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < -180 || value > 180) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < -180 || value > 180) {
                 reject(Error('Invalid value. Min: -180, Max: 180'));
             }
             else {
@@ -3606,7 +3858,12 @@ var ItemLayout = (function () {
                             return item_1.Item.get('prop:posaspect', _this._id);
                         }).then(function (val) {
                             return item_1.Item.set('prop:pos', val, _this._id);
+                        }).then(function () {
+                            resolve(_this);
                         });
+                    }
+                    else {
+                        resolve(_this);
                     }
                 });
             }
@@ -3986,7 +4243,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":57,"../../util/rectangle":79,"../scene":25}],17:[function(_require,module,exports){
+},{"../../internal/item":65,"../../util/rectangle":90,"../scene":29}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4024,7 +4281,7 @@ var ImageItem = (function (_super) {
 })(item_1.Item);
 exports.ImageItem = ImageItem;
 mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":61,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],18:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],20:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4045,15 +4302,7 @@ var ilayout_1 = _require('./ilayout');
 var version_1 = _require('../../internal/util/version');
 var isource_1 = _require('../source/isource');
 var source_1 = _require('../source/source');
-var game_1 = _require('../source/game');
-var camera_1 = _require('../source/camera');
-var audio_1 = _require('../source/audio');
-var videoplaylist_1 = _require('../source/videoplaylist');
-var html_1 = _require('../source/html');
-var flash_1 = _require('../source/flash');
-var screen_1 = _require('../source/screen');
-var image_1 = _require('../source/image');
-var media_1 = _require('../source/media');
+var sourcetyperesolve_1 = _require('../../util/sourcetyperesolve');
 /**
  * Used by items to determine the its view type.
  *
@@ -4498,46 +4747,70 @@ var Item = (function (_super) {
             item_1.Item.get('config', _this._id)
                 .then(function (config) {
                 var item = json_1.JSON.parse(config);
-                var type = Number(item['type']);
-                if (type === isource_1.ItemTypes.GAMESOURCE) {
-                    resolve(new game_1.GameSource(item));
-                }
-                else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
-                    item['name'].indexOf('Video Playlist') === 0 &&
-                    item['FilePlaylist'] !== '') {
-                    resolve(new videoplaylist_1.VideoPlaylistSource(item));
-                }
-                else if (type === isource_1.ItemTypes.HTML) {
-                    resolve(new html_1.HtmlSource(item));
-                }
-                else if (type === isource_1.ItemTypes.SCREEN) {
-                    resolve(new screen_1.ScreenSource(item));
-                }
-                else if (type === isource_1.ItemTypes.BITMAP ||
-                    type === isource_1.ItemTypes.FILE &&
-                        /\.gif$/.test(item['item'])) {
-                    resolve(new image_1.ImageSource(item));
-                }
-                else if (type === isource_1.ItemTypes.FILE &&
-                    /\.(gif|xbs)$/.test(item['item']) === false &&
-                    /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-                    new RegExp(media_1.MediaTypes.join('|')).test(item['item']) === true) {
-                    resolve(new media_1.MediaSource(item));
-                }
-                else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-                    item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-                    resolve(new camera_1.CameraSource(item));
-                }
-                else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-                    item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-                    resolve(new audio_1.AudioSource(item));
-                }
-                else if (Number(item['type']) === isource_1.ItemTypes.FLASHFILE) {
-                    resolve(new flash_1.FlashSource(item));
+                var srcType = sourcetyperesolve_1.SourceTypeResolve(item);
+                resolve(srcType);
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Checks if item is part of a group
+     *
+     * #### Usage
+     * ```javascript
+     * item.isChildItem()
+     * .then(function(isChild) {
+     *   console.log(isChild);
+     * });
+     * ```
+     */
+    Item.prototype.isChildItem = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            scene_1.Scene.searchScenesByItemId(_this._id)
+                .then(function (scene) {
+                return scene.getSceneIndex();
+            }).then(function (sceneIndex) {
+                return app_1.App.get("scenefindgroup:" + sceneIndex + ":" + _this._id);
+            }).then(function (groupID) {
+                resolve(groupID !== '' && groupID !== null);
+            });
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Get the GroupItem that contains this item.
+     * This rejects if item is not a child item or non-existent
+     *
+     * #### Usage
+     * ```javascript
+     * item.getParentItem()
+     * .then(function(parentItem) {
+     *   console.log(parentItem);
+     * });
+     * ```
+     */
+    Item.prototype.getParentItem = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            scene_1.Scene.searchScenesByItemId(_this._id)
+                .then(function (scene) {
+                return scene.getSceneIndex();
+            }).then(function (sceneIndex) {
+                return app_1.App.get("scenefindgroup:" + sceneIndex + ":" + _this._id);
+            }).then(function (groupID) {
+                if (groupID.trim() === '' || groupID === null) {
+                    reject('Item is not a child item or non-existent');
                 }
                 else {
-                    resolve(new source_1.Source(item));
+                    return scene_1.Scene.searchItemsById(groupID);
                 }
+            }).then(function (groupItem) {
+                resolve(groupItem);
             }).catch(function (err) {
                 reject(err);
             });
@@ -4549,7 +4822,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":52,"../../internal/eventmanager":53,"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/mixin":61,"../../internal/util/version":63,"../../internal/util/xml":64,"../../util/eventemitter":76,"../environment":4,"../scene":25,"../source/audio":26,"../source/camera":27,"../source/flash":29,"../source/game":30,"../source/html":31,"../source/image":39,"../source/isource":43,"../source/media":45,"../source/screen":46,"../source/source":47,"../source/videoplaylist":48,"./ilayout":16}],19:[function(_require,module,exports){
+},{"../../internal/app":60,"../../internal/eventmanager":61,"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/mixin":69,"../../internal/util/version":71,"../../internal/util/xml":72,"../../util/eventemitter":86,"../../util/sourcetyperesolve":91,"../environment":4,"../scene":29,"../source/isource":49,"../source/source":55,"./ilayout":18}],21:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -4587,10 +4860,15 @@ var ItemTransition = (function () {
     };
     ItemTransition.prototype.setTransition = function (value) {
         var _this = this;
-        return new Promise(function (resolve) {
-            item_1.Item.set('prop:transitionid', value.toString(), _this._id).then(function () {
-                resolve(_this);
-            });
+        return new Promise(function (resolve, reject) {
+            if (!(value instanceof transition_1.Transition)) {
+                reject(TypeError('Parameter should be a Transition object.'));
+            }
+            else {
+                item_1.Item.set('prop:transitionid', value.toString(), _this._id).then(function () {
+                    resolve(_this);
+                });
+            }
         });
     };
     ItemTransition.prototype.getTransitionTime = function () {
@@ -4604,7 +4882,10 @@ var ItemTransition = (function () {
     ItemTransition.prototype.setTransitionTime = function (value) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (value < 0 || value > 60000) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value < 0 || value > 60000) {
                 reject(RangeError('Transparency may only be in the range 0 to 60000.'));
             }
             else {
@@ -4617,7 +4898,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":57,"../transition":51}],20:[function(_require,module,exports){
+},{"../../internal/item":65,"../transition":59}],22:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4660,7 +4941,61 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.SourcePlayback, iaudio_1.Audio, ieffects_1.ItemEffect, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/imedia":40,"../source/iplayback":41,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],21:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/imedia":44,"../source/iplayback":45,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],23:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
+var itransition_1 = _require('./itransition');
+var iaudio_1 = _require('../source/iaudio');
+var item_1 = _require('./item');
+var ireplay_1 = _require('../source/ireplay');
+var ReplayItem = (function (_super) {
+    __extends(ReplayItem, _super);
+    function ReplayItem() {
+        _super.apply(this, arguments);
+    }
+    return ReplayItem;
+})(item_1.Item);
+exports.ReplayItem = ReplayItem;
+mixin_1.applyMixins(ReplayItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    iaudio_1.Audio, ieffects_1.ItemEffect, ireplay_1.SourceReplay]);
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/ireplay":46,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],24:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = _require('../../internal/util/mixin');
+var ilayout_1 = _require('./ilayout');
+var icolor_1 = _require('./icolor');
+var ichroma_1 = _require('./ichroma');
+var ieffects_1 = _require('./ieffects');
+var itransition_1 = _require('./itransition');
+var iaudio_1 = _require('../source/iaudio');
+var item_1 = _require('./item');
+var iscene_1 = _require('../source/iscene');
+var SceneItem = (function (_super) {
+    __extends(SceneItem, _super);
+    function SceneItem() {
+        _super.apply(this, arguments);
+    }
+    return SceneItem;
+})(item_1.Item);
+exports.SceneItem = SceneItem;
+mixin_1.applyMixins(SceneItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
+    iaudio_1.Audio, ieffects_1.ItemEffect, iscene_1.SourceScene]);
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iscene":47,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],25:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4700,7 +5035,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":61,"../source/iscreen":42,"./ichroma":13,"./icolor":14,"./ieffects":15,"./ilayout":16,"./item":18,"./itransition":19}],22:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iscreen":48,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],26:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4757,7 +5092,7 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iconfig":35,"../source/iplayback":41,"../source/ivideoplaylist":44,"./ichroma":13,"./icolor":14,"./ilayout":16,"./item":18,"./itransition":19}],23:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iconfig":39,"../source/iplayback":45,"../source/ivideoplaylist":50,"./ichroma":14,"./icolor":15,"./ilayout":18,"./item":20,"./itransition":21}],27:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4767,6 +5102,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var eventemitter_1 = _require('../util/eventemitter');
 var eventmanager_1 = _require('../internal/eventmanager');
+var internal_1 = _require('../internal/internal');
 /**
  * The LanguageInfo class allows access to the change in language made in
  * XSplit Broadcaster.
@@ -4818,6 +5154,13 @@ var LanguageInfo = (function (_super) {
             handler.call(_this, { lang: lang });
         });
     };
+    LanguageInfo.getCode = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHostFunc', 'getProperty', 'html:language', function (langCode) {
+                resolve(langCode);
+            });
+        });
+    };
     LanguageInfo._emitter = new LanguageInfo();
     return LanguageInfo;
 })(eventemitter_1.EventEmitter);
@@ -4833,13 +5176,14 @@ eventmanager_1.EventManager.subscribe(['LanguageChanged'], function (langObj) {
         LanguageInfo.emit(eventString, langObj['lang']);
     }
 });
-},{"../internal/eventmanager":53,"../util/eventemitter":76}],24:[function(_require,module,exports){
+},{"../internal/eventmanager":61,"../internal/internal":64,"../util/eventemitter":86}],28:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('./environment');
 var extension_1 = _require('./extension');
 var streaminfo_1 = _require('./streaminfo');
 var json_1 = _require('../internal/util/json');
+var scene_1 = _require('./scene');
 var item_1 = _require('../internal/item');
 var remote_1 = _require('../internal/remote');
 var window_1 = _require('../util/window');
@@ -4965,6 +5309,64 @@ var Output = (function () {
             }).catch(function (err) {
                 reject(err);
             });
+        });
+    };
+    /**
+     * param: scene<number|Scene>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets a scene to record. Set to live scene or blank string to reset
+     */
+    Output.setSceneToRecord = function (scene) {
+        return new Promise(function (resolve, reject) {
+            if (scene === '' || scene === scene_1.Scene.liveScene()) {
+                internal_1.exec('CallHostFunc', 'setSceneToRecord', '-1');
+                resolve(true);
+            }
+            else if (scene instanceof scene_1.Scene) {
+                scene.getSceneIndex().then(function (sceneIndex) {
+                    internal_1.exec('CallHostFunc', 'setSceneToRecord', Number(sceneIndex));
+                    resolve(true);
+                }).catch(function (err) {
+                    reject(err);
+                });
+            }
+            else if (typeof scene === 'number') {
+                if (scene < 1 || !Number['isInteger'](Number(scene))) {
+                    reject(Error('Invalid parameters. Valid range is greater than 0.'));
+                }
+                else {
+                    internal_1.exec('CallHostFunc', 'setSceneToRecord', String(scene - 1));
+                    resolve(true);
+                }
+            }
+            else {
+                reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+            }
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Start a local recording.
+     */
+    Output.startLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1');
+            resolve(true);
+        });
+    };
+    /**
+     * return: Promise<boolean>
+     *
+     * Unpause a local recording.
+     */
+    Output.stopLocalRecording = function () {
+        return new Promise(function (resolve) {
+            internal_1.exec('CallHost', 'stopBroadcast', 'Local Recording');
+            resolve(true);
         });
     };
     /**
@@ -5238,7 +5640,7 @@ window_1.default.SetBroadcastChannelXml = function (channelXML, name) {
         oldSetBroadcastChannelXml(channelXML);
     }
 };
-},{"../internal/internal":56,"../internal/item":57,"../internal/remote":58,"../internal/util/json":59,"../internal/util/version":63,"../util/window":80,"./environment":4,"./extension":5,"./streaminfo":49}],25:[function(_require,module,exports){
+},{"../internal/internal":64,"../internal/item":65,"../internal/remote":66,"../internal/util/json":67,"../internal/util/version":71,"../util/window":92,"./environment":4,"./extension":5,"./scene":29,"./streaminfo":57}],29:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -5247,26 +5649,12 @@ var internal_1 = _require('../internal/internal');
 var environment_1 = _require('./environment');
 var source_1 = _require('./source/source');
 var isource_1 = _require('./source/isource');
-var game_1 = _require('./source/game');
-var camera_1 = _require('./source/camera');
-var audio_1 = _require('./source/audio');
-var videoplaylist_1 = _require('./source/videoplaylist');
-var html_1 = _require('./source/html');
-var flash_1 = _require('./source/flash');
-var screen_1 = _require('./source/screen');
-var image_1 = _require('./source/image');
-var media_1 = _require('./source/media');
 var item_1 = _require('./items/item');
-var game_2 = _require('./items/game');
-var camera_2 = _require('./items/camera');
-var audio_2 = _require('./items/audio');
-var videoplaylist_2 = _require('./items/videoplaylist');
-var html_2 = _require('./items/html');
-var flash_2 = _require('./items/flash');
-var screen_2 = _require('./items/screen');
-var image_2 = _require('./items/image');
-var media_2 = _require('./items/media');
-var genericitem_1 = _require('./items/genericitem');
+var itemtyperesolve_1 = _require('../util/itemtyperesolve');
+var sourcetyperesolve_1 = _require('../util/sourcetyperesolve');
+var transition_1 = _require('./transition');
+var splitmode_1 = _require('../internal/util/splitmode');
+var addtosceneutil_1 = _require('../util/addtosceneutil');
 var version_1 = _require('../internal/util/version');
 var supportedPresetTransitionEasingFunctions = [
     '',
@@ -5281,6 +5669,10 @@ var Scene = (function () {
         if (!version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion)) {
             this._uid = uid;
             this._name = name;
+            this._refID = uid;
+        }
+        else {
+            this._refID = sceneId;
         }
     }
     ;
@@ -6194,6 +6586,258 @@ var Scene = (function () {
         });
     };
     /**
+     * return: Scene
+     *
+     * Returns a special `liveScene` object that may be added as a source to the stage.
+     * The Scene.liveScene object whenever called upon,
+     * gives access to the current active scene.
+     * This is made possible because the liveScene object does not pertain to a real scene
+     * in the context of XBC, but the actual view,
+     * or at least the scene which is currently loaded in that view.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var xjs = _require('xjs');
+     * xjs.Scene.liveScene().addAsSource();
+     * ```
+     */
+    Scene.liveScene = function () {
+        var _this = this;
+        if (Scene._liveScene === undefined) {
+            Scene._liveScene = new Scene('LIVE', 'Live Scene', '0');
+            Scene._liveScene.getSources = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getSources();
+                    }).then(function (sources) {
+                        resolve(sources);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getSceneNumber = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getSceneNumber();
+                    }).then(function (sceneNumber) {
+                        resolve(sceneNumber);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getSceneIndex = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getSceneIndex();
+                    }).then(function (sceneIndex) {
+                        resolve(sceneIndex);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getSceneUid = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getSceneUid();
+                    }).then(function (sceneUID) {
+                        resolve(sceneUID);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getName = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getName();
+                    }).then(function (name) {
+                        resolve(name);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.setName = function (name) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.setName(name);
+                    }).then(function (setFlag) {
+                        resolve(setFlag);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getItems = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getItems();
+                    }).then(function (items) {
+                        resolve(items);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getTopLevelItems = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getTopLevelItems();
+                    }).then(function (items) {
+                        resolve(items);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.isEmpty = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.isEmpty();
+                    }).then(function (empty) {
+                        resolve(empty);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.setItemOrder = function (items) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.setItemOrder(items);
+                    }).then(function (sources) {
+                        resolve(_this);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getPresets = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getPresets();
+                    }).then(function (presets) {
+                        resolve(presets);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getActivePreset = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getActivePreset();
+                    }).then(function (preset) {
+                        resolve(preset);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.switchToPreset = function (preset) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.switchToPreset(preset);
+                    }).then(function (setFlag) {
+                        resolve(setFlag);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.addPreset = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.addPreset();
+                    }).then(function (preset) {
+                        resolve(preset);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.removePreset = function (preset) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.removePreset(preset);
+                    }).then(function (setFlag) {
+                        resolve(setFlag);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getPresetTransitionEasing = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getPresetTransitionEasing();
+                    }).then(function (easing) {
+                        resolve(easing);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.setPresetTransitionEasing = function (presetTransitionEasing) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.setPresetTransitionEasing(presetTransitionEasing);
+                    }).then(function (setFlag) {
+                        resolve(setFlag);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.getPresetTransitionTime = function () {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.getPresetTransitionTime();
+                    }).then(function (time) {
+                        resolve(time);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+            Scene._liveScene.setPresetTransitionTime = function (presetTransitionTime) {
+                return new Promise(function (resolve, reject) {
+                    Scene.getActiveScene()
+                        .then(function (activeScene) {
+                        return activeScene.setPresetTransitionTime(presetTransitionTime);
+                    }).then(function (setFlag) {
+                        resolve(setFlag);
+                    }).catch(function (err) { return reject(err); });
+                });
+            };
+        }
+        return Scene._liveScene;
+    };
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this scene as a source to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    Scene.prototype.addAsSource = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (!version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneSourceVersion)) {
+                splitmode_1.checkSplitmode(value).then(function (scenePrefix) {
+                    var sceneToAdd = new json_1.JSON();
+                    sceneToAdd.tag = 'item';
+                    sceneToAdd['item'] = _this._uid;
+                    sceneToAdd['name'] = _this._name;
+                    sceneToAdd['type'] = (_this._uid === '0') ? isource_1.ItemTypes.VIEW : isource_1.ItemTypes.SCENE; // type LIVE
+                    sceneToAdd['selfclosing'] = true;
+                    var sceneXML = xml_1.XML.parseJSON(sceneToAdd);
+                    return addtosceneutil_1.addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
+                }).then(function (result) {
+                    resolve(result);
+                }).catch(function (err) {
+                    reject(err);
+                });
+            }
+            else {
+                reject(Error('Not supported in this XBC version'));
+            }
+        });
+    };
+    /**
      * return: Promise<Source[]>
      *
      * Get all unique Sources from the current scene.
@@ -6215,54 +6859,15 @@ var Scene = (function () {
     Scene.prototype.getSources = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsItemList('sceneconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('sceneconfig:' + _this._refID).then(function (jsonArr) {
                 var promiseArray = [];
                 var uniqueObj = {};
                 var uniqueSrc = [];
                 // type checking to return correct Source subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
                     var source = jsonArr[index];
-                    var type = Number(source['type']);
-                    if (type === isource_1.ItemTypes.GAMESOURCE) {
-                        typeResolve(new game_1.GameSource(source));
-                    }
-                    else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
-                        source['name'].indexOf('Video Playlist') === 0 &&
-                        source['FilePlaylist'] !== '') {
-                        typeResolve(new videoplaylist_1.VideoPlaylistSource(source));
-                    }
-                    else if (type === isource_1.ItemTypes.HTML) {
-                        typeResolve(new html_1.HtmlSource(source));
-                    }
-                    else if (type === isource_1.ItemTypes.SCREEN) {
-                        typeResolve(new screen_1.ScreenSource(source));
-                    }
-                    else if (type === isource_1.ItemTypes.BITMAP ||
-                        type === isource_1.ItemTypes.FILE &&
-                            /\.gif$/.test(source['item'])) {
-                        typeResolve(new image_1.ImageSource(source));
-                    }
-                    else if (type === isource_1.ItemTypes.FILE &&
-                        /\.(gif|xbs)$/.test(source['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-                        new RegExp(media_1.MediaTypes.join('|')).test(source['item']) === true) {
-                        typeResolve(new media_1.MediaSource(source));
-                    }
-                    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
-                        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-                        typeResolve(new camera_1.CameraSource(source));
-                    }
-                    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
-                        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-                        typeResolve(new audio_1.AudioSource(source));
-                    }
-                    else if (Number(source['type']) === isource_1.ItemTypes.FLASHFILE) {
-                        typeResolve(new flash_1.FlashSource(source));
-                    }
-                    else {
-                        typeResolve(new source_1.Source(source));
-                    }
+                    var srcType = sourcetyperesolve_1.SourceTypeResolve(source);
+                    typeResolve(srcType);
                 }); };
                 if (Array.isArray(jsonArr)) {
                     for (var i = 0; i < jsonArr.length; i++) {
@@ -6409,8 +7014,7 @@ var Scene = (function () {
     Scene.prototype.getName = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('scenename:' + _sceneId).then(function (val) {
+            app_1.App.get('scenename:' + _this._refID).then(function (val) {
                 resolve(val);
             });
         });
@@ -6428,12 +7032,144 @@ var Scene = (function () {
     Scene.prototype.setName = function (name) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (environment_1.Environment.isSourcePlugin()) {
-                reject(Error('Scene names are readonly for source plugins.'));
+            if (!environment_1.Environment.isSourceProps()) {
+                reject(Error('Scene names are readonly for source plugins and extensions.'));
             }
             else {
-                var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-                app_1.App.set('scenename:' + _sceneId, name).then(function (value) {
+                app_1.App.set('scenename:' + _this._refID, name).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * Get the transition override of this scene object.
+     * Transition overrides take priority over the more generic one from App.GetTransition
+     * See also: {@link #core/Transition Core/Transition} and {@link #core/App#getTransition getTransition}
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getTransitionOverride().then(function(transition) {
+     *  // do something here
+     * });
+     * ```
+     */
+    Scene.prototype.getTransitionOverride = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('scenetransitionid:' + _this._refID).then(function (val) {
+                if (val === '') {
+                    resolve(transition_1.Transition.NONE);
+                }
+                else {
+                    var currTransition = transition_1.Transition[val.toUpperCase()];
+                    if (typeof currTransition !== 'undefined') {
+                        resolve(currTransition);
+                    }
+                    else {
+                        transition_1.Transition.getSceneTransitions().then(function (transitions) {
+                            var inTransition = false;
+                            var transitionObj;
+                            var i;
+                            for (i = 0; i < transitions.length; i++) {
+                                transitionObj = transitions[i];
+                                if (transitionObj.toString() === val) {
+                                    inTransition = true;
+                                    break;
+                                }
+                            }
+                            if (inTransition) {
+                                resolve(transitionObj);
+                            }
+                            else {
+                                resolve(new transition_1.Transition(val));
+                            }
+                        }).catch(function (err) {
+                            resolve(new transition_1.Transition(val));
+                        });
+                    }
+                }
+            });
+        });
+    };
+    /**
+     * param: (value: string)
+     * Set the transition override of this scene object.
+     * Transition overrides take priority over the more generic one from App.GetTransition
+     * See also: {@link #core/Transition Core/Transition} and {@link #core/App#setTransition setTransition}
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.setTransitionOverride('xjs.Transition.CLOCK');
+     * ```
+     */
+    Scene.prototype.setTransitionOverride = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Scene transition overrides are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('scenetransitionid:' + _this._refID, value instanceof transition_1.Transition ? value.toString() : value)
+                    .then(function (value) {
+                    resolve(value);
+                }).catch(function (err) {
+                    reject(Error('Invalid parameter. Only Transition objects or transition strings are allowed.'));
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * Get the transition time override of this scene object.
+     * The scene transition time override will only take effect
+     * if the scene transition override itself is not equal to ''(Transition.NONE)
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getTransitionTime().then(function(time) {
+     *  // do something here
+     * });
+     * ```
+     */
+    Scene.prototype.getTransitionTime = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('scenetransitiontime:' + _this._refID).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    /**
+     * param: (value: string)
+     *
+     * Set the transition time override of this scene object.
+     * The scene transition time override will only take effect
+     * if the scene transition override itself is not equal to ''(Transition.NONE)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.setTransitionTime(1000);
+     * ```
+     */
+    Scene.prototype.setTransitionTime = function (time) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Scene transition overrides are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('scenetransitiontime:' + _this._refID, String(time)).then(function (value) {
                     resolve(value);
                 });
             }
@@ -6456,52 +7192,52 @@ var Scene = (function () {
     Scene.prototype.getItems = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.getAsItemList('sceneconfig:' + _sceneId).then(function (jsonArr) {
+            app_1.App.getAsItemList('sceneconfig:' + _this._refID).then(function (jsonArr) {
                 var promiseArray = [];
                 // type checking to return correct Source subtype
                 var typePromise = function (index) { return new Promise(function (typeResolve) {
                     var item = jsonArr[index];
-                    var type = Number(item['type']);
-                    if (type === isource_1.ItemTypes.GAMESOURCE) {
-                        typeResolve(new game_2.GameItem(item));
+                    var itemType = itemtyperesolve_1.ItemTypeResolve(item);
+                    typeResolve(itemType);
+                }); };
+                if (Array.isArray(jsonArr)) {
+                    for (var i = 0; i < jsonArr.length; i++) {
+                        jsonArr[i]['sceneId'] = _this._id;
+                        promiseArray.push(typePromise(i));
                     }
-                    else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
-                        item['name'].indexOf('Video Playlist') === 0 &&
-                        item['FilePlaylist'] !== '') {
-                        typeResolve(new videoplaylist_2.VideoPlaylistItem(item));
-                    }
-                    else if (type === isource_1.ItemTypes.HTML) {
-                        typeResolve(new html_2.HtmlItem(item));
-                    }
-                    else if (type === isource_1.ItemTypes.SCREEN) {
-                        typeResolve(new screen_2.ScreenItem(item));
-                    }
-                    else if (type === isource_1.ItemTypes.BITMAP ||
-                        type === isource_1.ItemTypes.FILE &&
-                            /\.gif$/.test(item['item'])) {
-                        typeResolve(new image_2.ImageItem(item));
-                    }
-                    else if (type === isource_1.ItemTypes.FILE &&
-                        /\.(gif|xbs)$/.test(item['item']) === false &&
-                        /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-                        new RegExp(media_1.MediaTypes.join('|')).test(item['item']) === true) {
-                        typeResolve(new media_2.MediaItem(item));
-                    }
-                    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-                        typeResolve(new camera_2.CameraItem(item));
-                    }
-                    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-                        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-                        typeResolve(new audio_2.AudioItem(item));
-                    }
-                    else if (Number(item['type']) === isource_1.ItemTypes.FLASHFILE) {
-                        typeResolve(new flash_2.FlashItem(item));
-                    }
-                    else {
-                        typeResolve(new genericitem_1.GenericItem(item));
-                    }
+                }
+                Promise.all(promiseArray).then(function (results) {
+                    resolve(results);
+                });
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    /**
+     * return: Promise<Item[]>
+     *
+     * Gets all non-child Items (not belonging to a group) in a specific scene
+     * See also: {@link #core/Item Core/Item}
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getTopLevelItems().then(function(items) {
+     *  // do something to each item in items array
+     * });
+     * ```
+     */
+    Scene.prototype.getTopLevelItems = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            app_1.App.getAsList('sceneconfig:' + _this._refID).then(function (jsonArr) {
+                var promiseArray = [];
+                // type checking to return correct Source subtype
+                var typePromise = function (index) { return new Promise(function (typeResolve) {
+                    var item = jsonArr[index];
+                    var itemType = itemtyperesolve_1.ItemTypeResolve(item);
+                    typeResolve(itemType);
                 }); };
                 if (Array.isArray(jsonArr)) {
                     for (var i = 0; i < jsonArr.length; i++) {
@@ -6535,8 +7271,7 @@ var Scene = (function () {
     Scene.prototype.isEmpty = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
-            app_1.App.get('sceneisempty:' + _sceneId).then(function (val) {
+            app_1.App.get('sceneisempty:' + _this._refID).then(function (val) {
                 resolve(val === '1');
             });
         });
@@ -6558,7 +7293,6 @@ var Scene = (function () {
             }
             else {
                 items.reverse();
-                var _sceneId = version_1.versionCompare(version_1.getVersion()).is.lessThan(version_1.sceneUidMinVersion) ? _this._id : _this._uid;
                 var ids = [];
                 Scene.getActiveScene().then(function (scene) {
                     if (items.every(function (el) { return (el instanceof source_1.Source || el instanceof item_1.Item); })) {
@@ -6595,7 +7329,7 @@ var Scene = (function () {
                         var sceneName;
                         _this.getName().then(function (name) {
                             sceneName = name;
-                            return app_1.App.getAsList('sceneconfig:' + _sceneId);
+                            return app_1.App.getAsList('sceneconfig:' + _this._refID);
                         }).then(function (jsonArr) {
                             var newOrder = new json_1.JSON();
                             newOrder.children = [];
@@ -6613,7 +7347,7 @@ var Scene = (function () {
                                     }
                                     newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
                                 }
-                                app_1.App.set('sceneconfig:' + _sceneId, 
+                                app_1.App.set('sceneconfig:' + _this._refID, 
                                 //Revert back the formatting from json when transforming to xml
                                 xml_1.XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')).then(function () {
                                     resolve(_this);
@@ -6945,7 +7679,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":52,"../internal/internal":56,"../internal/util/json":59,"../internal/util/version":63,"../internal/util/xml":64,"./environment":4,"./items/audio":7,"./items/camera":8,"./items/flash":9,"./items/game":10,"./items/genericitem":11,"./items/html":12,"./items/image":17,"./items/item":18,"./items/media":20,"./items/screen":21,"./items/videoplaylist":22,"./source/audio":26,"./source/camera":27,"./source/flash":29,"./source/game":30,"./source/html":31,"./source/image":39,"./source/isource":43,"./source/media":45,"./source/screen":46,"./source/source":47,"./source/videoplaylist":48}],26:[function(_require,module,exports){
+},{"../internal/app":60,"../internal/internal":64,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/version":71,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/itemtyperesolve":88,"../util/sourcetyperesolve":91,"./environment":4,"./items/item":20,"./source/isource":49,"./source/source":55,"./transition":59}],30:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -6996,7 +7730,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/iaudiosource":33,"../source/source":47}],27:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iaudiosource":37,"../source/source":55}],31:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7047,7 +7781,7 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [iaudio_1.Audio, icamera_1.SourceCamera]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/icamera":34,"../source/source":47}],28:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/icamera":38,"../source/source":55}],32:[function(_require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -7113,7 +7847,7 @@ var CuePoint = (function () {
     return CuePoint;
 })();
 exports.CuePoint = CuePoint;
-},{}],29:[function(_require,module,exports){
+},{}],33:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7164,7 +7898,7 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [iaudio_1.Audio, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/source":47,"./iflash":36}],30:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/source":55,"./iflash":40}],34:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7214,7 +7948,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [igame_1.iSourceGame]);
-},{"../../internal/util/mixin":61,"../source/source":47,"./igame":37}],31:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/source":55,"./igame":41}],35:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7266,7 +8000,7 @@ var HtmlSource = (function (_super) {
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurable, iaudio_1.Audio]);
-},{"../../internal/util/mixin":61,"../source/iaudio":32,"../source/ihtml":38,"../source/source":47,"./iconfig":35}],32:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/ihtml":42,"../source/source":55,"./iconfig":39}],36:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -7285,7 +8019,7 @@ var Audio = (function () {
                 _this._checkPromise = item_1.Item.get('prop:volume', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:volume', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:volume', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val));
@@ -7316,7 +8050,7 @@ var Audio = (function () {
                 _this._checkPromise = item_1.Item.get('prop:mute', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:mute', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:mute', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -7346,7 +8080,7 @@ var Audio = (function () {
                 _this._checkPromise = item_1.Item.get('prop:keepaudio', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:keepaudio', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:keepaudio', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val !== '1');
@@ -7376,7 +8110,7 @@ var Audio = (function () {
                 _this._checkPromise = item_1.Item.get('prop:sounddev', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:sounddev', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:sounddev', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -7406,7 +8140,7 @@ var Audio = (function () {
                 _this._checkPromise = item_1.Item.get('prop:audioavail', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:audioavail', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:audioavail', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -7416,7 +8150,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":57,"../../internal/util/logger":60}],33:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68}],37:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -7588,19 +8322,19 @@ var SourceAudio = (function () {
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":57,"../../internal/util/logger":60}],34:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68}],38:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../../util/rectangle');
 var item_1 = _require('../../internal/item');
 var system_1 = _require('../../system/system');
 var logger_1 = _require('../../internal/util/logger');
+var _delayExclusionObject = {
+    roxio: "vid_1b80&pid_e0(01|11|12)",
+    hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
+    hauppauge2: "vid_2040&pid_e50[012a4]"
+};
 var SourceCamera = (function () {
     function SourceCamera() {
-        this._delayExclusionObject = {
-            roxio: "vid_1b80&pid_e0(01|11|12)",
-            hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
-            hauppauge2: "vid_2040&pid_e50[012a4]"
-        };
     }
     SourceCamera.prototype._updateId = function (id, sceneId) {
         this._id = id;
@@ -7877,8 +8611,8 @@ var SourceCamera = (function () {
                     return _this.getValue();
                 }
             }).then(function (val) {
-                for (var key in _this._delayExclusionObject) {
-                    var regex = new RegExp(_this._delayExclusionObject[key].toLowerCase(), 'g');
+                for (var key in _delayExclusionObject) {
+                    var regex = new RegExp(_delayExclusionObject[key].toLowerCase(), 'g');
                     if (typeof val === 'string' && val.toLowerCase().match(regex) != null) {
                         reject(Error('Cannot set delay to specific device'));
                         break;
@@ -7947,7 +8681,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":57,"../../internal/util/logger":60,"../../system/system":71,"../../util/rectangle":79}],35:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68,"../../system/system":81,"../../util/rectangle":90}],39:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -7970,7 +8704,7 @@ var SourceConfigurable = (function () {
                 _this._checkPromise = item_1.Item.get('prop:BrowserConfiguration', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:BrowserConfiguration', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:BrowserConfiguration', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (config) {
                 var configObj = config === 'null' ? {} : JSON.parse(config);
@@ -8072,7 +8806,7 @@ var SourceConfigurable = (function () {
     return SourceConfigurable;
 })();
 exports.SourceConfigurable = SourceConfigurable;
-},{"../../internal/global":54,"../../internal/internal":56,"../../internal/item":57,"../../internal/util/logger":60,"../environment":4}],36:[function(_require,module,exports){
+},{"../../internal/global":62,"../../internal/internal":64,"../../internal/item":65,"../../internal/util/logger":68,"../environment":4}],40:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
@@ -8160,7 +8894,7 @@ var SourceFlash = (function () {
     return SourceFlash;
 })();
 exports.SourceFlash = SourceFlash;
-},{"../../internal/item":57,"../../internal/util/logger":60,"../../util/rectangle":79}],37:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68,"../../util/rectangle":90}],41:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var environment_1 = _require('../environment');
@@ -8168,6 +8902,8 @@ var xml_1 = _require('../../internal/util/xml');
 var json_1 = _require('../../internal/util/json');
 var isource_1 = _require('./isource');
 var logger_1 = _require('../../internal/util/logger');
+var MIN_FPS = 24;
+var MAX_FPS = 300;
 var iSourceGame = (function () {
     function iSourceGame() {
     }
@@ -8268,6 +9004,9 @@ var iSourceGame = (function () {
                         resolve(_this);
                     });
                 }
+                else {
+                    reject(Error('Invalid file path or type is provided.'));
+                }
             }
         });
     };
@@ -8281,17 +9020,94 @@ var iSourceGame = (function () {
                 reject(Error('Current item should be a game item'));
             }
             else {
-                _this.getValue().then(function () {
+                _this.getValue().then(function (value) {
                     var valueObj = json_1.JSON.parse(_this._value.toString());
                     resolve(valueObj['replace'] ? valueObj['replace'] : '');
                 });
             }
         });
     };
+    iSourceGame.prototype.isTransparent = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isTransparent', true);
+                _this._checkPromise = item_1.Item.get('prop:GameCapAlpha', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:GameCapAlpha', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (res) {
+                resolve(res === '1');
+            });
+        });
+    };
+    iSourceGame.prototype.setTransparent = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setTransparent', true);
+                _this._checkPromise = item_1.Item.set('prop:GameCapAlpha', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:GameCapAlpha', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    iSourceGame.prototype.getGameFPSCap = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getGameFPSCap', true);
+                _this._checkPromise = item_1.Item.get('prop:GameCapFrameTimeLimit', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:GameCapFrameTimeLimit', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (res) {
+                if (res === '0' || res === '' || res === 0) {
+                    resolve(0);
+                }
+                else {
+                    var fps = Math.floor(10000000 / Number(res));
+                    fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
+                    resolve(fps);
+                }
+            });
+        });
+    };
+    iSourceGame.prototype.setGameFPSCap = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof value !== 'number') {
+                reject(TypeError('Use an integer as the parameter.'));
+            }
+            else if (value !== 0 && (Number(value) < MIN_FPS || Number(value) > MAX_FPS)) {
+                reject(RangeError("Game FPS cap may only be 0 or in the range of " + MIN_FPS + " to " + MAX_FPS + "."));
+            }
+            else {
+                var frametime = (value > 0) ? Math.floor(10000000 / Number(value)) : 0;
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setGameFPSCap', true);
+                    item_1.Item.set('prop:GameCapFrameTimeLimit', String(frametime), _this._id).then(function () {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:GameCapFrameTimeLimit', String(frametime), _this._srcId, _this._id, _this._updateId.bind(_this)).then(function () {
+                        resolve(_this);
+                    });
+                }
+            }
+        });
+    };
     return iSourceGame;
 })();
 exports.iSourceGame = iSourceGame;
-},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/xml":64,"../environment":4,"./isource":43}],38:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/xml":72,"../environment":4,"./isource":49}],42:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../../internal/internal');
 var item_1 = _require('../../internal/item');
@@ -8927,7 +9743,7 @@ var iSourceHtml = (function () {
     return iSourceHtml;
 })();
 exports.iSourceHtml = iSourceHtml;
-},{"../../internal/internal":56,"../../internal/item":57,"../../internal/util/logger":60,"../../util/rectangle":79,"../environment":4}],39:[function(_require,module,exports){
+},{"../../internal/internal":64,"../../internal/item":65,"../../internal/util/logger":68,"../../util/rectangle":90,"../environment":4}],43:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8973,7 +9789,7 @@ var ImageSource = (function (_super) {
     return ImageSource;
 })(source_1.Source);
 exports.ImageSource = ImageSource;
-},{"../source/source":47}],40:[function(_require,module,exports){
+},{"../source/source":55}],44:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var json_1 = _require('../../internal/util/json');
@@ -9030,7 +9846,7 @@ var SourceMedia = (function () {
     return SourceMedia;
 })();
 exports.SourceMedia = SourceMedia;
-},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60}],41:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68}],45:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var cuepoint_1 = _require('./cuepoint');
@@ -9063,7 +9879,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('sync:syncable', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('sync:syncable', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('sync:syncable', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1' ? true : false);
@@ -9078,7 +9894,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('sync:position', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('sync:position', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('sync:position', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
@@ -9108,7 +9924,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('sync:duration', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('sync:duration', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('sync:duration', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
@@ -9123,7 +9939,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('sync:state', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('sync:state', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('sync:state', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === "running");
@@ -9153,7 +9969,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:InPoint', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:InPoint', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:InPoint', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
@@ -9183,7 +9999,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:OutPoint', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:OutPoint', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:OutPoint', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val) / 10000000);
@@ -9213,7 +10029,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:OpWhenFinished', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:OpWhenFinished', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:OpWhenFinished', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(Number(val));
@@ -9243,7 +10059,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:StartOnLoad', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:StartOnLoad', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:StartOnLoad', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -9273,7 +10089,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:fdeinterlace', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:fdeinterlace', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:fdeinterlace', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '3');
@@ -9303,7 +10119,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:RememberPosition', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:RememberPosition', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:RememberPosition', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -9333,7 +10149,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:ShowPosition', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:ShowPosition', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:ShowPosition', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 resolve(val === '1');
@@ -9345,10 +10161,10 @@ var SourcePlayback = (function () {
         return new Promise(function (resolve) {
             if (_this._isItemCall) {
                 logger_1.Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true);
-                _this._checkPromise = item_1.Item.set('prop:ShowPositio', (value ? '1' : '0'), _this._id);
+                _this._checkPromise = item_1.Item.set('prop:ShowPosition', (value ? '1' : '0'), _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapSet('prop:ShowPositio', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+                _this._checkPromise = item_1.Item.wrapSet('prop:ShowPosition', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function () {
                 resolve(_this);
@@ -9363,7 +10179,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:CuePoints', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:CuePoints', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:CuePoints', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (cuePointString) {
                 if (cuePointString === '') {
@@ -9401,7 +10217,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (filename) {
                 resolve(AUDIO_REGEX.test(filename));
@@ -9416,7 +10232,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (filename) {
                 resolve(VIDEO_REGEX.test(filename));
@@ -9432,7 +10248,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (filename) {
                 resolve(filename);
@@ -9466,7 +10282,321 @@ var SourcePlayback = (function () {
     return SourcePlayback;
 })();
 exports.SourcePlayback = SourcePlayback;
-},{"../../internal/item":57,"../../internal/util/logger":60,"./cuepoint":28}],42:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68,"./cuepoint":32}],46:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = _require('../../internal/item');
+var logger_1 = _require('../../internal/util/logger');
+var BUFFER_MAX = 120;
+var SourceReplay = (function () {
+    function SourceReplay() {
+    }
+    SourceReplay.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
+    SourceReplay.prototype.getChannel = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getChannelName', true);
+                _this._checkPromise = item_1.Item.get('prop:presproperty:channelName', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:presproperty:channelName', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function (channel) {
+                resolve(channel);
+            }).catch(function (err) { return reject(err); });
+        });
+    };
+    SourceReplay.prototype.setChannel = function (channel) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof channel === 'string') {
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setChannelName', true);
+                    item_1.Item.set('prop:presproperty:channelName', channel, _this._id)
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:presproperty:channelName', channel, _this._srcId, _this._id, _this._updateId.bind(_this))
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+            }
+            else {
+                reject(Error('Invalid parameter. setChannelName method only accepts channel name as a string.'));
+            }
+        });
+    };
+    SourceReplay.prototype.getHotkey = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getHotkey', true);
+                _this._checkPromise = item_1.Item.get('prop:presproperty:hotkey', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:presproperty:hotkey', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function (hotkey) {
+                resolve(Number(hotkey));
+            }).catch(function (err) { return reject(err); });
+        });
+    };
+    SourceReplay.prototype.setHotkey = function (hotkey) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof hotkey === 'number') {
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setHotkey', true);
+                    item_1.Item.set('prop:presproperty:hotkey', String(hotkey), _this._id)
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:presproperty:hotkey', String(hotkey), _this._srcId, _this._id, _this._updateId.bind(_this))
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+            }
+            else {
+                reject(Error('Invalid parameter. setHotkey method only accepts hotkey as a number.'));
+            }
+        });
+    };
+    SourceReplay.prototype.getReplayTime = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getReplayTime', true);
+                _this._checkPromise = item_1.Item.get('prop:presproperty:buffer', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:presproperty:buffer', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function (buffer) {
+                resolve(Number(buffer));
+            }).catch(function (err) { return reject(err); });
+        });
+    };
+    SourceReplay.prototype.setReplayTime = function (buffer) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof buffer === 'number') {
+                if (buffer > 120 || buffer < 0) {
+                    reject(Error("Invalid parameter. setReplaytime method only accepts numbers up to " + BUFFER_MAX + "."));
+                }
+                else if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setReplayTime', true);
+                    item_1.Item.set('prop:presproperty:buffer', String(buffer), _this._id)
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+                else {
+                    item_1.Item.wrapSet('prop:presproperty:buffer', String(buffer), _this._srcId, _this._id, _this._updateId.bind(_this))
+                        .then(function (val) {
+                        resolve(_this);
+                    });
+                }
+            }
+            else {
+                reject(Error('Invalid parameter. setReplaytime method only accepts buffer as a number.'));
+            }
+        });
+    };
+    SourceReplay.prototype.startReplay = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'startReplay', true);
+                item_1.Item.set('prop:ReplayActive', '1', _this._id)
+                    .then(function (val) {
+                    resolve(_this);
+                });
+            }
+            else {
+                item_1.Item.wrapSet('prop:ReplayActive', '1', _this._srcId, _this._id, _this._updateId.bind(_this))
+                    .then(function (val) {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    SourceReplay.prototype.stopReplay = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'stopReplay', true);
+                item_1.Item.set('prop:ReplayActive', '0', _this._id)
+                    .then(function (val) {
+                    resolve(_this);
+                });
+            }
+            else {
+                item_1.Item.wrapSet('prop:ReplayActive', '0', _this._srcId, _this._id, _this._updateId.bind(_this))
+                    .then(function (val) {
+                    resolve(_this);
+                });
+            }
+        });
+    };
+    SourceReplay.prototype.getReplayState = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getReplayState', true);
+                _this._checkPromise = item_1.Item.get('prop:ReplayActive', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:ReplayActive', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function (activeState) { return resolve(Number(activeState)); })
+                .catch(function (err) { return reject(err); });
+        });
+    };
+    SourceReplay.prototype.isAutostartOnSceneLoad = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isAutostartOnSceneLoad', true);
+                _this._checkPromise = item_1.Item.get('prop:StartOnLoad', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:StartOnLoad', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    SourceReplay.prototype.setAutostartOnSceneLoad = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setAutostartOnSceneLoad', true);
+                _this._checkPromise = item_1.Item.set('prop:StartOnLoad', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:StartOnLoad', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    return SourceReplay;
+})();
+exports.SourceReplay = SourceReplay;
+},{"../../internal/item":65,"../../internal/util/logger":68}],47:[function(_require,module,exports){
+var item_1 = _require('../../internal/item');
+var scene_1 = _require('../scene');
+var isource_1 = _require('../source/isource');
+var logger_1 = _require('../../internal/util/logger');
+var SourceScene = (function () {
+    function SourceScene() {
+    }
+    SourceScene.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
+    SourceScene.prototype._setScene = function (itemType, uid, name, resolve, reject) {
+        var _this = this;
+        if (this._isItemCall) {
+            logger_1.Logger.warn('sourceWarning', 'setScene', true);
+            this._checkPromise = item_1.Item.set('prop:srctype', itemType + "," + uid, this._id);
+        }
+        else {
+            //wrapset
+            this._checkPromise = item_1.Item.wrapSet('prop:srctype', itemType + "," + uid, this._srcId, this._id, this._updateId.bind(this));
+        }
+        var code;
+        this._checkPromise
+            .then(function (result) {
+            code = result;
+            return item_1.Item.set('prop:name', "Scene: " + name);
+        }).then(function () {
+            if (code) {
+                resolve(_this);
+            }
+            else {
+                reject(Error('Invalid value'));
+            }
+        }).catch(function (err) { return reject(err); });
+    };
+    SourceScene.prototype.getScene = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getScene', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function (scene) {
+                if (scene === '0') {
+                    resolve(scene_1.Scene.liveScene());
+                }
+                else {
+                    return scene_1.Scene.getBySceneUid(scene);
+                }
+            }).then(function (sceneObj) { return resolve(sceneObj); })
+                .catch(function (err) { return reject(err); });
+        });
+    };
+    SourceScene.prototype.setScene = function (scene) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (scene instanceof scene_1.Scene ||
+                (typeof scene === 'number' && scene >= 0 && Number['isInteger'](Number(scene)))) {
+                var itemType = '11';
+                if (scene instanceof scene_1.Scene) {
+                    var sceneUID = scene['_uid'];
+                    var name = scene['_name'];
+                    itemType = (sceneUID === "0") ? String(isource_1.ItemTypes.VIEW) : String(isource_1.ItemTypes.SCENE);
+                    _this._setScene(itemType, sceneUID, name, resolve, reject);
+                }
+                else if (typeof scene === 'number') {
+                    var name = '';
+                    var targetScene;
+                    scene_1.Scene.getBySceneIndex(scene)
+                        .then(function (sceneByID) {
+                        targetScene = sceneByID;
+                        return targetScene.getName();
+                    }).then(function (sceneName) {
+                        name = sceneName;
+                        return targetScene.getSceneUid();
+                    }).then(function (uid) {
+                        _this._setScene(itemType, uid, name, resolve, reject);
+                    }).catch(function (err) { return reject(err); });
+                }
+            }
+            else {
+                if (typeof scene === 'number' && (scene < 1 || !Number['isInteger'](Number(scene)))) {
+                    reject(Error('Invalid parameters. Valid range is greater than 0.'));
+                }
+                else {
+                    reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+                }
+            }
+        });
+    };
+    return SourceScene;
+})();
+exports.SourceScene = SourceScene;
+},{"../../internal/item":65,"../../internal/util/logger":68,"../scene":29,"../source/isource":49}],48:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var xml_1 = _require('../../internal/util/xml');
@@ -9755,7 +10885,7 @@ var iSourceScreen = (function () {
     return iSourceScreen;
 })();
 exports.iSourceScreen = iSourceScreen;
-},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/xml":64,"../../util/rectangle":79}],43:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/xml":72,"../../util/rectangle":90}],49:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var version_1 = _require('../../internal/util/version');
@@ -9778,6 +10908,12 @@ var logger_1 = _require('../../internal/util/logger');
     ItemTypes[ItemTypes["FLASHFILE"] = 6] = "FLASHFILE";
     ItemTypes[ItemTypes["GAMESOURCE"] = 7] = "GAMESOURCE";
     ItemTypes[ItemTypes["HTML"] = 8] = "HTML";
+    ItemTypes[ItemTypes["THREEDS"] = 9] = "THREEDS";
+    ItemTypes[ItemTypes["PPTFILE"] = 10] = "PPTFILE";
+    ItemTypes[ItemTypes["SCENE"] = 11] = "SCENE";
+    ItemTypes[ItemTypes["GROUP"] = 12] = "GROUP";
+    ItemTypes[ItemTypes["REPLAY"] = 13] = "REPLAY";
+    ItemTypes[ItemTypes["VIEW"] = 14] = "VIEW";
 })(exports.ItemTypes || (exports.ItemTypes = {}));
 var ItemTypes = exports.ItemTypes;
 /**
@@ -9827,7 +10963,7 @@ var iSource = (function () {
                 _this._checkPromise = item_1.Item.get('prop:name', _this._id);
             }
             else {
-                _this._checkPromise = item_1.Item.wrapGet('prop:name', _this._srcId, _this._id, _this._updateId.bind(_this).bind(_this));
+                _this._checkPromise = item_1.Item.wrapGet('prop:name', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (val) {
                 _this._name = String(val);
@@ -10072,7 +11208,7 @@ var iSource = (function () {
     return iSource;
 })();
 exports.iSource = iSource;
-},{"../../internal/item":57,"../../internal/util/json":59,"../../internal/util/logger":60,"../../internal/util/version":63,"../../internal/util/xml":64,"../scene":25}],44:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/version":71,"../../internal/util/xml":72,"../scene":29}],50:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var io_1 = _require('../../util/io');
@@ -10208,6 +11344,8 @@ var SourceVideoPlaylist = (function () {
                     .then(function (fileplaylist) {
                     resolve(_this);
                 });
+            }).catch(function (err) {
+                reject(err);
             });
         });
     };
@@ -10215,7 +11353,7 @@ var SourceVideoPlaylist = (function () {
     return SourceVideoPlaylist;
 })();
 exports.SourceVideoPlaylist = SourceVideoPlaylist;
-},{"../../internal/item":57,"../../internal/util/logger":60,"../../util/io":77}],45:[function(_require,module,exports){
+},{"../../internal/item":65,"../../internal/util/logger":68,"../../util/io":87}],51:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10272,7 +11410,105 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":61,"./iaudio":32,"./imedia":40,"./iplayback":41,"./source":47}],46:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"./iaudio":36,"./imedia":44,"./iplayback":45,"./source":55}],52:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = _require('../../internal/util/mixin');
+var source_1 = _require('../source/source');
+var iaudio_1 = _require('../source/iaudio');
+var ireplay_1 = _require('./ireplay');
+/**
+ * The ReplaySource class represents the sources of the replay items that
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
+ *
+ * Each item is represented by the ReplayItem class.
+ * See: {@link #core/ReplayItem Core/ReplayItem}
+ *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = _require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.ReplaySource) {
+ *         // Manipulate your game source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ * ```
+ *
+ * All methods marked as *Chainable* resolve with the original `ReplaySource`
+ * instance.
+ */
+var ReplaySource = (function (_super) {
+    __extends(ReplaySource, _super);
+    function ReplaySource() {
+        _super.apply(this, arguments);
+    }
+    return ReplaySource;
+})(source_1.Source);
+exports.ReplaySource = ReplaySource;
+mixin_1.applyMixins(ReplaySource, [iaudio_1.Audio, ireplay_1.SourceReplay]);
+},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/source":55,"./ireplay":46}],53:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var mixin_1 = _require('../../internal/util/mixin');
+var source_1 = _require('../source/source');
+var iscene_1 = _require('../source/iscene');
+/**
+ * The SceneSource class represents the sources of the scene items that
+ * has been added to the stage. A single source could have multiple items linked
+ * into it and any changes to the source would affect all items linked to it.
+ *
+ * Each item is represented by the SceneItem class.
+ * See: {@link #core/SceneItem Core/SceneItem}
+ *
+ * Inherits from: {@link #core/Source Core/Source}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var xjs = _require('xjs');
+ *
+ * xjs.Scene.getActiveScene().then(function(scene) {
+ *   scene.getSources().then(function(sources) {
+ *   for (var i in sources) {
+ *       if (sources[i] instanceof XJS.SceneSource) {
+ *         // Manipulate your scene source here
+ *         sources[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   })
+ * })
+ * ```
+  */
+var SceneSource = (function (_super) {
+    __extends(SceneSource, _super);
+    function SceneSource() {
+        _super.apply(this, arguments);
+    }
+    return SceneSource;
+})(source_1.Source);
+exports.SceneSource = SceneSource;
+mixin_1.applyMixins(SceneSource, [iscene_1.SourceScene]);
+},{"../../internal/util/mixin":69,"../source/iscene":47,"../source/source":55}],54:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -10322,7 +11558,7 @@ var ScreenSource = (function (_super) {
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
 mixin_1.applyMixins(ScreenSource, [iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":61,"../source/source":47,"./iscreen":42}],47:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"../source/source":55,"./iscreen":48}],55:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = _require('../../internal/util/mixin');
 var app_1 = _require('../../internal/app');
@@ -10555,7 +11791,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [isource_1.iSource]);
-},{"../../internal/app":52,"../../internal/item":57,"../../internal/util/mixin":61,"../../internal/util/version":63,"../environment":4,"../scene":25,"../source/isource":43}],48:[function(_require,module,exports){
+},{"../../internal/app":60,"../../internal/item":65,"../../internal/util/mixin":69,"../../internal/util/version":71,"../environment":4,"../scene":29,"../source/isource":49}],56:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10609,7 +11845,7 @@ var VideoPlaylistSource = (function (_super) {
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
 mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":61,"./iaudio":32,"./iconfig":35,"./iplayback":41,"./ivideoplaylist":44,"./source":47}],49:[function(_require,module,exports){
+},{"../../internal/util/mixin":69,"./iaudio":36,"./iconfig":39,"./iplayback":45,"./ivideoplaylist":50,"./source":55}],57:[function(_require,module,exports){
 var app_1 = _require('../internal/app');
 /**
  * The StreamInfo class provides methods to monitor the current active streams
@@ -10782,7 +12018,7 @@ var StreamInfo = (function () {
     return StreamInfo;
 })();
 exports.StreamInfo = StreamInfo;
-},{"../internal/app":52}],50:[function(_require,module,exports){
+},{"../internal/app":60}],58:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var scene_1 = _require('./scene');
 var app_1 = _require('../internal/app');
@@ -10850,7 +12086,7 @@ var Thumbnail = (function () {
     return Thumbnail;
 })();
 exports.Thumbnail = Thumbnail;
-},{"../internal/app":52,"./scene":25}],51:[function(_require,module,exports){
+},{"../internal/app":60,"./scene":29}],59:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -10998,7 +12234,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":52}],52:[function(_require,module,exports){
+},{"../internal/app":60}],60:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -11041,9 +12277,10 @@ var App = (function () {
     /** Gets all the items of the given condition as list */
     App.getAsItemList = function (name) {
         return new Promise(function (resolve, reject) {
+            var propsArr = [];
             App.get(name).then(function (xml) {
                 try {
-                    var propsJSON = json_1.JSON.parse(xml), propsArr = [];
+                    var propsJSON = json_1.JSON.parse(xml);
                     var recursion = function (children) {
                         children.forEach(function (child) {
                             if (child['tag'] === 'item')
@@ -11073,7 +12310,7 @@ var App = (function () {
                     resolve(propsArr);
                 }
                 catch (e) {
-                    reject(e);
+                    resolve(propsArr);
                 }
             });
         });
@@ -11102,11 +12339,15 @@ var App = (function () {
         });
     };
     /** Calls an application method asynchronously */
-    App.callFunc = function (func, arg) {
+    App.callFunc = function (func) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         return new Promise(function (resolve) {
-            internal_1.exec('AppCallFuncAsync', func, arg, function (ret) {
+            internal_1.exec.apply(void 0, ['AppCallFuncAsync', func].concat(args, [function (ret) {
                 resolve(ret);
-            });
+            }]));
         });
     };
     App.postMessage = function (key) {
@@ -11127,7 +12368,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":56,"./util/json":59}],53:[function(_require,module,exports){
+},{"./internal":64,"./util/json":67}],61:[function(_require,module,exports){
 var internal_1 = _require('./internal');
 var window_1 = _require('../util/window');
 var remote_1 = _require('./remote');
@@ -11320,7 +12561,7 @@ window_1.default.OnEvent = function (event, item) {
         oldOnEvent(event);
     }
 };
-},{"../util/window":80,"./internal":56,"./remote":58,"./util/version":63}],54:[function(_require,module,exports){
+},{"../util/window":92,"./internal":64,"./remote":66,"./util/version":71}],62:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -11349,7 +12590,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],55:[function(_require,module,exports){
+},{}],63:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var item_1 = _require('./item');
@@ -11486,7 +12727,7 @@ function init(config) {
     });
 }
 exports.default = init;
-},{"../core/environment":4,"../window/config":81,"./global":54,"./internal":56,"./item":57,"./util/version":63}],56:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":93,"./global":62,"./internal":64,"./item":65,"./util/version":71}],64:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 var remote_1 = _require('./remote');
 var window_1 = _require('../util/window');
@@ -11625,7 +12866,7 @@ window_1.default.OnAsyncCallback = function (asyncID, result) {
         asyncCallback(asyncID, result);
     }
 };
-},{"../util/window":80,"./remote":58}],57:[function(_require,module,exports){
+},{"../util/window":92,"./remote":66}],65:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -11928,7 +13169,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"../internal/app":52,"./internal":56,"./util/version":63}],58:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":60,"./internal":64,"./util/version":71}],66:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var ready_1 = _require('../util/ready');
@@ -12201,7 +13442,7 @@ var Remote = (function () {
     return Remote;
 })();
 exports.Remote = Remote;
-},{"../core/extension":5,"../core/output":24,"../util/eventemitter":76,"../util/io":77,"../util/ready":78,"./eventmanager":53,"./internal":56}],59:[function(_require,module,exports){
+},{"../core/extension":5,"../core/output":28,"../util/eventemitter":86,"../util/io":87,"../util/ready":89,"./eventmanager":61,"./internal":64}],67:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -12272,7 +13513,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":64}],60:[function(_require,module,exports){
+},{"./xml":72}],68:[function(_require,module,exports){
 var Logger = (function () {
     function Logger() {
     }
@@ -12306,7 +13547,7 @@ var Logger = (function () {
     return Logger;
 })();
 exports.Logger = Logger;
-},{}],61:[function(_require,module,exports){
+},{}],69:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -12318,7 +13559,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],62:[function(_require,module,exports){
+},{}],70:[function(_require,module,exports){
 /**
  * Check if splitmode is active
  */
@@ -12393,7 +13634,7 @@ function checkSplitmode(value) {
     });
 }
 exports.checkSplitmode = checkSplitmode;
-},{"../../core/scene":25,"../app":52}],63:[function(_require,module,exports){
+},{"../../core/scene":29,"../app":60}],71:[function(_require,module,exports){
 /*
 * List here the versions where we would limit a functionality.
 */
@@ -12406,6 +13647,7 @@ exports.itemSubscribeEventVersion = '2.9.1608.2301';
 exports.sceneUidMinVersion = '3.0.1704.2101';
 exports.sceneUidAddDeleteVersion = '3.3.1801.1901';
 exports.scenePresetsVersion = '3.8.1905.2118';
+exports.sceneSourceVersion = '3.8.1915.2501';
 exports.mockVersion = '';
 function versionCompare(version) {
     var parts = version.split('.');
@@ -12458,7 +13700,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],64:[function(_require,module,exports){
+},{}],72:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -12513,7 +13755,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],65:[function(_require,module,exports){
+},{}],73:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12852,7 +14094,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":59,"../internal/util/xml":64}],66:[function(_require,module,exports){
+},{"../internal/util/json":67,"../internal/util/xml":72}],74:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -12980,7 +14222,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74}],67:[function(_require,module,exports){
+},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],75:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -13035,7 +14277,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/util/splitmode":62,"../util/addtosceneutil":74}],68:[function(_require,module,exports){
+},{"../internal/util/splitmode":70,"../util/addtosceneutil":84}],76:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
@@ -13395,7 +14637,94 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":4,"../internal/app":52,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74,"../util/rectangle":79}],69:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":60,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/rectangle":90}],77:[function(_require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var item_1 = _require('../core/items/item');
+var app_1 = _require('../internal/app');
+var splitmode_1 = _require('../internal/util/splitmode');
+var addtosceneutil_1 = _require('../util/addtosceneutil');
+/**
+ *  Class for combining several Items into a group
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = _require('xjs');
+ * var myScene;
+ * var Group = XJS.Group;
+ * xjs.Scene.getActiveScene()
+ * .then(function(scene) {
+ *   myScene = scene;
+ *   return myScene.getItems();
+ * }).then(function(items) {
+ *   var newGroup = new Group(items);
+ *   newGroup.addToScene();
+ * })
+ *
+ *
+ * ```
+ */
+var Group = (function () {
+    function Group(itemArray) {
+        this._items = itemArray;
+    }
+    Group.prototype.toStringArray = function () {
+        var itemStringArray = this._items.map(function (item) {
+            if (item instanceof item_1.Item) {
+                return item._id;
+            }
+            else {
+                return item;
+            }
+        });
+        return itemStringArray;
+    };
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this group to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    Group.prototype.addToScene = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var splitScene;
+            var activeSceneIdx;
+            app_1.App.get('scene').then(function (sceneIdx) {
+                activeSceneIdx = sceneIdx;
+                return splitmode_1.checkSplitmode(value);
+            }).then(function (scenePrefix) {
+                splitScene = scenePrefix;
+                if (scenePrefix.split(':')[1]) {
+                    activeSceneIdx = scenePrefix.split(':')[1];
+                }
+                return app_1.App.get("scenecanaddgroup:" + activeSceneIdx + ":" + _this.toStringArray().join(','));
+            }).then(function (canAdd) {
+                if (canAdd === '1') {
+                    return addtosceneutil_1.addToSceneHandler.apply(void 0, [splitScene + 'addgroup'].concat(_this.toStringArray()));
+                }
+                else {
+                    reject('Items provided cannot be grouped');
+                }
+            }).then(function (result) {
+                resolve(result);
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    return Group;
+})();
+exports.Group = Group;
+},{"../core/items/item":20,"../internal/app":60,"../internal/util/splitmode":70,"../util/addtosceneutil":84}],78:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -13498,7 +14827,107 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74}],70:[function(_require,module,exports){
+},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],79:[function(_require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var splitmode_1 = _require('../internal/util/splitmode');
+var json_1 = _require('../internal/util/json');
+var xml_1 = _require('../internal/util/xml');
+var addtosceneutil_1 = _require('../util/addtosceneutil');
+var REPLAY_INCREMENT_COUNTER = 0;
+var generateReplayName = function () {
+    REPLAY_INCREMENT_COUNTER++;
+    return Date.now() + ("_replay#" + REPLAY_INCREMENT_COUNTER);
+};
+/**
+ *  The Class for combining several Items into a group.
+ *  This can be initialized with an optional object parameter,
+ *  which may contain the following:
+ *    * buffer - the replay time, which ranges from 1-120 seconds. Default is 10.
+ *    * channelName - the name of the channel where the replay will come from. Default is auto.
+ *    * hotkey - the numerical equivalent of the keyboard combination to trigger the replay. Default is 0.
+ *             - This allots for the modifiers shift(65536), ctrl(131072), and alt(262144) keys
+ *             - Sample computation for Ctrl + Shift + K = (keycode.which | 131072) | 65536 = 75 | 131072 | 65536 = 196683
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = _require('xjs');
+ * var Replay = XJS.Replay;
+ * xjs.Output.getOutputList()
+ * .then(function(outputs) {
+ *   return outputs[0].getName();
+ * }).then(function(name) {
+ *   var newReplay = new Replay({
+ *     buffer: 20,
+ *     channelName: name
+ *   });
+ *   newReplay.addToScene();
+ * })
+ *
+ * ```
+ */
+var Replay = (function () {
+    function Replay(replayOptions) {
+        this._buffer = replayOptions && replayOptions['buffer'] || 10;
+        this._channelName = replayOptions && replayOptions['channelName'] || 'auto';
+        this._hotkey = replayOptions && replayOptions['hotkey'] || 0;
+        this._propName = 'Replay';
+    }
+    Replay.prototype.toXML = function () {
+        var replay = new json_1.JSON();
+        replay.tag = 'item';
+        replay['item'] = generateReplayName();
+        replay['name'] = this._propName;
+        replay['type'] = '13'; // type REPLAY
+        replay['selfclosing'] = false;
+        var bufferJXON = new json_1.JSON();
+        bufferJXON.tag = 'presproperty';
+        bufferJXON.value = String(this._buffer);
+        bufferJXON['__map_id'] = 'buffer';
+        bufferJXON['selfclosing'] = false;
+        var channelNameJXON = new json_1.JSON();
+        channelNameJXON.tag = 'presproperty';
+        channelNameJXON.value = this._channelName;
+        channelNameJXON['__map_id'] = 'channelName';
+        channelNameJXON['selfclosing'] = false;
+        var hotkeyJXON = new json_1.JSON();
+        hotkeyJXON.tag = 'presproperty';
+        hotkeyJXON.value = String(this._hotkey);
+        hotkeyJXON['__map_id'] = 'hotkey';
+        hotkeyJXON['selfclosing'] = false;
+        replay.children = [bufferJXON, channelNameJXON, hotkeyJXON];
+        return xml_1.XML.parseJSON(replay);
+    };
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this replay object to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    Replay.prototype.addToScene = function (value) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            splitmode_1.checkSplitmode(value).then(function (scenePrefix) {
+                return addtosceneutil_1.addToSceneHandler(scenePrefix + 'additem', _this.toXML().toString());
+            }).then(function (result) {
+                resolve(result);
+            }).catch(function (err) {
+                reject(err);
+            });
+        });
+    };
+    return Replay;
+})();
+exports.Replay = Replay;
+},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],80:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var splitmode_1 = _require('../internal/util/splitmode');
@@ -13618,7 +15047,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../core/environment":4,"../internal/util/splitmode":62,"../util/addtosceneutil":74}],71:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/util/splitmode":70,"../util/addtosceneutil":84}],81:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -13987,7 +15416,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/dll":3,"../core/environment":4,"../internal/app":52,"../internal/internal":56,"./audio":65,"./camera":66,"./game":68,"./microphone":69,"./screen":70}],72:[function(_require,module,exports){
+},{"../core/dll":3,"../core/environment":4,"../internal/app":60,"../internal/internal":64,"./audio":73,"./camera":74,"./game":76,"./microphone":78,"./screen":80}],82:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -14064,7 +15493,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/util/splitmode":62,"../util/addtosceneutil":74}],73:[function(_require,module,exports){
+},{"../internal/util/splitmode":70,"../util/addtosceneutil":84}],83:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
@@ -14221,7 +15650,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../internal/app":52,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/xml":64,"../util/addtosceneutil":74,"../util/io":77}],74:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":60,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/io":87}],84:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -14272,7 +15701,11 @@ function guid(a) {
         : ('' + 1e7 + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, guid);
 }
 exports.guid = guid;
-function addToSceneHandler(cmd, args) {
+function addToSceneHandler(cmd) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        args[_i - 1] = arguments[_i];
+    }
     return new Promise(function (resolve, reject) {
         var eventId = 'EVENT-XJS-CREATE-' + guid(null) + '-' + Date.now();
         if (global_1.Global.isListenToItemAdd()) {
@@ -14284,8 +15717,7 @@ function addToSceneHandler(cmd, args) {
             _addToScene.on(eventId, itemCreated);
         }
         //actual creation of item
-        app_1.App
-            .callFunc('e:' + eventId + '|' + cmd, args)
+        app_1.App.callFunc.apply(app_1.App, ['e:' + eventId + '|' + cmd].concat(args))
             .then(function () {
             if (!global_1.Global.isListenToItemAdd())
                 resolve(true);
@@ -14296,7 +15728,7 @@ function addToSceneHandler(cmd, args) {
     });
 }
 exports.addToSceneHandler = addToSceneHandler;
-},{"../internal/app":52,"../internal/global":54,"../internal/internal":56,"./eventemitter":76,"./window":80}],75:[function(_require,module,exports){
+},{"../internal/app":60,"../internal/global":62,"../internal/internal":64,"./eventemitter":86,"./window":92}],85:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -14390,7 +15822,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],76:[function(_require,module,exports){
+},{}],86:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 // simple event emitter
 var EventEmitter = (function () {
@@ -14514,7 +15946,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{"../internal/remote":58}],77:[function(_require,module,exports){
+},{"../internal/remote":66}],87:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('../core/environment');
@@ -14692,7 +16124,7 @@ var IO = (function () {
                 IO._remoteCallback[result['file']].shift().resolve(result['result']);
             }
             else {
-                IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(Error('Invalid file path.'));
+                IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(Error("Invalid file path or cannot get file duration: '" + decodeURIComponent(result['file']) + "'"));
             }
         });
     };
@@ -14726,7 +16158,7 @@ window_1.default.OnGetVideoDurationFailed = function (file) {
         IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
     }
     else {
-        IO._callback[decodeURIComponent(file)].shift().reject(Error('Invalid file path.'));
+        IO._callback[decodeURIComponent(file)].shift().reject(Error("Invalid file path or cannot get file duration: '" + decodeURIComponent(file) + "'"));
         if (IO._callback[decodeURIComponent(file)].length === 0) {
             delete IO._callback[decodeURIComponent(file)];
         }
@@ -14735,7 +16167,77 @@ window_1.default.OnGetVideoDurationFailed = function (file) {
         oldOnGetVideoDuration(file);
     }
 };
-},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"./window":80}],78:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"./window":92}],88:[function(_require,module,exports){
+var game_1 = _require('../core/items/game');
+var camera_1 = _require('../core/items/camera');
+var audio_1 = _require('../core/items/audio');
+var videoplaylist_1 = _require('../core/items/videoplaylist');
+var html_1 = _require('../core/items/html');
+var flash_1 = _require('../core/items/flash');
+var screen_1 = _require('../core/items/screen');
+var image_1 = _require('../core/items/image');
+var media_1 = _require('../core/items/media');
+var scene_1 = _require('../core/items/scene');
+var genericitem_1 = _require('../core/items/genericitem');
+var group_1 = _require('../core/items/group');
+var replay_1 = _require('../core/items/replay');
+var isource_1 = _require('../core/source/isource');
+var media_2 = _require('../core/source/media');
+function ItemTypeResolve(item) {
+    var itemType;
+    var type = Number(item['type']);
+    if (type === isource_1.ItemTypes.GAMESOURCE) {
+        itemType = new game_1.GameItem(item);
+    }
+    else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
+        item['name'].indexOf('Video Playlist') === 0 &&
+        item['FilePlaylist'] !== '') {
+        itemType = new videoplaylist_1.VideoPlaylistItem(item);
+    }
+    else if (type === isource_1.ItemTypes.HTML) {
+        itemType = new html_1.HtmlItem(item);
+    }
+    else if (type === isource_1.ItemTypes.SCREEN) {
+        itemType = new screen_1.ScreenItem(item);
+    }
+    else if (type === isource_1.ItemTypes.BITMAP ||
+        type === isource_1.ItemTypes.FILE &&
+            /\.gif$/.test(item['item'])) {
+        itemType = new image_1.ImageItem(item);
+    }
+    else if (type === isource_1.ItemTypes.FILE &&
+        /\.(gif|xbs)$/.test(item['item']) === false &&
+        /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
+        new RegExp(media_2.MediaTypes.join('|')).test(item['item']) === true) {
+        itemType = new media_1.MediaItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
+        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+        itemType = new camera_1.CameraItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
+        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+        itemType = new audio_1.AudioItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.FLASHFILE) {
+        itemType = new flash_1.FlashItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.SCENE || Number(item['type']) === isource_1.ItemTypes.VIEW) {
+        itemType = new scene_1.SceneItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.GROUP) {
+        itemType = new group_1.GroupItem(item);
+    }
+    else if (Number(item['type']) === isource_1.ItemTypes.REPLAY) {
+        itemType = new replay_1.ReplayItem(item);
+    }
+    else {
+        itemType = new genericitem_1.GenericItem(item);
+    }
+    return itemType;
+}
+exports.ItemTypeResolve = ItemTypeResolve;
+},{"../core/items/audio":7,"../core/items/camera":8,"../core/items/flash":9,"../core/items/game":10,"../core/items/genericitem":11,"../core/items/group":12,"../core/items/html":13,"../core/items/image":19,"../core/items/media":22,"../core/items/replay":23,"../core/items/scene":24,"../core/items/screen":25,"../core/items/videoplaylist":26,"../core/source/isource":49,"../core/source/media":51}],89:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
@@ -14811,7 +16313,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":55,"../internal/remote":58,"../internal/util/version":63}],79:[function(_require,module,exports){
+},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":63,"../internal/remote":66,"../internal/util/version":71}],90:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -15028,7 +16530,73 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],80:[function(_require,module,exports){
+},{}],91:[function(_require,module,exports){
+/// <reference path="../../defs/es6-promise.d.ts" />
+var source_1 = _require('../core/source/source');
+var game_1 = _require('../core/source/game');
+var camera_1 = _require('../core/source/camera');
+var audio_1 = _require('../core/source/audio');
+var videoplaylist_1 = _require('../core/source/videoplaylist');
+var html_1 = _require('../core/source/html');
+var flash_1 = _require('../core/source/flash');
+var screen_1 = _require('../core/source/screen');
+var image_1 = _require('../core/source/image');
+var replay_1 = _require('../core/source/replay');
+var scenesource_1 = _require('../core/source/scenesource');
+var isource_1 = _require('../core/source/isource');
+var media_1 = _require('../core/source/media');
+function SourceTypeResolve(source) {
+    var srcType;
+    var type = Number(source['type']);
+    if (type === isource_1.ItemTypes.GAMESOURCE) {
+        srcType = new game_1.GameSource(source);
+    }
+    else if ((type === isource_1.ItemTypes.HTML || type === isource_1.ItemTypes.FILE) &&
+        source['name'].indexOf('Video Playlist') === 0 &&
+        source['FilePlaylist'] !== '') {
+        srcType = new videoplaylist_1.VideoPlaylistSource(source);
+    }
+    else if (type === isource_1.ItemTypes.HTML) {
+        srcType = new html_1.HtmlSource(source);
+    }
+    else if (type === isource_1.ItemTypes.SCREEN) {
+        srcType = new screen_1.ScreenSource(source);
+    }
+    else if (type === isource_1.ItemTypes.BITMAP ||
+        type === isource_1.ItemTypes.FILE &&
+            /\.gif$/.test(source['item'])) {
+        srcType = new image_1.ImageSource(source);
+    }
+    else if (type === isource_1.ItemTypes.FILE &&
+        /\.(gif|xbs)$/.test(source['item']) === false &&
+        /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
+        new RegExp(media_1.MediaTypes.join('|')).test(source['item']) === true) {
+        srcType = new media_1.MediaSource(source);
+    }
+    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
+        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+        srcType = new camera_1.CameraSource(source);
+    }
+    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
+        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+        srcType = new audio_1.AudioSource(source);
+    }
+    else if (Number(source['type']) === isource_1.ItemTypes.FLASHFILE) {
+        srcType = new flash_1.FlashSource(source);
+    }
+    else if (Number(source['type']) === isource_1.ItemTypes.REPLAY) {
+        srcType = new replay_1.ReplaySource(source);
+    }
+    else if (Number(source['type']) === isource_1.ItemTypes.SCENE || Number(source['type']) === isource_1.ItemTypes.VIEW) {
+        srcType = new scenesource_1.SceneSource(source);
+    }
+    else {
+        srcType = new source_1.Source(source);
+    }
+    return srcType;
+}
+exports.SourceTypeResolve = SourceTypeResolve;
+},{"../core/source/audio":30,"../core/source/camera":31,"../core/source/flash":33,"../core/source/game":34,"../core/source/html":35,"../core/source/image":43,"../core/source/isource":49,"../core/source/media":51,"../core/source/replay":52,"../core/source/scenesource":53,"../core/source/screen":54,"../core/source/source":55,"../core/source/videoplaylist":56}],92:[function(_require,module,exports){
 (function (global){
 var win = {};
 if (typeof window !== 'undefined') {
@@ -15045,7 +16613,7 @@ else {
 }
 exports.default = win;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],81:[function(_require,module,exports){
+},{}],93:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -15232,7 +16800,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"../util/eventemitter":76}],82:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"../util/eventemitter":86}],94:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -15591,7 +17159,7 @@ window_1.default.OnDialogResult = function (result) {
         oldOnDialogResult(result);
     }
 };
-},{"../core/environment":4,"../internal/internal":56,"../internal/remote":58,"../util/rectangle":79,"../util/window":80}],83:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"../util/rectangle":90,"../util/window":92}],95:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16037,7 +17605,7 @@ window_1.default.OnSceneLoad = function () {
         }
     });
 };
-},{"../core/environment":4,"../core/extension":5,"../core/items/item":18,"../core/scene":25,"../internal/app":52,"../internal/eventmanager":53,"../internal/internal":56,"../internal/util/json":59,"../internal/util/splitmode":62,"../internal/util/version":63,"../util/eventemitter":76,"../util/window":80}],84:[function(_require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":20,"../core/scene":29,"../internal/app":60,"../internal/eventmanager":61,"../internal/internal":64,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/version":71,"../util/eventemitter":86,"../util/window":92}],96:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16205,7 +17773,7 @@ window_1.default.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":4,"../internal/eventmanager":53,"../internal/global":54,"../internal/util/version":63,"../util/eventemitter":76,"../util/window":80}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":61,"../internal/global":62,"../internal/util/version":71,"../util/eventemitter":86,"../util/window":92}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -16234,6 +17802,8 @@ __export(_require('./core/source/screen'));
 __export(_require('./core/source/image'));
 __export(_require('./core/source/media'));
 __export(_require('./core/source/videoplaylist'));
+__export(_require('./core/source/replay'));
+__export(_require('./core/source/scenesource'));
 __export(_require('./core/items/item'));
 __export(_require('./core/items/camera'));
 __export(_require('./core/items/game'));
@@ -16243,6 +17813,9 @@ __export(_require('./core/items/flash'));
 __export(_require('./core/items/screen'));
 __export(_require('./core/items/image'));
 __export(_require('./core/items/media'));
+__export(_require('./core/items/group'));
+__export(_require('./core/items/replay'));
+__export(_require('./core/items/scene'));
 __export(_require('./core/items/videoplaylist'));
 var ieffects_1 = _require('./core/items/ieffects');
 exports.MaskEffect = ieffects_1.MaskEffect;
@@ -16267,6 +17840,8 @@ __export(_require('./system/url'));
 __export(_require('./system/screen'));
 __export(_require('./system/file'));
 __export(_require('./system/videoplaylist'));
+__export(_require('./system/group'));
+__export(_require('./system/replay'));
 __export(_require('./window/config'));
 __export(_require('./window/source'));
 __export(_require('./window/extension'));
@@ -16276,7 +17851,7 @@ var internal_1 = _require('./internal/internal');
 exports.exec = internal_1.exec;
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/html":12,"./core/items/ichroma":13,"./core/items/ieffects":15,"./core/items/image":17,"./core/items/item":18,"./core/items/media":20,"./core/items/screen":21,"./core/items/videoplaylist":22,"./core/languageinfo":23,"./core/output":24,"./core/scene":25,"./core/source/audio":26,"./core/source/camera":27,"./core/source/cuepoint":28,"./core/source/flash":29,"./core/source/game":30,"./core/source/html":31,"./core/source/image":39,"./core/source/iplayback":41,"./core/source/isource":43,"./core/source/media":45,"./core/source/screen":46,"./core/source/source":47,"./core/source/videoplaylist":48,"./core/streaminfo":49,"./core/thumbnail":50,"./core/transition":51,"./internal/internal":56,"./internal/remote":58,"./system/audio":65,"./system/camera":66,"./system/file":67,"./system/game":68,"./system/microphone":69,"./system/screen":70,"./system/system":71,"./system/url":72,"./system/videoplaylist":73,"./util/color":75,"./util/io":77,"./util/ready":78,"./util/rectangle":79,"./window/config":81,"./window/dialog":82,"./window/extension":83,"./window/source":84}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/group":12,"./core/items/html":13,"./core/items/ichroma":14,"./core/items/ieffects":16,"./core/items/image":19,"./core/items/item":20,"./core/items/media":22,"./core/items/replay":23,"./core/items/scene":24,"./core/items/screen":25,"./core/items/videoplaylist":26,"./core/languageinfo":27,"./core/output":28,"./core/scene":29,"./core/source/audio":30,"./core/source/camera":31,"./core/source/cuepoint":32,"./core/source/flash":33,"./core/source/game":34,"./core/source/html":35,"./core/source/image":43,"./core/source/iplayback":45,"./core/source/isource":49,"./core/source/media":51,"./core/source/replay":52,"./core/source/scenesource":53,"./core/source/screen":54,"./core/source/source":55,"./core/source/videoplaylist":56,"./core/streaminfo":57,"./core/thumbnail":58,"./core/transition":59,"./internal/internal":64,"./internal/remote":66,"./system/audio":73,"./system/camera":74,"./system/file":75,"./system/game":76,"./system/group":77,"./system/microphone":78,"./system/replay":79,"./system/screen":80,"./system/system":81,"./system/url":82,"./system/videoplaylist":83,"./util/color":85,"./util/io":87,"./util/ready":89,"./util/rectangle":90,"./window/config":93,"./window/dialog":94,"./window/extension":95,"./window/source":96}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();
