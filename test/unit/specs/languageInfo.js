@@ -47,7 +47,7 @@ describe('LanguageInfo ===', function() {
     it('that returns as a string', function(done) {
       promise.then(function(code) {
         expect(code).toBeTypeOf('string');
-        expect(langObj['lang']).toEqual(langCode);
+        expect(code).toEqual(langCode);
         done();
       });
     });
