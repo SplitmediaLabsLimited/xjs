@@ -39,107 +39,47 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
  */
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item
-  /**
-   * return: Promise<string>
-   *
-   * Gets the device ID of the underlying camera device.
-   */
+  /** See: {@link #core/ISourceCamera#getDeviceId getDeviceId} */
   getDeviceId: () => Promise<string>
 
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the camera's native resolution.
-   */
+  /** See: {@link #core/ISourceCamera#getResolution getResolution} */
   getResolution: () => Promise<Rectangle>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets audio delay with respect to video feed in milliseconds
-   */
+  /** See: {@link #core/ISourceCamera#getAudioOffset getAudioOffset} */
   getAudioOffset: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets audio delay with respect to video feed in milliseconds
-   */
-  setAudioOffset: (value: number) => Promise<ISourceCamera>
+  /** See: {@link #core/ISourceCamera#setAudioOffset setAudioOffset} */
+  setAudioOffset: (value: number) => Promise<CameraSource>
 
-  /**
-   * return: Promise<MicrophoneDevice>
-   *
-   * Gets the microphone device tied as an audio input,
-   * rejected if no microphone device is used
-   */
+  /** See: {@link #core/ISourceCamera#getAudioInput getAudioInput} */
   getAudioInput: () => Promise<MicrophoneDevice>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets the microphone device to be tied as an audio input
-   */
-  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
+  /** See: {@link #core/ISourceCamera#setAudioInput setAudioInput} */
+  setAudioInput: (value: MicrophoneDevice) => Promise<CameraSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera feed is paused
-   */
+  /** See: {@link #core/ISourceCamera#isStreamPaused isStreamPaused} */
   isStreamPaused: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Sets whether camera feed is paused or not
-   */
+  /** See: {@link #core/ISourceCamera#setStreamPaused setStreamPaused} */
   setStreamPaused: (value: boolean) => Promise<CameraSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is a hardware encoder or not. This check may fail
-   * if camera device is reinitializing or not present (value defaults to false)
-   *
-   */
+  /** See: {@link #core/ISourceCamera#isHardwareEncoder isHardwareEncoder} */
   isHardwareEncoder: () => Promise<boolean>
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks if camera device is active and present.
-   *
-   */
+
+  /** See: {@link #core/ISourceCamera#isActive isActive} */
   isActive: () => Promise<boolean>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets feed capture delay in milliseconds
-   */
+  /** See: {@link #core/ISourceCamera#getDelay getDelay} */
   getDelay: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets feed capture delay in milliseconds, accepts only positive delay
-   */
+  /** See: {@link #core/ISourceCamera#setDelay setDelay} */
   setDelay: (value: number) => Promise<CameraSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether deinterlacing is enforced
-   */
+  /** See: {@link #core/ISourceCamera#isForceDeinterlace isForceDeinterlace} */
   isForceDeinterlace: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Enables or disables forcing of deinterlacing
-   */
+  /** See: {@link #core/ISourceCamera#setForceDeinterlace setForceDeinterlace} */
   setForceDeinterlace: (value: boolean) => Promise<CameraSource>
-
 
   // General Audio
 

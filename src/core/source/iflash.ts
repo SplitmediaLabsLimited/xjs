@@ -11,6 +11,8 @@ export interface ISourceFlash {
    * Gets the custom resolution (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom resolution has been set.
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getCustomResolution(): Promise<Rectangle>
 
@@ -22,12 +24,25 @@ export interface ISourceFlash {
    *
    * Sets the custom resolution for the item
    * regardless of its layout on the mixer
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setCustomResolution(value: Rectangle): Promise<ISourceFlash>
+
   /**
    * return: Promise<boolean>
    *
    * Check if right click events are sent to the item or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
    */
   getAllowRightClick(): Promise<boolean>
 
@@ -39,6 +54,16 @@ export interface ISourceFlash {
    *
    * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.setAllowRightClick(true).then(function(item) {
+   *   // Promise resolves with the same Item instance
+   * });
+   * ```
    */
   setAllowRightClick(value: boolean): Promise<ISourceFlash>
 }

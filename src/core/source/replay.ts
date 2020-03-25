@@ -38,103 +38,38 @@ import {ISourceReplay, SourceReplay} from './ireplay';
 export class ReplaySource extends Source implements IAudio, ISourceReplay {
   //Shared with ReplayItem
 
-  /**
-   * return: Promise<string>
-   * 
-   * Gets the name of the stream/channel tied to the replay.
-   */ 
+  /** See: {@link #core/ISourceReplay#getChannel getChannel} */
   getChannel: () => Promise<string>
 
-  /**
-   * param: (channel: string)
-   * ```
-   * return: Promise<ISourceReplay>
-   * ```
-   *
-   * Sets the stream/channel tied to the replay via its name.
-   */
-  setChannel: (channel: string) => Promise<ISourceReplay>
+  /** See: {@link #core/ISourceReplay#setChannel setChannel} */
+  setChannel: (channel: string) => Promise<ReplaySource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the hotkey, in numerical value, used to toggle start/stop of the replay.
-   *
-   * See conversion from keycode: {@link #system/Replay Replay Class}
-   */
+  /** See: {@link #core/ISourceReplay#getHotkey getHotkey} */
   getHotkey: () => Promise<number>
 
-  /**
-   * param: (hotkey: number)
-   * ```
-   * return: Promise<ISourceReplay>
-   * ```
-   *
-   * Sets the hotkey, in numerical value, used to toggle start/stop of the replay.
-   *
-   * See conversion from keycode: {@link #system/Replay Replay Class}
-   */
-  setHotkey: (hotkey: number) => Promise<ISourceReplay>
+  /** See: {@link #core/ISourceReplay#setHotkey setHotkey} */
+  setHotkey: (hotkey: number) => Promise<ReplaySource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the duration, or buffer time for the replay
-   */
+  /** See: {@link #core/ISourceReplay#getReplayTime getReplayTime} */
   getReplayTime: () => Promise<number>
 
-  /**
-   * param: (time: number)
-   * ```
-   * return: Promise<ISourceReplay>
-   * ```
-   *
-   * Sets the duration, or buffer time for the replay
-   */
-  setReplayTime: (buffer: number) => Promise<ISourceReplay>
+  /** See: {@link #core/ISourceReplay#setReplayTime setReplayTime} */
+  setReplayTime: (buffer: number) => Promise<ReplaySource>
 
-  /**
-   * return: Promise<ISourceReplay>
-   *
-   * Start playing of the buffered replay
-   */
-  startReplay: () => Promise<ISourceReplay>
+  /** See: {@link #core/ISourceReplay#startReplay startReplay} */
+  startReplay: () => Promise<ReplaySource>
 
-  /**
-   * return: Promise<ISourceReplay>
-   *
-   * Stop playing of the buffered replay
-   */
-  stopReplay: () => Promise<ISourceReplay>
+  /** See: {@link #core/ISourceReplay#stopReplay stopReplay} */
+  stopReplay: () => Promise<ReplaySource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets the replay state, may return any of the following:
-   * 0 - playing
-   * 1 - not playing
-   * -1 - no stream exists
-   * -2 - stream exists but cannot be tied to a replay
-   */
+  /** See: {@link #core/ISourceReplay#getReplayState getReplayState} */
   getReplayState: () => Promise<number>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Checks whether this source is set to start playback when the application
-   * switches to this source's scene.
-   */
+  /** See: {@link #core/ISourceReplay#isAutostartOnSceneLoad isAutostartOnSceneLoad} */
   isAutostartOnSceneLoad: () => Promise<boolean>;
 
-  /**
-   * param: (value: boolean)
-   *
-   * Specifies whether this source is set to start playback when the application
-   * switches to this source's scene.
-   *
-   * *Chainable.*
-   */
-  setAutostartOnSceneLoad: (value: boolean) => Promise<ISourceReplay>;
+  /** See: {@link #core/ISourceReplay#setAutostartOnSceneLoad setAutostartOnSceneLoad} */
+  setAutostartOnSceneLoad: (value: boolean) => Promise<ReplaySource>;
 
   // ItemAudio
 
