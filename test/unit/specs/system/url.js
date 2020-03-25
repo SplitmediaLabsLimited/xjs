@@ -5,13 +5,14 @@ describe('Url', function() {
 
   var XJS = require('xjs');
   var Url = XJS.Url;
-
+  var ctr = 0;
   beforeEach(function() {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName) {
           if(funcName.includes('addurl')) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'url_' + ctr;
 
             setTimeout(function() {
               window.OnAsyncCallback(asyncId, '0');

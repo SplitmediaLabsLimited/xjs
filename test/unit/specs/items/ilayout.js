@@ -1,6 +1,6 @@
 /* globals describe, require, beforeEach, spyOn, it, expect */
 
-describe('Layouts interface', function() {
+describe('Layout interface', function() {
   'use strict';
 
   var XJS = require('xjs');
@@ -19,6 +19,8 @@ describe('Layouts interface', function() {
     EXTENSION : 'extension'
   };
 
+  var ctr = 0;
+
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -30,13 +32,20 @@ describe('Layouts interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'ilayout_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (property === 'posaspect') {
+      property = 'pos';
+    }
+
+    if (property === 'mixerresolution') {
+    	xCallback(asyncId, '1920,1080');
+    } else  if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -51,7 +60,8 @@ describe('Layouts interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'ilayout_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -61,10 +71,13 @@ describe('Layouts interface', function() {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
+
+  var firstItem;
+  var secondItem;
 
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
@@ -81,7 +94,8 @@ describe('Layouts interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+	    ctr++;
+	    var asyncId = 'ilayout_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -125,6 +139,8 @@ describe('Layouts interface', function() {
       return newScene.getItems();
     }).then(function(items) {
       enumeratedItems = items;
+      firstItem = enumeratedItems[0];
+      secondItem = enumeratedItems[1];
       done();
     });
   });
@@ -168,4 +184,474 @@ describe('Layouts interface', function() {
       expect(currentItem).hasMethods(methods);
     });
   });
+
+  describe('should be able to get and set if keep aspect ratio is enabled', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.isKeepAspectRatio();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = randomBoolean();
+      var secondBoolean = randomBoolean();
+
+      firstItem.setKeepAspectRatio(firstBoolean)
+      .then(function() {
+        return secondItem.setKeepAspectRatio(secondBoolean);
+      }).then(function() {
+        return firstItem.isKeepAspectRatio();
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
+        return secondItem.isKeepAspectRatio();
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
+        return firstItem.setKeepAspectRatio(!firstBoolean);
+      }).then(function() {
+        return firstItem.isKeepAspectRatio();
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set if position locked is enabled', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.isPositionLocked();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = randomBoolean();
+      var secondBoolean = randomBoolean();
+
+      firstItem.setPositionLocked(firstBoolean)
+      .then(function() {
+        return secondItem.setPositionLocked(secondBoolean);
+      }).then(function() {
+        return firstItem.isPositionLocked();
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
+        return secondItem.isPositionLocked();
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
+        return firstItem.setPositionLocked(!firstBoolean);
+      }).then(function() {
+        return firstItem.isPositionLocked();
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set if enhanced resize is enabled', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.isEnhancedResizeEnabled();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = randomBoolean();
+      var secondBoolean = randomBoolean();
+
+      firstItem.setEnhancedResizeEnabled(firstBoolean)
+      .then(function() {
+        return secondItem.setEnhancedResizeEnabled(secondBoolean);
+      }).then(function() {
+        return firstItem.isEnhancedResizeEnabled();
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
+        return secondItem.isEnhancedResizeEnabled();
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
+        return firstItem.setEnhancedResizeEnabled(!firstBoolean);
+      }).then(function() {
+        return firstItem.isEnhancedResizeEnabled();
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set position', function() {
+    var leftRand = randomInt(1, 500)/1000;
+    var topRand = randomInt(1, 500)/1000;
+    var rightRand = randomInt(1, 500)/1000 + leftRand;
+    var bottomRand = randomInt(1, 500)/1000 + topRand;
+
+    var firstRec = XJS.Rectangle.fromCoordinates(leftRand, topRand, rightRand, bottomRand);
+
+    it ('through a promise', function(done) {
+      var promise = firstItem.setPosition(firstRec);
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a Rectangle object', function(done) {
+      firstItem.setPosition(firstRec)
+      .then(function() {
+        return firstItem.getPosition();
+      }).then(function(rec1) {
+        expect(rec1).toBeInstanceOf(XJS.Rectangle);
+        expect(rec1.toCoordinateString()).toEqual(firstRec.toCoordinateString());
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set Y rotation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getRotateY();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(1,360);
+      var secondRand = randomSignMultiplier() * randomInt(1,360);
+
+      firstItem.setRotateY(firstRand)
+      .then(function() {
+        return secondItem.setRotateY(secondRand);
+      }).then(function() {
+        return firstItem.getRotateY();
+      }).then(function(rotation1) {
+        expect(rotation1).toBeTypeOf('number');
+        expect(rotation1).toEqual(firstRand);
+        return secondItem.getRotateY();
+      }).then(function(rotation2) {
+        expect(rotation2).toBeTypeOf('number');
+        expect(rotation2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(361, 1000);
+
+      firstItem.setRotateY(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setRotateY(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set X rotation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getRotateX();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(1,360);
+      var secondRand = randomSignMultiplier() * randomInt(1,360);
+
+      firstItem.setRotateX(firstRand)
+      .then(function() {
+        return secondItem.setRotateX(secondRand);
+      }).then(function() {
+        return firstItem.getRotateX();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getRotateX();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(361, 1000);
+
+      firstItem.setRotateX(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setRotateX(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set Z rotation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getRotateZ();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(1,360);
+      var secondRand = randomSignMultiplier() * randomInt(1,360);
+
+      firstItem.setRotateZ(firstRand)
+      .then(function() {
+        return secondItem.setRotateZ(secondRand);
+      }).then(function() {
+        return firstItem.getRotateZ();
+      }).then(function(rotation1) {
+        expect(rotation1).toBeTypeOf('number');
+        expect(rotation1).toEqual(firstRand);
+        return secondItem.getRotateZ();
+      }).then(function(rotation2) {
+        expect(rotation2).toBeTypeOf('number');
+        expect(rotation2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(361, 1000);
+
+      firstItem.setRotateZ(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setRotateZ(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set cropping', function() {
+    var leftRand = randomInt(1, 500)/1000;
+    var topRand = randomInt(1, 500)/1000;
+    var rightRand = randomInt(1, 500)/1000;
+    var bottomRand = randomInt(1, 500)/1000;
+
+    var coordObj = {
+    	left : leftRand,
+    	top : topRand,
+    	right : rightRand,
+    	bottom : bottomRand
+    }
+
+    it ('through a promise', function(done) {
+      var promise = firstItem.setCropping(coordObj);
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as an object', function(done) {
+      firstItem.setCropping(coordObj)
+      .then(function() {
+        return firstItem.getCropping();
+      }).then(function(obj) {
+        expect(obj).toBeInstanceOf(Object);
+        expect(obj.left).toEqual(coordObj.left);
+        expect(obj.top).toEqual(coordObj.top);
+        expect(obj.right).toEqual(coordObj.right);
+        expect(obj.bottom).toEqual(coordObj.bottom);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(361, 1000);
+
+      firstItem.setCropping(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setCropping(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set canvas rotation', function() {
+  	var allowedValues = [0, 90, 180, 270];
+    it ('through a promise', function(done) {
+      var promise = firstItem.getCanvasRotate();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+			var firstRand = allowedValues[randomInt(0,3)];
+			var secondRand = allowedValues[randomInt(0,3)];
+    	firstItem.setCanvasRotate(firstRand)
+    	.then(function() {
+    		return secondItem.setCanvasRotate(secondRand);
+    	}).then(function() {
+    		return firstItem.getCanvasRotate();
+    	}).then(function(rotation1) {
+    		expect(rotation1).toEqual(firstRand);
+    		return secondItem.getCanvasRotate();
+    	}).then(function(rotation2) {
+    		expect(rotation2).toEqual(rotation2);
+    		done();
+    	})
+    })
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(271, 1000);
+
+      firstItem.setCropping(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setCropping(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set enhanced canvas rotation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getEnhancedRotate();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+    	var randRotate = randomSignMultiplier() * randomInt(1,180);
+    	var posRec = XJS.Rectangle.fromCoordinates(0,0,1,1);
+
+    	firstItem.setPosition(posRec)
+    	.then(function() {
+    		return firstItem.setEnhancedRotate(randRotate);
+    	}).then(function() {
+    		return firstItem.getEnhancedRotate();
+    	}).then(function(canvasRotation) {
+    		expect(canvasRotation).toBeTypeOf('number');
+    		expect(canvasRotation).toEqual(randRotate);
+    		done();
+    	});
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(271, 1000);
+
+      firstItem.setEnhancedRotate(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setEnhancedRotate(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to set cropping in an enhanced state', function() {
+    var leftRand = randomInt(1, 500)/1000;
+    var topRand = randomInt(1, 500)/1000;
+    var rightRand = randomInt(1, 500)/1000;
+    var bottomRand = randomInt(1, 500)/1000;
+
+    var origCoordObj = {
+    	left : 0,
+    	top : 0,
+    	right : 0,
+    	bottom : 0
+    }
+
+    var coordObj = {
+    	left : leftRand,
+    	top : topRand,
+    	right : rightRand,
+    	bottom : bottomRand
+    }
+
+    it ('through a promise', function(done) {
+      var promise = firstItem.setCroppingEnhanced(coordObj);
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as an object', function(done) {
+    	var randRotate = randomSignMultiplier() * randomInt(1,180);
+    	var posRec = XJS.Rectangle.fromCoordinates(0,0,1,1);
+
+    	firstItem.setPosition(posRec)
+    	.then(function() {
+    		return firstItem.setEnhancedRotate(randRotate);
+    	}).then(function() {
+    		return firstItem.setCropping(origCoordObj);
+    	}).then(function() {
+    		return firstItem.setCroppingEnhanced(coordObj);
+    	}).then(function() {
+    		return firstItem.getCropping();
+    	}).then(function(obj) {
+        expect(obj).toBeInstanceOf(Object);
+        expect(obj.left).toEqual(coordObj.left);
+        expect(obj.top).toEqual(coordObj.top);
+        expect(obj.right).toEqual(coordObj.right);
+        expect(obj.bottom).toEqual(coordObj.bottom);
+    		done();
+    	});
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(361, 1000);
+
+      firstItem.setCroppingEnhanced(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setCroppingEnhanced(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
 });

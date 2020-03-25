@@ -10,11 +10,13 @@ describe('LanguageInfo ===', function() {
 
   var promise;
   var langCode = 'es';
+  var ctr = 0;
   beforeEach(function() {
     spyOn(window.external, 'CallHostFunc')
       .and.callFake(function(funcName, ...param) {
       if (funcName == 'getProperty' && param[0] === 'html:language') {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        ctr++;
+        var asyncId = 'language_info' + ctr;
 
         setTimeout(function() {
           window.OnAsyncCallback(asyncId, langCode);
@@ -34,7 +36,7 @@ describe('LanguageInfo ===', function() {
     window.SetEvent('event=LanguageChanged&lang=es')
   })
 
-  it('should be able to get the current language', function(done) {
+  describe('should be able to get the current language', function() {
     beforeEach(function() {
       promise = LanguageInfo.getCode()
     });
@@ -45,7 +47,7 @@ describe('LanguageInfo ===', function() {
     it('that returns as a string', function(done) {
       promise.then(function(code) {
         expect(code).toBeTypeOf('string');
-        expect(langObj['lang']).toEqual(langCode);
+        expect(code).toEqual(langCode);
         done();
       });
     });

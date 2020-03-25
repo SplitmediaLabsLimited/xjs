@@ -46,10 +46,10 @@ export class App {
   /** Gets all the items of the given condition as list */
   static getAsItemList(name: string): Promise<JXON[]> {
     return new Promise((resolve, reject) => {      
-      App.get(name).then((xml: string) => {       
+      let propsArr: JXON[] = [];
+      App.get(name).then((xml: string) => {
         try {
-          let propsJSON: JXON = JXON.parse(xml),
-            propsArr: JXON[] = [];  
+          let propsJSON: JXON = JXON.parse(xml)              
         
           const recursion = children => {            
             children.forEach(child => {
@@ -77,10 +77,9 @@ export class App {
           } else if (propsJSON['tag'] === 'placement' && propsJSON.children && propsJSON.children.length > 0) {
             recursion(propsJSON.children);
           }
-
           resolve(propsArr);
         } catch (e) {
-          reject(e);
+          resolve(propsArr);
         }
       });
     });

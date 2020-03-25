@@ -544,9 +544,9 @@ export class SourcePlayback implements ISourcePlayback {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
-        this._checkPromise = iItem.set('prop:ShowPositio', (value ? '1' : '0'), this._id)
+        this._checkPromise = iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id)
       } else {
-        this._checkPromise = iItem.wrapSet('prop:ShowPositio', (value ? '1' : '0'),
+        this._checkPromise = iItem.wrapSet('prop:ShowPosition', (value ? '1' : '0'),
           this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {

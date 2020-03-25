@@ -19,6 +19,8 @@ describe('Color interface', function() {
     EXTENSION : 'extension'
   };
 
+  var ctr = 0;
+
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -30,13 +32,14 @@ describe('Color interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+		ctr++;
+    var asyncId = 'icolor_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -51,7 +54,8 @@ describe('Color interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+		ctr++;
+    var asyncId = 'icolor_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -61,10 +65,13 @@ describe('Color interface', function() {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
+
+  var firstItem;
+  var secondItem;
 
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
@@ -81,7 +88,8 @@ describe('Color interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+	  	ctr++;
+	    var asyncId = 'icolor_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -125,6 +133,8 @@ describe('Color interface', function() {
       return newScene.getItems();
     }).then(function(items) {
       enumeratedItems = items;
+      firstItem = enumeratedItems[0];
+      secondItem = enumeratedItems[1];
       done();
     });
   });
@@ -155,6 +165,305 @@ describe('Color interface', function() {
 
     enumeratedItems.forEach(function(currentItem) {
       expect(currentItem).hasMethods(methods);
+    });
+  });
+
+  describe('should be able to get and set transparency', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getTransparency();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt(0,255);
+      var secondRand = randomInt(0,255);
+
+      firstItem.setTransparency(firstRand)
+      .then(function() {
+        return secondItem.setTransparency(secondRand);
+      }).then(function() {
+        return firstItem.getTransparency();
+      }).then(function(transparency1) {
+        expect(transparency1).toBeTypeOf('number');
+        expect(transparency1).toEqual(firstRand);
+        return secondItem.getTransparency();
+      }).then(function(transparency2) {
+        expect(transparency2).toBeTypeOf('number');
+        expect(transparency2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomInt(256, 1000);
+
+      firstItem.setTransparency(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setTransparency(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set brightness', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getBrightness();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(0,100);
+      var secondRand = randomSignMultiplier() * randomInt(0,100);
+
+      firstItem.setBrightness(firstRand)
+      .then(function() {
+        return secondItem.setBrightness(secondRand);
+      }).then(function() {
+        return firstItem.getBrightness();
+      }).then(function(action1) {
+        expect(action1).toBeTypeOf('number');
+        expect(action1).toEqual(firstRand);
+        return secondItem.getBrightness();
+      }).then(function(action2) {
+        expect(action2).toBeTypeOf('number');
+        expect(action2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
+
+      firstItem.setBrightness(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setBrightness(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set contrast', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getContrast();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(0,100);
+      var secondRand = randomSignMultiplier() * randomInt(0,100);
+
+      firstItem.setContrast(firstRand)
+      .then(function() {
+        return secondItem.setContrast(secondRand);
+      }).then(function() {
+        return firstItem.getContrast();
+      }).then(function(contrast1) {
+        expect(contrast1).toBeTypeOf('number');
+        expect(contrast1).toEqual(firstRand);
+        return secondItem.getContrast();
+      }).then(function(contrast2) {
+        expect(contrast2).toBeTypeOf('number');
+        expect(contrast2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
+
+      firstItem.setContrast(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setContrast(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set hue', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getHue();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(0,180);
+      var secondRand = randomSignMultiplier() * randomInt(0,180);
+
+      firstItem.setHue(firstRand)
+      .then(function() {
+        return secondItem.setHue(secondRand);
+      }).then(function() {
+        return firstItem.getHue();
+      }).then(function(hue1) {
+        expect(hue1).toBeTypeOf('number');
+        expect(hue1).toEqual(firstRand);
+        return secondItem.getHue();
+      }).then(function(hue2) {
+        expect(hue2).toBeTypeOf('number');
+        expect(hue2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(181, 1000);
+
+      firstItem.setHue(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setHue(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set saturation', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getSaturation();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomSignMultiplier() * randomInt(1,100);
+      var secondRand = randomSignMultiplier() * randomInt(1,100);
+
+      firstItem.setSaturation(firstRand)
+      .then(function() {
+        return secondItem.setSaturation(secondRand);
+      }).then(function() {
+        return firstItem.getSaturation();
+      }).then(function(saturation1) {
+        expect(saturation1).toBeTypeOf('number');
+        expect(saturation1).toEqual(firstRand);
+        return secondItem.getSaturation();
+      }).then(function(saturation2) {
+        expect(saturation2).toBeTypeOf('number');
+        expect(saturation2).toEqual(secondRand);
+        done();
+      })
+    });
+
+    it ('which rejects for invalid parameters', function(done) {
+    	var randomString = randomWord(5);
+    	var randomNumber = randomSignMultiplier() * randomInt(101, 1000);
+
+      firstItem.setSaturation(randomString)
+      .then(function() {
+        done.fail('Invalid type was accepted (string)');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setSaturation(randomNumber)
+      }).then(function() {
+      	done.fail('Invalid value was accepted');
+      }).catch(function(err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set border color', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.getBorderColor();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a Color object', function(done) {
+      var randomColorKey = randomColor();
+      var colorObj = XJS.Color.fromRGBString(randomColorKey);
+
+      firstItem.setBorderColor(randomColorKey)
+      .then(function() {
+        done.fail('Invalid type was accepted');
+      }).catch(function(err) {
+      	expect(err).toEqual(jasmine.any(Error));
+        return firstItem.setBorderColor(colorObj)
+      }).then(function() {
+      	return firstItem.getBorderColor();
+      }).then(function(color) {
+        expect(color.getRgb()).toEqual(color.getRgb());
+        done();
+      })
+    });
+
+    it ('and accepts transparent', function(done) {
+    	firstItem.setBorderColor(XJS.Color.fromTransparent())
+    	.then(function() {
+    		return firstItem.getBorderColor();
+    	}).then(function(color) {
+    		expect(color.isTransparent()).toBe(true);
+    		done();
+    	})
+    })
+  });
+
+  describe('should be able to get and set if full dynamic range is enabled', function() {
+    it ('through a promise', function(done) {
+      var promise = firstItem.isFullDynamicColorRange();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = randomBoolean();
+      var secondBoolean = randomBoolean();
+
+      firstItem.setFullDynamicColorRange(firstBoolean)
+      .then(function() {
+        return secondItem.setFullDynamicColorRange(secondBoolean);
+      }).then(function() {
+        return firstItem.isFullDynamicColorRange();
+      }).then(function(enabled1) {
+        expect(enabled1).toBeTypeOf('boolean');
+        expect(enabled1).toEqual(firstBoolean);
+        return secondItem.isFullDynamicColorRange();
+      }).then(function(enabled2) {
+        expect(enabled2).toBeTypeOf('boolean');
+        expect(enabled2).toEqual(secondBoolean);
+        return firstItem.setFullDynamicColorRange(!firstBoolean);
+      }).then(function() {
+        return firstItem.isFullDynamicColorRange();
+      }).then(function(enabled3) {
+        expect(enabled3).toEqual(!firstBoolean);
+        done();
+      })
     });
   });
 });

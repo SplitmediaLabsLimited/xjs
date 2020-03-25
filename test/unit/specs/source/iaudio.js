@@ -5,7 +5,7 @@ describe('Audio interface', function() {
 
   var XJS = require('xjs');
   var Scene = XJS.Scene;
-  var mockPresetConfig = '<placement name="Scene 1" id="{219DB767-BE5B-4389-90C2-E712F08EA2CC}" defpos="2"><item type="1" item="C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3" itemaudio="" name="C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3" cname="" pos_left="0.609375" pos_top="0.000000" pos_right="0.890625" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="1" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="0" alpha="255" border="0" cc_pin="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="2219327935" syncid1="1156186735" syncid2="3650348943" syncid3="3238716332" id="{EAC2BFE9-D749-4A61-9794-DAA4F288EE9E}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="620950005" OutPoint="945876220" CuePoints="" FilePlaylist="" OpWhenFinished="2" StartOnLoad="1" RememberPosition="1" LastPosition="880751189" LastRunState="1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""/><item type="1" item="C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3" itemaudio="" name="C:\\Users\\Public\\Music\\Sample Music\\Kalimba.mp3" cname="" pos_left="0.609375" pos_top="0.000000" pos_right="0.890625" pos_bottom="0.500000" crop_left="0.000000" crop_top="0.000000" crop_right="0.000000" crop_bottom="0.000000" pixalign="0" zorder="1" volume="100" mute="0" sounddev="0" lockmove="0" keep_ar="1" fdeinterlace="0" mipmaps="0" autoresdet="1" visible="1" keeploaded="0" alpha="255" border="0" cc_pin="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" key_pin="0" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" key_smartcamenable="0" key_smartcamconfig="" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" offset_x="0.000000" offset_y="0.000000" transitionid="" transitiontime="300" edgeeffectid="" edgeeffectcfg="" syncid0="2219327935" syncid1="1156186735" syncid2="3650348943" syncid3="3238716332" id="{EAC2BFE9-D749-4A61-9794-DAA4F288EE9E}" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" InPoint="620950005" OutPoint="945876220" CuePoints="" FilePlaylist="" OpWhenFinished="2" StartOnLoad="1" RememberPosition="1" LastPosition="880751189" LastRunState="1" ShowPosition="0" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture="0" ScrCapOptCapture1="1" ScrCapIntResize="0" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookiePath="" BrowserCookieFlags="0" Browser60fps="0" SwfWrapper="1" DllGrant="" custom=""/></placement>';
+  var mockPresetConfig = '<placement name="Scene 1" id="{7B13A7C7-3B1D-4EC1-AB02-BE08792EBA06}" preset_id="{00000000-0000-0000-0000-000000000000}" preset_trtime="500" preset_trfunc="" defpos="0" trid="" trtime="500"><item pos_left="0.000000000e+00" pos_top="1.027629972e-01" pos_right="5.000000000e-01" pos_bottom="6.027629972e-01" pos_an="1" crop_left="0.000000000e+00" crop_top="0.000000000e+00" crop_right="0.000000000e+00" crop_bottom="0.000000000e+00" crop_an="1" pixalign="0" zorder="0" lockmove="0" keep_ar="1" visible="1" visible_an="1" alpha="255" alpha_an="1" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" cc_brightness_an="1" cc_contrast_an="1" cc_hue_an="1" cc_saturation_an="1" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" pan="0" pan_config="R:1.000000000e+00&amp;la:0.000000000e+00&amp;fi:0.000000000e+00" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" rotate_x_an="1" rotate_y_an="1" offset_x="0.000000000e+00" offset_y="0.000000000e+00" ShowPosition="0" OverlayURL="" OverlayConfig="" transitionid="" transitiontime="300" trscenter="0" trscexit="0" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{4E422D40-4301-424D-BAEF-B7E5512E9822}" srcid="{22A2124F-C0B2-4EF4-81EE-F6B5C2C06332}" type="2" name="HD Pro Webcam C920" cname="" item="@DEVICE:PNP:\\?\USB#VID_046D&amp;PID_0892&amp;MI_00#7&amp;5BF7D2F&amp;1&amp;0000#{65E8773D-8F56-11D0-A3B9-00A0C9223196}\GLOBAL" itemaudio="" volume="100" mute="0" keepaudio="0" sounddev="0" mipmaps="0" autoresdet="1" keeploaded="1" RefreshOnScnLoad="0" RefreshOnSrcShow="0" zoom="l:0.000000000e+00|t:0.000000000e+00|r:1.000000000e+00|b:1.000000000e+00" or_enable="0" or_mode="0" or_angle="0" cc_pin="0" key_pin="0" edgeeffect_pin="0" effects_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:9.700000286e-01&amp;str:8.999999762e-01&amp;rad:7.000000030e-02&amp;color:2155905152&amp;trail:0.000000000e+00&amp;filtering:0.000000000e+00&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" CuePoints="" FilePlaylist="" fdeinterlace="0" InPoint="0" OutPoint="0" OpWhenFinished="0" StartOnLoad="1" StartOnSrcShow="0" RememberPosition="1" LastPosition="0" LastRunState="1" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture1="1" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapEnc="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapFrameTimeLimit="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserCookiePath="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookieFlags="0" Browser60fps="0" BrowserZoom="1.000000000e+00" SwfWrapper="1" DllGrant="" custom=""><presproperty __map_id="logitechcanrecommend">0</presproperty><presproperty __map_id="resetcamitemaudio">1</presproperty><presproperty __map_id="xsplitautoset">1</presproperty></item><item pos_left="5.000000000e-01" pos_top="5.000000000e-01" pos_right="1.000000000e+00" pos_bottom="1.000000000e+00" pos_an="1" crop_left="0.000000000e+00" crop_top="0.000000000e+00" crop_right="0.000000000e+00" crop_bottom="0.000000000e+00" crop_an="1" pixalign="0" zorder="1" lockmove="0" keep_ar="1" visible="1" visible_an="1" alpha="255" alpha_an="1" border="0" cc_brightness="0" cc_contrast="0" cc_hue="0" cc_saturation="0" cc_dynamicrange="1" cc_brightness_an="1" cc_contrast_an="1" cc_hue_an="1" cc_saturation_an="1" key_antialiasing="2" key_chromakey="0" key_chromakeytype="0" key_chromahue="0" key_chromarang="25" key_chromaranga="0" key_chromabr="25" key_chromasat="25" key_colorrgb="0" key_colorrang="25" key_colorranga="0" key_chromargbkeyprimary="1" key_chromargbkeythresh="50" key_chromargbkeybalance="0" pan="0" pan_config="R:1.000000000e+00&amp;la:0.000000000e+00&amp;fi:0.000000000e+00" rotate_x="0" rotate_y="0" rotate_z="0" rotate_canvas="0" rotate_x_an="1" rotate_y_an="1" offset_x="0.000000000e+00" offset_y="0.000000000e+00" ShowPosition="0" OverlayURL="" OverlayConfig="" transitionid="" transitiontime="300" trscenter="0" trscexit="0" edgeeffectid="" edgeeffectcfg="" edgeeffectmask="" edgeeffectmaskmode="0" id="{001A3E42-1561-4329-9720-11FD9303DED3}" srcid="{0912052F-F8A4-4829-AAFA-7B1BBA35CC5F}" type="1" name="F:\Videos\rgba_test.mov" cname="" item="F:\Videos\rgba_test.mov" itemaudio="" volume="100" mute="0" keepaudio="0" sounddev="0" mipmaps="0" autoresdet="1" keeploaded="1" RefreshOnScnLoad="0" RefreshOnSrcShow="0" zoom="l:0.000000000e+00|t:0.000000000e+00|r:1.000000000e+00|b:1.000000000e+00" or_enable="0" or_mode="0" or_angle="0" cc_pin="0" key_pin="0" edgeeffect_pin="0" effects_pin="0" key_smartcamenable="0" key_smartcamconfig="" key_rssmartcamconfig="" tobii="0" tobiiconfig="decay:9.700000286e-01&amp;str:8.999999762e-01&amp;rad:7.000000030e-02&amp;color:2155905152&amp;trail:0.000000000e+00&amp;filtering:0.000000000e+00&amp;fill:0" StreamDelay="0" AudioDelay="0" AudioGainEnable="0" AudioGain="5" AudioGainLatency="1000" LiveClockSync="0" LiveDetectSignal="1" CuePoints="" FilePlaylist="" fdeinterlace="0" InPoint="0" OutPoint="0" OpWhenFinished="1" StartOnLoad="1" StartOnSrcShow="0" RememberPosition="1" LastPosition="94540000" LastRunState="1" ScrCapMethod="3" ScrCapLayered="0" ScrCapOptCapture1="1" ScrCapShowMouse="1" ScrCapShowClicks="1" ScrCapTrackWindowTitle="0" GameCapShowMouse="0" GameCapSurfSharing="0" GameCapEnc="0" GameCapAlpha="0" GameCapPlSmooth="0" GameCapFrameTimeLimit="0" GameCapTrackActive="0" GameCapTrackActiveFullscreen="1" GameCapHideInactive="0" BrowserJs="" BrowserCookiePath="" BrowserSizeX="0" BrowserSizeY="0" BrowserTransparent="1" BrowserRightClick="0" BrowserCookieFlags="0" Browser60fps="0" BrowserZoom="1.000000000e+00" SwfWrapper="1" DllGrant="" custom=""/></placement>';
 
   var local = {};
   var attachedId;
@@ -33,6 +33,8 @@ describe('Audio interface', function() {
     EXTENSION : 'extension'
   };
 
+  var ctr = 0;
+
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -44,7 +46,8 @@ describe('Audio interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'iaudio_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -53,7 +56,7 @@ describe('Audio interface', function() {
       property = property.substring(3);
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -68,7 +71,8 @@ describe('Audio interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'iaudio_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -78,10 +82,13 @@ describe('Audio interface', function() {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
+
+  var firstSource;
+  var secondSource;
 
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
@@ -97,7 +104,8 @@ describe('Audio interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'iaudio_' + ctr;
       switch (funcName) {
         case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
@@ -121,6 +129,16 @@ describe('Audio interface', function() {
     });
 
     spyOn(window.external, 'SearchVideoItem2')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem')
+    .and.callFake(function(id) {
+      attachedId = id;
+    });
+
+    spyOn(window.external, 'AttachVideoItem2')
     .and.callFake(function(id) {
       attachedId = id;
     });
@@ -153,6 +171,8 @@ describe('Audio interface', function() {
             }
           }
         }
+        firstSource = enumeratedSource[0];
+        secondSource = enumeratedSource[1];
         done();
       });
     }
@@ -178,6 +198,132 @@ describe('Audio interface', function() {
       ].join(',');
 
     expect(enumeratedSource[0]).hasMethods(methods);
+  });
+
+  describe('should be able to get and set volume', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.getVolume();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a number', function(done) {
+      var firstRand = randomInt();
+      var secondRand = randomInt();
+      firstSource.setVolume(firstRand)
+      .then(function() {
+        return secondSource.setVolume(secondRand);
+      }).then(function() {
+        return firstSource.getVolume();
+      }).then(function(volume1) {
+        expect(volume1).toBeTypeOf('number');
+        expect(volume1).toEqual(firstRand);
+        return secondSource.getVolume();
+      }).then(function(volume2) {
+        expect(volume2).toBeTypeOf('number');
+        expect(volume2).toEqual(secondRand);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set mute state', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isMute();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = true;
+      var secondBoolean = false;
+
+      firstSource.setMute(firstBoolean)
+      .then(function() {
+        return secondSource.setMute(secondBoolean);
+      }).then(function() {
+        return firstSource.isMute();
+      }).then(function(mute1) {
+        expect(mute1).toBeTypeOf('boolean');
+        expect(mute1).toEqual(firstBoolean);
+        return secondSource.isMute();
+      }).then(function(mute2) {
+        expect(mute2).toBeTypeOf('boolean');
+        expect(mute2).toEqual(secondBoolean);
+        return firstSource.setMute(!firstBoolean);
+      }).then(function() {
+        return firstSource.isMute();
+      }).then(function(mute3) {
+        expect(mute3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set auto mute state', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isAutoMute();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = true;
+      var secondBoolean = false;
+
+      firstSource.setAutoMute(firstBoolean)
+      .then(function() {
+        return secondSource.setAutoMute(secondBoolean);
+      }).then(function() {
+        return firstSource.isAutoMute();
+      }).then(function(mute1) {
+        expect(mute1).toBeTypeOf('boolean');
+        expect(mute1).toEqual(firstBoolean);
+        return secondSource.isAutoMute();
+      }).then(function(mute2) {
+        expect(mute2).toBeTypeOf('boolean');
+        expect(mute2).toEqual(secondBoolean);
+        return firstSource.setAutoMute(!firstBoolean);
+      }).then(function() {
+        return firstSource.isAutoMute();
+      }).then(function(mute3) {
+        expect(mute3).toEqual(!firstBoolean);
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set stream only audio', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isStreamOnlyAudio();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      var firstBoolean = true;
+      var secondBoolean = false;
+
+      firstSource.setStreamOnlyAudio(firstBoolean)
+      .then(function() {
+        return secondSource.setStreamOnlyAudio(secondBoolean);
+      }).then(function() {
+        return firstSource.isStreamOnlyAudio();
+      }).then(function(streamOnly1) {
+        expect(streamOnly1).toBeTypeOf('boolean');
+        expect(streamOnly1).toEqual(firstBoolean);
+        return secondSource.isStreamOnlyAudio();
+      }).then(function(streamOnly2) {
+        expect(streamOnly2).toBeTypeOf('boolean');
+        expect(streamOnly2).toEqual(secondBoolean);
+        return firstSource.setStreamOnlyAudio(!firstBoolean);
+      }).then(function() {
+        return firstSource.isStreamOnlyAudio();
+      }).then(function(streamOnly3) {
+        expect(streamOnly3).toEqual(!firstBoolean);
+        done();
+      })
+    });
   });
 
 });

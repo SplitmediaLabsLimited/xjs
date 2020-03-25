@@ -46,14 +46,14 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   setHotkey: (hotkey: number) => Promise<ISourceReplay>
 
   /**
-   * See: {@link #core/ISourceReplay#getReplaytime getReplaytime}
+   * See: {@link #core/ISourceReplay#getReplayTime getReplayTime}
    */
-  getReplaytime: () => Promise<number>
+  getReplayTime: () => Promise<number>
 
   /**
-   * See: {@link #core/ISourceReplay#setReplaytime setReplaytime}
+   * See: {@link #core/ISourceReplay#setReplayTime setReplayTime}
    */
-  setReplaytime: (buffer: number) => Promise<ISourceReplay>
+  setReplayTime: (buffer: number) => Promise<ISourceReplay>
 
   /**
    * See: {@link #core/ISourceReplay#startReplay startReplay}

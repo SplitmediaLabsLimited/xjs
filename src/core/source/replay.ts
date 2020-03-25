@@ -81,7 +81,7 @@ export class ReplaySource extends Source implements IAudio, ISourceReplay {
    *
    * Gets the duration, or buffer time for the replay
    */
-  getReplaytime: () => Promise<number>
+  getReplayTime: () => Promise<number>
 
   /**
    * param: (time: number)
@@ -91,7 +91,7 @@ export class ReplaySource extends Source implements IAudio, ISourceReplay {
    *
    * Sets the duration, or buffer time for the replay
    */
-  setReplaytime: (buffer: number) => Promise<ISourceReplay>
+  setReplayTime: (buffer: number) => Promise<ISourceReplay>
 
   /**
    * return: Promise<ISourceReplay>
