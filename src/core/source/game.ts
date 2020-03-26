@@ -39,87 +39,34 @@ import {iSourceGame, ISourceGame} from './igame';
 export class GameSource extends Source implements ISourceGame{
   //iSourceGame
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Game Special Optimization is currently enabled or not
-   */
+  /** See: {@link #core/ISourceGame#isSpecialOptimizationEnabled isSpecialOptimizationEnabled} */
   isSpecialOptimizationEnabled: () => Promise<boolean>
 
-  /**
-   * param: Promise<boolean>
-   *
-   * Set Game Special Optimization to on or off
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceGame#setSpecialOptimizationEnabled setSpecialOptimizationEnabled} */
   setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if Show Mouse is currently enabled or not
-   */
+  /** See: {@link #core/ISourceGame#isShowMouseEnabled isShowMouseEnabled} */
   isShowMouseEnabled: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set Show Mouse in game to on or off
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceGame#setShowMouseEnabled setShowMouseEnabled} */
   setShowMouseEnabled: (value: boolean) => Promise<GameSource>
 
-  /**
-   * param: path<string>
-   *
-   * Set the offline image of a game source
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceGame#setOfflineImage setOfflineImage} */
   setOfflineImage: (path: string) => Promise<GameSource>
 
-  /**
-   * return: Promise<string>
-   *
-   * Get the offline image of a game source
-   */
+  /** See: {@link #core/ISourceGame#getOfflineImage getOfflineImage} */
   getOfflineImage:() => Promise<string>
 
-  /**
-   * return: Promise<boolean>
-   *
-   * Get the transparency of a game item.
-   * Please note that game transparency only works if Game Special Optimization is also enabled.
-   */
+  /** See: {@link #core/ISourceGame#isTransparent isTransparent} */
   isTransparent:() => Promise<boolean>
 
-  /**
-   * param: value<boolean>
-   *
-   * Set the transparency of a game item
-   * Please note that game transparency only works if Game Special Optimization is also enabled.
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceGame#setTransparent setTransparent} */
   setTransparent:(value: boolean) => Promise<GameSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Get the maximum number of frames per second the game is being limited to by XBC
-   */
+  /** See: {@link #core/ISourceGame#getGameFPSCap getGameFPSCap} */
   getGameFPSCap:() => Promise<number>
 
-  /**
-   * param: path<string>
-   *
-   * Set the maximum number of frames per second the game is being limited to by XBC.
-   * Accepter values are either 0 (disable capping) or within the range of 24 to 300 fps
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceGame#setGameFPSCap setGameFPSCap} */
   setGameFPSCap:(fps: number) => Promise<GameSource>
 }
 applyMixins(GameSource, [iSourceGame])

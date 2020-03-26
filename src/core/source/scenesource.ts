@@ -34,16 +34,12 @@ import {Scene} from '../scene';
   */
 export class SceneSource extends Source implements ISourceScene {
   /**
-   * Gets the scene that is being displayed by the source
-   *
-   * See: {@link #core/SceneSource#getScene getScene}
+   * See: {@link #core/ISourceScene#getScene getScene}
    */
 	getScene: () => Promise<Scene>
 
   /**
-   * Sets the scene to be displayed displayed by the source
-   *
-   * See: {@link #core/SceneSource#setScene setScene}
+   * See: {@link #core/ISourceScene#setScene setScene}
    */
 	setScene: (scene?: number | Scene) => Promise<SourceScene>
 }

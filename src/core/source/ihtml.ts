@@ -17,7 +17,7 @@ export interface ISourceHtml {
   /**
    * param: (func: string, arg: string)
    * ```
-   * return: Promise<HtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Allow this source to call a pre-exposed function within the HTML Source
@@ -34,7 +34,7 @@ export interface ISourceHtml {
   /**
    * param: (url: string)
    * ```
-   * return: Promise<HtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Sets the URL of this webpage source.
@@ -52,8 +52,13 @@ export interface ISourceHtml {
 
   /**
    * param: Promise<boolean>
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
+   *
+   * Enable or disable transparency of CEF browser
+   *
+   * *Chainable.*
    */
   enableBrowserTransparency(value: boolean): Promise<ISourceHtml>
 
@@ -66,8 +71,13 @@ export interface ISourceHtml {
 
   /**
    * param: Promise<boolean>
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
+   *
+   * Enable or disable browser source to render up to a maximum of 60FPS
+   *
+   * *Chainable.*
    */
   enableBrowser60FPS(value: boolean): Promise<ISourceHtml>
 
@@ -77,15 +87,23 @@ export interface ISourceHtml {
    * Gets the custom browser window size (in pixels) for the item, if set,
    * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
    * custom size has been set.
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   getBrowserCustomSize(): Promise<Rectangle>
 
   /**
    * param: Promise<Rectangle>
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
    *
-   * Set the custom brower window size (in pixels) for the item
+   * Sets the custom browser window size for the item
+   * regardless of its layout on the mixer
+   *
+   * *Chainable.*
+   *
+   * See also: {@link #util/Rectangle Util/Rectangle}
    */
   setBrowserCustomSize(value: Rectangle): Promise<ISourceHtml>
 
@@ -93,16 +111,35 @@ export interface ISourceHtml {
    * return: Promise<boolean>
    *
    * Check if right click events are sent to the item or not.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getAllowRightClick().then(function(isRightClickAllowed) {
+   *   // The rest of your code here
+   * });
+   * ```
    */
   getAllowRightClick(): Promise<boolean>
 
   /**
    * param: (value:boolean)
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
    *
    * Allow or disallow right click events to be sent to the item. Note that
    * you can only catch right click events using `mouseup/mousedown`
+   *
+   * *Chainable*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.setAllowRightClick(true).then(function(item) {
+   *   // Promise resolves with the same Item instance
+   * });
+   * ```
    */
   setAllowRightClick(value: boolean): Promise<ISourceHtml>
 
@@ -135,10 +172,15 @@ export interface ISourceHtml {
 
   /**
    * param: (value: boolean)
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
    *
    * Enables or disables execution of the set BrowserJs upon load.
+   * Note that disabling this will require item to be refreshed
+   * in order to remove any BrowserJS previously executed.
+   *
+   * *Chainable.*
    */
   enableBrowserJS(value: boolean): Promise<ISourceHtml>
 
@@ -151,10 +193,13 @@ export interface ISourceHtml {
 
   /**
    * param: (value: string)
-   *
+   * ```
    * return: Promise<ISourceHtml>
+   * ```
    *
    * Sets the custom CSS to be applied to the document upon loading
+   *
+   * *Chainable.*
    */
   setCustomCSS(value: string): Promise<ISourceHtml>
 
@@ -210,7 +255,7 @@ export class iSourceHtml implements ISourceHtml{
   /**
    * param: (func: string, arg: string)
    * ```
-   * return: Promise<HtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Allow this item to call a pre-exposed function within the HTML Item
@@ -260,7 +305,7 @@ export class iSourceHtml implements ISourceHtml{
   /**
    * param: (url: string)
    * ```
-   * return: Promise<HtmlSource>
+   * return: Promise<ISourceHtml>
    * ```
    *
    * Sets the URL of this webpage item.
