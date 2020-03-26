@@ -9130,7 +9130,7 @@ var iSourceHtml = (function () {
     /**
      * param: (func: string, arg: string)
      * ```
-     * return: Promise<HtmlSource>
+     * return: Promise<ISourceHtml>
      * ```
      *
      * Allow this item to call a pre-exposed function within the HTML Item
@@ -9179,7 +9179,7 @@ var iSourceHtml = (function () {
     /**
      * param: (url: string)
      * ```
-     * return: Promise<HtmlSource>
+     * return: Promise<ISourceHtml>
      * ```
      *
      * Sets the URL of this webpage item.
@@ -12737,8 +12737,25 @@ var _proxyCallbacks = {};
 var _remoteCallbacks = {};
 var counter = 0;
 /**
-* Executes an external function
-*/
+ * Executes an external function, and main callback handler for the XJS Framework.
+ *
+ * Since 2.9, this is exposed to provide an alternative way
+ * of handling new XBC properties, methods and item/source properties
+ * without having to wait for a new update.
+ * This _requires some knowledge on the needed native XBC calls.
+ *
+ * Usage:
+ * (This sample is basically the same as
+ * {@link #core/App#getFrameTime getFrameTime})
+ *
+ * ```
+ * XJS.exec('AppGetPropertyAsync', 'frametime')
+ * .then(function(frametime) {
+ *   // do something here
+ * });
+ * ```
+ *
+ */
 function exec(funcName) {
     var args = [];
     for (var _i = 1; _i < arguments.length; _i++) {
