@@ -5,7 +5,7 @@
 var XJS    = require('xjs');
 var Game   = XJS.Game;
 var System = XJS.System;
-
+var ctr = 0;
 describe('System', function() {
   var promise;
   var defpos = 0;
@@ -15,7 +15,8 @@ describe('System', function() {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        ctr++;
+        var asyncId = 'game_' + ctr;
         if (funcName === 'gsenum') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent(
@@ -34,11 +35,11 @@ describe('System', function() {
               ' fpsCapture="0.000000"/></configuration>\n'
             ));
           }, 10);
-        } else if (funcName === 'preset:0') {
+        } else if (funcName === 'scene:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, '0');
           }, 10);
-        } else if (funcName === 'presetconfig:0') {
+        } else if (funcName === 'sceneconfig:0') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, encodeURIComponent('<placement name="Scene 1" defpos="' + defpos + '" />'));
           }, 10);
@@ -48,7 +49,8 @@ describe('System', function() {
 
       spyOn(window.external, 'AppCallFuncAsync')
         .and.callFake(function(funcName, item) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        ctr++;
+        var asyncId = 'game_' + ctr;
         if(funcName.includes('additem')) {
           var itemXML = (new window.DOMParser()).parseFromString(item, "text/xml");
           var itemPlacement = itemXML.getElementsByTagName("item")[0];

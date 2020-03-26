@@ -627,7 +627,9 @@ export class ItemLayout implements IItemLayout {
 
   setRotateY(value: number): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      if (value < -360 || value > 360) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
         iItem.set('prop:rotate_y', String(value), this._id).then(() => {
@@ -647,7 +649,9 @@ export class ItemLayout implements IItemLayout {
 
   setRotateX(value: number): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      if (value < -360 || value > 360) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
         iItem.set('prop:rotate_x', String(value), this._id).then(() => {
@@ -667,7 +671,9 @@ export class ItemLayout implements IItemLayout {
 
   setRotateZ(value: number): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      if (value < -360 || value > 360) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -360 || value > 360) {
         reject(Error('Invalid value. Min: -360, Max: 360'));
       } else {
         iItem.set('prop:rotate_z', String(value), this._id).then(() => {
@@ -751,7 +757,9 @@ export class ItemLayout implements IItemLayout {
 
   setEnhancedRotate(value: number): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      if (value < -180 || value > 180) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < -180 || value > 180) {
         reject(Error('Invalid value. Min: -180, Max: 180'));
       } else {
         var formerObject;
@@ -820,7 +828,11 @@ export class ItemLayout implements IItemLayout {
               return iItem.get('prop:posaspect', this._id);
             }).then(val => {
               return iItem.set('prop:pos', val, this._id)
+            }).then(() => {
+              resolve(this);
             });
+          } else {
+            resolve(this);
           }
         });
       }

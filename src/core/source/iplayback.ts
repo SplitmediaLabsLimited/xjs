@@ -262,7 +262,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('sync:syncable', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('sync:syncable', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1' ? true : false);
@@ -277,7 +277,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('sync:position', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('sync:position', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
@@ -307,7 +307,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('sync:duration', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('sync:duration', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
@@ -322,7 +322,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('sync:state', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('sync:state', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === "running");
@@ -352,7 +352,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:InPoint', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:InPoint', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
@@ -382,7 +382,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:OutPoint', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:OutPoint', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val) / 10000000);
@@ -412,7 +412,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:OpWhenFinished', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:OpWhenFinished', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(Number(val));
@@ -442,7 +442,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:StartOnLoad', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:StartOnLoad', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -472,7 +472,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:fdeinterlace', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:fdeinterlace', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '3');
@@ -502,7 +502,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:RememberPosition', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:RememberPosition', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -532,7 +532,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:ShowPosition', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:ShowPosition', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(val => {
         resolve(val === '1');
@@ -544,9 +544,9 @@ export class SourcePlayback implements ISourcePlayback {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setShowingPlaybackPosition', true)
-        this._checkPromise = iItem.set('prop:ShowPositio', (value ? '1' : '0'), this._id)
+        this._checkPromise = iItem.set('prop:ShowPosition', (value ? '1' : '0'), this._id)
       } else {
-        this._checkPromise = iItem.wrapSet('prop:ShowPositio', (value ? '1' : '0'),
+        this._checkPromise = iItem.wrapSet('prop:ShowPosition', (value ? '1' : '0'),
           this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {
@@ -562,7 +562,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:CuePoints', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:CuePoints', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(cuePointString => {
         if (cuePointString === '') {
@@ -600,7 +600,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(filename => {
         resolve(AUDIO_REGEX.test(filename));
@@ -615,7 +615,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(filename => {
         resolve(VIDEO_REGEX.test(filename));
@@ -631,7 +631,7 @@ export class SourcePlayback implements ISourcePlayback {
         this._checkPromise = iItem.get('prop:srcitem', this._id)
       } else {
         this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId.bind(this).bind(this))
+          this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(filename => {
         resolve(filename);

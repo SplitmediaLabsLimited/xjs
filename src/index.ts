@@ -11,6 +11,7 @@ export * from './core/channelmanager';
 export * from './core/languageinfo';
 export * from './core/scene';
 export * from './core/transition';
+export * from './core/filter';
 export * from './core/dll';
 export * from './core/extension';
 export * from './core/source/source';
@@ -23,6 +24,8 @@ export * from './core/source/screen';
 export * from './core/source/image';
 export * from './core/source/media';
 export * from './core/source/videoplaylist';
+export * from './core/source/replay';
+export * from './core/source/scenesource';
 
 export * from './core/items/item';
 export * from './core/items/camera';
@@ -33,6 +36,9 @@ export * from './core/items/flash';
 export * from './core/items/screen';
 export * from './core/items/image';
 export * from './core/items/media';
+export * from './core/items/group';
+export * from './core/items/replay';
+export * from './core/items/scene';
 export * from './core/items/videoplaylist';
 
 export {MaskEffect} from './core/items/ieffects';
@@ -50,7 +56,9 @@ export * from './system/microphone';
 export * from './system/url';
 export * from './system/screen';
 export * from './system/file';
-export * from './system/videoplaylist'
+export * from './system/videoplaylist';
+export * from './system/group';
+export * from './system/replay';
 
 export * from './window/config';
 export * from './window/source';

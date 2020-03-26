@@ -47,230 +47,107 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   //iSourceHtml
 
   /**
-   * param: (func: string, arg: string)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Allow this source to call a pre-exposed function within the HTML Source
+   * See: {@link #core/ISourceHtml#call call}
    */
   call: () => Promise<HtmlSource>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the URL of this webpage source.
+   * See: {@link #core/ISourceHtml#getURL getURL}
    */
   getURL: () => Promise<string>
 
   /**
-   * param: (url: string)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Sets the URL of this webpage source.
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#setURL setURL}
    */
   setURL: () => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if browser is rendered transparent
+   * See: {@link #core/ISourceHtml#isBrowserTransparent isBrowserTransparent}
    */
   isBrowserTransparent: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disable transparency of CEF browser
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#enableBrowserTransparency enableBrowserTransparency}
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if browser can render up to a maximum of 60FPS
+   * See: {@link #core/ISourceHtml#isBrowser60FPS isBrowser60FPS}
    */
   isBrowser60FPS: () => Promise<boolean>
 
   /**
-   * param: Promise<boolean>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enable or disable browser source to render up to a maximum of 60FPS
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#enableBrowser60FPS enableBrowser60FPS}
    */
   enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>
 
   /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom browser window size (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom size has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/ISourceHtml#getBrowserCustomSize getBrowserCustomSize}
    */
   getBrowserCustomSize: () => Promise<Rectangle>
 
   /**
-   * param: Promise<Rectangle>
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Sets the custom browser window size for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
+   * See: {@link #core/ISourceHtml#setBrowserCustomSize setBrowserCustomSize}
    */
   setBrowserCustomSize: (value: Rectangle) => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
+   * See: {@link #core/ISourceHtml#getAllowRightClick getAllowRightClick}
    */
   getAllowRightClick: () => Promise<boolean>
 
   /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Source>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
+   * See: {@link #core/ISourceHtml#setAllowRightClick setAllowRightClick}
    */
   setAllowRightClick: (value: boolean) => Promise<HtmlSource>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the javascript commands to be executed on item upon load
+   * See: {@link #core/ISourceHtml#getBrowserJS getBrowserJS}
    */
   getBrowserJS: () => Promise<string>
 
   /**
-   * param: (js: string, refresh: boolean = false)
-   * ```
-   * return: Promise<ISourceHtml>
-   * ```
-   *
-   * Sets the javascript commands to be executed on item
-   * right upon setting and on load. Optionally set second parameter
-   * to true to refresh item (needed to clean previously executed JS code.)
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#setBrowserJS setBrowserJS}
    */
   setBrowserJS: () => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Gets if BrowserJS is enabled and executed on load
+   * See: {@link #core/ISourceHtml#isBrowserJSEnabled isBrowserJSEnabled}
    */
   isBrowserJSEnabled: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enables or disables execution of the set BrowserJs upon load.
-   * Note that disabling this will require item to be refreshed
-   * in order to remove any BrowserJS previously executed.
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#enableBrowserJS enableBrowserJS}
    */
   enableBrowserJS: (value: boolean) => Promise<HtmlSource>
 
   /**
-   * return: Promise<string>
-   *
-   * Gets the custom CSS applied to the document upon loading
+   * See: {@link #core/ISourceHtml#getCustomCSS getCustomCSS}
    */
   getCustomCSS: () => Promise<string>
 
   /**
-   * param: (value: string)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Sets the custom CSS to be applied to the document upon loading
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#setCustomCSS setCustomCSS}
    */
   setCustomCSS: (value: string) => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Gets if custom CSS is enabled and applied to the document on load
+   * See: {@link #core/ISourceHtml#isCustomCSSEnabled isCustomCSSEnabled}
    */
   isCustomCSSEnabled: () => Promise<boolean>
 
   /**
-   * param: (value: boolean)
-   * ```
-   * return: Promise<HtmlSource>
-   * ```
-   *
-   * Enables or disables application of custom CSS to the document
-   *
-   * *Chainable.*
+   * See: {@link #core/ISourceHtml#enableCustomCSS enableCustomCSS}
    */
   enableCustomCSS: (value: boolean) => Promise<HtmlSource>
 
   /**
-   * return: Promise<boolean>
-   *
-   * Gets if browser instance is optimized via surface sharing
+   * See: {@link #core/ISourceHtml#isBrowserOptimized isBrowserOptimized}
    */
   isBrowserOptimized: () => Promise<boolean>
+  
   /**
-   * return: Promise<string>
-   *
-   * Gets the load status of the html
-   * May return as any of the following:
-   * - 'LOADED' -> HTML is already loaded
-   * - 'NOT LOADED' -> HTML is not yet loaded
-   * - 'LOAD ERROR' -> Error in loading HTML
-   * - 'UNKNOWN' -> URL used is invalid or when status is checked right after adding new HTML source
-   * - 'UNAVAILABLE' -> Method for getting load status is unavailable for the XBC version
+   * See: {@link #core/ISourceHtml#getBrowserLoadStatus getBrowserLoadStatus}
    */
   getBrowserLoadStatus: () => Promise<string>
   

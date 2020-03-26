@@ -2,6 +2,8 @@
 
 import {Item as iItem} from '../../internal/item';
 import {Color} from '../../util/color';
+import {JSON as JXON} from '../../internal/util/json';
+import {Filter} from '../filter';
 
 /**
  *  Used by sources that implement the Effect interface.
@@ -15,10 +17,10 @@ import {Color} from '../../util/color';
  *  {@link #core/ScreenItem#getMaskEffect Core/ScreenItem}.
  */
 export enum MaskEffect {
-    NONE,
-    SHAPE,
-    FILE_BIND_TO_SOURCE,
-    FILE_BIND_TO_STAGE
+  NONE,
+  SHAPE,
+  FILE_BIND_TO_SOURCE,
+  FILE_BIND_TO_STAGE
 }
 
 const _DEFAULT_EFFECT_VALUES: Object = {
@@ -273,6 +275,43 @@ export interface IItemEffect {
    * Please note that resetting mask effect also resets this to false
    */
   showFileMaskingGuide(value: boolean): Promise<IItemEffect>;
+
+  /**
+   * return: Promise<Filter>
+   *
+   * Gets the post processing shader used
+   */
+  getFilter(): Promise<Filter>;
+
+  /**
+   * param: (value: Filter or transitionString)
+   *
+   * Sets the post processing shader to be used for the Item
+   *
+   * *Chainable.*
+   */
+  setFilter(value: any, config ?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }): Promise<IItemEffect>;
+
+  /**
+   * Removes the set post-processing shader used.
+   * Similar to setting to NONE
+   *
+   * *Chainable.*
+   */
+  removeFilter(): Promise<IItemEffect>;
+
+  /**
+   * return: Promise<Filter>
+   *
+   * Gets the post-processing shader configurations
+   * as an object possibly having properties such as:
+   * - `intensity` : percentage of filter applied
+   * - `resourceFile` : PNG image used as a reference for LUTs
+   */
+  getFilterConfig(): Promise<Object>;
 }
 
 export class ItemEffect implements IItemEffect {
@@ -521,8 +560,12 @@ export class ItemEffect implements IItemEffect {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 0;
       parameterObject['indIndex'] = [1, 2, 3];
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Color.fromRGBString('#' + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])));
+      this._getEdgeEffectValue(parameterObject)
+      .then(val => {
+        resolve(Color.fromRGBString(
+          '#' + this._convertToHex(val[0]) +
+          this._convertToHex(val[1]) +
+          this._convertToHex(val[2])));
       }).catch(err => {
         resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
       });
@@ -531,13 +574,18 @@ export class ItemEffect implements IItemEffect {
 
   setBorderEffectColor(value: Color): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
-      var parameterObject = {};
-      parameterObject['arrayIndex'] = 0;
-      parameterObject['indIndex'] = [1, 2, 3];
-      parameterObject['value'] = this._getRGBArray(value);
-      this._setEdgeEffectValue(parameterObject).then(() => {
-        resolve(this);
-      });
+      if (!(value instanceof Color)) {
+        reject(TypeError('Use a Color object as the parameter.'));
+      } else {
+        var parameterObject = {};
+        parameterObject['arrayIndex'] = 0;
+        parameterObject['indIndex'] = [1, 2, 3];
+        parameterObject['value'] = this._getRGBArray(value);
+        this._setEdgeEffectValue(parameterObject)
+        .then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -755,13 +803,100 @@ export class ItemEffect implements IItemEffect {
     return new Promise((resolve, reject) => {
       iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
         if (val === '1' || val === '3') {
-          iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id);
+          iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id).then(() => {
+            resolve(this);
+          });
         } else if (val === '2' || val === '4') {
-          iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id);
+          iItem.set('prop:edgeeffectmaskmode', value ? '4' : '2', this._id).then(() => {
+            resolve(this);
+          });
         } else {
           reject(Error('This method is not available if filemasking is not enabled.'));
         }
       })
+    });
+  }
+
+  getFilter(): Promise<Filter> {
+    return new Promise(resolve => {
+      iItem.get('prop:effects', this._id)
+      .then(val => {
+        try {
+          var effectsJXON = JXON.parse(val);
+          resolve(new Filter(effectsJXON['children'][0]['id']));
+        } catch(e) {
+          resolve(Filter.NONE);
+        }
+      });
+    });
+  }
+
+  setFilter(value: any, config ?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      config = config ? config : {};
+      const intensity = config['intensity'] ? config['intensity']/100 : 1;
+      const intensityConfig = `0,${intensity},0,0,0`;
+      const filterValue = value instanceof Filter ? value.toString() : value;
+
+      if (!filterValue || Object.keys(Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
+        reject(Error('Filter non-existent'));
+      } else {
+        var configString = '';
+        var effectString = '';
+
+        if (filterValue === 'cool') {
+          configString = `${intensityConfig}|1,0.0,0.0,0.0,0.0|2,0.53,0.95,0.95,1.0|3,0.0,0.0,0.1,1.0`;
+        } else if (filterValue === 'warm') {
+          configString = `${intensityConfig}|1,0.0,0.0,0.0,0.0|2,1,0.91,0.77,1.0|3,0.1,0.05,0,1.0`;
+        } else if (filterValue !== 'none') {
+          configString = intensityConfig;
+        }
+
+        if (filterValue === 'lut') {
+          const resourceFile = config['resourceFile'] ? config['resourceFile'] : '';
+          const resourceString = `<resource file="${resourceFile}" />`;
+          effectString = `<effect id="${filterValue}" cfg="${configString}">${resourceString}</effect>`;
+        } else {
+          effectString = `<effect id="${filterValue}" cfg="${configString}" />`;
+        }
+
+        const effect = `<effects>${effectString}</effects>`
+        iItem.set('prop:effects', effect, this._id).then(() => {
+          resolve(this);
+        });
+      }
+    });
+  }
+
+  removeFilter(): Promise<ItemEffect> {
+    return new Promise((resolve, reject) => {
+      iItem.set('prop:effects', '<effects/>', this._id).then(() => {
+        resolve(this);
+      });
+    });
+  }
+
+  getFilterConfig(): Promise<Object> {
+    return new Promise((resolve, reject) => {
+      iItem.get('prop:effects', this._id).then(val => {
+        const configObj = {};
+        try {
+          var effectsJXON = JXON.parse(val);
+          if (effectsJXON['children'][0]['cfg']) {
+            const cfgArray = effectsJXON['children'][0]['cfg'].split(',');
+            configObj['intensity'] = Number(cfgArray[1]) * 100;
+          }
+          if (effectsJXON['children'][0]['children'] && effectsJXON['children'][0]['children'][0]['file']) {
+            configObj['resourceFile'] = effectsJXON['children'][0]['children'][0]['file'];
+          }
+        } catch(e) {
+          
+        }
+        resolve(configObj);
+      });
     });
   }
 }

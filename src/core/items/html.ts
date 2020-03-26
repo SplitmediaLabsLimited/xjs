@@ -17,6 +17,7 @@ import {Item} from './item';
 import {Source} from '../source/source'
 import {Scene} from '../scene';
 import {Transition} from '../transition';
+import {Filter} from '../filter';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {iSourceHtml, ISourceHtml} from '../source/ihtml'
@@ -62,115 +63,107 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
   //iSourceHtml
   /**
-   * See: {@link #core/HtmlSource#call call}
+   * See: {@link #core/ISourceHtml#call call}
    */
   call: () => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getURL getURL}
+   * See: {@link #core/ISourceHtml#getURL getURL}
    */
   getURL: () => Promise<string>
 
   /**
-   * See: {@link #core/HtmlSource#setURL setURL}
+   * See: {@link #core/ISourceHtml#setURL setURL}
    */
   setURL: () => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#isBrowserTransparent isBrowserTransparent}
+   * See: {@link #core/ISourceHtml#isBrowserTransparent isBrowserTransparent}
    */
   isBrowserTransparent: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#enableBrowserTransparency enableBrowserTransparency}
+   * See: {@link #core/ISourceHtml#enableBrowserTransparency enableBrowserTransparency}
    */
   enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#isBrowser60FPS isBrowser60FPS}
+   * See: {@link #core/ISourceHtml#isBrowser60FPS isBrowser60FPS}
    */
   isBrowser60FPS: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#enableBrowser60FPS enableBrowser60FPS}
+   * See: {@link #core/ISourceHtml#enableBrowser60FPS enableBrowser60FPS}
    */
   enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getBrowserCustomSize getBrowserCustomSize}
+   * See: {@link #core/ISourceHtml#getBrowserCustomSize getBrowserCustomSize}
    */
   getBrowserCustomSize: () => Promise<Rectangle>
 
   /**
-   * See: {@link #core/HtmlSource#setBrowserCustomSize setBrowserCustomSize}
+   * See: {@link #core/ISourceHtml#setBrowserCustomSize setBrowserCustomSize}
    */
   setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getAllowRightClick getAllowRightClick}
+   * See: {@link #core/ISourceHtml#getAllowRightClick getAllowRightClick}
    */
   getAllowRightClick: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#setAllowRightClick setAllowRightClick}
+   * See: {@link #core/ISourceHtml#setAllowRightClick setAllowRightClick}
    */
   setAllowRightClick: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getBrowserJS getBrowserJS}
+   * See: {@link #core/ISourceHtml#getBrowserJS getBrowserJS}
    */
   getBrowserJS: () => Promise<string>
 
   /**
-   * See: {@link #core/HtmlSource#setBrowserJS setBrowserJS}
+   * See: {@link #core/ISourceHtml#setBrowserJS setBrowserJS}
    */
   setBrowserJS: () => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#isBrowserJSEnabled isBrowserJSEnabled}
+   * See: {@link #core/ISourceHtml#isBrowserJSEnabled isBrowserJSEnabled}
    */
   isBrowserJSEnabled: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#enableBrowserJS enableBrowserJS}
+   * See: {@link #core/ISourceHtml#enableBrowserJS enableBrowserJS}
    */
   enableBrowserJS: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#getCustomCSS getCustomCSS}
+   * See: {@link #core/ISourceHtml#getCustomCSS getCustomCSS}
    */
   getCustomCSS: () => Promise<string>
 
   /**
-   * See: {@link #core/HtmlSource#setCustomCSS setCustomCSS}
+   * See: {@link #core/ISourceHtml#setCustomCSS setCustomCSS}
    */
   setCustomCSS: (value: string) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#isCustomCSSEnabled isCustomCSSEnabled}
+   * See: {@link #core/ISourceHtml#isCustomCSSEnabled isCustomCSSEnabled}
    */
   isCustomCSSEnabled: () => Promise<boolean>
 
   /**
-   * See: {@link #core/HtmlSource#enableCustomCSS enableCustomCSS}
+   * See: {@link #core/ISourceHtml#enableCustomCSS enableCustomCSS}
    */
   enableCustomCSS: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/HtmlSource#isBrowserOptimized isBrowserOptimized}
+   * See: {@link #core/ISourceHtml#isBrowserOptimized isBrowserOptimized}
    */
   isBrowserOptimized: () => Promise<boolean>
   
   /**
-   * return: Promise<string>
-   *
-   * Gets the load status of the html
-   * May return as any of the following:
-   * - 'LOADED' -> HTML is already loaded
-   * - 'NOT LOADED' -> HTML is not yet loaded
-   * - 'LOAD ERROR' -> Error in loading HTML
-   * - 'UNKNOWN' -> URL used is invalid or when status is checked right after adding new HTML source
-   * - 'UNAVAILABLE' -> Method for getting load status is unavailable for the XBC version
+   * See: {@link #core/ISourceHtml#getBrowserLoadStatus getBrowserLoadStatus}
    */
   getBrowserLoadStatus: () => Promise<string>
 
@@ -685,6 +678,21 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
   showFileMaskingGuide: (value: boolean) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getFilter getFilter} */
+  getFilter: () => Promise<Filter>;
+
+  /** See: {@link #core/IItemEffect#setFilter setFilter} */
+  setFilter: (value: any, config?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }) => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
+  removeFilter: () => Promise<HtmlItem>;
+
+  /** See: {@link #core/IItemEffect#getFilterConfig getFilterConfig} */
+  getFilterConfig: () => Promise<Object>;
 }
 
 applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,

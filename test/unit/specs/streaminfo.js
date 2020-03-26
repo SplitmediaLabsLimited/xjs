@@ -6,12 +6,15 @@ describe('StreamInfo ===', function() {
   var XJS = require('xjs');
   var StreamInfo = XJS.StreamInfo;
 
+  var ctr = 0;
+
   describe('should be able to get active stream channels', function() {
     beforeEach(function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = 'stream_info_' + ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -107,7 +110,8 @@ describe('StreamInfo ===', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         if (funcName == 'recstat') {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = 'stream_info_' + ctr;
 
           setTimeout(function() {
             window.OnAsyncCallback(asyncId,
@@ -137,12 +141,13 @@ describe('StreamInfo ===', function() {
       spyOn(window.external, 'GetGlobalProperty')
         .and.callFake(function(funcName) {
           if (funcName === 'bandwidthusage-all') {
-            return '[{"ChannelName":"Local Streaming","AvgBitrate":167.0},{"ChannelName":"Local Recording","AvgBitrate":0.0}]';
+            return '[{"ChannelName":"Local Streaming","AvgBitrate":536.0,"Dropped":10,"NotDropped":946},{"ChannelName":"Local Recording","AvgBitrate":0.0}]';
           }
         })
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);          
+        ctr++;
+        var asyncId = 'stream_info_' + ctr;
         if (funcName == 'recstat') {
 
           setTimeout(function() {
@@ -270,6 +275,15 @@ describe('StreamInfo ===', function() {
       });
     });
 
+    it('should be able to get GOP dropped frames', function(done) {
+      channelLocal.getGOPDrops()
+      .then(function(droppedFrames) {
+        expect(droppedFrames).toBeTypeOf('number');
+        expect(droppedFrames).toEqual(10);
+        done();
+      });
+    });
+
     it('should be able to get its frames rendered', function(done) {
       isEmpty = false;
       channelLocal.getStreamRenderedFrames()
@@ -313,7 +327,7 @@ describe('StreamInfo ===', function() {
       channelLocal.getBandwidthUsage()
       .then(function(usage) {
         expect(usage).toBeTypeOf('number');
-        expect(usage).toEqual(167);
+        expect(usage).toEqual(536);
         done();
       });
     });

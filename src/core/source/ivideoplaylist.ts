@@ -168,7 +168,9 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
         .then(fileplaylist => {
           resolve(this);
         });
-      });
+      }).catch(err => {
+        reject(err);
+      })      ;
     });
   };
 }

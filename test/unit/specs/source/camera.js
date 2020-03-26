@@ -36,8 +36,11 @@ describe('Camera Source', function() {
     }, 10);
   };
 
+  var ctr = 0;
+
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'camera_source_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -76,7 +79,8 @@ describe('Camera Source', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+    ctr++;
+    var asyncId = 'camera_source_' + ctr;
 
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
@@ -121,16 +125,16 @@ describe('Camera Source', function() {
 
         break;
 
-        case 'preset:0':
+        case 'scene:0':
           xCallback(asyncId, '0');
         break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
         break;
 
         default:
-          if (funcName.indexOf('presetconfig:') !== -1) {
+          if (funcName.indexOf('sceneconfig:') !== -1) {
             xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           }
       }

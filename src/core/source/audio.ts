@@ -37,70 +37,28 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
  */
 export class AudioSource extends Source implements ISourceAudio, IAudio {
   // SourceAudio
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if silence detection is on or off
-   */
+  /** See: {@link #core/ISourceAudio#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
   isSilenceDetectionEnabled: () => Promise<boolean>
 
-  /**
-   * param: (value: boolean)
-   *
-   * Set silence detection to ON or OFF
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceAudio#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
   setSilenceDetectionEnabled: (value: boolean) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection threshold.
-   * Amplitude less than threshold will be detected as silence.
-   */
+  /** See: {@link #core/ISourceAudio#getSilenceThreshold getSilenceThreshold} */
   getSilenceThreshold: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection threshold, min of 0, max of 128
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceAudio#setSilenceThreshold setSilenceThreshold} */
   setSilenceThreshold: (value: number) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets silenced detection period in ms time unit.
-   * Reaction time before filter removes noice/sound less than threshold
-   */
+  /** See: {@link #core/ISourceAudio#getSilencePeriod getSilencePeriod} */
   getSilencePeriod: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets silence detection period, min of 0, max of 10000
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceAudio#setSilencePeriod setSilencePeriod} */
   setSilencePeriod: (value: number) => Promise<AudioSource>
 
-  /**
-   * return: Promise<number>
-   *
-   * Gets audio delay (1 unit = 100ns)
-   */
+  /** See: {@link #core/ISourceAudio#getAudioOffset getAudioOffset} */
   getAudioOffset: () => Promise<number>
 
-  /**
-   * param: (value: number)
-   *
-   * Sets audio delay, accepts only positive delay
-   *
-   * *Chainable.*
-   */
+  /** See: {@link #core/ISourceAudio#setAudioOffset setAudioOffset} */
   setAudioOffset: (value: number) => Promise<SourceAudio>
 
   // General Audio

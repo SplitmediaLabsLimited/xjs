@@ -151,6 +151,87 @@ export class Output {
   }
 
   /**
+   * param: scene<number|Scene>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets a scene to record. Set to live scene or blank string to reset
+   */
+  static setSceneToRecord(scene: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (scene === '' || scene === Scene.liveScene()) {
+        exec('CallHostFunc', 'setSceneToRecord', '-1');
+        resolve(true);
+      } else if (scene instanceof Scene) {
+        scene.getSceneIndex().then(sceneIndex => {
+          exec('CallHostFunc', 'setSceneToRecord', Number(sceneIndex));
+          resolve(true);
+        }).catch(err => {
+          reject(err);
+        })
+      } else if (typeof scene === 'number') {
+        if (scene < 1 || !Number['isInteger'](Number(scene))) {
+          reject(Error('Invalid parameters. Valid range is greater than 0.'));
+        } else {
+          exec('CallHostFunc', 'setSceneToRecord', String(scene - 1));
+          resolve(true);
+        }
+      } else {
+        reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+      }
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Start a local recording.
+   */
+  static startLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1');
+      resolve(true);
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Unpause a local recording.
+   */
+  static stopLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'stopBroadcast', 'Local Recording');
+      resolve(true);
+    })
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Pause a local recording.
+   */
+  static pauseLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'pauseRecording', 'Local Recording');
+      resolve(true);
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Unpause a local recording.
+   */
+  static unpauseLocalRecording(): Promise<boolean> {
+    return new Promise((resolve) => {
+      exec('CallHost', 'unpauseRecording', 'Local Recording');
+      resolve(true);
+    })
+  }
+
+  /**
    *  return: Promise<string>
    *
    *  Gets the actual name of the Output.
@@ -167,19 +248,16 @@ export class Output {
    *  Gets the name of the Output as displayed in the Outputs menu.
    */
   getDisplayName(): Promise<string> {
-    return new Promise(resolve => {
-      if (this._name === 'XBC_NDIStream') {
-        resolve(this._name)
-      } else {
-        Output._getBroadcastChannels(Output._id, this._name).then(channelJXON => {
-          resolve(channelJXON['displayName']
-            .replace(/&apos;/g, "'")
-            .replace(/&quot;/g, '"')
-            .replace(/&gt;/g, '>')
-            .replace(/&lt;/g, '<')
-            .replace(/&amp;/g, '&'));
-        });
-      }
+    return new Promise(resolve => {      
+      Output._getBroadcastChannels(Output._id, this._name).then(channelJXON => {
+        channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName']            
+          .replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&') : this._name;
+        resolve(channelJXON['displayName']);
+      });      
     });
   }
 
@@ -226,6 +304,8 @@ export class Output {
   }
 
   /**
+   * ** For Deprecation, please use the static method instead
+   *
    * return: Promise<boolean>
    *
    * Pause a local recording.
@@ -256,6 +336,8 @@ export class Output {
   }
 
   /**
+   * ** For Deprecation, please use the static method instead
+   *
    * return: Promise<boolean>
    *
    * Unpause a local recording.
@@ -331,7 +413,7 @@ export class Output {
 
         Output._proxyCallback[name ? callbackName : Output._id] = callback;
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', '0', name, window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', channelXML => { window.SetBroadcastChannelXml(channelXML, name); }) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       } else {
         if (Output._callback[name ? callbackName : Output._id] === undefined){
@@ -339,7 +421,7 @@ export class Output {
         }
         Output._callback[name ? callbackName : Output._id] = ({resolve});
         name ?
-          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', window.SetBroadcastChannelXml) :
+          exec('CallHostFunc', 'getBroadcastChannelXml', name, '0', channelXML => { window.SetBroadcastChannelXml(channelXML, name); }) :
           exec('CallHostFunc', 'getBroadcastChannelList', window.SetBroadcastChannelList);
       }
     })
@@ -366,9 +448,11 @@ window.SetBroadcastChannelList = function(channels) {
   }
 }
 
-const oldSetBroadcastChannelXml =window.SetBroadcastChannelXml;
-window.SetBroadcastChannelXml = function(channelXML) {
-  const channelJXON = JXON.parse(channelXML);
+const oldSetBroadcastChannelXml = window.SetBroadcastChannelXml;
+window.SetBroadcastChannelXml = function(channelXML, name) { 
+  const channelJXON = JXON.parse(channelXML); 
+  channelJXON['name'] = channelJXON['name'] ? channelJXON['name'] : name;
+  channelJXON['displayName'] = channelJXON['displayName'] ? channelJXON['displayName'] : name;
   channelJXON['name'] = channelJXON['name'].replace(/&apos;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&gt;/g, '>')

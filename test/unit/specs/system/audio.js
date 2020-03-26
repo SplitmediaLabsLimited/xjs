@@ -11,6 +11,8 @@ describe('Audio ===', function() {
   var AudioDeviceSystemEnabled = XJS.AudioDevice.SYSTEM_LEVEL_ENABLE;
   var AudioDeviceSystemMuteDisallowed = XJS.AudioDevice.SYSTEM_MUTE_CHANGE_NOT_ALLOWED;
 
+  var ctr = 0;
+
   var mockWasapi = '<list>' +
     '<dev name="Speakers (XSplit  Stream  Audio  Renderer)"' +
     ' adapter="XSplit  Stream  Audio  Renderer"' +
@@ -48,7 +50,8 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'audio_' + ctr;
             if(funcName === 'wasapienum') {
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
@@ -97,7 +100,8 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'audio_' + ctr;
             if(funcName === 'wasapienum') {
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId,
@@ -139,7 +143,8 @@ describe('Audio ===', function() {
       if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
         spyOn(window.external, 'AppGetPropertyAsync')
           .and.callFake(function(funcName) {
-            var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+            ctr++;
+            var asyncId = 'audio_' + ctr;
             if(funcName === 'wasapienum') {
               setTimeout(function() {
                 window.OnAsyncCallback(asyncId,

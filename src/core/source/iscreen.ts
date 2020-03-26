@@ -63,10 +63,12 @@ export interface ISourceScreen {
   setOptimizedCapture(value: boolean): Promise<ISourceScreen>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Show mouse clicks is selected.
    *
+   * ShowMouseClicks determine if you would want to display the clicks
+   * you're doing inside your screen captured area.
    */
   getShowMouseClicks(): Promise<boolean>
 
@@ -74,28 +76,36 @@ export interface ISourceScreen {
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ISourceScreen>
+   * return: Promise<ISourceScreen>
    * ```
    *
    * Sets the Show mouse clicks.
+   *
+   * ShowMouseClicks determine if you would want to display the clicks
+   * you're doing inside your screen captured area.
    */
   setShowMouseClicks(value: boolean): Promise<ISourceScreen>
 
   /**
-   * return Promise<boolean>
+   * return: Promise<boolean>
    *
    * Checks if the Show mouse is selected.
    *
+   * ShowMouse determine if you would want to display the mouse on your
+   * screen captured area.
    */
   getShowMouse(): Promise<boolean>
 
   /**
    * param: (value: boolean)
    * ```
-   * return Promise<ISourceScreen>
+   * return: Promise<ISourceScreen>
    * ```
    *
    * Sets the Show Mouse.
+   *
+   * ShowMouse determine if you would want to display the mouse on your
+   * screen captured area.
    */
   setShowMouse(value: boolean): Promise<ISourceScreen>
 

@@ -163,6 +163,17 @@ beforeEach(function() {
       };
     },
 
+    toBeArray : function () {
+      return {
+        compare : function (actual) {
+          return {
+            pass : (actual instanceof Array),
+            message : 'Expected ' + actual + ' is not an array'
+          };
+        }
+      };
+    },
+
     toBeEmptyArray: function() {
       return  {
         compare: function(actual) {

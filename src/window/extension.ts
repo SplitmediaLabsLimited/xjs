@@ -178,7 +178,7 @@ export class ExtensionWindow extends EventEmitter {
               let property = settingsObj['args'][0];
               let newValue = settingsObj['args'][1];
 
-              if (property.startsWith('presetconfign:') || property.startsWith('presetconfig:')) {
+              if (property.startsWith('sceneconfign:') || property.startsWith('sceneconfig:')) {
                 let changedIndex = property.split(":")[1];
                 Scene.getActiveScene().then(scene => {
                   return scene.getSceneNumber();
@@ -202,28 +202,28 @@ export class ExtensionWindow extends EventEmitter {
         if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0 && Environment.isExtension()) {
           ExtensionWindow._subscriptions.push('scenedlg:1');
           EventManager.subscribe('scenedlg:1', function() {
-            ExtensionWindow._encounteredFirstSceneChange = false;              
+            ExtensionWindow._encounteredFirstSceneChange = false;
           }, id);
           if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
             ExtensionWindow._subscriptions.push('SceneChange');
-            EventManager.subscribe('SceneChange', function(settingsObj) {                  
+            EventManager.subscribe('SceneChange', function(settingsObj) {
               let isSplitMode = false;
               const viewId = parseInt(settingsObj['args'][0]);
-              const sceneIndex = parseInt(settingsObj['args'][1]);                              
+              const sceneIndex = parseInt(settingsObj['args'][1]);
               App.getGlobalProperty('splitmode').then(split => {
-                isSplitMode = split === '1' ? true : false;                 
-                if(isSplitMode) {                      
-                  if(!ExtensionWindow._encounteredFirstSceneChange) {                        
-                    if(viewId === 1) {                          
-                      ExtensionWindow._encounteredFirstSceneChange = true;  
+                isSplitMode = split === '1' ? true : false;
+                if(isSplitMode) {
+                  if(!ExtensionWindow._encounteredFirstSceneChange) {
+                    if(viewId === 1) {
+                      ExtensionWindow._encounteredFirstSceneChange = true;
                       ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
                     }
                   }
-                } else {                      
+                } else {
                   if(viewId === 0) ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
                 }
               })
-            }, id);                
+            }, id);
           }
           resolve(this);
         } else {

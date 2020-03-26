@@ -9,6 +9,7 @@ import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
 import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
 import {ItemTransition, IItemTransition} from './itransition';
 import {Transition} from '../transition';
+import {Filter} from '../filter';
 import {Item} from './item';
 import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
@@ -85,6 +86,26 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
    * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
    */
   getOfflineImage:() => Promise<string>
+
+  /**
+   * See: {@link #core/GameSource#isTransparent isTransparent}
+   */
+  isTransparent:() => Promise<boolean>
+
+  /**
+   * See: {@link #core/GameSource#setTransparent setTransparent}
+   */
+  setTransparent: (value: boolean) => Promise<GameItem>
+
+  /**
+   * See: {@link #core/GameSource#getGameFPSCap getGameFPSCap}
+   */
+  getGameFPSCap:() => Promise<number>
+
+  /**
+   * See: {@link #core/GameSource#setGameFPSCap setGameFPSCap}
+   */
+  setGameFPSCap: (fps: number) => Promise<GameItem>
 
   // ItemLayout
 
@@ -546,6 +567,21 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
 
   /** See: {@link #core/IItemEffect#showFileMaskingGuide showFileMaskingGuide} */
   showFileMaskingGuide: (value: boolean) => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getFilter getFilter} */
+  getFilter: () => Promise<Filter>;
+
+  /** See: {@link #core/IItemEffect#setFilter setFilter} */
+  setFilter: (value: any, config?: {
+    intensity ?: number,
+    resourceFile ?: string
+  }) => Promise<GameItem>;  
+
+  /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
+  removeFilter: () => Promise<GameItem>;
+
+  /** See: {@link #core/IItemEffect#getFilterConfig getFilterConfig} */
+  getFilterConfig: () => Promise<Object>;
 }
 
 applyMixins(GameItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,

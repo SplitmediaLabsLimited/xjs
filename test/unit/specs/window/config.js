@@ -130,6 +130,8 @@ describe('SourcePropsWindow ===', function() {
           SourcePropsObj['height'] = Number(sizeObj['height']);
         } else if (eventObj['event'] === 'change-dialog-title') {
           SourcePropsObj['title'] = eventObj['value'];
+        } else if (eventObj['event'] === 'show-overlay') {
+          SourcePropsObj['showOverlay'] = eventObj['value'];
         }
       });
 
@@ -161,6 +163,13 @@ describe('SourcePropsWindow ===', function() {
       SourcePropsObj['closed'] = false;
       testConfigWindow.close();
       expect(SourcePropsObj['closed']).toBe(true);
+    });
+
+    it('show loading', function() {
+      testConfigWindow.showLoading(false);
+      expect(SourcePropsObj['showOverlay']).toBe(false);
+      testConfigWindow.showLoading(true);
+      expect(SourcePropsObj['showOverlay']).toBe(true);
     });
 
     it('but throws an error when called not from source props', function() {

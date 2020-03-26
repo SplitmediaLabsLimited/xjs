@@ -9,15 +9,15 @@ describe('System', function() {
   var env = new window.Environment(XJS);
   var environments = ['props', 'extension', 'plugin'];
   var local = {};
-
+  var ctr = 0;
   beforeAll(function() {
     if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
       spyOn(window.external, 'GetCursorPos')
         .and.callFake(function() {
           return local.x !== undefined && local.y !== undefined ?
             String(local.x) + ',' + String(local.y) :
-            String(Math.floor(Math.random() * 100)) + ',' +
-               String(Math.floor(Math.random() * 100));
+            String(randomInt()) + ',' +
+               String(randomInt());
         });
       spyOn(window.external, 'SetCursorPos')
         .and.callFake(function(x, y) {
@@ -28,7 +28,8 @@ describe('System', function() {
         });
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(prop) {
-          var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+          ctr++;
+          var asyncId = 'system_' + ctr;
 
           switch(prop) {
             case 'html:fontlist':
@@ -80,8 +81,8 @@ describe('System', function() {
   });
 
   it('should be able to set the cursor position', function(done) {
-    var x = Math.floor(Math.random() * 100);
-    var y = Math.floor(Math.random() * 100);
+    var x = randomInt();
+    var y = randomInt();
     env.set(environments[0]);
     System.setCursorPosition({x : x, y : y}).then(function(res) {
       if (!Environment.isSourcePlugin()) {

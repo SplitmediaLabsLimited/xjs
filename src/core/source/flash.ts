@@ -38,65 +38,16 @@ import {Rectangle} from '../../util/rectangle';
  */
 export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem
-  /**
-   * return: Promise<Rectangle>
-   *
-   * Gets the custom resolution (in pixels) for the item, if set,
-   * regardless of its layout on the mixer. Returns a (0, 0) Rectangle if no
-   * custom resolution has been set.
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
+  /** See: {@link #core/ISourceFlash#getCustomResolution getCustomResolution} */
   getCustomResolution: () => Promise<Rectangle>
 
-  /**
-   * param: (value: Rectangle)
-   * ```
-   * return: Promise<FlashSource>
-   * ```
-   *
-   * Sets the custom resolution for the item
-   * regardless of its layout on the mixer
-   *
-   * *Chainable.*
-   *
-   * See also: {@link #util/Rectangle Util/Rectangle}
-   */
-  setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
-  /**
-   * return: Promise<boolean>
-   *
-   * Check if right click events are sent to the item or not.
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.getAllowRightClick().then(function(isRightClickAllowed) {
-   *   // The rest of your code here
-   * });
-   * ```
-   */
+  /** See: {@link #core/ISourceFlash#setCustomResolution setCustomResolution} */
+  setCustomResolution: (value: Rectangle) => Promise<FlashSource>
+
+  /** See: {@link #core/ISourceFlash#getAllowRightClick getAllowRightClick} */
   getAllowRightClick: () => Promise<boolean>
 
-  /**
-   * param: (value:boolean)
-   * ```
-   * return: Promise<Item>
-   * ```
-   *
-   * Allow or disallow right click events to be sent to the item. Note that
-   * you can only catch right click events using `mouseup/mousedown`
-   *
-   * *Chainable*
-   *
-   * #### Usage
-   *
-   * ```javascript
-   * item.setAllowRightClick(true).then(function(item) {
-   *   // Promise resolves with the same Item instance
-   * });
-   * ```
-   */
+  /** See: {@link #core/ISourceFlash#setAllowRightClick setAllowRightClick} */
   setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
 
   // ItemAudio

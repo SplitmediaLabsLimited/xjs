@@ -87,10 +87,14 @@ export class ItemTransition implements IItemTransition {
   }
 
   setTransition(value: Transition): Promise<ItemTransition> {
-    return new Promise(resolve => {
-      iItem.set('prop:transitionid', value.toString(), this._id).then(() => {
-        resolve(this);
-      });
+    return new Promise((resolve, reject) => {
+      if (!(value instanceof Transition)) {
+        reject(TypeError('Parameter should be a Transition object.'));
+      } else {
+        iItem.set('prop:transitionid', value.toString(), this._id).then(() => {
+          resolve(this);
+        });
+      }
     });
   }
 
@@ -104,7 +108,9 @@ export class ItemTransition implements IItemTransition {
 
   setTransitionTime(value: number): Promise<ItemTransition> {
     return new Promise((resolve, reject) => {
-      if (value < 0 || value > 60000) {
+      if (typeof value !== 'number') {
+        reject(TypeError('Use an integer as the parameter.'));
+      } else if (value < 0 || value > 60000) {
         reject(RangeError('Transparency may only be in the range 0 to 60000.'));
       } else {
         iItem.set('prop:transitiontime', String(value), this._id).then(() => {

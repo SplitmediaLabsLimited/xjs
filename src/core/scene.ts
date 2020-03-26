@@ -7,57 +7,55 @@ import {exec} from '../internal/internal';
 import {Environment} from './environment';
 import {Source} from './source/source';
 import {ItemTypes} from './source/isource';
-import {GameSource} from './source/game';
-import {CameraSource} from './source/camera';
-import {AudioSource} from './source/audio';
-import {VideoPlaylistSource} from './source/videoplaylist'
-import {HtmlSource} from './source/html';
-import {FlashSource} from './source/flash';
-import {ScreenSource} from './source/screen';
-import {ImageSource} from './source/image';
-import {MediaSource, MediaTypes} from './source/media';
-
 import {Item, ViewTypes} from './items/item';
-import {GameItem} from './items/game';
-import {CameraItem} from './items/camera';
-import {AudioItem} from './items/audio';
-import {VideoPlaylistItem} from './items/videoplaylist'
-import {HtmlItem} from './items/html';
-import {FlashItem} from './items/flash';
-import {ScreenItem} from './items/screen';
-import {ImageItem} from './items/image';
-import {MediaItem} from './items/media';
-import {GenericItem} from './items/genericitem';
+import {ItemTypeResolve} from '../util/itemtyperesolve';
+import {SourceTypeResolve} from '../util/sourcetyperesolve';
+import {Transition} from './transition';
+import {checkSplitmode} from '../internal/util/splitmode';
+import {addToSceneHandler} from '../util/addtosceneutil';
 
 import {
   minVersion,
   versionCompare,
   getVersion,
-  sceneUidMinVersion
+  sceneUidMinVersion,
+  scenePresetsVersion,
+  sceneSourceVersion
 } from '../internal/util/version';
 
+const supportedPresetTransitionEasingFunctions = [
+  '',
+  'none',
+  'easeInCubic',
+  'easeOutCubic',
+  'easeInOutCubic'
+]
 
 export class Scene {
   private _id: number | string;
   private _uid: string;
+  private _refID: number | string;
   private _name: string;
-
 
   private static _maxScenes: number = 12;
   private static _scenePool: Scene[] = [];
+  private static _liveScene: Scene;
 
   constructor(sceneId: number | string, name?: string, uid?: string) {
     this._id = sceneId;
     if (!versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
       this._uid = uid;
       this._name = name;
+      this._refID = uid;
+    } else {
+      this._refID = sceneId;
     }
   };
 
   private static _initializeScenePoolAsync(): Promise<number> {
     return new Promise(resolve => {
       Scene._scenePool = [];
-      iApp.getAsList('presetconfig')
+      iApp.getAsList('sceneconfig')
       .then(jsonArr => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           const count = jsonArr.length;
@@ -95,7 +93,6 @@ export class Scene {
    * });
    * ```
    */
-
   static getSceneCount(): Promise<number> {
     return new Promise(resolve => {
       Scene._initializeScenePoolAsync().then(count => {
@@ -270,7 +267,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           iApp.get(preset).then(id => {
             return Scene.getBySceneIndex(Number(id));
           }).then(scene => {
@@ -295,7 +292,7 @@ export class Scene {
         reject(Error('Not supported on source plugins'));
       } else {
         iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'preset:1' : 'preset:0'
+          const preset = res === '1' ? 'scene:1' : 'scene:0'
           if (scene instanceof Scene) {
               iApp.set(preset, String(scene._id)).then(res => {
                 resolve(res);
@@ -309,7 +306,7 @@ export class Scene {
               });
             }
           } else {
-          reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
+            reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
           }
         })
       }
@@ -925,11 +922,11 @@ export class Scene {
         reject(Error('function is not available for source'));
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          iApp.get('presetcount').then(cnt => {
+          iApp.get('scenecount').then(cnt => {
             if (Number(cnt) < 12) {
               // Insert an empty scene for scene #12
               iApp
-                .set('presetconfig:11', '<placement name="Scene 12" defpos="0" />')
+                .set('sceneconfig:11', '<placement name="Scene 12" defpos="0" />')
                 .then(res => {
                   resolve(res);
                 });
@@ -940,6 +937,276 @@ export class Scene {
         } else {
           resolve(true);
         }
+      }
+    });
+  }
+
+  /**
+   * return: Scene
+   *
+   * Returns a special `liveScene` object that may be added as a source to the stage.
+   * The Scene.liveScene object whenever called upon,
+   * gives access to the current active scene.
+   * This is made possible because the liveScene object does not pertain to a real scene
+   * in the context of XBC, but the actual view,
+   * or at least the scene which is currently loaded in that view.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var xjs = require('xjs');
+   * xjs.Scene.liveScene().addAsSource();
+   * ```
+   */
+  static liveScene(): Scene {
+    if (Scene._liveScene === undefined) {
+      Scene._liveScene = new Scene('LIVE', 'Live Scene', '0');
+
+      Scene._liveScene.getSources = (): Promise<Source[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSources();
+          }).then(sources => {
+            resolve(sources);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneNumber = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneNumber();
+          }).then(sceneNumber => {
+            resolve(sceneNumber);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneIndex = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneIndex();
+          }).then(sceneIndex => {
+            resolve(sceneIndex);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getSceneUid = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getSceneUid();
+          }).then(sceneUID => {
+            resolve(sceneUID);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getName = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getName();
+          }).then(name => {
+            resolve(name);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setName = (name: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setName(name);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getItems = (): Promise<Item[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getItems();
+          }).then(items => {
+            resolve(items);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getTopLevelItems = (): Promise<Item[]> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getTopLevelItems();
+          }).then(items => {
+            resolve(items);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.isEmpty = (): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.isEmpty();
+          }).then(empty => {
+            resolve(empty);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setItemOrder = (items: Array<any>): Promise<Scene> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setItemOrder(items);
+          }).then(sources => {
+            resolve(this);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresets = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresets();
+          }).then(presets => {
+            resolve(presets);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getActivePreset = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getActivePreset();
+          }).then(preset => {
+            resolve(preset);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.switchToPreset = (preset: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.switchToPreset(preset);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.addPreset = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.addPreset();
+          }).then(preset => {
+            resolve(preset);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.removePreset = (preset: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.removePreset(preset);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresetTransitionEasing = (): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresetTransitionEasing();
+          }).then(easing => {
+            resolve(easing);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setPresetTransitionEasing = (presetTransitionEasing: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setPresetTransitionEasing(presetTransitionEasing);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.getPresetTransitionTime = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.getPresetTransitionTime();
+          }).then(time => {
+            resolve(time);
+          }).catch(err => reject(err))
+        })
+      }
+
+      Scene._liveScene.setPresetTransitionTime = (presetTransitionTime: number): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+          Scene.getActiveScene()
+          .then(activeScene => {
+            return activeScene.setPresetTransitionTime(presetTransitionTime);
+          }).then(setFlag => {
+            resolve(setFlag);
+          }).catch(err => reject(err))
+        })
+      }
+    }
+    return Scene._liveScene;
+  }
+
+  /**
+   * param: (value?: number | Scene)
+   * ```
+   * return: Promise<any>
+   * ```
+   *
+   * Adds this scene as a source to the current scene by default.
+   * Accepts an optional parameter value, which, when supplied,
+   * points to the scene where item will be added instead.
+   * If ready config {listenToItemAdd: true} it returns item id,
+   * else returns boolean.
+   *
+   * Note: There is yet no way to detect error responses for this action.
+   */
+  addAsSource(value?: number | Scene): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
+        checkSplitmode(value).then((scenePrefix) => {
+          const sceneToAdd = new JXON();
+          sceneToAdd.tag = 'item';
+          sceneToAdd['item'] = this._uid;
+          sceneToAdd['name'] = this._name;
+          sceneToAdd['type'] = (this._uid === '0') ? ItemTypes.VIEW : ItemTypes.SCENE; // type LIVE
+          sceneToAdd['selfclosing'] = true;
+          const sceneXML = XML.parseJSON(sceneToAdd);
+          return addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
+        }).then(result => {
+          resolve(result);
+        }).catch(err => {
+          reject(err);
+        });        
+      } else {
+        reject(Error('Not supported in this XBC version'));
       }
     });
   }
@@ -965,8 +1232,7 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
         let uniqueObj = {};
         let uniqueSrc = [];
@@ -974,39 +1240,8 @@ export class Scene {
         // type checking to return correct Source subtype
         let typePromise = index => new Promise(typeResolve => {
           let source = jsonArr[index];
-          let type = Number(source['type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameSource(source));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            source['name'].indexOf('Video Playlist') === 0 &&
-            source['FilePlaylist'] !== ''){
-            typeResolve(new VideoPlaylistSource(source));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlSource(source));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenSource(source));
-          } else if (type === ItemTypes.BITMAP ||
-              type === ItemTypes.FILE &&
-              /\.gif$/.test(source['item'])) {
-            typeResolve(new ImageSource(source));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(source['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-              new RegExp(MediaTypes.join('|')).test(source['item']) === true) {
-            typeResolve(new MediaSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraSource(source));
-          } else if (Number(source['type']) === ItemTypes.LIVE &&
-            source['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioSource(source));
-          } else if (Number(source['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashSource(source));
-          } else {
-              typeResolve(new Source(source));
-          }
+          let srcType = SourceTypeResolve(source);
+          typeResolve(srcType);
         });
 
         if (Array.isArray(jsonArr)) {
@@ -1037,7 +1272,7 @@ export class Scene {
   }
 
   /**
-   * return: number
+   * return: Promise<number>
    *
    * Get the 1-indexed scene number of this scene object.
    *
@@ -1077,7 +1312,7 @@ export class Scene {
   }
 
   /**
-   * return: number
+   * return: Promise<number>
    *
    * Get the 0-indexed scene number of this scene object.
    *
@@ -1110,7 +1345,7 @@ export class Scene {
   }
 
   /**
-   * return: string
+   * return: Promise<string>
    *
    * Get the unique id of this scene object.
    * Scenes unique id is only available for XBC v.3.0.1704.2101 or higher.
@@ -1134,7 +1369,7 @@ export class Scene {
   }
 
   /**
-   * return: number
+   * return: Promise<string>
    *
    * Get the name of this scene object.
    *
@@ -1149,8 +1384,7 @@ export class Scene {
    */
   getName(): Promise<string> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetname:' + _sceneId).then(val => {
+      iApp.get('scenename:' + this._refID).then(val => {
         resolve(val);
       });
     });
@@ -1168,11 +1402,139 @@ export class Scene {
    */
   setName(name: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (Environment.isSourcePlugin()) {
-        reject(Error('Scene names are readonly for source plugins.'));
+      if (!Environment.isSourceProps()) {
+        reject(Error('Scene names are readonly for source plugins and extensions.'));
       } else {
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-        iApp.set('presetname:' + _sceneId, name).then(value => {
+        iApp.set('scenename:' + this._refID, name).then(value => {
+          resolve(value);
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the transition override of this scene object.
+   * Transition overrides take priority over the more generic one from App.GetTransition
+   * See also: {@link #core/Transition Core/Transition} and {@link #core/App#getTransition getTransition}
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionOverride().then(function(transition) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionOverride(): Promise<Transition> {
+    return new Promise(resolve => {
+      iApp.get('scenetransitionid:' + this._refID).then(val => {
+        if (val === '') { // NONE
+          resolve(Transition.NONE);
+        } else {
+          let currTransition = Transition[val.toUpperCase()];
+          if (typeof currTransition !== 'undefined') {
+            resolve(currTransition);
+          } else {
+            Transition.getSceneTransitions().then(transitions => {
+              let inTransition = false;
+              let transitionObj;
+              let i;
+
+              for (i = 0; i < transitions.length; i++) {
+                transitionObj = transitions[i];
+                if (transitionObj.toString() === val) {
+                  inTransition = true;
+                  break;
+                }
+              }
+              if (inTransition) {
+                resolve(transitionObj);
+              } else {
+                resolve(new Transition(val));
+              }
+            }).catch(err => {
+              resolve(new Transition(val));
+            });
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * param: (value: string)
+   * Set the transition override of this scene object.
+   * Transition overrides take priority over the more generic one from App.GetTransition
+   * See also: {@link #core/Transition Core/Transition} and {@link #core/App#setTransition setTransition}
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionOverride('xjs.Transition.CLOCK');
+   * ```
+   */
+  setTransitionOverride(value: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        iApp.set('scenetransitionid:' + this._refID, value instanceof Transition ? value.toString() : value)
+        .then(value => {
+          resolve(value);
+        }).catch(err => {
+          reject(Error('Invalid parameter. Only Transition objects or transition strings are allowed.'))
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the transition time override of this scene object.
+   * The scene transition time override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionTime().then(function(time) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionTime(): Promise<string> {
+    return new Promise(resolve => {
+      iApp.get('scenetransitiontime:' + this._refID).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  /**
+   * param: (value: string)
+   *
+   * Set the transition time override of this scene object.
+   * The scene transition time override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionTime(1000);
+   * ```
+   */
+  setTransitionTime(time: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        iApp.set('scenetransitiontime:' + this._refID, String(time)).then(value => {
           resolve(value);
         });
       }
@@ -1195,46 +1557,14 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.getAsItemList('presetconfig:' + _sceneId).then(jsonArr => {
+      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
         var promiseArray: Promise<Source>[] = [];
 
         // type checking to return correct Source subtype
         let typePromise = index => new Promise(typeResolve => {
           let item = jsonArr[index];
-          let type = Number(item['type']);
-          if (type === ItemTypes.GAMESOURCE) {
-            typeResolve(new GameItem(item));
-          } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
-            item['name'].indexOf('Video Playlist') === 0 &&
-            item['FilePlaylist'] !== '') {
-            typeResolve(new VideoPlaylistItem(item));
-          } else if (type === ItemTypes.HTML) {
-            typeResolve(new HtmlItem(item));
-          } else if (type === ItemTypes.SCREEN) {
-            typeResolve(new ScreenItem(item));
-          } else if (type === ItemTypes.BITMAP ||
-            type === ItemTypes.FILE &&
-            /\.gif$/.test(item['item'])) {
-            typeResolve(new ImageItem(item));
-          } else if (type === ItemTypes.FILE &&
-              /\.(gif|xbs)$/.test(item['item']) === false &&
-              /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-              new RegExp(MediaTypes.join('|')).test(item['item']) === true) {
-            typeResolve(new MediaItem(item));
-          } else if (Number(item['type']) === ItemTypes.LIVE &&
-            item['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
-            typeResolve(new CameraItem(item));
-          } else if (Number(item['type']) === ItemTypes.LIVE &&
-            item['item'].indexOf(
-              '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
-            typeResolve(new AudioItem(item));
-          } else if (Number(item['type']) === ItemTypes.FLASHFILE) {
-            typeResolve(new FlashItem(item));
-          } else {
-            typeResolve(new GenericItem(item));
-          }
+          let itemType = ItemTypeResolve(item);
+          typeResolve(itemType);
         });
 
         if (Array.isArray(jsonArr)) {
@@ -1253,46 +1583,86 @@ export class Scene {
     });
   }
 
- /**
-  * return: Promise<boolean>
-  *
-  * Checks if a scene is empty.
-  *
-  * #### Usage
-  *
-  * ```javascript
-  * myScene.isEmpty().then(function(empty) {
-  *   if (empty === true) {
-  *     console.log('My scene is empty.');
-  *   }
-  * });
-  * ```
-  */
+  /**
+   * return: Promise<Item[]>
+   *
+   * Gets all non-child Items (not belonging to a group) in a specific scene
+   * See also: {@link #core/Item Core/Item}
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTopLevelItems().then(function(items) {
+   *  // do something to each item in items array
+   * });
+   * ```
+   */
+  getTopLevelItems(): Promise<Item[]> {
+    return new Promise((resolve, reject) => {
+      iApp.getAsList('sceneconfig:' + this._refID).then(jsonArr => {
+        var promiseArray: Promise<Source>[] = [];
+
+        // type checking to return correct Source subtype
+        let typePromise = index => new Promise(typeResolve => {
+          let item = jsonArr[index];
+          let itemType = ItemTypeResolve(item);
+          typeResolve(itemType);
+        });
+
+        if (Array.isArray(jsonArr)) {
+          for (var i = 0; i < jsonArr.length; i++) {
+            jsonArr[i]['sceneId'] = this._id;
+            promiseArray.push(typePromise(i));
+          }
+        }
+
+        Promise.all(promiseArray).then(results => {
+          resolve(results);
+        });
+      }).catch(err => {
+        reject(err)
+      });
+    });
+  }
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Checks if a scene is empty.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.isEmpty().then(function(empty) {
+   *   if (empty === true) {
+   *     console.log('My scene is empty.');
+   *   }
+   * });
+   * ```
+   */
   isEmpty(): Promise<boolean> {
     return new Promise(resolve => {
-      let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
-      iApp.get('presetisempty:' + _sceneId).then(val => {
+      iApp.get('sceneisempty:' + this._refID).then(val => {
         resolve(val === '1');
       });
     });
   }
 
   /**
- * param: Array<Item> | Array<string> (item IDs)
- * ```
- * return: Promise<Scene>
- * ```
- *
- * Sets the item order of the current scene. The first item in the array
- * will be on top (will cover items below it).
- */
+   * param: Array<Item> | Array<string> (item IDs)
+   * ```
+   * return: Promise<Scene>
+   * ```
+   *
+   * Sets the item order of the current scene. The first item in the array
+   * will be on top (will cover items below it).
+   */
   setItemOrder(items: Array<any>): Promise<Scene> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('not available for source plugins'));
       } else {
         items.reverse();
-        let _sceneId = versionCompare(getVersion()).is.lessThan(sceneUidMinVersion) ? this._id : this._uid;
         let ids = [];
         Scene.getActiveScene().then(scene => {
           if (items.every(el => { return (el instanceof Source || el instanceof Item) })) {
@@ -1328,7 +1698,7 @@ export class Scene {
             let sceneName: string;
             this.getName().then(name => {
               sceneName = name;
-              return iApp.getAsList('presetconfig:' + _sceneId);
+              return iApp.getAsList('sceneconfig:' + this._refID);
             }).then(jsonArr => {
               let newOrder = new JXON();
               newOrder.children = [];
@@ -1348,7 +1718,7 @@ export class Scene {
                 }
 
                 iApp.set(
-                  'presetconfig:' + _sceneId,
+                  'sceneconfig:' + this._refID,
                   //Revert back the formatting from json when transforming to xml
                   XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
                 ).then(() => {
@@ -1363,4 +1733,294 @@ export class Scene {
       }
     });
   }
+
+  /**
+   * return: Promise<string[]>
+   *
+   * Get all presets for the scene, returns an array of preset UIDs
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getPresets().then(function(presets) {
+   *  // do something to each preset UID in UIDs array
+   * });
+   * ```
+   */
+  getPresets(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        let presetArray = ['{00000000-0000-0000-0000-000000000000}'];
+        iApp.get('scenepresetlist:' + this._uid).then(presetlist => {
+          if (presetlist !== '') {
+            presetArray.push(...(presetlist.split(',')));
+          }
+          resolve(presetArray);
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the UID of the active preset.
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getActivePreset().then(function(preset) {
+   *  console.log('Active preset UID is ' + preset);
+   * });
+   * ```
+   */
+  getActivePreset(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.get('scenepreset:' + this._uid).then(value => {
+          resolve(value);
+        });
+      }
+    });
+  }
+
+  /**
+   * param: (preset: string)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * Switch to the specified preset for the scene.
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   *
+   * myScene.getPresets()
+   * .then(presets => {
+   *   const lastPreset = presets.pop()
+   *   return myScene.switchToPreset(lastPreset);
+   * })
+   * .then(isSwitched => {
+   *   console.log('switched to preset : ' + isSwitched)
+   * });
+   * ```
+   */
+  switchToPreset(preset: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.set('scenepreset:' + this._uid, preset).then(value => {
+          if (value) {
+            resolve(value);
+          } else {
+            reject(Error('Cannot switch to preset or preset non-existent'));
+          }
+        });
+      }
+    })
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Add a new preset to the scene, returns the UID of the new preset
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.addPreset().then(function(preset) {
+   *  console.log('New preset UID is ' + preset);
+   * });
+   * ```
+   */
+  addPreset(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.get('scenenewpreset:' + this._uid).then(value => {
+          resolve(value);
+        });
+      }
+    });
+  }
+
+  /**
+   * param: (preset: string)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * Remove the specified preset for the scene.
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   *
+   * myScene.removePreset(lastPreset)
+   * .then(isRemoved => {
+   *   console.log('preset is removed : ' + isRemoved)
+   * });
+   * ```
+   */
+  removePreset(preset: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else if (preset === '{00000000-0000-0000-0000-000000000000}') {
+        reject(Error('Cannot delete the default preset'));
+      } else {
+        iApp.set('sceneremovepreset:' + this._uid, preset).then(value => {
+          if (value) {
+            resolve(value);
+          } else {
+            reject(Error('Cannot delete preset or preset non-existent'));
+          }
+        });
+      }
+    })
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the preset transition easing function for the scene.
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getPresetTransition().then(function(presetTransition) {
+   *  console.log('Preset transition is ' + presetTransition);
+   * });
+   * ```
+   */
+  getPresetTransitionEasing(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.get('scenepresettransitionfunc:' + this._uid).then(value => {
+          if (value === '') {
+            value = 'none';
+          }
+          resolve(value);
+        });
+      }
+    });
+  }
+
+  /**
+   * param: (presetTransitionEasing: string)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * Switch to the specified preset transition easing function for the scene
+   * Possible values ('' or 'none', 'easeInCubic', 'easeOutCubic', 'easeInOutCubic')
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   *
+   * myScene.setPresetTransitionEasing('easeInCubic');
+   * ```
+   */
+  setPresetTransitionEasing(presetTransitionEasing: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else if (supportedPresetTransitionEasingFunctions.indexOf(presetTransitionEasing) < 0) {
+        reject(Error('Easing function not supported for preset transitions'));
+      } else {
+        presetTransitionEasing = presetTransitionEasing === 'none' ? '' : presetTransitionEasing;
+        iApp.set('scenepresettransitionfunc:' + this._uid, presetTransitionEasing).then(value => {
+          resolve(value);
+        });
+      }
+    })
+  }
+
+  /**
+   * return: Promise<number>
+   *
+   * Get the preset transition time for the scene, in ms
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getPresetTransitionTime().then(function(presetTransitionTime) {
+   *  console.log('Preset transition time is ' + presetTransitionTime);
+   * });
+   * ```
+   */
+  getPresetTransitionTime(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else {
+        iApp.get('scenepresettransitiontime:' + this._uid).then(value => {
+          resolve(Number(value));
+        });
+      }
+    });
+  }
+
+  /**
+   * param: (presetTransitionTime: number)
+   * ```
+   * return: Promise<boolean>
+   * ```
+   * Set the preset transition time for the scene, in ms
+   * Does not work on source plugins.
+   *
+   * #### Usage
+   *
+   * ```javascript
+   *
+   * myScene.setPresetTransitionTime(500);
+   * ```
+   */
+  setPresetTransitionTime(presetTransitionTime: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Not supported on source plugins'));
+      } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
+        reject(Error('Not supported in this XBC version'));
+      } else if (typeof presetTransitionTime !== 'number') {
+        reject(Error('Parameter must be a number'));
+      } else {
+        iApp.set('scenepresettransitiontime:' + this._uid, String(presetTransitionTime)).then(value => {
+          resolve(value);
+        });
+      }
+    })
+  }
+
 }

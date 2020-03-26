@@ -5,7 +5,7 @@
 var XJS    = require('xjs');
 var Screen = XJS.Screen;
 var System = XJS.System;
-
+var ctr = 0;
 describe('Screen', function() {
   var promise;
   var promise2;
@@ -29,7 +29,8 @@ describe('Screen', function() {
 
     spyOn(window.external, 'AppCallFuncAsync')
       .and.callFake(function(funcName, screen) {
-        var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+        ctr++;
+        var asyncId = 'screen_' + ctr;
         if(funcName === 'addscreen') {
           setTimeout(function() {
             window.OnAsyncCallback(asyncId, true);

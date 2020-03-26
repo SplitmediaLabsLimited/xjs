@@ -33,6 +33,8 @@ describe('HTML Source interface', function() {
     EXTENSION : 'extension'
   };
 
+  var ctr = 0;
+
   var parseXml = function(xmlStr) {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
@@ -44,8 +46,8 @@ describe('HTML Source interface', function() {
   };
 
   var getLocal = function(property) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
+    ctr++;
+    var asyncId = 'ihtml_' + ctr;
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
     }
@@ -53,7 +55,7 @@ describe('HTML Source interface', function() {
       property = property.substring(3);
     }
 
-    if (local[attachedId] !== undefined && local.attachedId.hasOwnProperty(
+    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -68,20 +70,27 @@ describe('HTML Source interface', function() {
   };
 
   var setLocal = function(property, value) {
-    var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
-
+    ctr++;
+    var asyncId = 'ihtml_' + ctr;
     if (property.substring(0, 5) === 'prop:') {
       property = property.replace(/^prop:/, '');
+    }
+
+    if (property.substring(0, 3) === 'src') {
+      property = property.substring(3);
     }
 
     if (local[attachedId] === undefined) {
       local[attachedId] = {};
     }
 
-    local.attachedId[property] = value;
+    local[attachedId][property] = value;
     xCallback(asyncId, '0');
     return asyncId;
   };
+
+  var firstSource;
+  var secondSource;
 
   beforeEach(function(done) {
     env.set(environments.EXTENSION); // for maximum flexibility/functionality
@@ -98,17 +107,18 @@ describe('HTML Source interface', function() {
 
     spyOn(window.external, 'AppGetPropertyAsync')
     .and.callFake(function(funcName) {
-      var asyncId = (new Date()).getTime() + Math.floor(Math.random()*1000);
+      ctr++;
+      var asyncId = 'ihtml_' + ctr;
       switch (funcName) {
-        case 'presetconfig:0':
+        case 'sceneconfig:0':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'presetconfig':
+        case 'sceneconfig':
           xCallback(asyncId, encodeURIComponent(mockPresetConfig));
           break;
 
-        case 'preset:0':
+        case 'scene:0':
           xCallback(asyncId, '0');
           break;
       }
@@ -146,14 +156,16 @@ describe('HTML Source interface', function() {
       }).then(function(sources) {
         var sourceArray = sources;
         var sourceArrayLength = sourceArray.length;
-        window.e = sources
+
         if (sourceArrayLength > 0) {
           for (var i = 0; i < sourceArrayLength; i++) {
-            if (sourceArray[i] instanceof XJS.HtmlSource) {
+            if (sourceArray[i] instanceof XJS.Source) {
               enumeratedSource.push(sourceArray[i]);
             }
           }
         }
+        firstSource = enumeratedSource[0];
+        secondSource = enumeratedSource[1];
         done();
       });
     }
@@ -167,6 +179,7 @@ describe('HTML Source interface', function() {
 
   it('contains all the necessary html methods', function() {
     var methods = [
+      'call',
       'getURL',
       'setURL',
       'isBrowserTransparent',
@@ -191,4 +204,231 @@ describe('HTML Source interface', function() {
     expect(enumeratedSource[0]).hasMethods(methods);
   });
 
+  describe('should be able to get and set URL', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.getURL();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a string', function(done) {
+      var firstURL = 'https://www.splitmedialabs.com/';
+      var secondURL = 'https://xjsframework.github.io/index.html';
+
+      firstSource.setURL(firstURL)
+      .then(function() {
+        return secondSource.setURL(secondURL);
+      }).then(function() {
+        return firstSource.getURL();
+      }).then(function(url1) {
+        expect(url1).toBeTypeOf('string');
+        expect(url1).toEqual(firstURL);
+        return secondSource.getURL();
+      }).then(function(url2) {
+        expect(url2).toBeTypeOf('string');
+        expect(url2).toEqual(secondURL)
+        done();
+      });
+    });
+  })
+
+  describe('should be able to get and set browser transparency', function() {
+    var randomBool = randomBoolean();
+    it ('through a promise', function(done) {
+      var promise = firstSource.isBrowserTransparent();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      firstSource.enableBrowserTransparency(randomBool)
+      .then(function() {
+        return firstSource.isBrowserTransparent();
+      }).then(function(isTransparent) {
+        expect(isTransparent).toBe(randomBool);
+        return firstSource.enableBrowserTransparency(!randomBool);
+      }).then(function() {
+        return firstSource.isBrowserTransparent();
+      }).then(function(isTransparent) {
+        expect(isTransparent).toBe(!randomBool);
+        done();
+      });
+    });
+  })
+
+  describe('should be able to get and set usage of up to 60 fps', function() {
+    var randomBool = randomBoolean();
+    // var randomBool = true;
+    it ('through a promise', function(done) {
+      var promise = firstSource.isBrowser60FPS();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      firstSource.enableBrowser60FPS(randomBool)
+      .then(function() {
+        // we put delay here to hack on enable also getting first the property
+        return new Promise(resolve => setTimeout(resolve, 0));
+      }).then(function() {
+        return firstSource.isBrowser60FPS();
+      }).then(function(is60fps) {
+        expect(is60fps).toBe(randomBool);
+        return firstSource.enableBrowser60FPS(!randomBool);
+      }).then(function() {
+        return firstSource.isBrowser60FPS();
+      }).then(function(is60fps) {
+        expect(is60fps).toBe(!randomBool);
+        done();
+      });
+    });
+  })
+
+  describe('should be able to get and set custom resolution', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.getBrowserCustomSize();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a Rectangle object', function(done) {
+      var firstRand = randomInt(0,1000);
+      var secondRand = randomInt(0,1000);
+      var thirdRand = randomInt(0,1000);
+      var fourthRand = randomInt(0,1000);
+
+      var firstRec = XJS.Rectangle.fromDimensions(firstRand, secondRand);
+      var secondRec = XJS.Rectangle.fromDimensions(thirdRand, fourthRand);
+
+      firstSource.setBrowserCustomSize(firstRec)
+      .then(function() {
+        return secondSource.setBrowserCustomSize(secondRec);
+      }).then(function() {
+        return firstSource.getBrowserCustomSize();
+      }).then(function(rec1) {
+        expect(rec1).toBeInstanceOf(XJS.Rectangle);
+        expect(rec1.toDimensionString()).toEqual(firstRec.toDimensionString());
+        return secondSource.getBrowserCustomSize();
+      }).then(function(rec2) {
+        expect(rec2).toBeInstanceOf(XJS.Rectangle);
+        expect(rec2.toDimensionString()).toEqual(secondRec.toDimensionString());
+        done();
+      })
+    });
+  });
+
+  describe('should be able to get and set if right click is allowed', function() {
+    var randomBool = randomBoolean();
+    it ('through a promise', function(done) {
+      var promise = firstSource.getAllowRightClick();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      firstSource.setAllowRightClick(randomBool)
+      .then(function() {
+        return firstSource.getAllowRightClick();
+      }).then(function(isAllowed) {
+        expect(isAllowed).toBe(randomBool);
+        return firstSource.setAllowRightClick(!randomBool);
+      }).then(function() {
+        return firstSource.getAllowRightClick();
+      }).then(function(isAllowed) {
+        expect(isAllowed).toBe(!randomBool);
+        done();
+      });
+    });
+  });
+
+  describe('should be able to get and set custom JS and CSS', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.getBrowserJS();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('which does not overwrite each other', function(done) {
+      var firstJS = `console.log('READY')`;
+      var secondJS = `alert('START')`;
+      var randomBool = randomBoolean();
+      var firstCSS = 'body{ color: red }';
+      var secondCSS = 'body{ background-color: blue }';
+
+      firstSource.setBrowserJS(firstJS)
+      .then(function() {
+        return secondSource.setBrowserJS(secondJS);
+      }).then(function() {
+        return secondSource.setCustomCSS(secondCSS);
+      }).then(function() {
+        return firstSource.setCustomCSS(firstCSS);
+      }).then(function() {
+        return firstSource.enableCustomCSS(randomBool);
+      }).then(function() {
+        return firstSource.isCustomCSSEnabled();
+      }).then(function(isEnabled1) {
+        expect(isEnabled1).toBeTypeOf('boolean');
+        expect(isEnabled1).toBe(randomBool);
+        return firstSource.enableCustomCSS(!randomBool);
+      }).then(function() {
+        return firstSource.isCustomCSSEnabled();
+      }).then(function(isEnabled1) {
+        expect(isEnabled1).toBeTypeOf('boolean');
+        expect(isEnabled1).toBe(!randomBool);
+        return secondSource.enableCustomCSS(!randomBool);
+      }).then(function() {
+        return secondSource.isCustomCSSEnabled();
+      }).then(function(isEnabled2) {
+        expect(isEnabled2).toBeTypeOf('boolean');
+        expect(isEnabled2).toBe(!randomBool);
+        return secondSource.enableCustomCSS(randomBool);
+      }).then(function() {
+        return secondSource.isCustomCSSEnabled();
+      }).then(function(isEnabled2) {
+        expect(isEnabled2).toBeTypeOf('boolean');
+        expect(isEnabled2).toBe(randomBool);
+        return firstSource.getCustomCSS();
+      }).then(function(customCSS1) {
+        expect(customCSS1).toBeTypeOf('string');
+        expect(customCSS1).toEqual(firstCSS);
+        return secondSource.getCustomCSS();
+      }).then(function(customCSS2) {
+        expect(customCSS2).toBeTypeOf('string');
+        expect(customCSS2).toEqual(secondCSS);
+        return secondSource.getBrowserJS();
+      }).then(function(browserJS2) {
+        expect(browserJS2).toBeTypeOf('string');
+        expect(browserJS2).toEqual(secondJS);
+        return firstSource.getBrowserJS();
+      }).then(function(browserJS1) {
+        expect(browserJS1).toBeTypeOf('string');
+        expect(browserJS1).toEqual(firstJS);
+        return firstSource.enableBrowserJS(randomBool);
+      }).then(function() {
+        return firstSource.isBrowserJSEnabled();
+      }).then(function(isEnabled1) {
+        expect(isEnabled1).toBeTypeOf('boolean');
+        expect(isEnabled1).toBe(randomBool);
+        return firstSource.enableBrowserJS(!randomBool);
+      }).then(function() {
+        return firstSource.isBrowserJSEnabled();
+      }).then(function(isEnabled1) {
+        expect(isEnabled1).toBeTypeOf('boolean');
+        expect(isEnabled1).toBe(!randomBool);
+        return secondSource.enableBrowserJS(!randomBool);
+      }).then(function() {
+        return secondSource.isBrowserJSEnabled();
+      }).then(function(isEnabled2) {
+        expect(isEnabled2).toBeTypeOf('boolean');
+        expect(isEnabled2).toBe(!randomBool);
+        return secondSource.enableBrowserJS(randomBool);
+      }).then(function() {
+        return secondSource.isBrowserJSEnabled();
+      }).then(function(isEnabled2) {
+        expect(isEnabled2).toBeTypeOf('boolean');
+        expect(isEnabled2).toBe(randomBool);
+        done();
+      });
+    });
+  })
 });
