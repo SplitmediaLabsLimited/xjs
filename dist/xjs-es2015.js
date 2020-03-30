@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.10.0
+ * version: 2.10.1
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -16194,7 +16194,7 @@ var flash_1 = _require('../core/items/flash');
 var screen_1 = _require('../core/items/screen');
 var image_1 = _require('../core/items/image');
 var media_1 = _require('../core/items/media');
-var scene_1 = _require('../core/items/scene');
+var sceneitem_1 = _require('../core/items/sceneitem');
 var genericitem_1 = _require('../core/items/genericitem');
 var group_1 = _require('../core/items/group');
 var replay_1 = _require('../core/items/replay');
@@ -16240,7 +16240,7 @@ function ItemTypeResolve(item) {
         itemType = new flash_1.FlashItem(item);
     }
     else if (Number(item['type']) === isource_1.ItemTypes.SCENE || Number(item['type']) === isource_1.ItemTypes.VIEW) {
-        itemType = new scene_1.SceneItem(item);
+        itemType = new sceneitem_1.SceneItem(item);
     }
     else if (Number(item['type']) === isource_1.ItemTypes.GROUP) {
         itemType = new group_1.GroupItem(item);
@@ -16254,7 +16254,7 @@ function ItemTypeResolve(item) {
     return itemType;
 }
 exports.ItemTypeResolve = ItemTypeResolve;
-},{"../core/items/audio":7,"../core/items/camera":8,"../core/items/flash":9,"../core/items/game":10,"../core/items/genericitem":11,"../core/items/group":12,"../core/items/html":13,"../core/items/image":19,"../core/items/media":22,"../core/items/replay":23,"../core/items/scene":24,"../core/items/screen":25,"../core/items/videoplaylist":26,"../core/source/isource":49,"../core/source/media":51}],89:[function(_require,module,exports){
+},{"../core/items/audio":7,"../core/items/camera":8,"../core/items/flash":9,"../core/items/game":10,"../core/items/genericitem":11,"../core/items/group":12,"../core/items/html":13,"../core/items/image":19,"../core/items/media":22,"../core/items/replay":23,"../core/items/sceneitem":24,"../core/items/screen":25,"../core/items/videoplaylist":26,"../core/source/isource":49,"../core/source/media":51}],89:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
@@ -17832,7 +17832,7 @@ __export(_require('./core/items/image'));
 __export(_require('./core/items/media'));
 __export(_require('./core/items/group'));
 __export(_require('./core/items/replay'));
-__export(_require('./core/items/scene'));
+__export(_require('./core/items/sceneitem'));
 __export(_require('./core/items/videoplaylist'));
 var ieffects_1 = _require('./core/items/ieffects');
 exports.MaskEffect = ieffects_1.MaskEffect;
@@ -17868,7 +17868,7 @@ var internal_1 = _require('./internal/internal');
 exports.exec = internal_1.exec;
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/group":12,"./core/items/html":13,"./core/items/ichroma":14,"./core/items/ieffects":16,"./core/items/image":19,"./core/items/item":20,"./core/items/media":22,"./core/items/replay":23,"./core/items/scene":24,"./core/items/screen":25,"./core/items/videoplaylist":26,"./core/languageinfo":27,"./core/output":28,"./core/scene":29,"./core/source/audio":30,"./core/source/camera":31,"./core/source/cuepoint":32,"./core/source/flash":33,"./core/source/game":34,"./core/source/html":35,"./core/source/image":43,"./core/source/iplayback":45,"./core/source/isource":49,"./core/source/media":51,"./core/source/replay":52,"./core/source/scenesource":53,"./core/source/screen":54,"./core/source/source":55,"./core/source/videoplaylist":56,"./core/streaminfo":57,"./core/thumbnail":58,"./core/transition":59,"./internal/internal":64,"./internal/remote":66,"./system/audio":73,"./system/camera":74,"./system/file":75,"./system/game":76,"./system/group":77,"./system/microphone":78,"./system/replay":79,"./system/screen":80,"./system/system":81,"./system/url":82,"./system/videoplaylist":83,"./util/color":85,"./util/io":87,"./util/ready":89,"./util/rectangle":90,"./window/config":93,"./window/dialog":94,"./window/extension":95,"./window/source":96}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/group":12,"./core/items/html":13,"./core/items/ichroma":14,"./core/items/ieffects":16,"./core/items/image":19,"./core/items/item":20,"./core/items/media":22,"./core/items/replay":23,"./core/items/sceneitem":24,"./core/items/screen":25,"./core/items/videoplaylist":26,"./core/languageinfo":27,"./core/output":28,"./core/scene":29,"./core/source/audio":30,"./core/source/camera":31,"./core/source/cuepoint":32,"./core/source/flash":33,"./core/source/game":34,"./core/source/html":35,"./core/source/image":43,"./core/source/iplayback":45,"./core/source/isource":49,"./core/source/media":51,"./core/source/replay":52,"./core/source/scenesource":53,"./core/source/screen":54,"./core/source/source":55,"./core/source/videoplaylist":56,"./core/streaminfo":57,"./core/thumbnail":58,"./core/transition":59,"./internal/internal":64,"./internal/remote":66,"./system/audio":73,"./system/camera":74,"./system/file":75,"./system/game":76,"./system/group":77,"./system/microphone":78,"./system/replay":79,"./system/screen":80,"./system/system":81,"./system/url":82,"./system/videoplaylist":83,"./util/color":85,"./util/io":87,"./util/ready":89,"./util/rectangle":90,"./window/config":93,"./window/dialog":94,"./window/extension":95,"./window/source":96}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();
