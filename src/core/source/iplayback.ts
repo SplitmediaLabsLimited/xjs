@@ -643,13 +643,24 @@ export class SourcePlayback implements ISourcePlayback {
     return new Promise((resolve, reject) => {
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
         if(this._isItemCall){
-          Logger.warn('sourceWarning', 'setValue', true)
-          this._checkPromise = iItem.set('prop:srcitem', filename, this._id)
+          Logger.warn('sourceWarning', 'setValue', true);
+          this._checkPromise = iItem.set('prop:srcitem', filename, this._id)  
         } else {
           this._checkPromise = iItem.wrapSet('prop:srcitem', filename,
             this._srcId, this._id, this._updateId.bind(this))
         }
         this._checkPromise
+        .then(() => {
+          return iItem.get('prop:FilePlaylist', this._id);
+        }).then(playlist => {
+          if (playlist && playlist !== 'PLAYLIST' && (playlist.split('|').length < 2)) {
+            const playlistArray = playlist.split('*');
+            playlistArray[0] = filename;
+            return iItem.set('prop:FilePlaylist', playlistArray.join('*'), this._id);
+          } else {
+            return Promise.resolve(true);
+          }
+        })
         .then(() => iItem.set('prop:name', filename, this._id))
         .then(() => iItem.set('prop:CuePoints', '', this._id))
         .then(() => {
