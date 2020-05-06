@@ -39,7 +39,7 @@ export function ItemTypeResolve(item: Object): any {
       /^(rtsp|rtmp):\/\//.test(itemValue) === false &&
       (VIDEO_REGEX.test(itemValue.split('*')[0])||
         AUDIO_REGEX.test(itemValue.split('*')[0]))
-      ) {
+     ) {
     itemType = new MediaItem(item);
   } else if (type === ItemTypes.LIVE &&
     itemValue.indexOf(

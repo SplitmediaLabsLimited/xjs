@@ -36,7 +36,9 @@ export function SourceTypeResolve(source: Object): any {
   } else if (type === ItemTypes.FILE &&
       /\.(gif|xbs)$/.test(sourceValue) === false &&
       /^(rtsp|rtmp):\/\//.test(sourceValue) === false &&
-      (VIDEO_REGEX.test(sourceValue) || AUDIO_REGEX.test(sourceValue))) {
+      (VIDEO_REGEX.test(sourceValue.split('*')[0]) ||
+        AUDIO_REGEX.test(sourceValue.split('*')[0]))
+    ) {
     srcType = new MediaSource(source);
   } else if (type === ItemTypes.LIVE &&
     sourceValue.indexOf(
