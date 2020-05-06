@@ -15,10 +15,10 @@ export enum ActionAfterPlayback {
   HIDE
 }
 
-const AUDIO_REGEX =
-  /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/;
-const VIDEO_REGEX =
-  /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
+export const AUDIO_REGEX =
+  /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/i;
+export const VIDEO_REGEX =
+  /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/i;
 
 export interface ISourcePlayback {
 
@@ -641,6 +641,7 @@ export class SourcePlayback implements ISourcePlayback {
 
   setValue(filename: string): Promise<SourcePlayback> {
     return new Promise((resolve, reject) => {
+      filename = filename.split('*')[0];
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
         if(this._isItemCall){
           Logger.warn('sourceWarning', 'setValue', true)
