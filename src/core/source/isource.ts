@@ -445,8 +445,8 @@ export class iSource implements ISource{
 
       let typeCheck = this.getValue().then(origVal => {
         return new Promise((typeRes, typeRej) => {
-          if (String(origVal).indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
-            val.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
+          if (String(origVal).toUpperCase().indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
+            val.toUpperCase().indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
             this._type === ItemTypes.LIVE) {
               typeRej(Error('Value is not a valid Audio source'))
           } else {
