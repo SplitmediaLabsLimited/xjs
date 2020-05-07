@@ -19,6 +19,8 @@ export function SourceTypeResolve(source: Object): any {
 	let srcType;
   const type = Number(source['type']);
   const sourceValue = source['item'];
+  const uppercaseValue = sourceValue.toUpperCase();
+
   if (type === ItemTypes.GAMESOURCE) {
     srcType = new GameSource(source);
   } else if ((type === ItemTypes.HTML || type === ItemTypes.FILE) &&
@@ -31,21 +33,21 @@ export function SourceTypeResolve(source: Object): any {
     srcType = new ScreenSource(source);
   } else if (type === ItemTypes.BITMAP ||
       type === ItemTypes.FILE &&
-      /\.gif$/.test(sourceValue)) {
+      /\.gif$/i.test(sourceValue)) {
     srcType = new ImageSource(source);
   } else if (type === ItemTypes.FILE &&
-      /\.(gif|xbs)$/.test(sourceValue) === false &&
-      /^(rtsp|rtmp):\/\//.test(sourceValue) === false &&
+      /\.(gif|xbs)$/i.test(sourceValue) === false &&
+      /^(rtsp|rtmp):\/\//i.test(sourceValue) === false &&
       (VIDEO_REGEX.test(sourceValue.split('*')[0]) ||
         AUDIO_REGEX.test(sourceValue.split('*')[0]))
     ) {
     srcType = new MediaSource(source);
   } else if (type === ItemTypes.LIVE &&
-    sourceValue.indexOf(
+    uppercaseValue.indexOf(
       '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
     srcType = new CameraSource(source);
   } else if (type === ItemTypes.LIVE &&
-    sourceValue.indexOf(
+    uppercaseValue.indexOf(
       '{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
     srcType = new AudioSource(source);
   } else if (type === ItemTypes.FLASHFILE) {

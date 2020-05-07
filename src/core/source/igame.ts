@@ -194,7 +194,7 @@ export class iSourceGame implements ISourceGame {
       } else {
         var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
           '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-        if (regExp.test(path) || path === '') {
+        if (regExp.test(path.toLowerCase()) || path === '') {
           var valueObj = JXON.parse(this._value.toString());
           valueObj['replace'] = path;
           this.setValue(XML.parseJSON(valueObj)).then(() => {
