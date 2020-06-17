@@ -407,7 +407,11 @@ describe('HtmlSource', function() {
       'getCustomCSS',
       'setCustomCSS',
       'isCustomCSSEnabled',
-      'enableCustomCSS'
+      'enableCustomCSS',
+      'isReloadOnShowEnabled',
+      'enableReloadOnShow',
+      'isReloadOnSceneEnter',
+      'enableReloadOnSceneEnter'
       ].join(',');
 
     expect(enumerated[0]).hasMethods(methods);
@@ -443,6 +447,5 @@ describe('HtmlSource', function() {
         'isAudioAvailable'
         ].join(','));
     });
-
   });
 });
