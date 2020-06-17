@@ -150,7 +150,27 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
    * See: {@link #core/ISourceHtml#getBrowserLoadStatus getBrowserLoadStatus}
    */
   getBrowserLoadStatus: () => Promise<string>
-  
+
+  /**
+   * See: {@link #core/ISourceHtml#isReloadOnShowEnabled isReloadOnShowEnabled}
+   */
+  isReloadOnShowEnabled: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/ISourceHtml#enableReloadOnShow enableReloadOnShow}
+   */
+  enableReloadOnShow: (value: boolean) => Promise<HtmlSource>
+
+  /**
+   * See: {@link #core/ISourceHtml#isReloadOnSceneEnter isReloadOnSceneEnter}
+   */
+  isReloadOnSceneEnter: () => Promise<boolean>
+
+  /**
+   * See: {@link #core/ISourceHtml#enableReloadOnSceneEnter enableReloadOnSceneEnter}
+   */
+  enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlSource>
+
   // SourceConfigurable
   /**
    * See: {@link #core/ISourceConfigurable#loadConfig loadConfig}
