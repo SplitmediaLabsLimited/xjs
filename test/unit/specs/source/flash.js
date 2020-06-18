@@ -15,6 +15,8 @@ describe('Flash Source', function() {
   var local = {};
   var urlSet = false;
   var TYPE_FLASH = 6;
+  var firstSource;
+  var shouldBeAvailable = true;
 
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
@@ -38,6 +40,7 @@ describe('Flash Source', function() {
 
   var getLocal = function(funcName) {
     rand += 1;
+    var irand = 'flash_source_' + rand;
 
     switch (funcName) {
       case 'prop:type':
@@ -47,7 +50,6 @@ describe('Flash Source', function() {
         var selected = '[id="' + attachedID + '"]';
         var itemSelected = placement.querySelector(selected);
         //return type attribute
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
         },10);
@@ -55,7 +57,6 @@ describe('Flash Source', function() {
 
       case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -66,7 +67,6 @@ describe('Flash Source', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return item attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
           },10);
@@ -75,7 +75,6 @@ describe('Flash Source', function() {
 
       case 'prop:BrowserSize':
         if (local.hasOwnProperty('browserSize')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
@@ -86,7 +85,6 @@ describe('Flash Source', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return browserJS attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               itemSelected.getAttribute('BrowserSizeX') + ',' +
@@ -97,16 +95,22 @@ describe('Flash Source', function() {
 
       case 'prop:BrowserRightClick':
         setTimeout(function() {
-          window.OnAsyncCallback(rand, local.rightclick);
+          window.OnAsyncCallback(irand, local.rightclick);
         }, 10);
       break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        },10);
+      break;
     }
-    return rand;
+    return irand;
   };
 
   var setLocal = function(funcName, val) {
     rand += 1;
-
+    var irand = 'flash_source_' + rand;
     switch (funcName) {
 
       case 'prop:srcitem':
@@ -119,7 +123,6 @@ describe('Flash Source', function() {
         	urlSet = false;
           isValid = '-1';
         }
-				var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -141,7 +144,6 @@ describe('Flash Source', function() {
           urlSet = false;
           isValid = '-1';
         }
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -149,11 +151,14 @@ describe('Flash Source', function() {
 
       case 'prop:BrowserRightClick':
         local.rightclick = val;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
       break;
 
     }
 
-    return rand;
+    return irand;
   };
 
   beforeEach(function(done) {
@@ -171,9 +176,9 @@ describe('Flash Source', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
       rand += 1;
+      var irand = 'flash_source_' + rand;
       switch (funcName) {
         case 'sceneconfig:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
@@ -181,21 +186,19 @@ describe('Flash Source', function() {
         break;
 
         case 'scene:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');
           },10);
         break;
 
         case 'sceneconfig':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
           },10);
         break;
       }
-      return rand;
+      return irand;
     });
 
     spyOn(window.external, 'SearchVideoItem')
@@ -232,7 +235,7 @@ describe('Flash Source', function() {
             }
           }
         }
-
+        firstSource = enumerated[0];
         done();
       });
     });
@@ -241,6 +244,27 @@ describe('Flash Source', function() {
   afterAll(function() {
     navigator.__defineGetter__('appVersion', function() {
       return appVersion;
+    });
+  });
+
+  describe('should be able to check if source file is avaiable', function(done) {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      firstSource.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return firstSource.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
     });
   });
 

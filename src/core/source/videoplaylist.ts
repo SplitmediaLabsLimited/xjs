@@ -87,6 +87,9 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    */
   setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
+  /** See: {@link #core/ISourceVideoPlaylist#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
+
   // SourceConfigurable
 
   /**

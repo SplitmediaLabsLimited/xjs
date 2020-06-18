@@ -178,14 +178,17 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   enableReloadOnShow: (value: boolean) => Promise<HtmlItem>
 
   /**
-   * See: {@link #core/ISourceHtml#isReloadOnSceneEnter isReloadOnSceneEnter}
+   * See: {@link #core/ISourceHtml#isReloadOnSceneEnterEnabled isReloadOnSceneEnterEnabled}
    */
-  isReloadOnSceneEnter: () => Promise<boolean>
+  isReloadOnSceneEnterEnabled: () => Promise<boolean>
 
   /**
    * See: {@link #core/ISourceHtml#enableReloadOnSceneEnter enableReloadOnSceneEnter}
    */
   enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlItem>
+
+  /** See: {@link #core/ISourceHtml#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
 
   // ItemLayout
 

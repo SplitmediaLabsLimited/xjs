@@ -39,6 +39,20 @@ export interface ISourceVideoPlaylist {
    */
   setVideoPlaylistSources(fileItems:string[]): Promise<SourceVideoPlaylist>
 
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if file used as source is available
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.isSourceAvailable().then(function(isAvail) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  isSourceAvailable(): Promise<boolean>
 }
 
 export class SourceVideoPlaylist implements ISourceVideoPlaylist {
@@ -173,4 +187,19 @@ export class SourceVideoPlaylist implements ISourceVideoPlaylist {
       })      ;
     });
   };
+
+  isSourceAvailable(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSourceAvailable', true)
+        iItem.get('prop:itemavail', this._id).then(val => {
+          resolve(val === '1');
+        });
+      } else {
+        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
+          resolve(val === '1');
+        });
+      }
+    });
+  }
 }
