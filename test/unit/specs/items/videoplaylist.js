@@ -373,7 +373,7 @@ describe('VideoPlaylistItem', function() {
     done();
   });
 
-  describe('should be able to check if source file is avaiable', function(done) {
+  describe('should be able to check if source file is avaiable', function() {
     it ('through a promise', function(done) {
       var promise = currentVideoPlaylistItem.isSourceAvailable();
       expect(promise).toBeInstanceOf(Promise);
