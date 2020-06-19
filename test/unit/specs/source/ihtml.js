@@ -206,7 +206,7 @@ describe('HTML Source interface', function() {
     expect(enumeratedSource[0]).hasMethods(methods);
   });
 
-  describe('should be able to check if source file is avaiable', function(done) {
+  describe('should be able to check if source file is avaiable', function() {
     it ('through a promise', function(done) {
       var promise = firstSource.isSourceAvailable();
       expect(promise).toBeInstanceOf(Promise);
