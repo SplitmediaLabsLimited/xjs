@@ -48,7 +48,10 @@ export class FlashSource extends Source implements IAudio, ISourceFlash {
   getAllowRightClick: () => Promise<boolean>
 
   /** See: {@link #core/ISourceFlash#setAllowRightClick setAllowRightClick} */
-  setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
+  setAllowRightClick: (value: boolean) => Promise<FlashSource>
+
+  /** See: {@link #core/ISourceFlash#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
 
   // ItemAudio
 

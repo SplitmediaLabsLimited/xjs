@@ -260,7 +260,7 @@ export interface ISourceHtml {
    *
    * Gets if source will refresh upon entering a scene containing an item of it (via setVisible)
    */
-  isReloadOnSceneEnter(): Promise<boolean>
+  isReloadOnSceneEnterEnabled(): Promise<boolean>
 
   /**
    * param: (value: boolean)
@@ -270,6 +270,21 @@ export interface ISourceHtml {
    * Enables or disables refresh of source upon entering a scene containing an item of it (via setVisible)
    */
   enableReloadOnSceneEnter(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if file used as source is available
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.isSourceAvailable().then(function(isAvail) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  isSourceAvailable(): Promise<boolean>
 }
 
 export class iSourceHtml implements ISourceHtml{
@@ -957,7 +972,7 @@ export class iSourceHtml implements ISourceHtml{
     });
   }
 
-  isReloadOnSceneEnter(): Promise<boolean> {
+  isReloadOnSceneEnterEnabled(): Promise<boolean> {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'isReloadOnShowEnabled', true)
@@ -984,6 +999,21 @@ export class iSourceHtml implements ISourceHtml{
       this._checkPromise.then(() => {
          resolve(this);
       });
+    });
+  }
+
+  isSourceAvailable(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSourceAvailable', true)
+        iItem.get('prop:itemavail', this._id).then(val => {
+          resolve(val === '1');
+        });
+      } else {
+        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
+          resolve(val === '1');
+        });
+      }
     });
   }
 }

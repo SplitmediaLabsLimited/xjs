@@ -1,6 +1,8 @@
+import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {XML} from '../../internal/util/xml';
+import {iSourceImage, ISourceImage} from './iimage';
 
 /**
  * The ImageSource class represents the sources of the image items that
@@ -32,18 +34,20 @@ import {XML} from '../../internal/util/xml';
  * All methods marked as *Chainable* resolve with the original `ImageSource`
  * instance.
  */
-export class ImageSource extends Source {
+export class ImageSource extends Source implements ISourceImage {
+
+  /** See: {@link #core/ISourceImage#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
+
   /**
-   * Gets a special string that refers to the image's main definition.
-   *
    * See: {@link #core/Source#getValue getValue}
    */
   getValue: () => Promise<string | XML>
 
   /**
-   * Sets the image's main definition.
-   *
    * See: {@link #core/Source#setValue setValue}
    */
-  setValue: (value: string | XML) => Promise<ImageSource>
+  setValue: (value: string | XML) => Promise<ImageSource>  
 }
+
+applyMixins(ImageSource, [iSourceImage]);

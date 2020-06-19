@@ -44,6 +44,9 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/MediaSource#getFileInfo getFileInfo} */
   getFileInfo: () => Promise<Object>
 
+  /** See: {@link #core/MediaSource#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
+
   // ItemLayout
 
   /**

@@ -16,7 +16,7 @@ describe('HtmlItem', function() {
   var local = {};
   var urlSet = false;
   var TYPE_HTML = 8;
-
+  var shouldBeAvailable = true;
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
     function() {
@@ -198,7 +198,13 @@ describe('HtmlItem', function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("RefreshOnScnLoad"));
           },10);
         }
-      break;      
+      break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        }, 10);
+      break;
     }
     return irand;
   };
@@ -901,7 +907,7 @@ describe('HtmlItem', function() {
     it('should be able to get if reload on scene enter is enabled',
       function(done) {
         exec(function(next) {
-          var promise = currentHtmlItem.isReloadOnSceneEnter();
+          var promise = currentHtmlItem.isReloadOnSceneEnterEnabled();
           expect(promise).toBeInstanceOf(Promise);
           promise.then(function(isEnabled) {
             expect(isEnabled).toBeTypeOf('boolean');
@@ -916,14 +922,14 @@ describe('HtmlItem', function() {
           var testBoolean = randomBoolean();
           var promise = currentHtmlItem.enableReloadOnSceneEnter(testBoolean);
           promise.then(function() {
-            return currentHtmlItem.isReloadOnSceneEnter();
+            return currentHtmlItem.isReloadOnSceneEnterEnabled();
           })
           .then(function(firstEnabled) {
             expect(firstEnabled).toBe(testBoolean);
             return currentHtmlItem.enableReloadOnSceneEnter(!testBoolean);
           })
           .then(function() {
-            return currentHtmlItem.isReloadOnSceneEnter();
+            return currentHtmlItem.isReloadOnSceneEnterEnabled();
           })
           .then(function(secondEnabled) {
             expect(secondEnabled).toBe(!testBoolean);
@@ -931,5 +937,20 @@ describe('HtmlItem', function() {
           });
         }).then(done);
     });
+
+    it('should be able to check if source file is avaiable', function(done) {
+      shouldBeAvailable = true;
+      var promise = currentHtmlItem.isSourceAvailable();
+      currentHtmlItem.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return currentHtmlItem.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
+    });
+
   });
 });

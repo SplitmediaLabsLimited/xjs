@@ -55,6 +55,8 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/FlashSource#setAllowRightClick setAllowRightClick} */
   setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
 
+  /** See: {@link #core/FlashSource#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
   // ItemLayout
 
   /**
