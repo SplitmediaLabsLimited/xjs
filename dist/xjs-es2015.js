@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.10.1
+ * version: 2.10.2-alpha
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1101,7 +1101,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"../internal/app":60,"../internal/internal":64,"../internal/util/json":67,"../internal/util/version":71,"../internal/util/xml":72,"../system/audio":73,"../util/rectangle":90,"./environment":4,"./transition":59}],2:[function(_require,module,exports){
+},{"../internal/app":61,"../internal/internal":65,"../internal/util/json":68,"../internal/util/version":72,"../internal/util/xml":73,"../system/audio":74,"../util/rectangle":91,"./environment":4,"./transition":60}],2:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1270,7 +1270,7 @@ function _subscribeEventManager() {
     });
 }
 exports._subscribeEventManager = _subscribeEventManager;
-},{"../internal/eventmanager":61,"../internal/util/json":67,"../util/eventemitter":86,"./environment":4,"./streaminfo":57}],3:[function(_require,module,exports){
+},{"../internal/eventmanager":62,"../internal/util/json":68,"../util/eventemitter":87,"./environment":4,"./streaminfo":58}],3:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1459,7 +1459,7 @@ window_1.default.Setdlldogrant = function (value) {
         oldSetdlldogrant(value);
     }
 };
-},{"../internal/internal":64,"../util/eventemitter":86,"../util/window":92}],4:[function(_require,module,exports){
+},{"../internal/internal":65,"../util/eventemitter":87,"../util/window":93}],4:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 var window_1 = _require('../util/window');
 /**
@@ -1519,7 +1519,7 @@ var Environment = (function () {
     return Environment;
 })();
 exports.Environment = Environment;
-},{"../internal/remote":66,"../util/window":92}],5:[function(_require,module,exports){
+},{"../internal/remote":67,"../util/window":93}],5:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var internal_1 = _require('../internal/internal');
@@ -1673,7 +1673,7 @@ window_1.default.Setid = function (id) {
         oldSetid(id);
     }
 };
-},{"../core/environment":4,"../internal/app":60,"../internal/internal":64,"../internal/remote":66,"../util/window":92}],6:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":61,"../internal/internal":65,"../internal/remote":67,"../util/window":93}],6:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /**
  * The Filter class represents a post-processing shader used within XSplit Broadcaster.
@@ -1809,7 +1809,7 @@ var AudioItem = (function (_super) {
 })(item_1.Item);
 exports.AudioItem = AudioItem;
 mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iaudiosource":37,"./item":20}],8:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iaudiosource":37,"./item":20}],8:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1936,7 +1936,7 @@ var CameraItem = (function (_super) {
 exports.CameraItem = CameraItem;
 mixin_1.applyMixins(CameraItem, [item_2.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, icamera_1.SourceCamera]);
-},{"../../internal/item":65,"../../internal/util/mixin":69,"../source/iaudio":36,"../source/icamera":38,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],9:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/mixin":70,"../source/iaudio":36,"../source/icamera":38,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],9:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1981,7 +1981,7 @@ var FlashItem = (function (_super) {
 exports.FlashItem = FlashItem;
 mixin_1.applyMixins(FlashItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iflash":40,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],10:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iflash":40,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],10:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2041,7 +2041,7 @@ var GameItem = (function (_super) {
 exports.GameItem = GameItem;
 mixin_1.applyMixins(GameItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igame_1.iSourceGame]);
-},{"../../internal/util/mixin":69,"../source/igame":41,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],11:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/igame":41,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],11:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2080,7 +2080,7 @@ var GenericItem = (function (_super) {
 exports.GenericItem = GenericItem;
 mixin_1.applyMixins(GenericItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],12:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],12:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2120,7 +2120,7 @@ var GroupItem = (function (_super) {
 exports.GroupItem = GroupItem;
 mixin_1.applyMixins(GroupItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, igroup_1.ItemGroup]);
-},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./igroup":17,"./ilayout":18,"./item":20,"./itransition":21}],13:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"./ichroma":14,"./icolor":15,"./ieffects":16,"./igroup":17,"./ilayout":18,"./item":20,"./itransition":21}],13:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -2183,7 +2183,7 @@ var HtmlItem = (function (_super) {
 exports.HtmlItem = HtmlItem;
 mixin_1.applyMixins(HtmlItem, [ihtml_1.iSourceHtml, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, iaudio_1.Audio, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iconfig":39,"../source/ihtml":42,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],14:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iconfig":39,"../source/ihtml":42,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],14:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2572,7 +2572,7 @@ var ItemChroma = (function () {
     return ItemChroma;
 })();
 exports.ItemChroma = ItemChroma;
-},{"../../internal/item":65,"../../util/color":85}],15:[function(_require,module,exports){
+},{"../../internal/item":66,"../../util/color":86}],15:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -2759,7 +2759,7 @@ var ItemColor = (function () {
     return ItemColor;
 })();
 exports.ItemColor = ItemColor;
-},{"../../internal/item":65,"../../util/color":85}],16:[function(_require,module,exports){
+},{"../../internal/item":66,"../../util/color":86}],16:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var color_1 = _require('../../util/color');
@@ -3413,7 +3413,7 @@ var ItemEffect = (function () {
     return ItemEffect;
 })();
 exports.ItemEffect = ItemEffect;
-},{"../../internal/item":65,"../../internal/util/json":67,"../../util/color":85,"../filter":6}],17:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/json":68,"../../util/color":86,"../filter":6}],17:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var app_1 = _require('../../internal/app');
@@ -3525,7 +3525,7 @@ var ItemGroup = (function () {
     return ItemGroup;
 })();
 exports.ItemGroup = ItemGroup;
-},{"../../internal/app":60,"../../internal/item":65,"../../util/itemtyperesolve":88,"./item":20}],18:[function(_require,module,exports){
+},{"../../internal/app":61,"../../internal/item":66,"../../util/itemtyperesolve":89,"./item":20}],18:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var scene_1 = _require('../scene');
@@ -4243,7 +4243,7 @@ var ItemLayout = (function () {
     return ItemLayout;
 })();
 exports.ItemLayout = ItemLayout;
-},{"../../internal/item":65,"../../util/rectangle":90,"../scene":29}],19:[function(_require,module,exports){
+},{"../../internal/item":66,"../../util/rectangle":91,"../scene":29}],19:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4258,6 +4258,7 @@ var ichroma_1 = _require('./ichroma');
 var ieffects_1 = _require('./ieffects');
 var itransition_1 = _require('./itransition');
 var item_1 = _require('./item');
+var iimage_1 = _require('../source/iimage');
 /**
  * The ImageItem class represents an image item (includes GIF files).
  *
@@ -4280,8 +4281,8 @@ var ImageItem = (function (_super) {
     return ImageItem;
 })(item_1.Item);
 exports.ImageItem = ImageItem;
-mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
-},{"../../internal/util/mixin":69,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],20:[function(_require,module,exports){
+mixin_1.applyMixins(ImageItem, [iimage_1.iSourceImage, item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
+},{"../../internal/util/mixin":70,"../source/iimage":43,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],20:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4822,7 +4823,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":60,"../../internal/eventmanager":61,"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/mixin":69,"../../internal/util/version":71,"../../internal/util/xml":72,"../../util/eventemitter":86,"../../util/sourcetyperesolve":91,"../environment":4,"../scene":29,"../source/isource":49,"../source/source":55,"./ilayout":18}],21:[function(_require,module,exports){
+},{"../../internal/app":61,"../../internal/eventmanager":62,"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/mixin":70,"../../internal/util/version":72,"../../internal/util/xml":73,"../../util/eventemitter":87,"../../util/sourcetyperesolve":92,"../environment":4,"../scene":29,"../source/isource":50,"../source/source":56,"./ilayout":18}],21:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var transition_1 = _require('../transition');
@@ -4898,7 +4899,7 @@ var ItemTransition = (function () {
     return ItemTransition;
 })();
 exports.ItemTransition = ItemTransition;
-},{"../../internal/item":65,"../transition":59}],22:[function(_require,module,exports){
+},{"../../internal/item":66,"../transition":60}],22:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4941,7 +4942,7 @@ var MediaItem = (function (_super) {
 exports.MediaItem = MediaItem;
 mixin_1.applyMixins(MediaItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma,
     itransition_1.ItemTransition, iplayback_1.SourcePlayback, iaudio_1.Audio, ieffects_1.ItemEffect, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/imedia":44,"../source/iplayback":45,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],23:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/imedia":45,"../source/iplayback":46,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],23:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4968,7 +4969,7 @@ var ReplayItem = (function (_super) {
 exports.ReplayItem = ReplayItem;
 mixin_1.applyMixins(ReplayItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, ireplay_1.SourceReplay]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/ireplay":46,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],24:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/ireplay":47,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],24:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -4995,7 +4996,7 @@ var SceneItem = (function (_super) {
 exports.SceneItem = SceneItem;
 mixin_1.applyMixins(SceneItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iaudio_1.Audio, ieffects_1.ItemEffect, iscene_1.SourceScene]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iscene":47,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],25:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iscene":48,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],25:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5035,7 +5036,7 @@ var ScreenItem = (function (_super) {
 exports.ScreenItem = ScreenItem;
 mixin_1.applyMixins(ScreenItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     ieffects_1.ItemEffect, iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":69,"../source/iscreen":48,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],26:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iscreen":49,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],26:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5092,7 +5093,7 @@ var VideoPlaylistItem = (function (_super) {
 exports.VideoPlaylistItem = VideoPlaylistItem;
 mixin_1.applyMixins(VideoPlaylistItem, [ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition,
     iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iconfig":39,"../source/iplayback":45,"../source/ivideoplaylist":50,"./ichroma":14,"./icolor":15,"./ilayout":18,"./item":20,"./itransition":21}],27:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iconfig":39,"../source/iplayback":46,"../source/ivideoplaylist":51,"./ichroma":14,"./icolor":15,"./ilayout":18,"./item":20,"./itransition":21}],27:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -5176,7 +5177,7 @@ eventmanager_1.EventManager.subscribe(['LanguageChanged'], function (langObj) {
         LanguageInfo.emit(eventString, langObj['lang']);
     }
 });
-},{"../internal/eventmanager":61,"../internal/internal":64,"../util/eventemitter":86}],28:[function(_require,module,exports){
+},{"../internal/eventmanager":62,"../internal/internal":65,"../util/eventemitter":87}],28:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('./environment');
@@ -5640,7 +5641,7 @@ window_1.default.SetBroadcastChannelXml = function (channelXML, name) {
         oldSetBroadcastChannelXml(channelXML);
     }
 };
-},{"../internal/internal":64,"../internal/item":65,"../internal/remote":66,"../internal/util/json":67,"../internal/util/version":71,"../util/window":92,"./environment":4,"./extension":5,"./scene":29,"./streaminfo":57}],29:[function(_require,module,exports){
+},{"../internal/internal":65,"../internal/item":66,"../internal/remote":67,"../internal/util/json":68,"../internal/util/version":72,"../util/window":93,"./environment":4,"./extension":5,"./scene":29,"./streaminfo":58}],29:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -7679,7 +7680,7 @@ var Scene = (function () {
     return Scene;
 })();
 exports.Scene = Scene;
-},{"../internal/app":60,"../internal/internal":64,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/version":71,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/itemtyperesolve":88,"../util/sourcetyperesolve":91,"./environment":4,"./items/item":20,"./source/isource":49,"./source/source":55,"./transition":59}],30:[function(_require,module,exports){
+},{"../internal/app":61,"../internal/internal":65,"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/version":72,"../internal/util/xml":73,"../util/addtosceneutil":85,"../util/itemtyperesolve":89,"../util/sourcetyperesolve":92,"./environment":4,"./items/item":20,"./source/isource":50,"./source/source":56,"./transition":60}],30:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7730,7 +7731,7 @@ var AudioSource = (function (_super) {
 })(source_1.Source);
 exports.AudioSource = AudioSource;
 mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/iaudiosource":37,"../source/source":55}],31:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iaudiosource":37,"../source/source":56}],31:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7781,7 +7782,7 @@ var CameraSource = (function (_super) {
 })(source_1.Source);
 exports.CameraSource = CameraSource;
 mixin_1.applyMixins(CameraSource, [iaudio_1.Audio, icamera_1.SourceCamera]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/icamera":38,"../source/source":55}],32:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/icamera":38,"../source/source":56}],32:[function(_require,module,exports){
 /**
  *  A CuePoint represents a configurable object for sources that
  *  support cue points. Check `getCuePoints()` and other related methods of
@@ -7898,7 +7899,7 @@ var FlashSource = (function (_super) {
 })(source_1.Source);
 exports.FlashSource = FlashSource;
 mixin_1.applyMixins(FlashSource, [iaudio_1.Audio, iflash_1.SourceFlash]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/source":55,"./iflash":40}],34:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/source":56,"./iflash":40}],34:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -7948,7 +7949,7 @@ var GameSource = (function (_super) {
 })(source_1.Source);
 exports.GameSource = GameSource;
 mixin_1.applyMixins(GameSource, [igame_1.iSourceGame]);
-},{"../../internal/util/mixin":69,"../source/source":55,"./igame":41}],35:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/source":56,"./igame":41}],35:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8000,7 +8001,7 @@ var HtmlSource = (function (_super) {
 })(source_1.Source);
 exports.HtmlSource = HtmlSource;
 mixin_1.applyMixins(HtmlSource, [ihtml_1.iSourceHtml, iconfig_1.SourceConfigurable, iaudio_1.Audio]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/ihtml":42,"../source/source":55,"./iconfig":39}],36:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/ihtml":42,"../source/source":56,"./iconfig":39}],36:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -8150,7 +8151,7 @@ var Audio = (function () {
     return Audio;
 })();
 exports.Audio = Audio;
-},{"../../internal/item":65,"../../internal/util/logger":68}],37:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69}],37:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -8322,7 +8323,7 @@ var SourceAudio = (function () {
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":65,"../../internal/util/logger":68}],38:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69}],38:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../../util/rectangle');
 var item_1 = _require('../../internal/item');
@@ -8681,7 +8682,7 @@ var SourceCamera = (function () {
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":65,"../../internal/util/logger":68,"../../system/system":81,"../../util/rectangle":90}],39:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../../system/system":82,"../../util/rectangle":91}],39:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var global_1 = _require('../../internal/global');
@@ -8806,7 +8807,7 @@ var SourceConfigurable = (function () {
     return SourceConfigurable;
 })();
 exports.SourceConfigurable = SourceConfigurable;
-},{"../../internal/global":62,"../../internal/internal":64,"../../internal/item":65,"../../internal/util/logger":68,"../environment":4}],40:[function(_require,module,exports){
+},{"../../internal/global":63,"../../internal/internal":65,"../../internal/item":66,"../../internal/util/logger":69,"../environment":4}],40:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var rectangle_1 = _require('../../util/rectangle');
@@ -8891,10 +8892,26 @@ var SourceFlash = (function () {
             }
         });
     };
+    SourceFlash.prototype.isSourceAvailable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSourceAvailable', true);
+                item_1.Item.get('prop:itemavail', _this._id).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+            else {
+                item_1.Item.wrapGet('prop:itemavail', _this._srcId, _this._id, _this._updateId.bind(_this)).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+        });
+    };
     return SourceFlash;
 })();
 exports.SourceFlash = SourceFlash;
-},{"../../internal/item":65,"../../internal/util/logger":68,"../../util/rectangle":90}],41:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../../util/rectangle":91}],41:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var environment_1 = _require('../environment');
@@ -8997,7 +9014,7 @@ var iSourceGame = (function () {
             else {
                 var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?' +
                     '\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*))\.(png|gif|jpg|jpeg|tif)$');
-                if (regExp.test(path) || path === '') {
+                if (regExp.test(path.toLowerCase()) || path === '') {
                     var valueObj = json_1.JSON.parse(_this._value.toString());
                     valueObj['replace'] = path;
                     _this.setValue(xml_1.XML.parseJSON(valueObj)).then(function () {
@@ -9107,7 +9124,7 @@ var iSourceGame = (function () {
     return iSourceGame;
 })();
 exports.iSourceGame = iSourceGame;
-},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/xml":72,"../environment":4,"./isource":49}],42:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/logger":69,"../../internal/util/xml":73,"../environment":4,"./isource":50}],42:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../../internal/internal');
 var item_1 = _require('../../internal/item');
@@ -9740,17 +9757,125 @@ var iSourceHtml = (function () {
             });
         });
     };
+    iSourceHtml.prototype.isReloadOnShowEnabled = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isReloadOnShowEnabled', true);
+                _this._checkPromise = item_1.Item.get('prop:RefreshOnSrcShow', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:RefreshOnSrcShow', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    iSourceHtml.prototype.enableReloadOnShow = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'enableReloadOnShow', true);
+                _this._checkPromise = item_1.Item.set('prop:RefreshOnSrcShow', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:RefreshOnSrcShow', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    iSourceHtml.prototype.isReloadOnSceneEnterEnabled = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isReloadOnShowEnabled', true);
+                _this._checkPromise = item_1.Item.get('prop:RefreshOnScnLoad', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:RefreshOnScnLoad', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (val) {
+                resolve(val === '1');
+            });
+        });
+    };
+    iSourceHtml.prototype.enableReloadOnSceneEnter = function (value) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'enableReloadOnShow', true);
+                _this._checkPromise = item_1.Item.set('prop:RefreshOnScnLoad', (value ? '1' : '0'), _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:RefreshOnScnLoad', (value ? '1' : '0'), _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    iSourceHtml.prototype.isSourceAvailable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSourceAvailable', true);
+                item_1.Item.get('prop:itemavail', _this._id).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+            else {
+                item_1.Item.wrapGet('prop:itemavail', _this._srcId, _this._id, _this._updateId.bind(_this)).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+        });
+    };
     return iSourceHtml;
 })();
 exports.iSourceHtml = iSourceHtml;
-},{"../../internal/internal":64,"../../internal/item":65,"../../internal/util/logger":68,"../../util/rectangle":90,"../environment":4}],43:[function(_require,module,exports){
+},{"../../internal/internal":65,"../../internal/item":66,"../../internal/util/logger":69,"../../util/rectangle":91,"../environment":4}],43:[function(_require,module,exports){
+/// <reference path="../../../defs/es6-promise.d.ts" />
+var item_1 = _require('../../internal/item');
+var logger_1 = _require('../../internal/util/logger');
+var iSourceImage = (function () {
+    function iSourceImage() {
+    }
+    iSourceImage.prototype._updateId = function (id, sceneId) {
+        this._id = id;
+        this._sceneId = sceneId;
+    };
+    iSourceImage.prototype.isSourceAvailable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSourceAvailable', true);
+                item_1.Item.get('prop:itemavail', _this._id).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+            else {
+                item_1.Item.wrapGet('prop:itemavail', _this._srcId, _this._id, _this._updateId.bind(_this)).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+        });
+    };
+    return iSourceImage;
+})();
+exports.iSourceImage = iSourceImage;
+},{"../../internal/item":66,"../../internal/util/logger":69}],44:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var mixin_1 = _require('../../internal/util/mixin');
 var source_1 = _require('../source/source');
+var iimage_1 = _require('./iimage');
 /**
  * The ImageSource class represents the sources of the image items that
  * has been added to the stage. A single source could have multiple items linked
@@ -9789,7 +9914,8 @@ var ImageSource = (function (_super) {
     return ImageSource;
 })(source_1.Source);
 exports.ImageSource = ImageSource;
-},{"../source/source":55}],44:[function(_require,module,exports){
+mixin_1.applyMixins(ImageSource, [iimage_1.iSourceImage]);
+},{"../../internal/util/mixin":70,"../source/source":56,"./iimage":43}],45:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var json_1 = _require('../../internal/util/json');
@@ -9843,10 +9969,26 @@ var SourceMedia = (function () {
             });
         });
     };
+    SourceMedia.prototype.isSourceAvailable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSourceAvailable', true);
+                item_1.Item.get('prop:itemavail', _this._id).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+            else {
+                item_1.Item.wrapGet('prop:itemavail', _this._srcId, _this._id, _this._updateId.bind(_this)).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+        });
+    };
     return SourceMedia;
 })();
 exports.SourceMedia = SourceMedia;
-},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68}],45:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/logger":69}],46:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var cuepoint_1 = _require('./cuepoint');
@@ -9862,8 +10004,8 @@ var logger_1 = _require('../../internal/util/logger');
     ActionAfterPlayback[ActionAfterPlayback["HIDE"] = 4] = "HIDE";
 })(exports.ActionAfterPlayback || (exports.ActionAfterPlayback = {}));
 var ActionAfterPlayback = exports.ActionAfterPlayback;
-var AUDIO_REGEX = /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/;
-var VIDEO_REGEX = /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
+exports.AUDIO_REGEX = /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/i;
+exports.VIDEO_REGEX = /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/i;
 var SourcePlayback = (function () {
     function SourcePlayback() {
     }
@@ -10220,7 +10362,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (filename) {
-                resolve(AUDIO_REGEX.test(filename));
+                resolve(exports.AUDIO_REGEX.test(filename));
             });
         });
     };
@@ -10235,7 +10377,7 @@ var SourcePlayback = (function () {
                 _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
             }
             _this._checkPromise.then(function (filename) {
-                resolve(VIDEO_REGEX.test(filename));
+                resolve(exports.VIDEO_REGEX.test(filename));
             });
         });
     };
@@ -10259,7 +10401,8 @@ var SourcePlayback = (function () {
     SourcePlayback.prototype.setValue = function (filename) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
+            filename = filename.split('*')[0];
+            if (exports.VIDEO_REGEX.test(filename) || exports.AUDIO_REGEX.test(filename)) {
                 if (_this._isItemCall) {
                     logger_1.Logger.warn('sourceWarning', 'setValue', true);
                     _this._checkPromise = item_1.Item.set('prop:srcitem', filename, _this._id);
@@ -10268,6 +10411,18 @@ var SourcePlayback = (function () {
                     _this._checkPromise = item_1.Item.wrapSet('prop:srcitem', filename, _this._srcId, _this._id, _this._updateId.bind(_this));
                 }
                 _this._checkPromise
+                    .then(function () {
+                    return item_1.Item.get('prop:FilePlaylist', _this._id);
+                }).then(function (playlist) {
+                    if (playlist && playlist !== 'PLAYLIST' && (playlist.split('|').length < 2)) {
+                        var playlistArray = playlist.split('*');
+                        playlistArray[0] = filename;
+                        return item_1.Item.set('prop:FilePlaylist', playlistArray.join('*'), _this._id);
+                    }
+                    else {
+                        return Promise.resolve(true);
+                    }
+                })
                     .then(function () { return item_1.Item.set('prop:name', filename, _this._id); })
                     .then(function () { return item_1.Item.set('prop:CuePoints', '', _this._id); })
                     .then(function () {
@@ -10282,7 +10437,7 @@ var SourcePlayback = (function () {
     return SourcePlayback;
 })();
 exports.SourcePlayback = SourcePlayback;
-},{"../../internal/item":65,"../../internal/util/logger":68,"./cuepoint":32}],46:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"./cuepoint":32}],47:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var logger_1 = _require('../../internal/util/logger');
@@ -10498,7 +10653,7 @@ var SourceReplay = (function () {
     return SourceReplay;
 })();
 exports.SourceReplay = SourceReplay;
-},{"../../internal/item":65,"../../internal/util/logger":68}],47:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69}],48:[function(_require,module,exports){
 var item_1 = _require('../../internal/item');
 var scene_1 = _require('../scene');
 var isource_1 = _require('../source/isource');
@@ -10596,7 +10751,7 @@ var SourceScene = (function () {
     return SourceScene;
 })();
 exports.SourceScene = SourceScene;
-},{"../../internal/item":65,"../../internal/util/logger":68,"../scene":29,"../source/isource":49}],48:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../scene":29,"../source/isource":50}],49:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var xml_1 = _require('../../internal/util/xml');
@@ -10885,7 +11040,7 @@ var iSourceScreen = (function () {
     return iSourceScreen;
 })();
 exports.iSourceScreen = iSourceScreen;
-},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/xml":72,"../../util/rectangle":90}],49:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/logger":69,"../../internal/util/xml":73,"../../util/rectangle":91}],50:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var version_1 = _require('../../internal/util/version');
@@ -11052,8 +11207,8 @@ var iSource = (function () {
             }
             var typeCheck = _this.getValue().then(function (origVal) {
                 return new Promise(function (typeRes, typeRej) {
-                    if (String(origVal).indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
-                        val.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
+                    if (String(origVal).toUpperCase().indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1 &&
+                        val.toUpperCase().indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1 &&
                         _this._type === ItemTypes.LIVE) {
                         typeRej(Error('Value is not a valid Audio source'));
                     }
@@ -11208,7 +11363,7 @@ var iSource = (function () {
     return iSource;
 })();
 exports.iSource = iSource;
-},{"../../internal/item":65,"../../internal/util/json":67,"../../internal/util/logger":68,"../../internal/util/version":71,"../../internal/util/xml":72,"../scene":29}],50:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/logger":69,"../../internal/util/version":72,"../../internal/util/xml":73,"../scene":29}],51:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = _require('../../internal/item');
 var io_1 = _require('../../util/io');
@@ -11350,10 +11505,26 @@ var SourceVideoPlaylist = (function () {
         });
     };
     ;
+    SourceVideoPlaylist.prototype.isSourceAvailable = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'isSourceAvailable', true);
+                item_1.Item.get('prop:itemavail', _this._id).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+            else {
+                item_1.Item.wrapGet('prop:itemavail', _this._srcId, _this._id, _this._updateId.bind(_this)).then(function (val) {
+                    resolve(val === '1');
+                });
+            }
+        });
+    };
     return SourceVideoPlaylist;
 })();
 exports.SourceVideoPlaylist = SourceVideoPlaylist;
-},{"../../internal/item":65,"../../internal/util/logger":68,"../../util/io":87}],51:[function(_require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../../util/io":88}],52:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11410,7 +11581,7 @@ var MediaSource = (function (_super) {
 })(source_1.Source);
 exports.MediaSource = MediaSource;
 mixin_1.applyMixins(MediaSource, [iplayback_1.SourcePlayback, iaudio_1.Audio, imedia_1.SourceMedia]);
-},{"../../internal/util/mixin":69,"./iaudio":36,"./imedia":44,"./iplayback":45,"./source":55}],52:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"./iaudio":36,"./imedia":45,"./iplayback":46,"./source":56}],53:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11461,7 +11632,7 @@ var ReplaySource = (function (_super) {
 })(source_1.Source);
 exports.ReplaySource = ReplaySource;
 mixin_1.applyMixins(ReplaySource, [iaudio_1.Audio, ireplay_1.SourceReplay]);
-},{"../../internal/util/mixin":69,"../source/iaudio":36,"../source/source":55,"./ireplay":46}],53:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/source":56,"./ireplay":47}],54:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11508,7 +11679,7 @@ var SceneSource = (function (_super) {
 })(source_1.Source);
 exports.SceneSource = SceneSource;
 mixin_1.applyMixins(SceneSource, [iscene_1.SourceScene]);
-},{"../../internal/util/mixin":69,"../source/iscene":47,"../source/source":55}],54:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/iscene":48,"../source/source":56}],55:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -11558,7 +11729,7 @@ var ScreenSource = (function (_super) {
 })(source_1.Source);
 exports.ScreenSource = ScreenSource;
 mixin_1.applyMixins(ScreenSource, [iscreen_1.iSourceScreen]);
-},{"../../internal/util/mixin":69,"../source/source":55,"./iscreen":48}],55:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"../source/source":56,"./iscreen":49}],56:[function(_require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var mixin_1 = _require('../../internal/util/mixin');
 var app_1 = _require('../../internal/app');
@@ -11791,7 +11962,7 @@ var Source = (function () {
 })();
 exports.Source = Source;
 mixin_1.applyMixins(Source, [isource_1.iSource]);
-},{"../../internal/app":60,"../../internal/item":65,"../../internal/util/mixin":69,"../../internal/util/version":71,"../environment":4,"../scene":29,"../source/isource":49}],56:[function(_require,module,exports){
+},{"../../internal/app":61,"../../internal/item":66,"../../internal/util/mixin":70,"../../internal/util/version":72,"../environment":4,"../scene":29,"../source/isource":50}],57:[function(_require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11845,7 +12016,7 @@ var VideoPlaylistSource = (function (_super) {
 })(source_1.Source);
 exports.VideoPlaylistSource = VideoPlaylistSource;
 mixin_1.applyMixins(VideoPlaylistSource, [iconfig_1.SourceConfigurable, ivideoplaylist_1.SourceVideoPlaylist, iplayback_1.SourcePlayback, iaudio_1.Audio]);
-},{"../../internal/util/mixin":69,"./iaudio":36,"./iconfig":39,"./iplayback":45,"./ivideoplaylist":50,"./source":55}],57:[function(_require,module,exports){
+},{"../../internal/util/mixin":70,"./iaudio":36,"./iconfig":39,"./iplayback":46,"./ivideoplaylist":51,"./source":56}],58:[function(_require,module,exports){
 var app_1 = _require('../internal/app');
 /**
  * The StreamInfo class provides methods to monitor the current active streams
@@ -12018,7 +12189,7 @@ var StreamInfo = (function () {
     return StreamInfo;
 })();
 exports.StreamInfo = StreamInfo;
-},{"../internal/app":60}],58:[function(_require,module,exports){
+},{"../internal/app":61}],59:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var scene_1 = _require('./scene');
 var app_1 = _require('../internal/app');
@@ -12086,7 +12257,7 @@ var Thumbnail = (function () {
     return Thumbnail;
 })();
 exports.Thumbnail = Thumbnail;
-},{"../internal/app":60,"./scene":29}],59:[function(_require,module,exports){
+},{"../internal/app":61,"./scene":29}],60:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 /**
@@ -12234,7 +12405,7 @@ var Transition = (function () {
     return Transition;
 })();
 exports.Transition = Transition;
-},{"../internal/app":60}],60:[function(_require,module,exports){
+},{"../internal/app":61}],61:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var json_1 = _require('./util/json');
@@ -12368,7 +12539,7 @@ var App = (function () {
     return App;
 })();
 exports.App = App;
-},{"./internal":64,"./util/json":67}],61:[function(_require,module,exports){
+},{"./internal":65,"./util/json":68}],62:[function(_require,module,exports){
 var internal_1 = _require('./internal');
 var window_1 = _require('../util/window');
 var remote_1 = _require('./remote');
@@ -12561,7 +12732,7 @@ window_1.default.OnEvent = function (event, item) {
         oldOnEvent(event);
     }
 };
-},{"../util/window":92,"./internal":64,"./remote":66,"./util/version":71}],62:[function(_require,module,exports){
+},{"../util/window":93,"./internal":65,"./remote":67,"./util/version":72}],63:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var Global = (function () {
     function Global() {
@@ -12590,7 +12761,7 @@ var Global = (function () {
     return Global;
 })();
 exports.Global = Global;
-},{}],63:[function(_require,module,exports){
+},{}],64:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var item_1 = _require('./item');
@@ -12727,7 +12898,7 @@ function init(config) {
     });
 }
 exports.default = init;
-},{"../core/environment":4,"../window/config":93,"./global":62,"./internal":64,"./item":65,"./util/version":71}],64:[function(_require,module,exports){
+},{"../core/environment":4,"../window/config":94,"./global":63,"./internal":65,"./item":66,"./util/version":72}],65:[function(_require,module,exports){
 /// <reference path="../../defs/window.d.ts" />
 var remote_1 = _require('./remote');
 var window_1 = _require('../util/window');
@@ -12857,33 +13028,38 @@ function finalCallback(message) {
 }
 exports.finalCallback = finalCallback;
 var asyncCallback = window_1.default.OnAsyncCallback;
-window_1.default.OnAsyncCallback = function (asyncID, result) {
+window_1.default.OnAsyncCallback = function (asyncID) {
+    var result = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        result[_i - 1] = arguments[_i];
+    }
+    var formattedResult;
+    try {
+        formattedResult = result.map(function (res) { return decodeURIComponent(res); });
+    }
+    catch (e) {
+        formattedResult = result;
+    }
     // Used by proxy to return Async calls
     if (remote_1.Remote.remoteType === 'proxy') {
         var callback = _proxyCallbacks[asyncID];
         if (callback instanceof Function) {
-            callback(decodeURIComponent(result));
+            callback.apply(void 0, formattedResult);
             delete _proxyCallbacks[asyncID];
         }
     }
     else {
         var callback = _callbacks[asyncID];
         if (callback instanceof Function) {
-            try {
-                callback(decodeURIComponent(result));
-                delete _callbacks[asyncID];
-            }
-            catch (e) {
-                callback(result);
-                delete _callbacks[asyncID];
-            }
+            callback.apply(void 0, formattedResult);
+            delete _callbacks[asyncID];
         }
     }
     if (typeof asyncCallback === 'function') {
-        asyncCallback(asyncID, result);
+        asyncCallback.apply(void 0, [asyncID].concat(result));
     }
 };
-},{"../util/window":92,"./remote":66}],65:[function(_require,module,exports){
+},{"../util/window":93,"./remote":67}],66:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var environment_1 = _require('../core/environment');
@@ -13186,7 +13362,7 @@ var Item = (function () {
     return Item;
 })();
 exports.Item = Item;
-},{"../core/environment":4,"../internal/app":60,"./internal":64,"./util/version":71}],66:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":61,"./internal":65,"./util/version":72}],67:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('./internal');
 var ready_1 = _require('../util/ready');
@@ -13459,7 +13635,7 @@ var Remote = (function () {
     return Remote;
 })();
 exports.Remote = Remote;
-},{"../core/extension":5,"../core/output":28,"../util/eventemitter":86,"../util/io":87,"../util/ready":89,"./eventmanager":61,"./internal":64}],67:[function(_require,module,exports){
+},{"../core/extension":5,"../core/output":28,"../util/eventemitter":87,"../util/io":88,"../util/ready":90,"./eventmanager":62,"./internal":65}],68:[function(_require,module,exports){
 var xml_1 = _require('./xml');
 var JSON = (function () {
     function JSON(xml) {
@@ -13530,7 +13706,7 @@ var JSON = (function () {
     return JSON;
 })();
 exports.JSON = JSON;
-},{"./xml":72}],68:[function(_require,module,exports){
+},{"./xml":73}],69:[function(_require,module,exports){
 var Logger = (function () {
     function Logger() {
     }
@@ -13564,7 +13740,7 @@ var Logger = (function () {
     return Logger;
 })();
 exports.Logger = Logger;
-},{}],69:[function(_require,module,exports){
+},{}],70:[function(_require,module,exports){
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(function (baseCtor) {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(function (name) {
@@ -13576,7 +13752,7 @@ function applyMixins(derivedCtor, baseCtors) {
     });
 }
 exports.applyMixins = applyMixins;
-},{}],70:[function(_require,module,exports){
+},{}],71:[function(_require,module,exports){
 /**
  * Check if splitmode is active
  */
@@ -13651,7 +13827,7 @@ function checkSplitmode(value) {
     });
 }
 exports.checkSplitmode = checkSplitmode;
-},{"../../core/scene":29,"../app":60}],71:[function(_require,module,exports){
+},{"../../core/scene":29,"../app":61}],72:[function(_require,module,exports){
 /*
 * List here the versions where we would limit a functionality.
 */
@@ -13717,7 +13893,7 @@ function getVersion() {
     }
 }
 exports.getVersion = getVersion;
-},{}],72:[function(_require,module,exports){
+},{}],73:[function(_require,module,exports){
 var XML = (function () {
     function XML(json) {
         var attributes = '';
@@ -13772,7 +13948,7 @@ var XML = (function () {
     return XML;
 })();
 exports.XML = XML;
-},{}],73:[function(_require,module,exports){
+},{}],74:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -13862,7 +14038,7 @@ var AudioDevice = (function () {
      *
      * ```javascript
      * var audioDataFlow = device.getDataFlow();
-     *   //where possible values are 'render' or 'capture'
+     *   //where possible values are 'Render' or 'Capture'
      * ```
      */
     AudioDevice.prototype.getDataFlow = function () {
@@ -14111,7 +14287,7 @@ var AudioDevice = (function () {
     return AudioDevice;
 })();
 exports.AudioDevice = AudioDevice;
-},{"../internal/util/json":67,"../internal/util/xml":72}],74:[function(_require,module,exports){
+},{"../internal/util/json":68,"../internal/util/xml":73}],75:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -14239,7 +14415,7 @@ var CameraDevice = (function () {
     return CameraDevice;
 })();
 exports.CameraDevice = CameraDevice;
-},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],75:[function(_require,module,exports){
+},{"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/xml":73,"../util/addtosceneutil":85}],76:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -14294,7 +14470,7 @@ var File = (function () {
     return File;
 })();
 exports.File = File;
-},{"../internal/util/splitmode":70,"../util/addtosceneutil":84}],76:[function(_require,module,exports){
+},{"../internal/util/splitmode":71,"../util/addtosceneutil":85}],77:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var rectangle_1 = _require('../util/rectangle');
 var json_1 = _require('../internal/util/json');
@@ -14654,7 +14830,7 @@ var Game = (function () {
     return Game;
 })();
 exports.Game = Game;
-},{"../core/environment":4,"../internal/app":60,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/rectangle":90}],77:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":61,"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/xml":73,"../util/addtosceneutil":85,"../util/rectangle":91}],78:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var item_1 = _require('../core/items/item');
 var app_1 = _require('../internal/app');
@@ -14741,7 +14917,7 @@ var Group = (function () {
     return Group;
 })();
 exports.Group = Group;
-},{"../core/items/item":20,"../internal/app":60,"../internal/util/splitmode":70,"../util/addtosceneutil":84}],78:[function(_require,module,exports){
+},{"../core/items/item":20,"../internal/app":61,"../internal/util/splitmode":71,"../util/addtosceneutil":85}],79:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var json_1 = _require('../internal/util/json');
 var xml_1 = _require('../internal/util/xml');
@@ -14796,6 +14972,20 @@ var MicrophoneDevice = (function () {
         return this._disp;
     };
     /**
+     * return: string
+     *
+     * Gets the device name
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var micName = device.getName();
+     * ```
+     */
+    MicrophoneDevice.prototype.getName = function () {
+        return this._name;
+    };
+    /**
      * return: XML
      *
      * Converts Microphone object into an XML object
@@ -14844,7 +15034,7 @@ var MicrophoneDevice = (function () {
     return MicrophoneDevice;
 })();
 exports.MicrophoneDevice = MicrophoneDevice;
-},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],79:[function(_require,module,exports){
+},{"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/xml":73,"../util/addtosceneutil":85}],80:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var json_1 = _require('../internal/util/json');
@@ -14944,7 +15134,7 @@ var Replay = (function () {
     return Replay;
 })();
 exports.Replay = Replay;
-},{"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84}],80:[function(_require,module,exports){
+},{"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/xml":73,"../util/addtosceneutil":85}],81:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var environment_1 = _require('../core/environment');
 var splitmode_1 = _require('../internal/util/splitmode');
@@ -15064,7 +15254,7 @@ var Screen = (function () {
     return Screen;
 })();
 exports.Screen = Screen;
-},{"../core/environment":4,"../internal/util/splitmode":70,"../util/addtosceneutil":84}],81:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/util/splitmode":71,"../util/addtosceneutil":85}],82:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var audio_1 = _require('./audio');
@@ -15201,14 +15391,13 @@ var System = (function () {
                 if (devicesJSON !== undefined) {
                     for (var _i = 0; _i < devicesJSON.length; _i++) {
                         var device = devicesJSON[_i];
-                        if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
-                            String(device['disp']).toLowerCase() !==
-                                ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
-                                    '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase() &&
+                        var dispUpperCase = String(device['disp']).toUpperCase();
+                        if (dispUpperCase.indexOf('XSPLIT') === -1 &&
+                            dispUpperCase !== '@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}' &&
                             String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) 3D Camera Virtual Driver').toLowerCase()) === -1 &&
                             String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) Camera SR300 Virtual Driver').toLowerCase()) === -1 &&
-                            String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#').toLowerCase()) === -1 &&
-                            String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#').toLowerCase()) === -1) {
+                            dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#')) === -1 &&
+                            dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#')) === -1) {
                             devices.push(camera_1.CameraDevice.parse(device));
                         }
                     }
@@ -15308,10 +15497,10 @@ var System = (function () {
             }).then(function (windowDetailsArr) {
                 var devices = windowDetailsArr
                     .filter(function (windowDetail) { return windowDetail[0] !== ''; })
-                    .filter(function (windowDetail) { return windowDetail[0].indexOf('XSplit Broadcaster') !== 0; })
-                    .filter(function (windowDetail) { return windowDetail[1].indexOf('Shell_TrayWnd') !== 0; })
-                    .filter(function (windowDetail) { return windowDetail[1].indexOf('Button') !== 0; })
-                    .filter(function (windowDetail) { return windowDetail[1].indexOf('Windows.UI.Core.CoreWindow') !== 0; })
+                    .filter(function (windowDetail) { return windowDetail[0].toUpperCase().indexOf('XSPLIT BROADCASTER') !== 0; })
+                    .filter(function (windowDetail) { return windowDetail[1].toUpperCase().indexOf('SHELL_TRAYWND') !== 0; })
+                    .filter(function (windowDetail) { return windowDetail[1].toUpperCase().indexOf('BUTTON') !== 0; })
+                    .filter(function (windowDetail) { return windowDetail[1].toUpperCase().indexOf('WINDOWS.UI.CORE.COREWINDOW') !== 0; })
                     .map(function (windowDetail) {
                     dll_1.Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2])
                         .then(function (detail) {
@@ -15433,7 +15622,7 @@ var System = (function () {
     return System;
 })();
 exports.System = System;
-},{"../core/dll":3,"../core/environment":4,"../internal/app":60,"../internal/internal":64,"./audio":73,"./camera":74,"./game":76,"./microphone":78,"./screen":80}],82:[function(_require,module,exports){
+},{"../core/dll":3,"../core/environment":4,"../internal/app":61,"../internal/internal":65,"./audio":74,"./camera":75,"./game":77,"./microphone":79,"./screen":81}],83:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var splitmode_1 = _require('../internal/util/splitmode');
 var addtosceneutil_1 = _require('../util/addtosceneutil');
@@ -15510,7 +15699,7 @@ var Url = (function () {
     return Url;
 })();
 exports.Url = Url;
-},{"../internal/util/splitmode":70,"../util/addtosceneutil":84}],83:[function(_require,module,exports){
+},{"../internal/util/splitmode":71,"../util/addtosceneutil":85}],84:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var app_1 = _require('../internal/app');
 var json_1 = _require('../internal/util/json');
@@ -15667,7 +15856,7 @@ var VideoPlaylist = (function () {
     return VideoPlaylist;
 })();
 exports.VideoPlaylist = VideoPlaylist;
-},{"../core/environment":4,"../internal/app":60,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/xml":72,"../util/addtosceneutil":84,"../util/io":87}],84:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/app":61,"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/xml":73,"../util/addtosceneutil":85,"../util/io":88}],85:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -15745,7 +15934,7 @@ function addToSceneHandler(cmd) {
     });
 }
 exports.addToSceneHandler = addToSceneHandler;
-},{"../internal/app":60,"../internal/global":62,"../internal/internal":64,"./eventemitter":86,"./window":92}],85:[function(_require,module,exports){
+},{"../internal/app":61,"../internal/global":63,"../internal/internal":65,"./eventemitter":87,"./window":93}],86:[function(_require,module,exports){
 var Color = (function () {
     function Color(props) {
         if (props['rgb'] !== undefined) {
@@ -15839,7 +16028,7 @@ var Color = (function () {
     return Color;
 })();
 exports.Color = Color;
-},{}],86:[function(_require,module,exports){
+},{}],87:[function(_require,module,exports){
 var remote_1 = _require('../internal/remote');
 // simple event emitter
 var EventEmitter = (function () {
@@ -15963,7 +16152,7 @@ var EventEmitter = (function () {
     return EventEmitter;
 })();
 exports.EventEmitter = EventEmitter;
-},{"../internal/remote":66}],87:[function(_require,module,exports){
+},{"../internal/remote":67}],88:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var internal_1 = _require('../internal/internal');
 var environment_1 = _require('../core/environment');
@@ -16184,7 +16373,7 @@ window_1.default.OnGetVideoDurationFailed = function (file) {
         oldOnGetVideoDuration(file);
     }
 };
-},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"./window":92}],88:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":65,"../internal/remote":67,"./window":93}],89:[function(_require,module,exports){
 var game_1 = _require('../core/items/game');
 var camera_1 = _require('../core/items/camera');
 var audio_1 = _require('../core/items/audio');
@@ -16199,10 +16388,12 @@ var genericitem_1 = _require('../core/items/genericitem');
 var group_1 = _require('../core/items/group');
 var replay_1 = _require('../core/items/replay');
 var isource_1 = _require('../core/source/isource');
-var media_2 = _require('../core/source/media');
+var iplayback_1 = _require('../core/source/iplayback');
 function ItemTypeResolve(item) {
     var itemType;
     var type = Number(item['type']);
+    var itemValue = item['item'];
+    var uppercaseValue = itemValue.toUpperCase();
     if (type === isource_1.ItemTypes.GAMESOURCE) {
         itemType = new game_1.GameItem(item);
     }
@@ -16219,33 +16410,34 @@ function ItemTypeResolve(item) {
     }
     else if (type === isource_1.ItemTypes.BITMAP ||
         type === isource_1.ItemTypes.FILE &&
-            /\.gif$/.test(item['item'])) {
+            /\.gif$/i.test(itemValue)) {
         itemType = new image_1.ImageItem(item);
     }
     else if (type === isource_1.ItemTypes.FILE &&
-        /\.(gif|xbs)$/.test(item['item']) === false &&
-        /^(rtsp|rtmp):\/\//.test(item['item']) === false &&
-        new RegExp(media_2.MediaTypes.join('|')).test(item['item']) === true) {
+        /\.(gif|xbs)$/i.test(itemValue) === false &&
+        /^(rtsp|rtmp):\/\//i.test(itemValue) === false &&
+        (iplayback_1.VIDEO_REGEX.test(itemValue.split('*')[0]) ||
+            iplayback_1.AUDIO_REGEX.test(itemValue.split('*')[0]))) {
         itemType = new media_1.MediaItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+    else if (type === isource_1.ItemTypes.LIVE &&
+        uppercaseValue.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
         itemType = new camera_1.CameraItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.LIVE &&
-        item['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+    else if (type === isource_1.ItemTypes.LIVE &&
+        uppercaseValue.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
         itemType = new audio_1.AudioItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.FLASHFILE) {
+    else if (type === isource_1.ItemTypes.FLASHFILE) {
         itemType = new flash_1.FlashItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.SCENE || Number(item['type']) === isource_1.ItemTypes.VIEW) {
+    else if (type === isource_1.ItemTypes.SCENE || type === isource_1.ItemTypes.VIEW) {
         itemType = new sceneitem_1.SceneItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.GROUP) {
+    else if (type === isource_1.ItemTypes.GROUP) {
         itemType = new group_1.GroupItem(item);
     }
-    else if (Number(item['type']) === isource_1.ItemTypes.REPLAY) {
+    else if (type === isource_1.ItemTypes.REPLAY) {
         itemType = new replay_1.ReplayItem(item);
     }
     else {
@@ -16254,7 +16446,7 @@ function ItemTypeResolve(item) {
     return itemType;
 }
 exports.ItemTypeResolve = ItemTypeResolve;
-},{"../core/items/audio":7,"../core/items/camera":8,"../core/items/flash":9,"../core/items/game":10,"../core/items/genericitem":11,"../core/items/group":12,"../core/items/html":13,"../core/items/image":19,"../core/items/media":22,"../core/items/replay":23,"../core/items/sceneitem":24,"../core/items/screen":25,"../core/items/videoplaylist":26,"../core/source/isource":49,"../core/source/media":51}],89:[function(_require,module,exports){
+},{"../core/items/audio":7,"../core/items/camera":8,"../core/items/flash":9,"../core/items/game":10,"../core/items/genericitem":11,"../core/items/group":12,"../core/items/html":13,"../core/items/image":19,"../core/items/media":22,"../core/items/replay":23,"../core/items/sceneitem":24,"../core/items/screen":25,"../core/items/videoplaylist":26,"../core/source/iplayback":46,"../core/source/isource":50}],90:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var version_1 = _require('../internal/util/version');
 var init_1 = _require('../internal/init');
@@ -16330,7 +16522,7 @@ function setOnce() {
     isInit = true;
 }
 exports.setOnce = setOnce;
-},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":63,"../internal/remote":66,"../internal/util/version":71}],90:[function(_require,module,exports){
+},{"../core/channelmanager":2,"../core/environment":4,"../internal/init":64,"../internal/remote":67,"../internal/util/version":72}],91:[function(_require,module,exports){
 /**
  *  The Rectangle class is a utility class used in many different parts of the
  *  framework. Please note that there are cases where the framework uses
@@ -16547,7 +16739,7 @@ var Rectangle = (function () {
     return Rectangle;
 })();
 exports.Rectangle = Rectangle;
-},{}],91:[function(_require,module,exports){
+},{}],92:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var source_1 = _require('../core/source/source');
 var game_1 = _require('../core/source/game');
@@ -16562,9 +16754,12 @@ var replay_1 = _require('../core/source/replay');
 var scenesource_1 = _require('../core/source/scenesource');
 var isource_1 = _require('../core/source/isource');
 var media_1 = _require('../core/source/media');
+var iplayback_1 = _require('../core/source/iplayback');
 function SourceTypeResolve(source) {
     var srcType;
     var type = Number(source['type']);
+    var sourceValue = source['item'];
+    var uppercaseValue = sourceValue.toUpperCase();
     if (type === isource_1.ItemTypes.GAMESOURCE) {
         srcType = new game_1.GameSource(source);
     }
@@ -16581,30 +16776,31 @@ function SourceTypeResolve(source) {
     }
     else if (type === isource_1.ItemTypes.BITMAP ||
         type === isource_1.ItemTypes.FILE &&
-            /\.gif$/.test(source['item'])) {
+            /\.gif$/i.test(sourceValue)) {
         srcType = new image_1.ImageSource(source);
     }
     else if (type === isource_1.ItemTypes.FILE &&
-        /\.(gif|xbs)$/.test(source['item']) === false &&
-        /^(rtsp|rtmp):\/\//.test(source['item']) === false &&
-        new RegExp(media_1.MediaTypes.join('|')).test(source['item']) === true) {
+        /\.(gif|xbs)$/i.test(sourceValue) === false &&
+        /^(rtsp|rtmp):\/\//i.test(sourceValue) === false &&
+        (iplayback_1.VIDEO_REGEX.test(sourceValue.split('*')[0]) ||
+            iplayback_1.AUDIO_REGEX.test(sourceValue.split('*')[0]))) {
         srcType = new media_1.MediaSource(source);
     }
-    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
-        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
+    else if (type === isource_1.ItemTypes.LIVE &&
+        uppercaseValue.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') === -1) {
         srcType = new camera_1.CameraSource(source);
     }
-    else if (Number(source['type']) === isource_1.ItemTypes.LIVE &&
-        source['item'].indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
+    else if (type === isource_1.ItemTypes.LIVE &&
+        uppercaseValue.indexOf('{33D9A762-90C8-11D0-BD43-00A0C911CE86}') !== -1) {
         srcType = new audio_1.AudioSource(source);
     }
-    else if (Number(source['type']) === isource_1.ItemTypes.FLASHFILE) {
+    else if (type === isource_1.ItemTypes.FLASHFILE) {
         srcType = new flash_1.FlashSource(source);
     }
-    else if (Number(source['type']) === isource_1.ItemTypes.REPLAY) {
+    else if (type === isource_1.ItemTypes.REPLAY) {
         srcType = new replay_1.ReplaySource(source);
     }
-    else if (Number(source['type']) === isource_1.ItemTypes.SCENE || Number(source['type']) === isource_1.ItemTypes.VIEW) {
+    else if (type === isource_1.ItemTypes.SCENE || type === isource_1.ItemTypes.VIEW) {
         srcType = new scenesource_1.SceneSource(source);
     }
     else {
@@ -16613,7 +16809,7 @@ function SourceTypeResolve(source) {
     return srcType;
 }
 exports.SourceTypeResolve = SourceTypeResolve;
-},{"../core/source/audio":30,"../core/source/camera":31,"../core/source/flash":33,"../core/source/game":34,"../core/source/html":35,"../core/source/image":43,"../core/source/isource":49,"../core/source/media":51,"../core/source/replay":52,"../core/source/scenesource":53,"../core/source/screen":54,"../core/source/source":55,"../core/source/videoplaylist":56}],92:[function(_require,module,exports){
+},{"../core/source/audio":30,"../core/source/camera":31,"../core/source/flash":33,"../core/source/game":34,"../core/source/html":35,"../core/source/image":44,"../core/source/iplayback":46,"../core/source/isource":50,"../core/source/media":52,"../core/source/replay":53,"../core/source/scenesource":54,"../core/source/screen":55,"../core/source/source":56,"../core/source/videoplaylist":57}],93:[function(_require,module,exports){
 (function (global){
 var win = {};
 if (typeof window !== 'undefined') {
@@ -16630,7 +16826,7 @@ else {
 }
 exports.default = win;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],93:[function(_require,module,exports){
+},{}],94:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -16817,7 +17013,7 @@ var SourcePropsWindow = (function (_super) {
     return SourcePropsWindow;
 })(eventemitter_1.EventEmitter);
 exports.SourcePropsWindow = SourcePropsWindow;
-},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"../util/eventemitter":86}],94:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":65,"../internal/remote":67,"../util/eventemitter":87}],95:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
@@ -17176,7 +17372,7 @@ window_1.default.OnDialogResult = function (result) {
         oldOnDialogResult(result);
     }
 };
-},{"../core/environment":4,"../internal/internal":64,"../internal/remote":66,"../util/rectangle":90,"../util/window":92}],95:[function(_require,module,exports){
+},{"../core/environment":4,"../internal/internal":65,"../internal/remote":67,"../util/rectangle":91,"../util/window":93}],96:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -17622,7 +17818,7 @@ window_1.default.OnSceneLoad = function () {
         }
     });
 };
-},{"../core/environment":4,"../core/extension":5,"../core/items/item":20,"../core/scene":29,"../internal/app":60,"../internal/eventmanager":61,"../internal/internal":64,"../internal/util/json":67,"../internal/util/splitmode":70,"../internal/util/version":71,"../util/eventemitter":86,"../util/window":92}],96:[function(_require,module,exports){
+},{"../core/environment":4,"../core/extension":5,"../core/items/item":20,"../core/scene":29,"../internal/app":61,"../internal/eventmanager":62,"../internal/internal":65,"../internal/util/json":68,"../internal/util/splitmode":71,"../internal/util/version":72,"../util/eventemitter":87,"../util/window":93}],97:[function(_require,module,exports){
 /// <reference path="../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -17790,7 +17986,7 @@ window_1.default.OnSceneLoad = function () {
         prevOnSceneLoad.apply(void 0, args);
     }
 };
-},{"../core/environment":4,"../internal/eventmanager":61,"../internal/global":62,"../internal/util/version":71,"../util/eventemitter":86,"../util/window":92}],"xjs":[function(_require,module,exports){
+},{"../core/environment":4,"../internal/eventmanager":62,"../internal/global":63,"../internal/util/version":72,"../util/eventemitter":87,"../util/window":93}],"xjs":[function(_require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -17868,7 +18064,7 @@ var internal_1 = _require('./internal/internal');
 exports.exec = internal_1.exec;
 var ready_1 = _require('./util/ready');
 exports.ready = ready_1.ready;
-},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/group":12,"./core/items/html":13,"./core/items/ichroma":14,"./core/items/ieffects":16,"./core/items/image":19,"./core/items/item":20,"./core/items/media":22,"./core/items/replay":23,"./core/items/sceneitem":24,"./core/items/screen":25,"./core/items/videoplaylist":26,"./core/languageinfo":27,"./core/output":28,"./core/scene":29,"./core/source/audio":30,"./core/source/camera":31,"./core/source/cuepoint":32,"./core/source/flash":33,"./core/source/game":34,"./core/source/html":35,"./core/source/image":43,"./core/source/iplayback":45,"./core/source/isource":49,"./core/source/media":51,"./core/source/replay":52,"./core/source/scenesource":53,"./core/source/screen":54,"./core/source/source":55,"./core/source/videoplaylist":56,"./core/streaminfo":57,"./core/thumbnail":58,"./core/transition":59,"./internal/internal":64,"./internal/remote":66,"./system/audio":73,"./system/camera":74,"./system/file":75,"./system/game":76,"./system/group":77,"./system/microphone":78,"./system/replay":79,"./system/screen":80,"./system/system":81,"./system/url":82,"./system/videoplaylist":83,"./util/color":85,"./util/io":87,"./util/ready":89,"./util/rectangle":90,"./window/config":93,"./window/dialog":94,"./window/extension":95,"./window/source":96}]},{},["xjs"]);
+},{"./core/app":1,"./core/channelmanager":2,"./core/dll":3,"./core/environment":4,"./core/extension":5,"./core/filter":6,"./core/items/audio":7,"./core/items/camera":8,"./core/items/flash":9,"./core/items/game":10,"./core/items/group":12,"./core/items/html":13,"./core/items/ichroma":14,"./core/items/ieffects":16,"./core/items/image":19,"./core/items/item":20,"./core/items/media":22,"./core/items/replay":23,"./core/items/sceneitem":24,"./core/items/screen":25,"./core/items/videoplaylist":26,"./core/languageinfo":27,"./core/output":28,"./core/scene":29,"./core/source/audio":30,"./core/source/camera":31,"./core/source/cuepoint":32,"./core/source/flash":33,"./core/source/game":34,"./core/source/html":35,"./core/source/image":44,"./core/source/iplayback":46,"./core/source/isource":50,"./core/source/media":52,"./core/source/replay":53,"./core/source/scenesource":54,"./core/source/screen":55,"./core/source/source":56,"./core/source/videoplaylist":57,"./core/streaminfo":58,"./core/thumbnail":59,"./core/transition":60,"./internal/internal":65,"./internal/remote":67,"./system/audio":74,"./system/camera":75,"./system/file":76,"./system/game":77,"./system/group":78,"./system/microphone":79,"./system/replay":80,"./system/screen":81,"./system/system":82,"./system/url":83,"./system/videoplaylist":84,"./util/color":86,"./util/io":88,"./util/ready":90,"./util/rectangle":91,"./window/config":94,"./window/dialog":95,"./window/extension":96,"./window/source":97}]},{},["xjs"]);
 
 module.exports = _require('xjs');
 })();
