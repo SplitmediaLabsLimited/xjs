@@ -225,7 +225,39 @@ export interface ISourcePlayback {
    */
   setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
 
+  /**
+   * return: Promise<string>
+   *
+   * Gets the URL path of the media file used as a source
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getValue().then(function(value) {
+   *   // Do something with the value
+   * });
+   * ```
+   */
   getValue(): Promise<string>;
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<ISourcePlayback>
+   * ```
+   *
+   * Set the media file to be used as source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setValue('C:\\SomeFolder\\SomeFile.mp4')
+   *   .then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
   setValue(value: string): Promise<any>;
 
   /**

@@ -102,6 +102,7 @@ describe('ScreenItem', function() {
     switch (funcName) {
 
       case 'prop:srcitem':
+      case 'prop:item':
         var irand = rand;
         local.item = val;
         setTimeout(function() {

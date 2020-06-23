@@ -369,17 +369,22 @@ export class iSourceHtml implements ISourceHtml{
           this._updateId.bind(this))
       }
       this._checkPromise.then(url => {
-          let _url = String(url).split('*');
-          _url[0] = value;
-
-          return iItem.set('prop:srcitem', _url.join('*'), this._id);
-        }).then(code => {
-          if (code) {
-            resolve(this);
-          } else {
-            reject(Error('Invalid value'));
-          }
-        });
+        const _url = String(url).split('*');
+        _url[0] = value;
+        return iItem.set(this._isItemCall ? 'prop:item' : 'prop:srcitem', _url.join('*'), this._id);
+      }).then(code => {
+        if (code) {
+          return iItem.set('prop:name', value, this._id);
+        } else {
+          return Promise.resolve(code);
+        }
+      }).then(code => {
+        if (code) {
+          resolve(this);
+        } else {
+          reject(Error('Invalid value'));
+        }
+      });
     });
   }
 
