@@ -4,6 +4,7 @@ import {Rectangle} from '../../util/rectangle';
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
+import {CameraDevice as CameraDevice} from '../../system/camera';
 import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';
 import {Logger} from '../../internal/util/logger';
@@ -115,6 +116,41 @@ export interface ISourceCamera {
    * Enables or disables forcing of deinterlacing
    */
   setForceDeinterlace(value: boolean): Promise<CameraSource>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the camera device used as a source
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getValue().then(function(value) {
+   *   // Do something with the value
+   * });
+   * ```
+   */
+  getValue(): Promise<string>;
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<CameraSource>
+   * ```
+   *
+   * Set the camera device to be used as source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setValue('<camera device>')
+   *   .then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
+  setValue(value: string): Promise<any>;
 }
 
 export class SourceCamera implements ISourceCamera {
@@ -460,5 +496,63 @@ export class SourceCamera implements ISourceCamera {
 
   isAudioAvailable: () => Promise<boolean>;
 
-  getValue: () => Promise<string>;
+  getValue(): Promise<string> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getValue',  true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+          this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(filename => {
+        resolve(filename);
+      });
+    });
+  };
+
+  setValue(camDevice: any): Promise<SourceCamera> {
+    return new Promise((resolve, reject) => {
+      let camName;
+      let _getName;
+      if (camDevice instanceof CameraDevice) {
+        _getName = new Promise(innerResolve => {
+          const name = camDevice.getName();
+          camDevice = camDevice.getId();
+          innerResolve(name)
+        })
+      } else if (typeof camDevice === 'string'){
+        _getName = new Promise(innerResolve => {
+          System.getCameraDevices()
+          .then(cameraDevices => {
+            const camGiven = cameraDevices.filter(cam => {
+              return cam.getId().toUpperCase() === camDevice.toUpperCase()
+            })
+            if (camGiven) {
+              innerResolve(camGiven[0].getName())
+            } else {
+              innerResolve('');
+            }
+          })
+        })
+      } else {
+        reject(TypeError('Parameter should either be a CameraDevice or string.'));
+      }
+      _getName.then(name => {
+        camName = name;
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setValue', true);
+          return iItem.set('prop:item', camDevice, this._id)  
+        } else {
+          return iItem.wrapSet('prop:srcitem', camDevice,
+            this._srcId, this._id, this._updateId.bind(this))
+        }
+      }).then(() => {
+        return iItem.set('prop:name', camName, this._id)
+      })
+      .then(() => {
+        resolve(this);
+      });
+    });
+  }
 }

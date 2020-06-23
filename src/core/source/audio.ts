@@ -92,5 +92,5 @@ export class AudioSource extends Source implements ISourceAudio, IAudio {
 
 
 }
-applyMixins(AudioSource, [SourceAudio, Audio])
+applyMixins(AudioSource, [Audio, SourceAudio])
 

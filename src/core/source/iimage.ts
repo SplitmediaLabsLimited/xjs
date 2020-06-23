@@ -38,7 +38,7 @@ export interface ISourceImage {
   /**
    * param: (value: string)
    * ```
-   * return: Promise<ISourcePlayback>
+   * return: Promise<ISourceImage>
    * ```
    *
    * Set the image file to be used as source
