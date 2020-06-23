@@ -69,7 +69,7 @@ export interface ISourceAudio {
   /**
    * return: Promise<string>
    *
-   * Gets the audio device used as a source
+   * Gets the microphone device used as a source
    *
    *
    * #### Usage
@@ -88,12 +88,12 @@ export interface ISourceAudio {
    * return: Promise<AudioSource>
    * ```
    *
-   * Set the audio device to be used as source
+   * Set the microphone device to be used as source
    *
    * #### Usage
    *
    * ```javascript
-   * source.setValue('<audio device>')
+   * source.setValue('<microphone device>')
    *   .then(function(source) {
    *   // Promise resolves with same Source instance
    * });
