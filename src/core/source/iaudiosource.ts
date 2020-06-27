@@ -3,6 +3,8 @@
 import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
+import {System} from '../../system/system';
+import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 
 export interface ISourceAudio {
 
@@ -63,12 +65,48 @@ export interface ISourceAudio {
    * Sets audio delay, accepts only positive delay
    */
   setAudioOffset(value: number): Promise<ISourceAudio>
+
+  /**
+   * return: Promise<string>
+   *
+   * Gets the microphone device used as a source
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getValue().then(function(value) {
+   *   // Do something with the value
+   * });
+   * ```
+   */
+  getValue(): Promise<string>;
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<AudioSource>
+   * ```
+   *
+   * Set the microphone device to be used as source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setValue('<microphone device>')
+   *   .then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
+  setValue(value: string): Promise<any>;
 }
 
 export class SourceAudio implements ISourceAudio {
   private _id: string;
   private _srcId: string;
   private _isItemCall: boolean;
+  private _checkPromise;
   private _sceneId: string;
 
   private _updateId(id?: string, sceneId?: string) {
@@ -229,6 +267,66 @@ export class SourceAudio implements ISourceAudio {
           });
         }
       }
+    });
+  }
+
+  getValue(): Promise<string> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'getValue',  true)
+        this._checkPromise = iItem.get('prop:srcitem', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
+          this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(filename => {
+        resolve(filename);
+      });
+    });
+  };
+
+  setValue(micDevice: any): Promise<SourceAudio> {
+    return new Promise((resolve, reject) => {
+      let audioName;
+      let _getName;
+      if (micDevice instanceof MicrophoneDevice) {
+        _getName = new Promise(innerResolve => {
+          const name = micDevice.getName();
+          micDevice = micDevice.getDisplayId();
+          innerResolve(name)
+        })
+      } else if (typeof micDevice === 'string'){
+        _getName = new Promise(innerResolve => {
+          System.getMicrophones()
+          .then(micDevices => {
+            const camGiven = micDevices.filter(cam => {
+              return cam.getDisplayId().toUpperCase() === micDevice.toUpperCase()
+            })
+            if (camGiven) {
+              innerResolve(camGiven[0].getName())
+            } else {
+              innerResolve('');
+            }
+          })
+        })
+      } else {
+        reject(TypeError('Parameter should either be a MicrophoneDevice or string.'));
+      }
+      _getName.then(name => {
+        audioName = name;
+        if(this._isItemCall){
+          Logger.warn('sourceWarning', 'setValue', true);
+          return iItem.set('prop:item', micDevice, this._id)  
+        } else {
+          return iItem.wrapSet('prop:srcitem', micDevice,
+            this._srcId, this._id, this._updateId.bind(this))
+        }
+      }).then(() => {
+        return iItem.set('prop:name', audioName, this._id)
+      })
+      .then(() => {
+        resolve(this);
+      });
     });
   }
 }

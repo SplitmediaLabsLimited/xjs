@@ -2,7 +2,7 @@ import {applyMixins} from '../../internal/util/mixin';
 import {Source} from '../source/source';
 import {Item as iItem} from '../../internal/item';
 import {XML} from '../../internal/util/xml';
-import {iSourceImage, ISourceImage} from './iimage';
+import {SourceImage, ISourceImage} from './iimage';
 
 /**
  * The ImageSource class represents the sources of the image items that
@@ -39,15 +39,11 @@ export class ImageSource extends Source implements ISourceImage {
   /** See: {@link #core/ISourceImage#isSourceAvailable isSourceAvailable} */
   isSourceAvailable: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/Source#getValue getValue}
-   */
-  getValue: () => Promise<string | XML>
+  /** See: {@link #core/ISourceImage#getValue getValue} */
+  getValue: () => Promise<string>;
 
-  /**
-   * See: {@link #core/Source#setValue setValue}
-   */
-  setValue: (value: string | XML) => Promise<ImageSource>  
+  /** See: {@link #core/ISourceImage#setValue setValue} */
+  setValue: (value: string) => Promise<ImageSource>;
 }
 
-applyMixins(ImageSource, [iSourceImage]);
+applyMixins(ImageSource, [SourceImage]);

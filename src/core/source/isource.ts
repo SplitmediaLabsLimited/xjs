@@ -458,7 +458,7 @@ export class iSource implements ISource{
       typeCheck.then(() => {
         if(this._isItemCall){
           Logger.warn('sourceWarning', 'setValue', true)
-          iItem.set(String(this._type) === '2' ? 'prop:item' : 'prop:srcitem' , val, this._id)
+          iItem.set('prop:item' , val, this._id)
           .then(() => {
             resolve(this);
           });

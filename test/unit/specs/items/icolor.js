@@ -268,8 +268,8 @@ describe('Color interface', function() {
     });
 
     it ('as a number', function(done) {
-      var firstRand = randomSignMultiplier() * randomInt(0,100);
-      var secondRand = randomSignMultiplier() * randomInt(0,100);
+      var firstRand = randomSignMultiplier() * randomInt(1,100);
+      var secondRand = randomSignMultiplier() * randomInt(1,100);
 
       firstItem.setContrast(firstRand)
       .then(function() {

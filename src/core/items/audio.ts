@@ -94,4 +94,4 @@ export class AudioItem extends Item implements ISourceAudio, IAudio {
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(AudioItem, [SourceAudio, Audio]);
+applyMixins(AudioItem, [Audio, SourceAudio]);

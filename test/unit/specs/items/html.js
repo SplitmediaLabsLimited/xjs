@@ -55,6 +55,7 @@ describe('HtmlItem', function() {
       break;
 
       case 'prop:srcitem':
+      case 'prop:item':
         if (local.hasOwnProperty('item')) {
           
           setTimeout(function() {
@@ -215,6 +216,7 @@ describe('HtmlItem', function() {
     switch (funcName) {
 
       case 'prop:srcitem':
+      case 'prop:item':
       	var isValid;
         if (typeof val === 'string') {
           local.item = val;
@@ -222,6 +224,20 @@ describe('HtmlItem', function() {
           isValid = '0';
         } else {
         	urlSet = false;
+          isValid = '-1';
+        }
+
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
+      break;
+
+      case 'prop:name':
+        var isValid;
+        if (typeof val === 'string') {
+          local.name = val;
+          isValid = '0';
+        } else {
           isValid = '-1';
         }
 
