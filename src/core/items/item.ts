@@ -11,6 +11,9 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
+import {checkSplitmode} from '../../internal/util/splitmode';
+import {addToSceneHandler} from '../../util/addtosceneutil';
+
 import {
   minVersion,
   versionCompare,
@@ -357,56 +360,41 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```
    */
-  duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
+  duplicate(options?: { linked?: boolean, scene?: number | Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
+      let cmd = 'additem';
       if(versionCompare(getVersion())
         .is
         .lessThan(globalsrcMinVersion)) {
-        iApp.callFunc('additem', this.toXML().toString()).then(() => {
-          resolve(this)
-        })
+        checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
+        }).then(result => {
+          resolve(result);
+        }).catch(err => {
+          reject(err);
+        }); 
       } else {
-        if(options){
-          if(options.linked) {
-            iItem.set('prop:keeploaded', '1', this._id)
-          }
-          if(options.scene !== undefined && options.linked !== undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
-                this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
+        checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
+          if(options){
+            if(options.linked) {
+              iItem.set('prop:keeploaded', '1', this._id)
             }
-          } else if(options.linked === undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:0|s:${id}|additem`,
-                  this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
+            if(options.scene !== undefined && options.linked !== undefined) {
+              cmd = `link:${options.linked ? 1 : 0}|${scenePrefix}additem`;
+            } else if(options.linked === undefined) {
+              cmd = `link:0|${scenePrefix}additem`;
+            } else if(options.scene === undefined) {
+              cmd = `link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`;
             }
-          } else if(options.scene === undefined) {
-            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
-            this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
+          } else {
+            cmd = 'link:0|additem';
           }
-        } else {
-          iApp.callFunc('link:0|additem', this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
-        }
+          return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
+        }).then(result => {
+          resolve(result);
+        }).catch(err => {
+          reject(err);
+        }); 
       }
     });
   }

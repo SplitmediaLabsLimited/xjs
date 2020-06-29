@@ -86,7 +86,7 @@
   /* globals require */
   'use strict';
   var xjs = require('xjs');
-  xjs.ready().then(function() {
+  xjs.ready({listenToItemAdd: true}).then(function() {
     var configWindow = xjs.itemPropsWindow.getInstance();
     configWindow.useFullWindow();
     configWindow.resizeConfig(500, 500);
