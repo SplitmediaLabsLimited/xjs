@@ -13,6 +13,7 @@ import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
 import {checkSplitmode} from '../../internal/util/splitmode';
 import {addToSceneHandler} from '../../util/addtosceneutil';
+import { Global } from '../../internal/global';
 
 import {
   minVersion,
@@ -363,19 +364,28 @@ export class Item extends Source implements IItemLayout, ISource {
   duplicate(options?: { linked?: boolean, scene?: number | Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       let cmd = 'additem';
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(globalsrcMinVersion)) {
-        checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
-          return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
-        }).then(result => {
-          resolve(result);
-        }).catch(err => {
-          reject(err);
-        }); 
-      } else {
-        checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
-          if(options){
+      const getItem = (res) => {
+        return new Promise((innerResolve, innerReject) => {
+          if (!Global.isListenToItemAdd()) {
+            innerResolve(this);
+          } else {
+            Scene.searchItemsById(res)
+            .then(item => {
+              innerResolve(item);
+            }).catch(err => {
+              innerReject(err);
+            })
+          }
+        });
+      };
+
+      checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
+        if(versionCompare(getVersion())
+          .is
+          .lessThan(globalsrcMinVersion)) {
+            return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
+        } else {
+          if(options) {
             if(options.linked) {
               iItem.set('prop:keeploaded', '1', this._id)
             }
@@ -389,13 +399,15 @@ export class Item extends Source implements IItemLayout, ISource {
           } else {
             cmd = 'link:0|additem';
           }
-          return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
-        }).then(result => {
-          resolve(result);
-        }).catch(err => {
-          reject(err);
-        }); 
-      }
+          return addToSceneHandler(cmd, this.toXML().toString());
+        }
+      }).then(result => {
+        return getItem(result);
+      }).then(result => {
+        resolve(result);
+      }).catch(err => {
+        reject(err);
+      }); 
     });
   }
 
