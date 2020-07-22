@@ -29,7 +29,7 @@ export * from '../src/core/items/image';
 export {IItemTransition} from '../src/core/items/itransition';
 export * from '../src/core/items/media';
 export * from '../src/core/items/replay';
-export * from '../src/core/items/scene';
+export * from '../src/core/items/sceneitem';
 export * from '../src/core/items/screen';
 export * from '../src/core/items/videoplaylist';
 
