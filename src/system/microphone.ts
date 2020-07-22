@@ -61,6 +61,21 @@ export class MicrophoneDevice implements Addable {
   }
 
   /**
+   * return: string
+   *
+   * Gets the device name
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * var micName = device.getName();
+   * ```
+   */
+  getName(): string {
+    return this._name;
+  }
+
+  /**
    * return: XML
    *
    * Converts Microphone object into an XML object

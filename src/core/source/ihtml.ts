@@ -237,7 +237,54 @@ export interface ISourceHtml {
    * - 'UNKNOWN' -> URL used is invalid or when status is checked right after adding new HTML source
    * - 'UNAVAILABLE' -> Method for getting load status is unavailable for the XBC version
    */
-    getBrowserLoadStatus: () => Promise<string>
+  getBrowserLoadStatus: () => Promise<string>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if source will refresh upon showing (via setVisible)
+   */
+  isReloadOnShowEnabled(): Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Enables or disables refresh of source upon showing (via setVisible)
+   */
+  enableReloadOnShow(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Gets if source will refresh upon entering a scene containing an item of it (via setVisible)
+   */
+  isReloadOnSceneEnterEnabled(): Promise<boolean>
+
+  /**
+   * param: (value: boolean)
+   *
+   * return: Promise<ISourceHtml>
+   *
+   * Enables or disables refresh of source upon entering a scene containing an item of it (via setVisible)
+   */
+  enableReloadOnSceneEnter(value: boolean): Promise<ISourceHtml>
+
+  /**
+   * return: Promise<boolean>
+   *
+   * Check if file used as source is available
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.isSourceAvailable().then(function(isAvail) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  isSourceAvailable(): Promise<boolean>
 }
 
 export class iSourceHtml implements ISourceHtml{
@@ -322,17 +369,22 @@ export class iSourceHtml implements ISourceHtml{
           this._updateId.bind(this))
       }
       this._checkPromise.then(url => {
-          let _url = String(url).split('*');
-          _url[0] = value;
-
-          return iItem.set('prop:srcitem', _url.join('*'), this._id);
-        }).then(code => {
-          if (code) {
-            resolve(this);
-          } else {
-            reject(Error('Invalid value'));
-          }
-        });
+        const _url = String(url).split('*');
+        _url[0] = value;
+        return iItem.set(this._isItemCall ? 'prop:item' : 'prop:srcitem', _url.join('*'), this._id);
+      }).then(code => {
+        if (code) {
+          return iItem.set('prop:name', value, this._id);
+        } else {
+          return Promise.resolve(code);
+        }
+      }).then(code => {
+        if (code) {
+          resolve(this);
+        } else {
+          reject(Error('Invalid value'));
+        }
+      });
     });
   }
 
@@ -892,6 +944,81 @@ export class iSourceHtml implements ISourceHtml{
           resolve(LoadStatus[loadStatus]);
         }
       });
+    });
+  }
+
+  isReloadOnShowEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isReloadOnShowEnabled', true)
+        this._checkPromise = iItem.get('prop:RefreshOnSrcShow', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:RefreshOnSrcShow', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  enableReloadOnShow(value: boolean): Promise<iSourceHtml> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'enableReloadOnShow', true)
+        this._checkPromise = iItem.set('prop:RefreshOnSrcShow', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:RefreshOnSrcShow', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+         resolve(this);
+      });
+    });
+  }
+
+  isReloadOnSceneEnterEnabled(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isReloadOnShowEnabled', true)
+        this._checkPromise = iItem.get('prop:RefreshOnScnLoad', this._id)
+      } else {
+        this._checkPromise = iItem.wrapGet('prop:RefreshOnScnLoad', this._srcId, this._id,
+          this._updateId.bind(this))
+      }
+      this._checkPromise.then(val => {
+        resolve(val === '1');
+      });
+    });
+  }
+
+  enableReloadOnSceneEnter(value: boolean): Promise<iSourceHtml> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'enableReloadOnShow', true)
+        this._checkPromise = iItem.set('prop:RefreshOnScnLoad', (value ? '1' : '0'), this._id)
+      } else {
+        this._checkPromise = iItem.wrapSet('prop:RefreshOnScnLoad', (value ? '1' : '0'),
+          this._srcId, this._id, this._updateId.bind(this))
+      }
+      this._checkPromise.then(() => {
+         resolve(this);
+      });
+    });
+  }
+
+  isSourceAvailable(): Promise<boolean> {
+    return new Promise(resolve => {
+      if(this._isItemCall){
+        Logger.warn('sourceWarning', 'isSourceAvailable', true)
+        iItem.get('prop:itemavail', this._id).then(val => {
+          resolve(val === '1');
+        });
+      } else {
+        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
+          resolve(val === '1');
+        });
+      }
     });
   }
 }

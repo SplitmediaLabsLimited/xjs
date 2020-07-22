@@ -58,6 +58,11 @@ export class MediaSource extends Source implements ISourcePlayback, IAudio,
   getFileInfo: () => Promise<Object>
 
   /**
+   * See: {@link #core/ISourceMedia#isSourceAvailable isSourceAvailable}
+   */
+  isSourceAvailable: () => Promise<boolean>
+
+  /**
    * See: {@link #core/ISourcePlayback#isAudio isAudio}
    */
   isAudio: () => Promise<boolean>;

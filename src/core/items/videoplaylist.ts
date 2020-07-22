@@ -74,6 +74,9 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
 
+  /** See: {@link #core/VideoPlaylistSource#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
+
   // ItemLayout
 
   /**

@@ -24,6 +24,8 @@ describe('HtmlSource', function() {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
   var TYPE_GAME = 7;
+  var firstSource;
+  var shouldBeAvailable = true;
 
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
@@ -42,7 +44,7 @@ describe('HtmlSource', function() {
 
   var getLocal = function(funcName) {
     rand += 1;
-
+    var irand = 'html_source_' + rand;
     switch (funcName) {
       case 'prop:type':
         //search for id
@@ -51,7 +53,6 @@ describe('HtmlSource', function() {
         var selected = '[id="' + attachedID + '"]';
         var itemSelected = placement.querySelector(selected);
         //return type attribute
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
         },10);
@@ -59,7 +60,6 @@ describe('HtmlSource', function() {
 
       case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -70,7 +70,6 @@ describe('HtmlSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return item attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
           },10);
@@ -79,7 +78,6 @@ describe('HtmlSource', function() {
 
       case 'prop:BrowserSize':
         if (local.hasOwnProperty('browserSize')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
@@ -90,7 +88,6 @@ describe('HtmlSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return browserJS attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               itemSelected.getAttribute("BrowserSizeX") + ',' +
@@ -101,7 +98,6 @@ describe('HtmlSource', function() {
 
       case 'prop:BrowserTransparent':
         if (local.hasOwnProperty('browserTransparent')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserTransparent);
           }, 10);
@@ -112,7 +108,6 @@ describe('HtmlSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return browserJS attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserTransparent"));
           },10);
@@ -121,7 +116,6 @@ describe('HtmlSource', function() {
 
       case 'prop:BrowserJs':
         if (local.hasOwnProperty('browserJS')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.browserJS);
           }, 10);
@@ -132,7 +126,6 @@ describe('HtmlSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return browserJS attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("BrowserJs"));
           },10);
@@ -141,7 +134,6 @@ describe('HtmlSource', function() {
 
       case 'prop:custom':
         if (local.hasOwnProperty('custom')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.custom);
           }, 10);
@@ -152,7 +144,6 @@ describe('HtmlSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return custom attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("custom"));
           },10);
@@ -161,16 +152,22 @@ describe('HtmlSource', function() {
 
       case 'prop:BrowserRightClick':
         setTimeout(function() {
-          window.OnAsyncCallback(rand, local.rightclick);
+          window.OnAsyncCallback(irand, local.rightclick);
         }, 10);
       break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        },10);
+      break;
     }
-    return rand;
+    return irand;
   };
 
   var setLocal = function(funcName, val) {
     rand += 1;
-
+    var irand = 'html_source_' + rand;
     switch (funcName) {
 
       case 'prop:srcitem':
@@ -183,7 +180,6 @@ describe('HtmlSource', function() {
         	urlSet = false;
           isValid = '-1';
         }
-				var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -199,7 +195,6 @@ describe('HtmlSource', function() {
           urlSet = false;
           isValid = '-1';
         }
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -221,7 +216,6 @@ describe('HtmlSource', function() {
           urlSet = false;
           isValid = '-1';
         }
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -237,7 +231,6 @@ describe('HtmlSource', function() {
           urlSet = false;
           isValid = '-1';
         }
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -268,7 +261,6 @@ describe('HtmlSource', function() {
           urlSet = false;
           isValid = '-1';
         }
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -277,7 +269,6 @@ describe('HtmlSource', function() {
       case 'refresh':
         var isValid;
 
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
@@ -285,11 +276,14 @@ describe('HtmlSource', function() {
 
       case 'prop:BrowserRightClick':
         local.rightclick = val;
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, isValid);
+        }, 10);
       break;
 
     }
 
-    return rand;
+    return irand;
   };
 
   beforeEach(function(done) {
@@ -309,16 +303,15 @@ describe('HtmlSource', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
+        var irand = 'html_source_' + rand;
         switch (funcName) {
           case 'gsenum':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand, encodeURIComponent('<configuration><src pid="23348" handle="386396224" hwnd="199840" GapiType="DX9" width="1280" height="800" flags="0" wndname="Terraria: Cthulhu is mad... and is missing an eye!" lastframets="9045125" fpsRender="44.885239" fpsCapture="0.000000"/><src pid="24448" handle="129832800" hwnd="265242" GapiType="DX9" width="1280" height="768" flags="0" wndname="AdVenture Capitalist!" lastframets="9045125" fpsRender="231.106949" fpsCapture="0.000000"/><src pid="25592" handle="172451040" hwnd="460446" GapiType="DX9Ex" width="1920" height="1080" flags="1" wndname="DOTA 2" lastframets="9043736" fpsRender="60.599564" fpsCapture="0.000000"/></configuration>'));
             },10);
           break;
 
           case 'sceneconfig:0':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,
                 encodeURIComponent(mockPresetConfig));
@@ -326,21 +319,19 @@ describe('HtmlSource', function() {
           break;
 
           case 'scene:0':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand, '0');
             },10);
           break;
 
           case 'sceneconfig':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,
                 encodeURIComponent(mockPresetConfig));
             },10);
           break;
         }
-        return rand;
+        return irand;
       });
 
       spyOn(window.external, 'SearchVideoItem')
@@ -375,6 +366,7 @@ describe('HtmlSource', function() {
               enumerated.push(sourceArray[i]);
             }
           }
+          firstSource = enumerated[0]
         }
 
         done();
@@ -407,10 +399,35 @@ describe('HtmlSource', function() {
       'getCustomCSS',
       'setCustomCSS',
       'isCustomCSSEnabled',
-      'enableCustomCSS'
+      'enableCustomCSS',
+      'isReloadOnShowEnabled',
+      'enableReloadOnShow',
+      'isReloadOnSceneEnterEnabled',
+      'enableReloadOnSceneEnter'
       ].join(',');
 
     expect(enumerated[0]).hasMethods(methods);
+  });
+
+  describe('should be able to check if source file is avaiable', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      firstSource.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return firstSource.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
+    });
   });
 
   describe('interface method checking', function() {
@@ -443,6 +460,5 @@ describe('HtmlSource', function() {
         'isAudioAvailable'
         ].join(','));
     });
-
   });
 });

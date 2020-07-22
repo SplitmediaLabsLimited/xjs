@@ -135,14 +135,13 @@ export class System{
         let devices: CameraDevice[] = [];
         if (devicesJSON !== undefined) {
           for(let device of devicesJSON) {
-            if (String(device['disp']).toLowerCase().indexOf('xsplit') === -1 &&
-              String(device['disp']).toLowerCase() !==
-              ('@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\' +
-              '{778abfb2-e87b-48a2-8d33-675150fcf8a2}').toLowerCase() &&
+            const dispUpperCase = String(device['disp']).toUpperCase();
+            if (dispUpperCase.indexOf('XSPLIT') === -1 &&
+              dispUpperCase !== '@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}' &&
               String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) 3D Camera Virtual Driver').toLowerCase()) === -1 &&
               String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) Camera SR300 Virtual Driver').toLowerCase()) === -1 &&
-              String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#').toLowerCase()) === -1 &&
-              String(device['disp']).toLowerCase().indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#').toLowerCase()) === -1
+              dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#')) === -1 &&
+              dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#')) === -1
               ) {
               devices.push(CameraDevice.parse(device));
             }
@@ -247,10 +246,10 @@ export class System{
       }).then(windowDetailsArr => {
         let devices = windowDetailsArr
           .filter(windowDetail => windowDetail[0] !== '')
-          .filter(windowDetail => windowDetail[0].indexOf('XSplit Broadcaster') !== 0)
-          .filter(windowDetail => windowDetail[1].indexOf('Shell_TrayWnd') !== 0)
-          .filter(windowDetail => windowDetail[1].indexOf('Button') !== 0)
-          .filter(windowDetail => windowDetail[1].indexOf('Windows.UI.Core.CoreWindow') !== 0)
+          .filter(windowDetail => windowDetail[0].toUpperCase().indexOf('XSPLIT BROADCASTER') !== 0)
+          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('SHELL_TRAYWND') !== 0)
+          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('BUTTON') !== 0)
+          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('WINDOWS.UI.CORE.COREWINDOW') !== 0)
           .map(windowDetail => {
             Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2])
             .then(detail => {

@@ -11,6 +11,10 @@ import {JSON as JXON} from '../../internal/util/json';
 import {XML} from '../../internal/util/xml';
 import {Scene} from '../scene';
 import {ItemLayout, IItemLayout} from './ilayout';
+import {checkSplitmode} from '../../internal/util/splitmode';
+import {addToSceneHandler} from '../../util/addtosceneutil';
+import { Global } from '../../internal/global';
+
 import {
   minVersion,
   versionCompare,
@@ -357,57 +361,53 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```
    */
-  duplicate(options?: { linked?: boolean, scene?: Scene }): Promise<Item> {
+  duplicate(options?: { linked?: boolean, scene?: number | Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
-      if(versionCompare(getVersion())
-        .is
-        .lessThan(globalsrcMinVersion)) {
-        iApp.callFunc('additem', this.toXML().toString()).then(() => {
-          resolve(this)
-        })
-      } else {
-        if(options){
-          if(options.linked) {
-            iItem.set('prop:keeploaded', '1', this._id)
+      let cmd = 'additem';
+      const getItem = (res) => {
+        return new Promise((innerResolve, innerReject) => {
+          if (!Global.isListenToItemAdd()) {
+            innerResolve(this);
+          } else {
+            Scene.searchItemsById(res)
+            .then(item => {
+              innerResolve(item);
+            }).catch(err => {
+              innerReject(err);
+            })
           }
-          if(options.scene !== undefined && options.linked !== undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${id}|additem`,
-                this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-            }
-          } else if(options.linked === undefined) {
-            if(options.scene instanceof Scene) {
-              options.scene.getSceneNumber().then((id) => {
-                iApp.callFunc(`link:0|s:${id}|additem`,
-                  this.toXML().toString())
-                  .then(() => {
-                  resolve(this);
-                });
-              })
-            } else {
-              reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-            }
-          } else if(options.scene === undefined) {
-            iApp.callFunc(`link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`,
-            this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
-          }
+        });
+      };
+
+      checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
+        if(versionCompare(getVersion())
+          .is
+          .lessThan(globalsrcMinVersion)) {
+            return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
         } else {
-          iApp.callFunc('link:0|additem', this.toXML().toString())
-              .then(() => {
-              resolve(this);
-            });
+          if(options) {
+            if(options.linked) {
+              iItem.set('prop:keeploaded', '1', this._id)
+            }
+            if(options.scene !== undefined && options.linked !== undefined) {
+              cmd = `link:${options.linked ? 1 : 0}|${scenePrefix}additem`;
+            } else if(options.linked === undefined) {
+              cmd = `link:0|${scenePrefix}additem`;
+            } else if(options.scene === undefined) {
+              cmd = `link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`;
+            }
+          } else {
+            cmd = 'link:0|additem';
+          }
+          return addToSceneHandler(cmd, this.toXML().toString());
         }
-      }
+      }).then(result => {
+        return getItem(result);
+      }).then(result => {
+        resolve(result);
+      }).catch(err => {
+        reject(err);
+      }); 
     });
   }
 

@@ -16,6 +16,7 @@ describe('MediaItem', function() {
   var rand = 0;
   var local = {};
   var TYPE_FILE = 1;
+  var shouldBeAvailable = true;
 
   var mix = new window.Mixin([
     function() {
@@ -38,7 +39,7 @@ describe('MediaItem', function() {
 
   var getLocal = function(funcName) {
     rand += 1;
-
+    var irand = 'media_' + rand;
     switch (funcName) {
       case 'prop:type':
         //search for id
@@ -47,7 +48,6 @@ describe('MediaItem', function() {
         var selected = '[id="' + attachedID + '"]';
         var itemSelected = placement.querySelector(selected);
         //return type attribute
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
         },10);
@@ -55,7 +55,6 @@ describe('MediaItem', function() {
 
       case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -66,14 +65,19 @@ describe('MediaItem', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return item attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
           },10);
         }
       break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        },10);
+      break;
     }
-    return rand;
+    return irand;
   };
 
   beforeAll(function(done) {
@@ -90,9 +94,9 @@ describe('MediaItem', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
       rand += 1;
+      var irand = 'media_' + rand;
       switch (funcName) {
         case 'sceneconfig:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
@@ -100,7 +104,6 @@ describe('MediaItem', function() {
         break;
 
         case 'sceneconfig':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
@@ -108,13 +111,12 @@ describe('MediaItem', function() {
           break;
 
         case 'scene:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');
           },10);
         break;
       }
-      return rand;
+      return irand;
     });
 
     spyOn(window.external, 'SearchVideoItem')
@@ -147,6 +149,7 @@ describe('MediaItem', function() {
                 enumerated.push(itemArray[i]);
               }
             }
+            currentMediaItem = enumerated[0];
           }
 
           done();
@@ -173,6 +176,27 @@ describe('MediaItem', function() {
 
     expect(mediaItems.length).toBe(enumerated.length);
     done();
+  });
+
+  describe('should be able to check if source file is avaiable', function() {
+    it ('through a promise', function(done) {
+      var promise = currentMediaItem.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      currentMediaItem.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return currentMediaItem.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
+    });
   });
 
   describe('interface method checking', function() {

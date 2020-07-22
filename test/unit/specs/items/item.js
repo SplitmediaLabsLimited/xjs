@@ -108,7 +108,7 @@ describe('Item ===', function() {
         local.cname = val;
       break;
 
-      case 'prop:srcitem':
+      case 'prop:item':
         local.item = val;
       break;
 

@@ -16,6 +16,7 @@ describe('ImageItem', function() {
   var local = {};
   var TYPE_BITMAP = 4;
   var TYPE_FILE = 1;
+  var firstSource;
 
   var appVersion = navigator.appVersion;
 
@@ -24,9 +25,11 @@ describe('ImageItem', function() {
       return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
   };
 
+  var shouldBeAvailable = true;
+
   var getLocal = function(funcName) {
     rand += 1;
-
+    var irand = 'image_' + rand;
     switch (funcName) {
       case 'prop:type':
         //search for id
@@ -35,7 +38,7 @@ describe('ImageItem', function() {
         var selected = '[id="' + attachedID + '"]';
         var itemSelected = placement.querySelector(selected);
         //return type attribute
-        var irand = rand;
+        
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute('type'));
         },10);
@@ -43,7 +46,6 @@ describe('ImageItem', function() {
 
       case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -54,14 +56,19 @@ describe('ImageItem', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return item attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute('item'));
           },10);
         }
       break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        },10);
+      break;
     }
-    return rand;
+    return irand;
   };
 
   beforeEach(function(done) {
@@ -78,9 +85,9 @@ describe('ImageItem', function() {
     spyOn(window.external, 'AppGetPropertyAsync')
       .and.callFake(function(funcName) {
       rand += 1;
+      var irand = 'image_' + rand;
       switch (funcName) {
         case 'sceneconfig:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
@@ -88,7 +95,6 @@ describe('ImageItem', function() {
         break;
 
         case 'sceneconfig':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand,
               encodeURIComponent(mockPresetConfig));
@@ -96,13 +102,12 @@ describe('ImageItem', function() {
         break;
 
         case 'scene:0':
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, '0');
           },10);
         break;
       }
-      return rand;
+      return irand;
     });
 
     spyOn(window.external, 'SearchVideoItem')
@@ -136,6 +141,7 @@ describe('ImageItem', function() {
               }
             }
           }
+          firstSource = enumerated[0];
 
           done();
         });
@@ -164,6 +170,27 @@ describe('ImageItem', function() {
 
     expect(bitmapItems.length + gifItems.length).toBe(enumerated.length);
     done();
+  });
+
+  describe('should be able to check if source file is avaiable', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      firstSource.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return firstSource.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
+    });
   });
 
   describe('interface method checking', function() {

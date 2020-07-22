@@ -15,10 +15,10 @@ export enum ActionAfterPlayback {
   HIDE
 }
 
-const AUDIO_REGEX =
-  /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/;
-const VIDEO_REGEX =
-  /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/;
+export const AUDIO_REGEX =
+  /\.(mp3|aac|cda|ogg|m4a|flac|wma|aiff|aif|wav|mid|midi|rma)$/i;
+export const VIDEO_REGEX =
+  /\.(avi|flv|mkv|mp4|mpg|wmv|3gp|3g2|asf|f4v|mov|mpeg|vob|webm)$/i;
 
 export interface ISourcePlayback {
 
@@ -225,7 +225,39 @@ export interface ISourcePlayback {
    */
   setCuePoints(value: CuePoint[]): Promise<ISourcePlayback>;
 
+  /**
+   * return: Promise<string>
+   *
+   * Gets the URL path of the media file used as a source
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getValue().then(function(value) {
+   *   // Do something with the value
+   * });
+   * ```
+   */
   getValue(): Promise<string>;
+
+  /**
+   * param: (value: string)
+   * ```
+   * return: Promise<ISourcePlayback>
+   * ```
+   *
+   * Set the media file to be used as source
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.setValue('C:\\SomeFolder\\SomeFile.mp4')
+   *   .then(function(source) {
+   *   // Promise resolves with same Source instance
+   * });
+   * ```
+   */
   setValue(value: string): Promise<any>;
 
   /**
@@ -641,15 +673,27 @@ export class SourcePlayback implements ISourcePlayback {
 
   setValue(filename: string): Promise<SourcePlayback> {
     return new Promise((resolve, reject) => {
+      filename = filename.split('*')[0];
       if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
         if(this._isItemCall){
-          Logger.warn('sourceWarning', 'setValue', true)
-          this._checkPromise = iItem.set('prop:srcitem', filename, this._id)
+          Logger.warn('sourceWarning', 'setValue', true);
+          this._checkPromise = iItem.set('prop:srcitem', filename, this._id)  
         } else {
           this._checkPromise = iItem.wrapSet('prop:srcitem', filename,
             this._srcId, this._id, this._updateId.bind(this))
         }
         this._checkPromise
+        .then(() => {
+          return iItem.get('prop:FilePlaylist', this._id);
+        }).then(playlist => {
+          if (playlist && playlist !== 'PLAYLIST' && (playlist.split('|').length < 2)) {
+            const playlistArray = playlist.split('*');
+            playlistArray[0] = filename;
+            return iItem.set('prop:FilePlaylist', playlistArray.join('*'), this._id);
+          } else {
+            return Promise.resolve(true);
+          }
+        })
         .then(() => iItem.set('prop:name', filename, this._id))
         .then(() => iItem.set('prop:CuePoints', '', this._id))
         .then(() => {

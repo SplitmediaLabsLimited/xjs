@@ -10,7 +10,7 @@ describe('Flash Source interface', function() {
   var local = {};
   var attachedId;
   var enumeratedSource = [];
-
+  var shouldBeAvailable = true;
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
     function() {
@@ -56,7 +56,9 @@ describe('Flash Source interface', function() {
       property = property.substring(3);
     }
 
-    if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
+    if (property === 'itemavail') {
+      xCallback(asyncId,  shouldBeAvailable ? '1' : '0');
+    } else  if (local[attachedId] !== undefined && local[attachedId].hasOwnProperty(
       property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
@@ -242,4 +244,26 @@ describe('Flash Source interface', function() {
       });
     });
   });
+
+  describe('should be able to check if source file is avaiable', function() {
+    it ('through a promise', function(done) {
+      var promise = firstSource.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      firstSource.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return firstSource.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
+    });
+  });
+
 });

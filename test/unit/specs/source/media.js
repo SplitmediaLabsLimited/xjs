@@ -24,6 +24,7 @@ describe('MediaSource', function() {
       return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
   };
   var TYPE_GAME = 7;
+  var shouldBeAvailable = true;
 
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
@@ -42,7 +43,7 @@ describe('MediaSource', function() {
 
   var getLocal = function(funcName) {
     rand += 1;
-
+    var irand = 'media_source_' + rand;
     switch (funcName) {
       case 'prop:type':
         //search for id
@@ -51,7 +52,6 @@ describe('MediaSource', function() {
         var selected = '[id="' + attachedID + '"]';
         var itemSelected = placement.querySelector(selected);
         //return type attribute
-        var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, itemSelected.getAttribute("type"));
         },10);
@@ -59,7 +59,6 @@ describe('MediaSource', function() {
 
       case 'prop:srcitem':
         if (local.hasOwnProperty('item')) {
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -70,19 +69,24 @@ describe('MediaSource', function() {
           var selected = '[id="' + attachedID + '"]';
           var itemSelected = placement.querySelector(selected);
           //return item attribute
-          var irand = rand;
           setTimeout(function() {
             window.OnAsyncCallback(irand, itemSelected.getAttribute("item"));
           },10);
         }
       break;
+
+      case 'prop:itemavail':
+        setTimeout(function() {
+          window.OnAsyncCallback(irand, shouldBeAvailable ? '1' : '0');
+        },10);
+      break;
     }
-    return rand;
+    return irand;
   };
 
   var setLocal = function(funcName, val) {
     rand += 1;
-
+    var irand = 'media_source_' + rand;
     switch (funcName) {
 
       case 'prop:srcitem':
@@ -95,14 +99,13 @@ describe('MediaSource', function() {
         	urlSet = false;
           isValid = '-1';
         }
-				var irand = rand;
         setTimeout(function() {
           window.OnAsyncCallback(irand, isValid);
         }, 10);
       break;
     }
 
-    return rand;
+    return irand;
   };
 
   beforeEach(function(done) {
@@ -122,9 +125,9 @@ describe('MediaSource', function() {
       spyOn(window.external, 'AppGetPropertyAsync')
         .and.callFake(function(funcName) {
         rand += 1;
+        var irand = 'media_source_' + rand;
         switch (funcName) {
           case 'sceneconfig:0':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,
                 encodeURIComponent(mockPresetConfig));
@@ -132,21 +135,19 @@ describe('MediaSource', function() {
           break;
 
           case 'scene:0':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand, '0');
             },10);
           break;
 
           case 'sceneconfig':
-            var irand = rand;
             setTimeout(function() {
               window.OnAsyncCallback(irand,
                 encodeURIComponent(mockPresetConfig));
             },10);
           break;
         }
-        return rand;
+        return irand;
       });
 
       spyOn(window.external, 'SearchVideoItem')
@@ -181,6 +182,7 @@ describe('MediaSource', function() {
               enumerated.push(sourceArray[i]);
             }
           }
+          currentMediaSource = enumerated[0];
         }
 
         done();
@@ -191,6 +193,27 @@ describe('MediaSource', function() {
   afterAll(function() {
     navigator.__defineGetter__('appVersion', function() {
       return appVersion;
+    });
+  });
+
+  describe('should be able to check if source file is avaiable', function() {
+    it ('through a promise', function(done) {
+      var promise = currentMediaSource.isSourceAvailable();
+      expect(promise).toBeInstanceOf(Promise);
+      done();
+    });
+
+    it ('as a boolean', function(done) {
+      shouldBeAvailable = true;
+      currentMediaSource.isSourceAvailable()
+      .then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        shouldBeAvailable = false;
+        return currentMediaSource.isSourceAvailable();
+      }).then(function(isAvailable) {
+        expect(isAvailable).toBe(shouldBeAvailable);
+        done();
+      });
     });
   });
 
@@ -254,6 +277,5 @@ describe('MediaSource', function() {
         'isAudioAvailable'
         ].join(','));
     });
-
   });
 });

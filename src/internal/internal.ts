@@ -128,29 +128,30 @@ export function finalCallback(message) {
 }
 
 let asyncCallback = window.OnAsyncCallback;
-window.OnAsyncCallback = function(asyncID: number, result: string) {
+window.OnAsyncCallback = function(asyncID: number, ...result) {
+  let formattedResult;
+  try {
+    formattedResult = result.map(res => decodeURIComponent(res));
+  } catch(e) {
+    formattedResult = result;
+  }
+
   // Used by proxy to return Async calls
   if (Remote.remoteType === 'proxy') {
     let callback = _proxyCallbacks[asyncID];
     if (callback instanceof Function) {
-      callback(decodeURIComponent(result));
+      callback(...formattedResult);
       delete _proxyCallbacks[asyncID];
     }
   } else {
     let callback = _callbacks[asyncID];
-
     if (callback instanceof Function) {
-      try {
-        callback(decodeURIComponent(result));
-        delete _callbacks[asyncID];
-      } catch(e) {
-        callback(result);
-        delete _callbacks[asyncID];
-      }
+      callback(...formattedResult);
+      delete _callbacks[asyncID];
     }
   }
 
   if(typeof asyncCallback === 'function') {
-    asyncCallback(asyncID, result);
+    asyncCallback(asyncID, ...result);
   }
 }

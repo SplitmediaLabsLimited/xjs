@@ -16,6 +16,7 @@ import {Rectangle} from '../../util/rectangle';
 import {Color} from '../../util/color';
 import {Environment} from '../environment';
 import {XML} from '../../internal/util/xml';
+import {SourceImage, ISourceImage} from '../source/iimage';
 
 /**
  * The ImageItem class represents an image item (includes GIF files).
@@ -32,17 +33,16 @@ import {XML} from '../../internal/util/xml';
  *  instance.
  */
 export class ImageItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect {
+  IItemChroma, IItemTransition, IItemEffect, ISourceImage {
 
-  /**
-   * See: {@link #core/Source#getValue getValue}
-   */
-  getValue: () => Promise<string | XML>
+  /** See: {@link #core/ISourceImage#isSourceAvailable isSourceAvailable} */
+  isSourceAvailable: () => Promise<boolean>
 
-  /**
-   * See: {@link #core/Source#setValue setValue}
-   */
-  setValue: (value: string | XML) => Promise<ImageItem>
+  /** See: {@link #core/ISourceImage#getValue getValue} */
+  getValue: () => Promise<string>;
+
+  /** See: {@link #core/ISourceImage#setValue setValue} */
+  setValue: (value: string) => Promise<ImageItem>;
 
   // ItemLayout
 
@@ -521,4 +521,4 @@ export class ImageItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(ImageItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);
+applyMixins(ImageItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect, SourceImage]);

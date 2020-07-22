@@ -148,6 +148,7 @@ describe('GameItem', function() {
       break;
 
       case 'prop:srcitem':
+      case 'prop:item':
         if (typeof val === 'string') {
           local.item = val;
           offlineImageSet = true;
