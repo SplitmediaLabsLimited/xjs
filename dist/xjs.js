@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.10.2-alpha
+ * version: 2.10.2
  *
  * XSplit Extensibility Framework and Plugin License
  *
@@ -1807,7 +1807,7 @@ var AudioItem = (function (_super) {
     return AudioItem;
 })(item_1.Item);
 exports.AudioItem = AudioItem;
-mixin_1.applyMixins(AudioItem, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
+mixin_1.applyMixins(AudioItem, [iaudio_1.Audio, iaudiosource_1.SourceAudio]);
 },{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iaudiosource":37,"./item":20}],8:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -4280,7 +4280,7 @@ var ImageItem = (function (_super) {
     return ImageItem;
 })(item_1.Item);
 exports.ImageItem = ImageItem;
-mixin_1.applyMixins(ImageItem, [iimage_1.iSourceImage, item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect]);
+mixin_1.applyMixins(ImageItem, [item_1.Item, ilayout_1.ItemLayout, icolor_1.ItemColor, ichroma_1.ItemChroma, itransition_1.ItemTransition, ieffects_1.ItemEffect, iimage_1.SourceImage]);
 },{"../../internal/util/mixin":70,"../source/iimage":43,"./ichroma":14,"./icolor":15,"./ieffects":16,"./ilayout":18,"./item":20,"./itransition":21}],20:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -4299,6 +4299,9 @@ var json_1 = require('../../internal/util/json');
 var xml_1 = require('../../internal/util/xml');
 var scene_1 = require('../scene');
 var ilayout_1 = require('./ilayout');
+var splitmode_1 = require('../../internal/util/splitmode');
+var addtosceneutil_1 = require('../../util/addtosceneutil');
+var global_1 = require('../../internal/global');
 var version_1 = require('../../internal/util/version');
 var isource_1 = require('../source/isource');
 var source_1 = require('../source/source');
@@ -4627,58 +4630,55 @@ var Item = (function (_super) {
     Item.prototype.duplicate = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (version_1.versionCompare(version_1.getVersion())
-                .is
-                .lessThan(version_1.globalsrcMinVersion)) {
-                app_1.App.callFunc('additem', _this.toXML().toString()).then(function () {
-                    resolve(_this);
-                });
-            }
-            else {
-                if (options) {
-                    if (options.linked) {
-                        item_1.Item.set('prop:keeploaded', '1', _this._id);
+            var cmd = 'additem';
+            var getItem = function (res) {
+                return new Promise(function (innerResolve, innerReject) {
+                    if (!global_1.Global.isListenToItemAdd()) {
+                        innerResolve(_this);
                     }
-                    if (options.scene !== undefined && options.linked !== undefined) {
-                        if (options.scene instanceof scene_1.Scene) {
-                            options.scene.getSceneNumber().then(function (id) {
-                                app_1.App.callFunc("link:" + (options.linked ? 1 : 0) + "|s:" + id + "|additem", _this.toXML().toString())
-                                    .then(function () {
-                                    resolve(_this);
-                                });
-                            });
-                        }
-                        else {
-                            reject(Error('Invalid parameters. Accepted format is "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-                        }
-                    }
-                    else if (options.linked === undefined) {
-                        if (options.scene instanceof scene_1.Scene) {
-                            options.scene.getSceneNumber().then(function (id) {
-                                app_1.App.callFunc("link:0|s:" + id + "|additem", _this.toXML().toString())
-                                    .then(function () {
-                                    resolve(_this);
-                                });
-                            });
-                        }
-                        else {
-                            reject(Error('Invalid parameters. Accepted format is:: "(options: {linked?:<boolean>, scene?:<Scene>})"'));
-                        }
-                    }
-                    else if (options.scene === undefined) {
-                        app_1.App.callFunc("link:" + (options.linked ? 1 : 0) + "|s:" + _this._sceneId + "|additem", _this.toXML().toString())
-                            .then(function () {
-                            resolve(_this);
+                    else {
+                        scene_1.Scene.searchItemsById(res)
+                            .then(function (item) {
+                            innerResolve(item);
+                        }).catch(function (err) {
+                            innerReject(err);
                         });
                     }
+                });
+            };
+            splitmode_1.checkSplitmode(options ? options.scene : undefined).then(function (scenePrefix) {
+                if (version_1.versionCompare(version_1.getVersion())
+                    .is
+                    .lessThan(version_1.globalsrcMinVersion)) {
+                    return addtosceneutil_1.addToSceneHandler(scenePrefix + cmd, _this.toXML().toString());
                 }
                 else {
-                    app_1.App.callFunc('link:0|additem', _this.toXML().toString())
-                        .then(function () {
-                        resolve(_this);
-                    });
+                    if (options) {
+                        if (options.linked) {
+                            item_1.Item.set('prop:keeploaded', '1', _this._id);
+                        }
+                        if (options.scene !== undefined && options.linked !== undefined) {
+                            cmd = "link:" + (options.linked ? 1 : 0) + "|" + scenePrefix + "additem";
+                        }
+                        else if (options.linked === undefined) {
+                            cmd = "link:0|" + scenePrefix + "additem";
+                        }
+                        else if (options.scene === undefined) {
+                            cmd = "link:" + (options.linked ? 1 : 0) + "|s:" + _this._sceneId + "|additem";
+                        }
+                    }
+                    else {
+                        cmd = 'link:0|additem';
+                    }
+                    return addtosceneutil_1.addToSceneHandler(cmd, _this.toXML().toString());
                 }
-            }
+            }).then(function (result) {
+                return getItem(result);
+            }).then(function (result) {
+                resolve(result);
+            }).catch(function (err) {
+                reject(err);
+            });
         });
     };
     /**
@@ -4822,7 +4822,7 @@ var Item = (function (_super) {
 })(source_1.Source);
 exports.Item = Item;
 mixin_1.applyMixins(Item, [isource_1.iSource, ilayout_1.ItemLayout]);
-},{"../../internal/app":61,"../../internal/eventmanager":62,"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/mixin":70,"../../internal/util/version":72,"../../internal/util/xml":73,"../../util/eventemitter":87,"../../util/sourcetyperesolve":92,"../environment":4,"../scene":29,"../source/isource":50,"../source/source":56,"./ilayout":18}],21:[function(require,module,exports){
+},{"../../internal/app":61,"../../internal/eventmanager":62,"../../internal/global":63,"../../internal/item":66,"../../internal/util/json":68,"../../internal/util/mixin":70,"../../internal/util/splitmode":71,"../../internal/util/version":72,"../../internal/util/xml":73,"../../util/addtosceneutil":85,"../../util/eventemitter":87,"../../util/sourcetyperesolve":92,"../environment":4,"../scene":29,"../source/isource":50,"../source/source":56,"./ilayout":18}],21:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var transition_1 = require('../transition');
@@ -7729,7 +7729,7 @@ var AudioSource = (function (_super) {
     return AudioSource;
 })(source_1.Source);
 exports.AudioSource = AudioSource;
-mixin_1.applyMixins(AudioSource, [iaudiosource_1.SourceAudio, iaudio_1.Audio]);
+mixin_1.applyMixins(AudioSource, [iaudio_1.Audio, iaudiosource_1.SourceAudio]);
 },{"../../internal/util/mixin":70,"../source/iaudio":36,"../source/iaudiosource":37,"../source/source":56}],31:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -8154,6 +8154,8 @@ exports.Audio = Audio;
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var logger_1 = require('../../internal/util/logger');
+var system_1 = require('../../system/system');
+var microphone_1 = require('../../system/microphone');
 var SourceAudio = (function () {
     function SourceAudio() {
     }
@@ -8319,13 +8321,78 @@ var SourceAudio = (function () {
             }
         });
     };
+    SourceAudio.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getValue', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
+                resolve(filename);
+            });
+        });
+    };
+    ;
+    SourceAudio.prototype.setValue = function (micDevice) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var audioName;
+            var _getName;
+            if (micDevice instanceof microphone_1.MicrophoneDevice) {
+                _getName = new Promise(function (innerResolve) {
+                    var name = micDevice.getName();
+                    micDevice = micDevice.getDisplayId();
+                    innerResolve(name);
+                });
+            }
+            else if (typeof micDevice === 'string') {
+                _getName = new Promise(function (innerResolve) {
+                    system_1.System.getMicrophones()
+                        .then(function (micDevices) {
+                        var camGiven = micDevices.filter(function (cam) {
+                            return cam.getDisplayId().toUpperCase() === micDevice.toUpperCase();
+                        });
+                        if (camGiven) {
+                            innerResolve(camGiven[0].getName());
+                        }
+                        else {
+                            innerResolve('');
+                        }
+                    });
+                });
+            }
+            else {
+                reject(TypeError('Parameter should either be a MicrophoneDevice or string.'));
+            }
+            _getName.then(function (name) {
+                audioName = name;
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                    return item_1.Item.set('prop:item', micDevice, _this._id);
+                }
+                else {
+                    return item_1.Item.wrapSet('prop:srcitem', micDevice, _this._srcId, _this._id, _this._updateId.bind(_this));
+                }
+            }).then(function () {
+                return item_1.Item.set('prop:name', audioName, _this._id);
+            })
+                .then(function () {
+                resolve(_this);
+            });
+        });
+    };
     return SourceAudio;
 })();
 exports.SourceAudio = SourceAudio;
-},{"../../internal/item":66,"../../internal/util/logger":69}],38:[function(require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../../system/microphone":79,"../../system/system":82}],38:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var rectangle_1 = require('../../util/rectangle');
 var item_1 = require('../../internal/item');
+var camera_1 = require('../../system/camera');
 var system_1 = require('../../system/system');
 var logger_1 = require('../../internal/util/logger');
 var _delayExclusionObject = {
@@ -8678,10 +8745,74 @@ var SourceCamera = (function () {
             }
         });
     };
+    SourceCamera.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getValue', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
+                resolve(filename);
+            });
+        });
+    };
+    ;
+    SourceCamera.prototype.setValue = function (camDevice) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var camName;
+            var _getName;
+            if (camDevice instanceof camera_1.CameraDevice) {
+                _getName = new Promise(function (innerResolve) {
+                    var name = camDevice.getName();
+                    camDevice = camDevice.getId();
+                    innerResolve(name);
+                });
+            }
+            else if (typeof camDevice === 'string') {
+                _getName = new Promise(function (innerResolve) {
+                    system_1.System.getCameraDevices()
+                        .then(function (cameraDevices) {
+                        var camGiven = cameraDevices.filter(function (cam) {
+                            return cam.getId().toUpperCase() === camDevice.toUpperCase();
+                        });
+                        if (camGiven) {
+                            innerResolve(camGiven[0].getName());
+                        }
+                        else {
+                            innerResolve('');
+                        }
+                    });
+                });
+            }
+            else {
+                reject(TypeError('Parameter should either be a CameraDevice or string.'));
+            }
+            _getName.then(function (name) {
+                camName = name;
+                if (_this._isItemCall) {
+                    logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                    return item_1.Item.set('prop:item', camDevice, _this._id);
+                }
+                else {
+                    return item_1.Item.wrapSet('prop:srcitem', camDevice, _this._srcId, _this._id, _this._updateId.bind(_this));
+                }
+            }).then(function () {
+                return item_1.Item.set('prop:name', camName, _this._id);
+            })
+                .then(function () {
+                resolve(_this);
+            });
+        });
+    };
     return SourceCamera;
 })();
 exports.SourceCamera = SourceCamera;
-},{"../../internal/item":66,"../../internal/util/logger":69,"../../system/system":82,"../../util/rectangle":91}],39:[function(require,module,exports){
+},{"../../internal/item":66,"../../internal/util/logger":69,"../../system/camera":75,"../../system/system":82,"../../util/rectangle":91}],39:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var global_1 = require('../../internal/global');
@@ -8905,6 +9036,41 @@ var SourceFlash = (function () {
                     resolve(val === '1');
                 });
             }
+        });
+    };
+    SourceFlash.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getValue', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
+                resolve(filename);
+            });
+        });
+    };
+    ;
+    SourceFlash.prototype.setValue = function (filename) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                _this._checkPromise = item_1.Item.set('prop:item', filename, _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:srcitem', filename, _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function () {
+                return item_1.Item.set('prop:name', filename, _this._id);
+            })
+                .then(function () {
+                resolve(_this);
+            });
         });
     };
     return SourceFlash;
@@ -9215,7 +9381,14 @@ var iSourceHtml = (function () {
             _this._checkPromise.then(function (url) {
                 var _url = String(url).split('*');
                 _url[0] = value;
-                return item_1.Item.set('prop:srcitem', _url.join('*'), _this._id);
+                return item_1.Item.set(_this._isItemCall ? 'prop:item' : 'prop:srcitem', _url.join('*'), _this._id);
+            }).then(function (code) {
+                if (code) {
+                    return item_1.Item.set('prop:name', value, _this._id);
+                }
+                else {
+                    return Promise.resolve(code);
+                }
             }).then(function (code) {
                 if (code) {
                     resolve(_this);
@@ -9839,14 +10012,14 @@ exports.iSourceHtml = iSourceHtml;
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
 var logger_1 = require('../../internal/util/logger');
-var iSourceImage = (function () {
-    function iSourceImage() {
+var SourceImage = (function () {
+    function SourceImage() {
     }
-    iSourceImage.prototype._updateId = function (id, sceneId) {
+    SourceImage.prototype._updateId = function (id, sceneId) {
         this._id = id;
         this._sceneId = sceneId;
     };
-    iSourceImage.prototype.isSourceAvailable = function () {
+    SourceImage.prototype.isSourceAvailable = function () {
         var _this = this;
         return new Promise(function (resolve) {
             if (_this._isItemCall) {
@@ -9862,9 +10035,44 @@ var iSourceImage = (function () {
             }
         });
     };
-    return iSourceImage;
+    SourceImage.prototype.getValue = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'getValue', true);
+                _this._checkPromise = item_1.Item.get('prop:srcitem', _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapGet('prop:srcitem', _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise.then(function (filename) {
+                resolve(filename);
+            });
+        });
+    };
+    ;
+    SourceImage.prototype.setValue = function (filename) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this._isItemCall) {
+                logger_1.Logger.warn('sourceWarning', 'setValue', true);
+                _this._checkPromise = item_1.Item.set('prop:item', filename, _this._id);
+            }
+            else {
+                _this._checkPromise = item_1.Item.wrapSet('prop:srcitem', filename, _this._srcId, _this._id, _this._updateId.bind(_this));
+            }
+            _this._checkPromise
+                .then(function () {
+                return item_1.Item.set('prop:name', filename, _this._id);
+            })
+                .then(function () {
+                resolve(_this);
+            });
+        });
+    };
+    return SourceImage;
 })();
-exports.iSourceImage = iSourceImage;
+exports.SourceImage = SourceImage;
 },{"../../internal/item":66,"../../internal/util/logger":69}],44:[function(require,module,exports){
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -9913,7 +10121,7 @@ var ImageSource = (function (_super) {
     return ImageSource;
 })(source_1.Source);
 exports.ImageSource = ImageSource;
-mixin_1.applyMixins(ImageSource, [iimage_1.iSourceImage]);
+mixin_1.applyMixins(ImageSource, [iimage_1.SourceImage]);
 },{"../../internal/util/mixin":70,"../source/source":56,"./iimage":43}],45:[function(require,module,exports){
 /// <reference path="../../../defs/es6-promise.d.ts" />
 var item_1 = require('../../internal/item');
@@ -11219,7 +11427,7 @@ var iSource = (function () {
             typeCheck.then(function () {
                 if (_this._isItemCall) {
                     logger_1.Logger.warn('sourceWarning', 'setValue', true);
-                    item_1.Item.set(String(_this._type) === '2' ? 'prop:item' : 'prop:srcitem', val, _this._id)
+                    item_1.Item.set('prop:item', val, _this._id)
                         .then(function () {
                         resolve(_this);
                     });
