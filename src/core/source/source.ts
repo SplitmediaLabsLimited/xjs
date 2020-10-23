@@ -226,8 +226,8 @@ export class Source implements ISource{
       let uniqueObj = {};
       let uniqueSrc = [];
       let promiseArray = [];
-      iApp.getAsItemList('sceneconfig').then(jsonArr => {        
-        allJson = jsonArr;      
+      iApp.getAsItemList('sceneconfig').then(jsonArr => {
+        allJson = jsonArr;
         let sourcePromise = srcid => new Promise(sourceResolve => {
           Scene.searchSourcesById(srcid).then(result => {
             allSrc = allSrc.concat(result);
@@ -310,6 +310,11 @@ export class Source implements ISource{
    * See: {@link #core/ISource#getId getId}
    */
   getId: () => Promise<string>
+
+  /**
+   * See: {@link #core/ISource#getSourceId getSourceId}
+   */
+  getSourceId: () => Promise<string>
 
   /**
    * See: {@link #core/ISource#getItemList getItemList}
