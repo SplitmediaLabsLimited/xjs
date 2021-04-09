@@ -2,6 +2,7 @@
 
 import {JSON as JXON} from '../internal/util/json';
 import {XML as XML} from '../internal/util/xml';
+import { Global } from '../internal/global';
 
 /**
  * The AudioDevice Class is the object returned by
@@ -373,11 +374,57 @@ export class AudioDevice{
       mix: deviceJXON['mix']
     });
 
-    audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level']*100 : 100))
-      ._setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
-      ._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
-      ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
-      ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
+    if (Global.isNewAudioEngine) {
+
+      if (deviceJXON['children'] && deviceJXON['children'].length > 0) {
+        //volume and mute
+        const volumeValue = deviceJXON['children'].filter(effect => effect['id'] === 'volume')[0];
+        const muteValue = deviceJXON['children'].filter(effect => effect['id'] === 'mute')[0];
+
+        let enabled = true;
+        let volume = 1;
+
+        if (volumeValue) {
+          const values = volumeValue['config'].split('&amp;');
+          values.forEach(keyValues => {
+            const keyValue = keyValues.split(':');
+            if (keyValue[0] === 'volume') volume = parseFloat(keyValue[1]);
+          });
+        }
+
+        if (muteValue) {
+          const values = muteValue['config'].split('&amp;');
+          values.forEach(keyValues => {
+            const keyValue = keyValues.split(':');
+            if (keyValue[0] === 'enable') enabled = parseInt(keyValue[1]) === 1;
+          });
+        }
+
+        //delay
+        const delayValue = deviceJXON['children'].filter(effect => effect['tag'] === 'param')[0];
+        let delay = 0;
+
+        if (delayValue) {
+          delay = Number(delayValue['delay']);
+        }
+
+        //set value
+        audio._setLevel(volume * 100)
+          ._setEnabled(enabled)          
+          ._setDelay(delay);
+      }
+
+      //set system values
+      audio._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
+        ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255));
+
+    } else {
+      audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level']*100 : 100))
+        ._setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
+        ._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
+        ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
+        ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
+    }    
 
     return audio;
   }

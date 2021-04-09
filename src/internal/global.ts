@@ -4,6 +4,7 @@ export class Global {
   private static persistedConfig: {} = {};
   private static initialPromises: Promise<any>[] = [];
   private static listenToItemAdd: boolean = false;
+  private static newAudioEngine: boolean = false;
 
   static addInitializationPromise(promise: Promise<any>): void {
     Global.initialPromises.push(promise);
@@ -27,5 +28,13 @@ export class Global {
 
    static setListenToItemAdd(): void {    
     Global.listenToItemAdd = true;    
+  }
+
+  static isNewAudioEngine(): boolean {    
+    return Global.newAudioEngine;
+  }
+
+   static setNewAudioEngine(isNewAudioEngine: boolean): void {    
+    Global.newAudioEngine = isNewAudioEngine;    
   }
 }
