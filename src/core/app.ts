@@ -226,7 +226,7 @@ export class App{
    */
   getPrimaryMic(): Promise<AudioDevice[]> {
     return new Promise((resolve, reject) => {
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         exec('CallHostFunc', 'getProperty', 'audiodev:000', resultXml => {
           let audioJson: JXON = JXON.parse(resultXml);                  
           const audio = AudioDevice.parse(audioJson);
@@ -237,7 +237,6 @@ export class App{
           var audioDevices = arr.map(val => {
             return AudioDevice.parse(val);
           });
-
           if (audioDevices.length && audioDevices.length > 0) {
             resolve(audioDevices[0]);
           } else {
@@ -265,7 +264,7 @@ export class App{
    */
   getPrimarySpeaker(): Promise<AudioDevice[]> {
     return new Promise((resolve, reject) => {
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         exec('CallHostFunc', 'getProperty', 'audiodev:001', resultXml => {
           let audioJson: JXON = JXON.parse(resultXml);            
           const audio = AudioDevice.parse(audioJson);
@@ -309,7 +308,7 @@ export class App{
         reject(Error('Volume can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
 
         const vol = volume / 100;
         const value = `volume:${vol.toFixed(6)}&enable:1`;
@@ -372,7 +371,7 @@ export class App{
   setPrimaryMicEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
 
         const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
         exec('CallHostFunc', 'setProperty', 'audiodevprop:000:effect:mute\\config', value, setVal => {
@@ -435,7 +434,7 @@ export class App{
         reject(Error('Volume can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         
         const vol = volume / 100;
         const value = vol.toFixed(6);
@@ -501,7 +500,7 @@ export class App{
         reject(Error('Value can only be 0, 1 or 255'));
       }
 
-      if (Global.isNewAudioEngine) {        
+      if (Global.isNewAudioEngine()) {        
         
         exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwenable', hwenabled.toString(), setVal => {          
           resolve(setVal);
@@ -566,7 +565,7 @@ export class App{
         reject(Error('Delay can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {        
+      if (Global.isNewAudioEngine()) {        
         
         exec('CallHostFunc', 'setProperty', 'audiodevprop:000:param\\delay', delay.toString(), setVal => {
           resolve(setVal);
@@ -630,7 +629,7 @@ export class App{
         reject(Error('Volume can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
 
         const vol = volume / 100;
         const value = `volume:${vol.toFixed(6)}&enable:1`;
@@ -691,7 +690,7 @@ export class App{
   setPrimarySpeakerEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
 
         const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
         exec('CallHostFunc', 'setProperty', 'audiodevprop:001:effect:mute\\config', value, setVal => {
@@ -755,7 +754,7 @@ export class App{
         reject(Error('Volume can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         
         const vol = volume / 100;
         const value = vol.toFixed(6);
@@ -820,7 +819,7 @@ export class App{
         reject(Error('Value can only be 0, 1 or 255'));
       }
 
-      if (Global.isNewAudioEngine) {        
+      if (Global.isNewAudioEngine()) {        
         
         exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwenable', hwenabled.toString(), setVal => {          
           resolve(setVal);
@@ -884,7 +883,7 @@ export class App{
         reject(Error('Delay can only be positive'));
       }
 
-      if (Global.isNewAudioEngine) {        
+      if (Global.isNewAudioEngine()) {        
         
         exec('CallHostFunc', 'setProperty', 'audiodevprop:001:param\\delay', delay.toString(), setVal => {
           resolve(setVal);
@@ -940,7 +939,7 @@ export class App{
    */
   isSilenceDetectionEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {  
+      if (Global.isNewAudioEngine()) {  
         exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
           if (config) {
             const values = config.split('&');          
@@ -978,7 +977,7 @@ export class App{
    */
   enableSilenceDetection(enabled: boolean): Promise<boolean> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         const value = enabled ? '1' : '0';
         updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'enable', value)
         .then(setVal => {
@@ -1014,7 +1013,7 @@ export class App{
    */
   getSilenceDetectionPeriod(): Promise<number> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {  
+      if (Global.isNewAudioEngine()) {  
         exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
           if (config) {          
             const values = config.split('&');          
@@ -1058,11 +1057,11 @@ export class App{
         reject(Error('Silence detection period must be a number'));
       } else if (sdPeriod % 1 != 0) {
         reject(Error('Silence detection period must be an integer'));
-      } else if (sdPeriod < 0 || (sdPeriod > 60000 && !Global.isNewAudioEngine)) {
-        reject(Error(`Silence detection must be in the range. ${!Global.isNewAudioEngine ? 'Range is 0-60000' : ''}`));
+      } else if (sdPeriod < 0 || (sdPeriod > 60000 && !Global.isNewAudioEngine())) {
+        reject(Error(`Silence detection must be in the range. ${!Global.isNewAudioEngine() ? 'Range is 0-60000' : ''}`));
       }
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         const value = sdPeriod.toString();
         updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'latency', value)
         .then(setVal => {
@@ -1097,7 +1096,7 @@ export class App{
    */
   getSilenceDetectionThreshold(): Promise<number> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {  
+      if (Global.isNewAudioEngine()) {  
         exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
           if (config) {          
             const values = config.split('&');          
@@ -1140,7 +1139,7 @@ export class App{
         reject(Error('Silence detection threshold must be a number'));
       } 
 
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         if (sdThreshold < 0 || sdThreshold > 1) {
           reject(Error('Silence detection threshold must be in the range 0-1.'));
         }
@@ -1182,7 +1181,7 @@ export class App{
    */
   isNoiseSuppressionEnabled(): Promise<boolean> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {  
+      if (Global.isNewAudioEngine()) {  
         exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ns\\config', config => {
           if (config) {          
             const values = config.split(',');          
@@ -1221,7 +1220,7 @@ export class App{
    */
   enableNoiseSuppression(enabled: boolean): Promise<boolean> {
     return new Promise(resolve => {
-      if (Global.isNewAudioEngine) {
+      if (Global.isNewAudioEngine()) {
         const value = enabled ? '1' : '0';
         updateMicrophoneEffects(effectIds.noiseSuppression, ',', '=', 'Enabled', value)
         .then(setVal => {

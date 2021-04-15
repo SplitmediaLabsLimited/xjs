@@ -213,7 +213,7 @@ var App = (function () {
      */
     App.prototype.getPrimaryMic = function () {
         return new Promise(function (resolve, reject) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodev:000', function (resultXml) {
                     var audioJson = json_1.JSON.parse(resultXml);
                     var audio = audio_1.AudioDevice.parse(audioJson);
@@ -252,7 +252,7 @@ var App = (function () {
      */
     App.prototype.getPrimarySpeaker = function () {
         return new Promise(function (resolve, reject) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodev:001', function (resultXml) {
                     var audioJson = json_1.JSON.parse(resultXml);
                     var audio = audio_1.AudioDevice.parse(audioJson);
@@ -295,7 +295,7 @@ var App = (function () {
             if (volume < 0) {
                 reject(Error('Volume can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var vol = volume / 100;
                 var value = "volume:" + vol.toFixed(6) + "&enable:1";
                 internal_1.exec('CallHostFunc', 'setProperty', "audiodevprop:000:effect:volume\\config", value, function (setVal) {
@@ -351,7 +351,7 @@ var App = (function () {
      */
     App.prototype.setPrimaryMicEnabled = function (enabled) {
         return new Promise(function (resolve, reject) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var value = "volume:1.000000&enable:" + (enabled ? 1 : 0);
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:000:effect:mute\\config', value, function (setVal) {
                     resolve(setVal);
@@ -409,7 +409,7 @@ var App = (function () {
             if (volume < 0) {
                 reject(Error('Volume can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var vol = volume / 100;
                 var value = vol.toFixed(6);
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwlevel', value, function (setVal) {
@@ -468,7 +468,7 @@ var App = (function () {
             if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
                 reject(Error('Value can only be 0, 1 or 255'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwenable', hwenabled.toString(), function (setVal) {
                     resolve(setVal);
                 })
@@ -525,7 +525,7 @@ var App = (function () {
             if (delay < 0) {
                 reject(Error('Delay can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:000:param\\delay', delay.toString(), function (setVal) {
                     resolve(setVal);
                 })
@@ -582,7 +582,7 @@ var App = (function () {
             if (volume < 0) {
                 reject(Error('Volume can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var vol = volume / 100;
                 var value = "volume:" + vol.toFixed(6) + "&enable:1";
                 internal_1.exec('CallHostFunc', 'setProperty', "audiodevprop:001:effect:volume\\config", value, function (setVal) {
@@ -638,7 +638,7 @@ var App = (function () {
      */
     App.prototype.setPrimarySpeakerEnabled = function (enabled) {
         return new Promise(function (resolve, reject) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var value = "volume:1.000000&enable:" + (enabled ? 1 : 0);
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:001:effect:mute\\config', value, function (setVal) {
                     resolve(setVal);
@@ -696,7 +696,7 @@ var App = (function () {
             if (volume < 0) {
                 reject(Error('Volume can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var vol = volume / 100;
                 var value = vol.toFixed(6);
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwlevel', value, function (setVal) {
@@ -755,7 +755,7 @@ var App = (function () {
             if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
                 reject(Error('Value can only be 0, 1 or 255'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwenable', hwenabled.toString(), function (setVal) {
                     resolve(setVal);
                 })
@@ -812,7 +812,7 @@ var App = (function () {
             if (delay < 0) {
                 reject(Error('Delay can only be positive'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'setProperty', 'audiodevprop:001:param\\delay', delay.toString(), function (setVal) {
                     resolve(setVal);
                 })
@@ -863,7 +863,7 @@ var App = (function () {
      */
     App.prototype.isSilenceDetectionEnabled = function () {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', function (config) {
                     if (config) {
                         var values = config.split('&');
@@ -902,7 +902,7 @@ var App = (function () {
      */
     App.prototype.enableSilenceDetection = function (enabled) {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var value = enabled ? '1' : '0';
                 updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'enable', value)
                     .then(function (setVal) {
@@ -937,7 +937,7 @@ var App = (function () {
      */
     App.prototype.getSilenceDetectionPeriod = function () {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', function (config) {
                     if (config) {
                         var values = config.split('&');
@@ -984,10 +984,10 @@ var App = (function () {
             else if (sdPeriod % 1 != 0) {
                 reject(Error('Silence detection period must be an integer'));
             }
-            else if (sdPeriod < 0 || (sdPeriod > 60000 && !global_1.Global.isNewAudioEngine)) {
-                reject(Error("Silence detection must be in the range. " + (!global_1.Global.isNewAudioEngine ? 'Range is 0-60000' : '')));
+            else if (sdPeriod < 0 || (sdPeriod > 60000 && !global_1.Global.isNewAudioEngine())) {
+                reject(Error("Silence detection must be in the range. " + (!global_1.Global.isNewAudioEngine() ? 'Range is 0-60000' : '')));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var value = sdPeriod.toString();
                 updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'latency', value)
                     .then(function (setVal) {
@@ -1021,7 +1021,7 @@ var App = (function () {
      */
     App.prototype.getSilenceDetectionThreshold = function () {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', function (config) {
                     if (config) {
                         var values = config.split('&');
@@ -1064,7 +1064,7 @@ var App = (function () {
             if (typeof sdThreshold !== 'number') {
                 reject(Error('Silence detection threshold must be a number'));
             }
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 if (sdThreshold < 0 || sdThreshold > 1) {
                     reject(Error('Silence detection threshold must be in the range 0-1.'));
                 }
@@ -1107,7 +1107,7 @@ var App = (function () {
      */
     App.prototype.isNoiseSuppressionEnabled = function () {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 internal_1.exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ns\\config', function (config) {
                     if (config) {
                         var values = config.split(',');
@@ -1147,7 +1147,7 @@ var App = (function () {
      */
     App.prototype.enableNoiseSuppression = function (enabled) {
         return new Promise(function (resolve) {
-            if (global_1.Global.isNewAudioEngine) {
+            if (global_1.Global.isNewAudioEngine()) {
                 var value = enabled ? '1' : '0';
                 updateMicrophoneEffects(effectIds.noiseSuppression, ',', '=', 'Enabled', value)
                     .then(function (setVal) {
@@ -14717,8 +14717,9 @@ var AudioDevice = (function () {
      * ```
      */
     AudioDevice.parse = function (deviceJXON) {
+        var isNewAudioEngine = global_1.Global.isNewAudioEngine();
         var audio = new AudioDevice({
-            id: deviceJXON['id'],
+            id: isNewAudioEngine && deviceJXON['source'] ? deviceJXON['source'] : deviceJXON['id'],
             name: deviceJXON['name'],
             adapter: deviceJXON['adapter'],
             adapterdev: deviceJXON['adapterdev'],
@@ -14730,7 +14731,7 @@ var AudioDevice = (function () {
             defaultMultimedia: (deviceJXON['DefaultMultimedia'] === '1'),
             mix: deviceJXON['mix']
         });
-        if (global_1.Global.isNewAudioEngine) {
+        if (isNewAudioEngine) {
             if (deviceJXON['children'] && deviceJXON['children'].length > 0) {
                 //volume and mute
                 var volumeValue = deviceJXON['children'].filter(function (effect) { return effect['id'] === 'volume'; })[0];

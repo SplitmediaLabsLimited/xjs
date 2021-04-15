@@ -359,9 +359,10 @@ export class AudioDevice{
    * ```
    */
   static parse(deviceJXON: JXON): AudioDevice {
+    const isNewAudioEngine = Global.isNewAudioEngine();
 
     var audio: AudioDevice = new AudioDevice({
-      id : deviceJXON['id'],
+      id : isNewAudioEngine && deviceJXON['source'] ? deviceJXON['source'] : deviceJXON['id'],
       name : deviceJXON['name'],
       adapter : deviceJXON['adapter'],
       adapterdev : deviceJXON['adapterdev'],
@@ -374,7 +375,7 @@ export class AudioDevice{
       mix: deviceJXON['mix']
     });
 
-    if (Global.isNewAudioEngine) {
+    if (isNewAudioEngine) {
 
       if (deviceJXON['children'] && deviceJXON['children'].length > 0) {
         //volume and mute
