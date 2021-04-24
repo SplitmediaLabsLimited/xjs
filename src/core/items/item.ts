@@ -219,6 +219,22 @@ export class Item extends Source implements IItemLayout, ISource {
   getId: () => Promise<string>
 
   /**
+   * return: Promise<string>
+   *
+   * Get the Source ID of the Item
+   * *Available only on XSplit Broadcaster versions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * item.getSourceId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSourceId: () => Promise<string>
+
+  /**
    * return: Promise<Number>
    *
    * Get the frames rendered per second of an item
@@ -407,7 +423,7 @@ export class Item extends Source implements IItemLayout, ISource {
         resolve(result);
       }).catch(err => {
         reject(err);
-      }); 
+      });
     });
   }
 

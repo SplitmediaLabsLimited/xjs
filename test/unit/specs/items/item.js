@@ -250,6 +250,15 @@ describe('Item ===', function() {
     }).then(done);
   });
 
+  it('should be able to get the source id', function(done) {
+    exec(function(next) {
+      Item.getSourceId().then(function(val) {
+        expect(val).toBeDefined();
+        next();
+      });
+    }).then(done);
+  });
+
   it('should be able to get its source', function(done) {
     exec(function(next) {
       Item.getSource().then(function(source) {
