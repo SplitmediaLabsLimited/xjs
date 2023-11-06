@@ -5597,7 +5597,7 @@ var Output = (function () {
      */
     Output.stopLocalRecording = function () {
         return new Promise(function (resolve) {
-            internal_1.exec('CallHost', 'stopBroadcast', 'Local Recording');
+            internal_1.exec('CallHostFunc', 'stopBroadcast', 'Local Recording');
             resolve(true);
         });
     };
@@ -5608,7 +5608,7 @@ var Output = (function () {
      */
     Output.pauseLocalRecording = function () {
         return new Promise(function (resolve) {
-            internal_1.exec('CallHost', 'pauseRecording', 'Local Recording');
+            internal_1.exec('CallHostFunc', 'pauseRecording', 'Local Recording');
             resolve(true);
         });
     };
@@ -5619,7 +5619,7 @@ var Output = (function () {
      */
     Output.unpauseLocalRecording = function () {
         return new Promise(function (resolve) {
-            internal_1.exec('CallHost', 'unpauseRecording', 'Local Recording');
+            internal_1.exec('CallHostFunc', 'unpauseRecording', 'Local Recording');
             resolve(true);
         });
     };
@@ -5677,7 +5677,7 @@ var Output = (function () {
                 resolve(true);
             }
             else {
-                internal_1.exec('CallHost', 'startBroadcast', _this._name);
+                internal_1.exec('CallHostFunc', 'startBroadcast', _this._name);
                 resolve(true);
             }
         });
@@ -5690,7 +5690,7 @@ var Output = (function () {
     Output.prototype.stopBroadcast = function () {
         var _this = this;
         return new Promise(function (resolve) {
-            internal_1.exec('CallHost', 'stopBroadcast', _this._name);
+            internal_1.exec('CallHostFunc', 'stopBroadcast', _this._name);
             resolve(true);
         });
     };
@@ -5714,7 +5714,7 @@ var Output = (function () {
                         }
                     }
                     if (Output._localRecording) {
-                        internal_1.exec('CallHost', 'pauseRecording');
+                        internal_1.exec('CallHostFunc', 'pauseRecording');
                         resolve(true);
                     }
                     else {
@@ -5747,7 +5747,7 @@ var Output = (function () {
                         }
                     }
                     if (Output._localRecording) {
-                        internal_1.exec('CallHost', 'unpauseRecording');
+                        internal_1.exec('CallHostFunc', 'unpauseRecording');
                         resolve(true);
                     }
                     else {

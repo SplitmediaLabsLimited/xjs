@@ -202,7 +202,7 @@ export class Output {
    */
   static stopLocalRecording(): Promise<boolean> {
     return new Promise((resolve) => {
-      exec('CallHost', 'stopBroadcast', 'Local Recording');
+      exec('CallHostFunc', 'stopBroadcast', 'Local Recording');
       resolve(true);
     })
   }
@@ -214,7 +214,7 @@ export class Output {
    */
   static pauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve) => {
-      exec('CallHost', 'pauseRecording', 'Local Recording');
+      exec('CallHostFunc', 'pauseRecording', 'Local Recording');
       resolve(true);
     });
   }
@@ -226,7 +226,7 @@ export class Output {
    */
   static unpauseLocalRecording(): Promise<boolean> {
     return new Promise((resolve) => {
-      exec('CallHost', 'unpauseRecording', 'Local Recording');
+      exec('CallHostFunc', 'unpauseRecording', 'Local Recording');
       resolve(true);
     })
   }
@@ -285,7 +285,7 @@ export class Output {
         exec('CallHostFunc', 'startBroadcast', this._name, 'suppressPrestreamDialog=1');
         resolve(true);
       } else {
-        exec('CallHost', 'startBroadcast', this._name);
+        exec('CallHostFunc', 'startBroadcast', this._name);
         resolve(true);
       }
     })
@@ -298,7 +298,7 @@ export class Output {
    */
   stopBroadcast(): Promise<boolean> {
     return new Promise(resolve => {
-      exec('CallHost', 'stopBroadcast', this._name);
+      exec('CallHostFunc', 'stopBroadcast', this._name);
       resolve(true);
     })
   }
@@ -322,7 +322,7 @@ export class Output {
             }
           }
           if(Output._localRecording) {
-            exec('CallHost', 'pauseRecording');
+            exec('CallHostFunc', 'pauseRecording');
             resolve(true);
           } else {
             reject(Error('Local recording is not active.'));
@@ -354,7 +354,7 @@ export class Output {
             }
           }
           if(Output._localRecording) {
-            exec('CallHost', 'unpauseRecording');
+            exec('CallHostFunc', 'unpauseRecording');
             resolve(true);
           } else {
             reject(Error('Local recording is not active.'));

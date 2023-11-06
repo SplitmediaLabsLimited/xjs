@@ -17,7 +17,7 @@
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.18",
     "glob": "^5.0.14",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-data": "^1.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-typescript": "^2.7.8",
