@@ -1288,6 +1288,49 @@ var App = (function () {
         });
     };
     /**
+     * return: Promise<number>
+     *
+     * Gets the scene transition volume
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.getTransitionVolume().then(function(res) {
+     *   var transitionVolume = res;
+     * });
+     * ```
+     */
+    App.prototype.getTransitionVolume = function () {
+        return new Promise(function (resolve) {
+            app_1.App.get('transitionvolume').then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    /**
+     * param: volume<number>
+     * ```
+     * return: Promise<boolean>
+     * ```
+     *
+     * Sets the scene transition volume
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * App.setTransitionVolume(volume).then(function(val) {
+     *  var isSet = val;
+     * });
+     * ```
+     */
+    App.prototype.setTransitionVolume = function (volume) {
+        return new Promise(function (resolve) {
+            app_1.App.set('transitionvolume', volume.toString()).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    /**
      * return: Promise<boolean>
      *
      *  Clears all cookies across all browser instances. Not available to
@@ -7277,6 +7320,54 @@ var Scene = (function () {
     /**
      * return: Promise<string>
      *
+     * Get the transition list
+     * Result comma separated list of source scene ids with specific transitions
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getTransitionList().then(function(sourceScene) {
+     *  // do something here
+     * });
+     * ```
+     */
+    Scene.prototype.getTransitionList = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            app_1.App.get('scenetransitionlist:' + _this._refID).then(function (val) {
+                resolve(val);
+            });
+        });
+    };
+    /**
+     * param: (list: string)
+     * Set the transition source scene list.
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.setTransitionList('TODO');
+     * ```
+     */
+    Scene.prototype.setTransitionList = function (list) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Scene transition overrides are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('scenetransitionlist:' + _this._refID, list)
+                    .then(function (value) {
+                    resolve(value);
+                }).catch(function (err) {
+                    reject(Error('Invalid parameter. Only Source Transition List String allowed.'));
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<string>
+     *
+     * param: (sourceScene: any)
+     *
      * Get the transition override of this scene object.
      * Transition overrides take priority over the more generic one from App.GetTransition
      * See also: {@link #core/Transition Core/Transition} and {@link #core/App#getTransition getTransition}
@@ -7290,10 +7381,11 @@ var Scene = (function () {
      * });
      * ```
      */
-    Scene.prototype.getTransitionOverride = function () {
+    Scene.prototype.getTransitionOverride = function (sourceScene) {
         var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
         return new Promise(function (resolve) {
-            app_1.App.get('scenetransitionid:' + _this._refID).then(function (val) {
+            app_1.App.get('scenetransitionid:' + _this._refID + (sourceScene ? ":" + sourceScene : '')).then(function (val) {
                 if (val === '') {
                     resolve(transition_1.Transition.NONE);
                 }
@@ -7329,7 +7421,7 @@ var Scene = (function () {
         });
     };
     /**
-     * param: (value: string)
+     * param: (value: string, sourceScene; string)
      * Set the transition override of this scene object.
      * Transition overrides take priority over the more generic one from App.GetTransition
      * See also: {@link #core/Transition Core/Transition} and {@link #core/App#setTransition setTransition}
@@ -7341,14 +7433,15 @@ var Scene = (function () {
      * myScene.setTransitionOverride('xjs.Transition.CLOCK');
      * ```
      */
-    Scene.prototype.setTransitionOverride = function (value) {
+    Scene.prototype.setTransitionOverride = function (value, sourceScene) {
         var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Scene transition overrides are readonly for source plugins.'));
             }
             else {
-                app_1.App.set('scenetransitionid:' + _this._refID, value instanceof transition_1.Transition ? value.toString() : value)
+                app_1.App.set('scenetransitionid:' + _this._refID + (sourceScene ? ":" + sourceScene : ''), value instanceof transition_1.Transition ? value.toString() : value)
                     .then(function (value) {
                     resolve(value);
                 }).catch(function (err) {
@@ -7359,6 +7452,8 @@ var Scene = (function () {
     };
     /**
      * return: Promise<number>
+     *
+     * param: (sourceScene: any)
      *
      * Get the transition time override of this scene object.
      * The scene transition time override will only take effect
@@ -7373,16 +7468,17 @@ var Scene = (function () {
      * });
      * ```
      */
-    Scene.prototype.getTransitionTime = function () {
+    Scene.prototype.getTransitionTime = function (sourceScene) {
         var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
         return new Promise(function (resolve) {
-            app_1.App.get('scenetransitiontime:' + _this._refID).then(function (val) {
+            app_1.App.get('scenetransitiontime:' + _this._refID + (sourceScene ? ":" + sourceScene : '')).then(function (val) {
                 resolve(Number(val));
             });
         });
     };
     /**
-     * param: (value: string)
+     * param: (value: string, sourceScene: string)
      *
      * Set the transition time override of this scene object.
      * The scene transition time override will only take effect
@@ -7394,14 +7490,69 @@ var Scene = (function () {
      * myScene.setTransitionTime(1000);
      * ```
      */
-    Scene.prototype.setTransitionTime = function (time) {
+    Scene.prototype.setTransitionTime = function (time, sourceScene) {
         var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
         return new Promise(function (resolve, reject) {
             if (environment_1.Environment.isSourcePlugin()) {
                 reject(Error('Scene transition overrides are readonly for source plugins.'));
             }
             else {
-                app_1.App.set('scenetransitiontime:' + _this._refID, String(time)).then(function (value) {
+                app_1.App.set('scenetransitiontime:' + _this._refID + (sourceScene ? ":" + sourceScene : ''), String(time)).then(function (value) {
+                    resolve(value);
+                });
+            }
+        });
+    };
+    /**
+     * return: Promise<number>
+     *
+     * param: (sourceScene: any)
+     *
+     * Get the transition volume override of this scene object.
+     * The scene transition volume override will only take effect
+     * if the scene transition override itself is not equal to ''(Transition.NONE)
+     *
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.getTransitionVolume().then(function(time) {
+     *  // do something here
+     * });
+     * ```
+     */
+    Scene.prototype.getTransitionVolume = function (sourceScene) {
+        var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
+        return new Promise(function (resolve) {
+            app_1.App.get('scenetransitionvolume:' + _this._refID + (sourceScene ? ":" + sourceScene : '')).then(function (val) {
+                resolve(Number(val));
+            });
+        });
+    };
+    /**
+     * param: (value: string, sourceScene: string)
+     *
+     * Set the transition volume override of this scene object.
+     * The scene transition volume override will only take effect
+     * if the scene transition override itself is not equal to ''(Transition.NONE)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * myScene.setTransitionVolume(1000);
+     * ```
+     */
+    Scene.prototype.setTransitionVolume = function (volume, sourceScene) {
+        var _this = this;
+        if (sourceScene === void 0) { sourceScene = ''; }
+        return new Promise(function (resolve, reject) {
+            if (environment_1.Environment.isSourcePlugin()) {
+                reject(Error('Scene transition overrides are readonly for source plugins.'));
+            }
+            else {
+                app_1.App.set('scenetransitionvolume:' + _this._refID + (sourceScene ? ":" + sourceScene : ''), String(volume)).then(function (value) {
                     resolve(value);
                 });
             }

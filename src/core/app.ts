@@ -1363,6 +1363,51 @@ export class App{
   }
 
   /**
+   * return: Promise<number>
+   *
+   * Gets the scene transition volume
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.getTransitionVolume().then(function(res) {
+   *   var transitionVolume = res;
+   * });
+   * ```
+   */
+  getTransitionVolume(): Promise<Number> {
+    return new Promise(resolve => {
+      iApp.get('transitionvolume').then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  /**
+   * param: volume<number>
+   * ```
+   * return: Promise<boolean>
+   * ```
+   *
+   * Sets the scene transition volume
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * App.setTransitionVolume(volume).then(function(val) {
+   *  var isSet = val;
+   * });
+   * ```
+   */
+  setTransitionVolume(volume: number): Promise<boolean> {
+    return new Promise(resolve => {
+      iApp.set('transitionvolume', volume.toString()).then(val => {
+        resolve(val);
+      });
+    });
+  }
+
+  /**
    * return: Promise<boolean>
    *
    *  Clears all cookies across all browser instances. Not available to
