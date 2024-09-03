@@ -4704,6 +4704,18 @@ var Item = (function (_super) {
                 var _a;
             });
         }
+        else if (event === 'item-in-scene-change' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchangeinscene_' + this._id) < 0) {
+            Item._subscriptions.push('itempropchangeinscene_' + this._id);
+            eventmanager_1.EventManager.subscribe('itempropchangeinscene_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-in-scene-change_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
     };
     /**
      * param: (event: string,  handler: Function)
@@ -13167,7 +13179,8 @@ var EventManager = (function () {
                         internal_1.exec('AppSubscribeEvents');
                     }
                     else if (_event.startsWith('itempropchange_') ||
-                        _event.startsWith('itemdestroyed_')) {
+                        _event.startsWith('itemdestroyed_') ||
+                        _event.startsWith('itempropchangeinscene_')) {
                         var itemID = _event.split('_')[1];
                         internal_1.exec('ItemSubscribeEvents', itemID);
                     }
@@ -13184,7 +13197,8 @@ var EventManager = (function () {
                         internal_1.exec('AppSubscribeEvents');
                     }
                     else if (_event.startsWith('itempropchange_') ||
-                        _event.startsWith('itemdestroyed_')) {
+                        _event.startsWith('itemdestroyed_') ||
+                        _event.startsWith('itempropchangeinscene_')) {
                         var itemID = _event.split('_')[1];
                         internal_1.exec('ItemSubscribeEvents', itemID);
                     }
@@ -13201,7 +13215,8 @@ var EventManager = (function () {
                             internal_1.exec('AppSubscribeEvents');
                         }
                         else if (_event.startsWith('itempropchange_') ||
-                            _event.startsWith('itemdestroyed_')) {
+                            _event.startsWith('itemdestroyed_') ||
+                            _event.startsWith('itempropchangeinscene_')) {
                             var itemID = _event.split('_')[1];
                             internal_1.exec('ItemSubscribeEvents', itemID);
                         }

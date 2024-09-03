@@ -142,6 +142,12 @@ export class Item extends Source implements IItemLayout, ISource {
       EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-destroyed_' + this._id, ...eventArgs);
       });
+    } else if (event === 'item-in-scene-change' && isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchangeinscene_' + this._id) < 0) {      
+      Item._subscriptions.push('itempropchangeinscene_' + this._id);
+      EventManager.subscribe('itempropchangeinscene_' + this._id, (...eventArgs) => {
+        Item._emitter.emit('item-in-scene-change_' + this._id, ...eventArgs);
+      });
     }
   }
 
