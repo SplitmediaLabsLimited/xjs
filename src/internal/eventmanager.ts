@@ -40,7 +40,10 @@ export class EventManager {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
                      _event.startsWith('itemdestroyed_') ||
-                     _event.startsWith('itempropchangeinscene_')) {
+                     _event.startsWith('itempropchangeinscene_') ||
+                     _event.startsWith('srcopened_') ||
+                     _event.startsWith('srcclosed_') ||
+                     _event.startsWith('srcassociatedprocessclosed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -58,7 +61,10 @@ export class EventManager {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
                      _event.startsWith('itemdestroyed_') ||
-                     _event.startsWith('itempropchangeinscene_')) {
+                     _event.startsWith('itempropchangeinscene_') ||
+                     _event.startsWith('srcopened_') ||
+                     _event.startsWith('srcclosed_') ||
+                     _event.startsWith('srcassociatedprocessclosed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -76,7 +82,10 @@ export class EventManager {
               exec('AppSubscribeEvents');
             } else if (_event.startsWith('itempropchange_') ||
                        _event.startsWith('itemdestroyed_') ||
-                       _event.startsWith('itempropchangeinscene_')) {
+                       _event.startsWith('itempropchangeinscene_') ||
+                       _event.startsWith('srcopened_') ||
+                       _event.startsWith('srcclosed_') ||
+                       _event.startsWith('srcassociatedprocessclosed_')) {
               let itemID = _event.split('_')[1];
               exec('ItemSubscribeEvents', itemID);
             }
@@ -168,7 +177,7 @@ window.OnEvent = (event, item, ...eventArgs ) => {
   if(event === 'itemremovedfromscene' && versionCompare(getVersion()).
   is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
     event = 'itemdestroyed'
-  }
+  }  
 
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;

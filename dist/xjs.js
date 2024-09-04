@@ -4716,6 +4716,42 @@ var Item = (function (_super) {
                 var _a;
             });
         }
+        else if (event === 'item-source-opened' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('srcopened_' + this._id) < 0) {
+            Item._subscriptions.push('srcopened_' + this._id);
+            eventmanager_1.EventManager.subscribe('srcopened_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-source-opened_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
+        else if (event === 'item-source-closed' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('srcclosed_' + this._id) < 0) {
+            Item._subscriptions.push('srcclosed_' + this._id);
+            eventmanager_1.EventManager.subscribe('srcclosed_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-source-closed_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
+        else if (event === 'item-process-closed' && isItemSubscribeEventsSupported &&
+            !environment_1.Environment.isSourceProps() && Item._subscriptions.indexOf('srcassociatedprocessclosed_' + this._id) < 0) {
+            Item._subscriptions.push('srcassociatedprocessclosed_' + this._id);
+            eventmanager_1.EventManager.subscribe('srcassociatedprocessclosed_' + this._id, function () {
+                var eventArgs = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    eventArgs[_i - 0] = arguments[_i];
+                }
+                (_a = Item._emitter).emit.apply(_a, ['item-process-closed_' + _this._id].concat(eventArgs));
+                var _a;
+            });
+        }
     };
     /**
      * param: (event: string,  handler: Function)
@@ -13180,7 +13216,10 @@ var EventManager = (function () {
                     }
                     else if (_event.startsWith('itempropchange_') ||
                         _event.startsWith('itemdestroyed_') ||
-                        _event.startsWith('itempropchangeinscene_')) {
+                        _event.startsWith('itempropchangeinscene_') ||
+                        _event.startsWith('srcopened_') ||
+                        _event.startsWith('srcclosed_') ||
+                        _event.startsWith('srcassociatedprocessclosed_')) {
                         var itemID = _event.split('_')[1];
                         internal_1.exec('ItemSubscribeEvents', itemID);
                     }
@@ -13198,7 +13237,10 @@ var EventManager = (function () {
                     }
                     else if (_event.startsWith('itempropchange_') ||
                         _event.startsWith('itemdestroyed_') ||
-                        _event.startsWith('itempropchangeinscene_')) {
+                        _event.startsWith('itempropchangeinscene_') ||
+                        _event.startsWith('srcopened_') ||
+                        _event.startsWith('srcclosed_') ||
+                        _event.startsWith('srcassociatedprocessclosed_')) {
                         var itemID = _event.split('_')[1];
                         internal_1.exec('ItemSubscribeEvents', itemID);
                     }
@@ -13216,7 +13258,10 @@ var EventManager = (function () {
                         }
                         else if (_event.startsWith('itempropchange_') ||
                             _event.startsWith('itemdestroyed_') ||
-                            _event.startsWith('itempropchangeinscene_')) {
+                            _event.startsWith('itempropchangeinscene_') ||
+                            _event.startsWith('srcopened_') ||
+                            _event.startsWith('srcclosed_') ||
+                            _event.startsWith('srcassociatedprocessclosed_')) {
                             var itemID = _event.split('_')[1];
                             internal_1.exec('ItemSubscribeEvents', itemID);
                         }
