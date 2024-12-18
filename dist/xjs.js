@@ -9987,6 +9987,14 @@ var iSourceHtml = (function () {
             });
         });
     };
+    iSourceHtml.prototype.getPolicyStringFunction = function (customCSS) {
+        var retrievedPolicyStringFunction = '';
+        if (window.trustedTypes) {
+            retrievedPolicyStringFunction =
+                "var retrievedPolicy = null;\n        if (window.trustedTypes) {                          \n          if (window.trustedTypes.defaultPolicy === null) {\n            retrievedPolicy = window.trustedTypes.createPolicy('default', {\n              createHTML: (input) => { return input; },\n              createScriptURL: (input) => { return input; },\n              createScript: (input) => { return input; }, \n            });            \n          } else {\n            retrievedPolicy = window.trustedTypes.defaultPolicy;\n          }          \n        }  \n        \n        var h = document.querySelector('head');\n        var existing = document.querySelector('head #splitmedialabsCSSOverwrite');\n        if (existing != null) h.removeChild(existing);\n        var xjsCSSOverwrite = document.createElement(\"style\");\n        xjsCSSOverwrite.id = \"splitmedialabsCSSOverwrite\";\n        xjsCSSOverwrite.type = \"text/css\";\n        xjsCSSOverwrite.innerHTML = \"" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "\";\n        var xjsCSSOverwriteHTML = retrievedPolicy.createHTML(xjsCSSOverwrite.outerHTML);\n        \n        if (xjsCSSOverwriteHTML) {\n          const htmlString = xjsCSSOverwriteHTML.toString();\n          const parser = new DOMParser();\n          const doc = parser.parseFromString(htmlString, 'text/html');\n          const styleElement = doc.querySelector('style');\n          if (styleElement) {            \n            h.appendChild(styleElement);\n          }\n        }        \n        ";
+        }
+        return retrievedPolicyStringFunction;
+    };
     iSourceHtml.prototype.setBrowserJS = function (value, refresh) {
         var _this = this;
         if (refresh === void 0) { refresh = false; }
@@ -10025,6 +10033,10 @@ var iSourceHtml = (function () {
                 customObject['customJS'] = value;
                 if (cssEnabled === true) {
                     var cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "';h.appendChild(xjsCSSOverwrite);";
+                    var retrievedPolicyFunction = _this.getPolicyStringFunction(customCSS);
+                    if (retrievedPolicyFunction) {
+                        cssScript = retrievedPolicyFunction;
+                    }
                     scriptString = scriptString + cssScript;
                 }
                 if (value !== '' && scriptEnabled === true) {
@@ -10118,6 +10130,10 @@ var iSourceHtml = (function () {
                         customCSS.replace(/(\r\n|\n|\r)/gm, '')
                             .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + '";"' +
                         'h.appendChild(xjsCSSOverwrite);';
+                    var retrievedPolicyFunction = _this.getPolicyStringFunction(customCSS);
+                    if (retrievedPolicyFunction) {
+                        cssScript = retrievedPolicyFunction;
+                    }
                     scriptString = scriptString + cssScript;
                 }
                 if (customJS !== '' && value === true) {
@@ -10211,6 +10227,10 @@ var iSourceHtml = (function () {
                         value.replace(/(\r\n|\n|\r)/gm, '')
                             .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
                         '";h.appendChild(xjsCSSOverwrite);';
+                    var retrievedPolicyFunction = _this.getPolicyStringFunction(value);
+                    if (retrievedPolicyFunction) {
+                        cssScript = retrievedPolicyFunction;
+                    }
                     scriptString = scriptString + cssScript;
                 }
                 if (customJS !== '' && scriptEnabled === true) {
@@ -10297,6 +10317,10 @@ var iSourceHtml = (function () {
                         customCSS.replace(/(\r\n|\n|\r)/gm, '')
                             .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
                         '";h.appendChild(xjsCSSOverwrite);';
+                    var retrievedPolicyFunction = _this.getPolicyStringFunction(customCSS);
+                    if (retrievedPolicyFunction) {
+                        cssScript = retrievedPolicyFunction;
+                    }
                     scriptString = scriptString + cssScript;
                 }
                 if (customJS !== '' && value === scriptEnabled) {
