@@ -594,9 +594,9 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  getPosition():Promise<Rectangle> {
+  getPosition(output: number = 0):Promise<Rectangle> {
     return new Promise(resolve => {
-      iItem.get('prop:pos', this._id).then(val => {
+      iItem.get(`prop:pos:${output}`, this._id).then(val => {
         var [left, top, right, bottom] = String(val).split(',');
         this.position = Rectangle.fromCoordinates(Number(left), Number(top),
           Number(right), Number(bottom));
@@ -607,8 +607,7 @@ export class ItemLayout implements IItemLayout {
 
   setPosition(value: Rectangle, output: number = 0): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      try {        
-        console.log('output', output);
+      try {                
         iItem.set(`prop:pos:${output}`, value.toCoordinateString(), this._id).then(() => {
           resolve(this);
         });

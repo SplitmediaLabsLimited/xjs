@@ -3893,10 +3893,11 @@ var ItemLayout = (function () {
             });
         });
     };
-    ItemLayout.prototype.getPosition = function () {
+    ItemLayout.prototype.getPosition = function (output) {
         var _this = this;
+        if (output === void 0) { output = 0; }
         return new Promise(function (resolve) {
-            item_1.Item.get('prop:pos', _this._id).then(function (val) {
+            item_1.Item.get("prop:pos:" + output, _this._id).then(function (val) {
                 var _a = String(val).split(','), left = _a[0], top = _a[1], right = _a[2], bottom = _a[3];
                 _this.position = rectangle_1.Rectangle.fromCoordinates(Number(left), Number(top), Number(right), Number(bottom));
                 resolve(_this.position);
@@ -3908,7 +3909,6 @@ var ItemLayout = (function () {
         if (output === void 0) { output = 0; }
         return new Promise(function (resolve, reject) {
             try {
-                console.log('output', output);
                 item_1.Item.set("prop:pos:" + output, value.toCoordinateString(), _this._id).then(function () {
                     resolve(_this);
                 });
