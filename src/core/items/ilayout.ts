@@ -607,10 +607,9 @@ export class ItemLayout implements IItemLayout {
 
   setPosition(value: Rectangle, output: number = 0): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      try {
-        var prop = output !== null && output !== undefined ? `prop:pos:${output}` : 'prop:pos';
-        console.log('prop', prop);
-        iItem.set(prop, value.toCoordinateString(), this._id).then(() => {
+      try {        
+        console.log('output', output);
+        iItem.set(`prop:pos:${output}`, value.toCoordinateString(), this._id).then(() => {
           resolve(this);
         });
       } catch(err) {

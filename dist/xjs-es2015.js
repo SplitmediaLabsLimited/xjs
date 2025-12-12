@@ -3908,9 +3908,8 @@ var ItemLayout = (function () {
         if (output === void 0) { output = 0; }
         return new Promise(function (resolve, reject) {
             try {
-                var prop = output !== null && output !== undefined ? "prop:pos:" + output : 'prop:pos';
-                console.log('prop', prop);
-                item_1.Item.set(prop, value.toCoordinateString(), _this._id).then(function () {
+                console.log('output', output);
+                item_1.Item.set("prop:pos:" + output, value.toCoordinateString(), _this._id).then(function () {
                     resolve(_this);
                 });
             }
