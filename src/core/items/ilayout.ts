@@ -129,7 +129,7 @@ export interface IItemLayout {
   getPosition(): Promise<Rectangle>;
 
   /**
-   * param: (value: Rectangle)
+   * param: (value: Rectangle, output: number = 0)
    *
    * Set Item Position. Relative coordinates (0-1) are required.
    *
@@ -605,10 +605,12 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  setPosition(value: Rectangle): Promise<ItemLayout> {
+  setPosition(value: Rectangle, output: number = 0): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
       try {
-        iItem.set('prop:pos', value.toCoordinateString(), this._id).then(() => {
+        var prop = output !== null && output !== undefined ? `prop:pos:${output}` : 'prop:pos';
+        console.log('prop', prop);
+        iItem.set(prop, value.toCoordinateString(), this._id).then(() => {
           resolve(this);
         });
       } catch(err) {

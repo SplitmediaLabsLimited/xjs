@@ -3903,11 +3903,14 @@ var ItemLayout = (function () {
             });
         });
     };
-    ItemLayout.prototype.setPosition = function (value) {
+    ItemLayout.prototype.setPosition = function (value, output) {
         var _this = this;
+        if (output === void 0) { output = 0; }
         return new Promise(function (resolve, reject) {
             try {
-                item_1.Item.set('prop:pos', value.toCoordinateString(), _this._id).then(function () {
+                var prop = output !== null && output !== undefined ? "prop:pos:" + output : 'prop:pos';
+                console.log('prop', prop);
+                item_1.Item.set(prop, value.toCoordinateString(), _this._id).then(function () {
                     resolve(_this);
                 });
             }
