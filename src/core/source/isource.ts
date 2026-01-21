@@ -222,7 +222,7 @@ export interface ISource {
   /**
    * return: Promise<string>
    *
-   * Get the Source ID of the source.
+   * Get the Source ID of the source. This yields the same value as {@link #core/ISource#getSourceId getSourceId}
    * *Available only on XSplit Broadcaster versions higher than 2.8.1603.0401*
    *
    * #### Usage
@@ -234,6 +234,22 @@ export interface ISource {
    * ```
    */
   getId(): Promise<string>
+
+  /**
+   * return: Promise<string>
+   *
+   * Get the Source ID of the source.
+   * *Available only on XSplit Broadcaster versions higher than 2.8.1603.0401*
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * source.getSourceId().then(function(id) {
+   *   // The rest of your code here
+   * });
+   * ```
+   */
+  getSourceId(): Promise<string>
 
   /**
    *  return: Promise<ISource>
@@ -526,6 +542,19 @@ export class iSource implements ISource{
             resolve(srcid);
           });
         }
+      }
+    });
+  }
+
+  getSourceId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        reject(Error('Only available on versions above ' + minVersion));
+      } else {
+      iItem.wrapGet('prop:srcid', this._srcId, this._id, this._updateId.bind(this))
+      .then(srcid => {
+          resolve(srcid);
+        });
       }
     });
   }
