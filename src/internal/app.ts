@@ -15,7 +15,7 @@ export class App {
   }
 
   /** Sets the value of a property */
-  static set(name: string, value: string): Promise<Boolean> {
+  static set(name: string, value: string): Promise<boolean> {
     return new Promise(resolve => {
       exec('AppSetPropertyAsync', name, value, ret => {
         resolve(Number(ret) < 0 ? false : true);

@@ -3,7 +3,7 @@ export declare class App {
     /** Get the value of the given property */
     static get(name: string): Promise<string>;
     /** Sets the value of a property */
-    static set(name: string, value: string): Promise<Boolean>;
+    static set(name: string, value: string): Promise<boolean>;
     /** Gets the value of the given property as list */
     static getAsList(name: string): Promise<JXON[]>;
     /** Gets all the items of the given condition as list */
