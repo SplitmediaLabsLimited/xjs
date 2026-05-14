@@ -57,6 +57,23 @@ section h2 {
   margin: 0 0 12px;
 }
 
+section h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.docs-fixtures {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-top: 18px;
+}
+
+.docs-fixtures > div {
+  border: 1px solid #d8dee6;
+  padding: 12px;
+}
+
 dl {
   display: grid;
   gap: 10px;
@@ -93,6 +110,72 @@ button,
   font: inherit;
   padding: 8px 12px;
   text-decoration: none;
+}
+
+.navigation,
+.quicklink {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation {
+  border: 1px solid #d8dee6;
+}
+
+.navigation a,
+.quicklink a {
+  color: #17202a;
+  display: block;
+  text-decoration: none;
+}
+
+.navigation a {
+  padding: 8px 10px;
+}
+
+.navigation ul {
+  background: #f6f8fb;
+  border-top: 1px solid #d8dee6;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation ul a {
+  padding-left: 24px;
+}
+
+.navigation li + li,
+.navigation ul li + li {
+  border-top: 1px solid #d8dee6;
+}
+
+.quicklink li + li {
+  margin-top: 8px;
+}
+
+.quicklink a {
+  border: 1px solid #d8dee6;
+  padding: 10px;
+}
+
+.grey {
+  color: #697586;
+  display: block;
+  font-size: 12px;
+}
+
+#search-container {
+  min-height: 40px;
+}
+
+#search {
+  border: 1px solid #d8dee6;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 8px;
+  width: 100%;
 }
 
 pre {

@@ -86,6 +86,14 @@
     });
   }
 
+  function assertFixtureSelectors(fixture, element) {
+    (fixture.expectedSelectors || []).forEach(function(selector) {
+      if (!element.querySelector(selector)) {
+        throw new Error(fixture.id + ' missing expected selector: ' + selector);
+      }
+    });
+  }
+
   function assertFixtureLayout(fixture, element) {
     if (!fixture.minBoundingBox) {
       return null;
@@ -193,6 +201,7 @@
           }
           assertFixtureText(fixture, element);
           assertFixtureLinks(fixture, element);
+          assertFixtureSelectors(fixture, element);
           var bounds = assertFixtureLayout(fixture, element);
           return {
             id: fixture.id,
@@ -200,6 +209,7 @@
             ready: fixture.readyAttribute ? element.getAttribute(fixture.readyAttribute) : null,
             text: element.textContent.trim().replace(/\s+/g, ' '),
             linkCount: element.querySelectorAll('a').length,
+            selectorCount: fixture.expectedSelectors ? fixture.expectedSelectors.length : 0,
             bounds: bounds,
           };
         });
