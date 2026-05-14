@@ -7,7 +7,7 @@ const vendor = resolve(out, 'vendor');
 
 await rm(out, { recursive: true, force: true });
 await mkdir(vendor, { recursive: true });
-await cp(resolve(root, 'docs/app'), out, { recursive: true });
+await cp(resolve(root, 'docs-old/app'), out, { recursive: true });
 
 const vendorFiles = [
   ['node_modules/angular/angular.js', 'angular/angular.js'],
