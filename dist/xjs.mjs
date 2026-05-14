@@ -12930,7 +12930,7 @@ class App {
   }
   // Audio Services
   /**
-   * return: Promise<AudioDevice[]>
+   * return: Promise<AudioDevice>
    *
    * Gets the primary microphone device used in the application
    *
@@ -12959,7 +12959,7 @@ class App {
     });
   }
   /**
-   * return: Promise<AudioDevice[]>
+   * return: Promise<AudioDevice>
    *
    * Gets the primary speaker/audio render device used in the application
    *

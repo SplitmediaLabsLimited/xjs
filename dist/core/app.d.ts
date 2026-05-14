@@ -105,7 +105,7 @@ export declare class App {
      */
     getFramesRendered(): Promise<number>;
     /**
-     * return: Promise<AudioDevice[]>
+     * return: Promise<AudioDevice>
      *
      * Gets the primary microphone device used in the application
      *
@@ -119,9 +119,9 @@ export declare class App {
      * });
      * ```
      */
-    getPrimaryMic(): Promise<AudioDevice[]>;
+    getPrimaryMic(): Promise<AudioDevice>;
     /**
-     * return: Promise<AudioDevice[]>
+     * return: Promise<AudioDevice>
      *
      * Gets the primary speaker/audio render device used in the application
      *
@@ -135,7 +135,7 @@ export declare class App {
      * });
      * ```
      */
-    getPrimarySpeaker(): Promise<AudioDevice[]>;
+    getPrimarySpeaker(): Promise<AudioDevice>;
     /**
      * param: volume<number> (0 to 100 normal range, > 100 will boost volume level)
      * ```

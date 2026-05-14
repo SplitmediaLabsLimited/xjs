@@ -13106,7 +13106,7 @@ var XJS = (function(exports) {
     }
     // Audio Services
     /**
-     * return: Promise<AudioDevice[]>
+     * return: Promise<AudioDevice>
      *
      * Gets the primary microphone device used in the application
      *
@@ -13135,7 +13135,7 @@ var XJS = (function(exports) {
       });
     }
     /**
-     * return: Promise<AudioDevice[]>
+     * return: Promise<AudioDevice>
      *
      * Gets the primary speaker/audio render device used in the application
      *

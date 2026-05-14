@@ -174,7 +174,7 @@ export class App{
   // Audio Services
 
   /**
-   * return: Promise<AudioDevice[]>
+   * return: Promise<AudioDevice>
    *
    * Gets the primary microphone device used in the application
    *
@@ -188,7 +188,7 @@ export class App{
    * });
    * ```
    */
-  getPrimaryMic(): Promise<AudioDevice[]> {
+  getPrimaryMic(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
@@ -205,7 +205,7 @@ export class App{
   }
 
   /**
-   * return: Promise<AudioDevice[]>
+   * return: Promise<AudioDevice>
    *
    * Gets the primary speaker/audio render device used in the application
    *
@@ -219,7 +219,7 @@ export class App{
    * });
    * ```
    */
-  getPrimarySpeaker(): Promise<AudioDevice[]> {
+  getPrimarySpeaker(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('microphonedev2').then(arr => {
         var audioDevices = arr.map(val => {
