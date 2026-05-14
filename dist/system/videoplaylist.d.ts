@@ -1,4 +1,5 @@
 import { Addable } from './iaddable';
+import { XML } from '../internal/util/xml';
 import { Scene } from '../core/scene';
 /**
  *  Special class for adding a video playlist to the stage.
@@ -30,7 +31,7 @@ export declare class VideoPlaylist implements Addable {
      * Creates an XML object with the playlist properties. This method is used
      * internally for the `addToScene` method.
      */
-    toXML(): Promise<string>;
+    toXML(): Promise<XML>;
     /**
      * param: (value?: number | Scene)
      * ```

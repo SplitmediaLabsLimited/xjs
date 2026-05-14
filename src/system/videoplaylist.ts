@@ -46,7 +46,7 @@ export class VideoPlaylist implements Addable {
    * internally for the `addToScene` method.
    */
 
-  toXML(): Promise<string> {
+  toXML(): Promise<XML> {
 
     return new Promise((resolve, reject) => {
       let filePromises = this._playlist.map((filename) => {
