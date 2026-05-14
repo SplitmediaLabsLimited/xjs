@@ -20,6 +20,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 
 ## Current Checkpoints
 
+- Bower package files, component directories, package metadata, and HTML imports are absent from active source and guarded by smoke tests.
 - Vite library builds generate ESM, CommonJS, browser, minified browser, and type outputs.
 - Generated modern `dist/` outputs are ignored by git; release validation regenerates them before packing.
 - The examples server exposes `/examples/` and `/xsplit-extension/index.html` on port `3999`.
