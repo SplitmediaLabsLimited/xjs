@@ -8,7 +8,7 @@
     "prepare": "npm run build",
     "docs:dev": "astro dev --root docs",
     "docs:check": "node scripts/check-docs.mjs",
-    "docs:build": "npm run docs:check && astro build --root docs",
+    "docs:build": "node scripts/build-docs.mjs",
     "docs:legacy:build": "node scripts/build-legacy-docs.mjs",
     "examples": "node scripts/serve-examples.mjs",
     "test": "npm run test:smoke",

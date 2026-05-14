@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 const root = new URL('../..', import.meta.url);
 const docsReadme = await readFile(new URL('docs-old/README.md', root), 'utf8');
 const buildDocs = await readFile(new URL('scripts/build-legacy-docs.mjs', root), 'utf8');
+const buildNewDocs = await readFile(new URL('scripts/build-docs.mjs', root), 'utf8');
 const docsConfig = await readFile(new URL('docs/astro.config.mjs', root), 'utf8');
 const docsCheck = await readFile(new URL('scripts/check-docs.mjs', root), 'utf8');
 const pagesWorkflow = await readFile(new URL('.github/workflows/pages.yml', root), 'utf8');
@@ -49,7 +50,7 @@ assert.equal(pkg.scripts['docs:legacy:build'], 'node scripts/build-legacy-docs.m
 assert.equal(pkg.scripts['docs:check'], 'node scripts/check-docs.mjs');
 assert.equal(
   pkg.scripts['docs:build'],
-  'npm run docs:check && astro build --root docs',
+  'node scripts/build-docs.mjs',
   'new docs build should target the Starlight site'
 );
 assert.match(pkg.scripts['docs:dev'], /astro dev --root docs/);
@@ -73,6 +74,16 @@ for (const expected of [
   "outDir: '../dist/docs'",
 ]) {
   assert.match(docsConfig, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+for (const expected of [
+  'scripts/check-docs.mjs',
+  'docs/.astro',
+  'docs/src/content/docs/api',
+  'docs/src/content/docs/internals',
+  "['build', '--root', 'docs']",
+]) {
+  assert.match(buildNewDocs, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 for (const expected of [
