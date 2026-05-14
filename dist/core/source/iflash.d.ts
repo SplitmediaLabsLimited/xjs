@@ -1,4 +1,5 @@
 import { Rectangle } from '../../util/rectangle';
+import { XML } from '../../internal/util/xml';
 export interface ISourceFlash {
     /**
      * return: Promise<Rectangle>
@@ -86,7 +87,7 @@ export interface ISourceFlash {
      * });
      * ```
      */
-    getValue(): Promise<string>;
+    getValue(): Promise<string | XML>;
     /**
      * param: (value: string)
      * ```

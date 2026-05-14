@@ -5,6 +5,7 @@ import {Environment} from '../environment';
 import {Logger} from '../../internal/util/logger';
 import {System} from '../../system/system';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
+import {XML} from '../../internal/util/xml';
 
 export interface ISourceAudio {
 
@@ -80,7 +81,7 @@ export interface ISourceAudio {
    * });
    * ```
    */
-  getValue(): Promise<string>;
+  getValue(): Promise<string | XML>;
 
   /**
    * param: (value: string)

@@ -1,6 +1,7 @@
 import { Rectangle } from '../../util/rectangle';
 import { MicrophoneDevice as MicrophoneDevice } from '../../system/microphone';
 import { CameraSource } from '../source/camera';
+import { XML } from '../../internal/util/xml';
 export interface ISourceCamera {
     /**
      * return: Promise<string>
@@ -104,7 +105,7 @@ export interface ISourceCamera {
      * });
      * ```
      */
-    getValue(): Promise<string>;
+    getValue(): Promise<string | XML>;
     /**
      * param: (value: string)
      * ```

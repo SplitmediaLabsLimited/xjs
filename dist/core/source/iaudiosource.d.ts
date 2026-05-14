@@ -1,3 +1,4 @@
+import { XML } from '../../internal/util/xml';
 export interface ISourceAudio {
     /**
      * return: Promise<boolean>
@@ -63,7 +64,7 @@ export interface ISourceAudio {
      * });
      * ```
      */
-    getValue(): Promise<string>;
+    getValue(): Promise<string | XML>;
     /**
      * param: (value: string)
      * ```

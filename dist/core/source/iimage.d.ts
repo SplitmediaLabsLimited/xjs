@@ -1,3 +1,4 @@
+import { XML } from '../../internal/util/xml';
 export interface ISourceImage {
     /**
      * return: Promise<boolean>
@@ -27,7 +28,7 @@ export interface ISourceImage {
      * });
      * ```
      */
-    getValue(): Promise<string>;
+    getValue(): Promise<string | XML>;
     /**
      * param: (value: string)
      * ```

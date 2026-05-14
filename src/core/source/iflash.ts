@@ -3,6 +3,7 @@
 import {Item as iItem} from '../../internal/item';
 import {Rectangle} from '../../util/rectangle';
 import {Logger} from '../../internal/util/logger';
+import {XML} from '../../internal/util/xml';
 
 export interface ISourceFlash {
   /**
@@ -96,7 +97,7 @@ export interface ISourceFlash {
    * });
    * ```
    */
-  getValue(): Promise<string>;
+  getValue(): Promise<string | XML>;
 
   /**
    * param: (value: string)

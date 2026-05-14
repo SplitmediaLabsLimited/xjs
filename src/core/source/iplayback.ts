@@ -3,6 +3,7 @@
 import {Item as iItem} from '../../internal/item';
 import {CuePoint} from './cuepoint';
 import {Logger} from '../../internal/util/logger';
+import {XML} from '../../internal/util/xml';
 
 /**
  *  Used by sources that implement the Playback interface.
@@ -239,7 +240,7 @@ export interface ISourcePlayback {
    * });
    * ```
    */
-  getValue(): Promise<string>;
+  getValue(): Promise<string | XML>;
 
   /**
    * param: (value: string)

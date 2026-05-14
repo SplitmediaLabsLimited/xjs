@@ -8,6 +8,7 @@ import {CameraDevice as CameraDevice} from '../../system/camera';
 import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';
 import {Logger} from '../../internal/util/logger';
+import {XML} from '../../internal/util/xml';
 
 const _delayExclusionObject = {
   roxio: "vid_1b80&pid_e0(01|11|12)",
@@ -131,7 +132,7 @@ export interface ISourceCamera {
    * });
    * ```
    */
-  getValue(): Promise<string>;
+  getValue(): Promise<string | XML>;
 
   /**
    * param: (value: string)
