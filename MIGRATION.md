@@ -11,6 +11,12 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 - Keep TypeScript 6 compatibility as the baseline so the project is positioned for TS-go when it becomes practical.
 - Grow regression coverage around package entry points, browser bundles, component fixtures, and XSplit CDP runs.
 
+## API Stability Constraint
+
+This modernization run must preserve the public XJS API. Do not remove exports, rename classes, rename methods, change method signatures, change package entry semantics, or intentionally alter existing runtime behavior as part of Bower removal, Vite migration, ESM transition, TypeScript hardening, or regression-test work.
+
+When existing behavior is awkward or legacy-shaped, add modern regression coverage around the behavior first and defer any API redesign to a separately planned major-version effort. Compatibility fixes for packaging and CEF output are allowed, but public API changes require explicit approval and a migration plan.
+
 ## Compatibility Targets
 
 - Modern bundlers: import from the package root through the conditional ESM export.
