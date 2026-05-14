@@ -28,14 +28,6 @@ npm run test:xsplit:cdp:attached
 
 That wrapper navigates an existing XSplit CEF target to `http://localhost:3999/xsplit-extension/index.html`. Each run writes timestamped artifacts under `artifacts/xsplit-cdp/` and updates `artifacts/xsplit-cdp/latest-summary.json` with the latest result path, pass/fail state, browser metadata, and screenshot path.
 
-To inspect which older timestamped CDP runs can be pruned:
-
-```sh
-npm run artifacts:xsplit:prune
-```
-
-The prune command defaults to dry-run mode, keeps the run referenced by `latest-summary.json`, and keeps the five newest timestamped runs. Set `XJS_CDP_ARTIFACT_KEEP=<count>` to change the retention count. Add `-- --yes` to delete the listed older run directories.
-
 ## Release build notes
 
 Generated modern package artifacts are intentionally ignored by git. Run `npm run build` before any local package validation or publish flow. The build regenerates `dist/xjs.mjs`, `dist/xjs.cjs`, `dist/xjs.js`, `dist/xjs.min.js`, and `dist/index.d.ts` from `src/`.
