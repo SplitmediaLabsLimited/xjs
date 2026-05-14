@@ -12,6 +12,7 @@
     "test:components": "web-test-runner --config web-test-runner.config.mjs",
     "test:legacy": "karma start --single-run --browsers Firefox",
     "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
+    "test:xsplit:cdp:attached": "node scripts/xsplit-cdp-attached.mjs",
     "pack:check": "npm run build && npm pack --dry-run"
   },
   "main": "./dist/xjs.cjs",

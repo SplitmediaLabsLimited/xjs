@@ -21,7 +21,11 @@ const fallbackTargetPrefixes = (process.env.XJS_EXTENSION_FALLBACK_URL_PREFIXES 
   .map(item => item.trim())
   .filter(Boolean);
 const allowNavigate = process.env.XJS_EXTENSION_ALLOW_NAVIGATE !== '0';
-const artifactDir = resolve('artifacts/xsplit-cdp', new Date().toISOString().replace(/[:.]/g, '-'));
+const artifactRoot = resolve('artifacts/xsplit-cdp');
+const artifactName = new Date().toISOString().replace(/[:.]/g, '-');
+const artifactDir = resolve(artifactRoot, artifactName);
+const artifactRelativeDir = `artifacts/xsplit-cdp/${artifactName}`;
+const latestSummaryPath = resolve(artifactRoot, 'latest-summary.json');
 
 let nextId = 1;
 const pending = new Map();
@@ -132,6 +136,19 @@ async function writeArtifacts(payload, screenshotBuffer, hasFailures) {
       await writeFile(resolve(artifactDir, 'failure.png'), screenshotBuffer);
     }
   }
+  await writeFile(latestSummaryPath, JSON.stringify({
+    runAt: new Date().toISOString(),
+    passed: !hasFailures,
+    artifactDirectory: artifactRelativeDir,
+    resultsPath: `${artifactRelativeDir}/results.json`,
+    screenshotPath: screenshotBuffer ? `${artifactRelativeDir}/screenshot.png` : null,
+    browser: payload.diagnostics.cdp.version.Browser,
+    userAgent: payload.diagnostics.cdp.version['User-Agent'],
+    navigateUrl: payload.diagnostics.cdp.navigateUrl || null,
+    targetUrl: payload.target?.url || null,
+    resultCount: Array.isArray(payload.results) ? payload.results.length : 0,
+    failureCount: payload.failures.length,
+  }, null, 2));
 }
 
 const version = await getJson(versionUrl);
