@@ -9,5 +9,5 @@ export declare class EventEmitter {
     /** This function lets an event trigger with any number of supplied parameters. */
     emit(event: string, ...params: any[]): void;
     static _setCallback(message: string): Promise<unknown>;
-    static _finalCallback(message: string): Promise<unknown>;
+    static _finalCallback(message: string): Promise<void>;
 }

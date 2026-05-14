@@ -21,7 +21,7 @@ export declare class Render {
     private static fpsInterval;
     static then: any[];
     static setCanvas(canvas: any, fps?: any): Promise<unknown>;
-    static drawToTexture(canvasIndex: any, sceneIndex: any): Promise<unknown>;
+    static drawToTexture(canvasIndex: any, sceneIndex: any): Promise<void>;
     static initializeCanvas(canvasIndex: any): void;
     static setCanvasToUseView(canvasIndex: any, sceneId: any): Promise<any>;
     static startStopRender(shouldRender: any, canvasIndex?: any): Promise<unknown>;

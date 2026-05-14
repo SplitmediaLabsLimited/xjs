@@ -48,7 +48,7 @@ export class Render {
     // }
 
     static testCanvasToUse(canvasIndex, sceneId) {
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         iRender.drawToTexture(canvasIndex, sceneId).then(res => {
           resolve()
         })

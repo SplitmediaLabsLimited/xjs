@@ -506,13 +506,13 @@ export class Scene {
 
         if (typeof func === 'function') {
           return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise(resolveScene => {
+            return new Promise<void>(resolveScene => {
               scene.getItems().then(items => {
                 if (items.length === 0) {
                   resolveScene();
                 } else {
                   return Promise.all(items.map(item => {
-                    return new Promise(resolveItem => {
+                    return new Promise<void>(resolveItem => {
                       func(item, (checker: boolean) => {
                         if (checker) {
                           matches.push(item);
@@ -565,13 +565,13 @@ export class Scene {
         let matches: Scene[] = [];
         if (typeof func === 'function') {
           return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise(resolveScene => {
+            return new Promise<void>(resolveScene => {
               scene.getItems().then(items => {
                 if (items.length === 0) {
                   resolveScene();
                 } else {
                   return Promise.all(items.map(item => {
-                    return new Promise(resolveItem => {
+                    return new Promise<void>(resolveItem => {
                       func(item, (checker: boolean) => {
                         if (checker) {
                           matches.push(scene);
@@ -807,13 +807,13 @@ export class Scene {
 
         if (typeof func === 'function') {
           return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise(resolveScene => {
+            return new Promise<void>(resolveScene => {
               scene.getSources().then(sources => {
                 if (sources.length === 0) {
                   resolveScene();
                 } else {
                   return Promise.all(sources.map(source => {
-                    return new Promise(resolveSource => {
+                    return new Promise<void>(resolveSource => {
                       func(source, (checker: boolean) => {
                         if (checker) {
                           matches.push(source);
@@ -866,13 +866,13 @@ export class Scene {
         let matches: Scene[] = [];
         if (typeof func === 'function') {
           return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise(resolveScene => {
+            return new Promise<void>(resolveScene => {
               scene.getSources().then(sources => {
                 if (sources.length === 0) {
                   resolveScene();
                 } else {
                   return Promise.all(sources.map(source => {
-                    return new Promise(resolveSource => {
+                    return new Promise<void>(resolveSource => {
                       func(source, (checker: boolean) => {
                         if (checker) {
                           matches.push(scene);

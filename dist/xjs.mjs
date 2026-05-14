@@ -1683,7 +1683,7 @@ function ready(config) {
     }
     if (Remote.remoteType === "remote") {
       readyResolve = () => {
-        resolve2();
+        resolve2(void 0);
       };
       Remote.sendMessage("getVersion");
     } else {

@@ -1259,7 +1259,7 @@ export class ItemLayout implements IItemLayout {
           forwardStep = itemsLength - 1 - itemIndex;
         }
         let promiseArray = [];
-        let zorderPromise = (itemId, idx) => new Promise( zorderResolve => {
+        let zorderPromise = (itemId, idx) => new Promise<void>( zorderResolve => {
           iItem.set('prop:zorder', '+', this._id).then(() => {
             zorderResolve();
           });
@@ -1296,7 +1296,7 @@ export class ItemLayout implements IItemLayout {
           backwardStep = itemIndex;
         }
         let promiseArray = [];
-        let zorderPromise = (itemId, idx) => new Promise( zorderResolve => {
+        let zorderPromise = (itemId, idx) => new Promise<void>( zorderResolve => {
           iItem.set('prop:zorder', '-', this._id).then(() => {
             zorderResolve();
           });

@@ -97,7 +97,7 @@ export class EventEmitter {
   }
 
   static _finalCallback(message:string) {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       const result = JSON.parse(decodeURIComponent(message));
       if (EventEmitter._remoteHandlers[result['id']] !== undefined) {
         for (let handler of EventEmitter._remoteHandlers[result['id']]) {

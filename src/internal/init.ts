@@ -38,7 +38,7 @@ function resolveRelativePath(path: string, base: string) {
 }
 
 function readMetaConfigUrl(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     if (Environment.isSourcePlugin()) {
       var configObj = {};
       // initialize config URL if necessary
@@ -84,7 +84,7 @@ function readMetaConfigUrl(): Promise<any> {
 }
 
 function getCurrentSourceId(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     if (
       Environment.isSourceProps() ||
       (
@@ -111,7 +111,7 @@ function getCurrentSourceId(): Promise<any> {
 }
 
 function informWhenConfigLoaded(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     if (Environment.isSourceProps()) {
       window.addEventListener('load', () => {
         try {

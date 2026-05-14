@@ -11,7 +11,7 @@ let isInit: boolean = false;
 let readyResolve;
 
 function readyPromise(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     if (typeof document !== 'undefined') {
       document.addEventListener('xsplit-js-ready', () => {
         resolve();
@@ -46,7 +46,7 @@ export function finishReady(config: Object): Promise<any> {
 }
 
 export function ready(config: Object): Promise<any> {
-  return new Promise((resolve,reject) => {
+  return new Promise<any>((resolve,reject) => {
     Environment.initialize();
     if (config && config['remote'] !== undefined) {
       if(config['remote']['type'] !== undefined) {
@@ -63,7 +63,7 @@ export function ready(config: Object): Promise<any> {
     if(Remote.remoteType === 'remote') {
       // Create a callback that would resolve ready()
       // Resolve ready() for Remote once finishReady was already called.
-      readyResolve = () => { resolve () };
+      readyResolve = () => { resolve(undefined) };
 
       Remote.sendMessage('getVersion');
     } else {

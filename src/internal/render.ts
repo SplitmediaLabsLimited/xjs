@@ -73,7 +73,7 @@ export class Render {
   }
 
   static drawToTexture(canvasIndex, sceneIndex) {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       Render.then[Render._CANVAS_ACTIVE] = window.performance.now();
       Render.setCanvasToUseView(canvasIndex, sceneIndex);
       // no need to render for preview yet, so just start rendering ACTIVE canvas.
