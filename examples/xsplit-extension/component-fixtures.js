@@ -116,5 +116,47 @@
         height: 80,
       },
     },
+    {
+      id: 'docs-member-card',
+      label: 'Docs member card',
+      selector: 'xsplit-doc-member-card',
+      customElement: 'xsplit-doc-member-card',
+      readyAttribute: 'data-ready',
+      readyValue: 'true',
+      expectedText: [
+        'getVersion',
+        'callback',
+        'Gets the current XSplit Broadcaster version.',
+      ],
+      expectedSelectors: [
+        'section.member',
+        '.name',
+        '.params .param',
+      ],
+      minBoundingBox: {
+        width: 240,
+        height: 100,
+      },
+    },
+    {
+      id: 'docs-code-sample',
+      label: 'Docs code sample',
+      selector: 'xsplit-doc-code-sample',
+      customElement: 'xsplit-doc-code-sample',
+      readyAttribute: 'data-ready',
+      readyValue: 'true',
+      expectedText: [
+        'xjs.ready',
+        'getVersion',
+      ],
+      expectedSelectors: [
+        'pre.language-javascript',
+        'code.language-javascript',
+      ],
+      minBoundingBox: {
+        width: 240,
+        height: 80,
+      },
+    },
   ];
 })();

@@ -106,11 +106,42 @@
     }
   }
 
+  class XSplitDocMemberCard extends HTMLElement {
+    connectedCallback() {
+      markReady(this, [
+        '<section class="member">',
+        '  <a name="getVersion"><h1 id="getVersion" class="name">',
+        '    getVersion<span class="params">(<span class="param">callback</span>)</span>',
+        '  </h1></a>',
+        '  <p>Gets the current XSplit Broadcaster version.</p>',
+        '</section>',
+      ].join(''));
+    }
+  }
+
+  class XSplitDocCodeSample extends HTMLElement {
+    connectedCallback() {
+      markReady(this, [
+        '<pre class="language-javascript"><code class="language-javascript">',
+        'var xjs = require(&#39;xjs&#39;);',
+        '\n',
+        'xjs.ready().then(function() {',
+        '\n',
+        '  return new xjs.App().getVersion();',
+        '\n',
+        '});',
+        '</code></pre>',
+      ].join(''));
+    }
+  }
+
   [
     ['xsplit-doc-search', XSplitDocSearch],
     ['xsplit-doc-navigation', XSplitDocNavigation],
     ['xsplit-doc-quicklinks', XSplitDocQuicklinks],
     ['xsplit-doc-search-results', XSplitDocSearchResults],
+    ['xsplit-doc-member-card', XSplitDocMemberCard],
+    ['xsplit-doc-code-sample', XSplitDocCodeSample],
   ].forEach(function(definition) {
     if (!customElements.get(definition[0])) {
       customElements.define(definition[0], definition[1]);

@@ -160,6 +160,24 @@ button,
   padding: 10px;
 }
 
+.member {
+  border: 1px solid #d8dee6;
+  border-left: 5px solid #0095de;
+  box-shadow: 0 0 5px 0 #d8dee6;
+  color: #17202a;
+  display: block;
+  padding: 12px;
+}
+
+.member .name {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.params {
+  font-weight: 400;
+}
+
 .grey {
   color: #697586;
   display: block;

@@ -55,3 +55,26 @@ it('defines and renders docs search-results fixture', async () => {
 
   element.remove();
 });
+
+it('defines and renders docs member-card fixture', async () => {
+  const element = await render('xsplit-doc-member-card');
+
+  assert(customElements.get('xsplit-doc-member-card'), 'member card custom element should be registered');
+  assert(element.getAttribute('data-ready') === 'true', 'member card fixture should mark itself ready');
+  assert(element.querySelector('section.member'), 'member card should preserve docs member class');
+  assert(element.querySelector('.params .param'), 'member card should preserve parameter markup');
+  assert(element.textContent.includes('getVersion'), 'member card should include sample API member text');
+
+  element.remove();
+});
+
+it('defines and renders docs code-sample fixture', async () => {
+  const element = await render('xsplit-doc-code-sample');
+
+  assert(customElements.get('xsplit-doc-code-sample'), 'code sample custom element should be registered');
+  assert(element.getAttribute('data-ready') === 'true', 'code sample fixture should mark itself ready');
+  assert(element.querySelector('pre.language-javascript code.language-javascript'), 'code sample should preserve Prism markup');
+  assert(element.textContent.includes('xjs.ready'), 'code sample should include sample API usage');
+
+  element.remove();
+});
