@@ -131,6 +131,19 @@
         xjs.ExtensionWindow.on('sources-list-update', function() {});
         return true;
       }),
+      runCheck('Docs component fixtures render', function() {
+        var navbar = document.querySelector('xsplit-navbar');
+        if (!customElements.get('xsplit-navbar')) {
+          throw new Error('xsplit-navbar custom element is not registered');
+        }
+        if (!navbar || navbar.getAttribute('data-ready') !== 'true') {
+          throw new Error('xsplit-navbar fixture did not render');
+        }
+        return {
+          tagName: navbar.tagName.toLowerCase(),
+          ready: navbar.getAttribute('data-ready'),
+        };
+      }),
     ];
 
     return Promise.all(checks).then(function(results) {

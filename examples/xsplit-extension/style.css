@@ -4,6 +4,31 @@ body {
   margin: 0;
 }
 
+.xsplit-navbar {
+  align-items: center;
+  background: #17202a;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+.xsplit-navbar a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.xsplit-navbar__brand {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.xsplit-navbar__links {
+  display: flex;
+  gap: 18px;
+}
+
 main {
   max-width: 900px;
   padding: 24px;

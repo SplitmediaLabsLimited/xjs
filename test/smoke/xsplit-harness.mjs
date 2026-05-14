@@ -8,6 +8,8 @@ const runner = await readFile(new URL('examples/xsplit-extension/regression-runn
 const server = await readFile(new URL('scripts/serve-examples.mjs', root), 'utf8');
 
 assert.match(index, /\.\.\/\.\.\/dist\/xjs\.js/, 'extension should load the CEF browser bundle');
+assert.match(index, /\.\.\/\.\.\/docs\/app\/js\/xsplit-navbar\.js/, 'extension should load the real docs navbar component');
+assert.match(index, /<xsplit-navbar><\/xsplit-navbar>/, 'extension should render the docs navbar fixture');
 assert.doesNotMatch(index, /@vite\/client/, 'extension must not load Vite HMR client');
 assert.match(index, /__runXjsRegressionSuite/, 'extension should expose manual runner hook');
 assert.match(config, /xsplit:config-url|XSplit/, 'config page should be XSplit-specific');
@@ -20,9 +22,13 @@ for (const check of [
   'App.getFrametime',
   'Dialog create/show/close',
   'Scene and source-list subscriptions',
+  'Docs component fixtures render',
 ]) {
   assert.match(runner, new RegExp(check.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `missing check: ${check}`);
 }
+
+assert.match(runner, /customElements\.get\(['"]xsplit-navbar['"]\)/, 'runner should verify the docs navbar custom element is registered');
+assert.match(runner, /data-ready/, 'runner should verify the docs navbar has rendered');
 
 assert.match(server, /3999/, 'examples server should default to port 3999');
 assert.match(server, /examples/, 'examples server should serve the examples directory');
