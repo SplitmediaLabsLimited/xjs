@@ -326,7 +326,7 @@ export class ItemEffect implements IItemEffect {
     return hex;
   }
 
-  private _getEdgeEffectValue(value: Object): Promise<number> {
+  private _getEdgeEffectValue(value: Object): Promise<string | string[]> {
     return new Promise((resolve, reject) => {
       iItem.get('prop:edgeeffectcfg', this._id).then(val => {
         if (val !== '' && val !== null) {
