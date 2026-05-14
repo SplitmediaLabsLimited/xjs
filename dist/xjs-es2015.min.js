@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.10.2
+ * version: 2.11.0
  * CEF 103 compatible browser bundle target: chrome103
  *
  * XSplit Extensibility Framework and Plugin License
