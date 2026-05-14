@@ -12,4 +12,6 @@ assert.match(source, /Runtime\.evaluate/, 'runner should execute the in-page reg
 assert.match(source, /Runtime\.consoleAPICalled/, 'runner should collect console output');
 assert.match(source, /Network\.loadingFailed/, 'runner should collect failed requests');
 assert.match(source, /Page\.captureScreenshot/, 'runner should capture screenshots when available');
+assert.match(source, /screenshot\.png/, 'runner should store screenshots for successful visual regression runs');
+assert.doesNotMatch(source, /if\s*\(\s*failures\.length[\s\S]{0,300}Page\.captureScreenshot/, 'screenshot capture should not be limited to failing runs');
 assert.doesNotMatch(source, /connectOverCDP|playwright/i, 'XSplit runner should be raw CDP first');

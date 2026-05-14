@@ -111,11 +111,15 @@ function clearTransientDiagnostics() {
   diagnostics.logs = [];
 }
 
-async function writeArtifacts(payload, screenshot) {
+async function writeArtifacts(payload, screenshot, hasFailures) {
   await mkdir(artifactDir, { recursive: true });
   await writeFile(resolve(artifactDir, 'results.json'), JSON.stringify(payload, null, 2));
   if (screenshot?.data) {
-    await writeFile(resolve(artifactDir, 'failure.png'), Buffer.from(screenshot.data, 'base64'));
+    const screenshotBuffer = Buffer.from(screenshot.data, 'base64');
+    await writeFile(resolve(artifactDir, 'screenshot.png'), screenshotBuffer);
+    if (hasFailures) {
+      await writeFile(resolve(artifactDir, 'failure.png'), screenshotBuffer);
+    }
   }
 }
 
@@ -169,26 +173,28 @@ const evaluation = await send(socket, 'Runtime.evaluate', {
   returnByValue: true,
 });
 
-let screenshot = null;
 const result = evaluation.result?.value;
 const failures = Array.isArray(result)
   ? result.filter(item => item.status !== 'pass')
   : [{ id: 'runner-result', status: 'fail', error: 'Regression suite did not return an array' }];
+const hasFailures = failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0;
 
-if (failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0) {
-  screenshot = await trySend(socket, 'Page.captureScreenshot', { format: 'png' });
-}
+const screenshot = await trySend(socket, 'Page.captureScreenshot', { format: 'png' });
 
 const payload = {
   target,
   diagnostics,
+  artifacts: {
+    screenshot: screenshot?.data ? 'screenshot.png' : null,
+    failureScreenshot: hasFailures && screenshot?.data ? 'failure.png' : null,
+  },
   results: result,
   failures,
 };
-await writeArtifacts(payload, screenshot);
+await writeArtifacts(payload, screenshot, hasFailures);
 socket.close();
 
-if (failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0) {
+if (hasFailures) {
   console.error(`XSplit CDP regression failed. Artifacts: ${artifactDir}`);
   process.exitCode = 1;
 } else {
