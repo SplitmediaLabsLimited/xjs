@@ -21,6 +21,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 ## Current Checkpoints
 
 - Bower package files, component directories, package metadata, and HTML imports are absent from active source and guarded by smoke tests.
+- Active package and CI build workflows use Vite/npm scripts; legacy Gulp, Browserify, and Traceur build entry points are absent from package metadata and guarded by smoke tests.
 - Vite library builds generate ESM, CommonJS, browser, minified browser, and type outputs.
 - Generated modern `dist/` outputs are ignored by git; release validation regenerates them before packing.
 - The examples server exposes `/examples/` and `/xsplit-extension/index.html` on port `3999`.
@@ -36,6 +37,7 @@ Keep this phase focused on package behavior and generated artifacts.
 
 - Preserve `main`, `module`, `types`, `browser`, and conditional `exports` in `package.json`.
 - Keep Vite build scripts in `scripts/build.mjs` and `vite.config.mjs`.
+- Keep CI pointed at `npm test` rather than legacy task runners.
 - Keep CEF browser output targeted to `chrome103`.
 - Run `npm test` before each checkpoint commit.
 - Run `npm run pack:check` before release-oriented changes.
