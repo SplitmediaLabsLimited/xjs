@@ -62,6 +62,47 @@
     throw new Error('window.__xjsComponentFixtures is not defined');
   }
 
+  function includesText(text, expected) {
+    return String(text || '').indexOf(expected) !== -1;
+  }
+
+  function assertFixtureText(fixture, element) {
+    (fixture.expectedText || []).forEach(function(expected) {
+      if (!includesText(element.textContent, expected)) {
+        throw new Error(fixture.id + ' missing expected text: ' + expected);
+      }
+    });
+  }
+
+  function assertFixtureLinks(fixture, element) {
+    (fixture.expectedLinks || []).forEach(function(expectedHref) {
+      var links = Array.prototype.slice.call(element.querySelectorAll('a'));
+      var matched = links.some(function(link) {
+        return link.getAttribute('href') === expectedHref || link.href === expectedHref;
+      });
+      if (!matched) {
+        throw new Error(fixture.id + ' missing expected link: ' + expectedHref);
+      }
+    });
+  }
+
+  function assertFixtureLayout(fixture, element) {
+    if (!fixture.minBoundingBox) {
+      return null;
+    }
+    var bounds = element.getBoundingClientRect();
+    if (bounds.width < fixture.minBoundingBox.width || bounds.height < fixture.minBoundingBox.height) {
+      throw new Error(
+        fixture.id + ' rendered too small: '
+        + Math.round(bounds.width) + 'x' + Math.round(bounds.height)
+      );
+    }
+    return {
+      width: Math.round(bounds.width),
+      height: Math.round(bounds.height),
+    };
+  }
+
   [
     'OnDialogLoadStart',
     'OnDialogTitleChange',
@@ -150,10 +191,16 @@
           if (fixture.readyAttribute && element.getAttribute(fixture.readyAttribute) !== fixture.readyValue) {
             throw new Error(fixture.id + ' fixture did not render');
           }
+          assertFixtureText(fixture, element);
+          assertFixtureLinks(fixture, element);
+          var bounds = assertFixtureLayout(fixture, element);
           return {
             id: fixture.id,
             tagName: element.tagName.toLowerCase(),
             ready: fixture.readyAttribute ? element.getAttribute(fixture.readyAttribute) : null,
+            text: element.textContent.trim().replace(/\s+/g, ' '),
+            linkCount: element.querySelectorAll('a').length,
+            bounds: bounds,
           };
         });
       }),

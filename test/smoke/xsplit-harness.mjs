@@ -23,6 +23,9 @@ assert.match(config, /xsplit:config-url|XSplit/, 'config page should be XSplit-s
 assert.match(fixtures, /__xjsComponentFixtures/, 'fixture manifest should expose component fixture metadata');
 assert.match(fixtures, /xsplit-navbar/, 'fixture manifest should include the docs navbar fixture');
 assert.match(fixtures, /data-ready/, 'fixture manifest should record the docs navbar ready attribute');
+assert.match(fixtures, /expectedText/, 'fixture manifest should record expected rendered text');
+assert.match(fixtures, /expectedLinks/, 'fixture manifest should record expected rendered links');
+assert.match(fixtures, /minBoundingBox/, 'fixture manifest should record minimum rendered dimensions');
 
 for (const check of [
   'xjs.ready resolves',
@@ -40,6 +43,9 @@ for (const check of [
 assert.match(runner, /__xjsComponentFixtures/, 'runner should read fixture checks from the manifest');
 assert.match(runner, /customElements\.get/, 'runner should verify custom elements are registered');
 assert.match(runner, /readyAttribute/, 'runner should verify fixture ready attributes');
+assert.match(runner, /expectedText/, 'runner should verify expected rendered text');
+assert.match(runner, /expectedLinks/, 'runner should verify expected rendered links');
+assert.match(runner, /getBoundingClientRect/, 'runner should verify fixture layout dimensions');
 
 assert.match(server, /3999/, 'examples server should default to port 3999');
 assert.match(server, /examples/, 'examples server should serve the examples directory');
