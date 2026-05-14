@@ -34,10 +34,65 @@ main {
   padding: 24px;
 }
 
-button {
+.surface-header {
+  margin-bottom: 18px;
+}
+
+.surface-header h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.surface-header p {
+  margin: 0;
+}
+
+section {
+  border-top: 1px solid #d8dee6;
+  padding: 18px 0;
+}
+
+section h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+dl {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+dl div {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 140px minmax(0, 1fr);
+}
+
+dt {
+  color: #52606d;
+  font-weight: 700;
+}
+
+dd {
+  margin: 0;
+  min-width: 0;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+button,
+.button-link {
+  background: #17202a;
+  border: 1px solid #17202a;
+  color: #fff;
   cursor: pointer;
+  display: inline-block;
   font: inherit;
   padding: 8px 12px;
+  text-decoration: none;
 }
 
 pre {

@@ -12,6 +12,10 @@ assert.match(index, /\.\.\/\.\.\/dist\/xjs\.js/, 'extension should load the CEF 
 assert.match(index, /\.\.\/\.\.\/docs\/app\/js\/xsplit-navbar\.js/, 'extension should load the real docs navbar component');
 assert.match(index, /\.\/component-fixtures\.js/, 'extension should load the component fixture manifest');
 assert.match(index, /<xsplit-navbar><\/xsplit-navbar>/, 'extension should render the docs navbar fixture');
+assert.match(index, /data-example-section="component-fixtures"/, 'extension should show component fixtures on the XSplit-visible page');
+assert.match(index, /data-example-section="config-preview"/, 'extension should show config/properties preview on the XSplit-visible page');
+assert.match(index, /data-example-section="regression-controls"/, 'extension should show regression controls on the XSplit-visible page');
+assert.match(index, /data-example-section="artifact-output"/, 'extension should show regression artifact output on the XSplit-visible page');
 assert.doesNotMatch(index, /@vite\/client/, 'extension must not load Vite HMR client');
 assert.match(index, /__runXjsRegressionSuite/, 'extension should expose manual runner hook');
 assert.match(config, /xsplit:config-url|XSplit/, 'config page should be XSplit-specific');

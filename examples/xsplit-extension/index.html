@@ -9,10 +9,49 @@
   <body>
     <xsplit-navbar></xsplit-navbar>
     <main>
-      <h1>XJS Regression Extension</h1>
-      <p id="status">Ready to run host regression checks.</p>
-      <button id="run" type="button">Run checks</button>
-      <pre id="results">[]</pre>
+      <header class="surface-header">
+        <h1>XJS Regression Extension</h1>
+        <p id="status">Ready to run host regression checks.</p>
+      </header>
+
+      <section data-example-section="component-fixtures">
+        <h2>Component Fixtures</h2>
+        <dl>
+          <div>
+            <dt>docs-navbar</dt>
+            <dd><code>xsplit-navbar</code></dd>
+          </div>
+          <div>
+            <dt>ready</dt>
+            <dd><code>data-ready="true"</code></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section data-example-section="config-preview">
+        <h2>Config Preview</h2>
+        <dl>
+          <div>
+            <dt>config-url</dt>
+            <dd><code>http://localhost:3999/xsplit-extension/config.html</code></dd>
+          </div>
+          <div>
+            <dt>title</dt>
+            <dd>XSplit regression config</dd>
+          </div>
+        </dl>
+        <a class="button-link" href="./config.html">Open config page</a>
+      </section>
+
+      <section data-example-section="regression-controls">
+        <h2>Regression Controls</h2>
+        <button id="run" type="button">Run checks</button>
+      </section>
+
+      <section data-example-section="artifact-output">
+        <h2>Regression Results</h2>
+        <pre id="results">[]</pre>
+      </section>
     </main>
     <script src="../../dist/xjs.js"></script>
     <script src="../../docs/app/js/xsplit-navbar.js"></script>
