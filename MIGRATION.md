@@ -22,7 +22,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 
 - Bower package files, component directories, package metadata, and HTML imports are absent from active source and guarded by smoke tests.
 - Active package and CI build workflows use Vite/npm scripts; legacy Gulp, Browserify, and Traceur build entry points are absent from package metadata and guarded by smoke tests.
-- The inactive Broccoli and Traceur tooling trees have been removed; Dgeni docs package source remains as reference material only and is no longer installed as an active dependency.
+- The inactive `tools/` tree has been removed after audit; Dgeni docs package source remains as reference material only and is no longer installed as an active dependency.
 - Vite library builds generate ESM, CommonJS, browser, minified browser, and type outputs.
 - Generated modern `dist/` outputs are ignored by git; release validation regenerates them before packing.
 - The examples server exposes `/examples/` and `/xsplit-extension/index.html` on port `3999`.
