@@ -14,6 +14,7 @@ const activeTextExtensions = new Set([
   '.ts',
   '.css',
 ]);
+const activeTextFiles = new Set(['.gitignore']);
 
 function extension(path) {
   const match = path.match(/\.[^.]+$/);
@@ -30,7 +31,7 @@ async function collectFiles(dir) {
       if (!ignoredDirs.has(entry)) {
         files.push(...await collectFiles(path));
       }
-    } else if (activeTextExtensions.has(extension(entry))) {
+    } else if (activeTextFiles.has(entry) || activeTextExtensions.has(extension(entry))) {
       files.push(path);
     }
   }
