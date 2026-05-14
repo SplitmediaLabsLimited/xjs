@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 
 const root = new URL('../..', import.meta.url);
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
@@ -26,3 +26,16 @@ assert.match(buildScript, /from 'vite'/, 'build wrapper should use Vite');
 assert.match(buildScript, /chrome103/, 'build wrapper should preserve the CEF 103 browser target');
 assert.doesNotMatch(buildScript, legacyBuildTools, 'build wrapper should not call legacy build tools');
 assert.match(viteConfig, /chrome103/, 'Vite config should preserve the CEF 103 browser target');
+
+for (const legacyEntryPoint of [
+  'tools/build/bundle.js',
+  'tools/build/es5build.js',
+  'tools/build/transpile.js',
+  'tools/transpiler/gulp-traceur.js',
+]) {
+  await assert.rejects(
+    stat(new URL(legacyEntryPoint, root)),
+    { code: 'ENOENT' },
+    `${legacyEntryPoint} should not remain as a legacy build entry point`
+  );
+}
