@@ -46,21 +46,52 @@ const forbidden = [
   'rel=' + '"import"',
   "rel=" + "'import'",
 ];
+const forbiddenFilePatterns = [
+  new RegExp(`(^|/)${legacyPackageManager}\\.json$`),
+  new RegExp(`(^|/)\\.${legacyPackageManager}rc$`),
+  new RegExp(`(^|/)${legacyPackageManager}_components(/|$)`),
+];
 
 const allowedHistoricalFiles = new Set([
   'RELEASE.md',
   'test/smoke/no-legacy-dependency-references.mjs',
 ]);
 
+function collectPackageReferences(value, path, references) {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+  for (const [key, child] of Object.entries(value)) {
+    const childPath = path ? `${path}.${key}` : key;
+    if (key.toLowerCase().includes(legacyPackageManager)) {
+      references.push(`${childPath}: legacy package-manager key should not be present`);
+    }
+    if (typeof child === 'string' && child.toLowerCase().includes(legacyPackageManager)) {
+      references.push(`${childPath}: legacy package-manager value should not be present`);
+    }
+    collectPackageReferences(child, childPath, references);
+  }
+}
+
 const failures = [];
 for (const file of await collectFiles(root)) {
   const rel = relative(root, file);
+  for (const pattern of forbiddenFilePatterns) {
+    if (pattern.test(rel)) {
+      failures.push(`${rel}: legacy package-manager file should not be tracked`);
+    }
+  }
   const content = await readFile(file, 'utf8');
   for (const needle of forbidden) {
     if (content.includes(needle) && !allowedHistoricalFiles.has(rel)) {
       failures.push(`${rel}: contains ${needle}`);
     }
   }
+}
+
+for (const packageFile of ['package.json', 'package-lock.json']) {
+  const content = await readFile(join(root, packageFile), 'utf8');
+  collectPackageReferences(JSON.parse(content), packageFile, failures);
 }
 
 assert.deepEqual(failures, [], `active Bower/HTML import references remain:\n${failures.join('\n')}`);
