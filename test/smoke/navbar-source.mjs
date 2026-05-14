@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const root = new URL('../..', import.meta.url);
-const html = await readFile(new URL('docs/app/api.html', root), 'utf8');
-const navbar = await readFile(new URL('docs/app/js/xsplit-navbar.js', root), 'utf8');
+const html = await readFile(new URL('docs-old/app/api.html', root), 'utf8');
+const navbar = await readFile(new URL('docs-old/app/js/xsplit-navbar.js', root), 'utf8');
 
 assert.doesNotMatch(html, /rel=["']import["']/, 'docs app should not use HTML imports');
 assert.doesNotMatch(html, /polymer/i, 'docs app should not reference Polymer');

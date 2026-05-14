@@ -1,4 +1,4 @@
-import '../../docs/app/js/xsplit-doc-shell.js';
+import '../../docs-old/app/js/xsplit-doc-shell.js';
 
 function assert(condition, message) {
   if (!condition) {

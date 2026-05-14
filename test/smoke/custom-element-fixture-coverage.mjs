@@ -7,9 +7,8 @@ const extensionIndex = await readFile(
   new URL('examples/xsplit-extension/index.html', root),
   'utf8'
 );
-const fixtureManifest = await readFile(
-  new URL('examples/xsplit-extension/component-fixtures.js', root),
-  'utf8'
+const fixtureManifest = JSON.parse(
+  await readFile(new URL('examples/xsplit-extension/component-fixtures.json', root), 'utf8')
 );
 const componentTests = await Promise.all([
   readFile(new URL('test/component/xsplit-navbar.test.js', root), 'utf8'),
@@ -17,7 +16,7 @@ const componentTests = await Promise.all([
 ]);
 
 async function readRuntimeSources() {
-  const sourceDirs = ['docs/app/js/', 'examples/', 'src/'];
+  const sourceDirs = ['docs-old/app/js/', 'examples/', 'src/'];
   const sources = [];
 
   async function visit(directoryUrl) {
@@ -78,14 +77,14 @@ for (const tagName of definedElements) {
     new RegExp(`<${tagName}></${tagName}>`),
     `${tagName} should render in the extension page`
   );
-  assert.match(
-    fixtureManifest,
-    new RegExp(`customElement:\\s*['"]${tagName}['"]`),
+  assert.equal(
+    fixtureManifest.some((fixture) => fixture.customElement === tagName),
+    true,
     `${tagName} should have fixture metadata`
   );
-  assert.match(
-    fixtureManifest,
-    new RegExp(`selector:\\s*['"]${tagName}['"]`),
+  assert.equal(
+    fixtureManifest.some((fixture) => fixture.selector === tagName),
+    true,
     `${tagName} should have a fixture selector`
   );
   assert.match(
@@ -96,8 +95,8 @@ for (const tagName of definedElements) {
 }
 
 const fixtureElements = new Set();
-for (const match of fixtureManifest.matchAll(/customElement:\s*['"](xsplit-[a-z0-9-]+)['"]/g)) {
-  fixtureElements.add(match[1]);
+for (const fixture of fixtureManifest) {
+  fixtureElements.add(fixture.customElement);
 }
 
 assert.deepEqual(

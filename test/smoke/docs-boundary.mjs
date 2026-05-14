@@ -2,28 +2,28 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const root = new URL('../..', import.meta.url);
-const docsReadme = await readFile(new URL('docs/README.md', root), 'utf8');
-const buildDocs = await readFile(new URL('scripts/build-docs.mjs', root), 'utf8');
+const docsReadme = await readFile(new URL('docs-old/README.md', root), 'utf8');
+const buildDocs = await readFile(new URL('scripts/build-legacy-docs.mjs', root), 'utf8');
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 
 for (const expected of [
-  'Documentation Source Boundary',
-  'Active Build Surface',
+  'Legacy Documentation Source Boundary',
+  'Legacy Build Surface',
   'Reference-Only Source',
-  'docs/app/',
-  'scripts/build-docs.mjs',
+  'docs-old/app/',
+  'scripts/build-legacy-docs.mjs',
   'Astro/Starlight',
 ]) {
   assert.match(docsReadme, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 for (const referenceOnlyPath of [
-  'docs/docs-package/',
-  'docs/angular.io-package/',
-  'docs/public-docs-package/',
-  'docs/typescript-package/',
-  'docs/typescript-definition-package/',
-  'docs/links-package/',
+  'docs-old/docs-package/',
+  'docs-old/angular.io-package/',
+  'docs-old/public-docs-package/',
+  'docs-old/typescript-package/',
+  'docs-old/typescript-definition-package/',
+  'docs-old/links-package/',
 ]) {
   assert.match(docsReadme, new RegExp(referenceOnlyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.doesNotMatch(
@@ -32,10 +32,14 @@ for (const referenceOnlyPath of [
   );
 }
 
-assert.match(buildDocs, /docs\/app/, 'docs build should copy only the active static docs app');
+assert.match(
+  buildDocs,
+  /docs-old\/app/,
+  'legacy docs build should copy only the old static docs app'
+);
 assert.doesNotMatch(
   buildDocs,
   /dgeni|docs-package|typescript-package|angular\.io-package|links-package/i
 );
 
-assert.equal(pkg.scripts['docs:build'], 'node scripts/build-docs.mjs');
+assert.equal(pkg.scripts['docs:legacy:build'], 'node scripts/build-legacy-docs.mjs');

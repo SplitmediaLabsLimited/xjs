@@ -1,4 +1,4 @@
-import '../../docs/app/js/xsplit-navbar.js';
+import '../../docs-old/app/js/xsplit-navbar.js';
 
 function assert(condition, message) {
   if (!condition) {

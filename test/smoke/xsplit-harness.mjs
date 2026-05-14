@@ -4,8 +4,12 @@ import { readFile } from 'node:fs/promises';
 const root = new URL('../..', import.meta.url);
 const index = await readFile(new URL('examples/xsplit-extension/index.html', root), 'utf8');
 const config = await readFile(new URL('examples/xsplit-extension/config.html', root), 'utf8');
-const fixtures = await readFile(
+const fixtureLoader = await readFile(
   new URL('examples/xsplit-extension/component-fixtures.js', root),
+  'utf8'
+);
+const fixtures = await readFile(
+  new URL('examples/xsplit-extension/component-fixtures.json', root),
   'utf8'
 );
 const runner = await readFile(
@@ -17,12 +21,12 @@ const server = await readFile(new URL('scripts/serve-examples.mjs', root), 'utf8
 assert.match(index, /\.\.\/\.\.\/dist\/xjs\.js/, 'extension should load the CEF browser bundle');
 assert.match(
   index,
-  /\.\.\/\.\.\/docs\/app\/js\/xsplit-navbar\.js/,
+  /\.\.\/\.\.\/docs-old\/app\/js\/xsplit-navbar\.js/,
   'extension should load the real docs navbar component'
 );
 assert.match(
   index,
-  /\.\.\/\.\.\/docs\/app\/js\/xsplit-doc-shell\.js/,
+  /\.\.\/\.\.\/docs-old\/app\/js\/xsplit-doc-shell\.js/,
   'extension should load reconstructed docs shell components'
 );
 assert.match(
@@ -90,10 +94,11 @@ assert.match(index, /__runXjsRegressionSuite/, 'extension should expose manual r
 assert.match(config, /xsplit:config-url|XSplit/, 'config page should be XSplit-specific');
 
 assert.match(
-  fixtures,
+  fixtureLoader,
   /__xjsComponentFixtures/,
-  'fixture manifest should expose component fixture metadata'
+  'fixture loader should expose component fixture metadata'
 );
+assert.match(fixtureLoader, /component-fixtures\.json/, 'fixture loader should read shared JSON data');
 assert.match(fixtures, /xsplit-navbar/, 'fixture manifest should include the docs navbar fixture');
 assert.match(
   fixtures,

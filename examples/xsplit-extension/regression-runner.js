@@ -58,8 +58,11 @@
   }
 
   function getComponentFixtures() {
+    if (window.__xjsComponentFixturesReady) {
+      return window.__xjsComponentFixturesReady;
+    }
     if (Array.isArray(window.__xjsComponentFixtures)) {
-      return window.__xjsComponentFixtures;
+      return Promise.resolve(window.__xjsComponentFixtures);
     }
     throw new Error('window.__xjsComponentFixtures is not defined');
   }
@@ -199,34 +202,36 @@
         return checks;
       }),
       runCheck('Docs component fixtures render', () =>
-        getComponentFixtures().map((fixture) => {
-          var element = document.querySelector(fixture.selector);
-          if (!customElements.get(fixture.customElement)) {
-            throw new Error(fixture.customElement + ' custom element is not registered');
-          }
-          if (!element) {
-            throw new Error(fixture.id + ' fixture was not found');
-          }
-          if (
-            fixture.readyAttribute &&
-            element.getAttribute(fixture.readyAttribute) !== fixture.readyValue
-          ) {
-            throw new Error(fixture.id + ' fixture did not render');
-          }
-          assertFixtureText(fixture, element);
-          assertFixtureLinks(fixture, element);
-          assertFixtureSelectors(fixture, element);
-          var bounds = assertFixtureLayout(fixture, element);
-          return {
-            id: fixture.id,
-            tagName: element.tagName.toLowerCase(),
-            ready: fixture.readyAttribute ? element.getAttribute(fixture.readyAttribute) : null,
-            text: element.textContent.trim().replace(/\s+/g, ' '),
-            linkCount: element.querySelectorAll('a').length,
-            selectorCount: fixture.expectedSelectors ? fixture.expectedSelectors.length : 0,
-            bounds: bounds,
-          };
-        })
+        getComponentFixtures().then((fixtures) =>
+          fixtures.map((fixture) => {
+            var element = document.querySelector(fixture.selector);
+            if (!customElements.get(fixture.customElement)) {
+              throw new Error(fixture.customElement + ' custom element is not registered');
+            }
+            if (!element) {
+              throw new Error(fixture.id + ' fixture was not found');
+            }
+            if (
+              fixture.readyAttribute &&
+              element.getAttribute(fixture.readyAttribute) !== fixture.readyValue
+            ) {
+              throw new Error(fixture.id + ' fixture did not render');
+            }
+            assertFixtureText(fixture, element);
+            assertFixtureLinks(fixture, element);
+            assertFixtureSelectors(fixture, element);
+            var bounds = assertFixtureLayout(fixture, element);
+            return {
+              id: fixture.id,
+              tagName: element.tagName.toLowerCase(),
+              ready: fixture.readyAttribute ? element.getAttribute(fixture.readyAttribute) : null,
+              text: element.textContent.trim().replace(/\s+/g, ' '),
+              linkCount: element.querySelectorAll('a').length,
+              selectorCount: fixture.expectedSelectors ? fixture.expectedSelectors.length : 0,
+              bounds: bounds,
+            };
+          })
+        )
       ),
     ];
 
