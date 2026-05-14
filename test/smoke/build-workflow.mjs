@@ -28,6 +28,7 @@ assert.doesNotMatch(buildScript, legacyBuildTools, 'build wrapper should not cal
 assert.match(viteConfig, /chrome103/, 'Vite config should preserve the CEF 103 browser target');
 
 for (const legacyEntryPoint of [
+  'tools/broccoli',
   'tools/build/bundle.js',
   'tools/build/es5build.js',
   'tools/build/transpile.js',
