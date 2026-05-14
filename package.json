@@ -8,11 +8,11 @@
     "docs:build": "node scripts/build-docs.mjs",
     "examples": "node scripts/serve-examples.mjs",
     "test": "npm run test:smoke",
-    "test:smoke": "node test/smoke/package-entries.mjs && node test/smoke/navbar-source.mjs && node test/smoke/xsplit-harness.mjs && node test/smoke/cdp-runner.mjs && node test/smoke/no-legacy-dependency-references.mjs",
+    "test:smoke": "npm run build && node test/smoke/package-entries.mjs && node test/smoke/navbar-source.mjs && node test/smoke/xsplit-harness.mjs && node test/smoke/cdp-runner.mjs && node test/smoke/no-legacy-dependency-references.mjs",
     "test:components": "web-test-runner --config web-test-runner.config.mjs",
     "test:legacy": "karma start --single-run --browsers Firefox",
     "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
-    "pack:check": "npm pack --dry-run"
+    "pack:check": "npm run build && npm pack --dry-run"
   },
   "main": "./dist/xjs.cjs",
   "module": "./dist/xjs.mjs",
