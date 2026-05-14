@@ -39,7 +39,7 @@ export class Group implements Addable {
   toStringArray() : string[] {
     var itemStringArray = this._items.map(item => {
       if (item instanceof Item) {
-        return item._id;
+        return (item as unknown as {_id: string})._id;
       } else {
         return item;
       }

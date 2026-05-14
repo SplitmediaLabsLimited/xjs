@@ -22,7 +22,7 @@ const findItem = (presetArray, id) => {
 
 const getID = (item: any) => {
   if (item instanceof Item) {
-    return item._id;
+    return (item as unknown as {_id: string})._id;
   } else {
     return item;
   }
