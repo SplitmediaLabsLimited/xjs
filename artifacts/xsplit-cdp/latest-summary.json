@@ -1,13 +1,13 @@
 {
-  "runAt": "2026-05-14T14:08:03.862Z",
-  "passed": false,
-  "artifactDirectory": "artifacts/xsplit-cdp/2026-05-14T14-07-51-485Z",
-  "resultsPath": "artifacts/xsplit-cdp/2026-05-14T14-07-51-485Z/results.json",
-  "screenshotPath": "artifacts/xsplit-cdp/2026-05-14T14-07-51-485Z/screenshot.png",
+  "runAt": "2026-05-14T14:22:39.035Z",
+  "passed": true,
+  "artifactDirectory": "artifacts/xsplit-cdp/2026-05-14T14-22-38-328Z",
+  "resultsPath": "artifacts/xsplit-cdp/2026-05-14T14-22-38-328Z/results.json",
+  "screenshotPath": "artifacts/xsplit-cdp/2026-05-14T14-22-38-328Z/screenshot.png",
   "browser": "Chrome/103.0.5060.134",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 XSplitBroadcaster/4.5.2603.0506 Safari/537.36",
-  "navigateUrl": "http://127.0.0.1:3999/xsplit-extension/index.html",
+  "navigateUrl": "http://10.1.0.101:3999/xsplit-extension/index.html",
   "targetUrl": "http://127.0.0.1:3999/xsplit-extension/index.html",
-  "resultCount": 1,
-  "failureCount": 1
+  "resultCount": 8,
+  "failureCount": 0
 }
