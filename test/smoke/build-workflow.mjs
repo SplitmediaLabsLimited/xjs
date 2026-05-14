@@ -7,7 +7,7 @@ const travis = await readFile(new URL('.travis.yml', root), 'utf8');
 const buildScript = await readFile(new URL('scripts/build.mjs', root), 'utf8');
 const viteConfig = await readFile(new URL('vite.config.mjs', root), 'utf8');
 
-const legacyBuildTools = /gulp|browserify|gulp-|traceur/i;
+const legacyBuildTools = /gulp|browserify|gulp-|traceur|dgeni(?:-packages)?/i;
 const packageWorkflow = JSON.stringify({
   scripts: pkg.scripts,
   dependencies: pkg.dependencies || {},
@@ -16,7 +16,7 @@ const packageWorkflow = JSON.stringify({
 
 assert.match(pkg.scripts.build, /^node scripts\/build\.mjs$/, 'build script should use the Vite build wrapper');
 assert.match(pkg.scripts['build:watch'], /^vite build --watch --config vite\.config\.mjs$/, 'watch build should use Vite');
-assert.doesNotMatch(packageWorkflow, legacyBuildTools, 'package scripts and dependencies should not install or invoke legacy build tools');
+assert.doesNotMatch(packageWorkflow, legacyBuildTools, 'package scripts and dependencies should not install or invoke legacy build/docs tools');
 
 assert.match(travis, /node_js:\s*\n\s*-\s*"20"/, 'CI should target the modern Node runtime');
 assert.match(travis, /npm test/, 'CI should run the npm smoke workflow');
@@ -32,7 +32,9 @@ for (const legacyEntryPoint of [
   'tools/build/bundle.js',
   'tools/build/es5build.js',
   'tools/build/transpile.js',
+  'tools/transpiler',
   'tools/transpiler/gulp-traceur.js',
+  'tools/traceur-jasmine',
 ]) {
   await assert.rejects(
     stat(new URL(legacyEntryPoint, root)),

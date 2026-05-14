@@ -22,7 +22,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 
 - Bower package files, component directories, package metadata, and HTML imports are absent from active source and guarded by smoke tests.
 - Active package and CI build workflows use Vite/npm scripts; legacy Gulp, Browserify, and Traceur build entry points are absent from package metadata and guarded by smoke tests.
-- The inactive Broccoli build tree has been removed; Dgeni docs packages remain as reference material for the later API documentation migration.
+- The inactive Broccoli and Traceur tooling trees have been removed; Dgeni docs package source remains as reference material only and is no longer installed as an active dependency.
 - Vite library builds generate ESM, CommonJS, browser, minified browser, and type outputs.
 - Generated modern `dist/` outputs are ignored by git; release validation regenerates them before packing.
 - The examples server exposes `/examples/` and `/xsplit-extension/index.html` on port `3999`.
@@ -104,7 +104,7 @@ Defer detailed planning until the package and regression migration is close to f
 
 - Preferred direction: Astro with Starlight.
 - Intended input: future JSDoc or TSDoc annotations from `src/`.
-- Existing Dgeni packages under `docs/` can be mined for old API-doc generation behavior, but they are not part of the active docs build.
+- Existing Dgeni package source under `docs/` can be mined for old API-doc generation behavior, but it is not part of the active docs build and is not kept installable through package dependencies.
 - Migration goal: replace the legacy AngularJS docs app with a static site after generated API docs are reliable.
 - Boundary: documentation templates are public API docs views, not runtime XSplit components.
 

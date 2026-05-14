@@ -43,8 +43,6 @@
     "angular-material": "^1.2.5",
     "angular-route": "^1.8.3",
     "canonical-path": "0.0.2",
-    "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.18",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.2",
     "karma-chrome-launcher": "^0.2.0",
