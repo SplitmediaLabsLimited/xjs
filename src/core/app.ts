@@ -18,7 +18,7 @@ var DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE: number = 10000000;
 
 const arrayToObj = (array, separator) => {
   var obj = {};
-  array.map((el) => {
+  array.forEach((el) => {
     var separatorIndex = el.indexOf(separator);
     var key = el.substring(0, separatorIndex);
     obj[key] = el.substring(separatorIndex + 1);

@@ -2533,7 +2533,8 @@ var XJS = (function(exports) {
             (windowDetail) => windowDetail[0].toUpperCase().indexOf("XSPLIT BROADCASTER") !== 0
           ).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("SHELL_TRAYWND") !== 0).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("BUTTON") !== 0).filter(
             (windowDetail) => windowDetail[1].toUpperCase().indexOf("WINDOWS.UI.CORE.COREWINDOW") !== 0
-          ).map((windowDetail) => {
+          );
+          devices2.forEach((windowDetail) => {
             Dll.call("xsplit.GetProcessDetailsKernel", windowDetail[2]).then((detail) => {
               const dev = {
                 title: windowDetail[0],
@@ -2972,18 +2973,18 @@ var XJS = (function(exports) {
     let settings = [];
     settings = args.split("&");
     const settingsObj = {};
-    settings.map((el) => {
+    settings.forEach((el) => {
       const _split = el.split("=");
       settingsObj[_split[0]] = _split[1];
     });
     if (Remote.remoteType === "proxy") {
       if (EventManager._proxyHandlers[settingsObj["event"]] === void 0) return;
-      EventManager._proxyHandlers[settingsObj["event"]].map((_cb) => {
+      EventManager._proxyHandlers[settingsObj["event"]].forEach((_cb) => {
         _cb(settingsObj);
       });
     } else {
       if (EventManager.callbacks[settingsObj["event"]] === void 0) return;
-      EventManager.callbacks[settingsObj["event"]].map((_cb) => {
+      EventManager.callbacks[settingsObj["event"]].forEach((_cb) => {
         _cb(settingsObj);
       });
     }
@@ -2995,12 +2996,12 @@ var XJS = (function(exports) {
   window$1.AppOnEvent = (event, ...args) => {
     if (Remote.remoteType === "proxy") {
       if (EventManager._proxyHandlers[event] === void 0) return;
-      EventManager._proxyHandlers[event].map((_cb) => {
+      EventManager._proxyHandlers[event].forEach((_cb) => {
         _cb({ event, args });
       });
     } else {
       if (EventManager.callbacks[event] === void 0) return;
-      EventManager.callbacks[event].map((_cb) => {
+      EventManager.callbacks[event].forEach((_cb) => {
         _cb({ event, args });
       });
     }
@@ -3015,12 +3016,12 @@ var XJS = (function(exports) {
     }
     if (Remote.remoteType === "proxy") {
       if (EventManager._proxyHandlers[event + "_" + item] === void 0) return;
-      EventManager._proxyHandlers[event + "_" + item].map((_cb) => {
+      EventManager._proxyHandlers[event + "_" + item].forEach((_cb) => {
         _cb(...eventArgs);
       });
     } else {
       if (EventManager.callbacks[event + "_" + item] === void 0) return;
-      EventManager.callbacks[event + "_" + item].map((_cb) => {
+      EventManager.callbacks[event + "_" + item].forEach((_cb) => {
         _cb(...eventArgs);
       });
     }
@@ -9769,7 +9770,7 @@ var XJS = (function(exports) {
             resolve2(Scene._maxScenes);
           } else {
             let count = 0;
-            jsonArr.filter((json) => json["tag"] === "placement").map((scene, index) => {
+            jsonArr.filter((json) => json["tag"] === "placement").forEach((scene, index) => {
               count++;
               Scene._scenePool[index] = new Scene(index, scene["name"], scene["id"]);
             });
@@ -9899,7 +9900,7 @@ var XJS = (function(exports) {
         } else {
           Scene._initializeScenePoolAsync().then(() => {
             const sceneLength = Scene._scenePool.length;
-            Scene._scenePool.map((scene, idx) => {
+            Scene._scenePool.forEach((scene, idx) => {
               scene.getSceneUid().then((uid) => {
                 if (uid === sceneUid) {
                   resolve2(scene);
@@ -9930,7 +9931,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         const sceneArr = [];
         Scene._initializeScenePoolAsync().then((count) => {
-          Scene._scenePool.map((scene, idx) => {
+          Scene._scenePool.forEach((scene, idx) => {
             scene.getName().then((name) => {
               if (name === sceneName) {
                 sceneArr.push(scene);
@@ -10055,7 +10056,7 @@ var XJS = (function(exports) {
                 });
               }
             });
-            Scene._scenePool.map((scene, idx, arr) => {
+            Scene._scenePool.forEach((scene, idx, arr) => {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
@@ -10111,7 +10112,7 @@ var XJS = (function(exports) {
                 });
               }
             });
-            Scene._scenePool.map((scene, idx, arr) => {
+            Scene._scenePool.forEach((scene, idx, arr) => {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
@@ -10330,7 +10331,7 @@ var XJS = (function(exports) {
                 });
               }
             });
-            Scene._scenePool.map((scene, idx, arr) => {
+            Scene._scenePool.forEach((scene, idx, arr) => {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
@@ -10392,7 +10393,7 @@ var XJS = (function(exports) {
                 });
               }
             });
-            Scene._scenePool.map((scene, idx, arr) => {
+            Scene._scenePool.forEach((scene, idx, arr) => {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
@@ -13108,7 +13109,7 @@ var XJS = (function(exports) {
   var DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE = 1e7;
   const arrayToObj = (array, separator) => {
     var obj = {};
-    array.map((el) => {
+    array.forEach((el) => {
       var separatorIndex = el.indexOf(separator);
       var key = el.substring(0, separatorIndex);
       obj[key] = el.substring(separatorIndex + 1);

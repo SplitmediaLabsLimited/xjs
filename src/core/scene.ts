@@ -68,7 +68,7 @@ export class Scene {
           let count = 0;
           jsonArr
             .filter((json) => json['tag'] === 'placement')
-            .map((scene, index) => {
+            .forEach((scene, index) => {
               count++;
               Scene._scenePool[index] = new Scene(index, scene['name'], scene['id']);
             });
@@ -203,7 +203,7 @@ export class Scene {
       } else {
         Scene._initializeScenePoolAsync().then(() => {
           const sceneLength = Scene._scenePool.length;
-          Scene._scenePool.map((scene, idx) => {
+          Scene._scenePool.forEach((scene, idx) => {
             scene.getSceneUid().then((uid) => {
               if (uid === sceneUid) {
                 resolve(scene);
@@ -235,7 +235,7 @@ export class Scene {
     return new Promise((resolve) => {
       const sceneArr = [];
       Scene._initializeScenePoolAsync().then((count) => {
-        Scene._scenePool.map((scene, idx) => {
+        Scene._scenePool.forEach((scene, idx) => {
           scene.getName().then((name) => {
             if (name === sceneName) {
               sceneArr.push(scene);
@@ -373,7 +373,7 @@ export class Scene {
               }
             });
 
-          Scene._scenePool.map((scene, idx, arr) => {
+          Scene._scenePool.forEach((scene, idx, arr) => {
             promiseArray.push(scenePromise(scene, idx, arr));
           });
 
@@ -438,7 +438,7 @@ export class Scene {
               }
             });
 
-          Scene._scenePool.map((scene, idx, arr) => {
+          Scene._scenePool.forEach((scene, idx, arr) => {
             promiseArray.push(scenePromise(scene, idx, arr));
           });
 
@@ -675,7 +675,7 @@ export class Scene {
                   });
               }
             });
-          Scene._scenePool.map((scene, idx, arr) => {
+          Scene._scenePool.forEach((scene, idx, arr) => {
             promiseArray.push(scenePromise(scene, idx, arr));
           });
           Promise.all(promiseArray).then((results) => {
@@ -744,7 +744,7 @@ export class Scene {
                   });
               }
             });
-          Scene._scenePool.map((scene, idx, arr) => {
+          Scene._scenePool.forEach((scene, idx, arr) => {
             promiseArray.push(scenePromise(scene, idx, arr));
           });
           Promise.all(promiseArray).then((results) => {

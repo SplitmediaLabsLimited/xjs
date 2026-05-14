@@ -266,18 +266,18 @@ export class System {
             .filter(
               (windowDetail) =>
                 windowDetail[1].toUpperCase().indexOf('WINDOWS.UI.CORE.COREWINDOW') !== 0
-            )
-            .map((windowDetail) => {
-              Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2]).then((detail) => {
-                const dev = {
-                  title: windowDetail[0],
-                  class: windowDetail[1],
-                  processDetail: detail.toLocaleLowerCase(),
-                  hwnd: windowDetail[3],
-                };
-                return screens.push(Screen.parse(dev));
-              });
+            );
+          devices.forEach((windowDetail) => {
+            Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2]).then((detail) => {
+              const dev = {
+                title: windowDetail[0],
+                class: windowDetail[1],
+                processDetail: detail.toLocaleLowerCase(),
+                hwnd: windowDetail[3],
+              };
+              return screens.push(Screen.parse(dev));
             });
+          });
           return devices;
         })
         .then((res) => {

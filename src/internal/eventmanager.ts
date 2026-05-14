@@ -141,7 +141,7 @@ window.SetEvent = (args: string) => {
   settings = args.split('&');
 
   const settingsObj = {};
-  settings.map((el) => {
+  settings.forEach((el) => {
     const _split = el.split('=');
     settingsObj[_split[0]] = _split[1];
   });
@@ -149,13 +149,13 @@ window.SetEvent = (args: string) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[settingsObj['event']] === undefined) return;
 
-    EventManager._proxyHandlers[settingsObj['event']].map((_cb) => {
+    EventManager._proxyHandlers[settingsObj['event']].forEach((_cb) => {
       _cb(settingsObj);
     });
   } else {
     if (EventManager.callbacks[settingsObj['event']] === undefined) return;
 
-    EventManager.callbacks[settingsObj['event']].map((_cb) => {
+    EventManager.callbacks[settingsObj['event']].forEach((_cb) => {
       _cb(settingsObj);
     });
   }
@@ -169,13 +169,13 @@ const oldAppOnEvent = window.AppOnEvent;
 window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
-    EventManager._proxyHandlers[event].map((_cb) => {
+    EventManager._proxyHandlers[event].forEach((_cb) => {
       _cb({ event, args });
     });
   } else {
     if (EventManager.callbacks[event] === undefined) return;
 
-    EventManager.callbacks[event].map((_cb) => {
+    EventManager.callbacks[event].forEach((_cb) => {
       _cb({ event, args });
     });
   }
@@ -196,13 +196,13 @@ window.OnEvent = (event, item, ...eventArgs) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;
 
-    EventManager._proxyHandlers[event + '_' + item].map((_cb) => {
+    EventManager._proxyHandlers[event + '_' + item].forEach((_cb) => {
       _cb(...eventArgs);
     });
   } else {
     if (EventManager.callbacks[event + '_' + item] === undefined) return;
 
-    EventManager.callbacks[event + '_' + item].map((_cb) => {
+    EventManager.callbacks[event + '_' + item].forEach((_cb) => {
       _cb(...eventArgs);
     });
   }
