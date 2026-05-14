@@ -36,4 +36,8 @@ Use `npm run pack:check` before publishing. It runs the build first, then verifi
 
 Only the deprecated compatibility bundles `dist/xjs-es2015.js` and `dist/xjs-es2015.min.js` remain tracked during the transition.
 
+## Backlog
+
+See [BACKLOG.md](BACKLOG.md) for planned modernization work, including the static docs-site migration.
+
 If you wish to contribute, check the [issue list](https://github.com/xjsframework/xjs/issues)! Drop a comment if you need more information before you start working on a pull request. Information on our deliverable roadmap is posted on [the wiki](https://github.com/xjsframework/xjs/wiki).
