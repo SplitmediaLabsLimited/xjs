@@ -1,4 +1,5 @@
 import { XML } from '../../internal/util/xml';
+import { Item } from '../items/item';
 /**
  * ItemTypes is used to define the type of the current Source.
  *
@@ -254,7 +255,7 @@ export interface ISource {
      * })
      * ```
      */
-    getItemList(): Promise<ISource[]>;
+    getItemList(): Promise<Item[]>;
     /**
      * return: Promise<ItemType>
      *
@@ -297,6 +298,6 @@ export declare class iSource implements ISource {
     setKeepLoaded(value: boolean): Promise<ISource>;
     getId(): Promise<string>;
     refresh(): Promise<iSource>;
-    getItemList(): Promise<iSource[]>;
+    getItemList(): Promise<Item[]>;
     getType(): Promise<number>;
 }

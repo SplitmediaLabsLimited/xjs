@@ -11,13 +11,13 @@ export declare class Item {
     /**
      * Helper function to check if the supplied item id still exist.
      */
-    static wrapGet(name: string, srcId?: string, id?: string, updateId?: Function): Promise<unknown>;
+    static wrapGet(name: string, srcId?: string, id?: string, updateId?: Function): Promise<string>;
     /** Get an item's local property asynchronously */
     static get(name: string, id?: string): Promise<string>;
     /**
      * Helper function to check if the supplied item id still exist.
      */
-    static wrapSet(name: string, value: string, srcId?: string, id?: string, updateId?: Function): Promise<unknown>;
+    static wrapSet(name: string, value: string, srcId?: string, id?: string, updateId?: Function): Promise<boolean>;
     /** Sets an item's local property */
     static set(name: string, value: string, id?: string): Promise<boolean>;
     /** For SourceProps and XBC version 2.7 below */

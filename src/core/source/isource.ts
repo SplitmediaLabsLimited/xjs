@@ -14,6 +14,7 @@ import {JSON as JXON} from '../../internal/util/json';
 import {Environment} from '../environment';
 import {Scene} from '../scene';
 import {Logger} from '../../internal/util/logger';
+import {Item} from '../items/item';
 
 /**
  * ItemTypes is used to define the type of the current Source.
@@ -281,7 +282,7 @@ export interface ISource {
    * })
    * ```
    */
-  getItemList(): Promise<ISource[]>
+  getItemList(): Promise<Item[]>
 
   /**
    * return: Promise<ItemType>
@@ -545,7 +546,7 @@ export class iSource implements ISource{
     });
   }
 
-  getItemList(): Promise<iSource[]> {
+  getItemList(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       if (
         versionCompare(getVersion())
@@ -565,7 +566,7 @@ export class iSource implements ISource{
             this._id, this._updateId.bind(this))
         }
         this._checkPromise.then(itemlist => {
-          const promiseArray: Promise<iSource>[] = [];
+          const promiseArray: Promise<Item>[] = [];
           const itemsArray = String(itemlist).split(',');
 
           itemsArray.forEach(itemId => {

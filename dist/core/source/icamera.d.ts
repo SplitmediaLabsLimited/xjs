@@ -1,6 +1,5 @@
 import { Rectangle } from '../../util/rectangle';
 import { MicrophoneDevice as MicrophoneDevice } from '../../system/microphone';
-import { CameraSource } from '../source/camera';
 import { XML } from '../../internal/util/xml';
 export interface ISourceCamera {
     /**
@@ -51,7 +50,7 @@ export interface ISourceCamera {
      *
      * Sets whether camera feed is paused or not
      */
-    setStreamPaused(value: boolean): Promise<CameraSource>;
+    setStreamPaused(value: boolean): Promise<ISourceCamera>;
     /**
      * return: Promise<boolean>
      *
@@ -78,7 +77,7 @@ export interface ISourceCamera {
      *
      * Sets feed capture delay in milliseconds, accepts only positive delay
      */
-    setDelay(value: number): Promise<CameraSource>;
+    setDelay(value: number): Promise<ISourceCamera>;
     /**
      * return: Promise<boolean>
      *
@@ -90,7 +89,7 @@ export interface ISourceCamera {
      *
      * Enables or disables forcing of deinterlacing
      */
-    setForceDeinterlace(value: boolean): Promise<CameraSource>;
+    setForceDeinterlace(value: boolean): Promise<ISourceCamera>;
     /**
      * return: Promise<string>
      *
@@ -135,17 +134,17 @@ export declare class SourceCamera implements ISourceCamera {
     getDeviceId(): Promise<string>;
     getResolution(): Promise<Rectangle>;
     getAudioOffset(): Promise<number>;
-    setAudioOffset(value: number): Promise<SourceCamera>;
+    setAudioOffset(value: number): Promise<ISourceCamera>;
     getAudioInput(): Promise<MicrophoneDevice>;
-    setAudioInput(value: MicrophoneDevice): Promise<SourceCamera>;
+    setAudioInput(value: MicrophoneDevice): Promise<ISourceCamera>;
     isStreamPaused(): Promise<boolean>;
-    setStreamPaused(value: boolean): Promise<CameraSource>;
+    setStreamPaused(value: boolean): Promise<ISourceCamera>;
     isHardwareEncoder(): Promise<boolean>;
     isActive(): Promise<boolean>;
     getDelay(): Promise<number>;
-    setDelay(value: number): Promise<CameraSource>;
+    setDelay(value: number): Promise<ISourceCamera>;
     isForceDeinterlace(): Promise<boolean>;
-    setForceDeinterlace(value: boolean): Promise<CameraSource>;
+    setForceDeinterlace(value: boolean): Promise<ISourceCamera>;
     isAudioAvailable: () => Promise<boolean>;
     getValue(): Promise<string>;
     setValue(camDevice: any): Promise<SourceCamera>;

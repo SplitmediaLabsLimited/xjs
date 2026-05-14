@@ -5,7 +5,6 @@ import {Item as iItem} from '../../internal/item';
 import {Environment} from '../environment';
 import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 import {CameraDevice as CameraDevice} from '../../system/camera';
-import {CameraSource} from '../source/camera';
 import {System} from '../../system/system';
 import {Logger} from '../../internal/util/logger';
 import {XML} from '../../internal/util/xml';
@@ -72,7 +71,7 @@ export interface ISourceCamera {
    *
    * Sets whether camera feed is paused or not
    */
-  setStreamPaused(value: boolean): Promise<CameraSource>
+  setStreamPaused(value: boolean): Promise<ISourceCamera>
 
   /**
    * return: Promise<boolean>
@@ -102,7 +101,7 @@ export interface ISourceCamera {
    *
    * Sets feed capture delay in milliseconds, accepts only positive delay
    */
-  setDelay(value: number): Promise<CameraSource>
+  setDelay(value: number): Promise<ISourceCamera>
 
   /**
    * return: Promise<boolean>
@@ -116,7 +115,7 @@ export interface ISourceCamera {
    *
    * Enables or disables forcing of deinterlacing
    */
-  setForceDeinterlace(value: boolean): Promise<CameraSource>
+  setForceDeinterlace(value: boolean): Promise<ISourceCamera>
 
   /**
    * return: Promise<string>
@@ -214,7 +213,7 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  setAudioOffset(value: number): Promise<SourceCamera> {
+  setAudioOffset(value: number): Promise<ISourceCamera> {
     return new Promise((resolve, reject) => {
       var itemAudio, delay;
       if(this._isItemCall){
@@ -291,7 +290,7 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  setAudioInput(value: MicrophoneDevice): Promise<SourceCamera> {
+  setAudioInput(value: MicrophoneDevice): Promise<ISourceCamera> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setAudioInput', true)
@@ -324,7 +323,7 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  setStreamPaused(value: boolean): Promise<CameraSource> {
+  setStreamPaused(value: boolean): Promise<ISourceCamera> {
     return new Promise((resolve, reject) => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setStreamPaused', true)
@@ -415,7 +414,7 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  setDelay(value: number): Promise<CameraSource> {
+  setDelay(value: number): Promise<ISourceCamera> {
     if(this._isItemCall){
       Logger.warn('sourceWarning', 'setDelay', true)
     }
@@ -479,7 +478,7 @@ export class SourceCamera implements ISourceCamera {
     });
   }
 
-  setForceDeinterlace(value: boolean): Promise<CameraSource> {
+  setForceDeinterlace(value: boolean): Promise<ISourceCamera> {
     return new Promise(resolve => {
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setForceDeinterlace', true)

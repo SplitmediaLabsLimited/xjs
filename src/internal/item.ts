@@ -72,7 +72,7 @@ export class Item {
   /**
    * Helper function to check if the supplied item id still exist.
    */
-  static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function) {
+  static wrapGet(name: string, srcId?: string, id?:string, updateId?: Function): Promise<string> {
     return new Promise(resolve => {
       if(versionCompare(getVersion())
         .is
@@ -190,7 +190,7 @@ export class Item {
    * Helper function to check if the supplied item id still exist.
    */
   static wrapSet(name: string, value:string,
-        srcId?:string, id?:string, updateId?: Function) {
+        srcId?:string, id?:string, updateId?: Function): Promise<boolean> {
     return new Promise(resolve => {
       if(versionCompare(getVersion())
         .is

@@ -41,15 +41,15 @@ export declare class CameraSource extends Source implements IAudio, ISourceCamer
     /** See: {@link #core/ISourceCamera#getAudioOffset getAudioOffset} */
     getAudioOffset: () => Promise<number>;
     /** See: {@link #core/ISourceCamera#setAudioOffset setAudioOffset} */
-    setAudioOffset: (value: number) => Promise<CameraSource>;
+    setAudioOffset: (value: number) => Promise<ISourceCamera>;
     /** See: {@link #core/ISourceCamera#getAudioInput getAudioInput} */
     getAudioInput: () => Promise<MicrophoneDevice>;
     /** See: {@link #core/ISourceCamera#setAudioInput setAudioInput} */
-    setAudioInput: (value: MicrophoneDevice) => Promise<CameraSource>;
+    setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>;
     /** See: {@link #core/ISourceCamera#isStreamPaused isStreamPaused} */
     isStreamPaused: () => Promise<boolean>;
     /** See: {@link #core/ISourceCamera#setStreamPaused setStreamPaused} */
-    setStreamPaused: (value: boolean) => Promise<CameraSource>;
+    setStreamPaused: (value: boolean) => Promise<ISourceCamera>;
     /** See: {@link #core/ISourceCamera#isHardwareEncoder isHardwareEncoder} */
     isHardwareEncoder: () => Promise<boolean>;
     /** See: {@link #core/ISourceCamera#isActive isActive} */
@@ -57,11 +57,11 @@ export declare class CameraSource extends Source implements IAudio, ISourceCamer
     /** See: {@link #core/ISourceCamera#getDelay getDelay} */
     getDelay: () => Promise<number>;
     /** See: {@link #core/ISourceCamera#setDelay setDelay} */
-    setDelay: (value: number) => Promise<CameraSource>;
+    setDelay: (value: number) => Promise<ISourceCamera>;
     /** See: {@link #core/ISourceCamera#isForceDeinterlace isForceDeinterlace} */
     isForceDeinterlace: () => Promise<boolean>;
     /** See: {@link #core/ISourceCamera#setForceDeinterlace setForceDeinterlace} */
-    setForceDeinterlace: (value: boolean) => Promise<CameraSource>;
+    setForceDeinterlace: (value: boolean) => Promise<ISourceCamera>;
     /** See: {@link #core/IAudio#getVolume getVolume} */
     getVolume: () => Promise<number>;
     /** See: {@link #core/IAudio#isMute isMute} */
