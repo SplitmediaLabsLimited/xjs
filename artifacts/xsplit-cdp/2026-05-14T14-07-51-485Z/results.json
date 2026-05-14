@@ -1,0 +1,82 @@
+{
+  "target": {
+    "description": "",
+    "devtoolsFrontendUrl": "/devtools/inspector.html?ws=127.0.0.1:9222/devtools/page/2FB8274F80E972B5AD22584AC79BBE06",
+    "id": "2FB8274F80E972B5AD22584AC79BBE06",
+    "title": "127.0.0.1:3999/xsplit-extension/index.html",
+    "type": "page",
+    "url": "http://127.0.0.1:3999/xsplit-extension/index.html",
+    "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/page/2FB8274F80E972B5AD22584AC79BBE06"
+  },
+  "diagnostics": {
+    "cdp": {
+      "version": {
+        "Browser": "Chrome/103.0.5060.134",
+        "Protocol-Version": "1.3",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 XSplitBroadcaster/4.5.2603.0506 Safari/537.36",
+        "V8-Version": "10.3.174.20",
+        "WebKit-Version": "537.36 (@8ec6fce403b3feb0869b0732eda8bd95011d333c)",
+        "webSocketDebuggerUrl": "ws://127.0.0.1:9222/devtools/browser/77cd4005-4b4d-4bba-bebe-ba9403b4a8f6"
+      },
+      "targetPrefixes": [
+        "http://127.0.0.1:3999/xsplit-extension/",
+        "http://localhost:3999/xsplit-extension/"
+      ],
+      "fallbackTargetPrefixes": [
+        "http://127.0.0.1:3001/",
+        "https://www.xspl.it.com/",
+        "http://www.xspl.it.com/",
+        "file:///www.xspl.it.com/"
+      ],
+      "navigatedFrom": null,
+      "navigateUrl": "http://127.0.0.1:3999/xsplit-extension/index.html"
+    },
+    "console": [],
+    "exceptions": [],
+    "failedRequests": [
+      {
+        "requestId": "97F5E53EFE8371C523145065081688C7",
+        "timestamp": 716702.73207,
+        "type": "Document",
+        "errorText": "net::ERR_CONNECTION_REFUSED",
+        "canceled": false
+      }
+    ],
+    "logs": [],
+    "pageState": {
+      "href": "chrome-error://chromewebdata/",
+      "readyState": "complete",
+      "title": "",
+      "runnerType": "undefined",
+      "fixtureCount": null,
+      "scripts": [],
+      "bodyText": ""
+    }
+  },
+  "artifacts": {
+    "screenshot": {
+      "path": "screenshot.png",
+      "bytes": 3216,
+      "sha256": "22764c8a198d631f9203d902a83c17bdfb4ab7a031de749f89c5918a8b5b3dab"
+    },
+    "failureScreenshot": {
+      "path": "failure.png",
+      "bytes": 3216,
+      "sha256": "22764c8a198d631f9203d902a83c17bdfb4ab7a031de749f89c5918a8b5b3dab"
+    }
+  },
+  "results": [
+    {
+      "id": "runner-bootstrap",
+      "status": "fail",
+      "error": "Error: Timed out waiting for window.__runXjsRegressionSuite\n    at waitForRegressionSuite (file:///home/ensu/Projects/sml/xjs/scripts/xsplit-cdp-runner.mjs:109:9)\n    at async file:///home/ensu/Projects/sml/xjs/scripts/xsplit-cdp-runner.mjs:229:3"
+    }
+  ],
+  "failures": [
+    {
+      "id": "runner-bootstrap",
+      "status": "fail",
+      "error": "Error: Timed out waiting for window.__runXjsRegressionSuite\n    at waitForRegressionSuite (file:///home/ensu/Projects/sml/xjs/scripts/xsplit-cdp-runner.mjs:109:9)\n    at async file:///home/ensu/Projects/sml/xjs/scripts/xsplit-cdp-runner.mjs:229:3"
+    }
+  ]
+}
