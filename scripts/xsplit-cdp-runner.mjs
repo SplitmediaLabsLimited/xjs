@@ -109,6 +109,22 @@ async function waitForRegressionSuite(socket, timeoutMs = 10000) {
   throw new Error('Timed out waiting for window.__runXjsRegressionSuite');
 }
 
+async function collectPageState(socket) {
+  const evaluation = await trySend(socket, 'Runtime.evaluate', {
+    expression: `(() => ({
+      href: location.href,
+      readyState: document.readyState,
+      title: document.title,
+      runnerType: typeof window.__runXjsRegressionSuite,
+      fixtureCount: Array.isArray(window.__xjsComponentFixtures) ? window.__xjsComponentFixtures.length : null,
+      scripts: Array.from(document.scripts).map(script => script.src || '[inline]'),
+      bodyText: document.body ? document.body.innerText.slice(0, 1000) : null,
+    }))()`,
+    returnByValue: true,
+  });
+  return evaluation?.result?.value || null;
+}
+
 function clearTransientDiagnostics() {
   diagnostics.console = [];
   diagnostics.exceptions = [];
@@ -124,6 +140,18 @@ function screenshotArtifact(buffer, path) {
     path,
     bytes: buffer.byteLength,
     sha256: createHash('sha256').update(buffer).digest('hex'),
+  };
+}
+
+async function captureScreenshot(socket, hasFailures) {
+  const screenshot = await trySend(socket, 'Page.captureScreenshot', { format: 'png' });
+  const screenshotBuffer = screenshot?.data ? Buffer.from(screenshot.data, 'base64') : null;
+  return {
+    buffer: screenshotBuffer,
+    metadata: {
+      screenshot: screenshotArtifact(screenshotBuffer, 'screenshot.png'),
+      failureScreenshot: hasFailures ? screenshotArtifact(screenshotBuffer, 'failure.png') : null,
+    },
   };
 }
 
@@ -192,36 +220,46 @@ if (navigateUrl) {
   diagnostics.cdp.navigateUrl = navigateUrl;
   await send(socket, 'Page.navigate', { url: navigateUrl });
 }
-await waitForRegressionSuite(socket);
-clearTransientDiagnostics();
 
-const evaluation = await send(socket, 'Runtime.evaluate', {
-  expression: `window.__runXjsRegressionSuite ? window.__runXjsRegressionSuite() : Promise.reject(new Error('window.__runXjsRegressionSuite is not defined'))`,
-  awaitPromise: true,
-  returnByValue: true,
-});
+let result = [];
+let failures = [];
+let hasFailures = false;
 
-const result = evaluation.result?.value;
-const failures = Array.isArray(result)
-  ? result.filter(item => item.status !== 'pass')
-  : [{ id: 'runner-result', status: 'fail', error: 'Regression suite did not return an array' }];
-const hasFailures = failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0;
+try {
+  await waitForRegressionSuite(socket);
+  clearTransientDiagnostics();
 
-const screenshot = await trySend(socket, 'Page.captureScreenshot', { format: 'png' });
-const screenshotBuffer = screenshot?.data ? Buffer.from(screenshot.data, 'base64') : null;
-const screenshotMetadata = screenshotArtifact(screenshotBuffer, 'screenshot.png');
+  const evaluation = await send(socket, 'Runtime.evaluate', {
+    expression: `window.__runXjsRegressionSuite ? window.__runXjsRegressionSuite() : Promise.reject(new Error('window.__runXjsRegressionSuite is not defined'))`,
+    awaitPromise: true,
+    returnByValue: true,
+  });
 
+  result = evaluation.result?.value;
+  failures = Array.isArray(result)
+    ? result.filter(item => item.status !== 'pass')
+    : [{ id: 'runner-result', status: 'fail', error: 'Regression suite did not return an array' }];
+  hasFailures = failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0;
+} catch (error) {
+  diagnostics.pageState = await collectPageState(socket);
+  failures = [{
+    id: 'runner-bootstrap',
+    status: 'fail',
+    error: error && error.stack ? error.stack : String(error),
+  }];
+  result = failures;
+  hasFailures = true;
+}
+
+const screenshot = await captureScreenshot(socket, hasFailures);
 const payload = {
   target,
   diagnostics,
-  artifacts: {
-    screenshot: screenshotMetadata,
-    failureScreenshot: hasFailures ? screenshotArtifact(screenshotBuffer, 'failure.png') : null,
-  },
+  artifacts: screenshot.metadata,
   results: result,
   failures,
 };
-await writeArtifacts(payload, screenshotBuffer, hasFailures);
+await writeArtifacts(payload, screenshot.buffer, hasFailures);
 socket.close();
 
 if (hasFailures) {

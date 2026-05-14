@@ -17,6 +17,10 @@ assert.match(source, /Runtime\.consoleAPICalled/, 'runner should collect console
 assert.match(source, /Network\.loadingFailed/, 'runner should collect failed requests');
 assert.match(source, /Page\.captureScreenshot/, 'runner should capture screenshots when available');
 assert.match(source, /screenshot\.png/, 'runner should store screenshots for successful visual regression runs');
+assert.match(source, /collectPageState/, 'runner should collect page state when the suite cannot bootstrap');
+assert.match(source, /runner-bootstrap/, 'runner should emit a structured bootstrap failure');
+assert.match(source, /runnerType/, 'bootstrap diagnostics should include the regression runner type');
+assert.match(source, /scripts:\s*Array\.from\(document\.scripts\)/, 'bootstrap diagnostics should include loaded scripts');
 assert.match(source, /sha256/, 'runner should record screenshot checksum metadata');
 assert.match(source, /bytes/, 'runner should record screenshot byte size metadata');
 assert.match(source, /latest-summary\.json/, 'runner should write a stable latest artifact summary');
