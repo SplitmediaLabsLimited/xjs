@@ -290,7 +290,7 @@ export class System{
    * });
    * ```
    */
-  static getFonts(): Promise<string> {
+  static getFonts(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));

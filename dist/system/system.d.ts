@@ -155,7 +155,7 @@ export declare class System {
      * });
      * ```
      */
-    static getFonts(): Promise<string>;
+    static getFonts(): Promise<string[]>;
     /**
      * return: Promise<JSON>
      *
