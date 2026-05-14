@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
     "target": "es2020",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "declaration": true,
+    "rootDir": "src",
     "outDir": "dist/",
     "strict": false,
     "skipLibCheck": true,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "types": []
   },
   "files": [
     "./src/index.ts"

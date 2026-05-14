@@ -17,6 +17,11 @@ Run `npm run test:legacy` when validating the original browser-based unit suite.
   This creates the ESM, CommonJS, CEF-compatible browser, and minified browser
 bundles under `dist/`.
 
+  Build tooling is pinned to TypeScript 6 as the transition baseline before the
+Go-native TypeScript line. Keep TS 6 deprecations visible and fix them rather
+than suppressing them, since deprecated compiler options are expected to stop
+working in TypeScript 7.
+
   *NOTE:* In case you want to specify the version number, execute
   `npm version 1.5.0`, then run `npm run build`.
 
