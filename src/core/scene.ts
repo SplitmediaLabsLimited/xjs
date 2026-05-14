@@ -1411,6 +1411,53 @@ export class Scene {
   /**
    * return: Promise<string>
    *
+   * Get the transition list
+   * Result comma separated list of source scene ids with specific transitions
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionList().then(function(sourceScene) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionList(): Promise<string> {
+    return new Promise(resolve => {
+      iApp.get('scenetransitionlist:' + this._refID).then(val => {
+        resolve(val);
+      });
+    });
+  }
+
+  /**
+   * param: (list: string)
+   * Set the transition source scene list.   
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionList('TODO');
+   * ```
+   */
+  setTransitionList(list: any): Promise<boolean> {
+    return new Promise((resolve,reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        iApp.set('scenetransitionlist:' + this._refID, list)
+        .then(value => {
+          resolve(value);
+        }).catch(err => {
+          reject(Error('Invalid parameter. Only Source Transition List String allowed.'))
+        });
+      }
+    });
+  }
+
+  /**
+   * return: Promise<string>
+   *
+   * param: (sourceScene: any)
+   *
    * Get the transition override of this scene object.
    * Transition overrides take priority over the more generic one from App.GetTransition
    * See also: {@link #core/Transition Core/Transition} and {@link #core/App#getTransition getTransition}
@@ -1424,9 +1471,9 @@ export class Scene {
    * });
    * ```
    */
-  getTransitionOverride(): Promise<Transition> {
+  getTransitionOverride(sourceScene : any = ''): Promise<Transition> {
     return new Promise(resolve => {
-      iApp.get('scenetransitionid:' + this._refID).then(val => {
+      iApp.get('scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
         if (val === '') { // NONE
           resolve(Transition.NONE);
         } else {
@@ -1461,7 +1508,7 @@ export class Scene {
   }
 
   /**
-   * param: (value: string)
+   * param: (value: string, sourceScene; string)
    * Set the transition override of this scene object.
    * Transition overrides take priority over the more generic one from App.GetTransition
    * See also: {@link #core/Transition Core/Transition} and {@link #core/App#setTransition setTransition}
@@ -1473,12 +1520,12 @@ export class Scene {
    * myScene.setTransitionOverride('xjs.Transition.CLOCK');
    * ```
    */
-  setTransitionOverride(value: any): Promise<boolean> {
+  setTransitionOverride(value: any, sourceScene: any = ''): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitionid:' + this._refID, value instanceof Transition ? value.toString() : value)
+        iApp.set('scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), value instanceof Transition ? value.toString() : value)
         .then(value => {
           resolve(value);
         }).catch(err => {
@@ -1490,6 +1537,8 @@ export class Scene {
 
   /**
    * return: Promise<number>
+   *
+   * param: (sourceScene: any)
    *
    * Get the transition time override of this scene object.
    * The scene transition time override will only take effect
@@ -1504,16 +1553,16 @@ export class Scene {
    * });
    * ```
    */
-  getTransitionTime(): Promise<number> {
+  getTransitionTime(sourceScene: any = ''): Promise<number> {
     return new Promise(resolve => {
-      iApp.get('scenetransitiontime:' + this._refID).then(val => {
+      iApp.get('scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
         resolve(Number(val));
       });
     });
   }
 
   /**
-   * param: (value: string)
+   * param: (value: string, sourceScene: string)
    *
    * Set the transition time override of this scene object.
    * The scene transition time override will only take effect
@@ -1525,17 +1574,68 @@ export class Scene {
    * myScene.setTransitionTime(1000);
    * ```
    */
-  setTransitionTime(time: number): Promise<boolean> {
+  setTransitionTime(time: number, sourceScene: any = ''): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitiontime:' + this._refID, String(time)).then(value => {
+        iApp.set('scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), String(time)).then(value => {
           resolve(value);
         });
       }
     });
   }
+
+  /**
+   * return: Promise<number>
+   *
+   * param: (sourceScene: any)
+   *
+   * Get the transition volume override of this scene object.
+   * The scene transition volume override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.getTransitionVolume().then(function(time) {
+   *  // do something here
+   * });
+   * ```
+   */
+  getTransitionVolume(sourceScene: any = ''): Promise<number> {
+    return new Promise(resolve => {
+      iApp.get('scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
+        resolve(Number(val));
+      });
+    });
+  }
+
+  /**
+   * param: (value: string, sourceScene: string)
+   *
+   * Set the transition volume override of this scene object.
+   * The scene transition volume override will only take effect
+   * if the scene transition override itself is not equal to ''(Transition.NONE)
+   *
+   * #### Usage
+   *
+   * ```javascript
+   * myScene.setTransitionVolume(1000);
+   * ```
+   */
+  setTransitionVolume(volume: number, sourceScene: any = ''): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Environment.isSourcePlugin()) {
+        reject(Error('Scene transition overrides are readonly for source plugins.'));
+      } else {
+        iApp.set('scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), String(volume)).then(value => {
+          resolve(value);
+        });
+      }
+    });
+  }  
 
   /**
    * return: Promise<Item[]>

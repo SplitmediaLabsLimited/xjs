@@ -557,6 +557,48 @@ export class iSourceHtml implements ISourceHtml{
     });
   }
 
+  getPolicyStringFunction(customCSS: string): string {
+    let retrievedPolicyStringFunction = '';    
+    
+    if (window.trustedTypes) {      
+      retrievedPolicyStringFunction =
+        `var retrievedPolicy = null;
+        if (window.trustedTypes) {                          
+          if (window.trustedTypes.defaultPolicy === null) {
+            retrievedPolicy = window.trustedTypes.createPolicy('default', {
+              createHTML: (input) => { return input; },
+              createScriptURL: (input) => { return input; },
+              createScript: (input) => { return input; }, 
+            });            
+          } else {
+            retrievedPolicy = window.trustedTypes.defaultPolicy;
+          }          
+        }  
+        
+        var h = document.querySelector('head');
+        var existing = document.querySelector('head #splitmedialabsCSSOverwrite');
+        if (existing != null) h.removeChild(existing);
+        var xjsCSSOverwrite = document.createElement("style");
+        xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";
+        xjsCSSOverwrite.type = "text/css";
+        xjsCSSOverwrite.innerHTML = "${customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '')}";
+        var xjsCSSOverwriteHTML = retrievedPolicy.createHTML(xjsCSSOverwrite.outerHTML);
+        
+        if (xjsCSSOverwriteHTML) {
+          const htmlString = xjsCSSOverwriteHTML.toString();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlString, 'text/html');
+          const styleElement = doc.querySelector('style');
+          if (styleElement) {            
+            h.appendChild(styleElement);
+          }
+        }        
+        `;
+    }
+
+    return retrievedPolicyStringFunction; 
+  }
+
   setBrowserJS(value: string, refresh = false): Promise<iSourceHtml> {
     return new Promise((resolve, reject) => {
       let customObject = {};
@@ -599,6 +641,12 @@ export class iSourceHtml implements ISourceHtml{
 
         if (cssEnabled === true) {
           let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, '').replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + "';h.appendChild(xjsCSSOverwrite);";
+
+          let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+          if (retrievedPolicyFunction) {
+            cssScript = retrievedPolicyFunction;
+          }                            
+
           scriptString = scriptString + cssScript;
         }
         if (value !== '' && scriptEnabled === true) {
@@ -699,6 +747,13 @@ export class iSourceHtml implements ISourceHtml{
             customCSS.replace(/(\r\n|\n|\r)/gm, '')
               .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') + '";"' +
             'h.appendChild(xjsCSSOverwrite);';
+
+
+          let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+          if (retrievedPolicyFunction) {
+            cssScript = retrievedPolicyFunction;
+          }
+
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === true) {
@@ -799,6 +854,12 @@ export class iSourceHtml implements ISourceHtml{
             value.replace(/(\r\n|\n|\r)/gm, '')
               .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
             '";h.appendChild(xjsCSSOverwrite);';
+
+          let retrievedPolicyFunction = this.getPolicyStringFunction(value);
+          if (retrievedPolicyFunction) {
+            cssScript = retrievedPolicyFunction;
+          }  
+
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && scriptEnabled === true) {
@@ -893,6 +954,12 @@ export class iSourceHtml implements ISourceHtml{
             customCSS.replace(/(\r\n|\n|\r)/gm, '')
               .replace(/\s{2,}/g, ' ').replace(/(\[br\])/gm, '') +
             '";h.appendChild(xjsCSSOverwrite);';
+
+          let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+          if (retrievedPolicyFunction) {
+            cssScript = retrievedPolicyFunction;
+          }
+
           scriptString = scriptString + cssScript;
         }
         if (customJS !== '' && value === scriptEnabled) {

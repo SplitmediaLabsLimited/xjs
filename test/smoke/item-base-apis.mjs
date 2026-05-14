@@ -14,6 +14,7 @@ const props = new Map([
   ['prop:lockmove', '0'],
   ['prop:mipmaps', '0'],
   ['prop:pos', '0,0,0.5,0.5'],
+  ['prop:pos:0', '0,0,0.5,0.5'],
   ['prop:crop', '0,0,0,0'],
   ['prop:rotate_x', '0'],
   ['prop:rotate_y', '0'],

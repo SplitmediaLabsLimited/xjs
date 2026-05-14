@@ -145,8 +145,8 @@ assert.deepEqual(
     ['CallHostFunc', 'setSceneToRecord', '-1'],
     ['CallHostFunc', 'setSceneToRecord', '1'],
     ['CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1'],
-    ['CallHost', 'stopBroadcast', 'Local Recording'],
-    ['CallHost', 'pauseRecording', 'Local Recording'],
-    ['CallHost', 'unpauseRecording', 'Local Recording'],
+    ['CallHostFunc', 'stopBroadcast', 'Local Recording'],
+    ['CallHostFunc', 'pauseRecording', 'Local Recording'],
+    ['CallHostFunc', 'unpauseRecording', 'Local Recording'],
   ]
 );

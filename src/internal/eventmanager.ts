@@ -39,7 +39,11 @@ export class EventManager {
           if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
-                     _event.startsWith('itemdestroyed_')) {
+                     _event.startsWith('itemdestroyed_') ||
+                     _event.startsWith('itempropchangeinscene_') ||
+                     _event.startsWith('srcopened_') ||
+                     _event.startsWith('srcclosed_') ||
+                     _event.startsWith('srcassociatedprocessclosed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -56,7 +60,11 @@ export class EventManager {
           if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
           } else if (_event.startsWith('itempropchange_') ||
-                     _event.startsWith('itemdestroyed_')) {
+                     _event.startsWith('itemdestroyed_') ||
+                     _event.startsWith('itempropchangeinscene_') ||
+                     _event.startsWith('srcopened_') ||
+                     _event.startsWith('srcclosed_') ||
+                     _event.startsWith('srcassociatedprocessclosed_')) {
             let itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
@@ -73,7 +81,11 @@ export class EventManager {
             if (EventManager._appEventsList.indexOf(_event) > -1) {
               exec('AppSubscribeEvents');
             } else if (_event.startsWith('itempropchange_') ||
-                       _event.startsWith('itemdestroyed_')) {
+                       _event.startsWith('itemdestroyed_') ||
+                       _event.startsWith('itempropchangeinscene_') ||
+                       _event.startsWith('srcopened_') ||
+                       _event.startsWith('srcclosed_') ||
+                       _event.startsWith('srcassociatedprocessclosed_')) {
               let itemID = _event.split('_')[1];
               exec('ItemSubscribeEvents', itemID);
             }
@@ -161,17 +173,18 @@ window.AppOnEvent = (event, ...args) => {
 }
 
 const oldOnEvent = window.OnEvent;
-window.OnEvent = (event, item, ...eventArgs ) => {
+window.OnEvent = (event, item, ...eventArgs ) => {  
   if(event === 'itemremovedfromscene' && versionCompare(getVersion()).
   is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
     event = 'itemdestroyed'
-  }
+  }  
+
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;
 
-      EventManager._proxyHandlers[event + '_' + item].map(_cb => {
-        _cb(...eventArgs);
-      });
+    EventManager._proxyHandlers[event + '_' + item].map(_cb => {
+      _cb(...eventArgs);
+    });
   } else {
     if (EventManager.callbacks[event + '_' + item] === undefined) return;
 
