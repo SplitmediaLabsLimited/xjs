@@ -1,8 +1,8 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {JSON as JXON} from '../../internal/util/json';
-import {Logger} from '../../internal/util/logger';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { Logger } from '../../internal/util/logger';
 
 export interface ISourceMedia {
   /**
@@ -39,7 +39,7 @@ export interface ISourceMedia {
    * });
    * ```
    */
-  getFileInfo(): Promise<Object>
+  getFileInfo(): Promise<Object>;
 
   /**
    * return: Promise<boolean>
@@ -54,7 +54,7 @@ export interface ISourceMedia {
    * });
    * ```
    */
-  isSourceAvailable(): Promise<boolean>
+  isSourceAvailable(): Promise<boolean>;
 }
 
 export class SourceMedia implements ISourceMedia {
@@ -71,20 +71,26 @@ export class SourceMedia implements ISourceMedia {
 
   getFileInfo(): Promise<Object> {
     return new Promise((resolve, reject) => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getFileInfo', true)
-        this._checkPromise = iItem.get('FileInfo', this._id)
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'getFileInfo', true);
+        this._checkPromise = iItem.get('FileInfo', this._id);
       } else {
-        this._checkPromise = iItem.wrapGet('FileInfo', this._srcId,
-          this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapGet(
+          'FileInfo',
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
-      this._checkPromise.then(val => {
+      this._checkPromise.then((val) => {
         try {
-          let fileInfoObj: Object = {};
-          let fileInfoJXON = JXON.parse(val);
-          if (typeof fileInfoJXON['children'] !== 'undefined'
-            && fileInfoJXON['children'].length > 0) {
-            let fileInfoChildren = fileInfoJXON['children'];
+          const fileInfoObj: Object = {};
+          const fileInfoJXON = JXON.parse(val);
+          if (
+            typeof fileInfoJXON['children'] !== 'undefined' &&
+            fileInfoJXON['children'].length > 0
+          ) {
+            const fileInfoChildren = fileInfoJXON['children'];
             for (var i = fileInfoChildren.length - 1; i >= 0; i--) {
               var child = fileInfoChildren[i];
               var childObj: Object = {};
@@ -110,17 +116,19 @@ export class SourceMedia implements ISourceMedia {
   }
 
   isSourceAvailable(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isSourceAvailable', true)
-        iItem.get('prop:itemavail', this._id).then(val => {
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'isSourceAvailable', true);
+        iItem.get('prop:itemavail', this._id).then((val) => {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
-          resolve(val === '1');
-        });
+        iItem
+          .wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this))
+          .then((val) => {
+            resolve(val === '1');
+          });
       }
     });
-  }  
+  }
 }

@@ -38,7 +38,9 @@ assert.equal(coordinates.getWidth(), 100);
 assert.equal(coordinates.getHeight(), 200);
 assert.equal(coordinates.toCoordinateString(), '10,20,110,220');
 assert.equal(
-  coordinates.toString('Left=:left Top=:top Right=:right Bottom=:bottom Width=:width Height=:height'),
+  coordinates.toString(
+    'Left=:left Top=:top Right=:right Bottom=:bottom Width=:width Height=:height'
+  ),
   'Left=10 Top=20 Right=110 Bottom=220 Width=100 Height=200'
 );
 

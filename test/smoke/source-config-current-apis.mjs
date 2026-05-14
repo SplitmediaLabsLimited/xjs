@@ -79,7 +79,7 @@ const sceneSource = '{DDDD0000-DDDD-4DDD-8DDD-DDDDDDDD0000}';
 const hostCalls = [];
 const slotItems = [null, null];
 let callbackId = 0;
-let currentItemId = htmlItem;
+const currentItemId = htmlItem;
 
 Object.defineProperty(globalThis, 'navigator', {
   configurable: true,
@@ -98,51 +98,75 @@ const sceneItems = [
 const sceneConfig = `<configuration cur="0"><placement name="Intro" id="${sceneA}" defpos="1">${sceneItems}</placement><placement name="Gameplay" id="${sceneB}" defpos="1"></placement><global /></configuration>`;
 
 const itemProps = new Map([
-  [htmlItem, new Map([
-    ['itemlist', htmlItem],
-    ['config', `<item id="${htmlItem}" srcid="${htmlSource}" type="8" name="Browser Widget" cname="Widget Custom" item="https://example.test/widget.html" custom="" />`],
-    ['prop:srcid', htmlSource],
-    ['prop:cname', 'Widget Custom'],
-    ['prop:name', 'Browser Widget'],
-    ['prop:item', 'https://example.test/widget.html'],
-    ['prop:srcitem', 'https://example.test/widget.html'],
-    ['prop:BrowserConfiguration', '{"theme":"dark","volume":7}'],
-  ])],
-  [flashItem, new Map([
-    ['itemlist', flashItem],
-    ['config', `<item id="${flashItem}" srcid="${flashSource}" type="6" name="C:\\\\media\\\\intro.swf" cname="Flash Custom" item="C:\\\\media\\\\intro.swf" custom="" />`],
-    ['prop:srcid', flashSource],
-    ['prop:cname', 'Flash Custom'],
-    ['prop:name', 'C:\\media\\intro.swf'],
-    ['prop:item', 'C:\\media\\intro.swf'],
-    ['prop:srcitem', 'C:\\media\\intro.swf'],
-    ['prop:BrowserSize', '640,360'],
-    ['prop:BrowserRightClick', '0'],
-    ['prop:itemavail', '1'],
-  ])],
-  [gameItem, new Map([
-    ['itemlist', gameItem],
-    ['config', `<item id="${gameItem}" srcid="${gameSource}" type="7" name="Game Capture" cname="Game Custom" item="&lt;capture executable=&quot;Game.exe&quot; replace=&quot;&quot; /&gt;" custom="" />`],
-    ['prop:srcid', gameSource],
-    ['prop:cname', 'Game Custom'],
-    ['prop:name', 'Game Capture'],
-    ['prop:item', '<capture executable="Game.exe" replace="" />'],
-    ['prop:srcitem', '<capture executable="Game.exe" replace="" />'],
-    ['GameCapSurfSharing', '0'],
-    ['GameCapShowMouse', '1'],
-    ['prop:GameCapAlpha', '0'],
-    ['prop:GameCapFrameTimeLimit', '166666'],
-  ])],
-  [sceneItem, new Map([
-    ['itemlist', sceneItem],
-    ['config', `<item id="${sceneItem}" srcid="${sceneSource}" type="11" name="Scene: Gameplay" cname="Scene Custom" item="${sceneB}" custom="" />`],
-    ['prop:srcid', sceneSource],
-    ['prop:cname', 'Scene Custom'],
-    ['prop:name', 'Scene: Gameplay'],
-    ['prop:item', sceneB],
-    ['prop:srcitem', sceneB],
-    ['prop:srctype', `11,${sceneB}`],
-  ])],
+  [
+    htmlItem,
+    new Map([
+      ['itemlist', htmlItem],
+      [
+        'config',
+        `<item id="${htmlItem}" srcid="${htmlSource}" type="8" name="Browser Widget" cname="Widget Custom" item="https://example.test/widget.html" custom="" />`,
+      ],
+      ['prop:srcid', htmlSource],
+      ['prop:cname', 'Widget Custom'],
+      ['prop:name', 'Browser Widget'],
+      ['prop:item', 'https://example.test/widget.html'],
+      ['prop:srcitem', 'https://example.test/widget.html'],
+      ['prop:BrowserConfiguration', '{"theme":"dark","volume":7}'],
+    ]),
+  ],
+  [
+    flashItem,
+    new Map([
+      ['itemlist', flashItem],
+      [
+        'config',
+        `<item id="${flashItem}" srcid="${flashSource}" type="6" name="C:\\\\media\\\\intro.swf" cname="Flash Custom" item="C:\\\\media\\\\intro.swf" custom="" />`,
+      ],
+      ['prop:srcid', flashSource],
+      ['prop:cname', 'Flash Custom'],
+      ['prop:name', 'C:\\media\\intro.swf'],
+      ['prop:item', 'C:\\media\\intro.swf'],
+      ['prop:srcitem', 'C:\\media\\intro.swf'],
+      ['prop:BrowserSize', '640,360'],
+      ['prop:BrowserRightClick', '0'],
+      ['prop:itemavail', '1'],
+    ]),
+  ],
+  [
+    gameItem,
+    new Map([
+      ['itemlist', gameItem],
+      [
+        'config',
+        `<item id="${gameItem}" srcid="${gameSource}" type="7" name="Game Capture" cname="Game Custom" item="&lt;capture executable=&quot;Game.exe&quot; replace=&quot;&quot; /&gt;" custom="" />`,
+      ],
+      ['prop:srcid', gameSource],
+      ['prop:cname', 'Game Custom'],
+      ['prop:name', 'Game Capture'],
+      ['prop:item', '<capture executable="Game.exe" replace="" />'],
+      ['prop:srcitem', '<capture executable="Game.exe" replace="" />'],
+      ['GameCapSurfSharing', '0'],
+      ['GameCapShowMouse', '1'],
+      ['prop:GameCapAlpha', '0'],
+      ['prop:GameCapFrameTimeLimit', '166666'],
+    ]),
+  ],
+  [
+    sceneItem,
+    new Map([
+      ['itemlist', sceneItem],
+      [
+        'config',
+        `<item id="${sceneItem}" srcid="${sceneSource}" type="11" name="Scene: Gameplay" cname="Scene Custom" item="${sceneB}" custom="" />`,
+      ],
+      ['prop:srcid', sceneSource],
+      ['prop:cname', 'Scene Custom'],
+      ['prop:name', 'Scene: Gameplay'],
+      ['prop:item', sceneB],
+      ['prop:srcitem', sceneB],
+      ['prop:srctype', `11,${sceneB}`],
+    ]),
+  ],
 ]);
 
 function nextAsyncId(prefix) {
@@ -159,7 +183,10 @@ function getLocalPropertyForSlot(slot) {
     hostCalls.push([slot === 0 ? 'GetLocalPropertyAsync' : 'GetLocalPropertyAsync2', name]);
     const asyncId = nextAsyncId('source_current_get');
     queueMicrotask(() => {
-      globalThis.OnAsyncCallback(asyncId, encodeURIComponent(getStoreForSlot(slot)?.get(name) ?? ''));
+      globalThis.OnAsyncCallback(
+        asyncId,
+        encodeURIComponent(getStoreForSlot(slot)?.get(name) ?? '')
+      );
     });
     return asyncId;
   };
@@ -257,7 +284,9 @@ assert.equal(currentSource instanceof xjs.HtmlSource, true);
 assert.equal(await currentSource.getId(), htmlSource);
 assert.deepEqual(await currentSource.loadConfig(), { theme: 'dark', volume: 7 });
 assert.equal(await currentSource.saveConfig({ theme: 'light' }), currentSource);
-assert.deepEqual(JSON.parse(itemProps.get(htmlItem).get('browser:Configuration')), { theme: 'light' });
+assert.deepEqual(JSON.parse(itemProps.get(htmlItem).get('browser:Configuration')), {
+  theme: 'light',
+});
 assert.equal(await currentSource.requestSaveConfig({ theme: 'requested' }), currentSource);
 assert.deepEqual(JSON.parse(hostCalls.findLast((call) => call[0] === 'CallInner')?.[2]), {
   request: 'saveConfig',
@@ -270,15 +299,23 @@ assert.deepEqual(JSON.parse(hostCalls.findLast((call) => call[0] === 'CallInner'
 });
 await assert.rejects(() => currentSource.saveConfig('bad'), /JSON format/);
 
-assert.deepEqual(await xjs.Source.getItemList().then((items) => Promise.all(items.map((item) => item.getId()))), [htmlItem]);
-assert.deepEqual(await xjs.Source.getAllSources().then((sources) => Promise.all(sources.map((source) => source.getId()))), [
-  htmlSource,
-  flashSource,
-  gameSource,
-  sceneSource,
-]);
+assert.deepEqual(
+  await xjs.Source.getItemList().then((items) => Promise.all(items.map((item) => item.getId()))),
+  [htmlItem]
+);
+assert.deepEqual(
+  await xjs.Source.getAllSources().then((sources) =>
+    Promise.all(sources.map((source) => source.getId()))
+  ),
+  [htmlSource, flashSource, gameSource, sceneSource]
+);
 
-const flash = new xjs.FlashSource({ id: flashItem, srcid: flashSource, sceneId: '0', type: xjs.ItemTypes.FLASHFILE });
+const flash = new xjs.FlashSource({
+  id: flashItem,
+  srcid: flashSource,
+  sceneId: '0',
+  type: xjs.ItemTypes.FLASHFILE,
+});
 assert.equal((await flash.getCustomResolution()).toDimensionString(), '640,360');
 assert.equal(await flash.setCustomResolution(xjs.Rectangle.fromDimensions(800, 450)), flash);
 assert.equal(itemProps.get(flashItem).get('prop:BrowserSize'), '800,450');
@@ -290,7 +327,12 @@ assert.equal(await flash.getValue(), 'C:\\media\\intro.swf');
 assert.equal(await flash.setValue('C:\\media\\updated.swf'), flash);
 assert.equal(itemProps.get(flashItem).get('prop:srcitem'), 'C:\\media\\updated.swf');
 
-const game = new xjs.GameSource({ id: gameItem, srcid: gameSource, sceneId: '0', type: xjs.ItemTypes.GAMESOURCE });
+const game = new xjs.GameSource({
+  id: gameItem,
+  srcid: gameSource,
+  sceneId: '0',
+  type: xjs.ItemTypes.GAMESOURCE,
+});
 assert.equal(await game.isSpecialOptimizationEnabled(), false);
 assert.equal(await game.setSpecialOptimizationEnabled(true), game);
 assert.equal(await game.isSpecialOptimizationEnabled(), true);
@@ -311,7 +353,12 @@ assert.equal(await game.setGameFPSCap(0), game);
 assert.equal(await game.getGameFPSCap(), 0);
 await assert.rejects(() => game.setGameFPSCap(23), /range of 24 to 300/);
 
-const sceneBackedSource = new xjs.SceneSource({ id: sceneItem, srcid: sceneSource, sceneId: '0', type: xjs.ItemTypes.SCENE });
+const sceneBackedSource = new xjs.SceneSource({
+  id: sceneItem,
+  srcid: sceneSource,
+  sceneId: '0',
+  type: xjs.ItemTypes.SCENE,
+});
 assert.equal(await sceneBackedSource.getScene().then((scene) => scene.getSceneUid()), sceneB);
 assert.equal(await sceneBackedSource.setScene(0), sceneBackedSource);
 assert.equal(itemProps.get(sceneItem).get('prop:srctype'), `11,${sceneA}`);
@@ -321,6 +368,15 @@ itemProps.get(sceneItem).set('prop:srcitem', '0');
 assert.equal(await sceneBackedSource.getScene(), xjs.Scene.liveScene());
 await assert.rejects(() => sceneBackedSource.setScene(-1), /greater than 0/);
 
-assert.equal(hostCalls.some((call) => call[0] === 'SetBrowserProperty'), true);
-assert.equal(hostCalls.some((call) => call[0] === 'CallInner'), true);
-assert.equal(hostCalls.some((call) => call[0] === 'SearchVideoItem'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SetBrowserProperty'),
+  true
+);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'CallInner'),
+  true
+);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SearchVideoItem'),
+  true
+);

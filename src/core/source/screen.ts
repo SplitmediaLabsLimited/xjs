@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Source} from '../source/source';
-import {applyMixins} from '../../internal/util/mixin';
-import {Rectangle} from '../../util/rectangle';
-import {ISourceScreen, iSourceScreen} from './iscreen';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Rectangle } from '../../util/rectangle';
+import { Source } from '../source/source';
+import { type ISourceScreen, iSourceScreen } from './iscreen';
 
 /**
  * The ScreenSource class represents the sources of the screen device items that
@@ -39,73 +39,72 @@ export class ScreenSource extends Source implements ISourceScreen {
   /**
    * See: {@link #core/ISourceScreen#isStickToTitle isStickToTitle}
    */
-  isStickToTitle: () => Promise<boolean>
+  isStickToTitle: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setStickToTitle setStickToTitle}
    */
-  setStickToTitle: (value: boolean) => Promise<ScreenSource>
+  setStickToTitle: (value: boolean) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#getCaptureLayered getCaptureLayered}
    */
-  getCaptureLayered: () => Promise<boolean>
+  getCaptureLayered: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setCaptureLayered setCaptureLayered}
    */
-  setCaptureLayered: (value: boolean) => Promise<ScreenSource>
+  setCaptureLayered: (value: boolean) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#getOptimizedCapture getOptimizedCapture}
    */
-  getOptimizedCapture: () => Promise<boolean>
+  getOptimizedCapture: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setOptimizedCapture setOptimizedCapture}
    */
-  setOptimizedCapture:(value: boolean) => Promise<ScreenSource>
+  setOptimizedCapture: (value: boolean) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#getShowMouseClicks getShowMouseClicks}
    */
-  getShowMouseClicks: () => Promise<boolean>
-
+  getShowMouseClicks: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setShowMouseClicks setShowMouseClicks}
    */
-  setShowMouseClicks: (value: boolean) => Promise<ScreenSource>
+  setShowMouseClicks: (value: boolean) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#getShowMouse getShowMouse}
    */
-  getShowMouse: () => Promise<boolean>
+  getShowMouse: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setShowMouse setShowMouse}
    */
-  setShowMouse: (value: boolean) => Promise<ScreenSource>
+  setShowMouse: (value: boolean) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#getCaptureArea getCaptureArea}
    */
-   getCaptureArea: () => Promise<Rectangle>
+  getCaptureArea: () => Promise<Rectangle>;
 
   /**
    * See: {@link #core/ISourceScreen#setCaptureArea setCaptureArea}
    */
-  setCaptureArea: (dimension: Rectangle) => Promise<ScreenSource>
+  setCaptureArea: (dimension: Rectangle) => Promise<ScreenSource>;
 
   /**
    * See: {@link #core/ISourceScreen#isClientArea isClientArea}
    */
-  isClientArea: () => Promise<boolean>
+  isClientArea: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceScreen#setClientArea setClientArea}
    */
-  setClientArea: (value: boolean) => Promise<ScreenSource>
+  setClientArea: (value: boolean) => Promise<ScreenSource>;
 }
 
-applyMixins(ScreenSource, [iSourceScreen])
+applyMixins(ScreenSource, [iSourceScreen]);

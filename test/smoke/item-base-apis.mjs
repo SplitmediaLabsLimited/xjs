@@ -158,7 +158,10 @@ assert.equal(props.get('prop:zorder'), '-');
 assert.match(String(item.toXML()), /id="\{ITEM-1\}"/);
 assert.match(String(item.toXML()), /type="8"/);
 
-assert.equal(hostCalls.some((call) => call[0] === 'SearchVideoItem'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SearchVideoItem'),
+  true
+);
 assert.equal(props.get('prop:name'), 'Updated Name');
 assert.equal(props.get('prop:cname'), 'Updated Custom');
 assert.equal(props.get('prop:item'), 'https://example.test/widget.html');

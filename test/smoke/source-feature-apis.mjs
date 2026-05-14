@@ -77,7 +77,8 @@ function setProps(id, props) {
 }
 
 setProps('{HTML-ITEM}', {
-  'prop:srcitem': 'https://example.test/widget.html*{"configUrl":"https://example.test/config.html"}',
+  'prop:srcitem':
+    'https://example.test/widget.html*{"configUrl":"https://example.test/config.html"}',
   'prop:item': 'https://example.test/widget.html*{"configUrl":"https://example.test/config.html"}',
   'prop:name': 'Browser Widget',
   'prop:BrowserTransparent': '1',
@@ -95,8 +96,10 @@ setProps('{HTML-ITEM}', {
 });
 
 setProps('{SCREEN-ITEM}', {
-  'prop:srcitem': '<screen module="" window="Chrome" hwnd="1001" wclient="1" left="10" top="20" width="300" height="200" />',
-  'prop:item': '<screen module="" window="Chrome" hwnd="1001" wclient="1" left="10" top="20" width="300" height="200" />',
+  'prop:srcitem':
+    '<screen module="" window="Chrome" hwnd="1001" wclient="1" left="10" top="20" width="300" height="200" />',
+  'prop:item':
+    '<screen module="" window="Chrome" hwnd="1001" wclient="1" left="10" top="20" width="300" height="200" />',
   'prop:ScrCapTrackWindowTitle': '0',
   'prop:ScrCapLayered': '0',
   'prop:ScrCapOptCapture1': '1',
@@ -129,7 +132,8 @@ setProps('{CAMERA-ITEM}', {
 
 setProps('{PLAYLIST-ITEM}', {
   'prop:srcitem': 'C:\\media\\a.mp4*0',
-  'prop:FilePlaylist': 'C:\\media\\a.mp4*0*1*100*100*0*0*0*0*0|C:\\media\\b.mp4*1*1*200*100*0*0*0*0*0',
+  'prop:FilePlaylist':
+    'C:\\media\\a.mp4*0*1*100*100*0*0*0*0*0|C:\\media\\b.mp4*1*1*200*100*0*0*0*0*0',
   'prop:itemavail': '1',
 });
 
@@ -151,26 +155,26 @@ function resolveStore(id, slot = 0) {
 
 function getLocalPropertyForSlot(slot) {
   return (name, id) => {
-  hostCalls.push(['GetLocalPropertyAsync', name, id]);
-  const asyncId = nextAsyncId('source_feature_get');
-  queueMicrotask(() => {
-    const store = resolveStore(id, slot);
-    globalThis.OnAsyncCallback(asyncId, store.get(name) ?? '');
-  });
-  return asyncId;
+    hostCalls.push(['GetLocalPropertyAsync', name, id]);
+    const asyncId = nextAsyncId('source_feature_get');
+    queueMicrotask(() => {
+      const store = resolveStore(id, slot);
+      globalThis.OnAsyncCallback(asyncId, store.get(name) ?? '');
+    });
+    return asyncId;
   };
 }
 
 function setLocalPropertyForSlot(slot) {
   return (name, value, id) => {
-  hostCalls.push(['SetLocalPropertyAsync', name, value, id]);
-  const asyncId = nextAsyncId('source_feature_set');
-  queueMicrotask(() => {
-    const store = resolveStore(id, slot);
-    store.set(name, value);
-    globalThis.OnAsyncCallback(asyncId, '0');
-  });
-  return asyncId;
+    hostCalls.push(['SetLocalPropertyAsync', name, value, id]);
+    const asyncId = nextAsyncId('source_feature_set');
+    queueMicrotask(() => {
+      const store = resolveStore(id, slot);
+      store.set(name, value);
+      globalThis.OnAsyncCallback(asyncId, '0');
+    });
+    return asyncId;
   };
 }
 
@@ -192,7 +196,10 @@ globalThis.external = {
   GetVideoDuration(file) {
     hostCalls.push(['GetVideoDuration', file]);
     queueMicrotask(() => {
-      globalThis.OnGetVideoDuration(encodeURIComponent(file), file.includes('missing') ? '' : '123456');
+      globalThis.OnGetVideoDuration(
+        encodeURIComponent(file),
+        file.includes('missing') ? '' : '123456'
+      );
     });
     return '0';
   },
@@ -200,10 +207,18 @@ globalThis.external = {
 
 const xjs = await import(new URL('../../dist/xjs.mjs', import.meta.url));
 
-const html = new xjs.HtmlItem({ id: '{HTML-ITEM}', srcid: '{HTML-SRC}', sceneId: '0', type: xjs.ItemTypes.HTML });
+const html = new xjs.HtmlItem({
+  id: '{HTML-ITEM}',
+  srcid: '{HTML-SRC}',
+  sceneId: '0',
+  type: xjs.ItemTypes.HTML,
+});
 assert.equal(await html.getURL(), 'https://example.test/widget.html');
 assert.equal(await html.setURL('https://example.test/updated.html'), html);
-assert.equal(propsById.get('{HTML-ITEM}').get('prop:item'), 'https://example.test/updated.html*{"configUrl":"https://example.test/config.html"}');
+assert.equal(
+  propsById.get('{HTML-ITEM}').get('prop:item'),
+  'https://example.test/updated.html*{"configUrl":"https://example.test/config.html"}'
+);
 assert.equal(await html.isBrowserTransparent(), true);
 assert.equal(await html.enableBrowserTransparency(false), html);
 assert.equal(await html.isBrowserTransparent(), false);
@@ -218,7 +233,12 @@ assert.equal(await html.getCustomCSS(), 'body { color: red; }');
 assert.equal(await html.getBrowserLoadStatus(), 'LOADED');
 assert.equal(await html.isSourceAvailable(), true);
 
-const screen = new xjs.ScreenItem({ id: '{SCREEN-ITEM}', srcid: '{SCREEN-SRC}', sceneId: '0', type: xjs.ItemTypes.SCREEN });
+const screen = new xjs.ScreenItem({
+  id: '{SCREEN-ITEM}',
+  srcid: '{SCREEN-SRC}',
+  sceneId: '0',
+  type: xjs.ItemTypes.SCREEN,
+});
 assert.equal(await screen.isStickToTitle(), true);
 assert.equal(await screen.setStickToTitle(false), screen);
 assert.equal(await screen.isStickToTitle(), false);
@@ -239,7 +259,12 @@ assert.equal(await screen.isClientArea(), true);
 assert.equal(await screen.setClientArea(false), screen);
 assert.equal(await screen.isClientArea(), false);
 
-const replay = new xjs.ReplayItem({ id: '{REPLAY-ITEM}', srcid: '{REPLAY-SRC}', sceneId: '0', type: xjs.ItemTypes.REPLAY });
+const replay = new xjs.ReplayItem({
+  id: '{REPLAY-ITEM}',
+  srcid: '{REPLAY-SRC}',
+  sceneId: '0',
+  type: xjs.ItemTypes.REPLAY,
+});
 assert.equal(await replay.getChannel(), 'Local Recording');
 assert.equal(await replay.setChannel('Local Streaming'), replay);
 assert.equal(await replay.getChannel(), 'Local Streaming');
@@ -255,7 +280,12 @@ assert.equal(await replay.isAutostartOnSceneLoad(), false);
 assert.equal(await replay.setAutostartOnSceneLoad(true), replay);
 assert.equal(await replay.isAutostartOnSceneLoad(), true);
 
-const camera = new xjs.CameraItem({ id: '{CAMERA-ITEM}', srcid: '{CAMERA-SRC}', sceneId: '0', type: xjs.ItemTypes.LIVE });
+const camera = new xjs.CameraItem({
+  id: '{CAMERA-ITEM}',
+  srcid: '{CAMERA-SRC}',
+  sceneId: '0',
+  type: xjs.ItemTypes.LIVE,
+});
 assert.equal(await camera.getDeviceId(), '@device:pnp:\\\\camera');
 assert.equal((await camera.getResolution()).toDimensionString(), '1920,1080');
 assert.equal(await camera.getAudioOffset(), 20);
@@ -269,12 +299,23 @@ assert.equal(await camera.getDelay(), 10);
 assert.equal(await camera.setForceDeinterlace(true), camera);
 assert.equal(await camera.isForceDeinterlace(), true);
 
-const playlist = new xjs.VideoPlaylistItem({ id: '{PLAYLIST-ITEM}', srcid: '{PLAYLIST-SRC}', sceneId: '0', type: xjs.ItemTypes.FILE });
+const playlist = new xjs.VideoPlaylistItem({
+  id: '{PLAYLIST-ITEM}',
+  srcid: '{PLAYLIST-SRC}',
+  sceneId: '0',
+  type: xjs.ItemTypes.FILE,
+});
 assert.equal(await playlist.getVideoNowPlaying(), 'C:\\media\\a.mp4');
-assert.deepEqual(await playlist.getVideoPlaylistSources(), ['C:\\media\\a.mp4', 'C:\\media\\b.mp4']);
+assert.deepEqual(await playlist.getVideoPlaylistSources(), [
+  'C:\\media\\a.mp4',
+  'C:\\media\\b.mp4',
+]);
 assert.equal(await playlist.setVideoNowPlaying('C:\\media\\b.mp4'), playlist);
 assert.equal(propsById.get('{PLAYLIST-ITEM}').get('prop:srcitem'), 'C:\\media\\b.mp4*1');
 await assert.rejects(() => playlist.setVideoNowPlaying('C:\\media\\missing.mp4'), /File not found/);
 assert.equal(await playlist.isSourceAvailable(), true);
 
-assert.equal(hostCalls.some((call) => call[0] === 'SearchVideoItem'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SearchVideoItem'),
+  true
+);

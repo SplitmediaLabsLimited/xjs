@@ -1,6 +1,4 @@
-(function() {
-  'use strict';
-
+(() => {
   var TIMEOUT_MS = 5000;
 
   function now() {
@@ -8,17 +6,20 @@
   }
 
   function timeout(promise, label) {
-    return new Promise(function(resolve, reject) {
-      var timer = setTimeout(function() {
+    return new Promise((resolve, reject) => {
+      var timer = setTimeout(() => {
         reject(new Error(label + ' timed out after ' + TIMEOUT_MS + 'ms'));
       }, TIMEOUT_MS);
-      Promise.resolve(promise).then(function(value) {
-        clearTimeout(timer);
-        resolve(value);
-      }, function(error) {
-        clearTimeout(timer);
-        reject(error);
-      });
+      Promise.resolve(promise).then(
+        (value) => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        (error) => {
+          clearTimeout(timer);
+          reject(error);
+        }
+      );
     });
   }
 
@@ -28,21 +29,22 @@
 
   function runCheck(id, fn) {
     var started = now();
-    return Promise.resolve().then(fn).then(function(value) {
-      return {
-        id: id,
-        status: 'pass',
-        durationMs: now() - started,
-        value: value === undefined ? null : value,
-      };
-    }, function(error) {
-      return {
-        id: id,
-        status: 'fail',
-        durationMs: now() - started,
-        error: error && error.stack ? error.stack : String(error),
-      };
-    });
+    return Promise.resolve()
+      .then(fn)
+      .then(
+        (value) => ({
+          id: id,
+          status: 'pass',
+          durationMs: now() - started,
+          value: value === undefined ? null : value,
+        }),
+        (error) => ({
+          id: id,
+          status: 'fail',
+          durationMs: now() - started,
+          error: error && error.stack ? error.stack : String(error),
+        })
+      );
   }
 
   function getXjs() {
@@ -67,7 +69,7 @@
   }
 
   function assertFixtureText(fixture, element) {
-    (fixture.expectedText || []).forEach(function(expected) {
+    (fixture.expectedText || []).forEach((expected) => {
       if (!includesText(element.textContent, expected)) {
         throw new Error(fixture.id + ' missing expected text: ' + expected);
       }
@@ -75,11 +77,11 @@
   }
 
   function assertFixtureLinks(fixture, element) {
-    (fixture.expectedLinks || []).forEach(function(expectedHref) {
+    (fixture.expectedLinks || []).forEach((expectedHref) => {
       var links = Array.prototype.slice.call(element.querySelectorAll('a'));
-      var matched = links.some(function(link) {
-        return link.getAttribute('href') === expectedHref || link.href === expectedHref;
-      });
+      var matched = links.some(
+        (link) => link.getAttribute('href') === expectedHref || link.href === expectedHref
+      );
       if (!matched) {
         throw new Error(fixture.id + ' missing expected link: ' + expectedHref);
       }
@@ -87,7 +89,7 @@
   }
 
   function assertFixtureSelectors(fixture, element) {
-    (fixture.expectedSelectors || []).forEach(function(selector) {
+    (fixture.expectedSelectors || []).forEach((selector) => {
       if (!element.querySelector(selector)) {
         throw new Error(fixture.id + ' missing expected selector: ' + selector);
       }
@@ -99,10 +101,16 @@
       return null;
     }
     var bounds = element.getBoundingClientRect();
-    if (bounds.width < fixture.minBoundingBox.width || bounds.height < fixture.minBoundingBox.height) {
+    if (
+      bounds.width < fixture.minBoundingBox.width ||
+      bounds.height < fixture.minBoundingBox.height
+    ) {
       throw new Error(
-        fixture.id + ' rendered too small: '
-        + Math.round(bounds.width) + 'x' + Math.round(bounds.height)
+        fixture.id +
+          ' rendered too small: ' +
+          Math.round(bounds.width) +
+          'x' +
+          Math.round(bounds.height)
       );
     }
     return {
@@ -111,13 +119,9 @@
     };
   }
 
-  [
-    'OnDialogLoadStart',
-    'OnDialogTitleChange',
-    'OnDialogLoadEnd',
-  ].forEach(function(callbackName) {
+  ['OnDialogLoadStart', 'OnDialogTitleChange', 'OnDialogLoadEnd'].forEach((callbackName) => {
     if (typeof window[callbackName] !== 'function') {
-      window[callbackName] = function() {};
+      window[callbackName] = () => {};
     }
   });
 
@@ -125,7 +129,7 @@
     window.__xjsRegressionResults = results;
     var status = document.getElementById('status');
     var output = document.getElementById('results');
-    var failed = results.filter(function(item) { return item.status !== 'pass'; });
+    var failed = results.filter((item) => item.status !== 'pass');
     if (status) {
       status.textContent = failed.length ? failed.length + ' checks failed' : 'All checks passed';
     }
@@ -135,43 +139,37 @@
   }
 
   window.__xjsRegressionResults = [];
-  window.__runXjsRegressionSuite = function() {
+  window.__runXjsRegressionSuite = () => {
     var xjs = getXjs();
     var app = new xjs.App();
     var checks = [
-      runCheck('xjs.ready resolves', function() {
-        return timeout(xjs.ready(), 'xjs.ready').then(function() {
-          return true;
-        });
-      }),
-      runCheck('ExtensionWindow.getInstance', function() {
-        return Boolean(xjs.ExtensionWindow.getInstance());
-      }),
-      runCheck('App.getVersion', function() {
-        return timeout(app.getVersion(), 'App.getVersion').then(function(version) {
+      runCheck('xjs.ready resolves', () => timeout(xjs.ready(), 'xjs.ready').then(() => true)),
+      runCheck('ExtensionWindow.getInstance', () => Boolean(xjs.ExtensionWindow.getInstance())),
+      runCheck('App.getVersion', () =>
+        timeout(app.getVersion(), 'App.getVersion').then((version) => {
           if (typeof version !== 'string') {
             throw new Error('Expected version string');
           }
           return version;
-        });
-      }),
-      runCheck('App.getResolution', function() {
-        return timeout(app.getResolution(), 'App.getResolution').then(function(resolution) {
+        })
+      ),
+      runCheck('App.getResolution', () =>
+        timeout(app.getResolution(), 'App.getResolution').then((resolution) => {
           if (!shapedObject(resolution)) {
             throw new Error('Expected resolution object');
           }
           return resolution;
-        });
-      }),
-      runCheck('App.getFrametime', function() {
-        return timeout(app.getFrametime(), 'App.getFrametime').then(function(frametime) {
+        })
+      ),
+      runCheck('App.getFrametime', () =>
+        timeout(app.getFrametime(), 'App.getFrametime').then((frametime) => {
           if (typeof frametime !== 'number') {
             throw new Error('Expected frametime number');
           }
           return frametime;
-        });
-      }),
-      runCheck('Dialog create/show/close', function() {
+        })
+      ),
+      runCheck('Dialog create/show/close', () => {
         var dialog = xjs.Dialog.createDialog('http://localhost:3999/xsplit-extension/config.html');
         if (!dialog) {
           throw new Error('Dialog.createDialog returned nothing');
@@ -180,15 +178,15 @@
         dialog.close();
         return true;
       }),
-      runCheck('Scene and source-list subscriptions', function() {
-        xjs.ExtensionWindow.on('scene-load', function() {});
-        xjs.ExtensionWindow.on('sources-list-highlight', function() {});
-        xjs.ExtensionWindow.on('sources-list-select', function() {});
-        xjs.ExtensionWindow.on('sources-list-update', function() {});
+      runCheck('Scene and source-list subscriptions', () => {
+        xjs.ExtensionWindow.on('scene-load', () => {});
+        xjs.ExtensionWindow.on('sources-list-highlight', () => {});
+        xjs.ExtensionWindow.on('sources-list-select', () => {});
+        xjs.ExtensionWindow.on('sources-list-update', () => {});
         return true;
       }),
-      runCheck('Docs component fixtures render', function() {
-        return getComponentFixtures().map(function(fixture) {
+      runCheck('Docs component fixtures render', () =>
+        getComponentFixtures().map((fixture) => {
           var element = document.querySelector(fixture.selector);
           if (!customElements.get(fixture.customElement)) {
             throw new Error(fixture.customElement + ' custom element is not registered');
@@ -196,7 +194,10 @@
           if (!element) {
             throw new Error(fixture.id + ' fixture was not found');
           }
-          if (fixture.readyAttribute && element.getAttribute(fixture.readyAttribute) !== fixture.readyValue) {
+          if (
+            fixture.readyAttribute &&
+            element.getAttribute(fixture.readyAttribute) !== fixture.readyValue
+          ) {
             throw new Error(fixture.id + ' fixture did not render');
           }
           assertFixtureText(fixture, element);
@@ -212,11 +213,11 @@
             selectorCount: fixture.expectedSelectors ? fixture.expectedSelectors.length : 0,
             bounds: bounds,
           };
-        });
-      }),
+        })
+      ),
     ];
 
-    return Promise.all(checks).then(function(results) {
+    return Promise.all(checks).then((results) => {
       render(results);
       return results;
     });

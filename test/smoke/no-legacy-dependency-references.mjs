@@ -29,7 +29,7 @@ async function collectFiles(dir) {
     const info = await stat(path);
     if (info.isDirectory()) {
       if (!ignoredDirs.has(entry)) {
-        files.push(...await collectFiles(path));
+        files.push(...(await collectFiles(path)));
       }
     } else if (activeTextFiles.has(entry) || activeTextExtensions.has(extension(entry))) {
       files.push(path);
@@ -45,7 +45,7 @@ const forbidden = [
   `"${legacyPackageManager}"`,
   `'${legacyPackageManager}'`,
   'rel=' + '"import"',
-  "rel=" + "'import'",
+  'rel=' + "'import'",
 ];
 const forbiddenFilePatterns = [
   new RegExp(`(^|/)${legacyPackageManager}\\.json$`),
@@ -95,4 +95,8 @@ for (const packageFile of ['package.json', 'package-lock.json']) {
   collectPackageReferences(JSON.parse(content), packageFile, failures);
 }
 
-assert.deepEqual(failures, [], `active Bower/HTML import references remain:\n${failures.join('\n')}`);
+assert.deepEqual(
+  failures,
+  [],
+  `active Bower/HTML import references remain:\n${failures.join('\n')}`
+);

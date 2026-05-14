@@ -6,19 +6,19 @@ import WebSocket from 'ws';
 const cdpBase = process.env.XJS_CDP_BASE || 'http://127.0.0.1:9222';
 const versionUrl = `${cdpBase}/json/version`;
 const listUrl = `${cdpBase}/json/list`;
-const targetPrefixes = (process.env.XJS_EXTENSION_URL_PREFIXES || [
-  'http://localhost:3999/xsplit-extension/',
-  'http://127.0.0.1:3999/xsplit-extension/',
-].join(','))
+const targetPrefixes = (
+  process.env.XJS_EXTENSION_URL_PREFIXES ||
+  ['http://localhost:3999/xsplit-extension/', 'http://127.0.0.1:3999/xsplit-extension/'].join(',')
+)
   .split(',')
-  .map(item => item.trim())
+  .map((item) => item.trim())
   .filter(Boolean);
-const fallbackTargetPrefixes = (process.env.XJS_EXTENSION_FALLBACK_URL_PREFIXES || [
-  'http://localhost:3999/',
-  'http://127.0.0.1:3999/',
-].join(','))
+const fallbackTargetPrefixes = (
+  process.env.XJS_EXTENSION_FALLBACK_URL_PREFIXES ||
+  ['http://localhost:3999/', 'http://127.0.0.1:3999/'].join(',')
+)
   .split(',')
-  .map(item => item.trim())
+  .map((item) => item.trim())
   .filter(Boolean);
 const allowNavigate = process.env.XJS_EXTENSION_ALLOW_NAVIGATE !== '0';
 const artifactRoot = resolve('artifacts/xsplit-cdp');
@@ -64,7 +64,7 @@ async function trySend(socket, method, params = {}) {
 
 async function connect(wsUrl) {
   const socket = new WebSocket(wsUrl);
-  socket.addEventListener('message', event => {
+  socket.addEventListener('message', (event) => {
     const message = JSON.parse(event.data);
     if (message.id && pending.has(message.id)) {
       const request = pending.get(message.id);
@@ -104,7 +104,7 @@ async function waitForRegressionSuite(socket, timeoutMs = 10000) {
     if (evaluation?.result?.value === true) {
       return;
     }
-    await new Promise(resolvePromise => setTimeout(resolvePromise, 250));
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
   }
   throw new Error('Timed out waiting for window.__runXjsRegressionSuite');
 }
@@ -164,19 +164,26 @@ async function writeArtifacts(payload, screenshotBuffer, hasFailures) {
       await writeFile(resolve(artifactDir, 'failure.png'), screenshotBuffer);
     }
   }
-  await writeFile(latestSummaryPath, JSON.stringify({
-    runAt: new Date().toISOString(),
-    passed: !hasFailures,
-    artifactDirectory: artifactRelativeDir,
-    resultsPath: `${artifactRelativeDir}/results.json`,
-    screenshotPath: screenshotBuffer ? `${artifactRelativeDir}/screenshot.png` : null,
-    browser: payload.diagnostics.cdp.version.Browser,
-    userAgent: payload.diagnostics.cdp.version['User-Agent'],
-    navigateUrl: payload.diagnostics.cdp.navigateUrl || null,
-    targetUrl: payload.target?.url || null,
-    resultCount: Array.isArray(payload.results) ? payload.results.length : 0,
-    failureCount: payload.failures.length,
-  }, null, 2));
+  await writeFile(
+    latestSummaryPath,
+    JSON.stringify(
+      {
+        runAt: new Date().toISOString(),
+        passed: !hasFailures,
+        artifactDirectory: artifactRelativeDir,
+        resultsPath: `${artifactRelativeDir}/results.json`,
+        screenshotPath: screenshotBuffer ? `${artifactRelativeDir}/screenshot.png` : null,
+        browser: payload.diagnostics.cdp.version.Browser,
+        userAgent: payload.diagnostics.cdp.version['User-Agent'],
+        navigateUrl: payload.diagnostics.cdp.navigateUrl || null,
+        targetUrl: payload.target?.url || null,
+        resultCount: Array.isArray(payload.results) ? payload.results.length : 0,
+        failureCount: payload.failures.length,
+      },
+      null,
+      2
+    )
+  );
 }
 
 const version = await getJson(versionUrl);
@@ -184,21 +191,23 @@ const targets = await getJson(listUrl);
 diagnostics.cdp = { version, targetPrefixes, fallbackTargetPrefixes };
 
 let navigatedFrom = null;
-let target = targets.find(item => (
-  item.type === 'page'
-  && targetPrefixes.some(prefix => item.url?.startsWith(prefix))
-));
+let target = targets.find(
+  (item) => item.type === 'page' && targetPrefixes.some((prefix) => item.url?.startsWith(prefix))
+);
 
 if (!target && allowNavigate) {
-  target = targets.find(item => (
-    item.type === 'page'
-    && fallbackTargetPrefixes.some(prefix => item.url === prefix || item.url?.startsWith(prefix))
-  ));
+  target = targets.find(
+    (item) =>
+      item.type === 'page' &&
+      fallbackTargetPrefixes.some((prefix) => item.url === prefix || item.url?.startsWith(prefix))
+  );
   navigatedFrom = target?.url || null;
 }
 
 if (!target?.webSocketDebuggerUrl) {
-  throw new Error(`No XSplit extension target found at ${targetPrefixes.join(', ')}. Check ${listUrl}.`);
+  throw new Error(
+    `No XSplit extension target found at ${targetPrefixes.join(', ')}. Check ${listUrl}.`
+  );
 }
 
 const socket = await connect(target.webSocketDebuggerUrl);
@@ -210,7 +219,8 @@ await trySend(socket, 'Network.enable');
 let navigateUrl = null;
 if (allowNavigate && navigatedFrom) {
   const baseUrl = new URL(navigatedFrom);
-  navigateUrl = process.env.XJS_EXTENSION_NAVIGATE_URL || `${baseUrl.origin}/xsplit-extension/index.html`;
+  navigateUrl =
+    process.env.XJS_EXTENSION_NAVIGATE_URL || `${baseUrl.origin}/xsplit-extension/index.html`;
 } else if (allowNavigate) {
   navigateUrl = process.env.XJS_EXTENSION_NAVIGATE_URL || target.url;
 }
@@ -237,16 +247,21 @@ try {
 
   result = evaluation.result?.value;
   failures = Array.isArray(result)
-    ? result.filter(item => item.status !== 'pass')
+    ? result.filter((item) => item.status !== 'pass')
     : [{ id: 'runner-result', status: 'fail', error: 'Regression suite did not return an array' }];
-  hasFailures = failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0;
+  hasFailures =
+    failures.length > 0 ||
+    diagnostics.exceptions.length > 0 ||
+    diagnostics.failedRequests.length > 0;
 } catch (error) {
   diagnostics.pageState = await collectPageState(socket);
-  failures = [{
-    id: 'runner-bootstrap',
-    status: 'fail',
-    error: error && error.stack ? error.stack : String(error),
-  }];
+  failures = [
+    {
+      id: 'runner-bootstrap',
+      status: 'fail',
+      error: error && error.stack ? error.stack : String(error),
+    },
+  ];
   result = failures;
   hasFailures = true;
 }

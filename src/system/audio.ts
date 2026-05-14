@@ -1,8 +1,8 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {JSON as JXON} from '../internal/util/json';
-import {XML as XML} from '../internal/util/xml';
 import { Global } from '../internal/global';
+import { JSON as JXON } from '../internal/util/json';
+import { XML } from '../internal/util/xml';
 
 /**
  * The AudioDevice Class is the object returned by
@@ -30,8 +30,7 @@ import { Global } from '../internal/global';
  * });
  * ```
  */
-export class AudioDevice{
-
+export class AudioDevice {
   static SYSTEM_LEVEL_MUTE: number = 0;
   static SYSTEM_LEVEL_ENABLE: number = 1;
   static SYSTEM_MUTE_CHANGE_NOT_ALLOWED: number = 255;
@@ -60,22 +59,22 @@ export class AudioDevice{
   constructor(props?: {}) {
     props = props || {};
 
-    this._id                   = props['id'];
-    this._name                 = props['name'];
-    this._adapter              = props['adapter'];
-    this._adapterdev           = props['adapterdev'];
-    this._dSoundGuid           = props['dSoundGuid'];
-    this._dataFlow             = props['dataFlow'];
-    this._state                = props['state'];
-    this._defaultConsole       = props['defaultConsole'];
-    this._defaultMultimedia    = props['defaultMultimedia'];
+    this._id = props['id'];
+    this._name = props['name'];
+    this._adapter = props['adapter'];
+    this._adapterdev = props['adapterdev'];
+    this._dSoundGuid = props['dSoundGuid'];
+    this._dataFlow = props['dataFlow'];
+    this._state = props['state'];
+    this._defaultConsole = props['defaultConsole'];
+    this._defaultMultimedia = props['defaultMultimedia'];
     this._defaultCommunication = props['defaultCommunication'];
-    this._level                = props['level'] !== undefined? props['level'] : 1.000000;
-    this._enable               = props['enable'] !== undefined? props['enable'] : true;
-    this._hwlevel              = props['hwlevel'] !== undefined? props['hwlevel'] : -1.000000;
-    this._hwenable             = props['hwenable'] !== undefined? props['hwenable'] : 255;
-    this._delay                = props['delay'] !== undefined? props['delay'] : 0;
-    this._mix                  = props['mix'] !== undefined? props['mix'] : 0;
+    this._level = props['level'] !== undefined ? props['level'] : 1.0;
+    this._enable = props['enable'] !== undefined ? props['enable'] : true;
+    this._hwlevel = props['hwlevel'] !== undefined ? props['hwlevel'] : -1.0;
+    this._hwenable = props['hwenable'] !== undefined ? props['hwenable'] : 255;
+    this._delay = props['delay'] !== undefined ? props['delay'] : 0;
+    this._mix = props['mix'] !== undefined ? props['mix'] : 0;
   }
 
   /**
@@ -136,7 +135,7 @@ export class AudioDevice{
    * ```
    */
   isDefaultDevice(): boolean {
-    return (this._defaultConsole && this._defaultMultimedia);
+    return this._defaultConsole && this._defaultMultimedia;
   }
 
   /**
@@ -333,13 +332,13 @@ export class AudioDevice{
     var device = new JXON();
     device.tag = 'dev';
     device.selfclosing = true;
-    device['id']       = this.getId();
-    device['level']    = (this.getLevel()/100).toFixed(6);
-    device['enable']   = this.isEnabled() ? 1 : 0;
-    device['hwlevel']  = (this.getSystemLevel()/100).toFixed(6);
+    device['id'] = this.getId();
+    device['level'] = (this.getLevel() / 100).toFixed(6);
+    device['enable'] = this.isEnabled() ? 1 : 0;
+    device['hwlevel'] = (this.getSystemLevel() / 100).toFixed(6);
     device['hwenable'] = this.getSystemEnabled();
-    device['delay']    = this.getDelay();
-    device['mix']      = this._mix;
+    device['delay'] = this.getDelay();
+    device['mix'] = this._mix;
 
     return XML.parseJSON(device).toString();
   }
@@ -362,32 +361,31 @@ export class AudioDevice{
     const isNewAudioEngine = Global.isNewAudioEngine();
 
     var audio: AudioDevice = new AudioDevice({
-      id : isNewAudioEngine && deviceJXON['source'] ? deviceJXON['source'] : deviceJXON['id'],
-      name : deviceJXON['name'],
-      adapter : deviceJXON['adapter'],
-      adapterdev : deviceJXON['adapterdev'],
-      dataFlow : deviceJXON['DataFlow'],
-      state : deviceJXON['State'],
-      dSoundGuid : deviceJXON['DSoundGuid'],
-      defaultCommunication : (deviceJXON['DefaultCommunication'] === '1'),
-      defaultConsole : (deviceJXON['DefaultConsole'] === '1'),
-      defaultMultimedia : (deviceJXON['DefaultMultimedia'] === '1'),
-      mix: deviceJXON['mix']
+      id: isNewAudioEngine && deviceJXON['source'] ? deviceJXON['source'] : deviceJXON['id'],
+      name: deviceJXON['name'],
+      adapter: deviceJXON['adapter'],
+      adapterdev: deviceJXON['adapterdev'],
+      dataFlow: deviceJXON['DataFlow'],
+      state: deviceJXON['State'],
+      dSoundGuid: deviceJXON['DSoundGuid'],
+      defaultCommunication: deviceJXON['DefaultCommunication'] === '1',
+      defaultConsole: deviceJXON['DefaultConsole'] === '1',
+      defaultMultimedia: deviceJXON['DefaultMultimedia'] === '1',
+      mix: deviceJXON['mix'],
     });
 
     if (isNewAudioEngine) {
-
       if (deviceJXON['children'] && deviceJXON['children'].length > 0) {
         //volume and mute
-        const volumeValue = deviceJXON['children'].filter(effect => effect['id'] === 'volume')[0];
-        const muteValue = deviceJXON['children'].filter(effect => effect['id'] === 'mute')[0];
+        const volumeValue = deviceJXON['children'].filter((effect) => effect['id'] === 'volume')[0];
+        const muteValue = deviceJXON['children'].filter((effect) => effect['id'] === 'mute')[0];
 
         let enabled = true;
         let volume = 1;
 
         if (volumeValue) {
           const values = volumeValue['config'].split('&amp;');
-          values.forEach(keyValues => {
+          values.forEach((keyValues) => {
             const keyValue = keyValues.split(':');
             if (keyValue[0] === 'volume') volume = parseFloat(keyValue[1]);
           });
@@ -395,14 +393,14 @@ export class AudioDevice{
 
         if (muteValue) {
           const values = muteValue['config'].split('&amp;');
-          values.forEach(keyValues => {
+          values.forEach((keyValues) => {
             const keyValue = keyValues.split(':');
             if (keyValue[0] === 'enable') enabled = parseInt(keyValue[1]) === 1;
           });
         }
 
         //delay
-        const delayValue = deviceJXON['children'].filter(effect => effect['tag'] === 'param')[0];
+        const delayValue = deviceJXON['children'].filter((effect) => effect['tag'] === 'param')[0];
         let delay = 0;
 
         if (delayValue) {
@@ -410,22 +408,32 @@ export class AudioDevice{
         }
 
         //set value
-        audio._setLevel(volume * 100)
-          ._setEnabled(enabled)          
+        audio
+          ._setLevel(volume * 100)
+          ._setEnabled(enabled)
           ._setDelay(delay);
       }
 
       //set system values
-      audio._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
-        ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255));
-
+      audio
+        ._setSystemLevel(
+          Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] * 100 : -100)
+        )
+        ._setSystemEnabled(
+          Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+        );
     } else {
-      audio._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level']*100 : 100))
+      audio
+        ._setLevel(Number(deviceJXON['level'] !== undefined ? deviceJXON['level'] * 100 : 100))
         ._setEnabled(deviceJXON['enable'] !== undefined ? deviceJXON['enable'] === '1' : true)
-        ._setSystemLevel(Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel']*100 : -100))
-        ._setSystemEnabled(Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255))
+        ._setSystemLevel(
+          Number(deviceJXON['hwlevel'] !== undefined ? deviceJXON['hwlevel'] * 100 : -100)
+        )
+        ._setSystemEnabled(
+          Number(deviceJXON['hwenable'] !== undefined ? deviceJXON['hwenable'] : 255)
+        )
         ._setDelay(Number(deviceJXON['delay'] !== undefined ? deviceJXON['delay'] : 0));
-    }    
+    }
 
     return audio;
   }

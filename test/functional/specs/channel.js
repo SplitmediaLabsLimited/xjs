@@ -1,8 +1,6 @@
 /* globals Rose, require, console */
 
-(function() {
-  'use strict';
-
+(() => {
   var XJS = require('xjs');
   var Channel = XJS.Channel;
 
@@ -12,52 +10,52 @@
   var additionalButtions = [
     {
       name: 'getName',
-      onClick: function() {
-        curChannel.getName().then(function(name) {
+      onClick: () => {
+        curChannel.getName().then((name) => {
           console.log(name);
           Rose.output(name);
         });
-      }
+      },
     },
 
     {
       name: 'getStreamDrops',
-      onClick: function() {
-        curChannel.getStreamDrops().then(function(drops) {
+      onClick: () => {
+        curChannel.getStreamDrops().then((drops) => {
           console.log(drops);
           Rose.output(drops);
         });
-      }
+      },
     },
 
     {
       name: 'getStreamRenderedFrames',
-      onClick: function() {
-        curChannel.getStreamRenderedFrames().then(function(frames) {
+      onClick: () => {
+        curChannel.getStreamRenderedFrames().then((frames) => {
           console.log(frames);
           Rose.output(frames);
         });
-      }
+      },
     },
 
     {
       name: 'getStreamTime',
-      onClick: function() {
-        curChannel.getStreamTime().then(function(time) {
+      onClick: () => {
+        curChannel.getStreamTime().then((time) => {
           console.log(time);
           Rose.output(time);
         });
-      }
-    }
-  ]
+      },
+    },
+  ];
 
   var t = Rose.createTab({
     name: 'Channel',
     buttons: [
       {
         name: 'getActiveStreamChannels',
-        onClick: function() {
-          Channel.getActiveStreamChannels().then(function(channels) {
+        onClick: () => {
+          Channel.getActiveStreamChannels().then((channels) => {
             console.log(channels);
             Rose.output(channels);
 
@@ -66,15 +64,13 @@
               t.buttons = t.buttons.concat(additionalButtions);
             } else {
               curChannel = undefined;
-              t.buttons = t.buttons.filter(function(obj) {
-                return obj.name === 'getActiveStreamChannels';
-              });
+              t.buttons = t.buttons.filter((obj) => obj.name === 'getActiveStreamChannels');
             }
 
             t.refresh();
           });
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 })();

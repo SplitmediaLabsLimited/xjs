@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
-import {Logger} from '../../internal/util/logger';
-import {XML} from '../../internal/util/xml';
+import { Item as iItem } from '../../internal/item';
+import { Logger } from '../../internal/util/logger';
+import type { XML } from '../../internal/util/xml';
+import { Rectangle } from '../../util/rectangle';
 
 export interface ISourceFlash {
   /**
@@ -15,7 +15,7 @@ export interface ISourceFlash {
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  getCustomResolution(): Promise<Rectangle>
+  getCustomResolution(): Promise<Rectangle>;
 
   /**
    * param: (value: Rectangle)
@@ -30,7 +30,7 @@ export interface ISourceFlash {
    *
    * See also: {@link #util/Rectangle Util/Rectangle}
    */
-  setCustomResolution(value: Rectangle): Promise<ISourceFlash>
+  setCustomResolution(value: Rectangle): Promise<ISourceFlash>;
 
   /**
    * return: Promise<boolean>
@@ -45,7 +45,7 @@ export interface ISourceFlash {
    * });
    * ```
    */
-  getAllowRightClick(): Promise<boolean>
+  getAllowRightClick(): Promise<boolean>;
 
   /**
    * param: (value:boolean)
@@ -66,7 +66,7 @@ export interface ISourceFlash {
    * });
    * ```
    */
-  setAllowRightClick(value: boolean): Promise<ISourceFlash>
+  setAllowRightClick(value: boolean): Promise<ISourceFlash>;
 
   /**
    * return: Promise<boolean>
@@ -81,7 +81,7 @@ export interface ISourceFlash {
    * });
    * ```
    */
-  isSourceAvailable(): Promise<boolean>
+  isSourceAvailable(): Promise<boolean>;
 
   /**
    * return: Promise<string>
@@ -132,72 +132,87 @@ export class SourceFlash implements ISourceFlash {
   }
 
   getCustomResolution(): Promise<Rectangle> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let customSize;
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getCustomResolution', true)
-        this._checkPromise = iItem.get('prop:BrowserSize', this._id)
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'getCustomResolution', true);
+        this._checkPromise = iItem.get('prop:BrowserSize', this._id);
       } else {
-        this._checkPromise = iItem.wrapGet('prop:BrowserSize', this._srcId,
-          this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapGet(
+          'prop:BrowserSize',
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
-      this._checkPromise.then(val => {
-          if (val !== '') {
-            var [width, height] = decodeURIComponent(val).split(',');
-            customSize = Rectangle.fromDimensions(Number(width), Number(height));
-          } else {
-            customSize = Rectangle.fromDimensions(0, 0);
-          }
-          resolve(customSize);
-        });
-
+      this._checkPromise.then((val) => {
+        if (val !== '') {
+          var [width, height] = decodeURIComponent(val).split(',');
+          customSize = Rectangle.fromDimensions(Number(width), Number(height));
+        } else {
+          customSize = Rectangle.fromDimensions(0, 0);
+        }
+        resolve(customSize);
+      });
     });
   }
 
   setCustomResolution(value: Rectangle): Promise<SourceFlash> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setCustomResolution', true)
-        iItem.set('prop:BrowserSize', value.toDimensionString(),
-          this._id).then(() => {
-            resolve(this);
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'setCustomResolution', true);
+        iItem.set('prop:BrowserSize', value.toDimensionString(), this._id).then(() => {
+          resolve(this);
         });
       } else {
-        iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
-          this._srcId, this._id, this._updateId.bind(this)).then(() => {
+        iItem
+          .wrapSet(
+            'prop:BrowserSize',
+            value.toDimensionString(),
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          )
+          .then(() => {
             resolve(this);
-        });
+          });
       }
-
     });
   }
 
   getAllowRightClick(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getAllowRightClick', true)
-        iItem.get('prop:BrowserRightClick', this._id).then(val => {
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'getAllowRightClick', true);
+        iItem.get('prop:BrowserRightClick', this._id).then((val) => {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:BrowserRightClick', this._srcId, this._id, this._updateId.bind(this)).then(val => {
-          resolve(val === '1');
-        });
+        iItem
+          .wrapGet('prop:BrowserRightClick', this._srcId, this._id, this._updateId.bind(this))
+          .then((val) => {
+            resolve(val === '1');
+          });
       }
-
     });
   }
 
   setAllowRightClick(value: boolean): Promise<SourceFlash> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'setAllowRightClick', true)
-        iItem.set('prop:BrowserRightClick', (value ? '1' : '0'), this._id)
-          .then(() => {
-            resolve(this);
-          });
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'setAllowRightClick', true);
+        iItem.set('prop:BrowserRightClick', value ? '1' : '0', this._id).then(() => {
+          resolve(this);
+        });
       } else {
-        iItem.wrapSet('prop:BrowserRightClick', (value ? '1' : '0'), this._srcId, this._id, this._updateId.bind(this))
+        iItem
+          .wrapSet(
+            'prop:BrowserRightClick',
+            value ? '1' : '0',
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          )
           .then(() => {
             resolve(this);
           });
@@ -206,51 +221,62 @@ export class SourceFlash implements ISourceFlash {
   }
 
   isSourceAvailable(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isSourceAvailable', true)
-        iItem.get('prop:itemavail', this._id).then(val => {
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'isSourceAvailable', true);
+        iItem.get('prop:itemavail', this._id).then((val) => {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
-          resolve(val === '1');
-        });
+        iItem
+          .wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this))
+          .then((val) => {
+            resolve(val === '1');
+          });
       }
     });
   }
 
   getValue(): Promise<string> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getValue',  true)
-        this._checkPromise = iItem.get('prop:srcitem', this._id)
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'getValue', true);
+        this._checkPromise = iItem.get('prop:srcitem', this._id);
       } else {
-        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapGet(
+          'prop:srcitem',
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
-      this._checkPromise.then(filename => {
+      this._checkPromise.then((filename) => {
         resolve(filename);
       });
     });
-  };
+  }
 
   setValue(filename: string): Promise<SourceFlash> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
         Logger.warn('sourceWarning', 'setValue', true);
-        this._checkPromise = iItem.set('prop:item', filename, this._id)  
+        this._checkPromise = iItem.set('prop:item', filename, this._id);
       } else {
-        this._checkPromise = iItem.wrapSet('prop:srcitem', filename,
-          this._srcId, this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapSet(
+          'prop:srcitem',
+          filename,
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
       this._checkPromise
-      .then(() => {
-        return iItem.set('prop:name', filename, this._id)
-      })
-      .then(() => {
-        resolve(this);
-      });
+        .then(() => {
+          return iItem.set('prop:name', filename, this._id);
+        })
+        .then(() => {
+          resolve(this);
+        });
     });
   }
 }

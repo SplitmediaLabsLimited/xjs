@@ -1,6 +1,6 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {App as iApp} from '../internal/app';
+import { App as iApp } from '../internal/app';
 
 /**
  * The Transition class represents a preset transition within XSplit Broadcaster.
@@ -38,22 +38,22 @@ export class Transition {
     MOVE_RIGHT: 'move_right',
     MOVE_TOP: 'move_top',
     MOVE_TOP_BOTTOM: 'move_top_bottom',
-    WAVE: 'wave'
-  }
+    WAVE: 'wave',
+  };
 
-  static NONE: Transition =  new Transition('NONE');
-  static CLOCK: Transition =  new Transition('CLOCK');
-  static COLLAPSE: Transition =  new Transition('COLLAPSE');
-  static FADE: Transition =  new Transition('FADE');
-  static FAN: Transition =  new Transition('FAN');
-  static HOLE: Transition =  new Transition('HOLE');
-  static MOVE_BOTTOM: Transition =  new Transition('MOVE_BOTTOM');
-  static MOVE_LEFT: Transition =  new Transition('MOVE_LEFT');
-  static MOVE_LEFT_RIGHT: Transition =  new Transition('MOVE_LEFT_RIGHT');
-  static MOVE_RIGHT: Transition =  new Transition('MOVE_RIGHT');
-  static MOVE_TOP: Transition =  new Transition('MOVE_TOP');
-  static MOVE_TOP_BOTTOM: Transition =  new Transition('MOVE_TOP_BOTTOM');
-  static WAVE: Transition =  new Transition('WAVE');
+  static NONE: Transition = new Transition('NONE');
+  static CLOCK: Transition = new Transition('CLOCK');
+  static COLLAPSE: Transition = new Transition('COLLAPSE');
+  static FADE: Transition = new Transition('FADE');
+  static FAN: Transition = new Transition('FAN');
+  static HOLE: Transition = new Transition('HOLE');
+  static MOVE_BOTTOM: Transition = new Transition('MOVE_BOTTOM');
+  static MOVE_LEFT: Transition = new Transition('MOVE_LEFT');
+  static MOVE_LEFT_RIGHT: Transition = new Transition('MOVE_LEFT_RIGHT');
+  static MOVE_RIGHT: Transition = new Transition('MOVE_RIGHT');
+  static MOVE_TOP: Transition = new Transition('MOVE_TOP');
+  static MOVE_TOP_BOTTOM: Transition = new Transition('MOVE_TOP_BOTTOM');
+  static WAVE: Transition = new Transition('WAVE');
 
   constructor(key: string, setValue = null) {
     var value = Transition._transitionMap[key];
@@ -61,24 +61,23 @@ export class Transition {
     if (typeof value !== 'undefined') {
       this._key = key; // retain key so that NONE is readable
       this._value = value;
-    } else if (key.substring(0,8) === 'stinger:') {
-      if (typeof setValue !== 'undefined' && setValue !== null ) {
+    } else if (key.substring(0, 8) === 'stinger:') {
+      if (typeof setValue !== 'undefined' && setValue !== null) {
         this._key = setValue;
       } else {
         var fileName = key.split(',')[0].split('\\').pop().split('/').pop();
         var m = fileName.lastIndexOf('.webm');
         if (m >= 0 && m + fileName.length >= fileName.length) {
-            fileName = fileName.substring(0, m);
+          fileName = fileName.substring(0, m);
         }
         var n = fileName.lastIndexOf('_');
         if (n >= 0 && n + fileName.length >= fileName.length) {
-          fileName = fileName.substring(0, n) + ': ' +
-            fileName.substring(n+1) + 'ms';
+          fileName = fileName.substring(0, n) + ': ' + fileName.substring(n + 1) + 'ms';
         }
         this._key = fileName;
       }
       this._value = key;
-    } else if (typeof setValue !== null){
+    } else if (typeof setValue !== null) {
       this._key = setValue; // retain key so that NONE is readable
       this._value = key;
     } else {
@@ -121,26 +120,28 @@ export class Transition {
    * ```
    */
   static getSceneTransitions(): Promise<Transition[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var transitions: Transition[] = [];
-      let transitionString
-      iApp.getGlobalProperty('transitions').then(result => {
+      let transitionString;
+      iApp.getGlobalProperty('transitions').then((result) => {
         transitionString = result;
         try {
           if (transitionString !== '') {
             var transitionArray = JSON.parse(transitionString);
             for (var i = transitionArray.length - 1; i >= 0; i--) {
               var transitionObject = transitionArray[i];
-              if (transitionObject.hasOwnProperty('Id') &&
-                transitionObject.hasOwnProperty('Name')) {
-                  transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']))
+              if (
+                Object.hasOwn(transitionObject, 'Id') &&
+                Object.hasOwn(transitionObject, 'Name')
+              ) {
+                transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']));
               }
             }
             resolve(transitions);
           } else {
             resolve(transitions);
           }
-        } catch(e) {
+        } catch (e) {
           throw new Error('Error retrieving available transitions');
         }
       });

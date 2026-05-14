@@ -100,7 +100,9 @@ globalThis.external = {
       return params[0] === '1001' ? '14528' : '2000';
     }
     if (funcName === 'xsplit.GetProcessDetailsKernel') {
-      return params[0] === '14528' ? '\\Device\\Chrome\\chrome.exe' : '\\Device\\XSplit\\xsplit.exe';
+      return params[0] === '14528'
+        ? '\\Device\\Chrome\\chrome.exe'
+        : '\\Device\\XSplit\\xsplit.exe';
     }
     return '';
   },
@@ -174,10 +176,7 @@ await assert.rejects(
   () => new xjs.VideoPlaylist(['C:\\videos\\missing.mov']).addToScene(),
   /One or more files included are invalid/
 );
-await assert.rejects(
-  () => new xjs.VideoPlaylist([]).addToScene(),
-  /No media file included/
-);
+await assert.rejects(() => new xjs.VideoPlaylist([]).addToScene(), /No media file included/);
 
 const appCalls = hostCalls.filter((call) => call[0] === 'AppCallFuncAsync');
 assert.equal(appCalls.length, 4);

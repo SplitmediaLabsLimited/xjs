@@ -1,14 +1,14 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Rectangle} from '../util/rectangle';
-import {JSON as JXON} from '../internal/util/json';
-import {XML} from '../internal/util/xml';
-import {Addable} from './iaddable';
-import {App as iApp} from '../internal/app';
-import {Environment} from '../core/environment';
-import {Scene} from '../core/scene';
-import {checkSplitmode} from '../internal/util/splitmode';
-import {addToSceneHandler} from '../util/addtosceneutil';
+import { Environment } from '../core/environment';
+import type { Scene } from '../core/scene';
+import { App as iApp } from '../internal/app';
+import { JSON as JXON } from '../internal/util/json';
+import { checkSplitmode } from '../internal/util/splitmode';
+import { XML } from '../internal/util/xml';
+import { addToSceneHandler } from '../util/addtosceneutil';
+import { Rectangle } from '../util/rectangle';
+import type { Addable } from './iaddable';
 
 /**
  * The Game Class is the object returned by {@link #system/System System Class}
@@ -32,7 +32,6 @@ import {addToSceneHandler} from '../util/addtosceneutil';
  * ```
  */
 export class Game implements Addable {
-
   private _pid: number;
   private _handle: number;
   private _hwnd: number;
@@ -142,7 +141,7 @@ export class Game implements Addable {
    * ```
    */
   isFullscreen() {
-    return this._flags === 1 ? true: false;
+    return this._flags === 1 ? true : false;
   }
 
   /**
@@ -230,23 +229,16 @@ export class Game implements Addable {
     var g = new Game();
 
     g._pid = jxon['pid'] !== undefined ? parseInt(jxon['pid']) : undefined;
-    g._handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) :
-      undefined;
+    g._handle = jxon['handle'] !== undefined ? parseInt(jxon['handle']) : undefined;
     g._hwnd = jxon['hwnd'] !== undefined ? parseInt(jxon['hwnd']) : undefined;
     g._gapitype = jxon['GapiType'];
-    g._width = jxon['width'] !== undefined ? parseInt(jxon['width']) :
-      undefined;
-    g._height = jxon['height'] !== undefined ? parseInt(jxon['height']) :
-      undefined;
-    g._flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) :
-      undefined;
+    g._width = jxon['width'] !== undefined ? parseInt(jxon['width']) : undefined;
+    g._height = jxon['height'] !== undefined ? parseInt(jxon['height']) : undefined;
+    g._flags = jxon['flags'] !== undefined ? parseInt(jxon['flags']) : undefined;
     g._wndname = jxon['wndname'];
-    g._lastframets = jxon['lastframets'] !== undefined ?
-      parseInt(jxon['lastframets']) : undefined;
-    g._fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) :
-      undefined;
-    g._fpsCapture = jxon['fpsCapture'] !== undefined ?
-      Number(jxon['fpsCapture']) : undefined;
+    g._lastframets = jxon['lastframets'] !== undefined ? parseInt(jxon['lastframets']) : undefined;
+    g._fpsRender = jxon['fpsRender'] !== undefined ? Number(jxon['fpsRender']) : undefined;
+    g._fpsCapture = jxon['fpsCapture'] !== undefined ? Number(jxon['fpsCapture']) : undefined;
     g._imagename = jxon['imagename'];
     g._replace = jxon['replace'];
 
@@ -264,7 +256,7 @@ export class Game implements Addable {
    * var gameXML = game.toXML();
    * ```
    */
-  toXML() : XML {
+  toXML(): XML {
     var gamesource = new JXON();
 
     gamesource.tag = 'src';
@@ -296,15 +288,18 @@ export class Game implements Addable {
    *
    * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<any> {
+  addToScene(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
-      checkSplitmode(value).then((scenePrefix) => {
-        return addToSceneHandler(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
-      }).then(result => {
-        resolve(result);
-      }).catch(err => {
-        reject(err);
-      });
+      checkSplitmode(value)
+        .then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + 'addgamesource', 'dev:' + this.toXML());
+        })
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -327,66 +322,75 @@ export class Game implements Addable {
   static autoDetect(): Game {
     if (Game._autoDetect === undefined) {
       Game._autoDetect = new Game();
-      let ad = Game._autoDetect;
+      const ad = Game._autoDetect;
       ad._pid = 0;
       ad._handle = 0;
       ad._hwnd = 0;
-      ad._gapitype = "";
+      ad._gapitype = '';
       ad._width = 0;
       ad._height = 0;
       ad._flags = 0;
-      ad._wndname = "";
+      ad._wndname = '';
       ad._lastframets = 0;
       ad._fpsRender = 0;
       ad._fpsCapture = 0;
-      ad._imagename = "";
+      ad._imagename = '';
 
-      Game._autoDetect.addToScene = function(value) {
-        return new Promise((resolve, reject) => {
-          checkSplitmode(value).then((scenePrefix) => {
-            var defposPromise;
-            if (Environment.isSourcePlugin()) {
-              defposPromise = new Promise(defposResolve => {
-                iApp.get('sceneconfig:-1').then(presetConfig => {
-                  let placementJSON = JXON.parse(presetConfig);
-                  defposResolve(placementJSON['defpos']);
+      Game._autoDetect.addToScene = (value) =>
+        new Promise((resolve, reject) => {
+          checkSplitmode(value)
+            .then((scenePrefix) => {
+              var defposPromise;
+              if (Environment.isSourcePlugin()) {
+                defposPromise = new Promise((defposResolve) => {
+                  iApp.get('sceneconfig:-1').then((presetConfig) => {
+                    const placementJSON = JXON.parse(presetConfig);
+                    defposResolve(placementJSON['defpos']);
+                  });
                 });
-              });
-            } else {
-              defposPromise = new Promise(defposResolve => {
-                iApp.get('scene:0').then(main => {
-                  return iApp.get('sceneconfig:' + main);
-                }).then(function(presetConfig) {
-                  let placementJSON = JXON.parse(presetConfig);
-                  defposResolve(placementJSON['defpos']);
-                });
-              });
-            }
-
-            defposPromise.then(defpos => {
-              let posString;
-              if (defpos === '0') {
-                posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
-              } else if (defpos === '1') {
-                posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
-              }  else if (defpos === '2') {
-                posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
-              } else if (defpos === '3') {
-                posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
               } else {
-                posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+                defposPromise = new Promise((defposResolve) => {
+                  iApp
+                    .get('scene:0')
+                    .then((main) => {
+                      return iApp.get('sceneconfig:' + main);
+                    })
+                    .then((presetConfig) => {
+                      const placementJSON = JXON.parse(presetConfig);
+                      defposResolve(placementJSON['defpos']);
+                    });
+                });
               }
 
-              let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + ' />';
-              return addToSceneHandler(scenePrefix + 'additem', adstring);
-            }).then(result => {
-              resolve(result);
+              defposPromise
+                .then((defpos) => {
+                  let posString;
+                  if (defpos === '0') {
+                    posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+                  } else if (defpos === '1') {
+                    posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+                  } else if (defpos === '2') {
+                    posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+                  } else if (defpos === '3') {
+                    posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+                  } else {
+                    posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+                  }
+
+                  const adstring =
+                    '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' +
+                    posString +
+                    ' />';
+                  return addToSceneHandler(scenePrefix + 'additem', adstring);
+                })
+                .then((result) => {
+                  resolve(result);
+                });
+            })
+            .catch((err) => {
+              reject(err);
             });
-          }).catch(err => {
-            reject(err);
-          });
-        })
-      };
+        });
     }
     return Game._autoDetect;
   }

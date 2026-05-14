@@ -75,7 +75,7 @@ const sourceB = '{BBBB0000-BBBB-4BBB-8BBB-BBBBBBBB0000}';
 
 let activeSceneIndex = '0';
 let callbackId = 0;
-let latestNewPreset = '{44444444-4444-4444-8444-444444444444}';
+const latestNewPreset = '{44444444-4444-4444-8444-444444444444}';
 const hostCalls = [];
 const slotItems = [null, null];
 const sceneNames = new Map([
@@ -94,27 +94,36 @@ const appProps = new Map([
   [`sceneisempty:${sceneB}`, '1'],
 ]);
 const itemProps = new Map([
-  [itemA, new Map([
-    ['itemlist', `${itemA},${itemB}`],
-    ['prop:srcid', sourceA],
-    ['prop:cname', 'Widget Custom'],
-    ['prop:name', 'Browser Widget'],
-    ['prop:item', 'https://example.test/widget.html'],
-  ])],
-  [itemB, new Map([
-    ['itemlist', `${itemA},${itemB}`],
-    ['prop:srcid', sourceA],
-    ['prop:cname', 'Duplicate Custom'],
-    ['prop:name', 'Browser Duplicate'],
-    ['prop:item', 'https://example.test/dupe.html'],
-  ])],
-  [itemC, new Map([
-    ['itemlist', itemC],
-    ['prop:srcid', sourceB],
-    ['prop:cname', 'Camera Custom'],
-    ['prop:name', 'Camera Main'],
-    ['prop:item', '@device:pnp:\\\\camera'],
-  ])],
+  [
+    itemA,
+    new Map([
+      ['itemlist', `${itemA},${itemB}`],
+      ['prop:srcid', sourceA],
+      ['prop:cname', 'Widget Custom'],
+      ['prop:name', 'Browser Widget'],
+      ['prop:item', 'https://example.test/widget.html'],
+    ]),
+  ],
+  [
+    itemB,
+    new Map([
+      ['itemlist', `${itemA},${itemB}`],
+      ['prop:srcid', sourceA],
+      ['prop:cname', 'Duplicate Custom'],
+      ['prop:name', 'Browser Duplicate'],
+      ['prop:item', 'https://example.test/dupe.html'],
+    ]),
+  ],
+  [
+    itemC,
+    new Map([
+      ['itemlist', itemC],
+      ['prop:srcid', sourceB],
+      ['prop:cname', 'Camera Custom'],
+      ['prop:name', 'Camera Main'],
+      ['prop:item', '@device:pnp:\\\\camera'],
+    ]),
+  ],
 ]);
 
 function scenePlacementXml({ uid, name, children = '' }) {
@@ -128,11 +137,13 @@ const sceneAItems = [
 ].join('');
 
 function getSceneConfig() {
-  return `<configuration cur="${activeSceneIndex}">` +
+  return (
+    `<configuration cur="${activeSceneIndex}">` +
     scenePlacementXml({ uid: sceneA, name: sceneNames.get(sceneA), children: sceneAItems }) +
     scenePlacementXml({ uid: sceneB, name: sceneNames.get(sceneB), children: '' }) +
     '<global />' +
-    '</configuration>';
+    '</configuration>'
+  );
 }
 
 function getSingleSceneConfig(uid) {
@@ -174,7 +185,10 @@ function getAppProperty(name) {
       value = sceneNames.get(name.slice('scenename:'.length)) ?? '';
     } else if (name === `scenenewpreset:${sceneA}`) {
       value = latestNewPreset;
-      appProps.set(`scenepresetlist:${sceneA}`, `${appProps.get(`scenepresetlist:${sceneA}`)},${latestNewPreset}`);
+      appProps.set(
+        `scenepresetlist:${sceneA}`,
+        `${appProps.get(`scenepresetlist:${sceneA}`)},${latestNewPreset}`
+      );
     } else {
       value = appProps.get(name) ?? '';
     }
@@ -193,7 +207,13 @@ function setAppProperty(name, value) {
       sceneNames.set(name.slice('scenename:'.length), value);
     } else if (name === `sceneremovepreset:${sceneA}`) {
       const current = appProps.get(`scenepresetlist:${sceneA}`) ?? '';
-      appProps.set(`scenepresetlist:${sceneA}`, current.split(',').filter((preset) => preset !== value).join(','));
+      appProps.set(
+        `scenepresetlist:${sceneA}`,
+        current
+          .split(',')
+          .filter((preset) => preset !== value)
+          .join(',')
+      );
     } else {
       appProps.set(name, value);
     }
@@ -208,7 +228,10 @@ function getLocalPropertyForSlot(slot) {
     const asyncId = nextAsyncId('scene_item_get');
     queueMicrotask(() => {
       const itemId = slotItems[slot];
-      globalThis.OnAsyncCallback(asyncId, encodeURIComponent(itemProps.get(itemId)?.get(name) ?? ''));
+      globalThis.OnAsyncCallback(
+        asyncId,
+        encodeURIComponent(itemProps.get(itemId)?.get(name) ?? '')
+      );
     });
     return asyncId;
   };
@@ -263,7 +286,12 @@ assert.equal(await firstScene.getSceneIndex(), 0);
 assert.equal(await firstScene.getSceneUid(), sceneA);
 assert.equal(await xjs.Scene.getBySceneIndex(1).then((scene) => scene.getName()), 'Gameplay');
 assert.equal(await xjs.Scene.getBySceneUid(sceneA).then((scene) => scene.getName()), 'Intro');
-assert.deepEqual(await xjs.Scene.getByName('Intro').then((scenes) => Promise.all(scenes.map((scene) => scene.getSceneUid()))), [sceneA]);
+assert.deepEqual(
+  await xjs.Scene.getByName('Intro').then((scenes) =>
+    Promise.all(scenes.map((scene) => scene.getSceneUid()))
+  ),
+  [sceneA]
+);
 await assert.rejects(() => xjs.Scene.getById(10), /Invalid parameter/);
 await assert.rejects(() => xjs.Scene.getBySceneUid('not-a-uid'), /Unique ID/);
 
@@ -296,28 +324,73 @@ assert.equal(sources.length, 2);
 assert.equal(sources[0] instanceof xjs.HtmlSource, true);
 assert.equal(sources[1] instanceof xjs.CameraSource, true);
 
-assert.equal(await xjs.Scene.searchItemsById(itemA.toLowerCase()).then((item) => item.getId()), itemA);
+assert.equal(
+  await xjs.Scene.searchItemsById(itemA.toLowerCase()).then((item) => item.getId()),
+  itemA
+);
 assert.equal(await xjs.Scene.searchItemsById('{DDDDDDDD-DDDD-4DDD-8DDD-DDDDDDDDDDDD}'), null);
-assert.equal(await xjs.Scene.searchScenesByItemId(itemC).then((scene) => scene.getSceneUid()), sceneA);
-assert.deepEqual(await xjs.Scene.searchItemsByName('Camera Custom').then((matches) => Promise.all(matches.map((item) => item.getId()))), [itemC]);
-assert.deepEqual(await xjs.Scene.filterItems((item, resolve) => resolve(item instanceof xjs.HtmlItem)).then((matches) => Promise.all(matches.map((item) => item.getId()))), [itemA, itemB]);
-assert.deepEqual(await xjs.Scene.filterScenesByItems((item, resolve) => resolve(item instanceof xjs.CameraItem)).then((matches) => Promise.all(matches.map((scene) => scene.getSceneUid()))), [sceneA]);
+assert.equal(
+  await xjs.Scene.searchScenesByItemId(itemC).then((scene) => scene.getSceneUid()),
+  sceneA
+);
+assert.deepEqual(
+  await xjs.Scene.searchItemsByName('Camera Custom').then((matches) =>
+    Promise.all(matches.map((item) => item.getId()))
+  ),
+  [itemC]
+);
+assert.deepEqual(
+  await xjs.Scene.filterItems((item, resolve) => resolve(item instanceof xjs.HtmlItem)).then(
+    (matches) => Promise.all(matches.map((item) => item.getId()))
+  ),
+  [itemA, itemB]
+);
+assert.deepEqual(
+  await xjs.Scene.filterScenesByItems((item, resolve) =>
+    resolve(item instanceof xjs.CameraItem)
+  ).then((matches) => Promise.all(matches.map((scene) => scene.getSceneUid()))),
+  [sceneA]
+);
 await assert.rejects(() => xjs.Scene.filterItems('bad'), /not a function/);
 
-assert.deepEqual(await xjs.Scene.searchSourcesById(sourceA.toLowerCase()).then((matches) => Promise.all(matches.map((source) => source.getId()))), [sourceA]);
-assert.deepEqual(await xjs.Scene.searchScenesBySourceId(sourceB).then((matches) => Promise.all(matches.map((scene) => scene.getSceneUid()))), [sceneA]);
-assert.deepEqual(await xjs.Scene.searchSourcesByName('Camera').then((matches) => Promise.all(matches.map((source) => source.getId()))), [sourceB]);
-assert.deepEqual(await xjs.Scene.filterSources((source, resolve) => resolve(source instanceof xjs.HtmlSource)).then((matches) => Promise.all(matches.map((source) => source.getId()))), [sourceA]);
-assert.deepEqual(await xjs.Scene.filterScenesBySources((source, resolve) => resolve(source instanceof xjs.CameraSource)).then((matches) => Promise.all(matches.map((scene) => scene.getSceneUid()))), [sceneA]);
+assert.deepEqual(
+  await xjs.Scene.searchSourcesById(sourceA.toLowerCase()).then((matches) =>
+    Promise.all(matches.map((source) => source.getId()))
+  ),
+  [sourceA]
+);
+assert.deepEqual(
+  await xjs.Scene.searchScenesBySourceId(sourceB).then((matches) =>
+    Promise.all(matches.map((scene) => scene.getSceneUid()))
+  ),
+  [sceneA]
+);
+assert.deepEqual(
+  await xjs.Scene.searchSourcesByName('Camera').then((matches) =>
+    Promise.all(matches.map((source) => source.getId()))
+  ),
+  [sourceB]
+);
+assert.deepEqual(
+  await xjs.Scene.filterSources((source, resolve) =>
+    resolve(source instanceof xjs.HtmlSource)
+  ).then((matches) => Promise.all(matches.map((source) => source.getId()))),
+  [sourceA]
+);
+assert.deepEqual(
+  await xjs.Scene.filterScenesBySources((source, resolve) =>
+    resolve(source instanceof xjs.CameraSource)
+  ).then((matches) => Promise.all(matches.map((scene) => scene.getSceneUid()))),
+  [sceneA]
+);
 await assert.rejects(() => xjs.Scene.searchSourcesById('bad'), /valid ID/);
 await assert.rejects(() => xjs.Scene.filterSources('bad'), /not a function/);
 
 assert.equal(await firstScene.setItemOrder([items[2], items[1], items[0]]), firstScene);
-assert.deepEqual(hostCalls.findLast((call) => call[0] === 'SourcesListOrderSave'), [
-  'SourcesListOrderSave',
-  '0',
-  `${itemA},${itemB},${itemC}`,
-]);
+assert.deepEqual(
+  hostCalls.findLast((call) => call[0] === 'SourcesListOrderSave'),
+  ['SourcesListOrderSave', '0', `${itemA},${itemB},${itemC}`]
+);
 
 assert.deepEqual(await firstScene.getPresets(), [
   '{00000000-0000-0000-0000-000000000000}',
@@ -327,7 +400,10 @@ assert.equal(await firstScene.getActivePreset(), '{33333333-3333-4333-8333-33333
 assert.equal(await firstScene.switchToPreset('{00000000-0000-0000-0000-000000000000}'), true);
 assert.equal(await firstScene.addPreset(), latestNewPreset);
 assert.equal(await firstScene.removePreset(latestNewPreset), true);
-await assert.rejects(() => firstScene.removePreset('{00000000-0000-0000-0000-000000000000}'), /default preset/);
+await assert.rejects(
+  () => firstScene.removePreset('{00000000-0000-0000-0000-000000000000}'),
+  /default preset/
+);
 assert.equal(await firstScene.getPresetTransitionEasing(), 'easeInCubic');
 assert.equal(await firstScene.setPresetTransitionEasing('none'), true);
 assert.equal(await firstScene.getPresetTransitionEasing(), 'none');
@@ -344,5 +420,11 @@ assert.equal(await liveScene.getItems().then((liveItems) => liveItems.length), 3
 assert.equal(await liveScene.setPresetTransitionTime(850), true);
 assert.equal(await firstScene.getPresetTransitionTime(), 850);
 
-assert.equal(hostCalls.some((call) => call[0] === 'AppGetPropertyAsync' && call[1] === 'sceneconfig'), true);
-assert.equal(hostCalls.some((call) => call[0] === 'AppSetPropertyAsync' && call[1] === 'scene:0'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'AppGetPropertyAsync' && call[1] === 'sceneconfig'),
+  true
+);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'AppSetPropertyAsync' && call[1] === 'scene:0'),
+  true
+);

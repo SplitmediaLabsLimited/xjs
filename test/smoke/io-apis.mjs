@@ -80,18 +80,16 @@ assert.deepEqual(
   ['C:\\videos\\video.mov', 'C:\\videos\\audio.ogg']
 );
 await assert.rejects(
-  () => xjs.IO.openFileDialog(null, {
-    name: 'Cancelled',
-    extensions: ['none'],
-  }),
+  () =>
+    xjs.IO.openFileDialog(null, {
+      name: 'Cancelled',
+      extensions: ['none'],
+    }),
   /File selection cancelled/
 );
 
 assert.equal(await xjs.IO.getVideoDuration('C:\\videos\\video.mov'), 22522500);
-await assert.rejects(
-  () => xjs.IO.getVideoDuration('C:\\videos\\missing.mov'),
-  /Invalid file path/
-);
+await assert.rejects(() => xjs.IO.getVideoDuration('C:\\videos\\missing.mov'), /Invalid file path/);
 await assert.rejects(() => xjs.IO.getVideoDuration(), /No file indicated/);
 
 assert.deepEqual(hostCalls, [

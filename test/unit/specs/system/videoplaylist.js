@@ -1,55 +1,52 @@
 /* globals describe, it, expect, beforeEach, require */
 
-'use strict';
-
-var XJS    = require('xjs');
-var VideoPlaylist   = XJS.VideoPlaylist ;
+var XJS = require('xjs');
+var VideoPlaylist = XJS.VideoPlaylist;
 var env = new window.Environment(XJS);
 var environments = ['props', 'extension', 'plugin'];
 var newFile = 'C:\\movie.mov';
 var ctr = 0;
-describe('Video Playlist', function() {
+describe('Video Playlist', () => {
   var defpos = 0;
   var itemPosition = '';
 
-  beforeEach(function() {
-    spyOn(window.external, 'AppGetPropertyAsync')
-      .and.callFake(function(funcName) {
+  beforeEach(() => {
+    spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
       ctr++;
       var asyncId = 'videoplaylist_' + ctr;
       if (funcName === 'scene:0') {
-        setTimeout(function() {
+        setTimeout(() => {
           window.OnAsyncCallback(asyncId, '0');
         }, 10);
       } else if (funcName === 'sceneconfig:0') {
-        setTimeout(function() {
-          window.OnAsyncCallback(asyncId, encodeURIComponent('<placement name="Scene 1" defpos="' + defpos + '" />'));
+        setTimeout(() => {
+          window.OnAsyncCallback(
+            asyncId,
+            encodeURIComponent('<placement name="Scene 1" defpos="' + defpos + '" />')
+          );
         }, 10);
       }
       return asyncId;
     });
 
-    spyOn(window.external, 'GetVideoDuration')
-      .and.callFake(function(filename) {
+    spyOn(window.external, 'GetVideoDuration').and.callFake((filename) => {
       if (filename === 'C:\\movie.mov') {
-        setTimeout(function() {
+        setTimeout(() => {
           window.OnGetVideoDuration(encodeURIComponent(filename), '22522500');
         }, 10);
       } else {
-        setTimeout(function() {
+        setTimeout(() => {
           window.OnGetVideoDurationFailed(encodeURIComponent(filename));
         }, 10);
       }
-
     });
 
-    spyOn(window.external, 'AppCallFuncAsync')
-      .and.callFake(function(funcName, item) {
+    spyOn(window.external, 'AppCallFuncAsync').and.callFake((funcName, item) => {
       ctr++;
       var asyncId = 'videoplaylist_' + ctr;
-      if(funcName.includes('additem')) {
-        var itemXML = (new window.DOMParser()).parseFromString(item, "text/xml");
-        var itemPlacement = itemXML.getElementsByTagName("item")[0];
+      if (funcName.includes('additem')) {
+        var itemXML = new window.DOMParser().parseFromString(item, 'text/xml');
+        var itemPlacement = itemXML.getElementsByTagName('item')[0];
 
         var posLeft = itemPlacement.getAttribute('pos_left');
         var posTop = itemPlacement.getAttribute('pos_top');
@@ -63,10 +60,15 @@ describe('Video Playlist', function() {
           itemPosition = 'bottom-left';
         } else if (posLeft === '0.5' && posTop === '0.5' && posRight === '1' && posBottom === '1') {
           itemPosition = 'bottom-right';
-        } else if (posLeft === '0.25' && posTop === '0.25' && posRight === '0.75' && posBottom === '0.75') {
+        } else if (
+          posLeft === '0.25' &&
+          posTop === '0.25' &&
+          posRight === '0.75' &&
+          posBottom === '0.75'
+        ) {
           itemPosition = 'center';
         }
-        setTimeout(function() {
+        setTimeout(() => {
           window.OnAsyncCallback(asyncId, '0');
         }, 10);
       }
@@ -74,56 +76,72 @@ describe('Video Playlist', function() {
     });
   });
 
-
-  it('can be added to the active scene', function(done) {
+  it('can be added to the active scene', (done) => {
     env.set(environments[2]); // source plugin window
     var newPlaylist = new VideoPlaylist([newFile]);
-    newPlaylist.addToScene().then(function() {
-      done.fail('Should reject if called in source');
-    }, function() {
-      env.set(environments[1]);
-      return new VideoPlaylist('').addToScene();
-    }).then(function() {
-      done.fail('Should reject if blank string is included');
-    }, function() {
-      return new VideoPlaylist().addToScene();
-    }).then(function() {
-      done.fail('Should reject if no file parameter is indicated');
-    }, function() {
-      return new VideoPlaylist('C:\\' + randomWord(10) + '.mov').addToScene();
-    }).then(function() {
-      done.fail('Should reject if file is invalid/missing');
-    }, function() {
-      return newPlaylist.addToScene();
-    }).then(function() {
-      expect(true).toBe(true);
-      done();
-    });
+    newPlaylist
+      .addToScene()
+      .then(
+        () => {
+          done.fail('Should reject if called in source');
+        },
+        () => {
+          env.set(environments[1]);
+          return new VideoPlaylist('').addToScene();
+        }
+      )
+      .then(
+        () => {
+          done.fail('Should reject if blank string is included');
+        },
+        () => new VideoPlaylist().addToScene()
+      )
+      .then(
+        () => {
+          done.fail('Should reject if no file parameter is indicated');
+        },
+        () => new VideoPlaylist('C:\\' + randomWord(10) + '.mov').addToScene()
+      )
+      .then(
+        () => {
+          done.fail('Should reject if file is invalid/missing');
+        },
+        () => newPlaylist.addToScene()
+      )
+      .then(() => {
+        expect(true).toBe(true);
+        done();
+      });
   });
 
-  it('position when added depends on default add position', function(done) {
+  it('position when added depends on default add position', (done) => {
     defpos = 0;
     var newPlaylist = new VideoPlaylist([newFile]);
-    newPlaylist.addToScene().then(function() {
-      expect(itemPosition).toEqual('top-left');
-      defpos = 1;
-      return newPlaylist.addToScene();
-    }).then(function() {
-      expect(itemPosition).toEqual('top-right');
-      defpos = 2;
-      return newPlaylist.addToScene();
-    }).then(function() {
-      expect(itemPosition).toEqual('bottom-left');
-      defpos = 3;
-      return newPlaylist.addToScene();
-    }).then(function() {
-      expect(itemPosition).toEqual('bottom-right');
-      defpos = 4;
-      return newPlaylist.addToScene();
-    }).then(function() {
-      expect(itemPosition).toEqual('center');
-      done();
-    });
+    newPlaylist
+      .addToScene()
+      .then(() => {
+        expect(itemPosition).toEqual('top-left');
+        defpos = 1;
+        return newPlaylist.addToScene();
+      })
+      .then(() => {
+        expect(itemPosition).toEqual('top-right');
+        defpos = 2;
+        return newPlaylist.addToScene();
+      })
+      .then(() => {
+        expect(itemPosition).toEqual('bottom-left');
+        defpos = 3;
+        return newPlaylist.addToScene();
+      })
+      .then(() => {
+        expect(itemPosition).toEqual('bottom-right');
+        defpos = 4;
+        return newPlaylist.addToScene();
+      })
+      .then(() => {
+        expect(itemPosition).toEqual('center');
+        done();
+      });
   });
-
 });

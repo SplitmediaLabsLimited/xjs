@@ -1,24 +1,29 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
+import { App as iApp } from '../../internal/app';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { applyMixins } from '../../internal/util/mixin';
+import { XML } from '../../internal/util/xml';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The GenericItem class represents a generic item.
@@ -34,9 +39,10 @@ import {XML} from '../../internal/util/xml';
  *  All methods marked as *Chainable* resolve with the original `GenericItem`
  *  instance.
  */
-export class GenericItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect {  
-
+export class GenericItem
+  extends Item
+  implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect
+{
   // ItemLayout
 
   /**
@@ -127,7 +133,7 @@ export class GenericItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<GenericItem>;
+  setEnhancedRotate: (value: number) => Promise<GenericItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
@@ -450,7 +456,7 @@ export class GenericItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
   setBorderEffectColor: (value: Color) => Promise<GenericItem>;
 
-   /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
   getShadowEffectColor: () => Promise<Color>;
 
   /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
@@ -502,10 +508,13 @@ export class GenericItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<GenericItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<GenericItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<GenericItem>;
@@ -514,5 +523,4 @@ export class GenericItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(GenericItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemEffect]);
+applyMixins(GenericItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);

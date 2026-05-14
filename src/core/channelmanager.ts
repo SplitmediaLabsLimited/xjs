@@ -1,12 +1,12 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 
-import {EventEmitter} from '../util/eventemitter';
-import {EventManager} from '../internal/eventmanager';
-import {StreamInfo} from './streaminfo';
-import {JSON as JXON} from '../internal/util/json';
-import {Environment} from './environment';
-import {Remote} from '../internal/remote';
+import { EventManager } from '../internal/eventmanager';
+import { Remote } from '../internal/remote';
+import { JSON as JXON } from '../internal/util/json';
+import { EventEmitter } from '../util/eventemitter';
+import { Environment } from './environment';
+import { StreamInfo } from './streaminfo';
 
 /**
  *  The ChannelManager class allows limited access to channels (also termed as outputs)
@@ -25,7 +25,6 @@ import {Remote} from '../internal/remote';
  *
  */
 export class ChannelManager extends EventEmitter {
-
   static _emitter = new ChannelManager();
 
   /**
@@ -60,69 +59,76 @@ export class ChannelManager extends EventEmitter {
    */
   static on(event: string, handler: Function) {
     if (Environment.isSourceProps()) {
-      console.warn('Channel Manager: stream-related events are not received' +
-        ' via the Source Properties');
+      console.warn(
+        'Channel Manager: stream-related events are not received' + ' via the Source Properties'
+      );
     }
     ChannelManager._emitter.on(event, (params) => {
       try {
-        let channelInfoObj = JSON.parse(decodeURIComponent(params));
+        const channelInfoObj = JSON.parse(decodeURIComponent(params));
 
-        if (channelInfoObj.hasOwnProperty('ChannelName')) {
-          let channelName = channelInfoObj['ChannelName'];
-          let infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
+        if (Object.hasOwn(channelInfoObj, 'ChannelName')) {
+          const channelName = channelInfoObj['ChannelName'];
+          const infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
-          let addedInfo: Object = {};
+          const addedInfo: Object = {};
 
           if (event === 'stream-end') {
             channelInfoObj['Dropped'] = Number(channelInfoObj['Dropped']) || 0;
             channelInfoObj['NotDropped'] = Number(channelInfoObj['NotDropped']) || 0;
-            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime']/10) || 0;
+            channelInfoObj['StreamTime'] = Number(channelInfoObj['StreamTime'] / 10) || 0;
             channelInfoObj['Audio'] = Number(channelInfoObj['Audio']) || 0;
             channelInfoObj['Video'] = Number(channelInfoObj['Video']) || 0;
             channelInfoObj['Output'] = Number(channelInfoObj['Output']) || 0;
 
-            statJSON = JXON.parse('<stat' +
-              ' video="' + channelInfoObj['Video'] +
-              '" audio="' + channelInfoObj['Audio'] +
-              '" output="' + channelInfoObj['Output'] +
-              '" frmdropped="' + channelInfoObj['Dropped'] +
-              '" frmcoded="' + channelInfoObj['NotDropped'] +
-              '" />');
+            statJSON = JXON.parse(
+              '<stat' +
+                ' video="' +
+                channelInfoObj['Video'] +
+                '" audio="' +
+                channelInfoObj['Audio'] +
+                '" output="' +
+                channelInfoObj['Output'] +
+                '" frmdropped="' +
+                channelInfoObj['Dropped'] +
+                '" frmcoded="' +
+                channelInfoObj['NotDropped'] +
+                '" />'
+            );
             addedInfo['streamTime'] = channelInfoObj['StreamTime'];
           } else if (event === 'stream-start') {
             statJSON = JXON.parse('<stat />');
           }
 
-          let eventChannel: StreamInfo = new StreamInfo({
+          const eventChannel: StreamInfo = new StreamInfo({
             name: channelName,
             stat: statJSON,
-            channel: infoJSON
+            channel: infoJSON,
           });
 
-          handler.call(this, {
+          handler.call(ChannelManager, {
             error: false,
             channel: eventChannel,
-            streamTime: addedInfo['streamTime']
+            streamTime: addedInfo['streamTime'],
           });
-        } else if (channelInfoObj.hasOwnProperty('new') &&
-          channelInfoObj.hasOwnProperty('old')) {
-            if (event === 'recording-renamed') {
-              const name = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, "/")
-              const nameArr = name.split('/')
-              const newName = nameArr[nameArr.length - 1]
+        } else if (Object.hasOwn(channelInfoObj, 'new') && Object.hasOwn(channelInfoObj, 'old')) {
+          if (event === 'recording-renamed') {
+            const name = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, '/');
+            const nameArr = name.split('/');
+            const newName = nameArr[nameArr.length - 1];
 
-              handler.call(this, {
-                error: false,
-                recordingInfo: {
-                  oldName: channelInfoObj['old'],
-                  newName: newName,
-                  fullPath: decodeURIComponent(channelInfoObj['new'])
-                }
-              })
-            }
+            handler.call(ChannelManager, {
+              error: false,
+              recordingInfo: {
+                oldName: channelInfoObj['old'],
+                newName: newName,
+                fullPath: decodeURIComponent(channelInfoObj['new']),
+              },
+            });
           }
+        }
       } catch (e) {
-        handler.call(this, { error: true })
+        handler.call(ChannelManager, { error: true });
       }
     });
   }
@@ -132,32 +138,35 @@ export class ChannelManager extends EventEmitter {
   }
 }
 
-
 export function _subscribeEventManager() {
-  EventManager.subscribe(['StreamStart', 'StreamEnd', 'RecordingRenamed'],
+  EventManager.subscribe(
+    ['StreamStart', 'StreamEnd', 'RecordingRenamed'],
     (settingsObj: string) => {
-    let eventString;
-    if (settingsObj.hasOwnProperty('event') &&
-        settingsObj.hasOwnProperty('info')) {
-      eventString = settingsObj['event'];
-      if (settingsObj['event'] === 'StreamStart') {
-        eventString = 'stream-start';
-      } else if (settingsObj['event'] === 'StreamEnd') {
-        eventString = 'stream-end';
-      }
-      ChannelManager.emit(eventString, settingsObj['info']);
-    }
-    if (settingsObj.hasOwnProperty('event') && settingsObj.hasOwnProperty('old')
-      && settingsObj.hasOwnProperty('new')) {
-      eventString = settingsObj['event'];
-      if (settingsObj['event'] === 'RecordingRenamed') {
-        eventString = 'recording-renamed';
-        const renameInfo = {
-          old: settingsObj['old'],
-          new: settingsObj['new']
+      let eventString;
+      if (Object.hasOwn(settingsObj, 'event') && Object.hasOwn(settingsObj, 'info')) {
+        eventString = settingsObj['event'];
+        if (settingsObj['event'] === 'StreamStart') {
+          eventString = 'stream-start';
+        } else if (settingsObj['event'] === 'StreamEnd') {
+          eventString = 'stream-end';
         }
-        ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+        ChannelManager.emit(eventString, settingsObj['info']);
+      }
+      if (
+        Object.hasOwn(settingsObj, 'event') &&
+        Object.hasOwn(settingsObj, 'old') &&
+        Object.hasOwn(settingsObj, 'new')
+      ) {
+        eventString = settingsObj['event'];
+        if (settingsObj['event'] === 'RecordingRenamed') {
+          eventString = 'recording-renamed';
+          const renameInfo = {
+            old: settingsObj['old'],
+            new: settingsObj['new'],
+          };
+          ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+        }
       }
     }
-  });
+  );
 }

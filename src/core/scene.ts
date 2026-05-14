@@ -1,35 +1,34 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {JSON as JXON} from '../internal/util/json';
-import {XML} from '../internal/util/xml';
-import {App as iApp} from '../internal/app';
-import {exec} from '../internal/internal';
-import {Environment} from './environment';
-import {Source} from './source/source';
-import {ItemTypes} from './source/isource';
-import {Item, ViewTypes} from './items/item';
-import {ItemTypeResolve} from '../util/itemtyperesolve';
-import {SourceTypeResolve} from '../util/sourcetyperesolve';
-import {Transition} from './transition';
-import {checkSplitmode} from '../internal/util/splitmode';
-import {addToSceneHandler} from '../util/addtosceneutil';
-
+import { App as iApp } from '../internal/app';
+import { exec } from '../internal/internal';
+import { JSON as JXON } from '../internal/util/json';
+import { checkSplitmode } from '../internal/util/splitmode';
 import {
-  minVersion,
-  versionCompare,
   getVersion,
-  sceneUidMinVersion,
+  minVersion,
   scenePresetsVersion,
-  sceneSourceVersion
+  sceneSourceVersion,
+  sceneUidMinVersion,
+  versionCompare,
 } from '../internal/util/version';
+import { XML } from '../internal/util/xml';
+import { addToSceneHandler } from '../util/addtosceneutil';
+import { ItemTypeResolve } from '../util/itemtyperesolve';
+import { SourceTypeResolve } from '../util/sourcetyperesolve';
+import { Environment } from './environment';
+import { Item, ViewTypes } from './items/item';
+import { ItemTypes } from './source/isource';
+import { Source } from './source/source';
+import { Transition } from './transition';
 
 const supportedPresetTransitionEasingFunctions = [
   '',
   'none',
   'easeInCubic',
   'easeOutCubic',
-  'easeInOutCubic'
-]
+  'easeInOutCubic',
+];
 
 export class Scene {
   private _id: number | string;
@@ -50,16 +49,15 @@ export class Scene {
     } else {
       this._refID = sceneId;
     }
-  };
+  }
 
   private static _initializeScenePoolAsync(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Scene._scenePool = [];
-      iApp.getAsList('sceneconfig')
-      .then(jsonArr => {
+      iApp.getAsList('sceneconfig').then((jsonArr) => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           const count = jsonArr.length;
-          (count > 12) ? Scene._maxScenes = count : Scene._maxScenes = 12;
+          count > 12 ? (Scene._maxScenes = count) : (Scene._maxScenes = 12);
           for (var i = 0; i < Scene._maxScenes; i++) {
             Scene._scenePool[i] = new Scene(i);
           }
@@ -67,18 +65,18 @@ export class Scene {
           Scene._scenePool.push(new Scene('i12'));
           resolve(Scene._maxScenes);
         } else {
-          let count = 0
+          let count = 0;
           jsonArr
-          .filter(json => json['tag'] === 'placement')
-          .map((scene, index) => {
-            count++
-            Scene._scenePool[index] = new Scene(index, scene['name'], scene['id'] );
-          })
+            .filter((json) => json['tag'] === 'placement')
+            .map((scene, index) => {
+              count++;
+              Scene._scenePool[index] = new Scene(index, scene['name'], scene['id']);
+            });
           // Add special scene for preview editor (i12)
           Scene._scenePool.push(new Scene('i12', 'i12', 'i12'));
           resolve(count);
         }
-      })
+      });
     });
   }
 
@@ -94,11 +92,11 @@ export class Scene {
    * ```
    */
   static getSceneCount(): Promise<number> {
-    return new Promise(resolve => {
-      Scene._initializeScenePoolAsync().then(count => {
-        resolve(count)
-      })
-    })
+    return new Promise((resolve) => {
+      Scene._initializeScenePoolAsync().then((count) => {
+        resolve(count);
+      });
+    });
   }
 
   /**
@@ -118,21 +116,25 @@ export class Scene {
    */
   static getById(sceneNum: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
+      Scene._initializeScenePoolAsync().then((cnt) => {
         if (sceneNum === 'i12') {
           if (Scene._scenePool[cnt]._id === 'i12') {
             resolve(Scene._scenePool[cnt]);
           } else {
-            reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
+            reject(
+              Error('Invalid parameter. Valid range is 1 to total number of available scenes.')
+            );
           }
         } else {
           try {
-            if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined'){
-              reject(Error('Invalid parameter. Valid range is 1 to total number of available scenes.'));
+            if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === 'undefined') {
+              reject(
+                Error('Invalid parameter. Valid range is 1 to total number of available scenes.')
+              );
             } else {
               resolve(Scene._scenePool[sceneNum - 1]);
             }
-          } catch(e) {
+          } catch (e) {
             reject(Error('Parameter must be a number'));
           }
         }
@@ -156,7 +158,7 @@ export class Scene {
    */
   static getBySceneIndex(sceneIndex: any): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
+      Scene._initializeScenePoolAsync().then((cnt) => {
         if (sceneIndex === 'i12') {
           if (Scene._scenePool[cnt]._id === 'i12') {
             resolve(Scene._scenePool[cnt]);
@@ -165,12 +167,12 @@ export class Scene {
           }
         } else {
           try {
-            if (sceneIndex > cnt || typeof Scene._scenePool[sceneIndex] === 'undefined'){
+            if (sceneIndex > cnt || typeof Scene._scenePool[sceneIndex] === 'undefined') {
               reject(Error('Invalid parameter'));
             } else {
               resolve(Scene._scenePool[sceneIndex]);
             }
-          } catch(e) {
+          } catch (e) {
             reject(Error('Parameter must be a number'));
           }
         }
@@ -195,25 +197,25 @@ export class Scene {
    */
   static getBySceneUid(sceneUid: string): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(sceneUid);
+      const isID: boolean = /^{[A-F0-9-]*}$/i.test(sceneUid);
       if (!isID) {
-        reject(Error('Not a valid Unique ID format for a Scene'))
+        reject(Error('Not a valid Unique ID format for a Scene'));
       } else {
-        this._initializeScenePoolAsync().then(() => {
-          const sceneLength = this._scenePool.length;
-          this._scenePool.map((scene, idx) => {
-            scene.getSceneUid().then(uid => {
-              if(uid === sceneUid){
-                resolve(scene)
+        Scene._initializeScenePoolAsync().then(() => {
+          const sceneLength = Scene._scenePool.length;
+          Scene._scenePool.map((scene, idx) => {
+            scene.getSceneUid().then((uid) => {
+              if (uid === sceneUid) {
+                resolve(scene);
               }
               if (sceneLength - 1 === idx) {
-                reject(Error('No matching Scene with the Unique ID provided.'))
+                reject(Error('No matching Scene with the Unique ID provided.'));
               }
-            })
-          })
-        })
+            });
+          });
+        });
       }
-    })
+    });
   }
 
   /**
@@ -230,20 +232,20 @@ export class Scene {
    * ```
    */
   static getByName(sceneName: string): Promise<Scene[]> {
-    return new Promise(resolve => {
-      let sceneArr = [];
-      this._initializeScenePoolAsync().then(count => {
-        this._scenePool.map((scene, idx) => {
-          scene.getName().then(name => {
-            if(name === sceneName) {
-              sceneArr.push(scene)
+    return new Promise((resolve) => {
+      const sceneArr = [];
+      Scene._initializeScenePoolAsync().then((count) => {
+        Scene._scenePool.map((scene, idx) => {
+          scene.getName().then((name) => {
+            if (name === sceneName) {
+              sceneArr.push(scene);
             }
-            if ((idx + 1) === count) {
-              resolve(sceneArr)
+            if (idx + 1 === count) {
+              resolve(sceneArr);
             }
-          })
-        })
-      })
+          });
+        });
+      });
     });
   }
 
@@ -266,14 +268,17 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'scene:1' : 'scene:0'
-          iApp.get(preset).then(id => {
-            return Scene.getBySceneIndex(Number(id));
-          }).then(scene => {
-            resolve(scene);
-          });
-        })
+        iApp.getGlobalProperty('splitmode').then((res) => {
+          const preset = res === '1' ? 'scene:1' : 'scene:0';
+          iApp
+            .get(preset)
+            .then((id) => {
+              return Scene.getBySceneIndex(Number(id));
+            })
+            .then((scene) => {
+              resolve(scene);
+            });
+        });
       }
     });
   }
@@ -291,24 +296,24 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));
       } else {
-        iApp.getGlobalProperty('splitmode').then(res => {
-          const preset = res === '1' ? 'scene:1' : 'scene:0'
+        iApp.getGlobalProperty('splitmode').then((res) => {
+          const preset = res === '1' ? 'scene:1' : 'scene:0';
           if (scene instanceof Scene) {
-              iApp.set(preset, String(scene._id)).then(res => {
-                resolve(res);
-              });
+            iApp.set(preset, String(scene._id)).then((res) => {
+              resolve(res);
+            });
           } else if (typeof scene === 'number') {
             if (scene < 1 || !Number['isInteger'](Number(scene))) {
-            reject(Error('Invalid parameters. Valid range is greater than 0.'));
+              reject(Error('Invalid parameters. Valid range is greater than 0.'));
             } else {
-              iApp.set(preset, String(scene - 1)).then(res => {
+              iApp.set(preset, String(scene - 1)).then((res) => {
                 resolve(res);
               });
             }
           } else {
             reject(Error('Invalid parameters. Valid range is greater than 0 or a Scene object.'));
           }
-        })
+        });
       }
     });
   }
@@ -332,45 +337,49 @@ export class Scene {
    */
   static searchItemsById(id: string): Promise<Item> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(id);
+      const isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
       if (!isID) {
         reject(Error('Not a valid ID format for items'));
       } else {
-        Scene._initializeScenePoolAsync().then(cnt => {
+        Scene._initializeScenePoolAsync().then((cnt) => {
           let match = null;
           let found = false;
-          let promiseArray = []
+          const promiseArray = [];
 
-          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
-            if (match === null) {
-              scene.getItems().then(items => {
-                found = items.some(item => {
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = item;
-                    return true
-                  } else {
-                    return false
-                  }
-                })
-                if (found ||
-                    Number(idx) === arr.length - 1) { // last scene, no match
-                    sceneResolve(match);
-                  } else {
+          const scenePromise = (scene, idx, arr) =>
+            new Promise((sceneResolve) => {
+              if (match === null) {
+                scene
+                  .getItems()
+                  .then((items) => {
+                    found = items.some((item) => {
+                      if (item['_id'] === id.toUpperCase()) {
+                        match = item;
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    });
+                    if (found || Number(idx) === arr.length - 1) {
+                      // last scene, no match
+                      sceneResolve(match);
+                    } else {
+                      sceneResolve(null);
+                    }
+                  })
+                  .catch((err) => {
                     sceneResolve(null);
-                  }
-              }).catch(err => {
-                sceneResolve(null);
-              })
-            }
-          })
+                  });
+              }
+            });
 
           Scene._scenePool.map((scene, idx, arr) => {
-            promiseArray.push(scenePromise(scene, idx, arr))
-          })
+            promiseArray.push(scenePromise(scene, idx, arr));
+          });
 
-          Promise.all(promiseArray).then(results => {
-            resolve(match)
-          })
+          Promise.all(promiseArray).then((results) => {
+            resolve(match);
+          });
         });
       }
     });
@@ -393,51 +402,53 @@ export class Scene {
    */
   static searchScenesByItemId(id: string): Promise<Scene> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
+      const isID: boolean = /^{[A-F0-9-]*}$/i.test(id);
       if (!isID) {
         reject(Error('Not a valid ID format for items'));
-
       } else {
-        Scene._initializeScenePoolAsync().then(cnt => {
+        Scene._initializeScenePoolAsync().then((cnt) => {
           let match = null;
           let found = false;
-          let promiseArray = []
+          const promiseArray = [];
 
-          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
-            if (match === null) {
-              scene.getItems().then(items => {
-                found = items.some(item => {
-                  if (item['_id'] === id.toUpperCase()) {
-                    match = scene;
-                    return true
-                  } else {
-                    return false
-                  }
-                })
-                if (found ||
-                    Number(idx) === arr.length - 1) { // last scene, no match
-                    sceneResolve(match);
-                  } else {
+          const scenePromise = (scene, idx, arr) =>
+            new Promise((sceneResolve) => {
+              if (match === null) {
+                scene
+                  .getItems()
+                  .then((items) => {
+                    found = items.some((item) => {
+                      if (item['_id'] === id.toUpperCase()) {
+                        match = scene;
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    });
+                    if (found || Number(idx) === arr.length - 1) {
+                      // last scene, no match
+                      sceneResolve(match);
+                    } else {
+                      sceneResolve(null);
+                    }
+                  })
+                  .catch((err) => {
                     sceneResolve(null);
-                  }
-              }).catch(err => {
-                sceneResolve(null);
-              })
-            }
-          })
+                  });
+              }
+            });
 
           Scene._scenePool.map((scene, idx, arr) => {
-            promiseArray.push(scenePromise(scene, idx, arr))
-          })
+            promiseArray.push(scenePromise(scene, idx, arr));
+          });
 
-          Promise.all(promiseArray).then(results => {
-            resolve(match)
-          })
-
+          Promise.all(promiseArray).then((results) => {
+            resolve(match);
+          });
         });
       }
     });
-  };
+  }
 
   /**
    * return: Promise<Items[]>
@@ -461,22 +472,22 @@ export class Scene {
    *
    */
   static searchItemsByName(param: string): Promise<Item[]> {
-    return new Promise(resolve => {
-      this.filterItems((item: Item, filterResolve: any) => {
+    return new Promise((resolve) => {
+      Scene.filterItems((item: Item, filterResolve: any) => {
         if (item['_cname'] === param) {
-          filterResolve(true)
+          filterResolve(true);
         } else if (item['_name'] === param) {
-          filterResolve(true)
+          filterResolve(true);
         } else if (item['_value'] === param) {
-          filterResolve(true)
+          filterResolve(true);
         } else {
-          filterResolve(false)
+          filterResolve(false);
         }
-      }).then(items => {
+      }).then((items) => {
         resolve(items);
       });
     });
-  };
+  }
 
   /**
    * param: (func: function)
@@ -501,34 +512,41 @@ export class Scene {
    */
   static filterItems(func: any): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        let matches: Item[] = [];
+      Scene._initializeScenePoolAsync().then((cnt) => {
+        const matches: Item[] = [];
 
         if (typeof func === 'function') {
-          return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise<void>(resolveScene => {
-              scene.getItems().then(items => {
-                if (items.length === 0) {
-                  resolveScene();
-                } else {
-                  return Promise.all(items.map(item => {
-                    return new Promise<void>(resolveItem => {
-                      func(item, (checker: boolean) => {
-                        if (checker) {
-                          matches.push(item);
-                        }
-                        resolveItem();
+          return Promise.all(
+            Scene._scenePool.map((scene) => {
+              return new Promise<void>((resolveScene) => {
+                scene
+                  .getItems()
+                  .then((items) => {
+                    if (items.length === 0) {
+                      resolveScene();
+                    } else {
+                      return Promise.all(
+                        items.map((item) => {
+                          return new Promise<void>((resolveItem) => {
+                            func(item, (checker: boolean) => {
+                              if (checker) {
+                                matches.push(item);
+                              }
+                              resolveItem();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
                       });
-                    });
-                  })).then(() => {
+                    }
+                  })
+                  .catch(() => {
                     resolveScene();
                   });
-                }
-              }).catch(() => {
-                resolveScene();
               });
-            });
-          })).then(() => {
+            })
+          ).then(() => {
             resolve(matches);
           });
         } else {
@@ -561,31 +579,38 @@ export class Scene {
    */
   static filterScenesByItems(func: any): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        let matches: Scene[] = [];
+      Scene._initializeScenePoolAsync().then((cnt) => {
+        const matches: Scene[] = [];
         if (typeof func === 'function') {
-          return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise<void>(resolveScene => {
-              scene.getItems().then(items => {
-                if (items.length === 0) {
-                  resolveScene();
-                } else {
-                  return Promise.all(items.map(item => {
-                    return new Promise<void>(resolveItem => {
-                      func(item, (checker: boolean) => {
-                        if (checker) {
-                          matches.push(scene);
-                        }
-                        resolveItem();
+          return Promise.all(
+            Scene._scenePool.map((scene) => {
+              return new Promise<void>((resolveScene) => {
+                scene
+                  .getItems()
+                  .then((items) => {
+                    if (items.length === 0) {
+                      resolveScene();
+                    } else {
+                      return Promise.all(
+                        items.map((item) => {
+                          return new Promise<void>((resolveItem) => {
+                            func(item, (checker: boolean) => {
+                              if (checker) {
+                                matches.push(scene);
+                              }
+                              resolveItem();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
                       });
-                    });
-                  })).then(() => {
-                    resolveScene();
-                  });
-                }
-              }).catch(() => resolveScene());
-            });
-          })).then(() => {
+                    }
+                  })
+                  .catch(() => resolveScene());
+              });
+            })
+          ).then(() => {
             resolve(matches);
           });
         } else {
@@ -615,53 +640,57 @@ export class Scene {
    */
   static searchSourcesById(srcId: string): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9\-]*}$/i.test(srcId);
+      const isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
       } else {
-        Scene._initializeScenePoolAsync().then(cnt => {
+        Scene._initializeScenePoolAsync().then((cnt) => {
           let match = null;
           let found = false;
-          let promiseArray = []
+          const promiseArray = [];
 
-          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
-            if (match === null) {
-              scene.getSources().then(sources => {
-                found = sources.some(source => {
-                  if (source['_srcId'] === srcId.toUpperCase()) {
-                    match = source;
-                    return true
-                  } else {
-                    return false
-                  }
-                })
-                if (found ||
-                    Number(idx) === arr.length - 1) { // last scene, no match
-                    sceneResolve(match);
-                  } else {
+          const scenePromise = (scene, idx, arr) =>
+            new Promise((sceneResolve) => {
+              if (match === null) {
+                scene
+                  .getSources()
+                  .then((sources) => {
+                    found = sources.some((source) => {
+                      if (source['_srcId'] === srcId.toUpperCase()) {
+                        match = source;
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    });
+                    if (found || Number(idx) === arr.length - 1) {
+                      // last scene, no match
+                      sceneResolve(match);
+                    } else {
+                      sceneResolve(null);
+                    }
+                  })
+                  .catch((err) => {
                     sceneResolve(null);
-                  }
-              }).catch(err => {
-                sceneResolve(null);
-              })
-            }
-          })
+                  });
+              }
+            });
           Scene._scenePool.map((scene, idx, arr) => {
-            promiseArray.push(scenePromise(scene, idx, arr))
-          })
-          Promise.all(promiseArray).then(results => {
-            let finalResults = []
+            promiseArray.push(scenePromise(scene, idx, arr));
+          });
+          Promise.all(promiseArray).then((results) => {
+            const finalResults = [];
             for (var i = 0; i < results.length; i++) {
-              if(results[i] !== null) {
-                finalResults.push(results[i])
+              if (results[i] !== null) {
+                finalResults.push(results[i]);
               }
             }
-            resolve(finalResults)
-          })
+            resolve(finalResults);
+          });
         });
       }
     });
-  };
+  }
 
   /**
    * return: Promise<Scene>
@@ -680,55 +709,57 @@ export class Scene {
    */
   static searchScenesBySourceId(srcId: string): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      let isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
+      const isID: boolean = /^{[A-F0-9-]*}$/i.test(srcId);
       if (!isID) {
         reject(Error('Not a valid ID format for sources'));
-
       } else {
-        Scene._initializeScenePoolAsync().then(cnt => {
+        Scene._initializeScenePoolAsync().then((cnt) => {
           let match = null;
           let found = false;
-          let promiseArray = []
+          const promiseArray = [];
 
-          let scenePromise = (scene, idx, arr) => new Promise(sceneResolve => {
-            if (match === null) {
-              scene.getSources().then(sources => {
-                found = sources.some(source => {
-                  if (source['_srcId'] === srcId.toUpperCase()) {
-                    match = scene;
-                    return true
-                  } else {
-                    return false
-                  }
-                })
-                if (found ||
-                    Number(idx) === arr.length - 1) { // last scene, no match
-                    sceneResolve(match);
-                  } else {
+          const scenePromise = (scene, idx, arr) =>
+            new Promise((sceneResolve) => {
+              if (match === null) {
+                scene
+                  .getSources()
+                  .then((sources) => {
+                    found = sources.some((source) => {
+                      if (source['_srcId'] === srcId.toUpperCase()) {
+                        match = scene;
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    });
+                    if (found || Number(idx) === arr.length - 1) {
+                      // last scene, no match
+                      sceneResolve(match);
+                    } else {
+                      sceneResolve(null);
+                    }
+                  })
+                  .catch((err) => {
                     sceneResolve(null);
-                  }
-              }).catch(err => {
-                sceneResolve(null);
-              })
-            }
-          })
+                  });
+              }
+            });
           Scene._scenePool.map((scene, idx, arr) => {
-            promiseArray.push(scenePromise(scene, idx, arr))
-          })
-          Promise.all(promiseArray).then(results => {
-            let finalResults = []
+            promiseArray.push(scenePromise(scene, idx, arr));
+          });
+          Promise.all(promiseArray).then((results) => {
+            const finalResults = [];
             for (var i = 0; i < results.length; i++) {
-              if(results[i] !== null) {
-                finalResults.push(results[i])
+              if (results[i] !== null) {
+                finalResults.push(results[i]);
               }
             }
-            resolve(finalResults)
-          })
-
+            resolve(finalResults);
+          });
         });
       }
     });
-  };
+  }
 
   /**
    * return: Promise<Source[]>
@@ -748,36 +779,40 @@ export class Scene {
    *
    */
   static searchSourcesByName(param: string): Promise<Source[]> {
-    return new Promise(resolve => {
-      this.filterSources((source: Source, filterResolve: any) => {
-        source.getCustomName().then(cname => {
-          if (cname.match(param)) {
-            filterResolve(true);
-          } else {
-            return source.getName();
-          }
-        }).then(name => {
-          if (name !== undefined) {
-            if (name.match(param)) {
+    return new Promise((resolve) => {
+      Scene.filterSources((source: Source, filterResolve: any) => {
+        source
+          .getCustomName()
+          .then((cname) => {
+            if (cname.match(param)) {
               filterResolve(true);
             } else {
-              return source.getValue();
+              return source.getName();
             }
-          }
-        }).then(value => {
-          if (value !== undefined) {
-            if (value.toString().match(param)) {
-              filterResolve(true);
-            } else {
-              filterResolve(false);
+          })
+          .then((name) => {
+            if (name !== undefined) {
+              if (name.match(param)) {
+                filterResolve(true);
+              } else {
+                return source.getValue();
+              }
             }
-          }
-        });
-      }).then(sources => {
+          })
+          .then((value) => {
+            if (value !== undefined) {
+              if (value.toString().match(param)) {
+                filterResolve(true);
+              } else {
+                filterResolve(false);
+              }
+            }
+          });
+      }).then((sources) => {
         resolve(sources);
       });
     });
-  };
+  }
 
   /**
    * param: (func: function)
@@ -802,34 +837,41 @@ export class Scene {
    */
   static filterSources(func: any): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        let matches: Source[] = [];
+      Scene._initializeScenePoolAsync().then((cnt) => {
+        const matches: Source[] = [];
 
         if (typeof func === 'function') {
-          return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise<void>(resolveScene => {
-              scene.getSources().then(sources => {
-                if (sources.length === 0) {
-                  resolveScene();
-                } else {
-                  return Promise.all(sources.map(source => {
-                    return new Promise<void>(resolveSource => {
-                      func(source, (checker: boolean) => {
-                        if (checker) {
-                          matches.push(source);
-                        }
-                        resolveSource();
+          return Promise.all(
+            Scene._scenePool.map((scene) => {
+              return new Promise<void>((resolveScene) => {
+                scene
+                  .getSources()
+                  .then((sources) => {
+                    if (sources.length === 0) {
+                      resolveScene();
+                    } else {
+                      return Promise.all(
+                        sources.map((source) => {
+                          return new Promise<void>((resolveSource) => {
+                            func(source, (checker: boolean) => {
+                              if (checker) {
+                                matches.push(source);
+                              }
+                              resolveSource();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
                       });
-                    });
-                  })).then(() => {
+                    }
+                  })
+                  .catch(() => {
                     resolveScene();
                   });
-                }
-            }).catch(() => {
-              resolveScene();
               });
-            });
-          })).then(() => {
+            })
+          ).then(() => {
             resolve(matches);
           });
         } else {
@@ -862,31 +904,35 @@ export class Scene {
    */
   static filterScenesBySources(func: any): Promise<Scene[]> {
     return new Promise((resolve, reject) => {
-      Scene._initializeScenePoolAsync().then(cnt => {
-        let matches: Scene[] = [];
+      Scene._initializeScenePoolAsync().then((cnt) => {
+        const matches: Scene[] = [];
         if (typeof func === 'function') {
-          return Promise.all(Scene._scenePool.map(scene => {
-            return new Promise<void>(resolveScene => {
-              scene.getSources().then(sources => {
-                if (sources.length === 0) {
-                  resolveScene();
-                } else {
-                  return Promise.all(sources.map(source => {
-                    return new Promise<void>(resolveSource => {
-                      func(source, (checker: boolean) => {
-                        if (checker) {
-                          matches.push(scene);
-                        }
-                        resolveSource();
-                      });
-                    });
-                  })).then(() => {
+          return Promise.all(
+            Scene._scenePool.map((scene) => {
+              return new Promise<void>((resolveScene) => {
+                scene.getSources().then((sources) => {
+                  if (sources.length === 0) {
                     resolveScene();
-                  });
-                }
+                  } else {
+                    return Promise.all(
+                      sources.map((source) => {
+                        return new Promise<void>((resolveSource) => {
+                          func(source, (checker: boolean) => {
+                            if (checker) {
+                              matches.push(scene);
+                            }
+                            resolveSource();
+                          });
+                        });
+                      })
+                    ).then(() => {
+                      resolveScene();
+                    });
+                  }
+                });
               });
-            });
-          })).then(() => {
+            })
+          ).then(() => {
             resolve(matches);
           });
         } else {
@@ -922,14 +968,12 @@ export class Scene {
         reject(Error('function is not available for source'));
       } else {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          iApp.get('scenecount').then(cnt => {
+          iApp.get('scenecount').then((cnt) => {
             if (Number(cnt) < 12) {
               // Insert an empty scene for scene #12
-              iApp
-                .set('sceneconfig:11', '<placement name="Scene 12" defpos="0" />')
-                .then(res => {
-                  resolve(res);
-                });
+              iApp.set('sceneconfig:11', '<placement name="Scene 12" defpos="0" />').then((res) => {
+                resolve(res);
+              });
             } else {
               resolve(true);
             }
@@ -965,211 +1009,253 @@ export class Scene {
       Scene._liveScene.getSources = (): Promise<Source[]> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getSources();
-          }).then(sources => {
-            resolve(sources);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getSources();
+            })
+            .then((sources) => {
+              resolve(sources);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getSceneNumber = (): Promise<number> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getSceneNumber();
-          }).then(sceneNumber => {
-            resolve(sceneNumber);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getSceneNumber();
+            })
+            .then((sceneNumber) => {
+              resolve(sceneNumber);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getSceneIndex = (): Promise<number> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getSceneIndex();
-          }).then(sceneIndex => {
-            resolve(sceneIndex);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getSceneIndex();
+            })
+            .then((sceneIndex) => {
+              resolve(sceneIndex);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getSceneUid = (): Promise<string> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getSceneUid();
-          }).then(sceneUID => {
-            resolve(sceneUID);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getSceneUid();
+            })
+            .then((sceneUID) => {
+              resolve(sceneUID);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getName = (): Promise<string> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getName();
-          }).then(name => {
-            resolve(name);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getName();
+            })
+            .then((name) => {
+              resolve(name);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.setName = (name: string): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.setName(name);
-          }).then(setFlag => {
-            resolve(setFlag);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.setName(name);
+            })
+            .then((setFlag) => {
+              resolve(setFlag);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getItems = (): Promise<Item[]> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getItems();
-          }).then(items => {
-            resolve(items);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getItems();
+            })
+            .then((items) => {
+              resolve(items);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getTopLevelItems = (): Promise<Item[]> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getTopLevelItems();
-          }).then(items => {
-            resolve(items);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getTopLevelItems();
+            })
+            .then((items) => {
+              resolve(items);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.isEmpty = (): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.isEmpty();
-          }).then(empty => {
-            resolve(empty);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.isEmpty();
+            })
+            .then((empty) => {
+              resolve(empty);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.setItemOrder = (items: Array<any>): Promise<Scene> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.setItemOrder(items);
-          }).then(sources => {
-            resolve(Scene._liveScene);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.setItemOrder(items);
+            })
+            .then((sources) => {
+              resolve(Scene._liveScene);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getPresets = (): Promise<string[]> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getPresets();
-          }).then(presets => {
-            resolve(presets);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getPresets();
+            })
+            .then((presets) => {
+              resolve(presets);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getActivePreset = (): Promise<string> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getActivePreset();
-          }).then(preset => {
-            resolve(preset);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getActivePreset();
+            })
+            .then((preset) => {
+              resolve(preset);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.switchToPreset = (preset: string): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.switchToPreset(preset);
-          }).then(setFlag => {
-            resolve(setFlag);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.switchToPreset(preset);
+            })
+            .then((setFlag) => {
+              resolve(setFlag);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.addPreset = (): Promise<string> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.addPreset();
-          }).then(preset => {
-            resolve(preset);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.addPreset();
+            })
+            .then((preset) => {
+              resolve(preset);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.removePreset = (preset: string): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.removePreset(preset);
-          }).then(setFlag => {
-            resolve(setFlag);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.removePreset(preset);
+            })
+            .then((setFlag) => {
+              resolve(setFlag);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getPresetTransitionEasing = (): Promise<string> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getPresetTransitionEasing();
-          }).then(easing => {
-            resolve(easing);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getPresetTransitionEasing();
+            })
+            .then((easing) => {
+              resolve(easing);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
-      Scene._liveScene.setPresetTransitionEasing = (presetTransitionEasing: string): Promise<boolean> => {
+      Scene._liveScene.setPresetTransitionEasing = (
+        presetTransitionEasing: string
+      ): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.setPresetTransitionEasing(presetTransitionEasing);
-          }).then(setFlag => {
-            resolve(setFlag);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.setPresetTransitionEasing(presetTransitionEasing);
+            })
+            .then((setFlag) => {
+              resolve(setFlag);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
       Scene._liveScene.getPresetTransitionTime = (): Promise<number> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.getPresetTransitionTime();
-          }).then(time => {
-            resolve(time);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.getPresetTransitionTime();
+            })
+            .then((time) => {
+              resolve(time);
+            })
+            .catch((err) => reject(err));
+        });
+      };
 
-      Scene._liveScene.setPresetTransitionTime = (presetTransitionTime: number): Promise<boolean> => {
+      Scene._liveScene.setPresetTransitionTime = (
+        presetTransitionTime: number
+      ): Promise<boolean> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
-          .then(activeScene => {
-            return activeScene.setPresetTransitionTime(presetTransitionTime);
-          }).then(setFlag => {
-            resolve(setFlag);
-          }).catch(err => reject(err))
-        })
-      }
+            .then((activeScene) => {
+              return activeScene.setPresetTransitionTime(presetTransitionTime);
+            })
+            .then((setFlag) => {
+              resolve(setFlag);
+            })
+            .catch((err) => reject(err));
+        });
+      };
     }
     return Scene._liveScene;
   }
@@ -1191,20 +1277,23 @@ export class Scene {
   addAsSource(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
-        checkSplitmode(value).then((scenePrefix) => {
-          const sceneToAdd = new JXON();
-          sceneToAdd.tag = 'item';
-          sceneToAdd['item'] = this._uid;
-          sceneToAdd['name'] = this._name;
-          sceneToAdd['type'] = (this._uid === '0') ? ItemTypes.VIEW : ItemTypes.SCENE; // type LIVE
-          sceneToAdd['selfclosing'] = true;
-          const sceneXML = XML.parseJSON(sceneToAdd);
-          return addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
-        }).then(result => {
-          resolve(result);
-        }).catch(err => {
-          reject(err);
-        });        
+        checkSplitmode(value)
+          .then((scenePrefix) => {
+            const sceneToAdd = new JXON();
+            sceneToAdd.tag = 'item';
+            sceneToAdd['item'] = this._uid;
+            sceneToAdd['name'] = this._name;
+            sceneToAdd['type'] = this._uid === '0' ? ItemTypes.VIEW : ItemTypes.SCENE; // type LIVE
+            sceneToAdd['selfclosing'] = true;
+            const sceneXML = XML.parseJSON(sceneToAdd);
+            return addToSceneHandler(scenePrefix + 'additem', sceneXML.toString());
+          })
+          .then((result) => {
+            resolve(result);
+          })
+          .catch((err) => {
+            reject(err);
+          });
       } else {
         reject(Error('Not supported in this XBC version'));
       }
@@ -1232,42 +1321,46 @@ export class Scene {
    */
   getSources(): Promise<Source[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
-        var promiseArray: Promise<Source>[] = [];
-        let uniqueObj = {};
-        let uniqueSrc = [];
+      iApp
+        .getAsItemList('sceneconfig:' + this._refID)
+        .then((jsonArr) => {
+          var promiseArray: Promise<Source>[] = [];
+          const uniqueObj = {};
+          const uniqueSrc = [];
 
-        // type checking to return correct Source subtype
-        let typePromise = (index: number): Promise<Source> => new Promise(typeResolve => {
-          let source = jsonArr[index];
-          let srcType = SourceTypeResolve(source);
-          typeResolve(srcType);
-        });
+          // type checking to return correct Source subtype
+          const typePromise = (index: number): Promise<Source> =>
+            new Promise((typeResolve) => {
+              const source = jsonArr[index];
+              const srcType = SourceTypeResolve(source);
+              typeResolve(srcType);
+            });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneId'] = this._id;
-            promiseArray.push(typePromise(i));
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneId'] = this._id;
+              promiseArray.push(typePromise(i));
+            }
           }
-        }
-        Promise.all(promiseArray).then(results => {
-          for(var h = 0; h< results.length; h++) {
-            for(var key in results[h]){
-              if(key === '_srcId'){
-                uniqueObj[results[h][key]] = results[h]
+          Promise.all(promiseArray).then((results) => {
+            for (var h = 0; h < results.length; h++) {
+              for (var key in results[h]) {
+                if (key === '_srcId') {
+                  uniqueObj[results[h][key]] = results[h];
+                }
               }
             }
-          }
-          for(var j in uniqueObj) {
-            if(uniqueObj.hasOwnProperty(j)) {
-              uniqueSrc.push(uniqueObj[j])
+            for (var j in uniqueObj) {
+              if (Object.hasOwn(uniqueObj, j)) {
+                uniqueSrc.push(uniqueObj[j]);
+              }
             }
-          }
-          resolve(uniqueSrc);
+            resolve(uniqueSrc);
+          });
+        })
+        .catch((err) => {
+          reject(err);
         });
-      }).catch(err => {
-        reject(err)
-      });
     });
   }
 
@@ -1288,22 +1381,23 @@ export class Scene {
    * ** For deprecation, please use getSceneIndex instead.
    */
   getSceneNumber(): Promise<number> {
-    return new Promise(resolve => {
-      let curUid = this._uid;
+    return new Promise((resolve) => {
+      const curUid = this._uid;
       if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
         if (typeof this._id === 'number') {
-          resolve(Number(this._id) + 1)
+          resolve(Number(this._id) + 1);
         } else {
-          resolve(Number(this._id))
+          resolve(Number(this._id));
         }
       } else {
-        Scene._initializeScenePoolAsync().then(() => {
-          return Scene.getBySceneUid(curUid)
-        }).then(curScene => {
-          resolve(Number(curScene._id) + 1)
-        })
+        Scene._initializeScenePoolAsync()
+          .then(() => {
+            return Scene.getBySceneUid(curUid);
+          })
+          .then((curScene) => {
+            resolve(Number(curScene._id) + 1);
+          });
       }
-
     });
   }
 
@@ -1322,20 +1416,22 @@ export class Scene {
    * ```
    */
   getSceneIndex(): Promise<number> {
-    return new Promise(resolve => {
-      let curUid = this._uid;
+    return new Promise((resolve) => {
+      const curUid = this._uid;
       if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
         if (typeof this._id !== 'number') {
-          resolve(Number(this._id))
+          resolve(Number(this._id));
         } else {
-          resolve(this._id)
+          resolve(this._id);
         }
       } else {
-        Scene._initializeScenePoolAsync().then(() => {
-          return Scene.getBySceneUid(curUid)
-        }).then(curScene => {
-          resolve(Number(curScene._id))
-        })
+        Scene._initializeScenePoolAsync()
+          .then(() => {
+            return Scene.getBySceneUid(curUid);
+          })
+          .then((curScene) => {
+            resolve(Number(curScene._id));
+          });
       }
     });
   }
@@ -1379,8 +1475,8 @@ export class Scene {
    * ```
    */
   getName(): Promise<string> {
-    return new Promise(resolve => {
-      iApp.get('scenename:' + this._refID).then(val => {
+    return new Promise((resolve) => {
+      iApp.get('scenename:' + this._refID).then((val) => {
         resolve(val);
       });
     });
@@ -1401,7 +1497,7 @@ export class Scene {
       if (!Environment.isSourceProps()) {
         reject(Error('Scene names are readonly for source plugins and extensions.'));
       } else {
-        iApp.set('scenename:' + this._refID, name).then(value => {
+        iApp.set('scenename:' + this._refID, name).then((value) => {
           resolve(value);
         });
       }
@@ -1422,8 +1518,8 @@ export class Scene {
    * ```
    */
   getTransitionList(): Promise<string> {
-    return new Promise(resolve => {
-      iApp.get('scenetransitionlist:' + this._refID).then(val => {
+    return new Promise((resolve) => {
+      iApp.get('scenetransitionlist:' + this._refID).then((val) => {
         resolve(val);
       });
     });
@@ -1431,7 +1527,7 @@ export class Scene {
 
   /**
    * param: (list: string)
-   * Set the transition source scene list.   
+   * Set the transition source scene list.
    * #### Usage
    *
    * ```javascript
@@ -1439,16 +1535,18 @@ export class Scene {
    * ```
    */
   setTransitionList(list: any): Promise<boolean> {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitionlist:' + this._refID, list)
-        .then(value => {
-          resolve(value);
-        }).catch(err => {
-          reject(Error('Invalid parameter. Only Source Transition List String allowed.'))
-        });
+        iApp
+          .set('scenetransitionlist:' + this._refID, list)
+          .then((value) => {
+            resolve(value);
+          })
+          .catch((err) => {
+            reject(Error('Invalid parameter. Only Source Transition List String allowed.'));
+          });
       }
     });
   }
@@ -1471,39 +1569,44 @@ export class Scene {
    * });
    * ```
    */
-  getTransitionOverride(sourceScene : any = ''): Promise<Transition> {
-    return new Promise(resolve => {
-      iApp.get('scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
-        if (val === '') { // NONE
-          resolve(Transition.NONE);
-        } else {
-          let currTransition = Transition[val.toUpperCase()];
-          if (typeof currTransition !== 'undefined') {
-            resolve(currTransition);
+  getTransitionOverride(sourceScene: any = ''): Promise<Transition> {
+    return new Promise((resolve) => {
+      iApp
+        .get('scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : ''))
+        .then((val) => {
+          if (val === '') {
+            // NONE
+            resolve(Transition.NONE);
           } else {
-            Transition.getSceneTransitions().then(transitions => {
-              let inTransition = false;
-              let transitionObj;
-              let i;
+            const currTransition = Transition[val.toUpperCase()];
+            if (typeof currTransition !== 'undefined') {
+              resolve(currTransition);
+            } else {
+              Transition.getSceneTransitions()
+                .then((transitions) => {
+                  let inTransition = false;
+                  let transitionObj;
+                  let i;
 
-              for (i = 0; i < transitions.length; i++) {
-                transitionObj = transitions[i];
-                if (transitionObj.toString() === val) {
-                  inTransition = true;
-                  break;
-                }
-              }
-              if (inTransition) {
-                resolve(transitionObj);
-              } else {
-                resolve(new Transition(val));
-              }
-            }).catch(err => {
-              resolve(new Transition(val));
-            });
+                  for (i = 0; i < transitions.length; i++) {
+                    transitionObj = transitions[i];
+                    if (transitionObj.toString() === val) {
+                      inTransition = true;
+                      break;
+                    }
+                  }
+                  if (inTransition) {
+                    resolve(transitionObj);
+                  } else {
+                    resolve(new Transition(val));
+                  }
+                })
+                .catch((err) => {
+                  resolve(new Transition(val));
+                });
+            }
           }
-        }
-      });
+        });
     });
   }
 
@@ -1525,12 +1628,19 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), value instanceof Transition ? value.toString() : value)
-        .then(value => {
-          resolve(value);
-        }).catch(err => {
-          reject(Error('Invalid parameter. Only Transition objects or transition strings are allowed.'))
-        });
+        iApp
+          .set(
+            'scenetransitionid:' + this._refID + (sourceScene ? `:${sourceScene}` : ''),
+            value instanceof Transition ? value.toString() : value
+          )
+          .then((value) => {
+            resolve(value);
+          })
+          .catch((err) => {
+            reject(
+              Error('Invalid parameter. Only Transition objects or transition strings are allowed.')
+            );
+          });
       }
     });
   }
@@ -1554,10 +1664,12 @@ export class Scene {
    * ```
    */
   getTransitionTime(sourceScene: any = ''): Promise<number> {
-    return new Promise(resolve => {
-      iApp.get('scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
-        resolve(Number(val));
-      });
+    return new Promise((resolve) => {
+      iApp
+        .get('scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : ''))
+        .then((val) => {
+          resolve(Number(val));
+        });
     });
   }
 
@@ -1579,9 +1691,14 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), String(time)).then(value => {
-          resolve(value);
-        });
+        iApp
+          .set(
+            'scenetransitiontime:' + this._refID + (sourceScene ? `:${sourceScene}` : ''),
+            String(time)
+          )
+          .then((value) => {
+            resolve(value);
+          });
       }
     });
   }
@@ -1605,10 +1722,12 @@ export class Scene {
    * ```
    */
   getTransitionVolume(sourceScene: any = ''): Promise<number> {
-    return new Promise(resolve => {
-      iApp.get('scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : '')).then(val => {
-        resolve(Number(val));
-      });
+    return new Promise((resolve) => {
+      iApp
+        .get('scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : ''))
+        .then((val) => {
+          resolve(Number(val));
+        });
     });
   }
 
@@ -1630,12 +1749,17 @@ export class Scene {
       if (Environment.isSourcePlugin()) {
         reject(Error('Scene transition overrides are readonly for source plugins.'));
       } else {
-        iApp.set('scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : ''), String(volume)).then(value => {
-          resolve(value);
-        });
+        iApp
+          .set(
+            'scenetransitionvolume:' + this._refID + (sourceScene ? `:${sourceScene}` : ''),
+            String(volume)
+          )
+          .then((value) => {
+            resolve(value);
+          });
       }
     });
-  }  
+  }
 
   /**
    * return: Promise<Item[]>
@@ -1653,29 +1777,33 @@ export class Scene {
    */
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
-        var promiseArray: Promise<Item>[] = [];
+      iApp
+        .getAsItemList('sceneconfig:' + this._refID)
+        .then((jsonArr) => {
+          var promiseArray: Promise<Item>[] = [];
 
-        // type checking to return correct Source subtype
-        let typePromise = (index: number): Promise<Item> => new Promise(typeResolve => {
-          let item = jsonArr[index];
-          let itemType = ItemTypeResolve(item);
-          typeResolve(itemType);
-        });
+          // type checking to return correct Source subtype
+          const typePromise = (index: number): Promise<Item> =>
+            new Promise((typeResolve) => {
+              const item = jsonArr[index];
+              const itemType = ItemTypeResolve(item);
+              typeResolve(itemType);
+            });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneId'] = this._id;
-            promiseArray.push(typePromise(i));
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneId'] = this._id;
+              promiseArray.push(typePromise(i));
+            }
           }
-        }
 
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
+          Promise.all(promiseArray).then((results) => {
+            resolve(results);
+          });
+        })
+        .catch((err) => {
+          reject(err);
         });
-      }).catch(err => {
-        reject(err)
-      });
     });
   }
 
@@ -1695,29 +1823,33 @@ export class Scene {
    */
   getTopLevelItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
-      iApp.getAsList('sceneconfig:' + this._refID).then(jsonArr => {
-        var promiseArray: Promise<Item>[] = [];
+      iApp
+        .getAsList('sceneconfig:' + this._refID)
+        .then((jsonArr) => {
+          var promiseArray: Promise<Item>[] = [];
 
-        // type checking to return correct Source subtype
-        let typePromise = (index: number): Promise<Item> => new Promise(typeResolve => {
-          let item = jsonArr[index];
-          let itemType = ItemTypeResolve(item);
-          typeResolve(itemType);
-        });
+          // type checking to return correct Source subtype
+          const typePromise = (index: number): Promise<Item> =>
+            new Promise((typeResolve) => {
+              const item = jsonArr[index];
+              const itemType = ItemTypeResolve(item);
+              typeResolve(itemType);
+            });
 
-        if (Array.isArray(jsonArr)) {
-          for (var i = 0; i < jsonArr.length; i++) {
-            jsonArr[i]['sceneId'] = this._id;
-            promiseArray.push(typePromise(i));
+          if (Array.isArray(jsonArr)) {
+            for (var i = 0; i < jsonArr.length; i++) {
+              jsonArr[i]['sceneId'] = this._id;
+              promiseArray.push(typePromise(i));
+            }
           }
-        }
 
-        Promise.all(promiseArray).then(results => {
-          resolve(results);
+          Promise.all(promiseArray).then((results) => {
+            resolve(results);
+          });
+        })
+        .catch((err) => {
+          reject(err);
         });
-      }).catch(err => {
-        reject(err)
-      });
     });
   }
 
@@ -1737,8 +1869,8 @@ export class Scene {
    * ```
    */
   isEmpty(): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.get('sceneisempty:' + this._refID).then(val => {
+    return new Promise((resolve) => {
+      iApp.get('sceneisempty:' + this._refID).then((val) => {
         resolve(val === '1');
       });
     });
@@ -1760,72 +1892,86 @@ export class Scene {
       } else {
         items.reverse();
         let ids = [];
-        Scene.getActiveScene().then(scene => {
-          if (items.every(el => { return (el instanceof Source || el instanceof Item) })) {
-            return new Promise(resolve => {
-              let promises = [];
-              for (let i in items) {
-                promises.push((_i => {
-                  return new Promise(resolve => {
-                    items[_i].getId().then(id => {
-                      ids[_i] = id;
-                      resolve(this);
-                    });
-                  });
-                })(i));
-              }
-
-              Promise.all(promises).then(() => {
-                return scene.getSceneNumber();
-              }).then(id => {
-                resolve(id);
-              });
-            });
-          } else {
-            ids = items;
-            return scene.getSceneNumber();
-          }
-        }).then(id => {
-          if ((Number(id) - 1) === this._id &&
-            (Environment.isSourceProps() || (Environment.isExtension)) ) {
-            exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
-            resolve(this);
-          } else {
-            let sceneName: string;
-            this.getName().then(name => {
-              sceneName = name;
-              return iApp.getAsList('sceneconfig:' + this._refID);
-            }).then(jsonArr => {
-              let newOrder = new JXON();
-              newOrder.children = [];
-              newOrder['tag'] = 'placement';
-              newOrder['name'] = sceneName;
-              if (Array.isArray(jsonArr)) {
-                let attrs = ['name', 'cname', 'item'];
-                for (let i = 0; i < jsonArr.length; i++) {
-                  for (let a = 0; a < attrs.length; a++) {
-                    //This formatting is for json
-                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/\\/g, '\\\\');
-                    jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]]
-                      .replace(/"/g, '&quot;');
-                  }
-                  newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+        Scene.getActiveScene()
+          .then((scene) => {
+            if (
+              items.every((el) => {
+                return el instanceof Source || el instanceof Item;
+              })
+            ) {
+              return new Promise((resolve) => {
+                const promises = [];
+                for (const i in items) {
+                  promises.push(
+                    ((_i) => {
+                      return new Promise((resolve) => {
+                        items[_i].getId().then((id) => {
+                          ids[_i] = id;
+                          resolve(this);
+                        });
+                      });
+                    })(i)
+                  );
                 }
 
-                iApp.set(
-                  'sceneconfig:' + this._refID,
-                  //Revert back the formatting from json when transforming to xml
-                  XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
-                ).then(() => {
-                  resolve(this);
+                Promise.all(promises)
+                  .then(() => {
+                    return scene.getSceneNumber();
+                  })
+                  .then((id) => {
+                    resolve(id);
+                  });
+              });
+            } else {
+              ids = items;
+              return scene.getSceneNumber();
+            }
+          })
+          .then((id) => {
+            if (
+              Number(id) - 1 === this._id &&
+              (Environment.isSourceProps() || Environment.isExtension)
+            ) {
+              exec('SourcesListOrderSave', String(ViewTypes.MAIN), ids.join(','));
+              resolve(this);
+            } else {
+              let sceneName: string;
+              this.getName()
+                .then((name) => {
+                  sceneName = name;
+                  return iApp.getAsList('sceneconfig:' + this._refID);
+                })
+                .then((jsonArr) => {
+                  const newOrder = new JXON();
+                  newOrder.children = [];
+                  newOrder['tag'] = 'placement';
+                  newOrder['name'] = sceneName;
+                  if (Array.isArray(jsonArr)) {
+                    const attrs = ['name', 'cname', 'item'];
+                    for (let i = 0; i < jsonArr.length; i++) {
+                      for (let a = 0; a < attrs.length; a++) {
+                        //This formatting is for json
+                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]].replace(/\\/g, '\\\\');
+                        jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]].replace(/"/g, '&quot;');
+                      }
+                      newOrder.children[ids.indexOf(jsonArr[i]['id'])] = jsonArr[i];
+                    }
+
+                    iApp
+                      .set(
+                        'sceneconfig:' + this._refID,
+                        //Revert back the formatting from json when transforming to xml
+                        XML.parseJSON(newOrder).toString().replace(/\\\\/g, '\\')
+                      )
+                      .then(() => {
+                        resolve(this);
+                      });
+                  } else {
+                    reject(Error('Scene does not have any source'));
+                  }
                 });
-              } else {
-                reject(Error('Scene does not have any source'));
-              }
-            });
-          }
-        });
+            }
+          });
       }
     });
   }
@@ -1851,10 +1997,10 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        let presetArray = ['{00000000-0000-0000-0000-000000000000}'];
-        iApp.get('scenepresetlist:' + this._uid).then(presetlist => {
+        const presetArray = ['{00000000-0000-0000-0000-000000000000}'];
+        iApp.get('scenepresetlist:' + this._uid).then((presetlist) => {
           if (presetlist !== '') {
-            presetArray.push(...(presetlist.split(',')));
+            presetArray.push(...presetlist.split(','));
           }
           resolve(presetArray);
         });
@@ -1883,7 +2029,7 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        iApp.get('scenepreset:' + this._uid).then(value => {
+        iApp.get('scenepreset:' + this._uid).then((value) => {
           resolve(value);
         });
       }
@@ -1919,7 +2065,7 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        iApp.set('scenepreset:' + this._uid, preset).then(value => {
+        iApp.set('scenepreset:' + this._uid, preset).then((value) => {
           if (value) {
             resolve(value);
           } else {
@@ -1927,7 +2073,7 @@ export class Scene {
           }
         });
       }
-    })
+    });
   }
 
   /**
@@ -1951,7 +2097,7 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        iApp.get('scenenewpreset:' + this._uid).then(value => {
+        iApp.get('scenenewpreset:' + this._uid).then((value) => {
           resolve(value);
         });
       }
@@ -1985,7 +2131,7 @@ export class Scene {
       } else if (preset === '{00000000-0000-0000-0000-000000000000}') {
         reject(Error('Cannot delete the default preset'));
       } else {
-        iApp.set('sceneremovepreset:' + this._uid, preset).then(value => {
+        iApp.set('sceneremovepreset:' + this._uid, preset).then((value) => {
           if (value) {
             resolve(value);
           } else {
@@ -1993,7 +2139,7 @@ export class Scene {
           }
         });
       }
-    })
+    });
   }
 
   /**
@@ -2017,7 +2163,7 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        iApp.get('scenepresettransitionfunc:' + this._uid).then(value => {
+        iApp.get('scenepresettransitionfunc:' + this._uid).then((value) => {
           if (value === '') {
             value = 'none';
           }
@@ -2053,11 +2199,11 @@ export class Scene {
         reject(Error('Easing function not supported for preset transitions'));
       } else {
         presetTransitionEasing = presetTransitionEasing === 'none' ? '' : presetTransitionEasing;
-        iApp.set('scenepresettransitionfunc:' + this._uid, presetTransitionEasing).then(value => {
+        iApp.set('scenepresettransitionfunc:' + this._uid, presetTransitionEasing).then((value) => {
           resolve(value);
         });
       }
-    })
+    });
   }
 
   /**
@@ -2081,7 +2227,7 @@ export class Scene {
       } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
         reject(Error('Not supported in this XBC version'));
       } else {
-        iApp.get('scenepresettransitiontime:' + this._uid).then(value => {
+        iApp.get('scenepresettransitiontime:' + this._uid).then((value) => {
           resolve(Number(value));
         });
       }
@@ -2112,11 +2258,12 @@ export class Scene {
       } else if (typeof presetTransitionTime !== 'number') {
         reject(Error('Parameter must be a number'));
       } else {
-        iApp.set('scenepresettransitiontime:' + this._uid, String(presetTransitionTime)).then(value => {
-          resolve(value);
-        });
+        iApp
+          .set('scenepresettransitiontime:' + this._uid, String(presetTransitionTime))
+          .then((value) => {
+            resolve(value);
+          });
       }
-    })
+    });
   }
-
 }

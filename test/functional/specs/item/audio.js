@@ -1,16 +1,14 @@
 /* globals Rose, require */
 
-(function() {
-  'use strict';
-
+(() => {
   var XJS = require('xjs');
   var System = XJS.System;
   var audioSources = [];
   var audioSource;
   var audioIndex;
 
-  XJS.Scene.getActiveScene().then(function(scene) {
-    scene.getSources().then(function(sources) {
+  XJS.Scene.getActiveScene().then((scene) => {
+    scene.getSources().then((sources) => {
       for (var i in sources) {
         if (sources[i] instanceof XJS.AudioSource) {
           audioSources.push(sources[i]);
@@ -28,240 +26,233 @@
     buttons: [
       {
         name: 'toggleAudioSource',
-        onClick: function() {
+        onClick: () => {
           if (audioIndex < audioSources.length - 1) {
             audioSource = audioSources[audioIndex + 1];
-            audioIndex ++;
+            audioIndex++;
           } else {
             audioSource = audioSources[0];
             audioIndex = 0;
           }
-          audioSource.getName().then(function(audioName) {
+          audioSource.getName().then((audioName) => {
             console.trace(audioName);
             Rose.output(audioName);
           });
-        }
+        },
       },
 
       {
         name: 'getName',
-        onClick: function() {
-          audioSource.getName().then(function(audioName) {
+        onClick: () => {
+          audioSource.getName().then((audioName) => {
             console.trace(audioName);
             Rose.output(audioName);
           });
-        }
+        },
       },
 
       {
         name: 'isSilenceDetectionEnabled',
-        onClick: function() {
-          audioSource.isSilenceDetectionEnabled()
-            .then(function(silenceDetectionEnabled) {
-              console.trace(silenceDetectionEnabled);
-              Rose.output(silenceDetectionEnabled);
+        onClick: () => {
+          audioSource.isSilenceDetectionEnabled().then((silenceDetectionEnabled) => {
+            console.trace(silenceDetectionEnabled);
+            Rose.output(silenceDetectionEnabled);
           });
-        }
+        },
       },
 
       {
         name: 'setSilenceDetectionEnabled',
-        onClick: function() {
-          audioSource.isSilenceDetectionEnabled()
-            .then(function(silenceDetectionEnabled) {
-              return audioSource
-                .setSilenceDetectionEnabled(!silenceDetectionEnabled);
-          })
-          .then(function(result) {
-            return audioSource.isSilenceDetectionEnabled();
-          })
-          .then(function(silenceDetectionEnabled2) {
-            console.trace(silenceDetectionEnabled2);
-            Rose.output(silenceDetectionEnabled2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .isSilenceDetectionEnabled()
+            .then((silenceDetectionEnabled) =>
+              audioSource.setSilenceDetectionEnabled(!silenceDetectionEnabled)
+            )
+            .then((result) => audioSource.isSilenceDetectionEnabled())
+            .then((silenceDetectionEnabled2) => {
+              console.trace(silenceDetectionEnabled2);
+              Rose.output(silenceDetectionEnabled2);
+            });
+        },
       },
 
       {
         name: 'getSilenceThreshold',
-        onClick: function() {
-          audioSource.getSilenceThreshold().then(function(silenceThreshold) {
+        onClick: () => {
+          audioSource.getSilenceThreshold().then((silenceThreshold) => {
             console.trace(silenceThreshold);
             Rose.output(silenceThreshold);
           });
-        }
+        },
       },
 
       {
         name: 'setSilenceThreshold',
-        onClick: function() {
-          audioSource.getSilenceThreshold().then(function(silenceThreshold) {
-            var newSilenceThreshold;
-            if (silenceThreshold < 128) {
-              newSilenceThreshold = silenceThreshold + 1;
-            } else {
-             newSilenceThreshold = 0;
-            }
-            return audioSource.setSilenceThreshold(newSilenceThreshold);
-          })
-          .then(function(result) {
-            return audioSource.getSilenceThreshold();
-          })
-          .then(function(silenceThreshold2) {
-            console.trace(silenceThreshold2);
-            Rose.output(silenceThreshold2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .getSilenceThreshold()
+            .then((silenceThreshold) => {
+              var newSilenceThreshold;
+              if (silenceThreshold < 128) {
+                newSilenceThreshold = silenceThreshold + 1;
+              } else {
+                newSilenceThreshold = 0;
+              }
+              return audioSource.setSilenceThreshold(newSilenceThreshold);
+            })
+            .then((result) => audioSource.getSilenceThreshold())
+            .then((silenceThreshold2) => {
+              console.trace(silenceThreshold2);
+              Rose.output(silenceThreshold2);
+            });
+        },
       },
 
       {
         name: 'getSilencePeriod',
-        onClick: function() {
-          audioSource.getSilencePeriod().then(function(silencePeriod) {
+        onClick: () => {
+          audioSource.getSilencePeriod().then((silencePeriod) => {
             console.trace(silencePeriod);
             Rose.output(silencePeriod);
           });
-        }
+        },
       },
 
       {
         name: 'setSilencePeriod',
-        onClick: function() {
-          audioSource.getSilencePeriod().then(function(silencePeriod) {
-            var newSilencePeriod;
-            if (silencePeriod < 10000) {
-              newSilencePeriod = silencePeriod + 1;
-            } else {
-              newSilencePeriod = 0;
-            }
-            return audioSource.setSilencePeriod(newSilencePeriod);
-          })
-          .then(function(result) {
-            return audioSource.getSilencePeriod();
-          })
-          .then(function(silencePeriod2) {
-            console.trace(silencePeriod2);
-            Rose.output(silencePeriod2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .getSilencePeriod()
+            .then((silencePeriod) => {
+              var newSilencePeriod;
+              if (silencePeriod < 10000) {
+                newSilencePeriod = silencePeriod + 1;
+              } else {
+                newSilencePeriod = 0;
+              }
+              return audioSource.setSilencePeriod(newSilencePeriod);
+            })
+            .then((result) => audioSource.getSilencePeriod())
+            .then((silencePeriod2) => {
+              console.trace(silencePeriod2);
+              Rose.output(silencePeriod2);
+            });
+        },
       },
 
       //SourceAudio interface
       {
         name: 'getVolume',
-        onClick: function() {
-          audioSource.getVolume().then(function(volume) {
+        onClick: () => {
+          audioSource.getVolume().then((volume) => {
             console.trace(volume);
             Rose.output(volume);
           });
-        }
+        },
       },
 
       {
         name: 'setVolume',
-        onClick: function() {
-          audioSource.getVolume().then(function(volume) {
-            var newVolume;
-            if (volume < 100) {
-              newVolume = volume + 1;
-            } else {
-              newVolume = 0;
-            }
-            return audioSource.setVolume(newVolume);
-          })
-          .then(function(result) {
-            return audioSource.getVolume();
-          })
-          .then(function(volume2) {
-            console.trace(volume2);
-            Rose.output(volume2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .getVolume()
+            .then((volume) => {
+              var newVolume;
+              if (volume < 100) {
+                newVolume = volume + 1;
+              } else {
+                newVolume = 0;
+              }
+              return audioSource.setVolume(newVolume);
+            })
+            .then((result) => audioSource.getVolume())
+            .then((volume2) => {
+              console.trace(volume2);
+              Rose.output(volume2);
+            });
+        },
       },
 
       {
         name: 'isMute',
-        onClick: function() {
-          audioSource.isMute().then(function(isMute) {
+        onClick: () => {
+          audioSource.isMute().then((isMute) => {
             console.trace(isMute);
             Rose.output(isMute);
           });
-        }
+        },
       },
 
       {
         name: 'setMute',
-        onClick: function() {
-          audioSource.isMute().then(function(isMute) {
-            return audioSource.setMute(!isMute);
-          })
-          .then(function(result) {
-            return audioSource.isMute();
-          })
-          .then(function(isMute2) {
-            console.trace(isMute2);
-            Rose.output(isMute2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .isMute()
+            .then((isMute) => audioSource.setMute(!isMute))
+            .then((result) => audioSource.isMute())
+            .then((isMute2) => {
+              console.trace(isMute2);
+              Rose.output(isMute2);
+            });
+        },
       },
 
       {
         name: 'getAudioOffset',
-        onClick: function() {
-          audioSource.getAudioOffset().then(function(audioOffset) {
+        onClick: () => {
+          audioSource.getAudioOffset().then((audioOffset) => {
             console.trace(audioOffset);
             Rose.output(audioOffset);
           });
-        }
+        },
       },
 
       {
         name: 'setAudioOffset',
-        onClick: function() {
-          audioSource.getAudioOffset().then(function(audioOffset) {
-            var newAudioOffset;
-            if (audioOffset < 100000000) {
-              newAudioOffset = audioOffset + 100000;
-            } else {
-              newAudioOffset = 0;
-            }
-            return audioSource.setAudioOffset(newAudioOffset);
-          })
-          .then(function(result) {
-            return audioSource.getAudioOffset();
-          })
-          .then(function(audioOffset2) {
-            console.trace(audioOffset2);
-            Rose.output(audioOffset2);
-          });
-        }
+        onClick: () => {
+          audioSource
+            .getAudioOffset()
+            .then((audioOffset) => {
+              var newAudioOffset;
+              if (audioOffset < 100000000) {
+                newAudioOffset = audioOffset + 100000;
+              } else {
+                newAudioOffset = 0;
+              }
+              return audioSource.setAudioOffset(newAudioOffset);
+            })
+            .then((result) => audioSource.getAudioOffset())
+            .then((audioOffset2) => {
+              console.trace(audioOffset2);
+              Rose.output(audioOffset2);
+            });
+        },
       },
 
       {
         name: 'isStreamOnlyAudio',
-        onClick: function() {
-          audioSource.isStreamOnlyAudio().then(function(isStreamOnly) {
+        onClick: () => {
+          audioSource.isStreamOnlyAudio().then((isStreamOnly) => {
             console.trace(isStreamOnly);
             Rose.output(isStreamOnly);
           });
-        }
+        },
       },
 
       {
         name: 'setStreamOnlyAudio',
-        onClick: function() {
-          audioSource.isStreamOnlyAudio().then(function(isStreamOnly) {
-            return audioSource.setStreamOnlyAudio(!isStreamOnly);
-          })
-          .then(function(result) {
-            return audioSource.isStreamOnlyAudio();
-          })
-          .then(function(isStreamOnly2) {
-            console.trace(isStreamOnly2);
-            Rose.output(isStreamOnly2);
-          });
-        }
-      }
-    ]
+        onClick: () => {
+          audioSource
+            .isStreamOnlyAudio()
+            .then((isStreamOnly) => audioSource.setStreamOnlyAudio(!isStreamOnly))
+            .then((result) => audioSource.isStreamOnlyAudio())
+            .then((isStreamOnly2) => {
+              console.trace(isStreamOnly2);
+              Rose.output(isStreamOnly2);
+            });
+        },
+      },
+    ],
   });
 })();

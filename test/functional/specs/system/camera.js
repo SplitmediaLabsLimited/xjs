@@ -1,14 +1,12 @@
 /* globals Rose, require */
 
-(function() {
-  'use strict';
-
+(() => {
   var XJS = require('xjs');
   var System = XJS.System;
 
   var cameraDevice;
   var promise = System.getCameraDevices();
-  promise.then(function(devices) {
+  promise.then((devices) => {
     cameraDevice = devices[0];
     console.log(cameraDevice);
   });
@@ -18,30 +16,30 @@
     buttons: [
       {
         name: 'getId',
-        onClick: function() {
+        onClick: () => {
           var camID = cameraDevice.getId();
           console.trace(camID);
           Rose.output(camID);
-        }
+        },
       },
 
       {
         name: 'getName',
-        onClick: function() {
+        onClick: () => {
           var camName = cameraDevice.getName();
           console.trace(camName);
           Rose.output(camName);
-        }
+        },
       },
 
       {
         name: 'getViewport',
-        onClick: function() {
+        onClick: () => {
           var camXML = cameraDevice.toXML();
           console.trace(camXML);
           Rose.output(camXML);
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 })();

@@ -1,15 +1,15 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
-import {exec} from '../../internal/internal';
-import {Environment} from '../environment';
-import {Item} from '../items/item';
-import {SourceConfigurable, ISourceConfigurable} from './iconfig';
-import {IAudio, Audio} from '../source/iaudio';
-import {iSourceHtml, ISourceHtml} from '../source/ihtml'
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import { Item } from '../items/item';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceHtml, iSourceHtml } from '../source/ihtml';
+import { Source } from '../source/source';
+import { type ISourceConfigurable, SourceConfigurable } from './iconfig';
 
 /**
  * The HtmlSource class represents the sources of the html items that
@@ -41,138 +41,136 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * All methods marked as *Chainable* resolve with the original `HtmlSource`
  * instance.
  */
-export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
-  ISourceHtml {
-
+export class HtmlSource extends Source implements ISourceConfigurable, IAudio, ISourceHtml {
   //iSourceHtml
 
   /**
    * See: {@link #core/ISourceHtml#call call}
    */
-  call: () => Promise<HtmlSource>
+  call: () => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#getURL getURL}
    */
-  getURL: () => Promise<string>
+  getURL: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setURL setURL}
    */
-  setURL: () => Promise<HtmlSource>
+  setURL: () => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserTransparent isBrowserTransparent}
    */
-  isBrowserTransparent: () => Promise<boolean>
+  isBrowserTransparent: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowserTransparency enableBrowserTransparency}
    */
-  enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>
+  enableBrowserTransparency: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowser60FPS isBrowser60FPS}
    */
-  isBrowser60FPS: () => Promise<boolean>
+  isBrowser60FPS: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowser60FPS enableBrowser60FPS}
    */
-  enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>
+  enableBrowser60FPS: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#getBrowserCustomSize getBrowserCustomSize}
    */
-  getBrowserCustomSize: () => Promise<Rectangle>
+  getBrowserCustomSize: () => Promise<Rectangle>;
 
   /**
    * See: {@link #core/ISourceHtml#setBrowserCustomSize setBrowserCustomSize}
    */
-  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlSource>
+  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#getAllowRightClick getAllowRightClick}
    */
-  getAllowRightClick: () => Promise<boolean>
+  getAllowRightClick: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#setAllowRightClick setAllowRightClick}
    */
-  setAllowRightClick: (value: boolean) => Promise<HtmlSource>
+  setAllowRightClick: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#getBrowserJS getBrowserJS}
    */
-  getBrowserJS: () => Promise<string>
+  getBrowserJS: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setBrowserJS setBrowserJS}
    */
-  setBrowserJS: () => Promise<HtmlSource>
+  setBrowserJS: () => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserJSEnabled isBrowserJSEnabled}
    */
-  isBrowserJSEnabled: () => Promise<boolean>
+  isBrowserJSEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowserJS enableBrowserJS}
    */
-  enableBrowserJS: (value: boolean) => Promise<HtmlSource>
+  enableBrowserJS: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#getCustomCSS getCustomCSS}
    */
-  getCustomCSS: () => Promise<string>
+  getCustomCSS: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setCustomCSS setCustomCSS}
    */
-  setCustomCSS: (value: string) => Promise<HtmlSource>
+  setCustomCSS: (value: string) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isCustomCSSEnabled isCustomCSSEnabled}
    */
-  isCustomCSSEnabled: () => Promise<boolean>
+  isCustomCSSEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableCustomCSS enableCustomCSS}
    */
-  enableCustomCSS: (value: boolean) => Promise<HtmlSource>
+  enableCustomCSS: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserOptimized isBrowserOptimized}
    */
-  isBrowserOptimized: () => Promise<boolean>
-  
+  isBrowserOptimized: () => Promise<boolean>;
+
   /**
    * See: {@link #core/ISourceHtml#getBrowserLoadStatus getBrowserLoadStatus}
    */
-  getBrowserLoadStatus: () => Promise<string>
+  getBrowserLoadStatus: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#isReloadOnShowEnabled isReloadOnShowEnabled}
    */
-  isReloadOnShowEnabled: () => Promise<boolean>
+  isReloadOnShowEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableReloadOnShow enableReloadOnShow}
    */
-  enableReloadOnShow: (value: boolean) => Promise<HtmlSource>
+  enableReloadOnShow: (value: boolean) => Promise<HtmlSource>;
 
   /**
    * See: {@link #core/ISourceHtml#isReloadOnSceneEnterEnabled isReloadOnSceneEnterEnabled}
    */
-  isReloadOnSceneEnterEnabled: () => Promise<boolean>
+  isReloadOnSceneEnterEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableReloadOnSceneEnter enableReloadOnSceneEnter}
    */
-  enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlSource>
+  enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlSource>;
 
   /** See: {@link #core/ISourceHtml#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // SourceConfigurable
   /**
@@ -226,4 +224,4 @@ export class HtmlSource extends Source implements ISourceConfigurable, IAudio,
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, Audio])
+applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, Audio]);

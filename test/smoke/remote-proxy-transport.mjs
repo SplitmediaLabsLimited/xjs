@@ -51,11 +51,15 @@ assert.deepEqual(remoteRequest, {
   asyncId: 1,
   type: 'exec',
 });
-void xjs.Remote.receiveMessage(encodeURIComponent(JSON.stringify({
-  type: 'exec',
-  asyncId: remoteRequest.asyncId,
-  result: 'remote-result',
-})));
+void xjs.Remote.receiveMessage(
+  encodeURIComponent(
+    JSON.stringify({
+      type: 'exec',
+      asyncId: remoteRequest.asyncId,
+      result: 'remote-result',
+    })
+  )
+);
 assert.equal(await remoteExec, 'remote-result');
 
 let remoteCallbackValue;
@@ -69,22 +73,30 @@ assert.deepEqual(remoteCallbackRequest, {
   asyncId: 2,
   type: 'exec',
 });
-void xjs.Remote.receiveMessage(encodeURIComponent(JSON.stringify({
-  type: 'exec',
-  asyncId: remoteCallbackRequest.asyncId,
-  result: 'callback-result',
-})));
+void xjs.Remote.receiveMessage(
+  encodeURIComponent(
+    JSON.stringify({
+      type: 'exec',
+      asyncId: remoteCallbackRequest.asyncId,
+      result: 'callback-result',
+    })
+  )
+);
 await waitForMicrotasks();
 assert.equal(remoteCallbackValue, 'callback-result');
 
 xjs.Remote.remoteType = 'proxy';
 sentMessages.length = 0;
-void xjs.Remote.receiveMessage(encodeURIComponent(JSON.stringify({
-  type: 'exec',
-  asyncId: 7,
-  funcName: 'CallHost',
-  args: ['mode', 'on'],
-})));
+void xjs.Remote.receiveMessage(
+  encodeURIComponent(
+    JSON.stringify({
+      type: 'exec',
+      asyncId: 7,
+      funcName: 'CallHost',
+      args: ['mode', 'on'],
+    })
+  )
+);
 await waitForMicrotasks();
 assert.deepEqual(decodeMessage(sentMessages.at(-1)), {
   result: 'sync:mode:on',
@@ -92,12 +104,16 @@ assert.deepEqual(decodeMessage(sentMessages.at(-1)), {
   type: 'exec',
 });
 
-void xjs.Remote.receiveMessage(encodeURIComponent(JSON.stringify({
-  type: 'exec',
-  asyncId: 8,
-  funcName: 'AppGetPropertyAsync',
-  args: ['proxy-prop'],
-})));
+void xjs.Remote.receiveMessage(
+  encodeURIComponent(
+    JSON.stringify({
+      type: 'exec',
+      asyncId: 8,
+      funcName: 'AppGetPropertyAsync',
+      args: ['proxy-prop'],
+    })
+  )
+);
 await waitForMicrotasks();
 assert.deepEqual(decodeMessage(sentMessages.at(-1)), {
   result: 'proxy-prop:proxy-value',

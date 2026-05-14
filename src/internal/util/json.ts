@@ -1,4 +1,4 @@
-import {XML} from './xml';
+import { XML } from './xml';
 
 export class JSON {
   tag: string;
@@ -17,7 +17,7 @@ export class JSON {
       sxml = xml.toString();
     }
 
-    var openingRegex = /<([^\s>\/]+)/g;
+    var openingRegex = /<([^\s>/]+)/g;
     var selfCloseRegex = /(\/>)/g;
 
     var openResult = openingRegex.exec(sxml);
@@ -25,14 +25,13 @@ export class JSON {
 
     sxml = sxml.replace(/&/g, '&amp;');
 
-    var xmlDocument = (new DOMParser()).parseFromString(sxml,
-      'application/xml');
+    var xmlDocument = new DOMParser().parseFromString(sxml, 'application/xml');
 
     if (xmlDocument.getElementsByTagName('parsererror').length > 0) {
       throw new Error('XML parsing error. Invalid XML string');
     }
 
-    var processNode = function(node) {
+    var processNode = (node) => {
       var obj = new JSON();
       obj.tag = node.tagName;
 
@@ -43,19 +42,19 @@ export class JSON {
         // this is the last tag, and there are no more self-closing tags
       } else if (openResult === null && selfCloseRegex.lastIndex > 0) {
         // no more opening tags, so by default the self-closing belongs to this
-          obj.selfclosing = true;
-          selfCloseResult = selfCloseRegex.exec(sxml);
-      } else if (openResult !== null &&
-          selfCloseRegex.lastIndex > openingRegex.lastIndex) {
+        obj.selfclosing = true;
+        selfCloseResult = selfCloseRegex.exec(sxml);
+      } else if (openResult !== null && selfCloseRegex.lastIndex > openingRegex.lastIndex) {
         // the self-closing pattern happens after the next opening tag, so
         // obviously current tag is not self-closing
-      } else if (openResult !== null &&
-          selfCloseRegex.lastIndex < openingRegex.lastIndex && // self-closing pattern is here
-          selfCloseRegex.lastIndex === openingRegex.lastIndex -
-            openResult[0].length // make sure self-closing pattern belongs to
-            ) {                  // tag instead of some substring within
-          obj.selfclosing = true;
-          selfCloseResult = selfCloseRegex.exec(sxml);
+      } else if (
+        openResult !== null &&
+        selfCloseRegex.lastIndex < openingRegex.lastIndex && // self-closing pattern is here
+        selfCloseRegex.lastIndex === openingRegex.lastIndex - openResult[0].length // make sure self-closing pattern belongs to
+      ) {
+        // tag instead of some substring within
+        obj.selfclosing = true;
+        selfCloseResult = selfCloseRegex.exec(sxml);
       }
 
       for (var i = 0; i < node.attributes.length; i++) {
@@ -74,7 +73,7 @@ export class JSON {
       }
 
       // process text value
-      if ( obj.value === undefined && obj.children.length === 0) {
+      if (obj.value === undefined && obj.children.length === 0) {
         delete obj.children;
         obj.value = node.textContent;
       }

@@ -62,10 +62,10 @@ await assert.rejects(
 
 assert.equal(persistedProperties.get(locationHref), JSON.stringify(savedConfig));
 assert.deepEqual(
-  hostCalls.filter(call => call[0] === 'SetPresProperty'),
+  hostCalls.filter((call) => call[0] === 'SetPresProperty'),
   [['SetPresProperty', locationHref, JSON.stringify(savedConfig)]]
 );
 assert.deepEqual(
-  hostCalls.filter(call => call[0] === 'GetPresProperty'),
+  hostCalls.filter((call) => call[0] === 'GetPresProperty'),
   [['GetPresProperty', locationHref]]
 );

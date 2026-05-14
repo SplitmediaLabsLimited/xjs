@@ -2,8 +2,8 @@
  * Check if splitmode is active
  */
 
-import {App as iApp} from '../app';
-import {Scene} from '../../core/scene';
+import { Scene } from '../../core/scene';
+import { App as iApp } from '../app';
 
 /**
  * return: value<number>
@@ -11,11 +11,11 @@ import {Scene} from '../../core/scene';
  * Returns splitmode value
  */
 export function splitMode(): Promise<number> {
-  return new Promise(resolve => {
-    iApp.getGlobalProperty('splitmode').then(mode => {
-      resolve(mode === '1' ? 1 : 0)
-    })
-  })
+  return new Promise((resolve) => {
+    iApp.getGlobalProperty('splitmode').then((mode) => {
+      resolve(mode === '1' ? 1 : 0);
+    });
+  });
 }
 
 /**
@@ -24,25 +24,25 @@ export function splitMode(): Promise<number> {
 export function checkSplitmode(value?: number | Scene): any {
   let scenePrefix = '';
   let scenePromise;
-  return new Promise((resolve,reject) => {
-    scenePromise = new Promise(sceneResolve => {
-      splitMode().then(res => {
+  return new Promise((resolve, reject) => {
+    scenePromise = new Promise((sceneResolve) => {
+      splitMode().then((res) => {
         if (res === 1 && !value) {
-          Scene.getActiveScene().then(val => {
-            value = val
-            sceneResolve(value)
-          })
+          Scene.getActiveScene().then((val) => {
+            value = val;
+            sceneResolve(value);
+          });
         } else {
-          sceneResolve(value)
+          sceneResolve(value);
         }
-      })
-    })
+      });
+    });
 
-    scenePromise.then(val => {
+    scenePromise.then((val) => {
       if (typeof val === 'number' || val instanceof Scene) {
-        Scene.getSceneCount().then(sceneCount => {
+        Scene.getSceneCount().then((sceneCount) => {
           if (typeof val === 'number') {
-            let int = Math.floor(val);
+            const int = Math.floor(val);
             if (int > sceneCount || int === 0) {
               reject(Error('Scene does not exist.'));
             } else {
@@ -50,7 +50,7 @@ export function checkSplitmode(value?: number | Scene): any {
               resolve(scenePrefix);
             }
           } else {
-            val.getSceneNumber().then(int => {
+            val.getSceneNumber().then((int) => {
               if (int > sceneCount || int === 0) {
                 reject(Error('Scene does not exist.'));
               } else {
@@ -61,10 +61,10 @@ export function checkSplitmode(value?: number | Scene): any {
           }
         });
       } else if (typeof val === 'undefined') {
-        resolve('')
+        resolve('');
       } else {
-        reject(Error('Optional parameter \'scene\' only accepts integers or an XJS.Scene object'))
+        reject(Error("Optional parameter 'scene' only accepts integers or an XJS.Scene object"));
       }
-    })
-  })
+    });
+  });
 }

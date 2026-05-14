@@ -171,7 +171,13 @@ assert.equal(sources[10] instanceof xjs.VideoPlaylistSource, true);
 assert.equal(sources[11] instanceof xjs.Source, true);
 
 await assert.rejects(() => xjs.Scene.getById(100), /Invalid parameter/);
-await assert.rejects(() => xjs.Scene.getBySceneUid('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}'), /No matching Scene/);
+await assert.rejects(
+  () => xjs.Scene.getBySceneUid('{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}'),
+  /No matching Scene/
+);
 await assert.rejects(() => xjs.Scene.getBySceneUid('not-a-guid'), /Not a valid Unique ID/);
 
-assert.equal(hostCalls.some((call) => call[1] === 'sceneconfig:{11111111-1111-1111-1111-111111111111}'), true);
+assert.equal(
+  hostCalls.some((call) => call[1] === 'sceneconfig:{11111111-1111-1111-1111-111111111111}'),
+  true
+);

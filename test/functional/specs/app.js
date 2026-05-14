@@ -1,8 +1,6 @@
 /* globals Rose, require */
 
-(function() {
-  'use strict';
-
+(() => {
   var XJS = require('xjs');
   var App = new XJS.App();
 
@@ -21,10 +19,10 @@
     XJS.App.TRANSITION_MOVE_RIGHT,
     XJS.App.TRANSITION_MOVE_TOP,
     XJS.App.TRANSITION_MOVE_TOP_BOTTOM,
-    XJS.App.TRANSITION_WAVE
+    XJS.App.TRANSITION_WAVE,
   ];
 
-  var randomWord = function(length) {
+  var randomWord = (length) => {
     var rand;
     var str = '';
 
@@ -41,186 +39,185 @@
     buttons: [
       {
         name: 'getFrametime',
-        onClick: function() {
-          App.getFrametime().then(function(val) {
+        onClick: () => {
+          App.getFrametime().then((val) => {
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'getResolution',
-        onClick: function() {
-          App.getResolution().then(function(val) {
+        onClick: () => {
+          App.getResolution().then((val) => {
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'getViewport',
-        onClick: function() {
-          App.getViewport().then(function(val) {
+        onClick: () => {
+          App.getViewport().then((val) => {
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'getVersion',
-        onClick: function() {
-          App.getVersion().then(function(val) {
+        onClick: () => {
+          App.getVersion().then((val) => {
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'getFramesRendered',
-        onClick: function() {
-          App.getFramesRendered().then(function(val) {
+        onClick: () => {
+          App.getFramesRendered().then((val) => {
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'getAudioGain',
-        onClick: function() {
-          App.getAudioGain().then(function(val) {
+        onClick: () => {
+          App.getAudioGain().then((val) => {
             audioGain = val;
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'setAudioGain',
-        onClick: function() {
+        onClick: () => {
           if (audioGain) {
-            audioGain.gain = Number(audioGain.gain) < 128 ?
-              Number(audioGain.gain) + 1 : 0;
+            audioGain.gain = Number(audioGain.gain) < 128 ? Number(audioGain.gain) + 1 : 0;
             App.setAudioGain(audioGain);
           }
           Rose.output('');
-        }
+        },
       },
 
       {
         name: 'newDialog',
-        onClick: function() {
+        onClick: () => {
           try {
             App.newDialog(
               'http://xsplit.com',
               500,
               500,
-              XJS.App.BORDER_ENABLE
-              | XJS.App.BORDER_ENABLE_SIZING
-              | XJS.App.BORDER_ENABLE_CAPTION
-              | XJS.App.BORDER_ENABLE_MINIMIZE
-              | XJS.App.BORDER_ENABLE_MAXIMIZE
+              XJS.App.BORDER_ENABLE |
+                XJS.App.BORDER_ENABLE_SIZING |
+                XJS.App.BORDER_ENABLE_CAPTION |
+                XJS.App.BORDER_ENABLE_MINIMIZE |
+                XJS.App.BORDER_ENABLE_MAXIMIZE
             );
             Rose.output('');
-          } catch(e) {
+          } catch (e) {
             Rose.output(e.message);
             console.trace(e.message);
           }
-        }
+        },
       },
 
       {
         name: 'newAutoDialog',
-        onClick: function() {
+        onClick: () => {
           try {
             App.newAutoDialog('http://xsplit.com');
             Rose.output('');
-          } catch(e) {
+          } catch (e) {
             Rose.output(e.message);
             console.trace(e.message);
           }
-        }
+        },
       },
 
       {
         name: 'closeDialog',
-        onClick: function() {
+        onClick: () => {
           try {
             App.closeDialog();
             Rose.output('');
-          } catch(e) {
+          } catch (e) {
             Rose.output(e.message);
             console.trace(e.message);
           }
-        }
+        },
       },
 
       {
         name: 'getTransition',
-        onClick: function() {
-          App.getTransition().then(function(val) {
+        onClick: () => {
+          App.getTransition().then((val) => {
             transition = transitions.indexOf(val);
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'setTransition',
-        onClick: function() {
+        onClick: () => {
           transition = transition >= transitions.length - 1 ? 0 : transition + 1;
           App.setTransition(transitions[transition]);
           console.trace(transitions[transition]);
           Rose.output(transitions[transition]);
-        }
+        },
       },
 
       {
         name: 'getTransitionTime',
-        onClick: function() {
-          App.getTransitionTime().then(function(val) {
+        onClick: () => {
+          App.getTransitionTime().then((val) => {
             transitionTime = val;
             console.trace(val);
             Rose.output(val);
           });
-        }
+        },
       },
 
       {
         name: 'setTransitionTime',
-        onClick: function() {
+        onClick: () => {
           transitionTime = transitionTime >= 2000 ? 100 : transitionTime + 100;
           App.setTransitionTime(transitionTime);
           console.trace(transitionTime);
           Rose.output(transitionTime);
-        }
+        },
       },
 
       {
         name: 'clearBrowserCookies',
-        onClick: function() {
+        onClick: () => {
           var expiration_date = new Date();
           expiration_date.setFullYear(expiration_date.getFullYear() + 1);
-          var cookie_string = "test_cookies=" + randomWord(5)
-            + "; path=/; expires=" + expiration_date.toGMTString();
+          var cookie_string =
+            'test_cookies=' + randomWord(5) + '; path=/; expires=' + expiration_date.toGMTString();
           document.cookie = cookie_string;
-          console.trace("INITIAL :: " + document.cookie);
-          Rose.output("INITIAL :: " + document.cookie);
+          console.trace('INITIAL :: ' + document.cookie);
+          Rose.output('INITIAL :: ' + document.cookie);
 
-          App.clearBrowserCookies().then(function() {
-            setTimeout(function() {
-              console.trace("FINAL :: " + document.cookie);
-              Rose.output("FINAL :: " + document.cookie);              
+          App.clearBrowserCookies().then(() => {
+            setTimeout(() => {
+              console.trace('FINAL :: ' + document.cookie);
+              Rose.output('FINAL :: ' + document.cookie);
             }, 1000);
           });
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 })();

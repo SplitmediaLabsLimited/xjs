@@ -111,16 +111,17 @@ const xjs = await import(new URL('../../dist/xjs.mjs', import.meta.url));
 
 assert.equal(String(xjs.Transition.FADE), 'fade');
 assert.equal(xjs.Transition.FADE.toTransitionKey(), 'FADE');
-const inferredStinger = new xjs.Transition('stinger:C:\\Transitions\\BlackBerry_18450.webm,184500000');
+const inferredStinger = new xjs.Transition(
+  'stinger:C:\\Transitions\\BlackBerry_18450.webm,184500000'
+);
 assert.equal(inferredStinger.toTransitionKey(), 'BlackBerry: 18450ms');
 assert.equal(String(inferredStinger), 'stinger:C:\\Transitions\\BlackBerry_18450.webm,184500000');
 
 const transitions = await xjs.Transition.getSceneTransitions();
-assert.deepEqual(transitions.map((transition) => transition.toTransitionKey()), [
-  'None',
-  'Fade',
-  'Stinger: 1100ms',
-]);
+assert.deepEqual(
+  transitions.map((transition) => transition.toTransitionKey()),
+  ['None', 'Fade', 'Stinger: 1100ms']
+);
 assert.deepEqual(transitions.map(String), [
   'none',
   'fade',
@@ -140,33 +141,40 @@ const recordingRenamed = new Promise((resolve) => {
   xjs.ChannelManager.on('recording-renamed', resolve);
 });
 
-const channelSettings = '<channel serviceName="LocalStreaming" name="Local Streaming" displayName="Local Streaming"/>';
+const channelSettings =
+  '<channel serviceName="LocalStreaming" name="Local Streaming" displayName="Local Streaming"/>';
 xjs.ChannelManager.emit(
   'stream-start',
-  encodeURIComponent(JSON.stringify({
-    ChannelName: 'Local Streaming',
-    Settings: channelSettings,
-  }))
+  encodeURIComponent(
+    JSON.stringify({
+      ChannelName: 'Local Streaming',
+      Settings: channelSettings,
+    })
+  )
 );
 xjs.ChannelManager.emit(
   'stream-end',
-  encodeURIComponent(JSON.stringify({
-    ChannelName: 'Local Streaming',
-    Settings: channelSettings,
-    Dropped: 10,
-    NotDropped: 77048,
-    StreamTime: 54500,
-    Audio: 1383326,
-    Video: 21800992,
-    Output: 29635585,
-  }))
+  encodeURIComponent(
+    JSON.stringify({
+      ChannelName: 'Local Streaming',
+      Settings: channelSettings,
+      Dropped: 10,
+      NotDropped: 77048,
+      StreamTime: 54500,
+      Audio: 1383326,
+      Video: 21800992,
+      Output: 29635585,
+    })
+  )
 );
 xjs.ChannelManager.emit(
   'recording-renamed',
-  encodeURIComponent(JSON.stringify({
-    old: 'old-file.mp4',
-    new: encodeURIComponent('C:\\Recordings\\new-file.mp4'),
-  }))
+  encodeURIComponent(
+    JSON.stringify({
+      old: 'old-file.mp4',
+      new: encodeURIComponent('C:\\Recordings\\new-file.mp4'),
+    })
+  )
 );
 
 const startEvent = await streamStart;

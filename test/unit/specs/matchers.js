@@ -1,186 +1,149 @@
 /* globals beforeEach, jasmine */
 
-beforeEach(function() {
-  'use strict';
-
+beforeEach(() => {
   jasmine.addMatchers({
-    toBeInstanceOf: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = true;
+    toBeInstanceOf: () => ({
+      compare: (actual, expected) => {
+        var pass = true;
 
-          pass = (actual instanceof expected);
+        pass = actual instanceof expected;
 
-          return { pass: pass };
-        }
-      };
-    },
+        return { pass: pass };
+      },
+    }),
 
-    eachToBeInstanceOf: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
+    eachToBeInstanceOf: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
 
-          for (var i = 0; i < actual.length; i++) {
-            pass = (actual[i] instanceof expected);
+        for (var i = 0; i < actual.length; i++) {
+          pass = actual[i] instanceof expected;
 
-            if (!pass) {
-              break;
-            }
+          if (!pass) {
+            break;
           }
-
-          return { pass: pass };
         }
-      };
-    },
 
-    eachToBeTypeOf: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
+        return { pass: pass };
+      },
+    }),
 
-          for (var i = 0; i < actual.length; i++) {
-            pass = (typeof actual[i] === expected);
+    eachToBeTypeOf: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
 
-            if (!pass) {
-              break;
-            }
+        for (var i = 0; i < actual.length; i++) {
+          pass = typeof actual[i] === expected;
+
+          if (!pass) {
+            break;
           }
-
-          return { pass: pass };
         }
-      };
-    },
 
-    eachHasMethods: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
-          var methods = expected.split(',');
+        return { pass: pass };
+      },
+    }),
 
-          loop1:
-          for (var i = 0; i < actual.length; i++) {
-            loop2:
-            for (var j = 0; j < methods.length; j++) {
-              var obj = actual[i];
-              var method = methods[j].trim();
+    eachHasMethods: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
+        var methods = expected.split(',');
 
-              pass = (typeof obj[method] === 'function' );
-              if (!pass)
-                break loop1;
-            }
-          }
-
-          return { pass: pass };
-        }
-      };
-    },
-
-    eachHasProperties: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
-          var properties = expected.split(',');
-
-          loop1:
-          for (var i = 0; i < actual.length; i++) {
+        loop1: for (var i = 0; i < actual.length; i++) {
+          for (var j = 0; j < methods.length; j++) {
             var obj = actual[i];
-            loop2:
-            for (var j = 0; j < properties.length; j++) {
+            var method = methods[j].trim();
 
-              var prop = properties[j].trim();
-
-              pass = (typeof obj[prop] !== 'undefined' );
-              if (!pass)
-                break loop1;
-            }
+            pass = typeof obj[method] === 'function';
+            if (!pass) break loop1;
           }
-
-          return { pass: pass };
         }
-      };
-    },
 
-    hasProperties: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
-          var properties = expected.split(',');
+        return { pass: pass };
+      },
+    }),
 
-          for (var i = 0; i < properties.length; i++) {
-            var testProperty = properties[i].trim();
+    eachHasProperties: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
+        var properties = expected.split(',');
 
-            pass = (typeof actual[testProperty] !== 'undefined');
-            if (!pass)
-              break;
+        loop1: for (var i = 0; i < actual.length; i++) {
+          var obj = actual[i];
+          for (var j = 0; j < properties.length; j++) {
+            var prop = properties[j].trim();
+
+            pass = typeof obj[prop] !== 'undefined';
+            if (!pass) break loop1;
           }
-
-          return { pass: pass };
         }
-      };
-    },
 
-    hasMethods: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass = (actual.length > 0);
-          var methods = expected.split(',');
-          var missingMethod = '';
+        return { pass: pass };
+      },
+    }),
 
-          for (var i = 0; i < methods.length; i++) {
-            var testMethod = methods[i].trim();
+    hasProperties: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
+        var properties = expected.split(',');
 
-            pass = (typeof actual[testMethod] === 'function');
-            if (!pass) {
-              missingMethod = testMethod;
-              break;
-            }
+        for (var i = 0; i < properties.length; i++) {
+          var testProperty = properties[i].trim();
+
+          pass = typeof actual[testProperty] !== 'undefined';
+          if (!pass) break;
+        }
+
+        return { pass: pass };
+      },
+    }),
+
+    hasMethods: () => ({
+      compare: (actual, expected) => {
+        var pass = actual.length > 0;
+        var methods = expected.split(',');
+        var missingMethod = '';
+
+        for (var i = 0; i < methods.length; i++) {
+          var testMethod = methods[i].trim();
+
+          pass = typeof actual[testMethod] === 'function';
+          if (!pass) {
+            missingMethod = testMethod;
+            break;
           }
-          return { pass: pass, message: 'Missing method ' + missingMethod };
         }
-      };
-    },
+        return { pass: pass, message: 'Missing method ' + missingMethod };
+      },
+    }),
 
-    toBeTypeOf: function() {
-      return {
-        compare: function(actual, expected) {
-          var pass =
-          (typeof actual === String(expected).toLowerCase());
+    toBeTypeOf: () => ({
+      compare: (actual, expected) => {
+        var pass = typeof actual === String(expected).toLowerCase();
 
-          return { pass: pass };
-        }
-      };
-    },
+        return { pass: pass };
+      },
+    }),
 
-    toBeBoolean : function () {
-      return {
-        compare : function (actual) {
-          return {
-            pass : (typeof actual === 'boolean'),
-            message : 'Expected ' + actual + ' is not boolean'
-          };
-        }
-      };
-    },
+    toBeBoolean: () => ({
+      compare: (actual) => ({
+        pass: typeof actual === 'boolean',
+        message: 'Expected ' + actual + ' is not boolean',
+      }),
+    }),
 
-    toBeArray : function () {
-      return {
-        compare : function (actual) {
-          return {
-            pass : (actual instanceof Array),
-            message : 'Expected ' + actual + ' is not an array'
-          };
-        }
-      };
-    },
+    toBeArray: () => ({
+      compare: (actual) => ({
+        pass: actual instanceof Array,
+        message: 'Expected ' + actual + ' is not an array',
+      }),
+    }),
 
-    toBeEmptyArray: function() {
-      return  {
-        compare: function(actual) {
-          var pass = (actual instanceof Array) && (actual.length === 0);
-          return { pass : pass };
-        }
-      };
-    }
+    toBeEmptyArray: () => ({
+      compare: (actual) => {
+        var pass = actual instanceof Array && actual.length === 0;
+        return { pass: pass };
+      },
+    }),
   });
 });

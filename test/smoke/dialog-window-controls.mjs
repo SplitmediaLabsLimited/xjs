@@ -13,7 +13,10 @@ class TestDocument {
 
   removeEventListener(type, listener) {
     const listeners = this.listeners.get(type) || [];
-    this.listeners.set(type, listeners.filter((candidate) => candidate !== listener));
+    this.listeners.set(
+      type,
+      listeners.filter((candidate) => candidate !== listener)
+    );
   }
 
   dispatchEvent(event) {
@@ -53,7 +56,13 @@ globalThis.external = {
   },
   NewDialog(url, reserved, size, flags, title, cookieConfig) {
     hostCalls.push(['NewDialog', url, reserved, size, flags, title, cookieConfig]);
-    Object.assign(hostState, { dialogUrl: url, dialogSize: size, dialogFlags: flags, dialogTitle: title, cookieConfig });
+    Object.assign(hostState, {
+      dialogUrl: url,
+      dialogSize: size,
+      dialogFlags: flags,
+      dialogTitle: title,
+      cookieConfig,
+    });
     return '0';
   },
   NewAutoDialog(url, reserved, size) {
@@ -120,7 +129,10 @@ const autoDialog = xjs.Dialog.createAutoDialog('https://example.test/auto.html')
 assert.equal(await autoDialog.show(), autoDialog);
 assert.equal(hostState.autoDialogUrl, 'https://example.test/auto.html');
 assert.equal(hostState.autoDialogSize, '320,240');
-assert.throws(() => autoDialog.setTitle('not allowed'), /Autoclosing dialogs cannot use this method/);
+assert.throws(
+  () => autoDialog.setTitle('not allowed'),
+  /Autoclosing dialogs cannot use this method/
+);
 
 await xjs.Dialog.return('child-result');
 assert.equal(hostState.dialogResult, 'child-result');

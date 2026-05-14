@@ -1,8 +1,6 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('SourcePropsWindow ===', function() {
-  'use strict';
-
+describe('SourcePropsWindow ===', () => {
   var XJS = require('xjs');
   var SourcePropsWindow = XJS.SourcePropsWindow;
   var env = new window.Environment(XJS);
@@ -10,7 +8,7 @@ describe('SourcePropsWindow ===', function() {
   var appVersion = navigator.appVersion;
   var SourcePropsObj = {};
 
-  var shuffle = function(arrayShuffle) {
+  var shuffle = (arrayShuffle) => {
     var ctr = arrayShuffle.length;
     // While there are elements in the array
     while (ctr > 0) {
@@ -26,14 +24,13 @@ describe('SourcePropsWindow ===', function() {
     return arrayShuffle;
   };
 
-  describe('should be able to change modes', function() {
+  describe('should be able to change modes', () => {
     var testConfigWindow;
-    beforeEach(function() {
+    beforeEach(() => {
       env.set(environments[0]);
       testConfigWindow = SourcePropsWindow.getInstance();
       SourcePropsObj = {};
-      spyOn(parent, 'postMessage')
-      .and.callFake(function(objString, allowed) {
+      spyOn(parent, 'postMessage').and.callFake((objString, allowed) => {
         var eventObj = JSON.parse(objString);
         if (eventObj['event'] === 'set-mode') {
           SourcePropsObj['mode'] = eventObj['value'];
@@ -51,18 +48,18 @@ describe('SourcePropsWindow ===', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(() => {
       env.set(environments[1]);
     });
 
-    it('such as full window', function() {
+    it('such as full window', () => {
       testConfigWindow.useFullWindow();
       expect(SourcePropsObj['mode']).toEqual('full');
       expect(SourcePropsObj['width']).toEqual(354);
       expect(SourcePropsObj['height']).toEqual(390);
     });
 
-    it('such as tabbed mode', function() {
+    it('such as tabbed mode', () => {
       var customTab = randomWord(10);
       var useColor = randomBoolean();
       var useLayout = randomBoolean();
@@ -83,7 +80,7 @@ describe('SourcePropsWindow ===', function() {
       }
 
       tabOrder = shuffle(tabOrder);
-      testConfigWindow.useTabbedWindow({'customTabs' : customTabs, 'tabOrder' : tabOrder});
+      testConfigWindow.useTabbedWindow({ customTabs: customTabs, tabOrder: tabOrder });
 
       expect(SourcePropsObj['mode']).toEqual('embedded');
       expect(SourcePropsObj['custom'][0]).toEqual(customTab);
@@ -115,14 +112,13 @@ describe('SourcePropsWindow ===', function() {
     });
   });
 
-  describe('should be able to call limited window manipulations', function() {
+  describe('should be able to call limited window manipulations', () => {
     var testConfigWindow;
-    beforeEach(function() {
+    beforeEach(() => {
       env.set(environments[0]);
       testConfigWindow = SourcePropsWindow.getInstance();
       SourcePropsObj = {};
-      spyOn(parent, 'postMessage')
-      .and.callFake(function(objString, allowed) {
+      spyOn(parent, 'postMessage').and.callFake((objString, allowed) => {
         var eventObj = JSON.parse(objString);
         if (eventObj['event'] === 'resize') {
           var sizeObj = JSON.parse(eventObj['value']);
@@ -135,17 +131,16 @@ describe('SourcePropsWindow ===', function() {
         }
       });
 
-      spyOn(external, 'Close')
-      .and.callFake(function() {
+      spyOn(external, 'Close').and.callFake(() => {
         SourcePropsObj['closed'] = true;
       });
     });
 
-    afterEach(function() {
+    afterEach(() => {
       env.set(environments[1]);
     });
 
-    it('resize', function() {
+    it('resize', () => {
       var width = randomInt(1, 9999);
       var height = randomInt(1, 9999);
       testConfigWindow.resize(width, height);
@@ -153,30 +148,28 @@ describe('SourcePropsWindow ===', function() {
       expect(SourcePropsObj['height']).toEqual(height);
     });
 
-    it('request dialog title change', function() {
+    it('request dialog title change', () => {
       var newTitle = randomWord(15);
       testConfigWindow.requestDialogTitleChange(newTitle);
       expect(SourcePropsObj['title']).toEqual(newTitle);
     });
 
-    it('close', function() {
+    it('close', () => {
       SourcePropsObj['closed'] = false;
       testConfigWindow.close();
       expect(SourcePropsObj['closed']).toBe(true);
     });
 
-    it('show loading', function() {
+    it('show loading', () => {
       testConfigWindow.showLoading(false);
       expect(SourcePropsObj['showOverlay']).toBe(false);
       testConfigWindow.showLoading(true);
       expect(SourcePropsObj['showOverlay']).toBe(true);
     });
 
-    it('but throws an error when called not from source props', function() {
-      expect(function() {
-        navigator.__defineGetter__('appVersion', function() {
-          return appVersion;
-        });
+    it('but throws an error when called not from source props', () => {
+      expect(() => {
+        navigator.__defineGetter__('appVersion', () => appVersion);
         // for testing purposes, we set SourcePropsWindow instance to undefined
         // in order to instantiate SourcePropsWindow from constructor
         SourcePropsWindow._instance = undefined;

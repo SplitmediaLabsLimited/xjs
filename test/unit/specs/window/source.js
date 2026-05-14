@@ -1,53 +1,49 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('SourcePluginWindow ===', function() {
-  'use strict';
-
+describe('SourcePluginWindow ===', () => {
   var XJS = require('xjs');
   var SourcePluginWindow = XJS.SourcePluginWindow;
   var env = new window.Environment(XJS);
   var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
 
-  describe('should be able to listen to source-related events', function() {
-    beforeEach(function() {
+  describe('should be able to listen to source-related events', () => {
+    beforeEach(() => {
       env.set(environments[2]);
-      navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.8.1606.1701 ';
-      });
+      navigator.__defineGetter__('appVersion', () => 'XSplit Broadcaster 2.8.1606.1701 ');
     });
 
-    it('save config', function(done) {
+    it('save config', (done) => {
       var testData = randomWord(20);
-      SourcePluginWindow.on('save-config', function(data) {
+      SourcePluginWindow.on('save-config', (data) => {
         expect(data).toEqual(testData);
         done();
       });
-      
+
       var messageData = {
-        request : 'saveConfig',
-        data : testData
+        request: 'saveConfig',
+        data: testData,
       };
       window.MessageSource(JSON.stringify(messageData));
     });
 
-    it('apply config', function(done) {
+    it('apply config', (done) => {
       var testData = randomWord(20);
-      SourcePluginWindow.on('apply-config', function(data) {
+      SourcePluginWindow.on('apply-config', (data) => {
         expect(data).toEqual(testData);
         done();
       });
-      
+
       var messageData = {
-        request : 'applyConfig',
-        data : testData
+        request: 'applyConfig',
+        data: testData,
       };
       window.MessageSource(JSON.stringify(messageData));
     });
 
-    it('set background color', function(done) {
+    it('set background color', (done) => {
       var testColor = randomColor().substr(1);
-      SourcePluginWindow.on('set-background-color', function(hex) {
+      SourcePluginWindow.on('set-background-color', (hex) => {
         expect(hex).toEqual(testColor);
         done();
       });
@@ -55,44 +51,39 @@ describe('SourcePluginWindow ===', function() {
     });
   });
 
-  describe('should be able to listen to scene-related events', function() {
+  describe('should be able to listen to scene-related events', () => {
     var someOtherEventSpy;
-    beforeEach(function() {
+    beforeEach(() => {
       env.set(environments[2]);
-      navigator.__defineGetter__('appVersion', function() {
-        return 'XSplit Broadcaster 2.8.1606.1701 ';
-      });
+      navigator.__defineGetter__('appVersion', () => 'XSplit Broadcaster 2.8.1606.1701 ');
 
       someOtherEventSpy = spyOn(console, 'warn');
     });
 
-    it('scene delete', function(done) {
-      SourcePluginWindow.on('scene-delete', function(sceneIndex) {
+    it('scene delete', (done) => {
+      SourcePluginWindow.on('scene-delete', (sceneIndex) => {
         expect(sceneIndex).toBeTypeOf('number');
         done();
       });
       window.SetEvent('event=SceneDeleted&index=9');
     });
 
-    it('scene load', function(done) {
-      SourcePluginWindow.on('scene-load', function() {
+    it('scene load', (done) => {
+      SourcePluginWindow.on('scene-load', () => {
         expect(true).toBe(true);
-        done()
+        done();
       });
       window.OnSceneLoad();
     });
 
-    it('and warn if event is not supported', function() {
-      SourcePluginWindow.on('some-other-event', function() {
-      });
+    it('and warn if event is not supported', () => {
+      SourcePluginWindow.on('some-other-event', () => {});
       expect(someOtherEventSpy).toHaveBeenCalled();
     });
 
-    it('but throws an error when called not from source', function() {
-      expect(function() {
-        navigator.__defineGetter__('appVersion', function() {
-          return appVersion;
-        });
+    it('but throws an error when called not from source', () => {
+      expect(() => {
+        navigator.__defineGetter__('appVersion', () => appVersion);
         // for testing purposes, we set SourcePluginWindow instance to undefined
         // in order to instantiate SourcePluginWindow from constructor
         SourcePluginWindow._instance = undefined;
@@ -100,5 +91,5 @@ describe('SourcePluginWindow ===', function() {
         var newTest = SourcePluginWindow.getInstance();
       }).toThrow();
     });
-  });  
+  });
 });

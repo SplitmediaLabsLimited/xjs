@@ -1,7 +1,7 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {exec} from '../internal/internal';
-import {EventEmitter} from '../util/eventemitter';
+import { exec } from '../internal/internal';
+import { EventEmitter } from '../util/eventemitter';
 import window from '../util/window';
 
 /**
@@ -40,11 +40,11 @@ export class Dll extends EventEmitter {
    *  ```
    */
   static load(path: string[]): Promise<any> {
-    return new Promise(resolve => {
-      exec('LoadDll', path.join(',')).then(result => {
-        resolve(result)
-      })
-    })
+    return new Promise((resolve) => {
+      exec('LoadDll', path.join(',')).then((result) => {
+        resolve(result);
+      });
+    });
   }
 
   static _emitter = new Dll();
@@ -82,8 +82,7 @@ export class Dll extends EventEmitter {
       const funcCall = 'CallDll';
       params.unshift(func);
       params.unshift(funcCall);
-      exec.apply(this, params)
-      .then( retValue => {
+      exec.apply(Dll, params).then((retValue) => {
         if (retValue !== undefined) {
           resolve(retValue);
         } else {
@@ -113,8 +112,7 @@ export class Dll extends EventEmitter {
       const funcCall = 'CallDllEx';
       params.unshift(func);
       params.unshift(funcCall);
-      exec.apply(this, params)
-      .then( retValue => {
+      exec.apply(Dll, params).then((retValue) => {
         if (retValue !== undefined) {
           resolve(retValue);
         } else {
@@ -124,7 +122,6 @@ export class Dll extends EventEmitter {
     });
   }
 
-
   /**
    *  return: Promise<boolean>
    *
@@ -132,10 +129,10 @@ export class Dll extends EventEmitter {
    *  resolves to true if DLL security is disabled altogether.
    */
   static isAccessGranted(): Promise<boolean> {
-    return new Promise(resolve => {
-      exec('CheckDllGrant').then(result => {
-        resolve (result === '1')
-      })
+    return new Promise((resolve) => {
+      exec('CheckDllGrant').then((result) => {
+        resolve(result === '1');
+      });
     });
   }
 }
@@ -152,7 +149,7 @@ window.UpdateLocalProperty = (prop: string, value: string) => {
   }
 
   if (typeof oldUpdateLocalProperty === 'function') {
-    oldUpdateLocalProperty(prop, value)
+    oldUpdateLocalProperty(prop, value);
   }
 };
 
@@ -166,6 +163,6 @@ window.Setdlldogrant = (value: string) => {
   }
 
   if (typeof oldSetdlldogrant === 'function') {
-    oldSetdlldogrant(value)
+    oldSetdlldogrant(value);
   }
-}
+};

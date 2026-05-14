@@ -1,19 +1,41 @@
-
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from './source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
-import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from './iplayback';
-import {IAudio, Audio} from './iaudio';
-import {CuePoint} from './cuepoint';
-import {ISourceMedia, SourceMedia} from './imedia';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { Rectangle } from '../../util/rectangle';
+import type { CuePoint } from './cuepoint';
+import { Audio, type IAudio } from './iaudio';
+import { type ISourceMedia, SourceMedia } from './imedia';
+import { type ActionAfterPlayback, type ISourcePlayback, SourcePlayback } from './iplayback';
+import { Source } from './source';
 
 export const MediaTypes = [
-    '.mp3','.aac','.cda','.ogg','.m4a','.flac','.wma',
-    '.aiff','.aif','.wav','.mid','.midi','.rma','.avi',
-    '.flv','.mkv','.mp4','.mpg','.wmv','.3gp','.3g2',
-    '.asf','.f4v','.mov','.mpeg','.vob','.webm'
-]
+  '.mp3',
+  '.aac',
+  '.cda',
+  '.ogg',
+  '.m4a',
+  '.flac',
+  '.wma',
+  '.aiff',
+  '.aif',
+  '.wav',
+  '.mid',
+  '.midi',
+  '.rma',
+  '.avi',
+  '.flv',
+  '.mkv',
+  '.mp4',
+  '.mpg',
+  '.wmv',
+  '.3gp',
+  '.3g2',
+  '.asf',
+  '.f4v',
+  '.mov',
+  '.mpeg',
+  '.vob',
+  '.webm',
+];
 
 /**
  * The MediaSource class represents the sources of the media items that
@@ -45,8 +67,7 @@ export const MediaTypes = [
  * All methods marked as *Chainable* resolve with the original `MediaSource`
  * instance.
  */
-export class MediaSource extends Source implements ISourcePlayback, IAudio,
-  ISourceMedia {
+export class MediaSource extends Source implements ISourcePlayback, IAudio, ISourceMedia {
   // ISourcePlayback
   // Inherited from base class, no need to redefine
   // getValue: () => Promise<string>;
@@ -55,12 +76,12 @@ export class MediaSource extends Source implements ISourcePlayback, IAudio,
   /**
    * See: {@link #core/ISourceMedia#getFileInfo getFileInfo}
    */
-  getFileInfo: () => Promise<Object>
+  getFileInfo: () => Promise<Object>;
 
   /**
    * See: {@link #core/ISourceMedia#isSourceAvailable isSourceAvailable}
    */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourcePlayback#isAudio isAudio}
@@ -210,7 +231,6 @@ export class MediaSource extends Source implements ISourcePlayback, IAudio,
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
-
 }
 
-applyMixins(MediaSource, [SourcePlayback, Audio, SourceMedia])
+applyMixins(MediaSource, [SourcePlayback, Audio, SourceMedia]);

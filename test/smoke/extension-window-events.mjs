@@ -12,7 +12,7 @@ class TestElement {
 }
 
 function parseAttributes(source) {
-  return Array.from(source.matchAll(/([^\s=]+)="([^"]*)"/g), match => ({
+  return Array.from(source.matchAll(/([^\s=]+)="([^"]*)"/g), (match) => ({
     name: match[1],
     value: match[2],
   }));
@@ -25,19 +25,20 @@ globalThis.DOMParser = class {
     if (!rootMatch) {
       return {
         childNodes: [],
-        getElementsByTagName: tag => tag === 'parsererror' ? [new TestElement('parsererror')] : [],
+        getElementsByTagName: (tag) =>
+          tag === 'parsererror' ? [new TestElement('parsererror')] : [],
       };
     }
 
     const children = Array.from(
       rootMatch[3].matchAll(/<([^\s>/]+)([^>]*)\/>/g),
-      match => new TestElement(match[1], parseAttributes(match[2]))
+      (match) => new TestElement(match[1], parseAttributes(match[2]))
     );
     const root = new TestElement(rootMatch[1], parseAttributes(rootMatch[2]), children);
 
     return {
       childNodes: [root],
-      getElementsByTagName: tag => tag === 'parsererror' ? [] : [],
+      getElementsByTagName: (tag) => (tag === 'parsererror' ? [] : []),
     };
   }
 };
@@ -70,14 +71,14 @@ globalThis.external = {
 };
 
 const xjs = await import(new URL('../../dist/xjs.mjs', import.meta.url));
-const waitForMicrotasks = () => new Promise(resolve => setTimeout(resolve, 0));
+const waitForMicrotasks = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 xjs.Environment.initialize();
 const extensionWindow = xjs.ExtensionWindow.getInstance();
 assert.equal(extensionWindow instanceof xjs.ExtensionWindow, true);
 
 const highlightEvents = [];
-await xjs.ExtensionWindow.on('sources-list-highlight', id => {
+await xjs.ExtensionWindow.on('sources-list-highlight', (id) => {
   highlightEvents.push(id);
 });
 globalThis.SourcesListHighlight('0', '');
@@ -87,7 +88,7 @@ await waitForMicrotasks();
 assert.deepEqual(highlightEvents, [null, '{main-highlight-id}']);
 
 const selectEvents = [];
-await xjs.ExtensionWindow.on('sources-list-select', id => {
+await xjs.ExtensionWindow.on('sources-list-select', (id) => {
   selectEvents.push(id);
 });
 globalThis.SourcesListSelect('0', '');
@@ -97,7 +98,7 @@ await waitForMicrotasks();
 assert.deepEqual(selectEvents, [null, '{main-select-id}']);
 
 const updateEvents = [];
-await xjs.ExtensionWindow.on('sources-list-update', idString => {
+await xjs.ExtensionWindow.on('sources-list-update', (idString) => {
   updateEvents.push(idString);
 });
 globalThis.SourcesListUpdate(
@@ -108,7 +109,7 @@ await waitForMicrotasks();
 assert.deepEqual(updateEvents, ['{source-a},{source-b}']);
 
 const sceneLoadEvents = [];
-await xjs.ExtensionWindow.on('scene-load', sceneIndex => {
+await xjs.ExtensionWindow.on('scene-load', (sceneIndex) => {
   sceneLoadEvents.push(sceneIndex);
 });
 globalThis.OnSceneLoad('1', '4');
@@ -123,7 +124,7 @@ await assert.rejects(
 );
 
 assert.deepEqual(
-  hostCalls.filter(call => call[0] === 'SourcesListSubscribeEvents'),
+  hostCalls.filter((call) => call[0] === 'SourcesListSubscribeEvents'),
   [
     ['SourcesListSubscribeEvents', '0'],
     ['SourcesListSubscribeEvents', '1'],

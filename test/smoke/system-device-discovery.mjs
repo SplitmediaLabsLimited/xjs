@@ -120,10 +120,10 @@ const xjs = await import(new URL('../../dist/xjs.mjs', import.meta.url));
 
 const audioDevices = await xjs.System.getAudioDevices();
 assert.equal(audioDevices.length, 2);
-assert.deepEqual(audioDevices.map((device) => device.getName()), [
-  'Microphone (HD Webcam C615)',
-  'Speakers (Realtek)',
-]);
+assert.deepEqual(
+  audioDevices.map((device) => device.getName()),
+  ['Microphone (HD Webcam C615)', 'Speakers (Realtek)']
+);
 assert.equal(audioDevices[0].getId(), 'mic-1');
 assert.equal(audioDevices[0].getDataFlow(), 'Capture');
 assert.equal(audioDevices[0].isDefaultDevice(), true);
@@ -135,25 +135,25 @@ assert.equal(audioDevices[0].getDelay(), 1000);
 assert.match(audioDevices[0].toString(), /id="mic-1"/);
 
 const captureDevices = await xjs.System.getAudioDevices(xjs.AudioDeviceDataflow.CAPTURE);
-assert.deepEqual(captureDevices.map((device) => device.getName()), [
-  'Microphone (HD Webcam C615)',
-]);
+assert.deepEqual(
+  captureDevices.map((device) => device.getName()),
+  ['Microphone (HD Webcam C615)']
+);
 
 const allDevices = await xjs.System.getAudioDevices(
   xjs.AudioDeviceDataflow.ALL,
   xjs.AudioDeviceState.ALL
 );
-assert.deepEqual(allDevices.map((device) => device.getName()), [
-  'Microphone (HD Webcam C615)',
-  'Stereo Mix (Realtek)',
-  'Speakers (Realtek)',
-]);
+assert.deepEqual(
+  allDevices.map((device) => device.getName()),
+  ['Microphone (HD Webcam C615)', 'Stereo Mix (Realtek)', 'Speakers (Realtek)']
+);
 
 const cameras = await xjs.System.getCameraDevices();
-assert.deepEqual(cameras.map((camera) => camera.getName()), [
-  'Elgato Game Capture HD',
-  'HD Webcam C615',
-]);
+assert.deepEqual(
+  cameras.map((camera) => camera.getName()),
+  ['Elgato Game Capture HD', 'HD Webcam C615']
+);
 assert.equal(cameras[1].getId(), '@device:pnp:\\\\?\\usb#vid_046d&pid_082c#global');
 assert.match(cameras[1].toXML().toString(), /HD Webcam C615/);
 

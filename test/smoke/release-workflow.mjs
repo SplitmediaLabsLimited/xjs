@@ -8,7 +8,11 @@ const gitignore = await readFile(new URL('.gitignore', root), 'utf8');
 
 assert.match(gitignore, /^dist\/\*\*$/m, 'generated dist output should be ignored');
 assert.match(gitignore, /^!dist\/xjs-es2015\.js$/m, 'legacy browser bundle should stay tracked');
-assert.match(gitignore, /^!dist\/xjs-es2015\.min\.js$/m, 'legacy minified browser bundle should stay tracked');
+assert.match(
+  gitignore,
+  /^!dist\/xjs-es2015\.min\.js$/m,
+  'legacy minified browser bundle should stay tracked'
+);
 
 assert.equal(pkg.scripts['pack:check'], 'npm run build && npm pack --dry-run');
 assert.ok(pkg.files.includes('dist/'), 'published package should include generated dist output');

@@ -1,6 +1,4 @@
-(function() {
-  'use strict';
-
+(() => {
   window.__xjsComponentFixtures = [
     {
       id: 'docs-navbar',
@@ -9,15 +7,8 @@
       customElement: 'xsplit-navbar',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'XSplit JS Framework',
-        'API Reference',
-        'GitHub',
-      ],
-      expectedLinks: [
-        'api.html',
-        'https://github.com/SplitmediaLabsLimited/xjs',
-      ],
+      expectedText: ['XSplit JS Framework', 'API Reference', 'GitHub'],
+      expectedLinks: ['api.html', 'https://github.com/SplitmediaLabsLimited/xjs'],
       minBoundingBox: {
         width: 240,
         height: 20,
@@ -30,10 +21,7 @@
       customElement: 'xsplit-doc-search',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedSelectors: [
-        '#search[placeholder="Search"]',
-        '#search[auto-complete]',
-      ],
+      expectedSelectors: ['#search[placeholder="Search"]', '#search[auto-complete]'],
       minBoundingBox: {
         width: 240,
         height: 34,
@@ -46,23 +34,9 @@
       customElement: 'xsplit-doc-navigation',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'Home',
-        'Core module',
-        'App class',
-        'Scene class',
-      ],
-      expectedLinks: [
-        'api.html',
-        'api.html#/core',
-        'api.html#/core/app',
-        'api.html#/core/scene',
-      ],
-      expectedSelectors: [
-        'ul.navigation',
-        'li.child-active',
-        'li.active',
-      ],
+      expectedText: ['Home', 'Core module', 'App class', 'Scene class'],
+      expectedLinks: ['api.html', 'api.html#/core', 'api.html#/core/app', 'api.html#/core/scene'],
+      expectedSelectors: ['ul.navigation', 'li.child-active', 'li.active'],
       minBoundingBox: {
         width: 240,
         height: 120,
@@ -75,17 +49,9 @@
       customElement: 'xsplit-doc-quicklinks',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'Core module',
-        'Window module',
-      ],
-      expectedLinks: [
-        'api.html#/core',
-        'api.html#/window',
-      ],
-      expectedSelectors: [
-        'ul.quicklink',
-      ],
+      expectedText: ['Core module', 'Window module'],
+      expectedLinks: ['api.html#/core', 'api.html#/window'],
+      expectedSelectors: ['ul.quicklink'],
       minBoundingBox: {
         width: 240,
         height: 80,
@@ -98,19 +64,9 @@
       customElement: 'xsplit-doc-search-results',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'Scene class',
-        'Core module',
-        'ExtensionWindow class',
-      ],
-      expectedLinks: [
-        'api.html#/core/scene',
-        'api.html#/window/extension-window',
-      ],
-      expectedSelectors: [
-        'ul.quicklink.search-results',
-        '.grey',
-      ],
+      expectedText: ['Scene class', 'Core module', 'ExtensionWindow class'],
+      expectedLinks: ['api.html#/core/scene', 'api.html#/window/extension-window'],
+      expectedSelectors: ['ul.quicklink.search-results', '.grey'],
       minBoundingBox: {
         width: 240,
         height: 80,
@@ -123,16 +79,8 @@
       customElement: 'xsplit-doc-member-card',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'getVersion',
-        'callback',
-        'Gets the current XSplit Broadcaster version.',
-      ],
-      expectedSelectors: [
-        'section.member',
-        '.name',
-        '.params .param',
-      ],
+      expectedText: ['getVersion', 'callback', 'Gets the current XSplit Broadcaster version.'],
+      expectedSelectors: ['section.member', '.name', '.params .param'],
       minBoundingBox: {
         width: 240,
         height: 100,
@@ -145,14 +93,8 @@
       customElement: 'xsplit-doc-code-sample',
       readyAttribute: 'data-ready',
       readyValue: 'true',
-      expectedText: [
-        'xjs.ready',
-        'getVersion',
-      ],
-      expectedSelectors: [
-        'pre.language-javascript',
-        'code.language-javascript',
-      ],
+      expectedText: ['xjs.ready', 'getVersion'],
+      expectedSelectors: ['pre.language-javascript', 'code.language-javascript'],
       minBoundingBox: {
         width: 240,
         height: 80,

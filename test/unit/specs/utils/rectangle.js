@@ -1,68 +1,91 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('Rectangle ===', function() {
-  'use strict';
-
+describe('Rectangle ===', () => {
   var XJS = require('xjs');
   var Rectangle = XJS.Rectangle;
 
-  describe('can be instantiated', function() {
-    it('from width and height', function() {
+  describe('can be instantiated', () => {
+    it('from width and height', () => {
       var dimRectangle = Rectangle.fromDimensions(randomInt(), randomInt());
       expect(dimRectangle).toBeInstanceOf(Rectangle);
-      expect(function() {
+      expect(() => {
         Rectangle.fromDimensions(-randomInt(1), randomInt());
       }).toThrow();
-      expect(function() {
+      expect(() => {
         Rectangle.fromDimensions(randomInt(), -randomInt(1));
       }).toThrow();
-      expect(function() {
+      expect(() => {
         Rectangle.fromDimensions(-randomInt(1), -randomInt(1));
       }).toThrow();
     });
 
-    it('from an object of rectangular coordinates', function() {
-      var firstSmallerInt = randomInt(0,50);
-      var secondSmallerInt = randomInt(0,50);
-      var firstBiggerInt = randomInt(51,100);
-      var secondBiggerInt = randomInt(51,100);
-      var coordRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);
+    it('from an object of rectangular coordinates', () => {
+      var firstSmallerInt = randomInt(0, 50);
+      var secondSmallerInt = randomInt(0, 50);
+      var firstBiggerInt = randomInt(51, 100);
+      var secondBiggerInt = randomInt(51, 100);
+      var coordRectangle = Rectangle.fromCoordinates(
+        firstSmallerInt,
+        secondSmallerInt,
+        firstBiggerInt,
+        secondBiggerInt
+      );
       expect(coordRectangle).toBeInstanceOf(Rectangle);
       // throw error when right is smaller than left
-      expect(function() {
-        coordRectangle = Rectangle.fromCoordinates(firstBiggerInt, secondSmallerInt, firstSmallerInt, secondBiggerInt);
+      expect(() => {
+        coordRectangle = Rectangle.fromCoordinates(
+          firstBiggerInt,
+          secondSmallerInt,
+          firstSmallerInt,
+          secondBiggerInt
+        );
       }).toThrow();
       // throw error when bottom is smaller than top
-      expect(function() {
-        coordRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondBiggerInt, firstBiggerInt, secondSmallerInt);
+      expect(() => {
+        coordRectangle = Rectangle.fromCoordinates(
+          firstSmallerInt,
+          secondBiggerInt,
+          firstBiggerInt,
+          secondSmallerInt
+        );
       }).toThrow();
       // throw error when both bottom is smaller than top and right is smaller than left
-      expect(function() {
-        coordRectangle = Rectangle.fromCoordinates(firstBiggerInt, secondBiggerInt, firstSmallerInt, secondSmallerInt);
+      expect(() => {
+        coordRectangle = Rectangle.fromCoordinates(
+          firstBiggerInt,
+          secondBiggerInt,
+          firstSmallerInt,
+          secondSmallerInt
+        );
       }).toThrow();
     });
 
-    it('or as an empty object', function() {
+    it('or as an empty object', () => {
       var emptyRectangle = new Rectangle();
       expect(emptyRectangle).toBeInstanceOf(Rectangle);
     });
   });
-  
-  describe('should be able to get and set', function() {
+
+  describe('should be able to get and set', () => {
     var testRectangle;
-    beforeEach(function() {
-      var firstSmallerInt = randomInt(0,50);
-      var secondSmallerInt = randomInt(0,50);
-      var firstBiggerInt = randomInt(51,100);
-      var secondBiggerInt = randomInt(51,100);
-      testRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);      
+    beforeEach(() => {
+      var firstSmallerInt = randomInt(0, 50);
+      var secondSmallerInt = randomInt(0, 50);
+      var firstBiggerInt = randomInt(51, 100);
+      var secondBiggerInt = randomInt(51, 100);
+      testRectangle = Rectangle.fromCoordinates(
+        firstSmallerInt,
+        secondSmallerInt,
+        firstBiggerInt,
+        secondBiggerInt
+      );
     });
 
-    it('left', function() {
+    it('left', () => {
       var testLeft = testRectangle.getLeft();
       var newLeft = testLeft;
       while (newLeft === testLeft) {
-        newLeft = randomInt(0,50);
+        newLeft = randomInt(0, 50);
       }
       testRectangle.setLeft(newLeft);
       var leftValue = testRectangle.getLeft();
@@ -71,11 +94,11 @@ describe('Rectangle ===', function() {
       expect(leftValue).toEqual(newLeft);
     });
 
-    it('top', function() {
+    it('top', () => {
       var testTop = testRectangle.getTop();
       var newTop = testTop;
       while (newTop === testTop) {
-        newTop = randomInt(0,50);
+        newTop = randomInt(0, 50);
       }
       testRectangle.setTop(newTop);
       var topValue = testRectangle.getTop();
@@ -84,11 +107,11 @@ describe('Rectangle ===', function() {
       expect(topValue).toEqual(newTop);
     });
 
-    it('right', function() {
+    it('right', () => {
       var testRight = testRectangle.getRight();
       var newRight = testRight;
       while (newRight === testRight) {
-        newRight = randomInt(51,100);
+        newRight = randomInt(51, 100);
       }
       testRectangle.setRight(newRight);
       var rightValue = testRectangle.getRight();
@@ -97,11 +120,11 @@ describe('Rectangle ===', function() {
       expect(rightValue).toEqual(newRight);
     });
 
-    it('bottom', function() {
+    it('bottom', () => {
       var testBottom = testRectangle.getBottom();
       var newBottom = testBottom;
       while (newBottom === testBottom) {
-        newBottom = randomInt(51,100);
+        newBottom = randomInt(51, 100);
       }
       testRectangle.setBottom(newBottom);
       var bottomValue = testRectangle.getBottom();
@@ -110,11 +133,11 @@ describe('Rectangle ===', function() {
       expect(bottomValue).toEqual(newBottom);
     });
 
-    it('width', function() {
+    it('width', () => {
       var testWidth = testRectangle.getWidth();
       var newWidth = testWidth;
       while (newWidth === testWidth) {
-        newWidth = randomInt(51,100);
+        newWidth = randomInt(51, 100);
       }
       testRectangle.setWidth(newWidth);
       var widthValue = testRectangle.getWidth();
@@ -123,25 +146,25 @@ describe('Rectangle ===', function() {
       expect(widthValue).toEqual(newWidth);
     });
 
-    it('height', function() {
+    it('height', () => {
       var testHeight = testRectangle.getHeight();
       var newHeight = testHeight;
       while (newHeight === testHeight) {
-        newHeight = randomInt(51,100);
+        newHeight = randomInt(51, 100);
       }
       testRectangle.setHeight(newHeight);
       var heightValue = testRectangle.getHeight();
       expect(heightValue).toBeTypeOf('number');
       expect(heightValue).not.toEqual(testHeight);
-      expect(heightValue).toEqual(newHeight);      
+      expect(heightValue).toEqual(newHeight);
     });
 
-    it('left or right with width being automatically adjusted', function() {
+    it('left or right with width being automatically adjusted', () => {
       var testLeft = testRectangle.getLeft();
       var testWidth = testRectangle.getWidth();
       var newLeft = testLeft;
       while (newLeft === testLeft) {
-        newLeft = randomInt(0,50);
+        newLeft = randomInt(0, 50);
       }
       testRectangle.setLeft(newLeft);
       expect(testRectangle.getWidth()).not.toEqual(testWidth);
@@ -149,18 +172,18 @@ describe('Rectangle ===', function() {
       var testRight = testRectangle.getRight();
       var newRight = testRight;
       while (newRight === testRight) {
-        newRight = randomInt(51,100);
+        newRight = randomInt(51, 100);
       }
       testRectangle.setRight(newRight);
       expect(testRectangle.getWidth()).not.toEqual(testWidth);
     });
 
-    it('top or bottom with height being automatically adjusted', function() {
+    it('top or bottom with height being automatically adjusted', () => {
       var testTop = testRectangle.getTop();
       var testHeight = testRectangle.getHeight();
       var newTop = testTop;
       while (newTop === testTop) {
-        newTop = randomInt(0,50);
+        newTop = randomInt(0, 50);
       }
       testRectangle.setTop(newTop);
       expect(testRectangle.getHeight()).not.toEqual(testHeight);
@@ -168,60 +191,82 @@ describe('Rectangle ===', function() {
       var testBottom = testRectangle.getBottom();
       var newBottom = testBottom;
       while (newBottom === testBottom) {
-        newBottom = randomInt(51,100);
+        newBottom = randomInt(51, 100);
       }
       testRectangle.setBottom(newBottom);
-      expect(testRectangle.getHeight()).not.toEqual(testHeight);      
+      expect(testRectangle.getHeight()).not.toEqual(testHeight);
     });
   });
 
-  describe('should be convertible to string', function() {
-    it('based on its dimensions', function() {
+  describe('should be convertible to string', () => {
+    it('based on its dimensions', () => {
       var testRectangle = Rectangle.fromDimensions(randomInt(), randomInt());
       expect(testRectangle.toDimensionString()).toBeTypeOf('string');
     });
 
-    it('based on its coordinates', function() {
-      var firstSmallerInt = randomInt(0,50);
-      var secondSmallerInt = randomInt(0,50);
-      var firstBiggerInt = randomInt(51,100);
-      var secondBiggerInt = randomInt(51,100);
-      var testRectangle = Rectangle.fromCoordinates(firstSmallerInt, secondSmallerInt, firstBiggerInt, secondBiggerInt);
+    it('based on its coordinates', () => {
+      var firstSmallerInt = randomInt(0, 50);
+      var secondSmallerInt = randomInt(0, 50);
+      var firstBiggerInt = randomInt(51, 100);
+      var secondBiggerInt = randomInt(51, 100);
+      var testRectangle = Rectangle.fromCoordinates(
+        firstSmallerInt,
+        secondSmallerInt,
+        firstBiggerInt,
+        secondBiggerInt
+      );
       expect(testRectangle.toCoordinateString()).toBeTypeOf('string');
-      expect(function() {
-        var rectangleString = Rectangle.fromDimensions(randomInt(), randomInt()).toCoordinateString();
+      expect(() => {
+        var rectangleString = Rectangle.fromDimensions(
+          randomInt(),
+          randomInt()
+        ).toCoordinateString();
       }).toThrow();
       testRectangle = new Rectangle();
-      expect(function() {
+      expect(() => {
         var rectangleString = testRectangle.toCoordinateString();
       }).toThrow();
       testRectangle.setLeft(firstSmallerInt);
-      expect(function() {
+      expect(() => {
         var rectangleString = testRectangle.toCoordinateString();
       }).toThrow();
       testRectangle.setTop(secondSmallerInt);
-      expect(function() {
+      expect(() => {
         var rectangleString = testRectangle.toCoordinateString();
       }).toThrow();
       testRectangle.setRight(firstBiggerInt);
-      expect(function() {
+      expect(() => {
         var rectangleString = testRectangle.toCoordinateString();
       }).toThrow();
       testRectangle.setBottom(firstBiggerInt);
       expect(testRectangle.toCoordinateString()).toBeTypeOf('string');
     });
 
-    it('based on a custom format', function() {
-      var leftValue = randomInt(0,50);
-      var topValue = randomInt(0,50);
-      var rightValue = randomInt(51,100);
-      var bottomValue = randomInt(51,100);
+    it('based on a custom format', () => {
+      var leftValue = randomInt(0, 50);
+      var topValue = randomInt(0, 50);
+      var rightValue = randomInt(51, 100);
+      var bottomValue = randomInt(51, 100);
       var widthValue = rightValue - leftValue;
       var heightValue = bottomValue - topValue;
       var formatRectangle = Rectangle.fromCoordinates(leftValue, topValue, rightValue, bottomValue);
 
-      var expectedString = 'Left->'+ leftValue + ', Top->' + topValue + ', Right->' + rightValue + ', Bottom->' + bottomValue + ', Width->' + widthValue + ', Height->' + heightValue;
-      var resultString = formatRectangle.toString('Left->:left, Top->:top, Right->:right, Bottom->:bottom, Width->:width, Height->:height');
+      var expectedString =
+        'Left->' +
+        leftValue +
+        ', Top->' +
+        topValue +
+        ', Right->' +
+        rightValue +
+        ', Bottom->' +
+        bottomValue +
+        ', Width->' +
+        widthValue +
+        ', Height->' +
+        heightValue;
+      var resultString = formatRectangle.toString(
+        'Left->:left, Top->:top, Right->:right, Bottom->:bottom, Width->:width, Height->:height'
+      );
       expect(formatRectangle.toString()).toEqual(formatRectangle.toDimensionString());
       expect(resultString).toEqual(expectedString);
     });

@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Color} from '../../util/color';
-import {JSON as JXON} from '../../internal/util/json';
-import {Filter} from '../filter';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { Color } from '../../util/color';
+import { Filter } from '../filter';
 
 /**
  *  Used by sources that implement the Effect interface.
@@ -20,29 +20,29 @@ export enum MaskEffect {
   NONE,
   SHAPE,
   FILE_BIND_TO_SOURCE,
-  FILE_BIND_TO_STAGE
+  FILE_BIND_TO_STAGE,
 }
 
 const _DEFAULT_EFFECT_VALUES: Object = {
-  'MASK_EFFECT' : MaskEffect.NONE,
-  'BORDER_RADIUS' : 0,
-  'BORDER_THICKNESS' : 0,
-  'BORDER_OPACITY' : 100,
-  'BORDER_COLOR' : Color.fromRGBString('#FFFFFF'),
-  'SHADOW_COLOR' : Color.fromRGBString('#FFFFFF'),
-  'SHADOW_THICKNESS' : 0,
-  'SHADOW_BLUR' : 0,
-  'SHADOW_OPACITY' : 100,
-  'SHADOW_OFFSET_X' : 0,
-  'SHADOW_OFFSET_Y' : 0,
-  'FILE_MASK' : '',
-  'FILE_MASK_GUIDE' : false
+  MASK_EFFECT: MaskEffect.NONE,
+  BORDER_RADIUS: 0,
+  BORDER_THICKNESS: 0,
+  BORDER_OPACITY: 100,
+  BORDER_COLOR: Color.fromRGBString('#FFFFFF'),
+  SHADOW_COLOR: Color.fromRGBString('#FFFFFF'),
+  SHADOW_THICKNESS: 0,
+  SHADOW_BLUR: 0,
+  SHADOW_OPACITY: 100,
+  SHADOW_OFFSET_X: 0,
+  SHADOW_OFFSET_Y: 0,
+  FILE_MASK: '',
+  FILE_MASK_GUIDE: false,
 };
 
-const _DEFAULT_EDGE_EFFECT_CONFIG: string = '0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1';
+const _DEFAULT_EDGE_EFFECT_CONFIG: string =
+  '0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1';
 
 export interface IItemEffect {
-
   /**
    * return: Promise<MaskEffect>
    *
@@ -290,10 +290,13 @@ export interface IItemEffect {
    *
    * *Chainable.*
    */
-  setFilter(value: any, config ?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }): Promise<IItemEffect>;
+  setFilter(
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ): Promise<IItemEffect>;
 
   /**
    * Removes the set post-processing shader used.
@@ -318,9 +321,8 @@ export class ItemEffect implements IItemEffect {
   private _id: string;
 
   private _convertToHex(value: string): string {
-    var hex = (parseInt(String(Number(value) * 255))).toString(16);
-    if (hex.length < 2)
-    {
+    var hex = parseInt(String(Number(value) * 255)).toString(16);
+    if (hex.length < 2) {
       hex = '0' + hex;
     }
     return hex;
@@ -328,9 +330,9 @@ export class ItemEffect implements IItemEffect {
 
   private _getEdgeEffectValue(value: Object): Promise<string | string[]> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:edgeeffectcfg', this._id).then(val => {
+      iItem.get('prop:edgeeffectcfg', this._id).then((val) => {
         if (val !== '' && val !== null) {
-          var edgeConfig = val.split("|");
+          var edgeConfig = val.split('|');
           var arrayIndex = value['arrayIndex'];
           var individualIndex = value['indIndex'];
 
@@ -358,7 +360,7 @@ export class ItemEffect implements IItemEffect {
 
   private _setEdgeEffectValue(value: Object): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:edgeeffectcfg', this._id).then(val => {
+      iItem.get('prop:edgeeffectcfg', this._id).then((val) => {
         var edgeConfig = [];
         var edgeEffectString;
         if (val !== '' && val !== null) {
@@ -366,7 +368,7 @@ export class ItemEffect implements IItemEffect {
         } else {
           edgeEffectString = _DEFAULT_EDGE_EFFECT_CONFIG;
         }
-        var edgeArray = edgeEffectString.split("|");
+        var edgeArray = edgeEffectString.split('|');
         var edgeArrayLength = edgeArray.length;
         for (var i = 0; i < edgeArrayLength; ++i) {
           edgeConfig.push(edgeArray[i].split(','));
@@ -394,8 +396,7 @@ export class ItemEffect implements IItemEffect {
               edgeEffectStringValue = edgeEffectStringValue + '|';
             }
           }
-          iItem.set('prop:edgeeffectcfg', edgeEffectStringValue, this._id)
-          .then(() => {
+          iItem.set('prop:edgeeffectcfg', edgeEffectStringValue, this._id).then(() => {
             resolve(this);
           });
         } else {
@@ -407,19 +408,19 @@ export class ItemEffect implements IItemEffect {
 
   private _getRGBArray(value: Color): Array<number> {
     var hex = value.getRgb();
-    var r = parseInt(hex.substring(0,2), 16)/255;
-    var g = parseInt(hex.substring(2,4), 16)/255;
-    var b = parseInt(hex.substring(4), 16)/255;
+    var r = parseInt(hex.substring(0, 2), 16) / 255;
+    var g = parseInt(hex.substring(2, 4), 16) / 255;
+    var b = parseInt(hex.substring(4), 16) / 255;
     return [r, g, b];
   }
 
   getMaskEffect(): Promise<MaskEffect> {
-    return new Promise(resolve => {
-      iItem.get('prop:edgeeffectid', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:edgeeffectid', this._id).then((val) => {
         if (val === 'border') {
           resolve(MaskEffect.SHAPE);
         } else {
-          iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
+          iItem.get('prop:edgeeffectmaskmode', this._id).then((val) => {
             if (val === '1' || val === '3') {
               resolve(MaskEffect.FILE_BIND_TO_SOURCE);
             } else if (val === '2' || val === '4') {
@@ -441,37 +442,45 @@ export class ItemEffect implements IItemEffect {
         reject(RangeError('Use a MaskEffect value as the parameter.'));
       } else {
         if (value === 1) {
-          iItem.set('prop:edgeeffectmaskmode', '0', this._id).then(() => {
-            return iItem.set('prop:edgeeffectid', 'border', this._id);
-          }).then(() => {
-            resolve(this);
-          });
+          iItem
+            .set('prop:edgeeffectmaskmode', '0', this._id)
+            .then(() => {
+              return iItem.set('prop:edgeeffectid', 'border', this._id);
+            })
+            .then(() => {
+              resolve(this);
+            });
         } else {
-          iItem.set('prop:edgeeffectid', '', this._id).then(() => {
-            if (value === 2 || value === 3) {
-              value = value - 1;
-            } else {
-              value = 0;
-            }
-            return iItem.set('prop:edgeeffectmaskmode', String(value), this._id);
-          }).then(() => {
-            resolve(this);
-          });
+          iItem
+            .set('prop:edgeeffectid', '', this._id)
+            .then(() => {
+              if (value === 2 || value === 3) {
+                value = value - 1;
+              } else {
+                value = 0;
+              }
+              return iItem.set('prop:edgeeffectmaskmode', String(value), this._id);
+            })
+            .then(() => {
+              resolve(this);
+            });
         }
       }
     });
   }
 
   getBorderEffectRadius(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 1;
       parameterObject['indIndex'] = 1;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['BORDER_RADIUS']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['BORDER_RADIUS']);
+        });
     });
   }
 
@@ -485,7 +494,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
         parameterObject['indIndex'] = 1;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -494,15 +503,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getBorderEffectThickness(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 1;
       parameterObject['indIndex'] = 2;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['BORDER_THICKNESS']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['BORDER_THICKNESS']);
+        });
     });
   }
 
@@ -516,7 +527,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
         parameterObject['indIndex'] = 2;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -525,15 +536,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getBorderEffectOpacity(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 0;
       parameterObject['indIndex'] = 4;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['BORDER_OPACITY']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['BORDER_OPACITY']);
+        });
     });
   }
 
@@ -547,7 +560,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 0;
         parameterObject['indIndex'] = 4;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -556,19 +569,24 @@ export class ItemEffect implements IItemEffect {
   }
 
   getBorderEffectColor(): Promise<Color> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 0;
       parameterObject['indIndex'] = [1, 2, 3];
       this._getEdgeEffectValue(parameterObject)
-      .then(val => {
-        resolve(Color.fromRGBString(
-          '#' + this._convertToHex(val[0]) +
-          this._convertToHex(val[1]) +
-          this._convertToHex(val[2])));
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
-      });
+        .then((val) => {
+          resolve(
+            Color.fromRGBString(
+              '#' +
+                this._convertToHex(val[0]) +
+                this._convertToHex(val[1]) +
+                this._convertToHex(val[2])
+            )
+          );
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['BORDER_COLOR']);
+        });
     });
   }
 
@@ -581,8 +599,7 @@ export class ItemEffect implements IItemEffect {
         parameterObject['arrayIndex'] = 0;
         parameterObject['indIndex'] = [1, 2, 3];
         parameterObject['value'] = this._getRGBArray(value);
-        this._setEdgeEffectValue(parameterObject)
-        .then(() => {
+        this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
       }
@@ -590,15 +607,24 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectColor(): Promise<Color> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 3;
       parameterObject['indIndex'] = [1, 2, 3];
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Color.fromRGBString('#' + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])));
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_COLOR']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(
+            Color.fromRGBString(
+              '#' +
+                this._convertToHex(val[0]) +
+                this._convertToHex(val[1]) +
+                this._convertToHex(val[2])
+            )
+          );
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_COLOR']);
+        });
     });
   }
 
@@ -615,15 +641,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectThickness(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 1;
       parameterObject['indIndex'] = 3;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_THICKNESS']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_THICKNESS']);
+        });
     });
   }
 
@@ -637,7 +665,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 1;
         parameterObject['indIndex'] = 3;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -646,15 +674,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectBlur(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 2;
       parameterObject['indIndex'] = 3;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_BLUR']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_BLUR']);
+        });
     });
   }
 
@@ -668,7 +698,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 2;
         parameterObject['indIndex'] = 3;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -677,15 +707,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectOpacity(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 3;
       parameterObject['indIndex'] = 4;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OPACITY']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OPACITY']);
+        });
     });
   }
 
@@ -699,7 +731,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 3;
         parameterObject['indIndex'] = 4;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -708,15 +740,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectOffsetX(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 2;
       parameterObject['indIndex'] = 1;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_X']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_X']);
+        });
     });
   }
 
@@ -730,7 +764,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 2;
         parameterObject['indIndex'] = 1;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -739,15 +773,17 @@ export class ItemEffect implements IItemEffect {
   }
 
   getShadowEffectOffsetY(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var parameterObject = {};
       parameterObject['arrayIndex'] = 2;
       parameterObject['indIndex'] = 2;
-      this._getEdgeEffectValue(parameterObject).then(val => {
-        resolve(Number(val) * 100);
-      }).catch(err => {
-        resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_Y']);
-      });
+      this._getEdgeEffectValue(parameterObject)
+        .then((val) => {
+          resolve(Number(val) * 100);
+        })
+        .catch((err) => {
+          resolve(_DEFAULT_EFFECT_VALUES['SHADOW_OFFSET_Y']);
+        });
     });
   }
 
@@ -761,7 +797,7 @@ export class ItemEffect implements IItemEffect {
         var parameterObject = {};
         parameterObject['arrayIndex'] = 2;
         parameterObject['indIndex'] = 2;
-        parameterObject['value'] = value/100;
+        parameterObject['value'] = value / 100;
         this._setEdgeEffectValue(parameterObject).then(() => {
           resolve(this);
         });
@@ -770,15 +806,15 @@ export class ItemEffect implements IItemEffect {
   }
 
   getFileMask(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:edgeeffectmask', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:edgeeffectmask', this._id).then((val) => {
         resolve(val);
       });
     });
   }
 
   setFileMask(value: string): Promise<ItemEffect> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:edgeeffectmask', value, this._id).then(() => {
         resolve(this);
       });
@@ -787,7 +823,7 @@ export class ItemEffect implements IItemEffect {
 
   isFileMaskingGuideVisible(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
+      iItem.get('prop:edgeeffectmaskmode', this._id).then((val) => {
         if (val === '4' || val === '3') {
           resolve(true);
         } else if (val === '2' || val === '1') {
@@ -801,7 +837,7 @@ export class ItemEffect implements IItemEffect {
 
   showFileMaskingGuide(value: boolean): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:edgeeffectmaskmode', this._id).then(val => {
+      iItem.get('prop:edgeeffectmaskmode', this._id).then((val) => {
         if (val === '1' || val === '3') {
           iItem.set('prop:edgeeffectmaskmode', value ? '3' : '1', this._id).then(() => {
             resolve(this);
@@ -813,31 +849,33 @@ export class ItemEffect implements IItemEffect {
         } else {
           reject(Error('This method is not available if filemasking is not enabled.'));
         }
-      })
+      });
     });
   }
 
   getFilter(): Promise<Filter> {
-    return new Promise(resolve => {
-      iItem.get('prop:effects', this._id)
-      .then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:effects', this._id).then((val) => {
         try {
           var effectsJXON = JXON.parse(val);
           resolve(new Filter(effectsJXON['children'][0]['id']));
-        } catch(e) {
+        } catch (e) {
           resolve(Filter.NONE);
         }
       });
     });
   }
 
-  setFilter(value: any, config ?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }): Promise<ItemEffect> {
+  setFilter(
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ): Promise<ItemEffect> {
     return new Promise((resolve, reject) => {
       config = config ? config : {};
-      const intensity = config['intensity'] ? config['intensity']/100 : 1;
+      const intensity = config['intensity'] ? config['intensity'] / 100 : 1;
       const intensityConfig = `0,${intensity},0,0,0`;
       const filterValue = value instanceof Filter ? value.toString() : value;
 
@@ -863,7 +901,7 @@ export class ItemEffect implements IItemEffect {
           effectString = `<effect id="${filterValue}" cfg="${configString}" />`;
         }
 
-        const effect = `<effects>${effectString}</effects>`
+        const effect = `<effects>${effectString}</effects>`;
         iItem.set('prop:effects', effect, this._id).then(() => {
           resolve(this);
         });
@@ -881,7 +919,7 @@ export class ItemEffect implements IItemEffect {
 
   getFilterConfig(): Promise<Object> {
     return new Promise((resolve, reject) => {
-      iItem.get('prop:effects', this._id).then(val => {
+      iItem.get('prop:effects', this._id).then((val) => {
         const configObj = {};
         try {
           var effectsJXON = JXON.parse(val);
@@ -889,12 +927,13 @@ export class ItemEffect implements IItemEffect {
             const cfgArray = effectsJXON['children'][0]['cfg'].split(',');
             configObj['intensity'] = Number(cfgArray[1]) * 100;
           }
-          if (effectsJXON['children'][0]['children'] && effectsJXON['children'][0]['children'][0]['file']) {
+          if (
+            effectsJXON['children'][0]['children'] &&
+            effectsJXON['children'][0]['children'][0]['file']
+          ) {
             configObj['resourceFile'] = effectsJXON['children'][0]['children'][0]['file'];
           }
-        } catch(e) {
-          
-        }
+        } catch (e) {}
         resolve(configObj);
       });
     });

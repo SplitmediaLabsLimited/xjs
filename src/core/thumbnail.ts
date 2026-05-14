@@ -1,7 +1,7 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Scene} from './scene';
-import {App as iApp} from '../internal/app';
+import { App as iApp } from '../internal/app';
+import { Scene } from './scene';
 
 export class Thumbnail {
   /**
@@ -24,39 +24,41 @@ export class Thumbnail {
    * })
    */
   static getSceneThumbnail(scene?: any): Promise<string> {
-    let scenePromise
+    let scenePromise;
     return new Promise((resolve, reject) => {
-      scenePromise = new Promise(innerResolve => {
+      scenePromise = new Promise((innerResolve) => {
         if (scene instanceof Scene) {
-          scene.getSceneUid()
-          .then(sceneUid => innerResolve(sceneUid))
+          scene.getSceneUid().then((sceneUid) => innerResolve(sceneUid));
         } else if (typeof scene === 'number') {
           if (scene < 0) {
-            reject(Error('Invalid parameters. Valid range is 0 or higher'))
+            reject(Error('Invalid parameters. Valid range is 0 or higher'));
           } else {
-            Scene.getBySceneIndex(scene).then(curScene => {
-              return curScene.getSceneUid()
-            }).then(sceneUid => {
-              innerResolve(sceneUid)
-            })
+            Scene.getBySceneIndex(scene)
+              .then((curScene) => {
+                return curScene.getSceneUid();
+              })
+              .then((sceneUid) => {
+                innerResolve(sceneUid);
+              });
           }
         } else if (!scene) {
-          Scene.getActiveScene().then(curScene => {
-            return curScene.getSceneUid() //replace with getSceneIndex
-          }).then(sceneUid => {
-            innerResolve(sceneUid)
-          })
+          Scene.getActiveScene()
+            .then((curScene) => {
+              return curScene.getSceneUid(); //replace with getSceneIndex
+            })
+            .then((sceneUid) => {
+              innerResolve(sceneUid);
+            });
         } else {
-          reject(Error('Invalid parameters. Valid parameter is scene or scene index'))
+          reject(Error('Invalid parameters. Valid parameter is scene or scene index'));
         }
-      })
+      });
 
-      scenePromise.then(sceneUid => {
-        iApp.get(`scenethumbnail:${sceneUid}`)
-        .then(thumb => {
-          resolve(thumb)
-        })
-      })
-    })
+      scenePromise.then((sceneUid) => {
+        iApp.get(`scenethumbnail:${sceneUid}`).then((thumb) => {
+          resolve(thumb);
+        });
+      });
+    });
   }
 }

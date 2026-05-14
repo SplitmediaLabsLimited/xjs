@@ -1,8 +1,6 @@
 /* globals describe, it, expect, require, beforeEach, spyOn */
 
-describe('Audio ===', function() {
-  'use strict';
-
+describe('Audio ===', () => {
   var XJS = require('xjs');
   var System = XJS.System;
   var AudioDeviceDataflow = XJS.AudioDeviceDataflow;
@@ -13,7 +11,8 @@ describe('Audio ===', function() {
 
   var ctr = 0;
 
-  var mockWasapi = '<list>' +
+  var mockWasapi =
+    '<list>' +
     '<dev name="Speakers (XSplit  Stream  Audio  Renderer)"' +
     ' adapter="XSplit  Stream  Audio  Renderer"' +
     ' adapterdev="Speakers" id="{0.0.0.00000000}.' +
@@ -42,48 +41,45 @@ describe('Audio ===', function() {
     ' DSoundGuid="{FD0F34DF-D9E8-4DE9-A212-DFDC9CB75178}"' +
     ' WaveId="" DefaultConsole="1" DefaultMultimedia="1" /></list>';
 
-  describe('should list audio devices', function() {
+  describe('should list audio devices', () => {
     var promise;
 
-    beforeEach(function() {
-
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-        spyOn(window.external, 'AppGetPropertyAsync')
-          .and.callFake(function(funcName) {
-            ctr++;
-            var asyncId = 'audio_' + ctr;
-            if(funcName === 'wasapienum') {
-              setTimeout(function() {
-                window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
-              }, 10);
-            }
-            return asyncId;
-          });
+    beforeEach(() => {
+      if (!/xsplit broadcaster/gi.test(navigator.appVersion)) {
+        spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
+          ctr++;
+          var asyncId = 'audio_' + ctr;
+          if (funcName === 'wasapienum') {
+            setTimeout(() => {
+              window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
+            }, 10);
+          }
+          return asyncId;
+        });
       }
       promise = System.getAudioDevices();
     });
 
-    it('through a promise', function() {
+    it('through a promise', () => {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('as an array', function(done) {
-      promise.then(function(devices) {
+    it('as an array', (done) => {
+      promise.then((devices) => {
         expect(devices).toBeInstanceOf(Array);
         done();
       });
     });
 
-    it('with correct properties', function(done) {
-      promise.then(function(devices) {
-        expect(devices)
-          .eachHasMethods(['getId', 'getName', 'getDataFlow'].join(','));
+    it('with correct properties', (done) => {
+      promise.then((devices) => {
+        expect(devices).eachHasMethods(['getId', 'getName', 'getDataFlow'].join(','));
         done();
       });
     });
 
-    it('excludes XSplit sound devices', function(done) {
-      promise.then(function(devices) {
+    it('excludes XSplit sound devices', (done) => {
+      promise.then((devices) => {
         for (var i = devices.length - 1; i >= 0; i--) {
           expect(devices[i].getName().toLowerCase().indexOf('xsplit')).toBe(-1);
         }
@@ -92,30 +88,27 @@ describe('Audio ===', function() {
     });
   });
 
-  describe('should allow audio device filters', function() {
+  describe('should allow audio device filters', () => {
     var promise;
 
-    beforeEach(function() {
-
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-        spyOn(window.external, 'AppGetPropertyAsync')
-          .and.callFake(function(funcName) {
-            ctr++;
-            var asyncId = 'audio_' + ctr;
-            if(funcName === 'wasapienum') {
-              setTimeout(function() {
-                window.OnAsyncCallback(asyncId,
-                  decodeURIComponent(mockWasapi));
-              }, 10);
-            }
-            return asyncId;
-          });
+    beforeEach(() => {
+      if (!/xsplit broadcaster/gi.test(navigator.appVersion)) {
+        spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
+          ctr++;
+          var asyncId = 'audio_' + ctr;
+          if (funcName === 'wasapienum') {
+            setTimeout(() => {
+              window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
+            }, 10);
+          }
+          return asyncId;
+        });
       }
     });
 
-    it('allow dataflow filter', function(done) {
+    it('allow dataflow filter', (done) => {
       promise = System.getAudioDevices(AudioDeviceDataflow.CAPTURE);
-      promise.then(function(devices) {
+      promise.then((devices) => {
         for (var i = devices.length - 1; i >= 0; i--) {
           expect(devices[i].getDataFlow()).toBe('Capture');
         }
@@ -123,10 +116,9 @@ describe('Audio ===', function() {
       });
     });
 
-    it('allow state filter', function(done) {
-      promise = System.getAudioDevices(AudioDeviceDataflow.ALL,
-        AudioDeviceState.ACTIVE);
-      promise.then(function(devices) {
+    it('allow state filter', (done) => {
+      promise = System.getAudioDevices(AudioDeviceDataflow.ALL, AudioDeviceState.ACTIVE);
+      promise.then((devices) => {
         for (var i = devices.length - 1; i >= 0; i--) {
           expect(devices[i]._state).toBe('Active');
         }
@@ -135,65 +127,62 @@ describe('Audio ===', function() {
     });
   });
 
-  describe('system Audio', function() {
+  describe('system Audio', () => {
     var promise;
 
-    beforeEach(function() {
-
-      if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-        spyOn(window.external, 'AppGetPropertyAsync')
-          .and.callFake(function(funcName) {
-            ctr++;
-            var asyncId = 'audio_' + ctr;
-            if(funcName === 'wasapienum') {
-              setTimeout(function() {
-                window.OnAsyncCallback(asyncId,
-                  decodeURIComponent(mockWasapi));
-              }, 10);
-            }
-            return asyncId;
-          });
+    beforeEach(() => {
+      if (!/xsplit broadcaster/gi.test(navigator.appVersion)) {
+        spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
+          ctr++;
+          var asyncId = 'audio_' + ctr;
+          if (funcName === 'wasapienum') {
+            setTimeout(() => {
+              window.OnAsyncCallback(asyncId, decodeURIComponent(mockWasapi));
+            }, 10);
+          }
+          return asyncId;
+        });
       }
       promise = System.getAudioDevices();
     });
 
-    it('should have a string ID', function(done) {
-      promise.then(function(devices) {
+    it('should have a string ID', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getId()).toBeTypeOf('string');
         done();
       });
     });
 
-    it('should have a string name', function(done) {
-      promise.then(function(devices) {
+    it('should have a string name', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getName()).toBeTypeOf('string');
         done();
       });
     });
 
-    it('should have a string dataflow', function(done) {
-      promise.then(function(devices) {
+    it('should have a string dataflow', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getDataFlow()).toBeTypeOf('string');
         done();
       });
     });
 
-    it('can be determined if system default device or not', function(done) {
-      promise.then(function(devices) {
+    it('can be determined if system default device or not', (done) => {
+      promise.then((devices) => {
         expect(devices[0].isDefaultDevice()).toBeTypeOf('boolean');
         done();
       });
     });
 
-    it('should have a volume level returned as a number', function(done) {
-      promise.then(function(devices) {
+    it('should have a volume level returned as a number', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getLevel()).toBeTypeOf('number');
         done();
       });
     });
 
-    it('can be set with a volume level', function(done) {
-      promise.then(function(devices) {
+    it('can be set with a volume level', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
         device._setLevel(1.5);
         expect(device.getLevel()).toBe(1.5);
@@ -201,16 +190,15 @@ describe('Audio ===', function() {
       });
     });
 
-    it('can be determined if enabled in the application', function(done) {
-      promise.then(function(devices) {
+    it('can be determined if enabled in the application', (done) => {
+      promise.then((devices) => {
         expect(devices[0].isEnabled()).toBeTypeOf('boolean');
         done();
       });
     });
 
-    it('can be configured to be enabled and disabled in the application',
-      function(done) {
-      promise.then(function(devices) {
+    it('can be configured to be enabled and disabled in the application', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
         device._setEnabled(false);
         expect(device.isEnabled()).toBe(false);
@@ -220,15 +208,15 @@ describe('Audio ===', function() {
       });
     });
 
-    it('should have a system volume level returned as a number', function(done) {
-      promise.then(function(devices) {
+    it('should have a system volume level returned as a number', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getSystemLevel()).toBeTypeOf('number');
         done();
       });
     });
 
-    it('can be set with a system volume level', function(done) {
-      promise.then(function(devices) {
+    it('can be set with a system volume level', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
         device._setSystemLevel(1.5);
         expect(device.getSystemLevel()).toBe(1.5);
@@ -236,16 +224,15 @@ describe('Audio ===', function() {
       });
     });
 
-    it('can be determined if enabled in the system', function(done) {
-      promise.then(function(devices) {
+    it('can be determined if enabled in the system', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getSystemEnabled()).toBeTypeOf('number');
         done();
       });
     });
 
-    it('can be configured to be enabled and disabled in the system',
-      function(done) {
-      promise.then(function(devices) {
+    it('can be configured to be enabled and disabled in the system', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
 
         device._setSystemEnabled(AudioDeviceSystemDisabled);
@@ -258,15 +245,15 @@ describe('Audio ===', function() {
       });
     });
 
-    it('should have a delay returned as a number', function(done) {
-      promise.then(function(devices) {
+    it('should have a delay returned as a number', (done) => {
+      promise.then((devices) => {
         expect(devices[0].getDelay()).toBeTypeOf('number');
         done();
       });
     });
 
-    it('can be configured to be set with a delay', function(done) {
-      promise.then(function(devices) {
+    it('can be configured to be set with a delay', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
         device._setDelay(1.5);
         expect(device.getDelay()).toBe(1.5);
@@ -274,31 +261,29 @@ describe('Audio ===', function() {
       });
     });
 
-    it('can be converted to a self-closed xml string', function(done) {
-      promise.then(function(devices) {
+    it('can be converted to a self-closed xml string', (done) => {
+      promise.then((devices) => {
         var device = devices[0];
         var deviceString = device.toString();
-        if (!/xsplit broadcaster/ig.test(navigator.appVersion)) {
-          expect(deviceString).toBe('<dev' +
-            ' id="{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}"' +
-            ' level="1.000000" enable="1" hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>');
+        if (!/xsplit broadcaster/gi.test(navigator.appVersion)) {
+          expect(deviceString).toBe(
+            '<dev' +
+              ' id="{0.0.1.00000000}.{b7709bea-527e-4f60-afb0-cd36431972ad}"' +
+              ' level="1.000000" enable="1" hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>'
+          );
         }
-        var parseXml = function(xmlStr) {
-          return ( new window.DOMParser() ).parseFromString(xmlStr, 'text/xml');
-        };
+        var parseXml = (xmlStr) => new window.DOMParser().parseFromString(xmlStr, 'text/xml');
         var audioDevice = parseXml(deviceString).getElementsByTagName('dev')[0];
-        expect(audioDevice.getAttribute("id") == device.getId() &&
-          audioDevice.getAttribute("level")*100 == parseFloat(device.getLevel()) &&
-          (audioDevice.getAttribute("enable") == '1') == device.isEnabled() &&
-          audioDevice.getAttribute("hwlevel")*100 ==
-            parseFloat(device.getSystemLevel()) &&
-          audioDevice.getAttribute("hwenable") == device.getSystemEnabled() &&
-          audioDevice.getAttribute("delay") == parseFloat(device.getDelay())
+        expect(
+          audioDevice.getAttribute('id') == device.getId() &&
+            audioDevice.getAttribute('level') * 100 == parseFloat(device.getLevel()) &&
+            (audioDevice.getAttribute('enable') == '1') == device.isEnabled() &&
+            audioDevice.getAttribute('hwlevel') * 100 == parseFloat(device.getSystemLevel()) &&
+            audioDevice.getAttribute('hwenable') == device.getSystemEnabled() &&
+            audioDevice.getAttribute('delay') == parseFloat(device.getDelay())
         ).toBe(true);
         done();
       });
     });
-
-
   });
 });

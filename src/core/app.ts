@@ -1,24 +1,24 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {App as iApp} from '../internal/app';
-import {Rectangle as Rectangle} from '../util/rectangle';
-import {AudioDevice as AudioDevice} from '../system/audio';
-import {JSON as JXON} from '../internal/util/json';
-import {XML as XML} from '../internal/util/xml';
-import {exec} from '../internal/internal';
-import {Environment} from './environment';
-import {Transition} from './transition';
-import {getVersion as getXsplitVersion} from '../internal/util/version';
-import {Global} from '../internal/global';
+import { App as iApp } from '../internal/app';
+import { Global } from '../internal/global';
+import { exec } from '../internal/internal';
+import { JSON as JXON } from '../internal/util/json';
+import { getVersion as getXsplitVersion } from '../internal/util/version';
+import { XML } from '../internal/util/xml';
+import { AudioDevice } from '../system/audio';
+import { Rectangle } from '../util/rectangle';
+import { Environment } from './environment';
+import { Transition } from './transition';
 
 var DEFAULT_SILENCE_DETECTION_THRESHOLD: number = 5;
 var DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE: number = 0.04;
 var DEFAULT_SILENCE_DETECTION_PERIOD: number = 1000;
 var DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE: number = 10000000;
 
-const arrayToObj = function(array, separator) {
+const arrayToObj = (array, separator) => {
   var obj = {};
-  array.map(function(el) {
+  array.map((el) => {
     var separatorIndex = el.indexOf(separator);
     var key = el.substring(0, separatorIndex);
     obj[key] = el.substring(separatorIndex + 1);
@@ -37,28 +37,38 @@ const effectIds = {
 };
 
 //used to get/set config values
-const updateMicrophoneEffects = (effectId, configSeparator, valueSeparator, effect, value): Promise<boolean> => {
-  return new Promise<boolean>(resolve => {
-    exec('CallHostFunc', 'getProperty', `audiodevprop:000:effect:${effectId}\\config`, 
-      config => {        
-        const values = config ? config.split(configSeparator) : config;        
-        let newValue = ''; 
-        let separator = '';
-        //the logic here is that a single value can be set in the config 
-        if (values) {        
-          values.forEach(keyValues => {           
-            const keyValue = keyValues.split(valueSeparator);
-            if (keyValue[0] !== effect) {
-              newValue = `${newValue}${separator}${keyValues}`;
-              separator = configSeparator;
-            }
-          });
-        }
-        newValue = `${newValue}${separator}${effect}${valueSeparator}${value}`;        
-        exec('CallHostFunc', 'setProperty', `audiodevprop:000:effect:${effectId}\\config`, newValue, 
-          setVal => {
-            resolve(setVal);
+const updateMicrophoneEffects = (
+  effectId,
+  configSeparator,
+  valueSeparator,
+  effect,
+  value
+): Promise<boolean> => {
+  return new Promise<boolean>((resolve) => {
+    exec('CallHostFunc', 'getProperty', `audiodevprop:000:effect:${effectId}\\config`, (config) => {
+      const values = config ? config.split(configSeparator) : config;
+      let newValue = '';
+      let separator = '';
+      //the logic here is that a single value can be set in the config
+      if (values) {
+        values.forEach((keyValues) => {
+          const keyValue = keyValues.split(valueSeparator);
+          if (keyValue[0] !== effect) {
+            newValue = `${newValue}${separator}${keyValues}`;
+            separator = configSeparator;
+          }
         });
+      }
+      newValue = `${newValue}${separator}${effect}${valueSeparator}${value}`;
+      exec(
+        'CallHostFunc',
+        'setProperty',
+        `audiodevprop:000:effect:${effectId}\\config`,
+        newValue,
+        (setVal) => {
+          resolve(setVal);
+        }
+      );
     });
   });
 };
@@ -85,8 +95,7 @@ const updateMicrophoneEffects = (effectId, configSeparator, valueSeparator, effe
  * (also will not be persistent after logging out of/exiting the application).
  *
  */
-export class App{
-
+export class App {
   /**
    * return: Promise<number>
    *
@@ -101,8 +110,8 @@ export class App{
    * ```
    */
   getFrameTime(): Promise<number> {
-    return new Promise(resolve => {
-      iApp.get('frametime').then(val => {
+    return new Promise((resolve) => {
+      iApp.get('frametime').then((val) => {
         resolve(Number(val));
       });
     });
@@ -131,12 +140,11 @@ export class App{
    * });
    * ```
    */
-  getResolution() : Promise<Rectangle> {
-    return new Promise(resolve => {
-      iApp.get('resolution').then(val => {
+  getResolution(): Promise<Rectangle> {
+    return new Promise((resolve) => {
+      iApp.get('resolution').then((val) => {
         var dimensions = val.split(',');
-        resolve(Rectangle.fromDimensions(parseInt(dimensions[0]),
-          parseInt(dimensions[1])));
+        resolve(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
       });
     });
   }
@@ -157,12 +165,11 @@ export class App{
    * });
    * ```
    */
-  getViewport() : Promise<Rectangle> {
-    return new Promise(resolve => {
-      iApp.get('viewport').then(val => {
+  getViewport(): Promise<Rectangle> {
+    return new Promise((resolve) => {
+      iApp.get('viewport').then((val) => {
         var dimensions = val.split(',');
-        resolve(Rectangle.fromDimensions(parseInt(dimensions[0]),
-          parseInt(dimensions[1])))
+        resolve(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
       });
     });
   }
@@ -180,7 +187,7 @@ export class App{
    * });
    * ```
    */
-  getVersion() : Promise<string> {
+  getVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         resolve(getXsplitVersion());
@@ -203,9 +210,9 @@ export class App{
    * });
    * ```
    */
-  getFramesRendered() : Promise<number> {
-    return new Promise(resolve => {
-      iApp.get('framesrendered').then(val => {
+  getFramesRendered(): Promise<number> {
+    return new Promise((resolve) => {
+      iApp.get('framesrendered').then((val) => {
         resolve(Number(val));
       });
     });
@@ -231,14 +238,14 @@ export class App{
   getPrimaryMic(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       if (Global.isNewAudioEngine()) {
-        exec('CallHostFunc', 'getProperty', 'audiodev:000', resultXml => {
-          let audioJson: JXON = JXON.parse(resultXml);                  
+        exec('CallHostFunc', 'getProperty', 'audiodev:000', (resultXml) => {
+          const audioJson: JXON = JXON.parse(resultXml);
           const audio = AudioDevice.parse(audioJson);
           resolve(audio);
         });
       } else {
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
           if (audioDevices.length && audioDevices.length > 0) {
@@ -247,7 +254,7 @@ export class App{
             reject(Error('No audio device is set as primary microphone'));
           }
         });
-      }     
+      }
     });
   }
 
@@ -269,14 +276,14 @@ export class App{
   getPrimarySpeaker(): Promise<AudioDevice> {
     return new Promise((resolve, reject) => {
       if (Global.isNewAudioEngine()) {
-        exec('CallHostFunc', 'getProperty', 'audiodev:001', resultXml => {
-          let audioJson: JXON = JXON.parse(resultXml);            
+        exec('CallHostFunc', 'getProperty', 'audiodev:001', (resultXml) => {
+          const audioJson: JXON = JXON.parse(resultXml);
           const audio = AudioDevice.parse(audioJson);
           resolve(audio);
         });
       } else {
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -313,21 +320,23 @@ export class App{
       }
 
       if (Global.isNewAudioEngine()) {
-
         const vol = volume / 100;
         const value = `volume:${vol.toFixed(6)}&enable:1`;
-        exec('CallHostFunc', 'setProperty', `audiodevprop:000:effect:volume\\config`, value, setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          `audiodevprop:000:effect:volume\\config`,
+          value,
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimaryMicLevel', err);
           reject('Unable to setPrimaryMicLevel');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -337,22 +346,19 @@ export class App{
             audioDevices[0] = micDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary microphone'));
           }
-
         });
-
-      }      
-
+      }
     });
   }
 
@@ -374,22 +380,23 @@ export class App{
    */
   setPrimaryMicEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (Global.isNewAudioEngine()) {
-
         const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:000:effect:mute\\config', value, setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:000:effect:mute\\config',
+          value,
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimaryMicEnabled', err);
           reject('Unable to setPrimaryMicEnabled');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -399,18 +406,17 @@ export class App{
             audioDevices[0] = micDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary microphone'));
           }
-
         });
       }
     });
@@ -439,21 +445,17 @@ export class App{
       }
 
       if (Global.isNewAudioEngine()) {
-        
         const vol = volume / 100;
         const value = vol.toFixed(6);
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwlevel', value, setVal => {
+        exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwlevel', value, (setVal) => {
           resolve(setVal);
-        })
-        .catch(err => {
+        }).catch((err) => {
           console.error('setPrimaryMicSystemLevel', err);
           reject('Unable to setPrimaryMicSystemLevel');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -463,21 +465,19 @@ export class App{
             audioDevices[0] = micDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary microphone'));
           }
         });
-
       }
-
     });
   }
 
@@ -499,25 +499,26 @@ export class App{
    */
   setPrimaryMicSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
         reject(Error('Value can only be 0, 1 or 255'));
       }
 
-      if (Global.isNewAudioEngine()) {        
-        
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:000:hwenable', hwenabled.toString(), setVal => {          
-          resolve(setVal);
-        })
-        .catch(err => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:000:hwenable',
+          hwenabled.toString(),
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimaryMicSystemEnabled', err);
           reject('Unable to setPrimaryMicSystemEnabled');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -527,22 +528,19 @@ export class App{
             audioDevices[0] = micDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary microphone'));
           }
-
         });
-
       }
-      
     });
   }
 
@@ -564,25 +562,26 @@ export class App{
    */
   setPrimaryMicDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (delay < 0) {
         reject(Error('Delay can only be positive'));
       }
 
-      if (Global.isNewAudioEngine()) {        
-        
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:000:param\\delay', delay.toString(), setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:000:param\\delay',
+          delay.toString(),
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimaryMicDelay', err);
           reject('Unable to setPrimaryMicDelay');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -592,20 +591,18 @@ export class App{
             audioDevices[0] = micDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary microphone'));
           }
-
         });
-
       }
     });
   }
@@ -628,27 +625,28 @@ export class App{
    */
   setPrimarySpeakerLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (volume < 0) {
         reject(Error('Volume can only be positive'));
       }
 
       if (Global.isNewAudioEngine()) {
-
         const vol = volume / 100;
         const value = `volume:${vol.toFixed(6)}&enable:1`;
-        exec('CallHostFunc', 'setProperty', `audiodevprop:001:effect:volume\\config`, value, setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          `audiodevprop:001:effect:volume\\config`,
+          value,
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimarySpeakerLevel', err);
           reject('Unable to setPrimarySpeakerLevel');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -658,19 +656,18 @@ export class App{
             audioDevices[1] = speakerDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary speaker/audio render device'));
           }
         });
-
       }
     });
   }
@@ -693,22 +690,23 @@ export class App{
    */
   setPrimarySpeakerEnabled(enabled: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (Global.isNewAudioEngine()) {
-
         const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:001:effect:mute\\config', value, setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:001:effect:mute\\config',
+          value,
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimarySpeakerEnabled', err);
           reject('Unable to setPrimarySpeakerEnabled');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -718,18 +716,17 @@ export class App{
             audioDevices[1] = speakerDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary speaker/audio render device'));
           }
-
         });
       }
     });
@@ -753,27 +750,22 @@ export class App{
    */
   setPrimarySpeakerSystemLevel(volume: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (volume < 0) {
         reject(Error('Volume can only be positive'));
       }
 
       if (Global.isNewAudioEngine()) {
-        
         const vol = volume / 100;
         const value = vol.toFixed(6);
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwlevel', value, setVal => {
+        exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwlevel', value, (setVal) => {
           resolve(setVal);
-        })
-        .catch(err => {
+        }).catch((err) => {
           console.error('setPrimarySpeakerSystemLevel', err);
           reject('Unable to setPrimarySpeakerSystemLevel');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -783,18 +775,17 @@ export class App{
             audioDevices[1] = speakerDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary speaker/audio render device'));
           }
-
         });
       }
     });
@@ -818,25 +809,26 @@ export class App{
    */
   setPrimarySpeakerSystemEnabled(hwenabled: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
         reject(Error('Value can only be 0, 1 or 255'));
       }
 
-      if (Global.isNewAudioEngine()) {        
-        
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:001:hwenable', hwenabled.toString(), setVal => {          
-          resolve(setVal);
-        })
-        .catch(err => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:001:hwenable',
+          hwenabled.toString(),
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimarySpeakerSystemEnabled', err);
           reject('Unable to setPrimarySpeakerSystemEnabled');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -846,20 +838,18 @@ export class App{
             audioDevices[1] = speakerDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary speaker/audio render device'));
           }
-
         });
-
       }
     });
   }
@@ -882,25 +872,26 @@ export class App{
    */
   setPrimarySpeakerDelay(delay: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-
       if (delay < 0) {
         reject(Error('Delay can only be positive'));
       }
 
-      if (Global.isNewAudioEngine()) {        
-        
-        exec('CallHostFunc', 'setProperty', 'audiodevprop:001:param\\delay', delay.toString(), setVal => {
-          resolve(setVal);
-        })
-        .catch(err => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'setProperty',
+          'audiodevprop:001:param\\delay',
+          delay.toString(),
+          (setVal) => {
+            resolve(setVal);
+          }
+        ).catch((err) => {
           console.error('setPrimarySpeakerDelay', err);
           reject('Unable to setPrimarySpeakerDelay');
         });
-
       } else {
-
-        iApp.getAsList('microphonedev2').then(arr => {
-          var audioDevices = arr.map(val => {
+        iApp.getAsList('microphonedev2').then((arr) => {
+          var audioDevices = arr.map((val) => {
             return AudioDevice.parse(val);
           });
 
@@ -910,21 +901,19 @@ export class App{
             audioDevices[1] = speakerDevice;
             var dev = '';
             if (Array.isArray(audioDevices)) {
-                for (var i = 0; i < audioDevices.length; ++i) {
-                    dev += audioDevices[i].toString();
-                }
+              for (var i = 0; i < audioDevices.length; ++i) {
+                dev += audioDevices[i].toString();
+              }
             }
             dev = '<devices>' + dev + '</devices>';
-            iApp.set('microphonedev2', dev).then(setVal => {
+            iApp.set('microphonedev2', dev).then((setVal) => {
               resolve(setVal);
             });
           } else {
             reject(Error('No audio device is set as primary speaker/audio render device'));
           }
-
         });
       }
-      
     });
   }
 
@@ -942,24 +931,29 @@ export class App{
    * ```
    */
   isSilenceDetectionEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      if (Global.isNewAudioEngine()) {  
-        exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
-          if (config) {
-            const values = config.split('&');          
-            const queryObj = arrayToObj(values, ':');
-            resolve(queryObj['enable'] === '1');
-          } else {
-            //since there is no config assume false
-            resolve(false);
+    return new Promise((resolve) => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'getProperty',
+          'audiodevprop:000:effect:mic_dsp_ng\\config',
+          (config) => {
+            if (config) {
+              const values = config.split('&');
+              const queryObj = arrayToObj(values, ':');
+              resolve(queryObj['enable'] === '1');
+            } else {
+              //since there is no config assume false
+              resolve(false);
+            }
           }
-        });
+        );
       } else {
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var micGainObj = JXON.parse(val);
           resolve(micGainObj['enable'] == '1');
         });
-      }      
+      }
     });
   }
 
@@ -980,24 +974,23 @@ export class App{
    * ```
    */
   enableSilenceDetection(enabled: boolean): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (Global.isNewAudioEngine()) {
         const value = enabled ? '1' : '0';
-        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'enable', value)
-        .then(setVal => {
+        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'enable', value).then((setVal) => {
           resolve(setVal);
-        });       
+        });
       } else {
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var silenceDetectionObj = JXON.parse(val);
-          silenceDetectionObj['enable'] = (enabled ? '1' : '0');
-          iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-          .then(setVal => {
-            resolve(setVal);
-          });
+          silenceDetectionObj['enable'] = enabled ? '1' : '0';
+          iApp
+            .set('microphonegain', XML.parseJSON(silenceDetectionObj).toString())
+            .then((setVal) => {
+              resolve(setVal);
+            });
         });
       }
-
     });
   }
 
@@ -1016,23 +1009,35 @@ export class App{
    * ```
    */
   getSilenceDetectionPeriod(): Promise<number> {
-    return new Promise(resolve => {
-      if (Global.isNewAudioEngine()) {  
-        exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
-          if (config) {          
-            const values = config.split('&');          
-            const queryObj = arrayToObj(values, ':');
-            resolve(queryObj['latency'] !== undefined ? Number(queryObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
-          } else {
-            //assume no configuration set 
-            resolve(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
+    return new Promise((resolve) => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'getProperty',
+          'audiodevprop:000:effect:mic_dsp_ng\\config',
+          (config) => {
+            if (config) {
+              const values = config.split('&');
+              const queryObj = arrayToObj(values, ':');
+              resolve(
+                queryObj['latency'] !== undefined
+                  ? Number(queryObj['latency'])
+                  : DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE
+              );
+            } else {
+              //assume no configuration set
+              resolve(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
+            }
           }
-        });
+        );
       } else {
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var micGainObj = JXON.parse(val);
-          resolve(micGainObj['latency'] !== undefined ?
-            Number(micGainObj['latency']) : DEFAULT_SILENCE_DETECTION_PERIOD);
+          resolve(
+            micGainObj['latency'] !== undefined
+              ? Number(micGainObj['latency'])
+              : DEFAULT_SILENCE_DETECTION_PERIOD
+          );
         });
       }
     });
@@ -1062,26 +1067,29 @@ export class App{
       } else if (sdPeriod % 1 != 0) {
         reject(Error('Silence detection period must be an integer'));
       } else if (sdPeriod < 0 || (sdPeriod > 60000 && !Global.isNewAudioEngine())) {
-        reject(Error(`Silence detection must be in the range. ${!Global.isNewAudioEngine() ? 'Range is 0-60000' : ''}`));
+        reject(
+          Error(
+            `Silence detection must be in the range. ${!Global.isNewAudioEngine() ? 'Range is 0-60000' : ''}`
+          )
+        );
       }
 
       if (Global.isNewAudioEngine()) {
         const value = sdPeriod.toString();
-        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'latency', value)
-        .then(setVal => {
+        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'latency', value).then((setVal) => {
           resolve(setVal);
-        });       
+        });
       } else {
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var silenceDetectionObj = JXON.parse(val);
-          silenceDetectionObj['latency'] = (sdPeriod.toString());
-          iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-          .then(setVal => {
-            resolve(setVal);
-          });
+          silenceDetectionObj['latency'] = sdPeriod.toString();
+          iApp
+            .set('microphonegain', XML.parseJSON(silenceDetectionObj).toString())
+            .then((setVal) => {
+              resolve(setVal);
+            });
         });
       }
-
     });
   }
 
@@ -1099,23 +1107,35 @@ export class App{
    * ```
    */
   getSilenceDetectionThreshold(): Promise<number> {
-    return new Promise(resolve => {
-      if (Global.isNewAudioEngine()) {  
-        exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ng\\config', config => {
-          if (config) {          
-            const values = config.split('&');          
-            const queryObj = arrayToObj(values, ':');
-            resolve(queryObj['gain'] !== undefined ? Number(queryObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
-          } else {
-            //assume no configuration set 
-            resolve(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
+    return new Promise((resolve) => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'getProperty',
+          'audiodevprop:000:effect:mic_dsp_ng\\config',
+          (config) => {
+            if (config) {
+              const values = config.split('&');
+              const queryObj = arrayToObj(values, ':');
+              resolve(
+                queryObj['gain'] !== undefined
+                  ? Number(queryObj['gain'])
+                  : DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE
+              );
+            } else {
+              //assume no configuration set
+              resolve(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
+            }
           }
-        });
+        );
       } else {
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var micGainObj = JXON.parse(val);
-          resolve(micGainObj['gain'] !== undefined ?
-            Number(micGainObj['gain']) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
+          resolve(
+            micGainObj['gain'] !== undefined
+              ? Number(micGainObj['gain'])
+              : DEFAULT_SILENCE_DETECTION_THRESHOLD
+          );
         });
       }
     });
@@ -1141,30 +1161,30 @@ export class App{
     return new Promise((resolve, reject) => {
       if (typeof sdThreshold !== 'number') {
         reject(Error('Silence detection threshold must be a number'));
-      } 
+      }
 
       if (Global.isNewAudioEngine()) {
         if (sdThreshold < 0 || sdThreshold > 1) {
           reject(Error('Silence detection threshold must be in the range 0-1.'));
         }
         const value = sdThreshold.toString();
-        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'gain', value)
-        .then(setVal => {
+        updateMicrophoneEffects(effectIds.noiseGate, '&', ':', 'gain', value).then((setVal) => {
           resolve(setVal);
-        });       
+        });
       } else {
         if (sdThreshold % 1 != 0) {
           reject(Error('Silence detection threshold must be an integer'));
         } else if (sdThreshold < 0 || sdThreshold > 128) {
           reject(Error('Silence detection threshold must be in the range 0-128.'));
         }
-        iApp.get('microphonegain').then(val => {
+        iApp.get('microphonegain').then((val) => {
           var silenceDetectionObj = JXON.parse(val);
-          silenceDetectionObj['gain'] = (sdThreshold.toString());
-          iApp.set('microphonegain',XML.parseJSON(silenceDetectionObj).toString())
-          .then(setVal => {
-            resolve(setVal);
-          });
+          silenceDetectionObj['gain'] = sdThreshold.toString();
+          iApp
+            .set('microphonegain', XML.parseJSON(silenceDetectionObj).toString())
+            .then((setVal) => {
+              resolve(setVal);
+            });
         });
       }
     });
@@ -1184,20 +1204,25 @@ export class App{
    * ```
    */
   isNoiseSuppressionEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      if (Global.isNewAudioEngine()) {  
-        exec('CallHostFunc', 'getProperty', 'audiodevprop:000:effect:mic_dsp_ns\\config', config => {
-          if (config) {          
-            const values = config.split(',');          
-            const queryObj = arrayToObj(values, '=');
-            resolve(queryObj['Enabled'] === '1');
-          } else {
-            //assume no configuration set 
-            resolve(false);
+    return new Promise((resolve) => {
+      if (Global.isNewAudioEngine()) {
+        exec(
+          'CallHostFunc',
+          'getProperty',
+          'audiodevprop:000:effect:mic_dsp_ns\\config',
+          (config) => {
+            if (config) {
+              const values = config.split(',');
+              const queryObj = arrayToObj(values, '=');
+              resolve(queryObj['Enabled'] === '1');
+            } else {
+              //assume no configuration set
+              resolve(false);
+            }
           }
-        });
+        );
       } else {
-        exec('CallHostFunc', 'getProperty', 'sound_ns', queryString => {
+        exec('CallHostFunc', 'getProperty', 'sound_ns', (queryString) => {
           var queryParams = queryString.split('&');
           var queryObj = arrayToObj(queryParams, '=');
           resolve(queryObj['Enabled'] === '1');
@@ -1223,15 +1248,16 @@ export class App{
    * ```
    */
   enableNoiseSuppression(enabled: boolean): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (Global.isNewAudioEngine()) {
         const value = enabled ? '1' : '0';
-        updateMicrophoneEffects(effectIds.noiseSuppression, ',', '=', 'Enabled', value)
-        .then(setVal => {
-          resolve(setVal);
-        });       
+        updateMicrophoneEffects(effectIds.noiseSuppression, ',', '=', 'Enabled', value).then(
+          (setVal) => {
+            resolve(setVal);
+          }
+        );
       } else {
-        exec('CallHostFunc', 'setProperty', 'sound_ns', `Enabled=${Number(enabled)}`, setVal => {
+        exec('CallHostFunc', 'setProperty', 'sound_ns', `Enabled=${Number(enabled)}`, (setVal) => {
           resolve(setVal);
         });
       }
@@ -1256,35 +1282,38 @@ export class App{
    * ```
    */
   getTransition(): Promise<Transition> {
-    return new Promise(resolve => {
-      iApp.get('transitionid').then(val => {
-        if (val === '') { // NONE
+    return new Promise((resolve) => {
+      iApp.get('transitionid').then((val) => {
+        if (val === '') {
+          // NONE
           resolve(Transition.NONE);
         } else {
-          let currTransition = Transition[val.toUpperCase()];
+          const currTransition = Transition[val.toUpperCase()];
           if (typeof currTransition !== 'undefined') {
             resolve(currTransition);
           } else {
-            Transition.getSceneTransitions().then(transitions => {
-              let inTransition = false;
-              let transitionObj;
-              let i;
+            Transition.getSceneTransitions()
+              .then((transitions) => {
+                let inTransition = false;
+                let transitionObj;
+                let i;
 
-              for (i = 0; i < transitions.length; i++) {
-                transitionObj = transitions[i];
-                if (transitionObj.toString() === val) {
-                  inTransition = true;
-                  break;
+                for (i = 0; i < transitions.length; i++) {
+                  transitionObj = transitions[i];
+                  if (transitionObj.toString() === val) {
+                    inTransition = true;
+                    break;
+                  }
                 }
-              }
-              if (inTransition) {
-                resolve(transitionObj);
-              } else {
+                if (inTransition) {
+                  resolve(transitionObj);
+                } else {
+                  resolve(new Transition(val));
+                }
+              })
+              .catch((err) => {
                 resolve(new Transition(val));
-              }
-            }).catch(err => {
-              resolve(new Transition(val));
-            });
+              });
           }
         }
       });
@@ -1314,8 +1343,8 @@ export class App{
    * ```
    */
   setTransition(transition: Transition): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.set('transitionid', transition.toString()).then(val => {
+    return new Promise((resolve) => {
+      iApp.set('transitionid', transition.toString()).then((val) => {
         resolve(val);
       });
     });
@@ -1334,9 +1363,9 @@ export class App{
    * });
    * ```
    */
-  getTransitionTime(): Promise<Number> {
-    return new Promise(resolve => {
-      iApp.get('transitiontime').then(val => {
+  getTransitionTime(): Promise<number> {
+    return new Promise((resolve) => {
+      iApp.get('transitiontime').then((val) => {
         resolve(Number(val));
       });
     });
@@ -1359,8 +1388,8 @@ export class App{
    * ```
    */
   setTransitionTime(time: number): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.set('transitiontime', time.toString()).then(val => {
+    return new Promise((resolve) => {
+      iApp.set('transitiontime', time.toString()).then((val) => {
         resolve(val);
       });
     });
@@ -1379,9 +1408,9 @@ export class App{
    * });
    * ```
    */
-  getTransitionVolume(): Promise<Number> {
-    return new Promise(resolve => {
-      iApp.get('transitionvolume').then(val => {
+  getTransitionVolume(): Promise<number> {
+    return new Promise((resolve) => {
+      iApp.get('transitionvolume').then((val) => {
         resolve(Number(val));
       });
     });
@@ -1404,8 +1433,8 @@ export class App{
    * ```
    */
   setTransitionVolume(volume: number): Promise<boolean> {
-    return new Promise(resolve => {
-      iApp.set('transitionvolume', volume.toString()).then(val => {
+    return new Promise((resolve) => {
+      iApp.set('transitionvolume', volume.toString()).then((val) => {
         resolve(val);
       });
     });
@@ -1426,15 +1455,19 @@ export class App{
    * ```
    */
   clearBrowserCookies(cookiePath: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {      
-      if(cookiePath && cookiePath !== '' && typeof window.external['CallHostFunc'] === 'function') {
+    return new Promise((resolve, reject) => {
+      if (
+        cookiePath &&
+        cookiePath !== '' &&
+        typeof window.external['CallHostFunc'] === 'function'
+      ) {
         exec('CallHostFunc', 'deleteCookie', cookiePath);
       } else if (Environment.isSourcePlugin()) {
         reject(Error('This method is not available to source plugins.'));
       } else {
         exec('CallHost', 'deletecookie:videoitemprop');
-      }    
-      resolve(true);      
+      }
+      resolve(true);
     });
   }
 
@@ -1446,10 +1479,10 @@ export class App{
    * certain XSplit users only.
    */
   getUserIdHash(): Promise<string> {
-    return new Promise(resolve => {
-      iApp.getGlobalProperty('userid').then( res => {
+    return new Promise((resolve) => {
+      iApp.getGlobalProperty('userid').then((res) => {
         resolve(res);
-      })
+      });
     });
   }
 }

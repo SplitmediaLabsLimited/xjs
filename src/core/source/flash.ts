@@ -1,10 +1,10 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {IAudio, Audio} from '../source/iaudio';
-import {ISourceFlash, SourceFlash} from './iflash';
-import {Rectangle} from '../../util/rectangle';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Rectangle } from '../../util/rectangle';
+import { Audio, type IAudio } from '../source/iaudio';
+import { Source } from '../source/source';
+import { type ISourceFlash, SourceFlash } from './iflash';
 
 /**
  * The FlashSource class represents the sources of the flash items that
@@ -39,19 +39,19 @@ import {Rectangle} from '../../util/rectangle';
 export class FlashSource extends Source implements IAudio, ISourceFlash {
   //Shared with FlashItem
   /** See: {@link #core/ISourceFlash#getCustomResolution getCustomResolution} */
-  getCustomResolution: () => Promise<Rectangle>
+  getCustomResolution: () => Promise<Rectangle>;
 
   /** See: {@link #core/ISourceFlash#setCustomResolution setCustomResolution} */
-  setCustomResolution: (value: Rectangle) => Promise<FlashSource>
+  setCustomResolution: (value: Rectangle) => Promise<FlashSource>;
 
   /** See: {@link #core/ISourceFlash#getAllowRightClick getAllowRightClick} */
-  getAllowRightClick: () => Promise<boolean>
+  getAllowRightClick: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceFlash#setAllowRightClick setAllowRightClick} */
-  setAllowRightClick: (value: boolean) => Promise<FlashSource>
+  setAllowRightClick: (value: boolean) => Promise<FlashSource>;
 
   /** See: {@link #core/ISourceFlash#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // ItemAudio
 
@@ -82,5 +82,4 @@ export class FlashSource extends Source implements IAudio, ISourceFlash {
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
-applyMixins(FlashSource, [Audio, SourceFlash])
-
+applyMixins(FlashSource, [Audio, SourceFlash]);

@@ -1,24 +1,29 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {IAudio, Audio} from '../source/iaudio';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {ISourceFlash, SourceFlash} from '../source/iflash';
+import { App as iApp } from '../../internal/app';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceFlash, SourceFlash } from '../source/iflash';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The FlashItem class represents a flash item, which is any SWF file
@@ -38,25 +43,33 @@ import {ISourceFlash, SourceFlash} from '../source/iflash';
  * may not be properly reflected in the item unless native flash audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class FlashItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceFlash {
-
+export class FlashItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    IAudio,
+    IItemEffect,
+    ISourceFlash
+{
   //Shared with Source
 
   /** See: {@link #core/FlashSource#getCustomResolution getCustomResolution} */
-  getCustomResolution: () => Promise<Rectangle>
+  getCustomResolution: () => Promise<Rectangle>;
 
   /** See: {@link #core/FlashSource#setCustomResolution setCustomResolution} */
-  setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>
+  setCustomResolution: (value: Rectangle) => Promise<ISourceFlash>;
 
   /** See: {@link #core/FlashSource#getAllowRightClick getAllowRightClick} */
-  getAllowRightClick: () => Promise<boolean>
+  getAllowRightClick: () => Promise<boolean>;
 
   /** See: {@link #core/FlashSource#setAllowRightClick setAllowRightClick} */
-  setAllowRightClick: (value: boolean) => Promise<ISourceFlash>
+  setAllowRightClick: (value: boolean) => Promise<ISourceFlash>;
 
   /** See: {@link #core/FlashSource#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
   // ItemLayout
 
   /**
@@ -122,12 +135,12 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<FlashItem>;  
+  sendBackward: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<FlashItem>; 
+  sendToBack: () => Promise<FlashItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -551,10 +564,13 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<FlashItem>;  
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<FlashItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<FlashItem>;
@@ -563,5 +579,12 @@ export class FlashItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(FlashItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  Audio, ItemEffect, SourceFlash]);
+applyMixins(FlashItem, [
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  Audio,
+  ItemEffect,
+  SourceFlash,
+]);

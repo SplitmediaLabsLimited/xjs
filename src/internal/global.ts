@@ -22,19 +22,19 @@ export class Global {
     return Global.persistedConfig;
   }
 
-  static isListenToItemAdd(): boolean {    
+  static isListenToItemAdd(): boolean {
     return Global.listenToItemAdd;
   }
 
-   static setListenToItemAdd(): void {    
-    Global.listenToItemAdd = true;    
+  static setListenToItemAdd(): void {
+    Global.listenToItemAdd = true;
   }
 
-  static isNewAudioEngine(): boolean {    
+  static isNewAudioEngine(): boolean {
     return Global.newAudioEngine;
   }
 
-   static setNewAudioEngine(isNewAudioEngine: boolean): void {    
-    Global.newAudioEngine = isNewAudioEngine;    
+  static setNewAudioEngine(isNewAudioEngine: boolean): void {
+    Global.newAudioEngine = isNewAudioEngine;
   }
 }

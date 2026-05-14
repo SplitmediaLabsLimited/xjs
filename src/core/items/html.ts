@@ -1,26 +1,31 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Environment} from '../environment';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
-import {IAudio, Audio} from '../source/iaudio';
-import {Item} from './item';
-import {Source} from '../source/source'
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {iSourceHtml, ISourceHtml} from '../source/ihtml'
+import { App as iApp } from '../../internal/app';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceConfigurable, SourceConfigurable } from '../source/iconfig';
+import { type ISourceHtml, iSourceHtml } from '../source/ihtml';
+import { Source } from '../source/source';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The HtmlItem class represents a web page item. This covers both item
@@ -57,138 +62,146 @@ import {iSourceHtml, ISourceHtml} from '../source/ihtml'
  * may not be properly reflected in the item unless native browser audio support
  * is enabled. (Tools menu > General Settings > Advanced tab)
  */
-export class HtmlItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, ISourceConfigurable, IAudio, IItemEffect,
-  ISourceHtml {
-
+export class HtmlItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    ISourceConfigurable,
+    IAudio,
+    IItemEffect,
+    ISourceHtml
+{
   //iSourceHtml
   /**
    * See: {@link #core/ISourceHtml#call call}
    */
-  call: () => Promise<HtmlItem>
+  call: () => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#getURL getURL}
    */
-  getURL: () => Promise<string>
+  getURL: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setURL setURL}
    */
-  setURL: () => Promise<HtmlItem>
+  setURL: () => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserTransparent isBrowserTransparent}
    */
-  isBrowserTransparent: () => Promise<boolean>
+  isBrowserTransparent: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowserTransparency enableBrowserTransparency}
    */
-  enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>
+  enableBrowserTransparency: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowser60FPS isBrowser60FPS}
    */
-  isBrowser60FPS: () => Promise<boolean>
+  isBrowser60FPS: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowser60FPS enableBrowser60FPS}
    */
-  enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>
+  enableBrowser60FPS: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#getBrowserCustomSize getBrowserCustomSize}
    */
-  getBrowserCustomSize: () => Promise<Rectangle>
+  getBrowserCustomSize: () => Promise<Rectangle>;
 
   /**
    * See: {@link #core/ISourceHtml#setBrowserCustomSize setBrowserCustomSize}
    */
-  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>
+  setBrowserCustomSize: (value: Rectangle) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#getAllowRightClick getAllowRightClick}
    */
-  getAllowRightClick: () => Promise<boolean>
+  getAllowRightClick: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#setAllowRightClick setAllowRightClick}
    */
-  setAllowRightClick: (value: boolean) => Promise<HtmlItem>
+  setAllowRightClick: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#getBrowserJS getBrowserJS}
    */
-  getBrowserJS: () => Promise<string>
+  getBrowserJS: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setBrowserJS setBrowserJS}
    */
-  setBrowserJS: () => Promise<HtmlItem>
+  setBrowserJS: () => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserJSEnabled isBrowserJSEnabled}
    */
-  isBrowserJSEnabled: () => Promise<boolean>
+  isBrowserJSEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableBrowserJS enableBrowserJS}
    */
-  enableBrowserJS: (value: boolean) => Promise<HtmlItem>
+  enableBrowserJS: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#getCustomCSS getCustomCSS}
    */
-  getCustomCSS: () => Promise<string>
+  getCustomCSS: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#setCustomCSS setCustomCSS}
    */
-  setCustomCSS: (value: string) => Promise<HtmlItem>
+  setCustomCSS: (value: string) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isCustomCSSEnabled isCustomCSSEnabled}
    */
-  isCustomCSSEnabled: () => Promise<boolean>
+  isCustomCSSEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableCustomCSS enableCustomCSS}
    */
-  enableCustomCSS: (value: boolean) => Promise<HtmlItem>
+  enableCustomCSS: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isBrowserOptimized isBrowserOptimized}
    */
-  isBrowserOptimized: () => Promise<boolean>
-  
+  isBrowserOptimized: () => Promise<boolean>;
+
   /**
    * See: {@link #core/ISourceHtml#getBrowserLoadStatus getBrowserLoadStatus}
    */
-  getBrowserLoadStatus: () => Promise<string>
+  getBrowserLoadStatus: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceHtml#isReloadOnShowEnabled isReloadOnShowEnabled}
    */
-  isReloadOnShowEnabled: () => Promise<boolean>
+  isReloadOnShowEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableReloadOnShow enableReloadOnShow}
    */
-  enableReloadOnShow: (value: boolean) => Promise<HtmlItem>
+  enableReloadOnShow: (value: boolean) => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/ISourceHtml#isReloadOnSceneEnterEnabled isReloadOnSceneEnterEnabled}
    */
-  isReloadOnSceneEnterEnabled: () => Promise<boolean>
+  isReloadOnSceneEnterEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISourceHtml#enableReloadOnSceneEnter enableReloadOnSceneEnter}
    */
-  enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlItem>
+  enableReloadOnSceneEnter: (value: boolean) => Promise<HtmlItem>;
 
   /** See: {@link #core/ISourceHtml#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // ItemLayout
 
@@ -255,12 +268,12 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<HtmlItem>;  
+  sendBackward: () => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<HtmlItem>; 
+  sendToBack: () => Promise<HtmlItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -706,10 +719,13 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<HtmlItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<HtmlItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<HtmlItem>;
@@ -718,5 +734,13 @@ export class HtmlItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(HtmlItem, [iSourceHtml ,ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  SourceConfigurable, Audio, ItemEffect]);
+applyMixins(HtmlItem, [
+  iSourceHtml,
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  SourceConfigurable,
+  Audio,
+  ItemEffect,
+]);

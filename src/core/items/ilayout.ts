@@ -1,11 +1,10 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Scene} from '../scene';
-import {Rectangle} from '../../util/rectangle';
+import { Item as iItem } from '../../internal/item';
+import { Rectangle } from '../../util/rectangle';
+import { Scene } from '../scene';
 
 export interface IItemLayout {
-
   /**
    * return: Promise<boolean>
    *
@@ -504,33 +503,24 @@ export class ItemLayout implements IItemLayout {
 
   private _getCanvasAndZRotate(value: number): Object {
     var rotationObject: Object = {};
-    if (value >= -180 && value <= -135)
-    {
+    if (value >= -180 && value <= -135) {
       rotationObject['canvasRotate'] = 180;
       rotationObject['zRotate'] = value + 180;
       rotationObject['orientation'] = 'landscape';
-    }
-    else if (value > -135 && value < -45)
-    {
+    } else if (value > -135 && value < -45) {
       rotationObject['canvasRotate'] = 270;
       rotationObject['zRotate'] = value + 90;
       rotationObject['orientation'] = 'portrait';
-    }
-    else if (value >= -45 && value <= 45)
-    {
+    } else if (value >= -45 && value <= 45) {
       rotationObject['canvasRotate'] = 0;
       rotationObject['zRotate'] = value;
       rotationObject['orientation'] = 'landscape';
-    }
-    else if (value > 45 && value < 135)
-    {
-      rotationObject['canvasRotate'] = 90
+    } else if (value > 45 && value < 135) {
+      rotationObject['canvasRotate'] = 90;
       rotationObject['zRotate'] = value - 90;
       rotationObject['orientation'] = 'portrait';
-    }
-    else if (value >= 135 && value <= 180)
-    {
-      rotationObject['canvasRotate'] = 180
+    } else if (value >= 135 && value <= 180) {
+      rotationObject['canvasRotate'] = 180;
       rotationObject['zRotate'] = value - 180;
       rotationObject['orientation'] = 'landscape';
     }
@@ -547,15 +537,15 @@ export class ItemLayout implements IItemLayout {
   }
 
   isKeepAspectRatio(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:keep_ar', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:keep_ar', this._id).then((val) => {
         resolve(val === '1');
       });
     });
   }
 
   setKeepAspectRatio(value: boolean): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:keep_ar', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
@@ -563,15 +553,15 @@ export class ItemLayout implements IItemLayout {
   }
 
   isPositionLocked(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:lockmove', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:lockmove', this._id).then((val) => {
         resolve(val === '1');
       });
     });
   }
 
   setPositionLocked(value: boolean): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:lockmove', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
@@ -579,27 +569,31 @@ export class ItemLayout implements IItemLayout {
   }
 
   isEnhancedResizeEnabled(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:mipmaps', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:mipmaps', this._id).then((val) => {
         resolve(val === '1');
       });
     });
   }
 
   setEnhancedResizeEnabled(value: boolean): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:mipmaps', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
   }
 
-  getPosition(output: number = 0):Promise<Rectangle> {
-    return new Promise(resolve => {
-      iItem.get(`prop:pos:${output}`, this._id).then(val => {
+  getPosition(output: number = 0): Promise<Rectangle> {
+    return new Promise((resolve) => {
+      iItem.get(`prop:pos:${output}`, this._id).then((val) => {
         var [left, top, right, bottom] = String(val).split(',');
-        this.position = Rectangle.fromCoordinates(Number(left), Number(top),
-          Number(right), Number(bottom));
+        this.position = Rectangle.fromCoordinates(
+          Number(left),
+          Number(top),
+          Number(right),
+          Number(bottom)
+        );
         resolve(this.position);
       });
     });
@@ -607,19 +601,19 @@ export class ItemLayout implements IItemLayout {
 
   setPosition(value: Rectangle, output: number = 0): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      try {                
+      try {
         iItem.set(`prop:pos:${output}`, value.toCoordinateString(), this._id).then(() => {
           resolve(this);
         });
-      } catch(err) {
+      } catch (err) {
         reject(err);
       }
     });
   }
 
   getRotateY(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:rotate_y', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:rotate_y', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -640,8 +634,8 @@ export class ItemLayout implements IItemLayout {
   }
 
   getRotateX(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:rotate_x', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:rotate_x', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -662,8 +656,8 @@ export class ItemLayout implements IItemLayout {
   }
 
   getRotateZ(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:rotate_z', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:rotate_z', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -683,10 +677,10 @@ export class ItemLayout implements IItemLayout {
     });
   }
 
-  getCropping():Promise<Object> {
-    return new Promise(resolve => {
+  getCropping(): Promise<Object> {
+    return new Promise((resolve) => {
       var cropObject: Object = {};
-      iItem.get('prop:crop', this._id).then(val => {
+      iItem.get('prop:crop', this._id).then((val) => {
         var [left, top, right, bottom] = String(val).split(',');
         cropObject['left'] = Number(left);
         cropObject['top'] = Number(top);
@@ -699,23 +693,38 @@ export class ItemLayout implements IItemLayout {
 
   setCropping(value: Object): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-      if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
-        value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
-        iItem.set('prop:crop', value['left'].toFixed(6) + ',' +
-              value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
-              value['bottom'].toFixed(6), this._id).then(() => {
-          resolve(this);
-        });
+      if (
+        Object.hasOwn(value, 'top') &&
+        Object.hasOwn(value, 'left') &&
+        Object.hasOwn(value, 'right') &&
+        Object.hasOwn(value, 'bottom')
+      ) {
+        iItem
+          .set(
+            'prop:crop',
+            value['left'].toFixed(6) +
+              ',' +
+              value['top'].toFixed(6) +
+              ',' +
+              value['right'].toFixed(6) +
+              ',' +
+              value['bottom'].toFixed(6),
+            this._id
+          )
+          .then(() => {
+            resolve(this);
+          });
       } else {
-        reject(Error('Error setting cropping,' +
-          ' insufficient properties (left, top, right, bottom)'));
+        reject(
+          Error('Error setting cropping,' + ' insufficient properties (left, top, right, bottom)')
+        );
       }
     });
   }
 
   getCanvasRotate(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:rotate_canvas', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:rotate_canvas', this._id).then((val) => {
         var value = Number(val);
         if ([0, 90, 180, 270].indexOf(value) < 0) {
           resolve(0);
@@ -729,8 +738,7 @@ export class ItemLayout implements IItemLayout {
   setCanvasRotate(value: number): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
       if ([0, 90, 180, 270].indexOf(value) < 0) {
-        reject(
-          Error('Invalid value. Only possible values are 0, 90, 180 and 270'));
+        reject(Error('Invalid value. Only possible values are 0, 90, 180 and 270'));
       } else {
         iItem.set('prop:rotate_canvas', String(value), this._id).then(() => {
           resolve(this);
@@ -740,18 +748,21 @@ export class ItemLayout implements IItemLayout {
   }
 
   getEnhancedRotate(): Promise<number> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       var rotateZ;
       var rotateCanvas;
       var rotateValue;
-      iItem.get('prop:rotate_z', this._id).then(val => {
-        rotateZ = Number(val);
-        return iItem.get('prop:rotate_canvas', this._id);
-      }).then(val => {
-        rotateCanvas = Number(val);
-        rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
-        resolve(rotateValue);
-      });
+      iItem
+        .get('prop:rotate_z', this._id)
+        .then((val) => {
+          rotateZ = Number(val);
+          return iItem.get('prop:rotate_canvas', this._id);
+        })
+        .then((val) => {
+          rotateCanvas = Number(val);
+          rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
+          resolve(rotateValue);
+        });
     });
   }
 
@@ -764,87 +775,102 @@ export class ItemLayout implements IItemLayout {
       } else {
         var formerObject;
         var valueObject = this._getCanvasAndZRotate(Number(value));
-        this.getEnhancedRotate().then(val => {
-          formerObject = this._getCanvasAndZRotate(Number(val));
-          return iItem.set('prop:rotate_z',
-            String(valueObject['zRotate']), this._id)
-        }).then(() => {
-          return iItem.set('prop:rotate_canvas',
-            String(valueObject['canvasRotate']), this._id)
-        }).then(() => {
-          if (formerObject['orientation'] !== valueObject['orientation'])
-          {
-            // interChangeHeightAndWidth();
-            var outputResolution;
-            var widthMax;
-            var heightMax;
-            iItem.get('mixerresolution', this._id).then(val => {
-              outputResolution = val.split(',');
-              widthMax = Number(outputResolution[0]);
-              heightMax = Number(outputResolution[1]);
-              return iItem.get('prop:pos', this._id);
-            }).then(val => {
-              var position = val.split(',');
-              var leftPosition = parseFloat(position[0]) * widthMax;
-              var topPosition = parseFloat(position[1]) * heightMax;
-              var rightPosition = parseFloat(position[2]) * widthMax;
-              var bottomPosition = parseFloat(position[3]) * heightMax;
+        this.getEnhancedRotate()
+          .then((val) => {
+            formerObject = this._getCanvasAndZRotate(Number(val));
+            return iItem.set('prop:rotate_z', String(valueObject['zRotate']), this._id);
+          })
+          .then(() => {
+            return iItem.set('prop:rotate_canvas', String(valueObject['canvasRotate']), this._id);
+          })
+          .then(() => {
+            if (formerObject['orientation'] !== valueObject['orientation']) {
+              // interChangeHeightAndWidth();
+              var outputResolution;
+              var widthMax;
+              var heightMax;
+              iItem
+                .get('mixerresolution', this._id)
+                .then((val) => {
+                  outputResolution = val.split(',');
+                  widthMax = Number(outputResolution[0]);
+                  heightMax = Number(outputResolution[1]);
+                  return iItem.get('prop:pos', this._id);
+                })
+                .then((val) => {
+                  var position = val.split(',');
+                  var leftPosition = parseFloat(position[0]) * widthMax;
+                  var topPosition = parseFloat(position[1]) * heightMax;
+                  var rightPosition = parseFloat(position[2]) * widthMax;
+                  var bottomPosition = parseFloat(position[3]) * heightMax;
 
-              var newLeft;
-              var newRight;
-              var newTop;
-              var newBottom;
-              var widthValue = Math.round(rightPosition - leftPosition);
-              var heightValue = Math.round(bottomPosition - topPosition);
+                  var newLeft;
+                  var newRight;
+                  var newTop;
+                  var newBottom;
+                  var widthValue = Math.round(rightPosition - leftPosition);
+                  var heightValue = Math.round(bottomPosition - topPosition);
 
-              if (heightValue > widthMax) {
-                newLeft = 0;
-                newRight = widthMax;
-              } else {
-                var xCenter = leftPosition +
-                  ((rightPosition - leftPosition) / 2);
-                newLeft = xCenter - (heightValue / 2);
-                newRight = xCenter + (heightValue / 2);
-              }
+                  if (heightValue > widthMax) {
+                    newLeft = 0;
+                    newRight = widthMax;
+                  } else {
+                    var xCenter = leftPosition + (rightPosition - leftPosition) / 2;
+                    newLeft = xCenter - heightValue / 2;
+                    newRight = xCenter + heightValue / 2;
+                  }
 
-              if (widthValue > heightMax) {
-                newTop = 0;
-                newBottom = heightMax;
-              } else {
-                var yCenter = topPosition + ((bottomPosition - topPosition) / 2);
-                newTop = yCenter - (widthValue/2);
-                newBottom = yCenter + (widthValue/2);
-              }
+                  if (widthValue > heightMax) {
+                    newTop = 0;
+                    newBottom = heightMax;
+                  } else {
+                    var yCenter = topPosition + (bottomPosition - topPosition) / 2;
+                    newTop = yCenter - widthValue / 2;
+                    newBottom = yCenter + widthValue / 2;
+                  }
 
-              var leftPos = newLeft / widthMax;
-              var topPos = newTop / heightMax;
-              var rightPos = newRight / widthMax;
-              var bottomPos = newBottom / heightMax;
+                  var leftPos = newLeft / widthMax;
+                  var topPos = newTop / heightMax;
+                  var rightPos = newRight / widthMax;
+                  var bottomPos = newBottom / heightMax;
 
-              return iItem.set('prop:pos', leftPos.toFixed(6) + ',' +
-                topPos.toFixed(6) + ',' + rightPos.toFixed(6) + ',' +
-                bottomPos.toFixed(6), this._id);
-            }).then(() => {
-              return iItem.get('prop:posaspect', this._id);
-            }).then(val => {
-              return iItem.set('prop:pos', val, this._id)
-            }).then(() => {
+                  return iItem.set(
+                    'prop:pos',
+                    leftPos.toFixed(6) +
+                      ',' +
+                      topPos.toFixed(6) +
+                      ',' +
+                      rightPos.toFixed(6) +
+                      ',' +
+                      bottomPos.toFixed(6),
+                    this._id
+                  );
+                })
+                .then(() => {
+                  return iItem.get('prop:posaspect', this._id);
+                })
+                .then((val) => {
+                  return iItem.set('prop:pos', val, this._id);
+                })
+                .then(() => {
+                  resolve(this);
+                });
+            } else {
               resolve(this);
-            });
-          } else {
-            resolve(this);
-          }
-        });
+            }
+          });
       }
     });
   }
 
   setCroppingEnhanced(value: Object): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
-
-      if (value.hasOwnProperty('top') && value.hasOwnProperty('left') &&
-        value.hasOwnProperty('right') && value.hasOwnProperty('bottom')) {
-
+      if (
+        Object.hasOwn(value, 'top') &&
+        Object.hasOwn(value, 'left') &&
+        Object.hasOwn(value, 'right') &&
+        Object.hasOwn(value, 'bottom')
+      ) {
         var originalWidth;
         var originalHeight;
         var outputResolution;
@@ -852,380 +878,328 @@ export class ItemLayout implements IItemLayout {
         var canvasRotate;
         var preCropPosition: Object = {};
 
-        iItem.get('mixerresolution', this._id).then(val => {
-          outputResolution = val.split(',');
-          return iItem.get('prop:pos', this._id);
-        }).then(val => {
-          position = val.split(',');
-          return iItem.get('prop:rotate_canvas', this._id);
-        }).then(val => {
-          canvasRotate = val;
-          return iItem.get('prop:crop', this._id);
-        }).then(val => {
-          var mixerWidth = parseInt(outputResolution[0]);
-          var mixerHeight = parseInt(outputResolution[1]);
+        iItem
+          .get('mixerresolution', this._id)
+          .then((val) => {
+            outputResolution = val.split(',');
+            return iItem.get('prop:pos', this._id);
+          })
+          .then((val) => {
+            position = val.split(',');
+            return iItem.get('prop:rotate_canvas', this._id);
+          })
+          .then((val) => {
+            canvasRotate = val;
+            return iItem.get('prop:crop', this._id);
+          })
+          .then((val) => {
+            var mixerWidth = parseInt(outputResolution[0]);
+            var mixerHeight = parseInt(outputResolution[1]);
 
-          var leftPositionInit = parseFloat(position[0]) * mixerWidth;
-          var topPositionInit = parseFloat(position[1]) * mixerHeight;
-          var rightPositionInit = parseFloat(position[2]) * mixerWidth;
-          var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
+            var leftPositionInit = parseFloat(position[0]) * mixerWidth;
+            var topPositionInit = parseFloat(position[1]) * mixerHeight;
+            var rightPositionInit = parseFloat(position[2]) * mixerWidth;
+            var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
 
-          var widthValue = rightPositionInit - leftPositionInit;
-          var heightValue = bottomPositionInit - topPositionInit;
+            var widthValue = rightPositionInit - leftPositionInit;
+            var heightValue = bottomPositionInit - topPositionInit;
 
-          var crop = val.split(',');
+            var crop = val.split(',');
 
-          var leftCropRaw = parseFloat(crop[0]);
-          var topCropRaw = parseFloat(crop[1]);
-          var rightCropRaw = parseFloat(crop[2]);
-          var bottomCropRaw = parseFloat(crop[3]);
+            var leftCropRaw = parseFloat(crop[0]);
+            var topCropRaw = parseFloat(crop[1]);
+            var rightCropRaw = parseFloat(crop[2]);
+            var bottomCropRaw = parseFloat(crop[3]);
 
-          var leftValue = Math.round(leftCropRaw * 100);
-          var topValue = Math.round(topCropRaw * 100);
-          var rightValue = Math.round(rightCropRaw * 100);
-          var bottomValue = Math.round(bottomCropRaw * 100);
+            var leftValue = Math.round(leftCropRaw * 100);
+            var topValue = Math.round(topCropRaw * 100);
+            var rightValue = Math.round(rightCropRaw * 100);
+            var bottomValue = Math.round(bottomCropRaw * 100);
 
-          var isNoCropping = ((leftValue == 0) && (topValue == 0) &&
-            (rightValue == 0) && (bottomValue == 0));
+            var isNoCropping =
+              leftValue == 0 && topValue == 0 && rightValue == 0 && bottomValue == 0;
 
-          if (canvasRotate == 270)
-          {
-            if (isNoCropping)
-            {
-              preCropPosition = position;
-              originalHeight = widthValue;
-              originalWidth = heightValue;
-            }
-            else
-            {
-              var leftPosition = parseFloat(position[3]);
-              var topPosition = parseFloat(position[0]);
-              var rightPosition = parseFloat(position[1]);
-              var bottomPosition = parseFloat(position[2]);
-
-              if (leftCropRaw != 0 || rightCropRaw != 0)
-              {
-                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
-
-                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
-                preCropPosition[3] = leftPosition + leftDifference;
-
-                var rightDifference = (originalWidth * rightCropRaw) /
-                  mixerHeight;
-                preCropPosition[1] = rightPosition - rightDifference;
-              }
-              else
-              {
-                originalWidth = heightValue;
-              }
-              if (topCropRaw != 0 || bottomCropRaw != 0)
-              {
-                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
-
-                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
-                preCropPosition[0] = topPosition - topDifference;
-
-                var bottomDifference = (originalHeight * bottomCropRaw) /
-                  mixerWidth;
-                preCropPosition[2] = bottomPosition + bottomDifference;
-              }
-              else
-              {
+            if (canvasRotate == 270) {
+              if (isNoCropping) {
+                preCropPosition = position;
                 originalHeight = widthValue;
-              }
-
-              if (leftCropRaw == 0)
-              {
-                preCropPosition[3] = position[3];
-              }
-
-              if (topCropRaw == 0)
-              {
-                preCropPosition[0] = position[0];
-              }
-
-              if (rightCropRaw == 0)
-              {
-                preCropPosition[1] = position[1];
-              }
-
-              if (bottomCropRaw == 0)
-              {
-                preCropPosition[2] = position[2];
-              }
-            }
-          }
-          else if (canvasRotate == 180)
-          {
-            if (isNoCropping)
-            {
-              preCropPosition = position;
-              originalWidth = widthValue;
-              originalHeight = heightValue;
-            }
-            else
-            {
-              var leftPosition = parseFloat(position[2]);
-              var topPosition = parseFloat(position[3]);
-              var rightPosition = parseFloat(position[0]);
-              var bottomPosition = parseFloat(position[1]);
-
-              if (leftCropRaw != 0 || rightCropRaw != 0)
-              {
-                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
-
-                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
-                preCropPosition[2] = leftPosition + leftDifference;
-
-                var rightDifference = (originalWidth * rightCropRaw) / mixerWidth;
-                preCropPosition[0] = rightPosition - rightDifference;
-              }
-              else
-              {
-                originalWidth = widthValue;
-              }
-              if (topCropRaw != 0 || bottomCropRaw != 0)
-              {
-                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
-
-                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
-                preCropPosition[3] = topPosition + topDifference;
-
-                var bottomDifference = (originalHeight * bottomCropRaw) /
-                  mixerHeight;
-                preCropPosition[1] = bottomPosition - bottomDifference;
-              }
-              else
-              {
-                originalHeight = heightValue;
-              }
-
-              if (leftCropRaw == 0)
-              {
-                preCropPosition[2] = position[2];
-              }
-
-              if (topCropRaw == 0)
-              {
-                preCropPosition[3] = position[3];
-              }
-
-              if (rightCropRaw == 0)
-              {
-                preCropPosition[0] = position[0];
-              }
-
-              if (bottomCropRaw == 0)
-              {
-                preCropPosition[1] = position[1];
-              }
-            }
-          }
-          else if (canvasRotate == 90)
-          {
-            if (isNoCropping)
-            {
-              preCropPosition = position;
-              originalHeight = widthValue;
-              originalWidth = heightValue;
-            }
-            else
-            {
-              var leftPosition = parseFloat(position[1]);
-              var topPosition = parseFloat(position[2]);
-              var rightPosition = parseFloat(position[3]);
-              var bottomPosition = parseFloat(position[0]);
-
-              if (leftCropRaw != 0 || rightCropRaw != 0)
-              {
-                originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
-
-                var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
-                preCropPosition[1] = leftPosition - leftDifference;
-
-                var rightDifference = (originalWidth * rightCropRaw) /
-                  mixerHeight;
-                preCropPosition[3] = rightPosition + rightDifference;
-              }
-              else
-              {
                 originalWidth = heightValue;
+              } else {
+                var leftPosition = parseFloat(position[3]);
+                var topPosition = parseFloat(position[0]);
+                var rightPosition = parseFloat(position[1]);
+                var bottomPosition = parseFloat(position[2]);
+
+                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+
+                  var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                  preCropPosition[3] = leftPosition + leftDifference;
+
+                  var rightDifference = (originalWidth * rightCropRaw) / mixerHeight;
+                  preCropPosition[1] = rightPosition - rightDifference;
+                } else {
+                  originalWidth = heightValue;
+                }
+                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+
+                  var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                  preCropPosition[0] = topPosition - topDifference;
+
+                  var bottomDifference = (originalHeight * bottomCropRaw) / mixerWidth;
+                  preCropPosition[2] = bottomPosition + bottomDifference;
+                } else {
+                  originalHeight = widthValue;
+                }
+
+                if (leftCropRaw == 0) {
+                  preCropPosition[3] = position[3];
+                }
+
+                if (topCropRaw == 0) {
+                  preCropPosition[0] = position[0];
+                }
+
+                if (rightCropRaw == 0) {
+                  preCropPosition[1] = position[1];
+                }
+
+                if (bottomCropRaw == 0) {
+                  preCropPosition[2] = position[2];
+                }
               }
-              if (topCropRaw != 0 || bottomCropRaw != 0)
-              {
-                originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
-
-                var topDifference = (originalHeight * topCropRaw) / mixerWidth;
-                preCropPosition[2] = topPosition + topDifference;
-
-                var bottomDifference = (originalHeight * bottomCropRaw) /
-                  mixerWidth;
-                preCropPosition[0] = bottomPosition - bottomDifference;
-
-              }
-              else
-              {
-                originalHeight = widthValue;
-              }
-
-              if (leftCropRaw == 0)
-              {
-                preCropPosition[1] = position[1];
-              }
-
-              if (topCropRaw == 0)
-              {
-                preCropPosition[2] = position[2];
-              }
-
-              if (rightCropRaw == 0)
-              {
-                preCropPosition[3] = position[3];
-              }
-
-              if (bottomCropRaw == 0)
-              {
-                preCropPosition[0] = position[0];
-              }
-            }
-          }
-          // canvasRotate is zero
-          else
-          {
-            if (isNoCropping)
-            {
-              preCropPosition = position;
-              originalHeight = heightValue;
-              originalWidth = widthValue;
-            }
-            else
-            {
-              var leftPosition = parseFloat(position[0]);
-              var topPosition = parseFloat(position[1]);
-              var rightPosition = parseFloat(position[2]);
-              var bottomPosition = parseFloat(position[3]);
-
-              if (leftCropRaw != 0 || rightCropRaw != 0)
-              {
-                originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
-
-                var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
-                preCropPosition[0] = leftPosition - leftDifference;
-
-                var rightDifference = (originalWidth * rightCropRaw) /
-                  mixerWidth;
-                preCropPosition[2] = rightPosition + rightDifference;
-              }
-              else
-              {
+            } else if (canvasRotate == 180) {
+              if (isNoCropping) {
+                preCropPosition = position;
                 originalWidth = widthValue;
-              }
-
-              if (topCropRaw != 0 || bottomCropRaw != 0)
-              {
-                originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
-
-                var topDifference = (originalHeight * topCropRaw) / mixerHeight;
-                preCropPosition[1] = topPosition - topDifference;
-
-                var bottomDifference = (originalHeight * bottomCropRaw) /
-                  mixerHeight;
-                preCropPosition[3] = bottomPosition + bottomDifference;
-              }
-              else
-              {
                 originalHeight = heightValue;
-              }
+              } else {
+                var leftPosition = parseFloat(position[2]);
+                var topPosition = parseFloat(position[3]);
+                var rightPosition = parseFloat(position[0]);
+                var bottomPosition = parseFloat(position[1]);
 
-              if (leftCropRaw == 0)
-              {
-                preCropPosition[0] = position[0];
-              }
+                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
 
-              if (topCropRaw == 0)
-              {
-                preCropPosition[1] = position[1];
-              }
+                  var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                  preCropPosition[2] = leftPosition + leftDifference;
 
-              if (rightCropRaw == 0)
-              {
-                preCropPosition[2] = position[2];
-              }
+                  var rightDifference = (originalWidth * rightCropRaw) / mixerWidth;
+                  preCropPosition[0] = rightPosition - rightDifference;
+                } else {
+                  originalWidth = widthValue;
+                }
+                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
 
-              if (bottomCropRaw == 0)
-              {
-                preCropPosition[3] = position[3];
+                  var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                  preCropPosition[3] = topPosition + topDifference;
+
+                  var bottomDifference = (originalHeight * bottomCropRaw) / mixerHeight;
+                  preCropPosition[1] = bottomPosition - bottomDifference;
+                } else {
+                  originalHeight = heightValue;
+                }
+
+                if (leftCropRaw == 0) {
+                  preCropPosition[2] = position[2];
+                }
+
+                if (topCropRaw == 0) {
+                  preCropPosition[3] = position[3];
+                }
+
+                if (rightCropRaw == 0) {
+                  preCropPosition[0] = position[0];
+                }
+
+                if (bottomCropRaw == 0) {
+                  preCropPosition[1] = position[1];
+                }
+              }
+            } else if (canvasRotate == 90) {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalHeight = widthValue;
+                originalWidth = heightValue;
+              } else {
+                var leftPosition = parseFloat(position[1]);
+                var topPosition = parseFloat(position[2]);
+                var rightPosition = parseFloat(position[3]);
+                var bottomPosition = parseFloat(position[0]);
+
+                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+
+                  var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
+                  preCropPosition[1] = leftPosition - leftDifference;
+
+                  var rightDifference = (originalWidth * rightCropRaw) / mixerHeight;
+                  preCropPosition[3] = rightPosition + rightDifference;
+                } else {
+                  originalWidth = heightValue;
+                }
+                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+
+                  var topDifference = (originalHeight * topCropRaw) / mixerWidth;
+                  preCropPosition[2] = topPosition + topDifference;
+
+                  var bottomDifference = (originalHeight * bottomCropRaw) / mixerWidth;
+                  preCropPosition[0] = bottomPosition - bottomDifference;
+                } else {
+                  originalHeight = widthValue;
+                }
+
+                if (leftCropRaw == 0) {
+                  preCropPosition[1] = position[1];
+                }
+
+                if (topCropRaw == 0) {
+                  preCropPosition[2] = position[2];
+                }
+
+                if (rightCropRaw == 0) {
+                  preCropPosition[3] = position[3];
+                }
+
+                if (bottomCropRaw == 0) {
+                  preCropPosition[0] = position[0];
+                }
               }
             }
-          }
+            // canvasRotate is zero
+            else {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalHeight = heightValue;
+                originalWidth = widthValue;
+              } else {
+                var leftPosition = parseFloat(position[0]);
+                var topPosition = parseFloat(position[1]);
+                var rightPosition = parseFloat(position[2]);
+                var bottomPosition = parseFloat(position[3]);
 
-          var leftCrop = value['left'];
-          var topCrop = value['top'];
-          var rightCrop = value['right'];
-          var bottomCrop = value['bottom'];
+                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
 
-          var leftPosition = parseFloat(preCropPosition[0]);
-          var topPosition = parseFloat(preCropPosition[1]);
-          var rightPosition = parseFloat(preCropPosition[2]);
-          var bottomPosition = parseFloat(preCropPosition[3]);
+                  var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
+                  preCropPosition[0] = leftPosition - leftDifference;
 
-          var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
-          var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
+                  var rightDifference = (originalWidth * rightCropRaw) / mixerWidth;
+                  preCropPosition[2] = rightPosition + rightDifference;
+                } else {
+                  originalWidth = widthValue;
+                }
 
-          var newLeft, newTop, newRight, newBottom;
+                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
 
-          if (canvasRotate == 270)
-          {
-            newLeft = ((topCrop * sourceWidth) / mixerWidth) + leftPosition;
-            newTop = ((rightCrop * sourceHeight) / mixerHeight) + topPosition;
-            newRight = rightPosition - ((bottomCrop * sourceWidth) / mixerWidth);
-            newBottom = bottomPosition -
-              ((leftCrop * sourceHeight) / mixerHeight);
-          }
-          else if (canvasRotate == 180)
-          {
-            newLeft = ((rightCrop * sourceWidth) / mixerWidth) + leftPosition;
-            newTop = ((bottomCrop * sourceHeight) / mixerHeight) + topPosition;
-            newRight = rightPosition - ((leftCrop * sourceWidth) / mixerWidth);
-            newBottom = bottomPosition -
-              ((topCrop * sourceHeight) / mixerHeight);
-          }
-          else if (canvasRotate == 90)
-          {
-            newLeft = ((bottomCrop * sourceWidth) / mixerWidth) + leftPosition;
-            newTop = ((leftCrop * sourceHeight) / mixerHeight) + topPosition;
-            newRight = rightPosition - ((topCrop * sourceWidth) / mixerWidth);
-            newBottom = bottomPosition -
-              ((rightCrop * sourceHeight) / mixerHeight);
-          }
-          else
-          {
-            newLeft = ((leftCrop * sourceWidth) / mixerWidth) + leftPosition;
-            newTop = ((topCrop * sourceHeight) / mixerHeight) + topPosition;
-            newRight = rightPosition - ((rightCrop * sourceWidth) / mixerWidth);
-            newBottom = bottomPosition -
-              ((bottomCrop * sourceHeight) / mixerHeight);
-          }
+                  var topDifference = (originalHeight * topCropRaw) / mixerHeight;
+                  preCropPosition[1] = topPosition - topDifference;
 
-          iItem.set('prop:crop', value['left'].toFixed(6) + ',' +
-            value['top'].toFixed(6) + ',' + value['right'].toFixed(6) + ',' +
-            value['bottom'].toFixed(6), this._id).then(() => {
-              return iItem.set('prop:pos', newLeft.toFixed(6) + ',' +
-                newTop.toFixed(6) + ',' + newRight.toFixed(6) + ',' +
-                newBottom.toFixed(6), this._id);
-          }).then(() => {
-            resolve(this);
+                  var bottomDifference = (originalHeight * bottomCropRaw) / mixerHeight;
+                  preCropPosition[3] = bottomPosition + bottomDifference;
+                } else {
+                  originalHeight = heightValue;
+                }
+
+                if (leftCropRaw == 0) {
+                  preCropPosition[0] = position[0];
+                }
+
+                if (topCropRaw == 0) {
+                  preCropPosition[1] = position[1];
+                }
+
+                if (rightCropRaw == 0) {
+                  preCropPosition[2] = position[2];
+                }
+
+                if (bottomCropRaw == 0) {
+                  preCropPosition[3] = position[3];
+                }
+              }
+            }
+
+            var leftCrop = value['left'];
+            var topCrop = value['top'];
+            var rightCrop = value['right'];
+            var bottomCrop = value['bottom'];
+
+            var leftPosition = parseFloat(preCropPosition[0]);
+            var topPosition = parseFloat(preCropPosition[1]);
+            var rightPosition = parseFloat(preCropPosition[2]);
+            var bottomPosition = parseFloat(preCropPosition[3]);
+
+            var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
+            var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
+
+            var newLeft, newTop, newRight, newBottom;
+
+            if (canvasRotate == 270) {
+              newLeft = (topCrop * sourceWidth) / mixerWidth + leftPosition;
+              newTop = (rightCrop * sourceHeight) / mixerHeight + topPosition;
+              newRight = rightPosition - (bottomCrop * sourceWidth) / mixerWidth;
+              newBottom = bottomPosition - (leftCrop * sourceHeight) / mixerHeight;
+            } else if (canvasRotate == 180) {
+              newLeft = (rightCrop * sourceWidth) / mixerWidth + leftPosition;
+              newTop = (bottomCrop * sourceHeight) / mixerHeight + topPosition;
+              newRight = rightPosition - (leftCrop * sourceWidth) / mixerWidth;
+              newBottom = bottomPosition - (topCrop * sourceHeight) / mixerHeight;
+            } else if (canvasRotate == 90) {
+              newLeft = (bottomCrop * sourceWidth) / mixerWidth + leftPosition;
+              newTop = (leftCrop * sourceHeight) / mixerHeight + topPosition;
+              newRight = rightPosition - (topCrop * sourceWidth) / mixerWidth;
+              newBottom = bottomPosition - (rightCrop * sourceHeight) / mixerHeight;
+            } else {
+              newLeft = (leftCrop * sourceWidth) / mixerWidth + leftPosition;
+              newTop = (topCrop * sourceHeight) / mixerHeight + topPosition;
+              newRight = rightPosition - (rightCrop * sourceWidth) / mixerWidth;
+              newBottom = bottomPosition - (bottomCrop * sourceHeight) / mixerHeight;
+            }
+
+            iItem
+              .set(
+                'prop:crop',
+                value['left'].toFixed(6) +
+                  ',' +
+                  value['top'].toFixed(6) +
+                  ',' +
+                  value['right'].toFixed(6) +
+                  ',' +
+                  value['bottom'].toFixed(6),
+                this._id
+              )
+              .then(() => {
+                return iItem.set(
+                  'prop:pos',
+                  newLeft.toFixed(6) +
+                    ',' +
+                    newTop.toFixed(6) +
+                    ',' +
+                    newRight.toFixed(6) +
+                    ',' +
+                    newBottom.toFixed(6),
+                  this._id
+                );
+              })
+              .then(() => {
+                resolve(this);
+              });
           });
-        });
       } else {
-        reject(Error('Error setting cropping,' +
-          ' insufficient properties (left, top, right, bottom)'));
+        reject(
+          Error('Error setting cropping,' + ' insufficient properties (left, top, right, bottom)')
+        );
       }
     });
   }
 
   bringForward(): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:zorder', '+', this._id).then(() => {
         resolve(this);
       });
@@ -1233,7 +1207,7 @@ export class ItemLayout implements IItemLayout {
   }
 
   sendBackward(): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:zorder', '-', this._id).then(() => {
         resolve(this);
       });
@@ -1241,74 +1215,80 @@ export class ItemLayout implements IItemLayout {
   }
 
   bringToFront(): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let itemsLength = 0;
       let itemIndex = -1;
       let forwardStep = 0;
-      Scene.searchScenesByItemId(this._id).then(itemScene => {
-        return itemScene.getItems();
-      }).then(sceneItems => {
-        itemsLength = sceneItems.length;
-        for (var i = 0; i < itemsLength; ++i) {
-          if (sceneItems[i]['_id'] === this._id) {
-            itemIndex = i;
-            break;
+      Scene.searchScenesByItemId(this._id)
+        .then((itemScene) => {
+          return itemScene.getItems();
+        })
+        .then((sceneItems) => {
+          itemsLength = sceneItems.length;
+          for (var i = 0; i < itemsLength; ++i) {
+            if (sceneItems[i]['_id'] === this._id) {
+              itemIndex = i;
+              break;
+            }
           }
-        }
-        if (itemsLength > 0 && itemIndex > -1) {
-          forwardStep = itemsLength - 1 - itemIndex;
-        }
-        let promiseArray = [];
-        let zorderPromise = (itemId, idx) => new Promise<void>( zorderResolve => {
-          iItem.set('prop:zorder', '+', this._id).then(() => {
-            zorderResolve();
+          if (itemsLength > 0 && itemIndex > -1) {
+            forwardStep = itemsLength - 1 - itemIndex;
+          }
+          const promiseArray = [];
+          const zorderPromise = (itemId, idx) =>
+            new Promise<void>((zorderResolve) => {
+              iItem.set('prop:zorder', '+', this._id).then(() => {
+                zorderResolve();
+              });
+            });
+          for (var i = forwardStep - 1; i >= 0; i--) {
+            promiseArray.push(zorderPromise(this._id, i));
+          }
+
+          Promise.all(promiseArray).then(() => {
+            resolve(this);
           });
         });
-        for (var i = forwardStep - 1; i >= 0; i--) {
-          promiseArray.push(zorderPromise(this._id, i));
-        }
-
-        Promise.all(promiseArray).then(() => {
-          resolve(this);
-        });
-      });
       // get index in scene
       // call bring forward based on index
     });
   }
 
   sendToBack(): Promise<ItemLayout> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let itemsLength = 0;
       let itemIndex = -1;
       let backwardStep = 0;
-      Scene.searchScenesByItemId(this._id).then(itemScene => {
-        return itemScene.getItems();
-      }).then(sceneItems => {
-        itemsLength = sceneItems.length;
-        for (var i = 0; i < itemsLength; ++i) {
-          if (sceneItems[i]['_id'] === this._id) {
-            itemIndex = i;
-            break;
+      Scene.searchScenesByItemId(this._id)
+        .then((itemScene) => {
+          return itemScene.getItems();
+        })
+        .then((sceneItems) => {
+          itemsLength = sceneItems.length;
+          for (var i = 0; i < itemsLength; ++i) {
+            if (sceneItems[i]['_id'] === this._id) {
+              itemIndex = i;
+              break;
+            }
           }
-        }
-        if (itemsLength > 0 && itemIndex > -1) {
-          backwardStep = itemIndex;
-        }
-        let promiseArray = [];
-        let zorderPromise = (itemId, idx) => new Promise<void>( zorderResolve => {
-          iItem.set('prop:zorder', '-', this._id).then(() => {
-            zorderResolve();
+          if (itemsLength > 0 && itemIndex > -1) {
+            backwardStep = itemIndex;
+          }
+          const promiseArray = [];
+          const zorderPromise = (itemId, idx) =>
+            new Promise<void>((zorderResolve) => {
+              iItem.set('prop:zorder', '-', this._id).then(() => {
+                zorderResolve();
+              });
+            });
+          for (var i = backwardStep - 1; i >= 0; i--) {
+            promiseArray.push(zorderPromise(this._id, i));
+          }
+
+          Promise.all(promiseArray).then(() => {
+            resolve(this);
           });
         });
-        for (var i = backwardStep - 1; i >= 0; i--) {
-          promiseArray.push(zorderPromise(this._id, i));
-        }
-
-        Promise.all(promiseArray).then(() => {
-          resolve(this);
-        });
-      });
       // get index in scene
       // call bring forward based on index
     });

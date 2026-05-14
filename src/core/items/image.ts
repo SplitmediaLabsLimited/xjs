@@ -1,22 +1,27 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {XML} from '../../internal/util/xml';
-import {SourceImage, ISourceImage} from '../source/iimage';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { XML } from '../../internal/util/xml';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { type ISourceImage, SourceImage } from '../source/iimage';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The ImageItem class represents an image item (includes GIF files).
@@ -32,11 +37,12 @@ import {SourceImage, ISourceImage} from '../source/iimage';
  *  All methods marked as *Chainable* resolve with the original `ImageItem`
  *  instance.
  */
-export class ImageItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect, ISourceImage {
-
+export class ImageItem
+  extends Item
+  implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect, ISourceImage
+{
   /** See: {@link #core/ISourceImage#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceImage#getValue getValue} */
   getValue: () => Promise<string>;
@@ -509,10 +515,13 @@ export class ImageItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<ImageItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<ImageItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<ImageItem>;
@@ -521,4 +530,12 @@ export class ImageItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(ImageItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect, SourceImage]);
+applyMixins(ImageItem, [
+  Item,
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  ItemEffect,
+  SourceImage,
+]);

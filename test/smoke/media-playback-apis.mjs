@@ -145,4 +145,7 @@ assert.equal(props.get('prop:name'), 'C:\\media\\updated.mov');
 assert.equal(props.get('prop:CuePoints'), '');
 await assert.rejects(() => media.setValue('C:\\media\\not-supported.txt'), /valid media type/);
 
-assert.equal(hostCalls.some((call) => call[0] === 'SearchVideoItem'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SearchVideoItem'),
+  true
+);

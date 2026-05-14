@@ -26,10 +26,16 @@ for (const referenceOnlyPath of [
   'docs/links-package/',
 ]) {
   assert.match(docsReadme, new RegExp(referenceOnlyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.doesNotMatch(buildDocs, new RegExp(referenceOnlyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(
+    buildDocs,
+    new RegExp(referenceOnlyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  );
 }
 
 assert.match(buildDocs, /docs\/app/, 'docs build should copy only the active static docs app');
-assert.doesNotMatch(buildDocs, /dgeni|docs-package|typescript-package|angular\.io-package|links-package/i);
+assert.doesNotMatch(
+  buildDocs,
+  /dgeni|docs-package|typescript-package|angular\.io-package|links-package/i
+);
 
 assert.equal(pkg.scripts['docs:build'], 'node scripts/build-docs.mjs');

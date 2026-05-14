@@ -1,10 +1,10 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
-import {Rectangle} from '../../util/rectangle';
-import {iSourceGame, ISourceGame} from './igame';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { Rectangle } from '../../util/rectangle';
+import { Source } from '../source/source';
+import { type ISourceGame, iSourceGame } from './igame';
 
 /**
  * The GameSource class represents the sources of the game items that
@@ -36,37 +36,37 @@ import {iSourceGame, ISourceGame} from './igame';
  * All methods marked as *Chainable* resolve with the original `GameSource`
  * instance.
  */
-export class GameSource extends Source implements ISourceGame{
+export class GameSource extends Source implements ISourceGame {
   //iSourceGame
 
   /** See: {@link #core/ISourceGame#isSpecialOptimizationEnabled isSpecialOptimizationEnabled} */
-  isSpecialOptimizationEnabled: () => Promise<boolean>
+  isSpecialOptimizationEnabled: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceGame#setSpecialOptimizationEnabled setSpecialOptimizationEnabled} */
-  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>
+  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameSource>;
 
   /** See: {@link #core/ISourceGame#isShowMouseEnabled isShowMouseEnabled} */
-  isShowMouseEnabled: () => Promise<boolean>
+  isShowMouseEnabled: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceGame#setShowMouseEnabled setShowMouseEnabled} */
-  setShowMouseEnabled: (value: boolean) => Promise<GameSource>
+  setShowMouseEnabled: (value: boolean) => Promise<GameSource>;
 
   /** See: {@link #core/ISourceGame#setOfflineImage setOfflineImage} */
-  setOfflineImage: (path: string) => Promise<GameSource>
+  setOfflineImage: (path: string) => Promise<GameSource>;
 
   /** See: {@link #core/ISourceGame#getOfflineImage getOfflineImage} */
-  getOfflineImage:() => Promise<string>
+  getOfflineImage: () => Promise<string>;
 
   /** See: {@link #core/ISourceGame#isTransparent isTransparent} */
-  isTransparent:() => Promise<boolean>
+  isTransparent: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceGame#setTransparent setTransparent} */
-  setTransparent:(value: boolean) => Promise<GameSource>
+  setTransparent: (value: boolean) => Promise<GameSource>;
 
   /** See: {@link #core/ISourceGame#getGameFPSCap getGameFPSCap} */
-  getGameFPSCap:() => Promise<number>
+  getGameFPSCap: () => Promise<number>;
 
   /** See: {@link #core/ISourceGame#setGameFPSCap setGameFPSCap} */
-  setGameFPSCap:(fps: number) => Promise<GameSource>
+  setGameFPSCap: (fps: number) => Promise<GameSource>;
 }
-applyMixins(GameSource, [iSourceGame])
+applyMixins(GameSource, [iSourceGame]);

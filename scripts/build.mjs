@@ -8,7 +8,10 @@ const dist = resolve(root, 'dist');
 const entry = resolve(root, 'src/index.ts');
 const license = await readFile(resolve(root, 'LICENSE'), 'utf8');
 const pkg = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
-const banner = `/**\n * XSplit JS Framework\n * version: ${pkg.version}\n * CEF 103 compatible browser bundle target: chrome103\n *\n${license.split('\n').map(line => ` * ${line}`).join('\n')}\n */`;
+const banner = `/**\n * XSplit JS Framework\n * version: ${pkg.version}\n * CEF 103 compatible browser bundle target: chrome103\n *\n${license
+  .split('\n')
+  .map((line) => ` * ${line}`)
+  .join('\n')}\n */`;
 
 function run(command, args, options = {}) {
   return new Promise((resolvePromise, reject) => {
@@ -17,10 +20,12 @@ function run(command, args, options = {}) {
       shell: process.platform === 'win32',
       stdio: 'inherit',
     });
-    child.on('exit', code => {
+    child.on('exit', (code) => {
       if (code === 0 || options.allowFailure) {
         if (code !== 0) {
-          console.warn(`${command} ${args.join(' ')} exited with ${code}; continuing because declarations were still emitted.`);
+          console.warn(
+            `${command} ${args.join(' ')} exited with ${code}; continuing because declarations were still emitted.`
+          );
         }
         resolvePromise();
       } else {

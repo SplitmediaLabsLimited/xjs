@@ -260,10 +260,13 @@ assert.equal(String(await item.getFilter()), 'none');
 assert.equal(await item.setFilter(xjs.Filter.COOL, { intensity: 55 }), item);
 assert.equal(String(await item.getFilter()), 'cool');
 assert.deepEqual(await item.getFilterConfig(), { intensity: 55.00000000000001 });
-assert.equal(await item.setFilter(xjs.Filter.LUT, {
-  intensity: 25,
-  resourceFile: 'C:\\LUTs\\warm.cube',
-}), item);
+assert.equal(
+  await item.setFilter(xjs.Filter.LUT, {
+    intensity: 25,
+    resourceFile: 'C:\\LUTs\\warm.cube',
+  }),
+  item
+);
 assert.equal(String(await item.getFilter()), 'lut');
 assert.deepEqual(await item.getFilterConfig(), {
   intensity: 25,
@@ -273,7 +276,10 @@ assert.equal(await item.removeFilter(), item);
 assert.equal(String(await item.getFilter()), 'none');
 await assert.rejects(() => item.setFilter('missing-filter'), /Filter non-existent/);
 
-assert.equal(hostCalls.some((call) => call[0] === 'SearchVideoItem'), true);
+assert.equal(
+  hostCalls.some((call) => call[0] === 'SearchVideoItem'),
+  true
+);
 assert.equal(props.get('prop:alpha'), '128');
 assert.equal(props.get('prop:cc_dynamicrange'), '1');
 assert.equal(props.get('prop:key_chromakey'), '1');

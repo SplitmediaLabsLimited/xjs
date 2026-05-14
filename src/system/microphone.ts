@@ -1,11 +1,11 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {JSON as JXON} from '../internal/util/json';
-import {XML} from '../internal/util/xml';
-import {Addable} from './iaddable';
-import {Scene} from '../core/scene';
-import{checkSplitmode} from '../internal/util/splitmode';
-import {addToSceneHandler} from '../util/addtosceneutil';
+import type { Scene } from '../core/scene';
+import { JSON as JXON } from '../internal/util/json';
+import { checkSplitmode } from '../internal/util/splitmode';
+import { XML } from '../internal/util/xml';
+import { addToSceneHandler } from '../util/addtosceneutil';
+import type { Addable } from './iaddable';
 
 /**
  * The MicrophoneDevice class provides you with methods to add a microphone
@@ -86,7 +86,7 @@ export class MicrophoneDevice implements Addable {
    * var microphoneXML = microphone.toXML();
    * ```
    */
-  toXML() : XML {
+  toXML(): XML {
     var microphone = new JXON();
 
     microphone.tag = 'item';
@@ -112,15 +112,18 @@ export class MicrophoneDevice implements Addable {
    *
    * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<any> {
+  addToScene(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
-      checkSplitmode(value).then((scenePrefix) => {
-        return addToSceneHandler(scenePrefix + 'additem', this.toXML().toString());
-      }).then(result => {
-        resolve(result);
-      }).catch(err => {
-        reject(err);
-      });
+      checkSplitmode(value)
+        .then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + 'additem', this.toXML().toString());
+        })
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 }

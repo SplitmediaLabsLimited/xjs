@@ -1,5 +1,5 @@
-import {Scene} from '../core/scene';
+import type { Scene } from '../core/scene';
 
 export interface Addable {
-  addToScene(value: number | Scene ): Promise<any>;  
+  addToScene(value: number | Scene): Promise<any>;
 }

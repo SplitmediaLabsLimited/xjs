@@ -1,10 +1,10 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 /// <reference path="../../defs/window.d.ts" />
 
-import { EventEmitter } from './eventemitter';
 import { App as iApp } from '../internal/app';
 import { Global } from '../internal/global';
 import { exec } from '../internal/internal';
+import { EventEmitter } from './eventemitter';
 import window from './window';
 
 export class AddToSceneEventEmitter extends EventEmitter {
@@ -17,8 +17,7 @@ export class AddToSceneEventEmitter extends EventEmitter {
       const prevAppOnItemAdded = window.AppOnItemAdded;
       window.AppOnItemAdded = (...args) => {
         this.emit(args[0], args[1]);
-        if (typeof prevAppOnItemAdded === 'function')
-          prevAppOnItemAdded(...args);
+        if (typeof prevAppOnItemAdded === 'function') prevAppOnItemAdded(...args);
       };
       exec('AppSubscribeEvents');
     }
@@ -45,7 +44,7 @@ export function addToSceneHandler(cmd: string, ...args: string[]): Promise<any> 
     const eventId = 'EVENT-XJS-CREATE-' + guid(null) + '-' + Date.now();
     if (Global.isListenToItemAdd()) {
       const _addToScene = AddToSceneEventEmitter.getInstance();
-      const itemCreated = itemId => {
+      const itemCreated = (itemId) => {
         _addToScene.off(eventId, itemCreated);
         resolve(itemId);
       };
@@ -57,7 +56,7 @@ export function addToSceneHandler(cmd: string, ...args: string[]): Promise<any> 
       .then(() => {
         if (!Global.isListenToItemAdd()) resolve(true);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err);
       });
   });

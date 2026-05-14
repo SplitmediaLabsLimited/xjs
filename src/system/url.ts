@@ -1,9 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Addable} from './iaddable';
-import {Scene} from '../core/scene';
-import{checkSplitmode} from '../internal/util/splitmode';
-import {addToSceneHandler} from '../util/addtosceneutil';
+import type { Scene } from '../core/scene';
+import { checkSplitmode } from '../internal/util/splitmode';
+import { addToSceneHandler } from '../util/addtosceneutil';
+import type { Addable } from './iaddable';
 
 /**
  *  Class for adding a web source to the stage.
@@ -21,7 +21,6 @@ import {addToSceneHandler} from '../util/addtosceneutil';
  * ```
  */
 export class Url implements Addable {
-
   private _url: string;
 
   /**
@@ -61,19 +60,23 @@ export class Url implements Addable {
    *
    * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?: number | Scene ): Promise<any> {
+  addToScene(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
       let scenePrefix = '';
-      checkSplitmode(value).then((prefix) => {
-        scenePrefix = prefix
-        return this._getUrl();
-      }).then(url => {
-        return addToSceneHandler(scenePrefix + 'addurl', url);
-      }).then(result => {
-        resolve(result);
-      }).catch(err => {
-        reject(err);
-      });
+      checkSplitmode(value)
+        .then((prefix) => {
+          scenePrefix = prefix;
+          return this._getUrl();
+        })
+        .then((url) => {
+          return addToSceneHandler(scenePrefix + 'addurl', url);
+        })
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 }

@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {ISourceScene, SourceScene} from '../source/iscene';
-import {Scene} from '../scene';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Scene } from '../scene';
+import { type ISourceScene, SourceScene } from '../source/iscene';
+import { Source } from '../source/source';
 
 /**
  * The SceneSource class represents the sources of the scene items that
@@ -31,17 +31,17 @@ import {Scene} from '../scene';
  *   })
  * })
  * ```
-  */
+ */
 export class SceneSource extends Source implements ISourceScene {
   /**
    * See: {@link #core/ISourceScene#getScene getScene}
    */
-	getScene: () => Promise<Scene>
+  getScene: () => Promise<Scene>;
 
   /**
    * See: {@link #core/ISourceScene#setScene setScene}
    */
-	setScene: (scene?: number | Scene) => Promise<SourceScene>
+  setScene: (scene?: number | Scene) => Promise<SourceScene>;
 }
 
-applyMixins(SceneSource, [SourceScene])
+applyMixins(SceneSource, [SourceScene]);

@@ -18,7 +18,7 @@ sandbox.globalThis = sandbox;
 sandbox.self = sandbox;
 sandbox.window = sandbox;
 sandbox.navigator = { appVersion: 'XSplit Broadcaster 4.0.0' };
-sandbox.require = name => {
+sandbox.require = (name) => {
   delegatedCalls.push(name);
   return sandbox.previousRequireResult;
 };
@@ -30,9 +30,17 @@ vm.runInContext(bundle, sandbox, {
 
 assert.equal(typeof sandbox.XJS, 'object', 'browser bundle should expose XJS globally');
 assert.equal(typeof sandbox.require, 'function', 'browser bundle should install a require shim');
-assert.equal(sandbox.require('xjs'), sandbox.XJS, 'require("xjs") should return the browser exports');
+assert.equal(
+  sandbox.require('xjs'),
+  sandbox.XJS,
+  'require("xjs") should return the browser exports'
+);
 assert.equal(sandbox.require.xjs, sandbox.XJS, 'require shim should expose the xjs exports');
-assert.equal(sandbox.require('other-module'), sandbox.previousRequireResult, 'require shim should delegate unknown modules');
+assert.equal(
+  sandbox.require('other-module'),
+  sandbox.previousRequireResult,
+  'require shim should delegate unknown modules'
+);
 assert.deepEqual(delegatedCalls, ['other-module']);
 
 for (const api of [

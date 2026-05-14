@@ -24,11 +24,9 @@ export class Rectangle {
   setTop(top: number): Rectangle {
     this._top = top;
 
-    if (this._bottom !== undefined &&
-      this._height !== (this._top - this._bottom)) {
+    if (this._bottom !== undefined && this._height !== this._top - this._bottom) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    } else if (this._height !== undefined &&
-      this._bottom !== (this._top + this._height)) {
+    } else if (this._height !== undefined && this._bottom !== this._top + this._height) {
       this.setBottom(this._top + this._height);
     }
 
@@ -44,11 +42,9 @@ export class Rectangle {
   setLeft(left: number): Rectangle {
     this._left = left;
 
-    if (this._right !== undefined &&
-      this._width !== Math.abs(this._right - this._left)) {
+    if (this._right !== undefined && this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    } else if (this._width !== undefined &&
-      this._height !== (this._left + this._width)) {
+    } else if (this._width !== undefined && this._height !== this._left + this._width) {
       this.setRight(this._left + this._width);
     }
 
@@ -64,11 +60,9 @@ export class Rectangle {
   setRight(right: number): Rectangle {
     this._right = right;
 
-    if (this._left !== undefined &&
-      this._width !== Math.abs(this._right - this._left)) {
+    if (this._left !== undefined && this._width !== Math.abs(this._right - this._left)) {
       this.setWidth(Math.abs(this._right - this._left));
-    } else if (this._width !== undefined &&
-      this._left !== (this._right - this._width)) {
+    } else if (this._width !== undefined && this._left !== this._right - this._width) {
       this.setLeft(this._right - this._width);
     }
 
@@ -84,11 +78,9 @@ export class Rectangle {
   setBottom(bottom: number): Rectangle {
     this._bottom = bottom;
 
-    if (this._top !== undefined &&
-      this._height !== Math.abs(this._top - this._bottom)) {
+    if (this._top !== undefined && this._height !== Math.abs(this._top - this._bottom)) {
       this.setHeight(Math.abs(this._top - this._bottom));
-    } else if (this._height !== undefined &&
-      this._top !== (this._bottom - this._height)) {
+    } else if (this._height !== undefined && this._top !== this._bottom - this._height) {
       this.setTop(this._bottom - this._height);
     }
 
@@ -104,11 +96,9 @@ export class Rectangle {
   setWidth(width: number): Rectangle {
     this._width = width;
 
-    if (this._right !== undefined &&
-      this._left !== (this._right - this._width)) {
+    if (this._right !== undefined && this._left !== this._right - this._width) {
       this.setLeft(this._right - this._width);
-    } else if (this._left !== undefined &&
-      this._right !== (this._left + this._width)) {
+    } else if (this._left !== undefined && this._right !== this._left + this._width) {
       this.setRight(this._left + this._width);
     }
 
@@ -124,11 +114,9 @@ export class Rectangle {
   setHeight(height: number): Rectangle {
     this._height = height;
 
-    if (this._top !== undefined &&
-      this._bottom !== (this._top + this._height)) {
+    if (this._top !== undefined && this._bottom !== this._top + this._height) {
       this.setBottom(this._top + this._height);
-    } else if (this._bottom !== undefined &&
-      this._top !== (this._bottom - this._height)) {
+    } else if (this._bottom !== undefined && this._top !== this._bottom - this._height) {
       this.setTop(this._bottom - this._height);
     }
 
@@ -149,7 +137,7 @@ export class Rectangle {
       throw new Error('Rectangle dimensions cannot be negative.');
     }
 
-    let rect = new Rectangle();
+    const rect = new Rectangle();
     rect._width = width;
     rect._height = height;
     return rect;
@@ -164,15 +152,14 @@ export class Rectangle {
    *  and relative (0-1) dimensions are accepted. Refer to the documentation
    *  of each individual function to see which one is necessary.
    */
-  static fromCoordinates(left: number, top: number,
-    right: number, bottom: number): Rectangle {
+  static fromCoordinates(left: number, top: number, right: number, bottom: number): Rectangle {
     if (top > bottom) {
       throw new Error('Top coordinate must be smaller than bottom.');
     } else if (left > right) {
       throw new Error('Right coordinate must be smaller than left.');
     }
 
-    let rect = new Rectangle();
+    const rect = new Rectangle();
     rect._top = top;
     rect._left = left;
     rect.setRight(right); // calculates width
@@ -224,7 +211,7 @@ export class Rectangle {
    *  - :width
    *  - :height
    */
-  toString(value ?: string): string {
+  toString(value?: string): string {
     if (value === undefined) {
       return this.toDimensionString(); // all rectangles have dimensions
     } else {

@@ -1,11 +1,9 @@
-
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Transition} from '../transition';
+import { Item as iItem } from '../../internal/item';
+import { Transition } from '../transition';
 
 export interface IItemTransition {
-
   /**
    * return: Promise<boolean>
    *
@@ -59,15 +57,15 @@ export class ItemTransition implements IItemTransition {
   private _id: string;
 
   isVisible(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:visible', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:visible', this._id).then((val) => {
         resolve(val === '1' ? true : false);
       });
     });
   }
 
   setVisible(value: boolean): Promise<ItemTransition> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:visible', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
@@ -75,9 +73,10 @@ export class ItemTransition implements IItemTransition {
   }
 
   getTransition(): Promise<Transition> {
-    return new Promise(resolve => {
-      iItem.get('prop:transitionid', this._id).then(val => {
-        if (val === '') { // NONE
+    return new Promise((resolve) => {
+      iItem.get('prop:transitionid', this._id).then((val) => {
+        if (val === '') {
+          // NONE
           resolve(Transition.NONE);
         } else {
           resolve(Transition[val.toUpperCase()]);
@@ -99,8 +98,8 @@ export class ItemTransition implements IItemTransition {
   }
 
   getTransitionTime(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:transitiontime', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:transitiontime', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -118,6 +117,5 @@ export class ItemTransition implements IItemTransition {
         });
       }
     });
-
   }
 }

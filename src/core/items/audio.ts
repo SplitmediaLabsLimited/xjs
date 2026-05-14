@@ -1,12 +1,12 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {IAudio, Audio} from '../source/iaudio';
-import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
-import {Scene} from '../scene';
-import {Item} from './item';
-import {Environment} from '../environment';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { Environment } from '../environment';
+import { Scene } from '../scene';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceAudio, SourceAudio } from '../source/iaudiosource';
+import { Item } from './item';
 
 /**
  * The AudioItem class represents an audio device that has been added
@@ -37,32 +37,31 @@ import {Environment} from '../environment';
  *  instance.
  */
 export class AudioItem extends Item implements ISourceAudio, IAudio {
-
   // SourceAudio
 
   /** See: {@link #core/AudioSource#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
-  isSilenceDetectionEnabled: () => Promise<boolean>
+  isSilenceDetectionEnabled: () => Promise<boolean>;
 
   /** See: {@link #core/AudioSource#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
-  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioItem>
+  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioItem>;
 
   /** See: {@link #core/AudioSource#getSilenceThreshold getSilenceThreshold} */
-  getSilenceThreshold: () => Promise<number>
+  getSilenceThreshold: () => Promise<number>;
 
   /** See: {@link #core/AudioSource#setSilenceThreshold setSilenceThreshold} */
-  setSilenceThreshold: (value: number) => Promise<AudioItem>
+  setSilenceThreshold: (value: number) => Promise<AudioItem>;
 
   /** See: {@link #core/AudioSource#getSilencePeriod getSilencePeriod} */
-  getSilencePeriod: () => Promise<number>
+  getSilencePeriod: () => Promise<number>;
 
   /** See: {@link #core/AudioSource#setSilencePeriod setSilencePeriod} */
-  setSilencePeriod: (value: number) => Promise<AudioItem>
+  setSilencePeriod: (value: number) => Promise<AudioItem>;
 
   /** See: {@link #core/AudioSource#getAudioOffset getAudioOffset} */
-  getAudioOffset: () => Promise<number>
+  getAudioOffset: () => Promise<number>;
 
   /** See: {@link #core/AudioSource#setAudioOffset setAudioOffset} */
-  setAudioOffset: (value: number) => Promise<SourceAudio>
+  setAudioOffset: (value: number) => Promise<SourceAudio>;
 
   // General Audio
 

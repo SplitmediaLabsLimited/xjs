@@ -81,11 +81,10 @@ await assert.rejects(
 );
 
 const addUrlCalls = hostCalls.filter((call) => call[0] === 'AppCallFuncAsync');
-assert.deepEqual(addUrlCalls.map((call) => call[2]), [
-  'http://www.xsplit.com',
-  'https://www.xsplit.com',
-  'http://www.xsplit.com',
-]);
+assert.deepEqual(
+  addUrlCalls.map((call) => call[2]),
+  ['http://www.xsplit.com', 'https://www.xsplit.com', 'http://www.xsplit.com']
+);
 for (const call of addUrlCalls) {
   assert.match(call[1], /^e:EVENT-XJS-CREATE-.+\|addurl$/);
 }
