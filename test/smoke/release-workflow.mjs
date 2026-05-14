@@ -14,7 +14,8 @@ assert.match(
   'legacy minified browser bundle should stay tracked'
 );
 
-assert.equal(pkg.scripts['pack:check'], 'npm run build && npm pack --dry-run');
+assert.equal(pkg.scripts.prepare, 'npm run build');
+assert.equal(pkg.scripts['pack:check'], 'npm pack --dry-run');
 assert.ok(pkg.files.includes('dist/'), 'published package should include generated dist output');
 
 for (const expected of [
@@ -22,6 +23,7 @@ for (const expected of [
   'Generated modern package artifacts are intentionally ignored by git',
   'npm run build',
   'npm run pack:check',
+  'prepare',
   'dist/xjs.mjs',
   'dist/xjs.cjs',
   'dist/xjs.js',

@@ -46,7 +46,7 @@ XJS_EXTENSION_NAVIGATE_URL=http://<reachable-host>:3999/xsplit-extension/index.h
 
 Generated modern package artifacts are intentionally ignored by git. Run `npm run build` before any local package validation or publish flow. The build regenerates `dist/xjs.mjs`, `dist/xjs.cjs`, `dist/xjs.js`, `dist/xjs.min.js`, and `dist/index.d.ts` from `src/`.
 
-Use `npm run pack:check` before publishing. It runs the build first, then verifies the package tarball with `npm pack --dry-run`. The package still includes `dist/` output because `package.json` lists `dist/` in `files`.
+Use `npm run pack:check` before publishing. The package `prepare` lifecycle runs the build first, then `npm pack --dry-run` verifies the package tarball. The same `prepare` hook runs for `npm publish` and npm git dependencies, so the ignored modern `dist/` output is regenerated before the tarball is assembled. The package still includes `dist/` output because `package.json` lists `dist/` in `files`.
 
 Only the deprecated compatibility bundles `dist/xjs-es2015.js` and `dist/xjs-es2015.min.js` remain tracked during the transition.
 

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "build:watch": "vite build --watch --config vite.config.mjs",
+    "prepare": "npm run build",
     "docs:build": "node scripts/build-docs.mjs",
     "examples": "node scripts/serve-examples.mjs",
     "test": "npm run test:smoke",
@@ -15,7 +16,7 @@
     "test:legacy": "karma start --single-run --browsers Firefox",
     "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
     "test:xsplit:cdp:attached": "node scripts/xsplit-cdp-attached.mjs",
-    "pack:check": "npm run build && npm pack --dry-run"
+    "pack:check": "npm pack --dry-run"
   },
   "main": "./dist/xjs.cjs",
   "module": "./dist/xjs.mjs",
