@@ -16,6 +16,7 @@
       "test/**/*.html",
       "test/**/*.css",
       "test/**/*.scss",
+      "!test/unit/jasmine/**",
       "scripts/**/*.js",
       "scripts/**/*.mjs",
       "examples/**/*.js",
