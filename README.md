@@ -28,10 +28,18 @@ npm run test:xsplit:cdp:attached
 
 That wrapper navigates an existing XSplit CEF target to `http://localhost:3999/xsplit-extension/index.html`. Each run writes timestamped artifacts under `artifacts/xsplit-cdp/` and updates `artifacts/xsplit-cdp/latest-summary.json` with the latest result path, pass/fail state, browser metadata, and screenshot path.
 
-If XSplit Broadcaster is running on another machine or inside a tunnel where `localhost:3999` points at the Windows host instead of this examples server, pass the reachable URL explicitly:
+If XSplit Broadcaster is running on the Windows client, keep `localhost:3999` working there with the reverse SSH tunnel:
 
 ```sh
-XJS_EXTENSION_NAVIGATE_URL=http://10.1.0.101:3999/xsplit-extension/index.html npm run test:xsplit:cdp:attached
+ssh -N \
+  -R '127.0.0.1:3999:127.0.0.1:3999' \
+  ensu-win
+```
+
+If that tunnel is not available, pass a URL that the Windows CEF process can reach:
+
+```sh
+XJS_EXTENSION_NAVIGATE_URL=http://<reachable-host>:3999/xsplit-extension/index.html npm run test:xsplit:cdp:attached
 ```
 
 ## Release build notes
