@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import WebSocket from 'ws';
@@ -111,11 +112,21 @@ function clearTransientDiagnostics() {
   diagnostics.logs = [];
 }
 
-async function writeArtifacts(payload, screenshot, hasFailures) {
+function screenshotArtifact(buffer, path) {
+  if (!buffer) {
+    return null;
+  }
+  return {
+    path,
+    bytes: buffer.byteLength,
+    sha256: createHash('sha256').update(buffer).digest('hex'),
+  };
+}
+
+async function writeArtifacts(payload, screenshotBuffer, hasFailures) {
   await mkdir(artifactDir, { recursive: true });
   await writeFile(resolve(artifactDir, 'results.json'), JSON.stringify(payload, null, 2));
-  if (screenshot?.data) {
-    const screenshotBuffer = Buffer.from(screenshot.data, 'base64');
+  if (screenshotBuffer) {
     await writeFile(resolve(artifactDir, 'screenshot.png'), screenshotBuffer);
     if (hasFailures) {
       await writeFile(resolve(artifactDir, 'failure.png'), screenshotBuffer);
@@ -180,18 +191,20 @@ const failures = Array.isArray(result)
 const hasFailures = failures.length > 0 || diagnostics.exceptions.length > 0 || diagnostics.failedRequests.length > 0;
 
 const screenshot = await trySend(socket, 'Page.captureScreenshot', { format: 'png' });
+const screenshotBuffer = screenshot?.data ? Buffer.from(screenshot.data, 'base64') : null;
+const screenshotMetadata = screenshotArtifact(screenshotBuffer, 'screenshot.png');
 
 const payload = {
   target,
   diagnostics,
   artifacts: {
-    screenshot: screenshot?.data ? 'screenshot.png' : null,
-    failureScreenshot: hasFailures && screenshot?.data ? 'failure.png' : null,
+    screenshot: screenshotMetadata,
+    failureScreenshot: hasFailures ? screenshotArtifact(screenshotBuffer, 'failure.png') : null,
   },
   results: result,
   failures,
 };
-await writeArtifacts(payload, screenshot, hasFailures);
+await writeArtifacts(payload, screenshotBuffer, hasFailures);
 socket.close();
 
 if (hasFailures) {

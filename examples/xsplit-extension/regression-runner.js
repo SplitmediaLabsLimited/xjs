@@ -55,6 +55,13 @@
     throw new Error('XJS browser bundle is not loaded');
   }
 
+  function getComponentFixtures() {
+    if (Array.isArray(window.__xjsComponentFixtures)) {
+      return window.__xjsComponentFixtures;
+    }
+    throw new Error('window.__xjsComponentFixtures is not defined');
+  }
+
   [
     'OnDialogLoadStart',
     'OnDialogTitleChange',
@@ -132,17 +139,23 @@
         return true;
       }),
       runCheck('Docs component fixtures render', function() {
-        var navbar = document.querySelector('xsplit-navbar');
-        if (!customElements.get('xsplit-navbar')) {
-          throw new Error('xsplit-navbar custom element is not registered');
-        }
-        if (!navbar || navbar.getAttribute('data-ready') !== 'true') {
-          throw new Error('xsplit-navbar fixture did not render');
-        }
-        return {
-          tagName: navbar.tagName.toLowerCase(),
-          ready: navbar.getAttribute('data-ready'),
-        };
+        return getComponentFixtures().map(function(fixture) {
+          var element = document.querySelector(fixture.selector);
+          if (!customElements.get(fixture.customElement)) {
+            throw new Error(fixture.customElement + ' custom element is not registered');
+          }
+          if (!element) {
+            throw new Error(fixture.id + ' fixture was not found');
+          }
+          if (fixture.readyAttribute && element.getAttribute(fixture.readyAttribute) !== fixture.readyValue) {
+            throw new Error(fixture.id + ' fixture did not render');
+          }
+          return {
+            id: fixture.id,
+            tagName: element.tagName.toLowerCase(),
+            ready: fixture.readyAttribute ? element.getAttribute(fixture.readyAttribute) : null,
+          };
+        });
       }),
     ];
 

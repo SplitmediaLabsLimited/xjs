@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 const source = await readFile(new URL('../../scripts/xsplit-cdp-runner.mjs', import.meta.url), 'utf8');
 
+assert.match(source, /node:crypto/, 'runner should use a stable hash for visual artifact metadata');
 assert.match(source, /127\.0\.0\.1:9222/, 'runner should default to the local CDP port');
 assert.match(source, /\/json\/version/, 'runner should inspect CDP version metadata');
 assert.match(source, /\/json\/list/, 'runner should inspect page targets');
@@ -13,5 +14,7 @@ assert.match(source, /Runtime\.consoleAPICalled/, 'runner should collect console
 assert.match(source, /Network\.loadingFailed/, 'runner should collect failed requests');
 assert.match(source, /Page\.captureScreenshot/, 'runner should capture screenshots when available');
 assert.match(source, /screenshot\.png/, 'runner should store screenshots for successful visual regression runs');
+assert.match(source, /sha256/, 'runner should record screenshot checksum metadata');
+assert.match(source, /bytes/, 'runner should record screenshot byte size metadata');
 assert.doesNotMatch(source, /if\s*\(\s*failures\.length[\s\S]{0,300}Page\.captureScreenshot/, 'screenshot capture should not be limited to failing runs');
 assert.doesNotMatch(source, /connectOverCDP|playwright/i, 'XSplit runner should be raw CDP first');
