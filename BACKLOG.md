@@ -1,25 +1,16 @@
 # Backlog
 
-## Docs Site Modernization
+## Modernization Migration
 
-Status: Planned
+Status: In progress
 
-Replace the legacy AngularJS documentation app under `docs/app/` with a static documentation site. The preferred direction is Astro with Starlight so the docs can stay mostly static, fast to host, and easy to regenerate from source annotations as the TypeScript migration continues.
+The active migration plan lives in [MIGRATION.md](MIGRATION.md). Use that document as the source of truth for build tooling, package outputs, TypeScript 6 hardening, XSplit CEF regression coverage, and release validation.
 
-Goals:
+## Deferred Documentation Site Work
 
-- Generate API reference pages from future JSDoc or TSDoc annotations in `src/`.
-- Preserve public documentation navigation, search, and API-member presentation from the current docs experience.
-- Keep the XSplit CEF regression extension and example fixtures separate from the docs runtime.
-- Retire the AngularJS docs app once the generated static site reaches feature parity.
-- Keep docs output deployable to the existing static hosting flow.
+Status: Planned later
 
-Validation:
-
-- Add a docs build command that generates the static site without requiring the legacy docs app runtime.
-- Add smoke checks for generated docs routes, navigation, search index output, and API reference content.
-- Update component fixture screenshots when docs shell markup changes.
-- Keep active docs output free of deprecated package-manager paths and HTML import usage.
+The legacy AngularJS docs app should eventually become a static documentation site. The current preference is Astro with Starlight, fed by future JSDoc or TSDoc annotations from `src/`, but the detailed docs-site plan should wait until the package and regression migration is close to complete.
 
 Notes:
 

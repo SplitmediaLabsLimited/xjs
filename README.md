@@ -38,6 +38,6 @@ Only the deprecated compatibility bundles `dist/xjs-es2015.js` and `dist/xjs-es2
 
 ## Backlog
 
-See [BACKLOG.md](BACKLOG.md) for planned modernization work, including the static docs-site migration.
+See [MIGRATION.md](MIGRATION.md) for the active modernization migration plan. [BACKLOG.md](BACKLOG.md) tracks deferred follow-up work, including the later static docs-site migration.
 
 If you wish to contribute, check the [issue list](https://github.com/xjsframework/xjs/issues)! Drop a comment if you need more information before you start working on a pull request. Information on our deliverable roadmap is posted on [the wiki](https://github.com/xjsframework/xjs/wiki).
