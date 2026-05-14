@@ -1,0 +1,19 @@
+---
+title: XJS Framework
+description: JavaScript framework for XSplit Broadcaster extensions and plugins.
+---
+
+XJS Framework provides JavaScript APIs for XSplit Broadcaster extensions, source plugins, dialogs, scenes, sources, items, system devices, and output workflows.
+
+The modern docs are generated from the TypeScript source where possible. Component examples use the same fixture metadata that powers the XSplit regression extension, with MDX notes layered on top for human guidance.
+
+## Documentation Model
+
+- API pages are generated from TypeDoc and source JSDoc.
+- Component pages are backed by tested fixture metadata.
+- Contributor reference pages expose internal modules for migration work.
+- The old Dgeni/Angular docs stack is preserved in `docs-old/` as migration reference material.
+
+## Compatibility Notes
+
+The package API remains stable during this modernization. The browser bundle and XSplit harness continue to target CEF 103 compatibility.

@@ -1,0 +1,49 @@
+:root {
+  --sl-color-accent-low: #d9f0fb;
+  --sl-color-accent: #0095de;
+  --sl-color-accent-high: #005d8a;
+  --sl-color-white: #ffffff;
+  --sl-font: "Source Sans Pro", "Segoe UI", Arial, sans-serif;
+  --sl-content-width: 72rem;
+}
+
+:root[data-theme="light"] {
+  --sl-color-bg: #f4f6f8;
+  --sl-color-bg-nav: #17202a;
+  --sl-color-text: #26313d;
+  --sl-color-hairline: #d8dee6;
+}
+
+.site-title {
+  color: #ffffff;
+}
+
+.hero {
+  border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.xjs-fixture {
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 4px;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--sl-color-white);
+}
+
+.xjs-fixture h2 {
+  margin-top: 0;
+}
+
+.xjs-fixture dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.xjs-fixture dt {
+  font-weight: 700;
+}
+
+.xjs-fixture dd {
+  margin: 0;
+}

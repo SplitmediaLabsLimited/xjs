@@ -1,4 +1,7 @@
 node_modules/
+.astro/
+docs/src/content/docs/api/
+docs/src/content/docs/internals/
 *.sublime-project
 *.sublime-workspace
 dist/**
