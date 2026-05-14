@@ -37,9 +37,11 @@ for (const expected of [
   'test/unit/specs',
   'test/functional/specs',
   'Remaining Parity Gaps',
-  'scene API smokes',
-  'source configuration smokes',
-  'remote/proxy transport smokes',
+  'scene-apis.mjs',
+  'source-config-current-apis.mjs',
+  'remote-proxy-transport.mjs',
+  'event-focused smokes',
+  'legacy-to-modern method inventory',
 ]) {
   assert.match(parityAudit, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
