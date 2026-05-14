@@ -28,6 +28,7 @@ function run(command, args) {
 
 await run(process.execPath, [resolve(root, 'scripts/check-docs.mjs')]);
 await rm(resolve(root, 'docs/.astro'), { recursive: true, force: true });
+await rm(resolve(root, 'docs/node_modules/.astro'), { recursive: true, force: true });
 await rm(resolve(root, 'docs/src/content/docs/api'), { recursive: true, force: true });
 await rm(resolve(root, 'docs/src/content/docs/internals'), { recursive: true, force: true });
 await run(astroBin, ['build', '--root', 'docs']);
