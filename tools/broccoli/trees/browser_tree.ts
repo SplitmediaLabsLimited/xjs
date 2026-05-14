@@ -183,18 +183,10 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       new Funnel(modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
 
   var scripts = mergeTrees(servingTrees);
-  var polymerFiles = new Funnel('.', {
-    files: [
-      'bower_components/polymer/lib/polymer.html',
-      'tools/build/snippets/url_params_to_form.js'
-    ]
-  });
-  var polymer = stew.mv(flatten(polymerFiles), 'benchmarks_external/src/tree/polymer');
-
   var reactFiles = new Funnel('.', {files: ['node_modules/react/dist/react.min.js']});
   var react = stew.mv(flatten(reactFiles), 'benchmarks_external/src/tree/react');
 
-  htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
+  htmlTree = mergeTrees([htmlTree, scripts, react]);
 
   es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree]);
 

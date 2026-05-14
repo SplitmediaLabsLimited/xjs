@@ -10,6 +10,31 @@ body {
   box-sizing: border-box;
 }
 
+.xsplit-navbar {
+  align-items: center;
+  background: #17202a;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+.xsplit-navbar a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.xsplit-navbar__brand {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.xsplit-navbar__links {
+  display: flex;
+  gap: 18px;
+}
+
 #container {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.75);
   margin: 68px auto 0;

@@ -3,26 +3,47 @@
   "version": "2.10.2",
   "description": "XSplit JS Framework",
   "scripts": {
-    "test": "karma start --single-run --browsers Firefox"
+    "build": "node scripts/build.mjs",
+    "build:watch": "vite build --watch --config vite.config.mjs",
+    "docs:build": "node scripts/build-docs.mjs",
+    "examples": "node scripts/serve-examples.mjs",
+    "test": "npm run test:smoke",
+    "test:smoke": "node test/smoke/package-entries.mjs && node test/smoke/navbar-source.mjs && node test/smoke/xsplit-harness.mjs && node test/smoke/cdp-runner.mjs && node test/smoke/no-legacy-dependency-references.mjs",
+    "test:components": "web-test-runner --config web-test-runner.config.mjs",
+    "test:legacy": "karma start --single-run --browsers Firefox",
+    "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
+    "pack:check": "npm pack --dry-run"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/xjs.cjs",
+  "module": "./dist/xjs.mjs",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/xjs.js",
+  "unpkg": "./dist/xjs.min.js",
+  "jsdelivr": "./dist/xjs.min.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/xjs.mjs",
+      "require": "./dist/xjs.cjs",
+      "default": "./dist/xjs.mjs"
+    },
+    "./browser": "./dist/xjs.js",
+    "./browser.min": "./dist/xjs.min.js",
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "devDependencies": {
-    "bower": "^1.4.1",
-    "browser-sync": "2.18.2",
-    "browserify": "^10.2.6",
+    "@web/test-runner": "^0.20.2",
+    "angular": "^1.8.3",
+    "angular-animate": "^1.8.3",
+    "angular-aria": "^1.8.3",
+    "angular-material": "^1.2.5",
+    "angular-route": "^1.8.3",
     "canonical-path": "0.0.2",
-    "connect-history-api-fallback": "^1.1.0",
-    "del": "^1.2.0",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.10.18",
-    "glob": "^5.0.14",
-    "gulp": "^3.9.0",
-    "gulp-data": "^1.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^2.7.8",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.6",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.2",
     "karma-chrome-launcher": "^0.2.0",
@@ -30,17 +51,16 @@
     "karma-jasmine": "^0.3.6",
     "karma-jasmine-html-reporter": "^0.1.8",
     "lodash": "^4.17.15",
-    "run-sequence": "^1.1.5",
     "string-to-comments": "^0.1.2",
     "traceur": "0.0.87",
-    "tsify": "^0.11.2",
-    "typescript": "^1.6.2",
-    "vinyl-source-stream": "^1.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0",
+    "ws": "^8.20.1",
     "yargs": "^3.29.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xjsframework/xjs.git"
+    "url": "https://github.com/SplitmediaLabsLimited/xjs.git"
   },
   "keywords": [
     "xsplit",
@@ -50,10 +70,10 @@
   "author": "SplitmediaLabs, Ltd. <xjs@splitmedialabs.com>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/xjsframework/xjs/issues",
+    "url": "https://github.com/SplitmediaLabsLimited/xjs/issues",
     "email": "xjs@splitmedialabs.com"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "homepage": "https://github.com/SplitmediaLabsLimited/xjs#readme",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -61,10 +81,12 @@
   "files": [
     "defs/",
     "dist/",
+    "examples/",
     "src/",
-    "test/",
-    "gulpfile.js",
-    "karma.conf.js",
-    "tsconfig.json"
-  ]
+    "LICENSE",
+    "README.md"
+  ],
+  "volta": {
+    "node": "20.19.0"
+  }
 }

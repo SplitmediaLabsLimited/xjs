@@ -4,25 +4,25 @@ This document describes how to release a new version of XSplit JS Framework
 
 1. **Make sure that tests are green**
 
-  Before the release, make sure that all test cases are passed. Execute
-`gulp test/unit` first to ensure that all test cases are passing.
+  Before the release, make sure that all required checks pass. Execute
+`npm test` first to run package, docs, harness, and packaging smoke checks.
+Run `npm run test:legacy` when validating the original browser-based unit suite.
 
 2. **Prepare the release branch**
 
-  Merge all branches to develop and then create the release branch. Execute
-`gulp version --up --major|minor|patch` to transpile and bundle the project.
+  Merge all branches to develop and then create the release branch. Use
+`npm version major|minor|patch` to update package metadata, then execute
+`npm run build` to transpile and bundle the project.
 
-  This will update the version number in the `package.json` file and also
-creates the bundled `xjs.js` file, along with the minified version and es2015
-version.
+  This creates the ESM, CommonJS, CEF-compatible browser, and minified browser
+bundles under `dist/`.
 
-  *NOTE:* In case you want to specify the version number, you can simply execute
-  `gulp version --version 1.5.0`, which would set package.json, bower.json, and
-  all the transpiled xjs files' version to 1.5.0.
+  *NOTE:* In case you want to specify the version number, execute
+  `npm version 1.5.0`, then run `npm run build`.
 
 3. **Prepare the website for release**
 
-  Generate the API Docs by executing `gulp docs` and then copy the necessary files
+  Generate the API Docs by executing `npm run docs:build` and then copy the necessary files
 to `xjsframework.github.io`'s repository and update the tutorials if needed.
 
 4. **Release**
@@ -31,6 +31,9 @@ to `xjsframework.github.io`'s repository and update the tutorials if needed.
   - Draft a new release in Github
   - Publish to NPM
   - Upload the latest generated xjs files to CDN
+  - If XSplit Broadcaster is available, run `npm run examples`, attach
+    `http://localhost:3999/xsplit-extension/index.html`, and collect
+    `npm run test:xsplit:cdp` artifacts.
 
 5. **Update the Release Notes and/or send the Newsletter**
 

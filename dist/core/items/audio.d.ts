@@ -1,0 +1,67 @@
+import { IAudio } from '../source/iaudio';
+import { ISourceAudio, SourceAudio } from '../source/iaudiosource';
+import { Item } from './item';
+/**
+ * The AudioItem class represents an audio device that has been added
+ * to the stage.
+ *
+ * Inherits from: {@link #core/Item Core/Item}
+ *
+ * Implements: {@link #core/IAudio Core/IAudio}
+ *
+ * ### Basic Usage
+ *
+ * ```javascript
+ * var XJS = require('xjs');
+ *
+ * XJS.Scene.getActiveScene().then(function(scene) {
+ *   scene.getItems().then(function(items) {
+ *     for (var i in items) {
+ *       if (items[i] instanceof XJS.AudioItem) {
+ *         // Manipulate your audio device item here
+ *         items[i].setSilenceDetectionEnabled(true);
+ *       }
+ *     }
+ *   });
+ * });
+ * ```
+ *
+ *  All methods marked as *Chainable* resolve with the original `AudioItem`
+ *  instance.
+ */
+export declare class AudioItem extends Item implements ISourceAudio, IAudio {
+    /** See: {@link #core/AudioSource#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
+    isSilenceDetectionEnabled: () => Promise<boolean>;
+    /** See: {@link #core/AudioSource#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
+    setSilenceDetectionEnabled: (value: boolean) => Promise<AudioItem>;
+    /** See: {@link #core/AudioSource#getSilenceThreshold getSilenceThreshold} */
+    getSilenceThreshold: () => Promise<number>;
+    /** See: {@link #core/AudioSource#setSilenceThreshold setSilenceThreshold} */
+    setSilenceThreshold: (value: number) => Promise<AudioItem>;
+    /** See: {@link #core/AudioSource#getSilencePeriod getSilencePeriod} */
+    getSilencePeriod: () => Promise<number>;
+    /** See: {@link #core/AudioSource#setSilencePeriod setSilencePeriod} */
+    setSilencePeriod: (value: number) => Promise<AudioItem>;
+    /** See: {@link #core/AudioSource#getAudioOffset getAudioOffset} */
+    getAudioOffset: () => Promise<number>;
+    /** See: {@link #core/AudioSource#setAudioOffset setAudioOffset} */
+    setAudioOffset: (value: number) => Promise<SourceAudio>;
+    /** See: {@link #core/IAudio#getVolume getVolume} */
+    getVolume: () => Promise<number>;
+    /** See: {@link #core/IAudio#isMute isMute} */
+    isMute: () => Promise<boolean>;
+    /** See: {@link #core/IAudio#isAutoMute isAutoMute} */
+    isAutoMute: () => Promise<boolean>;
+    /** See: {@link #core/IAudio#setVolume setVolume} */
+    setVolume: (value: number) => Promise<AudioItem>;
+    /** See: {@link #core/IAudio#setMute setMute} */
+    setMute: (value: boolean) => Promise<AudioItem>;
+    /** See: {@link #core/IAudio#setAutoMute setAutoMute} */
+    setAutoMute: (value: boolean) => Promise<AudioItem>;
+    /** See: {@link #core/IAudio#isStreamOnlyAudio isStreamOnlyAudio} */
+    isStreamOnlyAudio: () => Promise<boolean>;
+    /** See: {@link #core/IAudio#setStreamOnlyAudio setStreamOnlyAudio} */
+    setStreamOnlyAudio: (value: boolean) => Promise<AudioItem>;
+    /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
+    isAudioAvailable: () => Promise<boolean>;
+}

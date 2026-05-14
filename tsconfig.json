@@ -1,11 +1,15 @@
 {
-    "compilerOptions": {
-        "declaration": true,
-        "target": "es5",
-        "outDir": "dist/",
-        "module": "commonjs"
-    },
-    "files": [
-        "./src/index.ts"
-    ]
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "dist/",
+    "strict": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false
+  },
+  "files": [
+    "./src/index.ts"
+  ]
 }

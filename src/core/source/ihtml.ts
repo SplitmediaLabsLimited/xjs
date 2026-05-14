@@ -13,6 +13,10 @@ const LoadStatus = {
   unknown: 'UNKNOWN'
 }
 
+const toStableNumber = function(value: number): number {
+  return Number(value.toFixed(12));
+}
+
 export interface ISourceHtml {
   /**
    * param: (func: string, arg: string)
@@ -466,8 +470,8 @@ export class iSourceHtml implements ISourceHtml{
         if (val !== '') {
           var [width, height] = decodeURIComponent(val).split(',');
           customSize = Rectangle.fromDimensions(
-            Number(width) / window.devicePixelRatio,
-            Number(height) / window.devicePixelRatio
+            toStableNumber(Number(width) / window.devicePixelRatio),
+            toStableNumber(Number(height) / window.devicePixelRatio)
           );
         } else {
           customSize = Rectangle.fromDimensions(0, 0);
@@ -480,14 +484,16 @@ export class iSourceHtml implements ISourceHtml{
   setBrowserCustomSize(value: Rectangle): Promise<iSourceHtml> {
     return new Promise(resolve => {
       // Set the correct width and height based on the DPI settings
-      value.setWidth(value.getWidth() * window.devicePixelRatio);
-      value.setHeight(value.getHeight() * window.devicePixelRatio);
+      const browserSize = Rectangle.fromDimensions(
+        value.getWidth() * window.devicePixelRatio,
+        value.getHeight() * window.devicePixelRatio
+      );
 
       if(this._isItemCall){
         Logger.warn('sourceWarning', 'setBrowserCustomSize', true)
-        this._checkPromise = iItem.set('prop:BrowserSize', value.toDimensionString(), this._id)
+        this._checkPromise = iItem.set('prop:BrowserSize', browserSize.toDimensionString(), this._id)
       } else {
-        this._checkPromise = iItem.wrapSet('prop:BrowserSize', value.toDimensionString(),
+        this._checkPromise = iItem.wrapSet('prop:BrowserSize', browserSize.toDimensionString(),
           this._srcId, this._id, this._updateId.bind(this))
       }
       this._checkPromise.then(() => {

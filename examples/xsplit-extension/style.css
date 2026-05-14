@@ -1,0 +1,24 @@
+body {
+  color: #1f2933;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+main {
+  max-width: 900px;
+  padding: 24px;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+  padding: 8px 12px;
+}
+
+pre {
+  background: #111827;
+  color: #f9fafb;
+  overflow: auto;
+  padding: 16px;
+  white-space: pre-wrap;
+}

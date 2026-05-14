@@ -1,0 +1,14 @@
+export declare const minVersion = "2.8.1603.0401";
+export declare const deleteSceneEventFixVersion = "2.8.1606.1601";
+export declare const addSceneEventFixVersion = "2.8.1606.1701";
+export declare const handlePreStreamDialogFixVersion = "3.1.1707.3101";
+export declare const globalsrcMinVersion = "2.9";
+export declare const itemSubscribeEventVersion = "2.9.1608.2301";
+export declare const sceneUidMinVersion = "3.0.1704.2101";
+export declare const sceneUidAddDeleteVersion = "3.3.1801.1901";
+export declare const scenePresetsVersion = "3.8.1905.2118";
+export declare const sceneSourceVersion = "3.8.1915.2501";
+export declare let mockVersion: string;
+export declare function versionCompare(version: string): any;
+export declare function setMockVersion(version: string): void;
+export declare function getVersion(): string;
