@@ -42,6 +42,7 @@ export default defineConfig({
           typeDoc: {
             ...typeDocBase,
             entryPointStrategy: 'expand',
+            readme: './docs/src/typedoc/internals.md',
           },
         }),
       ],
