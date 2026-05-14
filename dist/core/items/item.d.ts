@@ -191,9 +191,9 @@ export declare class Item extends Source implements IItemLayout, ISource {
      * })
      * ```
      */
-    getView(): Promise<string>;
+    getView(): Promise<ViewTypes>;
     /**
-     * return: Promise<number>
+     * return: Promise<number|string>
      *
      * Get (1-indexed) Scene ID where the source is loaded
      *
@@ -205,7 +205,7 @@ export declare class Item extends Source implements IItemLayout, ISource {
      * });
      * ```
      */
-    getSceneId(): Promise<number>;
+    getSceneId(): Promise<number | string>;
     /**
      * return: XML
      *

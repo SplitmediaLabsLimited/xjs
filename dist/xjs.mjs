@@ -8135,7 +8135,7 @@ const _Item = class _Item extends Source {
     });
   }
   /**
-   * return: Promise<number>
+   * return: Promise<number|string>
    *
    * Get (1-indexed) Scene ID where the source is loaded
    *

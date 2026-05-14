@@ -265,7 +265,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * })
    * ```
    */
-  getView(): Promise<string> {
+  getView(): Promise<ViewTypes> {
     return new Promise(resolve => {
       iItem.get('prop:viewid', this._id).then(viewId => {
         let view = ViewTypes.MAIN;
@@ -284,7 +284,7 @@ export class Item extends Source implements IItemLayout, ISource {
   }
 
   /**
-   * return: Promise<number>
+   * return: Promise<number|string>
    *
    * Get (1-indexed) Scene ID where the source is loaded
    *
@@ -296,7 +296,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * });
    * ```
    */
-  getSceneId(): Promise<number> {
+  getSceneId(): Promise<number | string> {
     return new Promise(resolve => {
       if (String(this._sceneId) === 'i12') {
         resolve('i12')

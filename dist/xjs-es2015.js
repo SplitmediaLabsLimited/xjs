@@ -8238,7 +8238,7 @@ var XJS = (function(exports) {
       });
     }
     /**
-     * return: Promise<number>
+     * return: Promise<number|string>
      *
      * Get (1-indexed) Scene ID where the source is loaded
      *
