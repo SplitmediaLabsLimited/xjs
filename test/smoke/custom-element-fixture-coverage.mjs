@@ -1,18 +1,41 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 
 const root = new URL('../..', import.meta.url);
 
-const componentSources = await Promise.all([
-  readFile(new URL('docs/app/js/xsplit-navbar.js', root), 'utf8'),
-  readFile(new URL('docs/app/js/xsplit-doc-shell.js', root), 'utf8'),
-]);
 const extensionIndex = await readFile(new URL('examples/xsplit-extension/index.html', root), 'utf8');
 const fixtureManifest = await readFile(new URL('examples/xsplit-extension/component-fixtures.js', root), 'utf8');
 const componentTests = await Promise.all([
   readFile(new URL('test/component/xsplit-navbar.test.js', root), 'utf8'),
   readFile(new URL('test/component/xsplit-doc-shell.test.js', root), 'utf8'),
 ]);
+
+async function readRuntimeSources() {
+  const sourceDirs = [
+    'docs/app/js/',
+    'examples/',
+    'src/',
+  ];
+  const sources = [];
+
+  async function visit(directoryUrl) {
+    const entries = await readdir(directoryUrl, { withFileTypes: true });
+    for (const entry of entries) {
+      const entryUrl = new URL(entry.name + (entry.isDirectory() ? '/' : ''), directoryUrl);
+      if (entry.isDirectory()) {
+        await visit(entryUrl);
+      } else if (/\.(js|ts|html)$/.test(entry.name)) {
+        sources.push(await readFile(entryUrl, 'utf8'));
+      }
+    }
+  }
+
+  for (const sourceDir of sourceDirs) {
+    await visit(new URL(sourceDir, root));
+  }
+
+  return sources;
+}
 
 function extractCustomElements(source) {
   const tags = new Set();
@@ -26,7 +49,7 @@ function extractCustomElements(source) {
 }
 
 const definedElements = new Set();
-for (const source of componentSources) {
+for (const source of await readRuntimeSources()) {
   for (const tagName of extractCustomElements(source)) {
     definedElements.add(tagName);
   }
