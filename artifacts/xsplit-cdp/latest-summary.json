@@ -1,9 +1,9 @@
 {
-  "runAt": "2026-05-14T13:08:19.918Z",
+  "runAt": "2026-05-14T13:31:13.410Z",
   "passed": true,
-  "artifactDirectory": "artifacts/xsplit-cdp/2026-05-14T13-08-19-918Z",
-  "resultsPath": "artifacts/xsplit-cdp/2026-05-14T13-08-19-918Z/results.json",
-  "screenshotPath": "artifacts/xsplit-cdp/2026-05-14T13-08-19-918Z/screenshot.png",
+  "artifactDirectory": "artifacts/xsplit-cdp/2026-05-14T13-31-12-426Z",
+  "resultsPath": "artifacts/xsplit-cdp/2026-05-14T13-31-12-426Z/results.json",
+  "screenshotPath": "artifacts/xsplit-cdp/2026-05-14T13-31-12-426Z/screenshot.png",
   "browser": "Chrome/103.0.5060.134",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 XSplitBroadcaster/4.5.2603.0506 Safari/537.36",
   "navigateUrl": "http://localhost:3999/xsplit-extension/index.html",
