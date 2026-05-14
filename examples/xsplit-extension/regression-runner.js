@@ -185,6 +185,19 @@
         xjs.ExtensionWindow.on('sources-list-update', () => {});
         return true;
       }),
+      runCheck('CEF 103 ES2022 runtime support', () => {
+        var checks = {
+          arrayAt: [1].at(-1) === 1,
+          objectHasOwn: Object.hasOwn({ available: true }, 'available'),
+          errorCause: new Error('outer', { cause: 'inner' }).cause === 'inner',
+          regexpIndices: /x/d.exec('x').indices[0][0] === 0,
+        };
+        var unsupported = Object.keys(checks).filter((key) => !checks[key]);
+        if (unsupported.length) {
+          throw new Error('Missing ES2022 support: ' + unsupported.join(', '));
+        }
+        return checks;
+      }),
       runCheck('Docs component fixtures render', () =>
         getComponentFixtures().map((fixture) => {
           var element = document.querySelector(fixture.selector);

@@ -151,6 +151,7 @@ for (const check of [
   'App.getFrametime',
   'Dialog create/show/close',
   'Scene and source-list subscriptions',
+  'CEF 103 ES2022 runtime support',
   'Docs component fixtures render',
 ]) {
   assert.match(
