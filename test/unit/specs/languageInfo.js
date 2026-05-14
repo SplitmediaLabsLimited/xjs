@@ -11,7 +11,7 @@ describe('LanguageInfo ===', () => {
   var ctr = 0;
   beforeEach(() => {
     spyOn(window.external, 'CallHostFunc').and.callFake((funcName, ...param) => {
-      if (funcName == 'getProperty' && param[0] === 'html:language') {
+      if (funcName === 'getProperty' && param[0] === 'html:language') {
         ctr++;
         var asyncId = 'language_info' + ctr;
 

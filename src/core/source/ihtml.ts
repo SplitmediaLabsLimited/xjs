@@ -676,10 +676,10 @@ export class iSourceHtml implements ISourceHtml {
           try {
             customObject = JSON.parse(custom);
             if (Object.hasOwn(customObject, 'cssEnabled')) {
-              cssEnabled = customObject['cssEnabled'] == 'true';
+              cssEnabled = customObject['cssEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'scriptEnabled')) {
-              scriptEnabled = customObject['scriptEnabled'] == 'true';
+              scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'customCSS')) {
               customCSS = customObject['customCSS'];
@@ -745,7 +745,7 @@ export class iSourceHtml implements ISourceHtml {
         try {
           const customObject = JSON.parse(custom);
           if (Object.hasOwn(customObject, 'scriptEnabled')) {
-            enabled = customObject['scriptEnabled'] == 'true';
+            enabled = customObject['scriptEnabled'] === 'true';
           }
         } catch (e) {}
         resolve(enabled);
@@ -779,7 +779,7 @@ export class iSourceHtml implements ISourceHtml {
           try {
             customObject = JSON.parse(custom);
             if (Object.hasOwn(customObject, 'cssEnabled')) {
-              cssEnabled = customObject['cssEnabled'] == 'true';
+              cssEnabled = customObject['cssEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'customJS')) {
               customJS = customObject['customJS'];
@@ -890,10 +890,10 @@ export class iSourceHtml implements ISourceHtml {
           try {
             customObject = JSON.parse(custom);
             if (Object.hasOwn(customObject, 'cssEnabled')) {
-              cssEnabled = customObject['cssEnabled'] == 'true';
+              cssEnabled = customObject['cssEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'scriptEnabled')) {
-              scriptEnabled = customObject['scriptEnabled'] == 'true';
+              scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'customJS')) {
               customJS = customObject['customJS'];
@@ -960,7 +960,7 @@ export class iSourceHtml implements ISourceHtml {
         try {
           const customObject = JSON.parse(custom);
           if (Object.hasOwn(customObject, 'cssEnabled')) {
-            enabled = customObject['cssEnabled'] == 'true';
+            enabled = customObject['cssEnabled'] === 'true';
           }
         } catch (e) {}
         resolve(enabled);
@@ -994,7 +994,7 @@ export class iSourceHtml implements ISourceHtml {
           try {
             customObject = JSON.parse(custom);
             if (Object.hasOwn(customObject, 'scriptEnabled')) {
-              scriptEnabled = customObject['scriptEnabled'] == 'true';
+              scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
             if (Object.hasOwn(customObject, 'customJS')) {
               customJS = customObject['customJS'];

@@ -9,7 +9,7 @@ describe('StreamInfo ===', () => {
   describe('should be able to get active stream channels', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'recstat') {
+        if (funcName === 'recstat') {
           ctr++;
           var asyncId = 'stream_info_' + ctr;
 
@@ -109,7 +109,7 @@ describe('StreamInfo ===', () => {
   describe('should be able to get active stream channels', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'recstat') {
+        if (funcName === 'recstat') {
           ctr++;
           var asyncId = 'stream_info_' + ctr;
 
@@ -145,7 +145,7 @@ describe('StreamInfo ===', () => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
         ctr++;
         var asyncId = 'stream_info_' + ctr;
-        if (funcName == 'recstat') {
+        if (funcName === 'recstat') {
           setTimeout(() => {
             window.OnAsyncCallback(
               asyncId,
@@ -216,7 +216,7 @@ describe('StreamInfo ===', () => {
           }, 10);
 
           return asyncId;
-        } else if (funcName == 'streamdrops:Local Streaming') {
+        } else if (funcName === 'streamdrops:Local Streaming') {
           setTimeout(() => {
             if (isEmpty) {
               window.OnAsyncCallback(asyncId, '');
@@ -225,7 +225,7 @@ describe('StreamInfo ===', () => {
             }
           }, 10);
           return asyncId;
-        } else if (funcName == 'streamtime:Local Streaming') {
+        } else if (funcName === 'streamtime:Local Streaming') {
           setTimeout(() => {
             if (isEmpty) {
               window.OnAsyncCallback(asyncId, '');

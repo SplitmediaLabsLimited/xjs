@@ -275,12 +275,12 @@ describe('Audio ===', () => {
         var parseXml = (xmlStr) => new window.DOMParser().parseFromString(xmlStr, 'text/xml');
         var audioDevice = parseXml(deviceString).getElementsByTagName('dev')[0];
         expect(
-          audioDevice.getAttribute('id') == device.getId() &&
-            audioDevice.getAttribute('level') * 100 == parseFloat(device.getLevel()) &&
-            (audioDevice.getAttribute('enable') == '1') == device.isEnabled() &&
-            audioDevice.getAttribute('hwlevel') * 100 == parseFloat(device.getSystemLevel()) &&
-            audioDevice.getAttribute('hwenable') == device.getSystemEnabled() &&
-            audioDevice.getAttribute('delay') == parseFloat(device.getDelay())
+          audioDevice.getAttribute('id') === device.getId() &&
+            audioDevice.getAttribute('level') * 100 === parseFloat(device.getLevel()) &&
+            (audioDevice.getAttribute('enable') === '1') === device.isEnabled() &&
+            audioDevice.getAttribute('hwlevel') * 100 === parseFloat(device.getSystemLevel()) &&
+            audioDevice.getAttribute('hwenable') === device.getSystemEnabled() &&
+            audioDevice.getAttribute('delay') === parseFloat(device.getDelay())
         ).toBe(true);
         done();
       });

@@ -951,7 +951,7 @@ export class App {
       } else {
         iApp.get('microphonegain').then((val) => {
           var micGainObj = JXON.parse(val);
-          resolve(micGainObj['enable'] == '1');
+          resolve(micGainObj['enable'] === '1');
         });
       }
     });
@@ -1064,7 +1064,7 @@ export class App {
     return new Promise((resolve, reject) => {
       if (typeof sdPeriod !== 'number') {
         reject(Error('Silence detection period must be a number'));
-      } else if (sdPeriod % 1 != 0) {
+      } else if (sdPeriod % 1 !== 0) {
         reject(Error('Silence detection period must be an integer'));
       } else if (sdPeriod < 0 || (sdPeriod > 60000 && !Global.isNewAudioEngine())) {
         reject(
@@ -1172,7 +1172,7 @@ export class App {
           resolve(setVal);
         });
       } else {
-        if (sdThreshold % 1 != 0) {
+        if (sdThreshold % 1 !== 0) {
           reject(Error('Silence detection threshold must be an integer'));
         } else if (sdThreshold < 0 || sdThreshold > 128) {
           reject(Error('Silence detection threshold must be in the range 0-128.'));

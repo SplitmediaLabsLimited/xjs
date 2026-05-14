@@ -917,9 +917,9 @@ export class ItemLayout implements IItemLayout {
             var bottomValue = Math.round(bottomCropRaw * 100);
 
             var isNoCropping =
-              leftValue == 0 && topValue == 0 && rightValue == 0 && bottomValue == 0;
+              leftValue === 0 && topValue === 0 && rightValue === 0 && bottomValue === 0;
 
-            if (canvasRotate == 270) {
+            if (canvasRotate === 270) {
               if (isNoCropping) {
                 preCropPosition = position;
                 originalHeight = widthValue;
@@ -930,7 +930,7 @@ export class ItemLayout implements IItemLayout {
                 var rightPosition = parseFloat(position[1]);
                 var bottomPosition = parseFloat(position[2]);
 
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
                   originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
 
                   var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
@@ -941,7 +941,7 @@ export class ItemLayout implements IItemLayout {
                 } else {
                   originalWidth = heightValue;
                 }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
                   originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
 
                   var topDifference = (originalHeight * topCropRaw) / mixerWidth;
@@ -953,23 +953,23 @@ export class ItemLayout implements IItemLayout {
                   originalHeight = widthValue;
                 }
 
-                if (leftCropRaw == 0) {
+                if (leftCropRaw === 0) {
                   preCropPosition[3] = position[3];
                 }
 
-                if (topCropRaw == 0) {
+                if (topCropRaw === 0) {
                   preCropPosition[0] = position[0];
                 }
 
-                if (rightCropRaw == 0) {
+                if (rightCropRaw === 0) {
                   preCropPosition[1] = position[1];
                 }
 
-                if (bottomCropRaw == 0) {
+                if (bottomCropRaw === 0) {
                   preCropPosition[2] = position[2];
                 }
               }
-            } else if (canvasRotate == 180) {
+            } else if (canvasRotate === 180) {
               if (isNoCropping) {
                 preCropPosition = position;
                 originalWidth = widthValue;
@@ -980,7 +980,7 @@ export class ItemLayout implements IItemLayout {
                 var rightPosition = parseFloat(position[0]);
                 var bottomPosition = parseFloat(position[1]);
 
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
                   originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
 
                   var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
@@ -991,7 +991,7 @@ export class ItemLayout implements IItemLayout {
                 } else {
                   originalWidth = widthValue;
                 }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
                   originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
 
                   var topDifference = (originalHeight * topCropRaw) / mixerHeight;
@@ -1003,23 +1003,23 @@ export class ItemLayout implements IItemLayout {
                   originalHeight = heightValue;
                 }
 
-                if (leftCropRaw == 0) {
+                if (leftCropRaw === 0) {
                   preCropPosition[2] = position[2];
                 }
 
-                if (topCropRaw == 0) {
+                if (topCropRaw === 0) {
                   preCropPosition[3] = position[3];
                 }
 
-                if (rightCropRaw == 0) {
+                if (rightCropRaw === 0) {
                   preCropPosition[0] = position[0];
                 }
 
-                if (bottomCropRaw == 0) {
+                if (bottomCropRaw === 0) {
                   preCropPosition[1] = position[1];
                 }
               }
-            } else if (canvasRotate == 90) {
+            } else if (canvasRotate === 90) {
               if (isNoCropping) {
                 preCropPosition = position;
                 originalHeight = widthValue;
@@ -1030,7 +1030,7 @@ export class ItemLayout implements IItemLayout {
                 var rightPosition = parseFloat(position[3]);
                 var bottomPosition = parseFloat(position[0]);
 
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
                   originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
 
                   var leftDifference = (originalWidth * leftCropRaw) / mixerHeight;
@@ -1041,7 +1041,7 @@ export class ItemLayout implements IItemLayout {
                 } else {
                   originalWidth = heightValue;
                 }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
                   originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
 
                   var topDifference = (originalHeight * topCropRaw) / mixerWidth;
@@ -1053,19 +1053,19 @@ export class ItemLayout implements IItemLayout {
                   originalHeight = widthValue;
                 }
 
-                if (leftCropRaw == 0) {
+                if (leftCropRaw === 0) {
                   preCropPosition[1] = position[1];
                 }
 
-                if (topCropRaw == 0) {
+                if (topCropRaw === 0) {
                   preCropPosition[2] = position[2];
                 }
 
-                if (rightCropRaw == 0) {
+                if (rightCropRaw === 0) {
                   preCropPosition[3] = position[3];
                 }
 
-                if (bottomCropRaw == 0) {
+                if (bottomCropRaw === 0) {
                   preCropPosition[0] = position[0];
                 }
               }
@@ -1082,7 +1082,7 @@ export class ItemLayout implements IItemLayout {
                 var rightPosition = parseFloat(position[2]);
                 var bottomPosition = parseFloat(position[3]);
 
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
                   originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
 
                   var leftDifference = (originalWidth * leftCropRaw) / mixerWidth;
@@ -1094,7 +1094,7 @@ export class ItemLayout implements IItemLayout {
                   originalWidth = widthValue;
                 }
 
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
                   originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
 
                   var topDifference = (originalHeight * topCropRaw) / mixerHeight;
@@ -1106,19 +1106,19 @@ export class ItemLayout implements IItemLayout {
                   originalHeight = heightValue;
                 }
 
-                if (leftCropRaw == 0) {
+                if (leftCropRaw === 0) {
                   preCropPosition[0] = position[0];
                 }
 
-                if (topCropRaw == 0) {
+                if (topCropRaw === 0) {
                   preCropPosition[1] = position[1];
                 }
 
-                if (rightCropRaw == 0) {
+                if (rightCropRaw === 0) {
                   preCropPosition[2] = position[2];
                 }
 
-                if (bottomCropRaw == 0) {
+                if (bottomCropRaw === 0) {
                   preCropPosition[3] = position[3];
                 }
               }
@@ -1139,17 +1139,17 @@ export class ItemLayout implements IItemLayout {
 
             var newLeft, newTop, newRight, newBottom;
 
-            if (canvasRotate == 270) {
+            if (canvasRotate === 270) {
               newLeft = (topCrop * sourceWidth) / mixerWidth + leftPosition;
               newTop = (rightCrop * sourceHeight) / mixerHeight + topPosition;
               newRight = rightPosition - (bottomCrop * sourceWidth) / mixerWidth;
               newBottom = bottomPosition - (leftCrop * sourceHeight) / mixerHeight;
-            } else if (canvasRotate == 180) {
+            } else if (canvasRotate === 180) {
               newLeft = (rightCrop * sourceWidth) / mixerWidth + leftPosition;
               newTop = (bottomCrop * sourceHeight) / mixerHeight + topPosition;
               newRight = rightPosition - (leftCrop * sourceWidth) / mixerWidth;
               newBottom = bottomPosition - (topCrop * sourceHeight) / mixerHeight;
-            } else if (canvasRotate == 90) {
+            } else if (canvasRotate === 90) {
               newLeft = (bottomCrop * sourceWidth) / mixerWidth + leftPosition;
               newTop = (leftCrop * sourceHeight) / mixerHeight + topPosition;
               newRight = rightPosition - (topCrop * sourceWidth) / mixerWidth;

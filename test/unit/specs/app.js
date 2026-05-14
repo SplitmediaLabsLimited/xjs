@@ -36,7 +36,7 @@ describe('App ===', () => {
   describe('should get frametime', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'frametime') {
+        if (funcName === 'frametime') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '12');
@@ -63,7 +63,7 @@ describe('App ===', () => {
   describe('should get resolution', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'resolution') {
+        if (funcName === 'resolution') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '900, 600');
@@ -93,7 +93,7 @@ describe('App ===', () => {
   describe('should get viewport', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'viewport') {
+        if (funcName === 'viewport') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '900, 600');
@@ -132,7 +132,7 @@ describe('App ===', () => {
   describe('should get version', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'version') {
+        if (funcName === 'version') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '1.3.0.429');
@@ -177,7 +177,7 @@ describe('App ===', () => {
   describe('should get frames rendered', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'framesrendered') {
+        if (funcName === 'framesrendered') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '12683');
@@ -217,7 +217,7 @@ describe('App ===', () => {
 
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'microphonedev2') {
+        if (funcName === 'microphonedev2') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, micDev2Mock);
@@ -301,7 +301,7 @@ describe('App ===', () => {
 
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'microphonedev2') {
+        if (funcName === 'microphonedev2') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, micDev2);
@@ -577,7 +577,7 @@ describe('App ===', () => {
     var promise;
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'microphonegain') {
+        if (funcName === 'microphonegain') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(
@@ -644,7 +644,7 @@ describe('App ===', () => {
     );
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'microphonegain') {
+        if (funcName === 'microphonegain') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, audioGainMock);
@@ -861,10 +861,10 @@ describe('App ===', () => {
       spyOn(window.external, 'CallHostFunc').and.callFake((funcName, ...param) => {
         ctr++;
         var asyncId = 'iapp_' + ctr;
-        if (funcName == 'getProperty' && param[0] === 'sound_ns') {
+        if (funcName === 'getProperty' && param[0] === 'sound_ns') {
           xCallback(asyncId, `Enabled=${Number(nsEnabled)}`);
           return asyncId;
-        } else if (funcName == 'setProperty' && param[0] === 'sound_ns') {
+        } else if (funcName === 'setProperty' && param[0] === 'sound_ns') {
           var queryParams = param[1].split('&');
           var queryObj = arrayToObj(queryParams, '=');
           nsEnabled = queryObj['Enabled'] === '1';
@@ -924,7 +924,7 @@ describe('App ===', () => {
   describe('should get transition', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'transitionid') {
+        if (funcName === 'transitionid') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, 'clock');
@@ -945,7 +945,7 @@ describe('App ===', () => {
     beforeEach(() => {
       transitionSet = false;
       spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
-        if (funcName === 'transitionid' && value == 'clock') {
+        if (funcName === 'transitionid' && value === 'clock') {
           transitionSet = true;
           ctr++;
           var asyncId = 'iapp_' + ctr;
@@ -971,7 +971,7 @@ describe('App ===', () => {
   describe('should get transition time', () => {
     beforeEach(() => {
       spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName == 'transitiontime') {
+        if (funcName === 'transitiontime') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '3000');
@@ -1001,7 +1001,7 @@ describe('App ===', () => {
     beforeEach(() => {
       transitionTimeSet = false;
       spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
-        if (funcName === 'transitiontime' && typeof value == 'string' && value === '1000') {
+        if (funcName === 'transitiontime' && typeof value === 'string' && value === '1000') {
           transitionTimeSet = true;
           ctr++;
           var asyncId = 'iapp_' + ctr;

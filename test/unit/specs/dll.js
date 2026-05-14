@@ -22,7 +22,7 @@ describe('Dll ===', () => {
   describe('should be able call functions', () => {
     beforeEach(() => {
       spyOn(external, 'CallDll').and.callFake((funcName) => {
-        if (funcName == 'xsplit.EnumParentWindows') {
+        if (funcName === 'xsplit.EnumParentWindows') {
           return '65750,131452,132324,131374,131454,65910,66274,66402,66400,66398,66396,66394,66392,66390,1049414,131916,66604,132240,263086,459244,983482,132276,4129072,6227402,394892,395240,395362';
         } else {
           return undefined;
@@ -30,7 +30,7 @@ describe('Dll ===', () => {
       });
 
       spyOn(external, 'CallDllEx').and.callFake((funcName, parameters) => {
-        if (funcName == 'xsplit.Exists') {
+        if (funcName === 'xsplit.Exists') {
           return '1';
         } else {
           return undefined;

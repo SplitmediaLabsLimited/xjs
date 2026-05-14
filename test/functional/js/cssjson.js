@@ -51,7 +51,7 @@ var CSSJSON = new (function () {
   var capEnd = 3;
   var capAttr = 4;
 
-  var isEmpty = (x) => typeof x == 'undefined' || x.length == 0 || x == null;
+  var isEmpty = (x) => typeof x === 'undefined' || x.length === 0 || x == null;
 
   /**
    * Input is css string and current pos, returns JSON object
@@ -74,7 +74,7 @@ var CSSJSON = new (function () {
     var match = null;
     var count = 0;
 
-    if (typeof args == 'undefined') {
+    if (typeof args === 'undefined') {
       var args = {
         ordered: false,
         comments: false,
@@ -171,10 +171,10 @@ var CSSJSON = new (function () {
    */
   this.toCSS = (node, depth, breaks) => {
     var cssString = '';
-    if (typeof depth == 'undefined') {
+    if (typeof depth === 'undefined') {
       depth = 0;
     }
-    if (typeof breaks == 'undefined') {
+    if (typeof breaks === 'undefined') {
       breaks = false;
     }
     if (node.attributes) {
