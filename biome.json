@@ -8,10 +8,21 @@
   "files": {
     "includes": [
       "src/**/*.ts",
+      "src/**/*.html",
+      "src/**/*.css",
+      "src/**/*.scss",
       "test/**/*.js",
       "test/**/*.mjs",
+      "test/**/*.html",
+      "test/**/*.css",
+      "test/**/*.scss",
       "scripts/**/*.js",
-      "scripts/**/*.mjs"
+      "scripts/**/*.mjs",
+      "examples/**/*.js",
+      "examples/**/*.mjs",
+      "examples/**/*.html",
+      "examples/**/*.css",
+      "examples/**/*.scss"
     ]
   },
   "formatter": {
