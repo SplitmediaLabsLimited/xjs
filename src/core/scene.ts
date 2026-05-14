@@ -1351,7 +1351,7 @@ export class Scene {
               }
             }
             for (var j in uniqueObj) {
-              if (Object.prototype.hasOwnProperty.call(uniqueObj, j)) {
+              if (Object.hasOwn(uniqueObj, j)) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }

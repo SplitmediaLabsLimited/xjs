@@ -694,10 +694,10 @@ export class ItemLayout implements IItemLayout {
   setCropping(value: Object): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
       if (
-        Object.prototype.hasOwnProperty.call(value, 'top') &&
-        Object.prototype.hasOwnProperty.call(value, 'left') &&
-        Object.prototype.hasOwnProperty.call(value, 'right') &&
-        Object.prototype.hasOwnProperty.call(value, 'bottom')
+        Object.hasOwn(value, 'top') &&
+        Object.hasOwn(value, 'left') &&
+        Object.hasOwn(value, 'right') &&
+        Object.hasOwn(value, 'bottom')
       ) {
         iItem
           .set(
@@ -866,10 +866,10 @@ export class ItemLayout implements IItemLayout {
   setCroppingEnhanced(value: Object): Promise<ItemLayout> {
     return new Promise((resolve, reject) => {
       if (
-        Object.prototype.hasOwnProperty.call(value, 'top') &&
-        Object.prototype.hasOwnProperty.call(value, 'left') &&
-        Object.prototype.hasOwnProperty.call(value, 'right') &&
-        Object.prototype.hasOwnProperty.call(value, 'bottom')
+        Object.hasOwn(value, 'top') &&
+        Object.hasOwn(value, 'left') &&
+        Object.hasOwn(value, 'right') &&
+        Object.hasOwn(value, 'bottom')
       ) {
         var originalWidth;
         var originalHeight;

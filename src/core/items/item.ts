@@ -374,7 +374,7 @@ export class Item extends Source implements IItemLayout, ISource {
     var item: JXON = new JXON();
 
     for (const prop in this._xmlparams) {
-      if (!Object.prototype.hasOwnProperty.call(this._xmlparams, prop)) continue;
+      if (!Object.hasOwn(this._xmlparams, prop)) continue;
 
       item[prop] = this._xmlparams[prop];
     }

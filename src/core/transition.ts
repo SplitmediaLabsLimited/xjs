@@ -131,8 +131,8 @@ export class Transition {
             for (var i = transitionArray.length - 1; i >= 0; i--) {
               var transitionObject = transitionArray[i];
               if (
-                Object.prototype.hasOwnProperty.call(transitionObject, 'Id') &&
-                Object.prototype.hasOwnProperty.call(transitionObject, 'Name')
+                Object.hasOwn(transitionObject, 'Id') &&
+                Object.hasOwn(transitionObject, 'Name')
               ) {
                 transitions.push(new Transition(transitionObject['Id'], transitionObject['Name']));
               }

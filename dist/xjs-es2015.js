@@ -3473,7 +3473,7 @@ var XJS = (function(exports) {
               }
             }
             for (var j in uniqueObj) {
-              if (Object.prototype.hasOwnProperty.call(uniqueObj, j)) {
+              if (Object.hasOwn(uniqueObj, j)) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }
@@ -4556,7 +4556,7 @@ var XJS = (function(exports) {
           let customJS = "";
           try {
             const customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+            if (Object.hasOwn(customObject2, "customJS")) {
               customJS = customObject2["customJS"];
             }
           } catch (e) {
@@ -4624,13 +4624,13 @@ var XJS = (function(exports) {
           let cssEnabled = true;
           try {
             customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+            if (Object.hasOwn(customObject2, "cssEnabled")) {
               cssEnabled = customObject2["cssEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+            if (Object.hasOwn(customObject2, "scriptEnabled")) {
               scriptEnabled = customObject2["scriptEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+            if (Object.hasOwn(customObject2, "customCSS")) {
               customCSS = customObject2["customCSS"];
             }
           } catch (e) {
@@ -4681,7 +4681,7 @@ var XJS = (function(exports) {
           let enabled = true;
           try {
             const customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+            if (Object.hasOwn(customObject2, "scriptEnabled")) {
               enabled = customObject2["scriptEnabled"] === "true";
             }
           } catch (e) {
@@ -4711,13 +4711,13 @@ var XJS = (function(exports) {
           let cssEnabled = true;
           try {
             customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+            if (Object.hasOwn(customObject2, "cssEnabled")) {
               cssEnabled = customObject2["cssEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+            if (Object.hasOwn(customObject2, "customJS")) {
               customJS = customObject2["customJS"];
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+            if (Object.hasOwn(customObject2, "customCSS")) {
               customCSS = customObject2["customCSS"];
             }
           } catch (e) {
@@ -4768,7 +4768,7 @@ var XJS = (function(exports) {
           let customCSS = "";
           try {
             const customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+            if (Object.hasOwn(customObject2, "customCSS")) {
               customCSS = customObject2["customCSS"];
             }
           } catch (e) {
@@ -4798,13 +4798,13 @@ var XJS = (function(exports) {
           let cssEnabled = true;
           try {
             customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+            if (Object.hasOwn(customObject2, "cssEnabled")) {
               cssEnabled = customObject2["cssEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+            if (Object.hasOwn(customObject2, "scriptEnabled")) {
               scriptEnabled = customObject2["scriptEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+            if (Object.hasOwn(customObject2, "customJS")) {
               customJS = customObject2["customJS"];
             }
           } catch (e) {
@@ -4849,7 +4849,7 @@ var XJS = (function(exports) {
           let enabled = true;
           try {
             const customObject2 = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+            if (Object.hasOwn(customObject2, "cssEnabled")) {
               enabled = customObject2["cssEnabled"] === "true";
             }
           } catch (e) {
@@ -4879,13 +4879,13 @@ var XJS = (function(exports) {
           let scriptEnabled = true;
           try {
             customObject = JSON.parse(custom);
-            if (Object.prototype.hasOwnProperty.call(customObject, "scriptEnabled")) {
+            if (Object.hasOwn(customObject, "scriptEnabled")) {
               scriptEnabled = customObject["scriptEnabled"] === "true";
             }
-            if (Object.prototype.hasOwnProperty.call(customObject, "customJS")) {
+            if (Object.hasOwn(customObject, "customJS")) {
               customJS = customObject["customJS"];
             }
-            if (Object.prototype.hasOwnProperty.call(customObject, "customCSS")) {
+            if (Object.hasOwn(customObject, "customCSS")) {
               customCSS = customObject["customCSS"];
             }
           } catch (e) {
@@ -7111,7 +7111,7 @@ var XJS = (function(exports) {
     }
     setCropping(value2) {
       return new Promise((resolve2, reject2) => {
-        if (Object.prototype.hasOwnProperty.call(value2, "top") && Object.prototype.hasOwnProperty.call(value2, "left") && Object.prototype.hasOwnProperty.call(value2, "right") && Object.prototype.hasOwnProperty.call(value2, "bottom")) {
+        if (Object.hasOwn(value2, "top") && Object.hasOwn(value2, "left") && Object.hasOwn(value2, "right") && Object.hasOwn(value2, "bottom")) {
           Item$1.set(
             "prop:crop",
             value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6),
@@ -7241,7 +7241,7 @@ var XJS = (function(exports) {
     }
     setCroppingEnhanced(value2) {
       return new Promise((resolve2, reject2) => {
-        if (Object.prototype.hasOwnProperty.call(value2, "top") && Object.prototype.hasOwnProperty.call(value2, "left") && Object.prototype.hasOwnProperty.call(value2, "right") && Object.prototype.hasOwnProperty.call(value2, "bottom")) {
+        if (Object.hasOwn(value2, "top") && Object.hasOwn(value2, "left") && Object.hasOwn(value2, "right") && Object.hasOwn(value2, "bottom")) {
           var originalWidth;
           var originalHeight;
           var outputResolution;
@@ -7817,7 +7817,7 @@ var XJS = (function(exports) {
     toXML() {
       var item = new JSON$1();
       for (const prop in this._xmlparams) {
-        if (!Object.prototype.hasOwnProperty.call(this._xmlparams, prop)) continue;
+        if (!Object.hasOwn(this._xmlparams, prop)) continue;
         item[prop] = this._xmlparams[prop];
       }
       item["tag"] = "item";
@@ -9355,7 +9355,7 @@ var XJS = (function(exports) {
               var transitionArray = JSON.parse(transitionString);
               for (var i = transitionArray.length - 1; i >= 0; i--) {
                 var transitionObject = transitionArray[i];
-                if (Object.prototype.hasOwnProperty.call(transitionObject, "Id") && Object.prototype.hasOwnProperty.call(transitionObject, "Name")) {
+                if (Object.hasOwn(transitionObject, "Id") && Object.hasOwn(transitionObject, "Name")) {
                   transitions.push(new Transition(transitionObject["Id"], transitionObject["Name"]));
                 }
               }
@@ -10894,7 +10894,7 @@ var XJS = (function(exports) {
               }
             }
             for (var j in uniqueObj) {
-              if (Object.prototype.hasOwnProperty.call(uniqueObj, j)) {
+              if (Object.hasOwn(uniqueObj, j)) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }
@@ -12266,7 +12266,7 @@ var XJS = (function(exports) {
       ChannelManager._emitter.on(event, (params) => {
         try {
           const channelInfoObj = JSON.parse(decodeURIComponent(params));
-          if (Object.prototype.hasOwnProperty.call(channelInfoObj, "ChannelName")) {
+          if (Object.hasOwn(channelInfoObj, "ChannelName")) {
             const channelName = channelInfoObj["ChannelName"];
             const infoJSON = JSON$1.parse(channelInfoObj["Settings"]);
             let statJSON;
@@ -12295,7 +12295,7 @@ var XJS = (function(exports) {
               channel: eventChannel,
               streamTime: addedInfo["streamTime"]
             });
-          } else if (Object.prototype.hasOwnProperty.call(channelInfoObj, "new") && Object.prototype.hasOwnProperty.call(channelInfoObj, "old")) {
+          } else if (Object.hasOwn(channelInfoObj, "new") && Object.hasOwn(channelInfoObj, "old")) {
             if (event === "recording-renamed") {
               const name = decodeURIComponent(channelInfoObj["new"]).replace(/\\/g, "/");
               const nameArr = name.split("/");
@@ -12324,7 +12324,7 @@ var XJS = (function(exports) {
       ["StreamStart", "StreamEnd", "RecordingRenamed"],
       (settingsObj) => {
         let eventString;
-        if (Object.prototype.hasOwnProperty.call(settingsObj, "event") && Object.prototype.hasOwnProperty.call(settingsObj, "info")) {
+        if (Object.hasOwn(settingsObj, "event") && Object.hasOwn(settingsObj, "info")) {
           eventString = settingsObj["event"];
           if (settingsObj["event"] === "StreamStart") {
             eventString = "stream-start";
@@ -12333,7 +12333,7 @@ var XJS = (function(exports) {
           }
           ChannelManager.emit(eventString, settingsObj["info"]);
         }
-        if (Object.prototype.hasOwnProperty.call(settingsObj, "event") && Object.prototype.hasOwnProperty.call(settingsObj, "old") && Object.prototype.hasOwnProperty.call(settingsObj, "new")) {
+        if (Object.hasOwn(settingsObj, "event") && Object.hasOwn(settingsObj, "old") && Object.hasOwn(settingsObj, "new")) {
           eventString = settingsObj["event"];
           if (settingsObj["event"] === "RecordingRenamed") {
             eventString = "recording-renamed";
@@ -14498,7 +14498,7 @@ var XJS = (function(exports) {
   }
   EventManager.subscribe(["LanguageChanged"], (langObj) => {
     let eventString;
-    if (Object.prototype.hasOwnProperty.call(langObj, "event") && Object.prototype.hasOwnProperty.call(langObj, "lang")) {
+    if (Object.hasOwn(langObj, "event") && Object.hasOwn(langObj, "lang")) {
       eventString = langObj["event"];
       if (langObj["event"] === "LanguageChanged") {
         eventString = "language-change";
