@@ -10,6 +10,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 - Use Vite as the build foundation and avoid reintroducing Browserify or Gulp tasks.
 - Keep TypeScript 6 compatibility as the baseline so the project is positioned for TS-go when it becomes practical.
 - Grow regression coverage around package entry points, browser bundles, component fixtures, and XSplit CDP runs.
+- Track modern coverage against legacy Karma and functional behavior in [MODERN_PARITY_AUDIT.md](MODERN_PARITY_AUDIT.md).
 
 ## API Stability Constraint
 
@@ -91,7 +92,7 @@ Exit criteria:
 
 ### Phase 4: Legacy Test And Example Rationalization
 
-Keep old tests only where they still protect behavior that the modern suite does not cover.
+Keep old tests only where they still protect behavior that the modern suite does not cover. Use [MODERN_PARITY_AUDIT.md](MODERN_PARITY_AUDIT.md) to decide which legacy areas are covered well enough to retire later.
 
 - Prefer smoke tests and focused component tests for migration guards.
 - Keep Karma/Firefox available as `npm run test:legacy` while it still provides useful historical coverage.

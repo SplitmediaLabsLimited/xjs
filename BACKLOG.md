@@ -6,6 +6,8 @@ Status: In progress
 
 The active migration plan lives in [MIGRATION.md](MIGRATION.md). Use that document as the source of truth for build tooling, package outputs, TypeScript 6 hardening, XSplit CEF regression coverage, and release validation.
 
+The current modern-to-legacy coverage map lives in [MODERN_PARITY_AUDIT.md](MODERN_PARITY_AUDIT.md). Keep legacy Karma and functional tests until the audit shows equivalent modern coverage for the affected public APIs.
+
 ## Deferred Documentation Site Work
 
 Status: Planned later
