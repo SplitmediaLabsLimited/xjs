@@ -1067,12 +1067,12 @@ export class Scene {
           .then(activeScene => {
             return activeScene.setItemOrder(items);
           }).then(sources => {
-            resolve(this);
+            resolve(Scene._liveScene);
           }).catch(err => reject(err))
         })
       }
 
-      Scene._liveScene.getPresets = (): Promise<string> => {
+      Scene._liveScene.getPresets = (): Promise<string[]> => {
         return new Promise((resolve, reject) => {
           Scene.getActiveScene()
           .then(activeScene => {
@@ -1238,7 +1238,7 @@ export class Scene {
         let uniqueSrc = [];
 
         // type checking to return correct Source subtype
-        let typePromise = index => new Promise(typeResolve => {
+        let typePromise = (index: number): Promise<Source> => new Promise(typeResolve => {
           let source = jsonArr[index];
           let srcType = SourceTypeResolve(source);
           typeResolve(srcType);
@@ -1294,17 +1294,13 @@ export class Scene {
         if (typeof this._id === 'number') {
           resolve(Number(this._id) + 1)
         } else {
-          resolve(this._id)
+          resolve(Number(this._id))
         }
       } else {
         Scene._initializeScenePoolAsync().then(() => {
           return Scene.getBySceneUid(curUid)
         }).then(curScene => {
-          if (typeof curScene !== 'number') {
-            resolve(Number(curScene._id) + 1)
-          } else {
-            resolve(curScene._id)
-          }
+          resolve(Number(curScene._id) + 1)
         })
       }
 
@@ -1338,7 +1334,7 @@ export class Scene {
         Scene._initializeScenePoolAsync().then(() => {
           return Scene.getBySceneUid(curUid)
         }).then(curScene => {
-          resolve(curScene._id)
+          resolve(Number(curScene._id))
         })
       }
     });
@@ -1508,7 +1504,7 @@ export class Scene {
    * });
    * ```
    */
-  getTransitionTime(): Promise<string> {
+  getTransitionTime(): Promise<number> {
     return new Promise(resolve => {
       iApp.get('scenetransitiontime:' + this._refID).then(val => {
         resolve(Number(val));
@@ -1558,10 +1554,10 @@ export class Scene {
   getItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       iApp.getAsItemList('sceneconfig:' + this._refID).then(jsonArr => {
-        var promiseArray: Promise<Source>[] = [];
+        var promiseArray: Promise<Item>[] = [];
 
         // type checking to return correct Source subtype
-        let typePromise = index => new Promise(typeResolve => {
+        let typePromise = (index: number): Promise<Item> => new Promise(typeResolve => {
           let item = jsonArr[index];
           let itemType = ItemTypeResolve(item);
           typeResolve(itemType);
@@ -1600,10 +1596,10 @@ export class Scene {
   getTopLevelItems(): Promise<Item[]> {
     return new Promise((resolve, reject) => {
       iApp.getAsList('sceneconfig:' + this._refID).then(jsonArr => {
-        var promiseArray: Promise<Source>[] = [];
+        var promiseArray: Promise<Item>[] = [];
 
         // type checking to return correct Source subtype
-        let typePromise = index => new Promise(typeResolve => {
+        let typePromise = (index: number): Promise<Item> => new Promise(typeResolve => {
           let item = jsonArr[index];
           let itemType = ItemTypeResolve(item);
           typeResolve(itemType);
@@ -1748,7 +1744,7 @@ export class Scene {
    * });
    * ```
    */
-  getPresets(): Promise<string> {
+  getPresets(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('Not supported on source plugins'));

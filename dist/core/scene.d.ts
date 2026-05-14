@@ -499,7 +499,7 @@ export declare class Scene {
      * });
      * ```
      */
-    getTransitionTime(): Promise<string>;
+    getTransitionTime(): Promise<number>;
     /**
      * param: (value: string)
      *
@@ -584,7 +584,7 @@ export declare class Scene {
      * });
      * ```
      */
-    getPresets(): Promise<string>;
+    getPresets(): Promise<string[]>;
     /**
      * return: Promise<string>
      *

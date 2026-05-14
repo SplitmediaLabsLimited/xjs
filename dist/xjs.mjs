@@ -10942,7 +10942,7 @@ const _Scene = class _Scene {
           _Scene.getActiveScene().then((activeScene) => {
             return activeScene.setItemOrder(items);
           }).then((sources) => {
-            resolve2(this);
+            resolve2(_Scene._liveScene);
           }).catch((err) => reject2(err));
         });
       };
@@ -11145,17 +11145,13 @@ const _Scene = class _Scene {
         if (typeof this._id === "number") {
           resolve2(Number(this._id) + 1);
         } else {
-          resolve2(this._id);
+          resolve2(Number(this._id));
         }
       } else {
         _Scene._initializeScenePoolAsync().then(() => {
           return _Scene.getBySceneUid(curUid);
         }).then((curScene) => {
-          if (typeof curScene !== "number") {
-            resolve2(Number(curScene._id) + 1);
-          } else {
-            resolve2(curScene._id);
-          }
+          resolve2(Number(curScene._id) + 1);
         });
       }
     });
@@ -11187,7 +11183,7 @@ const _Scene = class _Scene {
         _Scene._initializeScenePoolAsync().then(() => {
           return _Scene.getBySceneUid(curUid);
         }).then((curScene) => {
-          resolve2(curScene._id);
+          resolve2(Number(curScene._id));
         });
       }
     });

@@ -11098,7 +11098,7 @@ var XJS = (function(exports) {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.setItemOrder(items);
             }).then((sources) => {
-              resolve2(this);
+              resolve2(Scene._liveScene);
             }).catch((err) => reject2(err));
           });
         };
@@ -11301,17 +11301,13 @@ var XJS = (function(exports) {
           if (typeof this._id === "number") {
             resolve2(Number(this._id) + 1);
           } else {
-            resolve2(this._id);
+            resolve2(Number(this._id));
           }
         } else {
           Scene._initializeScenePoolAsync().then(() => {
             return Scene.getBySceneUid(curUid);
           }).then((curScene) => {
-            if (typeof curScene !== "number") {
-              resolve2(Number(curScene._id) + 1);
-            } else {
-              resolve2(curScene._id);
-            }
+            resolve2(Number(curScene._id) + 1);
           });
         }
       });
@@ -11343,7 +11339,7 @@ var XJS = (function(exports) {
           Scene._initializeScenePoolAsync().then(() => {
             return Scene.getBySceneUid(curUid);
           }).then((curScene) => {
-            resolve2(curScene._id);
+            resolve2(Number(curScene._id));
           });
         }
       });

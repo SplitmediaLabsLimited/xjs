@@ -15,7 +15,7 @@ import {ReplayItem} from '../core/items/replay';
 import {ItemTypes} from '../core/source/isource';
 import {VIDEO_REGEX, AUDIO_REGEX} from '../core/source/iplayback';
 
-export function ItemTypeResolve(item: Object): any {
+export function ItemTypeResolve(item: Object): Item {
 	let itemType;
   const type = Number(item['type']);
   const itemValue = item['item'];

@@ -15,7 +15,7 @@ import {ItemTypes} from '../core/source/isource';
 import {MediaSource} from '../core/source/media';
 import {VIDEO_REGEX, AUDIO_REGEX} from '../core/source/iplayback';
 
-export function SourceTypeResolve(source: Object): any {
+export function SourceTypeResolve(source: Object): Source {
 	let srcType;
   const type = Number(source['type']);
   const sourceValue = source['item'];
