@@ -94,7 +94,7 @@ export class ExtensionWindow extends EventEmitter {
    */
   static on(event: string, handler: Function): Promise<any> {
     return new Promise((resolve, reject) => {
-      const id = new Date().getTime() + '_' + Math.floor(Math.random() * 1000);
+      const id = Date.now() + '_' + Math.floor(Math.random() * 1000);
       ExtensionWindow.getInstance().on(event, handler, id);
       const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
         deleteSceneEventFixVersion

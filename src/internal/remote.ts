@@ -272,7 +272,8 @@ export class Remote {
           const messageArr = [messageObj['file'], messageObj['callback']];
           IO.getVideoDuration.call(Remote, messageArr);
         } else if (messageObj['type'] === 'extWindow') {
-          const Ext = (messageObj['instance'] = new Extension());
+          messageObj['instance'] = new Extension();
+          const Ext = messageObj['instance'];
           Ext.getId(messageObj['callback']);
         } else if (messageObj['type'] === 'broadcastChannels') {
           Output._getBroadcastChannels(

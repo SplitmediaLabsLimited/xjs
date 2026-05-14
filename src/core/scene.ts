@@ -57,7 +57,7 @@ export class Scene {
       iApp.getAsList('sceneconfig').then((jsonArr) => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           const count = jsonArr.length;
-          count > 12 ? (Scene._maxScenes = count) : (Scene._maxScenes = 12);
+          Scene._maxScenes = count > 12 ? count : 12;
           for (var i = 0; i < Scene._maxScenes; i++) {
             Scene._scenePool[i] = new Scene(i);
           }

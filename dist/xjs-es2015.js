@@ -754,7 +754,7 @@ var XJS = (function(exports) {
     /** This function attaches a handler to an event. Duplicate handlers are allowed. */
     on(event, handler, _id) {
       if (Remote.remoteType === "remote") {
-        const id = _id ? _id : (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
+        const id = _id ? _id : Date.now() + "_" + Math.floor(Math.random() * 1e3);
         const message = {
           event,
           id,
@@ -2891,7 +2891,7 @@ var XJS = (function(exports) {
     }
     static subscribe(event, _cb, id) {
       return new Promise((resolve2) => {
-        event = event instanceof Array ? event : [event];
+        event = Array.isArray(event) ? event : [event];
         if (Remote.remoteType === "remote") {
           const message = {
             event,
@@ -2925,7 +2925,7 @@ var XJS = (function(exports) {
             EventManager._proxyHandlers[_event].push(_cb);
           });
         } else {
-          if (event instanceof Array) {
+          if (Array.isArray(event)) {
             event.forEach((_event) => {
               if (EventManager.callbacks[_event] === void 0) {
                 EventManager.callbacks[_event] = [];
@@ -9761,7 +9761,7 @@ var XJS = (function(exports) {
         App$1.getAsList("sceneconfig").then((jsonArr) => {
           if (versionCompare(getVersion()).is.lessThan(minVersion)) {
             const count = jsonArr.length;
-            count > 12 ? Scene._maxScenes = count : Scene._maxScenes = 12;
+            Scene._maxScenes = count > 12 ? count : 12;
             for (var i = 0; i < Scene._maxScenes; i++) {
               Scene._scenePool[i] = new Scene(i);
             }
@@ -12881,7 +12881,8 @@ var XJS = (function(exports) {
             const messageArr = [messageObj["file"], messageObj["callback"]];
             IO.getVideoDuration.call(Remote, messageArr);
           } else if (messageObj["type"] === "extWindow") {
-            const Ext = messageObj["instance"] = new Extension();
+            messageObj["instance"] = new Extension();
+            const Ext = messageObj["instance"];
             Ext.getId(messageObj["callback"]);
           } else if (messageObj["type"] === "broadcastChannels") {
             Output._getBroadcastChannels(
@@ -15249,7 +15250,7 @@ var XJS = (function(exports) {
      */
     static on(event, handler) {
       return new Promise((resolve2, reject2) => {
-        const id = (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
+        const id = Date.now() + "_" + Math.floor(Math.random() * 1e3);
         ExtensionWindow.getInstance().on(event, handler, id);
         const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
           deleteSceneEventFixVersion

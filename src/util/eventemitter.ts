@@ -9,7 +9,7 @@ export class EventEmitter {
   /** This function attaches a handler to an event. Duplicate handlers are allowed. */
   on(event: string, handler: Function, _id?: string) {
     if (Remote.remoteType === 'remote') {
-      const id = _id ? _id : new Date().getTime() + '_' + Math.floor(Math.random() * 1000);
+      const id = _id ? _id : Date.now() + '_' + Math.floor(Math.random() * 1000);
       const message = {
         event,
         id,

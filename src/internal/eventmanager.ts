@@ -30,7 +30,7 @@ export class EventManager {
 
   static subscribe(event, _cb, id?) {
     return new Promise((resolve) => {
-      event = event instanceof Array ? event : [event];
+      event = Array.isArray(event) ? event : [event];
       if (Remote.remoteType === 'remote') {
         const message = {
           event,
@@ -82,7 +82,7 @@ export class EventManager {
           EventManager._proxyHandlers[_event].push(_cb);
         });
       } else {
-        if (event instanceof Array) {
+        if (Array.isArray(event)) {
           event.forEach((_event) => {
             if (EventManager.callbacks[_event] === undefined) {
               EventManager.callbacks[_event] = [];
