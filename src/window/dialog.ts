@@ -78,6 +78,9 @@ export class Dialog {
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
 
+        // In CEF builds with Proxy support, getResult() may be waiting on
+        // dialogProxy rather than this instance. Keep both paths aligned with
+        // the old Object.observe fallback below.
         if (typeof dialogProxy !== 'undefined' && typeof Proxy !== 'undefined') {
           dialogProxy._result = e.detail;
         } else {
@@ -380,6 +383,7 @@ export class Dialog {
 
   private _calculateFlags(): string {
     let flags = 0;
+    // Host flags are bit values consumed by NewDialog/NewDialog2.
     if (this._showBorder) {
       flags += 1;
     }

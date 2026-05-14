@@ -554,6 +554,12 @@ var XJS = (function(exports) {
     static {
       this.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
     }
+    /**
+     * Serializes the legacy JXON node shape back into XSplit host XML.
+     *
+     * Dynamic object properties become XML attributes; reserved node fields are
+     * structural and must not be emitted as attributes.
+     */
     constructor(json) {
       let attributes = "";
       if (json.value === void 0) {
@@ -596,6 +602,13 @@ var XJS = (function(exports) {
     }
   }
   let JSON$1 = class JSON2 {
+    /**
+     * Builds the legacy JXON shape used by XSplit host XML payloads.
+     *
+     * The constructor intentionally returns the parsed root node object instead
+     * of `this`. Existing code relies on `new JSON(xml)` and `JSON.parse(xml)`
+     * producing a node-like object with dynamic XML attributes copied onto it.
+     */
     constructor(xml) {
       if (xml === void 0 || xml === "") {
         return;
@@ -2890,6 +2903,13 @@ var XJS = (function(exports) {
         "scenedlg:1"
       ];
     }
+    /**
+     * Registers callbacks locally or across a remote/proxy pair.
+     *
+     * XSplit exposes several native callback entry points (`SetEvent`,
+     * `AppOnEvent`, and `OnEvent`). This method normalizes subscription storage
+     * before those global bridge functions fan events back out to handlers.
+     */
     static subscribe(event, _cb, id) {
       return new Promise((resolve2) => {
         event = Array.isArray(event) ? event : [event];

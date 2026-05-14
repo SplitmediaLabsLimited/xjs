@@ -116,7 +116,9 @@ export class Remote {
         !Remote._isVersion &&
         message.indexOf('setVersion') !== -1
       ) {
-        // Receive version on first message from proxy
+        // Receive version on first message from proxy. Remote-side version
+        // checks use this mock so API behavior matches the host process even
+        // when calls are forwarded through another window/context.
         Remote._isVersion = true;
         let mockVersion = message;
         const msgArray = message.split('::');
@@ -129,7 +131,8 @@ export class Remote {
         message !== undefined &&
         message === 'getVersion'
       ) {
-        // First message to get and send version
+        // First handshake message: send the proxy host version back to the
+        // remote side before any forwarded XJS calls are processed.
         Remote.sendMessage('setVersion::' + window.navigator.appVersion);
         resolve(true);
       } else if (Remote.remoteType === 'local') {
@@ -183,6 +186,8 @@ export class Remote {
         let messageObj = {};
         return new Promise((resolve, reject) => {
           messageObj = JSON.parse(decodeURIComponent(message));
+          // The proxy performs the native exec call, then sends a compact
+          // callback payload back to the remote side keyed by asyncId.
           messageObj['callback'] = (result) => {
             const retObj = {
               result,
@@ -260,6 +265,8 @@ export class Remote {
         }
       } else if (Remote.remoteType === 'proxy') {
         const messageObj = JSON.parse(decodeURIComponent(message));
+        // Window APIs are routed by type because each subsystem owns its own
+        // final-callback contract and return payload.
         messageObj['callback'] = (result) => {
           const retObj = {
             result,

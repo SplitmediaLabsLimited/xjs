@@ -5,6 +5,12 @@ export class XML {
 
   private static RESERVED_ATTRIBUTES: RegExp = /^(children|tag|value|selfclosing)$/i;
 
+  /**
+   * Serializes the legacy JXON node shape back into XSplit host XML.
+   *
+   * Dynamic object properties become XML attributes; reserved node fields are
+   * structural and must not be emitted as attributes.
+   */
   constructor(json?: JSON) {
     let attributes = '';
     const value = '';

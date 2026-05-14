@@ -36,7 +36,9 @@ const effectIds = {
   compressor: 'mic_dsp_comp',
 };
 
-//used to get/set config values
+// New-audio-engine effect settings are encoded as compact host config strings
+// rather than XML device lists. Preserve unknown key/value pairs while replacing
+// only the requested effect entry.
 const updateMicrophoneEffects = (
   effectId,
   configSeparator,

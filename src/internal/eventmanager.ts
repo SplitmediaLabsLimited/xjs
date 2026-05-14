@@ -28,6 +28,13 @@ export class EventManager {
     'scenedlg:1',
   ];
 
+  /**
+   * Registers callbacks locally or across a remote/proxy pair.
+   *
+   * XSplit exposes several native callback entry points (`SetEvent`,
+   * `AppOnEvent`, and `OnEvent`). This method normalizes subscription storage
+   * before those global bridge functions fan events back out to handlers.
+   */
   static subscribe(event, _cb, id?) {
     return new Promise((resolve) => {
       event = Array.isArray(event) ? event : [event];
@@ -186,6 +193,9 @@ window.AppOnEvent = (event, ...args) => {
 
 const oldOnEvent = window.OnEvent;
 window.OnEvent = (event, item, ...eventArgs) => {
+  // Newer XSplit builds identify a scene item deletion with
+  // `itemremovedfromscene`; older public callbacks expect `itemdestroyed`.
+  // Keep the compatibility alias at the bridge boundary.
   if (
     event === 'itemremovedfromscene' &&
     versionCompare(getVersion()).is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)

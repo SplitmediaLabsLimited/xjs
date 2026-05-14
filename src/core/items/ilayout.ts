@@ -503,6 +503,9 @@ export class ItemLayout implements IItemLayout {
 
   private _getCanvasAndZRotate(value: number): Object {
     var rotationObject: Object = {};
+    // XSplit's property window represents a single visual rotation by
+    // combining canvas rotation in 90 degree steps with a smaller z-rotation.
+    // Preserve those breakpoints so enhanced rotation matches the UI.
     if (value >= -180 && value <= -135) {
       rotationObject['canvasRotate'] = 180;
       rotationObject['zRotate'] = value + 180;

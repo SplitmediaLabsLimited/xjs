@@ -13,6 +13,9 @@ const LoadStatus = {
   unknown: 'UNKNOWN',
 };
 
+// Browser custom sizes are transported to XSplit in physical pixels. Round the
+// value we expose back to user code so high-DPI displays do not leak floating
+// point noise into regression assertions.
 const toStableNumber = (value: number): number => Number(value.toFixed(12));
 
 export interface ISourceHtml {
@@ -610,6 +613,9 @@ export class iSourceHtml implements ISourceHtml {
     let retrievedPolicyStringFunction = '';
 
     if (window.trustedTypes) {
+      // HTML sources may run in pages with Trusted Types enabled. The injected
+      // setup preserves legacy custom CSS/JS behavior by creating a default
+      // policy only when the page has not already provided one.
       retrievedPolicyStringFunction = `var retrievedPolicy = null;
         if (window.trustedTypes) {                          
           if (window.trustedTypes.defaultPolicy === null) {
