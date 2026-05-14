@@ -8,7 +8,7 @@
     "docs:build": "node scripts/build-docs.mjs",
     "examples": "node scripts/serve-examples.mjs",
     "test": "npm run test:smoke",
-    "test:smoke": "npm run build && node test/smoke/package-entries.mjs && node test/smoke/navbar-source.mjs && node test/smoke/xsplit-harness.mjs && node test/smoke/custom-element-fixture-coverage.mjs && node test/smoke/cdp-runner.mjs && node test/smoke/build-workflow.mjs && node test/smoke/release-workflow.mjs && node test/smoke/migration-plan.mjs && node test/smoke/no-legacy-dependency-references.mjs",
+    "test:smoke": "npm run build && node test/smoke/package-entries.mjs && node test/smoke/navbar-source.mjs && node test/smoke/xsplit-harness.mjs && node test/smoke/custom-element-fixture-coverage.mjs && node test/smoke/cdp-runner.mjs && node test/smoke/build-workflow.mjs && node test/smoke/release-workflow.mjs && node test/smoke/migration-plan.mjs && node test/smoke/docs-boundary.mjs && node test/smoke/no-legacy-dependency-references.mjs",
     "test:components": "web-test-runner --config web-test-runner.config.mjs",
     "test:legacy": "karma start --single-run --browsers Firefox",
     "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
