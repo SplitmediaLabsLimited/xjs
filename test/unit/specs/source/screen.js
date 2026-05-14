@@ -46,7 +46,7 @@ describe('ScreenSource', () => {
       }
 
       case 'prop:item':
-        if (Object.hasOwn(local, 'item')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'item')) {
           var irand = rand;
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.item);
@@ -74,7 +74,7 @@ describe('ScreenSource', () => {
 
       case 'prop:ScrCapTrackWindowTitle': {
         var irand = rand;
-        if (Object.hasOwn(local, 'stickTitle')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'stickTitle')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.stickTitle);
           }, 10);

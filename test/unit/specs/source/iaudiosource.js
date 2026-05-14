@@ -49,7 +49,7 @@ describe('Audio Source interface', () => {
       property = property.substring(3);
     }
 
-    if (local[attachedId] !== undefined && Object.hasOwn(local[attachedId], property)) {
+    if (local[attachedId] !== undefined && Object.prototype.hasOwnProperty.call(local[attachedId], property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
       var placement = parseXml(mockPresetConfig).getElementsByTagName('placement')[0];

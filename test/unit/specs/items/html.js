@@ -48,7 +48,7 @@ describe('HtmlItem', () => {
 
       case 'prop:srcitem':
       case 'prop:item':
-        if (Object.hasOwn(local, 'item')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'item')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -66,7 +66,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:BrowserSize':
-        if (Object.hasOwn(local, 'browserSize')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'browserSize')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
@@ -89,7 +89,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:BrowserTransparent':
-        if (Object.hasOwn(local, 'browserTransparent')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'browserTransparent')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.browserTransparent);
           }, 10);
@@ -107,7 +107,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:BrowserJs':
-        if (Object.hasOwn(local, 'browserJS')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'browserJS')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.browserJS);
           }, 10);
@@ -125,7 +125,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:custom':
-        if (Object.hasOwn(local, 'custom')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'custom')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.custom);
           }, 10);
@@ -149,7 +149,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:RefreshOnSrcShow':
-        if (Object.hasOwn(local, 'RefreshOnSrcShow')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'RefreshOnSrcShow')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.RefreshOnSrcShow);
           }, 10);
@@ -166,7 +166,7 @@ describe('HtmlItem', () => {
         break;
 
       case 'prop:RefreshOnScnLoad':
-        if (Object.hasOwn(local, 'RefreshOnScnLoad')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'RefreshOnScnLoad')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.RefreshOnScnLoad);
           }, 10);
@@ -292,10 +292,10 @@ describe('HtmlItem', () => {
           try {
             var customObject = JSON.parse(val);
             if (
-              Object.hasOwn(customObject, 'customCSS') &&
-              Object.hasOwn(customObject, 'customJS') &&
-              Object.hasOwn(customObject, 'scriptEnabled') &&
-              Object.hasOwn(customObject, 'cssEnabled')
+              Object.prototype.hasOwnProperty.call(customObject, 'customCSS') &&
+              Object.prototype.hasOwnProperty.call(customObject, 'customJS') &&
+              Object.prototype.hasOwnProperty.call(customObject, 'scriptEnabled') &&
+              Object.prototype.hasOwnProperty.call(customObject, 'cssEnabled')
             ) {
               local.custom = val;
               urlSet = true;

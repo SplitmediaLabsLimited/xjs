@@ -67,7 +67,7 @@ export class ChannelManager extends EventEmitter {
       try {
         const channelInfoObj = JSON.parse(decodeURIComponent(params));
 
-        if (Object.hasOwn(channelInfoObj, 'ChannelName')) {
+        if (Object.prototype.hasOwnProperty.call(channelInfoObj, 'ChannelName')) {
           const channelName = channelInfoObj['ChannelName'];
           const infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
@@ -111,7 +111,7 @@ export class ChannelManager extends EventEmitter {
             channel: eventChannel,
             streamTime: addedInfo['streamTime'],
           });
-        } else if (Object.hasOwn(channelInfoObj, 'new') && Object.hasOwn(channelInfoObj, 'old')) {
+        } else if (Object.prototype.hasOwnProperty.call(channelInfoObj, 'new') && Object.prototype.hasOwnProperty.call(channelInfoObj, 'old')) {
           if (event === 'recording-renamed') {
             const name = decodeURIComponent(channelInfoObj['new']).replace(/\\/g, '/');
             const nameArr = name.split('/');
@@ -143,7 +143,7 @@ export function _subscribeEventManager() {
     ['StreamStart', 'StreamEnd', 'RecordingRenamed'],
     (settingsObj: string) => {
       let eventString;
-      if (Object.hasOwn(settingsObj, 'event') && Object.hasOwn(settingsObj, 'info')) {
+      if (Object.prototype.hasOwnProperty.call(settingsObj, 'event') && Object.prototype.hasOwnProperty.call(settingsObj, 'info')) {
         eventString = settingsObj['event'];
         if (settingsObj['event'] === 'StreamStart') {
           eventString = 'stream-start';
@@ -153,9 +153,9 @@ export function _subscribeEventManager() {
         ChannelManager.emit(eventString, settingsObj['info']);
       }
       if (
-        Object.hasOwn(settingsObj, 'event') &&
-        Object.hasOwn(settingsObj, 'old') &&
-        Object.hasOwn(settingsObj, 'new')
+        Object.prototype.hasOwnProperty.call(settingsObj, 'event') &&
+        Object.prototype.hasOwnProperty.call(settingsObj, 'old') &&
+        Object.prototype.hasOwnProperty.call(settingsObj, 'new')
       ) {
         eventString = settingsObj['event'];
         if (settingsObj['event'] === 'RecordingRenamed') {

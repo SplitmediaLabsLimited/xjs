@@ -67,7 +67,7 @@ describe('CameraSource interface', () => {
     } else if (
       local[attachedId] !== undefined &&
       local[attachedId] &&
-      Object.hasOwn(local[attachedId], property)
+      Object.prototype.hasOwnProperty.call(local[attachedId], property)
     ) {
       xCallback(asyncId, local[attachedId][property]);
     } else {

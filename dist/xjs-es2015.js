@@ -41,335 +41,6 @@
  */
 var XJS = (function(exports) {
   "use strict";
-  class Color {
-    constructor(props) {
-      if (props["rgb"] !== void 0) {
-        this.setRgb(props["rgb"]);
-      } else if (props["irgb"] !== void 0) {
-        this.setIrgb(props["irgb"]);
-      } else if (props["bgr"] !== void 0) {
-        this.setBgr(props["bgr"]);
-      } else if (props["ibgr"] !== void 0) {
-        this.setIbgr(props["ibgr"]);
-      } else if (props["isTransparent"] !== void 0 && props["isTransparent"] === true) {
-        this.setTransparent();
-      } else {
-        throw new Error("Do not call Color constructor without parameters.");
-      }
-    }
-    static fromRGBString(rgb) {
-      return new Color({ rgb });
-    }
-    static fromRGBInt(irgb) {
-      return new Color({ irgb });
-    }
-    static fromBGRString(bgr) {
-      return new Color({ bgr });
-    }
-    static fromBGRInt(ibgr) {
-      return new Color({ ibgr });
-    }
-    static fromTransparent() {
-      return new Color({ isTransparent: true });
-    }
-    getRgb() {
-      return this._rgb;
-    }
-    setRgb(rgb) {
-      this._rgb = rgb.replace(/^#/, "").toUpperCase();
-      this._irgb = parseInt(this._rgb, 16);
-      this._bgr = [
-        this._rgb.substring(4, 6),
-        this._rgb.substring(2, 4),
-        this._rgb.substring(0, 2)
-      ].join("").toUpperCase();
-      this._ibgr = parseInt(this._bgr, 16);
-      this._transparent = false;
-      return this;
-    }
-    getBgr() {
-      return this._bgr;
-    }
-    setBgr(bgr) {
-      this.setRgb([
-        bgr.substring(4, 6),
-        bgr.substring(2, 4),
-        bgr.substring(0, 2)
-      ].join(""));
-      return this;
-    }
-    getIrgb() {
-      return this._irgb;
-    }
-    setIrgb(irgb) {
-      let rgb = irgb.toString(16);
-      while (rgb.length < 6) {
-        rgb = "0" + rgb;
-      }
-      this.setRgb(rgb);
-      return this;
-    }
-    getIbgr() {
-      return this._ibgr;
-    }
-    setIbgr(ibgr) {
-      var bgr = ibgr.toString(16);
-      while (bgr.length < 6) {
-        bgr = "0" + bgr;
-      }
-      this.setBgr(bgr);
-      return this;
-    }
-    setTransparent() {
-      this._rgb = "0";
-      this._irgb = 0;
-      this._bgr = "0";
-      this._ibgr = 0;
-      this._transparent = true;
-      return this;
-    }
-    isTransparent() {
-      return this._transparent;
-    }
-  }
-  class Rectangle {
-    /** Gets the top value */
-    getTop() {
-      return this._top;
-    }
-    /** Sets the top value */
-    setTop(top) {
-      this._top = top;
-      if (this._bottom !== void 0 && this._height !== this._top - this._bottom) {
-        this.setHeight(Math.abs(this._top - this._bottom));
-      } else if (this._height !== void 0 && this._bottom !== this._top + this._height) {
-        this.setBottom(this._top + this._height);
-      }
-      return this;
-    }
-    /** Gets the left value */
-    getLeft() {
-      return this._left;
-    }
-    /** Sets the left value */
-    setLeft(left) {
-      this._left = left;
-      if (this._right !== void 0 && this._width !== Math.abs(this._right - this._left)) {
-        this.setWidth(Math.abs(this._right - this._left));
-      } else if (this._width !== void 0 && this._height !== this._left + this._width) {
-        this.setRight(this._left + this._width);
-      }
-      return this;
-    }
-    /** Gets the right value */
-    getRight() {
-      return this._right;
-    }
-    /** Sets the right value */
-    setRight(right) {
-      this._right = right;
-      if (this._left !== void 0 && this._width !== Math.abs(this._right - this._left)) {
-        this.setWidth(Math.abs(this._right - this._left));
-      } else if (this._width !== void 0 && this._left !== this._right - this._width) {
-        this.setLeft(this._right - this._width);
-      }
-      return this;
-    }
-    /** Gets the bottom value */
-    getBottom() {
-      return this._bottom;
-    }
-    /** Sets the bottom value */
-    setBottom(bottom) {
-      this._bottom = bottom;
-      if (this._top !== void 0 && this._height !== Math.abs(this._top - this._bottom)) {
-        this.setHeight(Math.abs(this._top - this._bottom));
-      } else if (this._height !== void 0 && this._top !== this._bottom - this._height) {
-        this.setTop(this._bottom - this._height);
-      }
-      return this;
-    }
-    /** Gets the width value */
-    getWidth() {
-      return this._width;
-    }
-    /** Sets the width value */
-    setWidth(width) {
-      this._width = width;
-      if (this._right !== void 0 && this._left !== this._right - this._width) {
-        this.setLeft(this._right - this._width);
-      } else if (this._left !== void 0 && this._right !== this._left + this._width) {
-        this.setRight(this._left + this._width);
-      }
-      return this;
-    }
-    /** Gets the height value */
-    getHeight() {
-      return this._height;
-    }
-    /** Sets the height value */
-    setHeight(height) {
-      this._height = height;
-      if (this._top !== void 0 && this._bottom !== this._top + this._height) {
-        this.setBottom(this._top + this._height);
-      } else if (this._bottom !== void 0 && this._top !== this._bottom - this._height) {
-        this.setTop(this._bottom - this._height);
-      }
-      return this;
-    }
-    /**
-     *  param: (width: number, height: number)
-     *  ```
-     *  return: Rectangle
-     *  ```
-     *  Creates a rectangle from width and height dimensions. Absolute (pixels)
-     *  and relative (0-1) dimensions are accepted. Refer to the documentation
-     *  of each individual function to see which one is necessary.
-     */
-    static fromDimensions(width, height) {
-      if (width < 0 || height < 0) {
-        throw new Error("Rectangle dimensions cannot be negative.");
-      }
-      let rect = new Rectangle();
-      rect._width = width;
-      rect._height = height;
-      return rect;
-    }
-    /**
-     *  param: (left: number, top: number, right: number, bottom: number)
-     *  ```
-     *  return: Rectangle
-     *  ```
-     *  Creates a rectangle from coordinates. Absolute (pixels)
-     *  and relative (0-1) dimensions are accepted. Refer to the documentation
-     *  of each individual function to see which one is necessary.
-     */
-    static fromCoordinates(left, top, right, bottom) {
-      if (top > bottom) {
-        throw new Error("Top coordinate must be smaller than bottom.");
-      } else if (left > right) {
-        throw new Error("Right coordinate must be smaller than left.");
-      }
-      let rect = new Rectangle();
-      rect._top = top;
-      rect._left = left;
-      rect.setRight(right);
-      rect.setBottom(bottom);
-      return rect;
-    }
-    /**
-     *  return: string
-     *
-     *  Returns a comma-separated string containing the width and height values.
-     */
-    toDimensionString() {
-      return this._width + "," + this._height;
-    }
-    /**
-     *  return: string
-     *
-     *  Returns a comma-separated string containing the coordinates in the order:
-     *  left, top, right, bottom.
-     */
-    toCoordinateString() {
-      if ([this._left, this._right, this._top, this._bottom].indexOf(void 0) > -1) {
-        throw new Error("This Rectangle instance does not have coordinates.");
-      } else {
-        return this._left + "," + this._top + "," + this._right + "," + this._bottom;
-      }
-    }
-    /**
-     *  return: string
-     *  ```
-     *  param: (format ?: string)
-     *  ```
-     *  Returns a string representation of the Rectangle object. If the format
-     *  optional parameter is omitted, then this is simply the string from
-     *  `toDimensionString()`. Sample usage:
-     *
-     *  ```javascript
-     *  console.log(rect.toString('Origin is at (:left, :top)'));```
-     *
-     *  You can format the output string by specifying the following markers in
-     *  the parameter:
-     *  - :left
-     *  - :top
-     *  - :right
-     *  - :bottom
-     *  - :width
-     *  - :height
-     */
-    toString(value2) {
-      if (value2 === void 0) {
-        return this.toDimensionString();
-      } else {
-        let format = value2;
-        format = format.replace(":left", String(this._left));
-        format = format.replace(":top", String(this._top));
-        format = format.replace(":right", String(this._right));
-        format = format.replace(":bottom", String(this._bottom));
-        format = format.replace(":width", String(this._width));
-        format = format.replace(":height", String(this._height));
-        return format;
-      }
-    }
-  }
-  const minVersion = "2.8.1603.0401";
-  const deleteSceneEventFixVersion = "2.8.1606.1601";
-  const addSceneEventFixVersion = "2.8.1606.1701";
-  const handlePreStreamDialogFixVersion = "3.1.1707.3101";
-  const globalsrcMinVersion = "2.9";
-  const itemSubscribeEventVersion = "2.9.1608.2301";
-  const sceneUidMinVersion = "3.0.1704.2101";
-  const sceneUidAddDeleteVersion = "3.3.1801.1901";
-  const scenePresetsVersion = "3.8.1905.2118";
-  const sceneSourceVersion = "3.8.1915.2501";
-  let mockVersion = "";
-  function versionCompare(version) {
-    const parts = version.split(".");
-    const comp = (prev, curr, idx) => {
-      if (parts[idx] < curr && prev !== -1 || prev === 1) {
-        return 1;
-      } else if (parts[idx] > curr || prev === -1) {
-        return -1;
-      } else {
-        return 0;
-      }
-    };
-    return {
-      is: {
-        lessThan: (compare) => {
-          let cParts = compare.split(".");
-          return cParts.reduce(comp, parts[0]) === 1;
-        },
-        greaterThan: (compare) => {
-          let cParts = compare.split(".");
-          return cParts.reduce(comp, parts[0]) === -1;
-        },
-        equalsTo: (compare) => {
-          let cParts = compare.split(".");
-          return cParts.reduce(comp, parts[0]) === 0;
-        },
-        greaterThanOrEqualTo: (compare) => {
-          let cParts = compare.split(".");
-          return cParts.reduce(comp, parts[0]) === -1 || cParts.reduce(comp, parts[0]) === 0;
-        }
-      }
-    };
-  }
-  function setMockVersion(version) {
-    mockVersion = version;
-  }
-  function getVersion() {
-    let xbcPattern = /(?:XSplit Broadcaster\s|XSplit\sBroadcaster\sPTR\s|XSplitBroadcaster\/|XSplitBroadcasterPTR\/)(.*?)\s/;
-    let xbcMatch = navigator.appVersion.match(xbcPattern);
-    xbcMatch = xbcMatch || mockVersion.match(xbcPattern);
-    if (xbcMatch !== null) {
-      return xbcMatch[1];
-    } else {
-      throw new Error("not loaded in XSplit Broadcaster");
-    }
-  }
   let win = {};
   if (typeof window !== "undefined") {
     win = window;
@@ -423,220 +94,194 @@ var XJS = (function(exports) {
       }
     }
   }
-  class XML {
+  class Extension {
     static {
-      this.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
+      this._proxyCallback = {};
     }
-    constructor(json) {
-      let attributes = "";
-      if (json.value === void 0) {
-        json.value = "";
+    static {
+      this._remoteCallback = {};
+    }
+    static {
+      this._callback = {};
+    }
+    /**
+     *  Gets the instance of the Extension class. Use this instead of the constructor.
+     */
+    static getInstance() {
+      if (Extension._instance === void 0) {
+        Extension._instance = new Extension();
       }
-      for (let key in json) {
-        if (!XML.RESERVED_ATTRIBUTES.test(key) && json[key] !== void 0) {
-          attributes += [" ", key, '="', json[key], '"'].join("");
-        }
-      }
-      if (json.children === void 0) {
-        json.children = [];
-      }
-      for (var child of json.children) {
-        json.value += new XML(child).toString();
-      }
-      if (json.selfclosing === true) {
-        this.xml = ["<", json.tag, attributes, "/>"].join("");
+      Extension._instance.getId().then((id) => {
+        Extension._instance._id = String(id);
+      });
+      return Extension._instance;
+    }
+    constructor() {
+      if (Environment.isExtension()) {
+        this._presName = window$1.location.href;
       } else {
-        this.xml = [
-          "<",
-          json.tag,
-          attributes,
-          ">",
-          json.value,
-          "</",
-          json.tag,
-          ">"
-        ].join("");
+        throw new Error("Extension class can only be used on Extension Plugins");
       }
     }
-    toString() {
-      return this.xml;
+    /**
+     * param: (configObj: JSON)
+     * ```
+     * return: Promise<ExtensionWindow|Error>
+     * ```
+     *
+     * Save the configuration object to the presentation
+     */
+    saveConfig(configObj) {
+      return new Promise((resolve2, reject2) => {
+        if ({}.toString.call(configObj) === "[object Object]") {
+          exec("SetPresProperty", this._presName, JSON.stringify(configObj)).then((result) => {
+            resolve2(this);
+          });
+        } else {
+          reject2(Error("Configuration object should be in JSON format"));
+        }
+      });
     }
-    static parseJSON(json) {
-      return new XML(json);
+    /**
+     * return: Promise<JSON>
+     *
+     * Get the saved configuration from the presentation
+     */
+    loadConfig() {
+      return new Promise((resolve2) => {
+        const getConfig = (mapId) => {
+          return new Promise((resolveConfig) => {
+            exec("GetPresProperty", mapId, (configData) => {
+              let configObj = null;
+              try {
+                if (configData) {
+                  configObj = JSON.parse(configData);
+                }
+              } catch (err) {
+                console.error("Error on load config", err);
+              }
+              resolveConfig(configObj);
+            });
+          });
+        };
+        const defaultConfig = {};
+        getConfig(this._presName).then((config) => {
+          if (!config && this._presName.indexOf("file:///") > -1) {
+            return getConfig(this._presName.replace("file:///", "file://"));
+          } else {
+            return Promise.resolve(config);
+          }
+        }).then((config) => {
+          if (config) {
+            resolve2(config);
+          } else {
+            resolve2(defaultConfig);
+          }
+        });
+      });
     }
-    static encode(str) {
-      return str.replace(/[&<>'']/g, function($0) {
-        return "&" + {
-          "&": "amp",
-          "<": "lt",
-          ">": "gt",
-          "'": "quot",
-          '"': "#39"
-        }[$0] + ";";
+    /**
+     *  return: Promise<string>
+     *
+     *  Get the extension id.
+     */
+    getId(handler) {
+      return new Promise((resolve2) => {
+        if (this._id === void 0) {
+          if (Remote.remoteType === "remote") {
+            const message = {
+              type: "extWindow",
+              instance: Extension._instance
+            };
+            Extension._remoteCallback["ExtensionWindowID"] = { resolve: resolve2 };
+            Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+          } else if (Remote.remoteType === "proxy") {
+            Extension._proxyCallback["ExtensionWindowID"] = handler;
+            App$1.postMessage("8");
+          } else {
+            Extension._callback["ExtensionWindowID"] = { resolve: resolve2 };
+            App$1.postMessage("8");
+          }
+        } else {
+          resolve2(this._id);
+        }
+      });
+    }
+    static _finalCallback(message) {
+      return new Promise((resolve2) => {
+        const result = JSON.parse(decodeURIComponent(message));
+        Extension._remoteCallback["ExtensionWindowID"].resolve(result["result"]);
       });
     }
   }
-  let JSON$1 = class JSON2 {
-    constructor(xml) {
-      if (xml === void 0 || xml === "") {
-        return;
-      }
-      let sxml = xml;
-      if (xml instanceof XML) {
-        sxml = xml.toString();
-      }
-      var openingRegex = /<([^\s>\/]+)/g;
-      var selfCloseRegex = /(\/>)/g;
-      var openResult = openingRegex.exec(sxml);
-      selfCloseRegex.exec(sxml);
-      sxml = sxml.replace(/&/g, "&amp;");
-      var xmlDocument = new DOMParser().parseFromString(
-        sxml,
-        "application/xml"
-      );
-      if (xmlDocument.getElementsByTagName("parsererror").length > 0) {
-        throw new Error("XML parsing error. Invalid XML string");
-      }
-      var processNode = function(node) {
-        var obj = new JSON2();
-        obj.tag = node.tagName;
-        openResult = openingRegex.exec(sxml);
-        if (openResult === null && selfCloseRegex.lastIndex === 0) ;
-        else if (openResult === null && selfCloseRegex.lastIndex > 0) {
-          obj.selfclosing = true;
-          selfCloseRegex.exec(sxml);
-        } else if (openResult !== null && selfCloseRegex.lastIndex > openingRegex.lastIndex) ;
-        else if (openResult !== null && selfCloseRegex.lastIndex < openingRegex.lastIndex && // self-closing pattern is here
-        selfCloseRegex.lastIndex === openingRegex.lastIndex - openResult[0].length) {
-          obj.selfclosing = true;
-          selfCloseRegex.exec(sxml);
-        }
-        for (var i = 0; i < node.attributes.length; i++) {
-          var att = node.attributes[i];
-          obj[att.name] = att.value;
-        }
-        obj.children = [];
-        for (var j = 0; j < node.childNodes.length; j++) {
-          var child = node.childNodes[j];
-          if (child instanceof Element) {
-            obj.children.push(processNode(child));
-          }
-        }
-        if (obj.value === void 0 && obj.children.length === 0) {
-          delete obj.children;
-          obj.value = node.textContent;
-        }
-        return obj;
-      };
-      return processNode(xmlDocument.childNodes[0]);
+  const oldSetid = window$1.Setid;
+  window$1.Setid = function(id) {
+    if (Remote.remoteType === "proxy") {
+      if (Extension._proxyCallback["ExtensionWindowID"] === void 0) return;
+      Extension._proxyCallback["ExtensionWindowID"].call(this, id);
+    } else {
+      Extension._callback["ExtensionWindowID"].resolve(id);
     }
-    static parse(xml) {
-      return new JSON2(xml);
+    if (typeof oldSetid === "function") {
+      oldSetid(id);
     }
   };
-  let App$1 = class App2 {
-    /** Get the value of the given property */
-    static get(name) {
-      return new Promise((resolve2) => {
-        exec("AppGetPropertyAsync", name, resolve2);
-      });
+  const minVersion = "2.8.1603.0401";
+  const deleteSceneEventFixVersion = "2.8.1606.1601";
+  const addSceneEventFixVersion = "2.8.1606.1701";
+  const handlePreStreamDialogFixVersion = "3.1.1707.3101";
+  const globalsrcMinVersion = "2.9";
+  const itemSubscribeEventVersion = "2.9.1608.2301";
+  const sceneUidMinVersion = "3.0.1704.2101";
+  const sceneUidAddDeleteVersion = "3.3.1801.1901";
+  const scenePresetsVersion = "3.8.1905.2118";
+  const sceneSourceVersion = "3.8.1915.2501";
+  let mockVersion = "";
+  function versionCompare(version) {
+    const parts = version.split(".");
+    const comp = (prev, curr, idx) => {
+      if (parts[idx] < curr && prev !== -1 || prev === 1) {
+        return 1;
+      } else if (parts[idx] > curr || prev === -1) {
+        return -1;
+      } else {
+        return 0;
+      }
+    };
+    return {
+      is: {
+        lessThan: (compare) => {
+          const cParts = compare.split(".");
+          return cParts.reduce(comp, parts[0]) === 1;
+        },
+        greaterThan: (compare) => {
+          const cParts = compare.split(".");
+          return cParts.reduce(comp, parts[0]) === -1;
+        },
+        equalsTo: (compare) => {
+          const cParts = compare.split(".");
+          return cParts.reduce(comp, parts[0]) === 0;
+        },
+        greaterThanOrEqualTo: (compare) => {
+          const cParts = compare.split(".");
+          return cParts.reduce(comp, parts[0]) === -1 || cParts.reduce(comp, parts[0]) === 0;
+        }
+      }
+    };
+  }
+  function setMockVersion(version) {
+    mockVersion = version;
+  }
+  function getVersion() {
+    const xbcPattern = /(?:XSplit Broadcaster\s|XSplit\sBroadcaster\sPTR\s|XSplitBroadcaster\/|XSplitBroadcasterPTR\/)(.*?)\s/;
+    let xbcMatch = navigator.appVersion.match(xbcPattern);
+    xbcMatch = xbcMatch || mockVersion.match(xbcPattern);
+    if (xbcMatch !== null) {
+      return xbcMatch[1];
+    } else {
+      throw new Error("not loaded in XSplit Broadcaster");
     }
-    /** Sets the value of a property */
-    static set(name, value2) {
-      return new Promise((resolve2) => {
-        exec("AppSetPropertyAsync", name, value2, (ret) => {
-          resolve2(Number(ret) < 0 ? false : true);
-        });
-      });
-    }
-    /** Gets the value of the given property as list */
-    static getAsList(name) {
-      return new Promise((resolve2, reject2) => {
-        App2.get(name).then((xml) => {
-          try {
-            let propsJSON = JSON$1.parse(xml), propsArr = [];
-            if (propsJSON.children && propsJSON.children.length > 0) {
-              propsArr = propsJSON.children;
-            }
-            resolve2(propsArr);
-          } catch (e) {
-            reject2(e);
-          }
-        });
-      });
-    }
-    /** Gets all the items of the given condition as list */
-    static getAsItemList(name) {
-      return new Promise((resolve2, reject2) => {
-        let propsArr = [];
-        App2.get(name).then((xml) => {
-          try {
-            let propsJSON = JSON$1.parse(xml);
-            const recursion = (children) => {
-              children.forEach((child) => {
-                if (child["tag"] === "item") propsArr.push(child);
-                if (child["type"] === "12" && child.children && child.children.length > 0) {
-                  child.children.forEach((placement) => {
-                    if (placement["tag"] === "placement" && placement.children && placement.children.length > 0) {
-                      recursion(placement.children);
-                    }
-                  });
-                }
-              });
-            };
-            if (propsJSON["tag"] === "configuration" && propsJSON.children && propsJSON.children.length > 0) {
-              propsJSON.children.forEach((placement) => {
-                if (placement["tag"] === "placement" && placement.children && placement.children.length > 0) {
-                  recursion(placement.children);
-                }
-              });
-            } else if (propsJSON["tag"] === "placement" && propsJSON.children && propsJSON.children.length > 0) {
-              recursion(propsJSON.children);
-            }
-            resolve2(propsArr);
-          } catch (e) {
-            resolve2(propsArr);
-          }
-        });
-      });
-    }
-    /** Get the value of the given global property */
-    static getGlobalProperty(name) {
-      return new Promise((resolve2) => {
-        exec("GetGlobalProperty", name).then((result) => {
-          resolve2(result);
-        });
-      });
-    }
-    /** Calls a DLL function synchronously */
-    static callDll(func, ...arg) {
-      var args = [].slice.call(arguments);
-      return new Promise((resolve2) => {
-        args.unshift("CallDll");
-        exec.apply(this, args).then((result) => {
-          resolve2(result);
-        });
-      });
-    }
-    /** Calls an application method asynchronously */
-    static callFunc(func, ...args) {
-      return new Promise((resolve2) => {
-        exec("AppCallFuncAsync", func, ...args, (ret) => {
-          resolve2(ret);
-        });
-      });
-    }
-    static postMessage(key, ...args) {
-      return new Promise((resolve2) => {
-        args.unshift(key);
-        args.unshift("PostMessageToParent");
-        args.push((val) => {
-          resolve2(val);
-        });
-        exec.apply(this, args);
-      });
-    }
-  };
+  }
   let Item$1 = class Item2 {
     static {
       this.MAX_SLOTS = 2;
@@ -663,26 +308,17 @@ var XJS = (function(exports) {
           Item2.itemSlotMap[slot] = itemID;
         }
         if (!Environment.isSourcePlugin()) {
-          exec(
-            "SearchVideoItem" + (String(slot) === "0" ? "" : slot + 1),
-            itemID
-          );
+          exec("SearchVideoItem" + (String(slot) === "0" ? "" : slot + 1), itemID);
         } else {
-          let hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
+          const hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
           if (hasGlobalSources) {
-            exec(
-              "AttachVideoItem" + (slot + 1),
-              itemID
-            );
+            exec("AttachVideoItem" + (slot + 1), itemID);
           } else {
-            exec(
-              "AttachVideoItem" + (String(slot) === "0" ? "" : slot + 1),
-              itemID
-            );
+            exec("AttachVideoItem" + (String(slot) === "0" ? "" : slot + 1), itemID);
           }
         }
         if (callBack) {
-          callBack.call(this, slot);
+          callBack.call(Item2, slot);
         } else {
           resolve2(slot);
         }
@@ -775,7 +411,7 @@ var XJS = (function(exports) {
     /** Get an item's local property asynchronously */
     static get(name, id) {
       return new Promise((resolve2) => {
-        let hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
+        const hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
         const execCallFunc = (slot) => {
           if (!Environment.isSourcePlugin() && String(slot) === "0" || Environment.isSourcePlugin() && String(slot) === "0" && !hasGlobalSources) {
             slot = -1;
@@ -890,7 +526,7 @@ var XJS = (function(exports) {
         }
         slotPromise.then((newSlot) => {
           slot = newSlot;
-          let hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
+          const hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
           if (!Environment.isSourcePlugin() && String(slot) === "0" || Environment.isSourcePlugin() && String(slot) === "0" && !hasGlobalSources) {
             slot = -1;
           }
@@ -914,6 +550,159 @@ var XJS = (function(exports) {
       return Item2.baseID;
     }
   };
+  class XML {
+    static {
+      this.RESERVED_ATTRIBUTES = /^(children|tag|value|selfclosing)$/i;
+    }
+    constructor(json) {
+      let attributes = "";
+      if (json.value === void 0) {
+        json.value = "";
+      }
+      for (const key in json) {
+        if (!XML.RESERVED_ATTRIBUTES.test(key) && json[key] !== void 0) {
+          attributes += [" ", key, '="', json[key], '"'].join("");
+        }
+      }
+      if (json.children === void 0) {
+        json.children = [];
+      }
+      for (var child of json.children) {
+        json.value += new XML(child).toString();
+      }
+      if (json.selfclosing === true) {
+        this.xml = ["<", json.tag, attributes, "/>"].join("");
+      } else {
+        this.xml = ["<", json.tag, attributes, ">", json.value, "</", json.tag, ">"].join("");
+      }
+    }
+    toString() {
+      return this.xml;
+    }
+    static parseJSON(json) {
+      return new XML(json);
+    }
+    static encode(str) {
+      return str.replace(
+        /[&<>'']/g,
+        ($0) => "&" + {
+          "&": "amp",
+          "<": "lt",
+          ">": "gt",
+          "'": "quot",
+          '"': "#39"
+        }[$0] + ";"
+      );
+    }
+  }
+  let JSON$1 = class JSON2 {
+    constructor(xml) {
+      if (xml === void 0 || xml === "") {
+        return;
+      }
+      let sxml = xml;
+      if (xml instanceof XML) {
+        sxml = xml.toString();
+      }
+      var openingRegex = /<([^\s>/]+)/g;
+      var selfCloseRegex = /(\/>)/g;
+      var openResult = openingRegex.exec(sxml);
+      selfCloseRegex.exec(sxml);
+      sxml = sxml.replace(/&/g, "&amp;");
+      var xmlDocument = new DOMParser().parseFromString(sxml, "application/xml");
+      if (xmlDocument.getElementsByTagName("parsererror").length > 0) {
+        throw new Error("XML parsing error. Invalid XML string");
+      }
+      var processNode = (node) => {
+        var obj = new JSON2();
+        obj.tag = node.tagName;
+        openResult = openingRegex.exec(sxml);
+        if (openResult === null && selfCloseRegex.lastIndex === 0) ;
+        else if (openResult === null && selfCloseRegex.lastIndex > 0) {
+          obj.selfclosing = true;
+          selfCloseRegex.exec(sxml);
+        } else if (openResult !== null && selfCloseRegex.lastIndex > openingRegex.lastIndex) ;
+        else if (openResult !== null && selfCloseRegex.lastIndex < openingRegex.lastIndex && // self-closing pattern is here
+        selfCloseRegex.lastIndex === openingRegex.lastIndex - openResult[0].length) {
+          obj.selfclosing = true;
+          selfCloseRegex.exec(sxml);
+        }
+        for (var i = 0; i < node.attributes.length; i++) {
+          var att = node.attributes[i];
+          obj[att.name] = att.value;
+        }
+        obj.children = [];
+        for (var j = 0; j < node.childNodes.length; j++) {
+          var child = node.childNodes[j];
+          if (child instanceof Element) {
+            obj.children.push(processNode(child));
+          }
+        }
+        if (obj.value === void 0 && obj.children.length === 0) {
+          delete obj.children;
+          obj.value = node.textContent;
+        }
+        return obj;
+      };
+      return processNode(xmlDocument.childNodes[0]);
+    }
+    static parse(xml) {
+      return new JSON2(xml);
+    }
+  };
+  function splitMode() {
+    return new Promise((resolve2) => {
+      App$1.getGlobalProperty("splitmode").then((mode) => {
+        resolve2(mode === "1" ? 1 : 0);
+      });
+    });
+  }
+  function checkSplitmode(value2) {
+    let scenePrefix = "";
+    let scenePromise;
+    return new Promise((resolve2, reject2) => {
+      scenePromise = new Promise((sceneResolve) => {
+        splitMode().then((res) => {
+          if (res === 1 && !value2) {
+            Scene.getActiveScene().then((val) => {
+              value2 = val;
+              sceneResolve(value2);
+            });
+          } else {
+            sceneResolve(value2);
+          }
+        });
+      });
+      scenePromise.then((val) => {
+        if (typeof val === "number" || val instanceof Scene) {
+          Scene.getSceneCount().then((sceneCount) => {
+            if (typeof val === "number") {
+              const int = Math.floor(val);
+              if (int > sceneCount || int === 0) {
+                reject2(Error("Scene does not exist."));
+              } else {
+                scenePrefix = "s:" + (int - 1) + "|";
+                resolve2(scenePrefix);
+              }
+            } else {
+              val.getSceneNumber().then((int) => {
+                if (int > sceneCount || int === 0) {
+                  reject2(Error("Scene does not exist."));
+                } else {
+                  scenePrefix = "s:" + (int - 1) + "|";
+                  resolve2(scenePrefix);
+                }
+              });
+            }
+          });
+        } else if (typeof val === "undefined") {
+          resolve2("");
+        } else {
+          reject2(Error("Optional parameter 'scene' only accepts integers or an XJS.Scene object"));
+        }
+      });
+    });
+  }
   class Global {
     static {
       this.persistedConfig = {};
@@ -965,8 +754,8 @@ var XJS = (function(exports) {
     /** This function attaches a handler to an event. Duplicate handlers are allowed. */
     on(event, handler, _id) {
       if (Remote.remoteType === "remote") {
-        let id = _id ? _id : (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
-        let message = {
+        const id = _id ? _id : (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
+        const message = {
           event,
           id,
           type: "event-emitter"
@@ -1022,19 +811,19 @@ var XJS = (function(exports) {
         if (EventEmitter._proxyHandlers[event] === void 0) {
           return;
         }
-        for (let handler of EventEmitter._proxyHandlers[event]) {
+        for (const handler of EventEmitter._proxyHandlers[event]) {
           handler.apply(this, params);
         }
       } else if (Remote.remoteType === "remote") {
         if (EventEmitter._remoteHandlers[event] === void 0) return;
-        for (let handler of EventEmitter._remoteHandlers[event]) {
+        for (const handler of EventEmitter._remoteHandlers[event]) {
           handler.apply(this, params);
         }
       } else {
         if (this._handlers[event] === void 0) {
           return;
         }
-        for (let handler of this._handlers[event]) {
+        for (const handler of this._handlers[event]) {
           handler.apply(this, params);
         }
       }
@@ -1051,885 +840,55 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         const result = JSON.parse(decodeURIComponent(message));
         if (EventEmitter._remoteHandlers[result["id"]] !== void 0) {
-          for (let handler of EventEmitter._remoteHandlers[result["id"]]) {
-            handler.apply(this, [result["result"]]);
+          for (const handler of EventEmitter._remoteHandlers[result["id"]]) {
+            handler.apply(EventEmitter, [result["result"]]);
           }
         }
         resolve2();
       });
     }
   }
-  class SourcePropsWindow extends EventEmitter {
-    static {
-      this._MODE_FULL = "full";
-    }
-    static {
-      this._MODE_TABBED = "embedded";
-    }
-    /**
-     *  Gets the instance of the window utility. Use this instead of the constructor.
-     */
-    static getInstance() {
-      if (SourcePropsWindow._instance === void 0) {
-        SourcePropsWindow._instance = new SourcePropsWindow();
-      }
-      return SourcePropsWindow._instance;
-    }
-    /**
-     *  Use getInstance() instead.
-     */
+  class AddToSceneEventEmitter extends EventEmitter {
     constructor() {
       super();
-      if (!Environment.isSourceProps()) {
-        throw new Error("SourcePropsWindow class is only available for source properties");
-      }
-      if (Remote.remoteType === "remote") {
-        throw new Error("Unable to listen to SourcePropsWindow events through Remote");
-      } else {
-        window.addEventListener("message", function(event) {
-          try {
-            var data = JSON.parse(event.data);
-          } catch (e) {
-            return;
-          }
-          switch (data.event) {
-            // currently, restrict messages to selected set
-            case "set-selected-tab":
-              this.emit(data.event, data.value);
-              break;
-            case "async-callback":
-              this.emit(data.event, {
-                asyncId: data.value.asyncId,
-                result: data.value.result
-              });
-              break;
-          }
-        }.bind(this));
-        this.on("config-load", () => {
-          this._informConfigLoaded();
-        });
-        SourcePropsWindow._instance = this;
-      }
-    }
-    // helper function to communicate with built-in container
-    _notify(obj) {
-      window.parent.postMessage(JSON.stringify(obj), "*");
-    }
-    /**
-     *  Informs the application that the plugin intends to use the entire window for rendering its configuration.
-     */
-    useFullWindow() {
-      this._setRenderMode(SourcePropsWindow._MODE_FULL);
-      this.resize(354, 390);
-    }
-    /**
-     *  param: ({customTabs: string[], tabOrder: string[]})
-     *
-     *  Informs the application that the plugin intends to use the existing tab
-     *  system to render its properties window.
-     *
-     *  The `customTabs` node should contain a list of tab titles that the plugin
-     *  will create for itself.
-     *
-     *  The `tabOrder` node contains the desired order of tabs. This list comes
-     *  from the specified custom tabs, and the set of reusable XSplit tabs:
-     *  'Color', 'Layout' and 'Transition'.
-     */
-    useTabbedWindow(config) {
-      this._setRenderMode(SourcePropsWindow._MODE_TABBED);
-      this._declareCustomTabs(config.customTabs);
-      this._setTabOrder(config.tabOrder);
-    }
-    _setRenderMode(renderMode) {
-      this._mode = renderMode;
-      this._notify({
-        event: "set-mode",
-        value: renderMode
-      });
-    }
-    _setTabOrder(tabArray) {
-      this._notify({
-        event: "set-tab-order",
-        value: JSON.stringify(tabArray)
-      });
-    }
-    _declareCustomTabs(tabArray) {
-      this._notify({
-        event: "set-custom-tabs",
-        value: JSON.stringify(tabArray)
-      });
-    }
-    _informConfigLoaded() {
-      this._notify({ event: "load" });
-    }
-    /**
-     *  param: width<number>, height<number>
-     *
-     *  Resizes the properties window. Currently only works when using full
-     *  window mode.
-     */
-    resize(width, height) {
-      this._notify({
-        event: "resize",
-        value: JSON.stringify({
-          width,
-          height
-        })
-      });
-    }
-    /**
-     *  param: name<string>
-     *
-     *  Changes the title of the source properties dialog.
-     *  Note: The title change is temporary, as re-opening the source properties
-     *  resets the title to the display name of the source
-     *  (custom name takes precedence over name)
-     */
-    requestDialogTitleChange(name) {
-      this._notify({
-        event: "change-dialog-title",
-        value: name
-      });
-    }
-    /** Closes the properties window. */
-    close() {
-      return new Promise((resolve2) => {
-        resolve2(exec("Close"));
-      });
-    }
-    /**
-     *  param: show<boolean>
-     *
-     *  Toggles on/off the load indicator of the source properties dialog
-     */
-    showLoading(show) {
-      this._notify({
-        event: "show-overlay",
-        value: show
-      });
-    }
-  }
-  function resolveRelativePath(path, base) {
-    if (path.substring(0, 7) === "http://" || path.substring(0, 8) === "https://") {
-      return path;
-    } else if (path.substring(0, 2) === "//") {
-      return base.split("://")[0] + ":" + path;
-    } else if (path.substring(0, 3) === "../") {
-      let upDirectoryCount = 0;
-      while (path.substring(0, 3) === "../") {
-        path = path.substring(3);
-        ++upDirectoryCount;
-      }
-      let baseDirectories = base.split("/");
-      baseDirectories = baseDirectories.slice(0, length - 1 - upDirectoryCount);
-      baseDirectories.push(path);
-      return baseDirectories.join("/");
-    } else {
-      if (path.substring(0, 2) === "./") {
-        path = path.substring(2);
-      }
-      let baseSegments = base.split("/");
-      baseSegments[baseSegments.length - 1] = path;
-      return baseSegments.join("/");
-    }
-  }
-  function readMetaConfigUrl() {
-    return new Promise((resolve2) => {
-      if (Environment.isSourcePlugin()) {
-        var configObj = {};
-        var promise = new Promise((resolveInner) => {
-          exec("GetLocalPropertyAsync", "prop:BrowserConfiguration", (result) => {
-            resolveInner(result);
-          });
-        });
-        promise.then((browserConfig) => {
-          try {
-            if (browserConfig === "" || browserConfig === "null") {
-              browserConfig = exec("GetConfiguration");
-            }
-            configObj = JSON.parse(browserConfig);
-          } catch (e) {
-          } finally {
-            var metas = document.getElementsByTagName("meta");
-            for (var i = metas.length - 1; i >= 0; i--) {
-              if (metas[i].name === "xsplit:config-url") {
-                let url = resolveRelativePath(
-                  metas[i].content,
-                  window.location.href
-                );
-                configObj["configUrl"] = url;
-                var persist = {
-                  configUrl: url
-                };
-                Global.setPersistentConfig(persist);
-                break;
-              }
-            }
-            exec("SetBrowserProperty", "Configuration", JSON.stringify(configObj));
-            resolve2();
-          }
-        });
-      } else {
-        resolve2();
-      }
-    });
-  }
-  function getCurrentSourceId() {
-    return new Promise((resolve2) => {
-      if (Environment.isSourceProps() || Environment.isSourcePlugin() && versionCompare(getVersion()).is.lessThan(minVersion)) {
-        exec(
-          "GetLocalPropertyAsync",
-          "prop:id",
-          (result) => {
-            let id = result;
-            Item$1.setBaseId(id);
-            if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-              Item$1.lockSourceSlot(id);
-            }
-            resolve2();
-          }
-        );
-      } else {
-        resolve2();
-      }
-    });
-  }
-  function informWhenConfigLoaded() {
-    return new Promise((resolve2) => {
-      if (Environment.isSourceProps()) {
-        window.addEventListener("load", () => {
-          try {
-            SourcePropsWindow.getInstance().emit("config-load");
-          } catch (e) {
-          }
-          resolve2();
-        });
-      } else {
-        resolve2();
-      }
-    });
-  }
-  function setAudioengineUsed() {
-    return new Promise((resolve2) => {
-      exec("CallHostFunc", "getProperty", "experimental:audioengine", (isExperimental) => {
-        const isNewAudioEngine = parseInt(isExperimental) === 1;
-        Global.setNewAudioEngine(isNewAudioEngine);
-        resolve2();
-      });
-    });
-  }
-  function init(config) {
-    Global.addInitializationPromise(readMetaConfigUrl());
-    Global.addInitializationPromise(getCurrentSourceId());
-    Global.addInitializationPromise(setAudioengineUsed());
-    if (!(config && config["deferLoad"] !== void 0)) {
-      Global.addInitializationPromise(informWhenConfigLoaded());
-    }
-    if (config && config["listenToItemAdd"] !== void 0) {
-      Global.setListenToItemAdd();
-    }
-    Promise.all(Global.getInitializationPromises()).then(() => {
-      document.dispatchEvent(new CustomEvent("xsplit-js-ready", {
-        bubbles: true
-      }));
-    });
-  }
-  class EventManager {
-    static {
-      this.callbacks = {};
-    }
-    static {
-      this._remoteHandlers = {};
-    }
-    static {
-      this._proxyHandlers = {};
-    }
-    static {
-      this._appEventsList = ["OnSceneAddByUser", "OnSceneAdd", "OnSceneDelete", "OnSceneDeleteAll", "scenedlg:1"];
-    }
-    static subscribe(event, _cb, id) {
-      return new Promise((resolve2) => {
-        event = event instanceof Array ? event : [event];
-        if (Remote.remoteType === "remote") {
-          let message = {
-            event,
-            id,
-            type: "event-manager"
-          };
-          event.forEach((_event) => {
-            if (EventManager._remoteHandlers[_event] === void 0) {
-              EventManager._remoteHandlers[_event] = [];
-            }
-            if (EventManager._appEventsList.indexOf(_event) > -1) {
-              exec("AppSubscribeEvents");
-            } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
-              let itemID = _event.split("_")[1];
-              exec("ItemSubscribeEvents", itemID);
-            }
-            EventManager._remoteHandlers[_event].push(_cb);
-          });
-          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
-        } else if (Remote.remoteType === "proxy") {
-          event.forEach((_event) => {
-            if (EventManager._proxyHandlers[_event] === void 0) {
-              EventManager._proxyHandlers[_event] = [];
-            }
-            if (EventManager._appEventsList.indexOf(_event) > -1) {
-              exec("AppSubscribeEvents");
-            } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
-              let itemID = _event.split("_")[1];
-              exec("ItemSubscribeEvents", itemID);
-            }
-            EventManager._proxyHandlers[_event].push(_cb);
-          });
-        } else {
-          if (event instanceof Array) {
-            event.forEach((_event) => {
-              if (EventManager.callbacks[_event] === void 0) {
-                EventManager.callbacks[_event] = [];
-              }
-              if (EventManager._appEventsList.indexOf(_event) > -1) {
-                exec("AppSubscribeEvents");
-              } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
-                let itemID = _event.split("_")[1];
-                exec("ItemSubscribeEvents", itemID);
-              }
-              EventManager.callbacks[_event].push(_cb);
-            });
-          }
-          resolve2(this);
-        }
-      });
-    }
-    static _setCallback(message) {
-      return new Promise((resolve2) => {
-        if (EventManager._proxyHandlers[message[0]] === void 0) {
-          EventManager._proxyHandlers[message[0]] = [];
-        }
-        resolve2(EventManager._proxyHandlers[message[0]].push(message[1]));
-      });
-    }
-    static _finalCallback(message) {
-      return new Promise((resolve2) => {
-        const result = JSON.parse(decodeURIComponent(message));
-        if (EventManager._remoteHandlers[result["event"]] !== void 0) {
-          result["result"]["id"] = result["id"];
-          for (let handler of EventManager._remoteHandlers[result["event"]]) {
-            handler.apply(this, [result["result"]]);
-          }
-        }
-      });
-    }
-  }
-  window$1.OnMetersUpdate = (evt) => {
-  };
-  window$1.AppOnShowSettings = (evt) => {
-  };
-  const oldSetEvent = window$1.SetEvent;
-  window$1.SetEvent = (args) => {
-    let settings = [];
-    settings = args.split("&");
-    let settingsObj = {};
-    settings.map(function(el) {
-      let _split = el.split("=");
-      settingsObj[_split[0]] = _split[1];
-    });
-    if (Remote.remoteType === "proxy") {
-      if (EventManager._proxyHandlers[settingsObj["event"]] === void 0) return;
-      EventManager._proxyHandlers[settingsObj["event"]].map((_cb) => {
-        _cb(settingsObj);
-      });
-    } else {
-      if (EventManager.callbacks[settingsObj["event"]] === void 0) return;
-      EventManager.callbacks[settingsObj["event"]].map((_cb) => {
-        _cb(settingsObj);
-      });
-    }
-    if (typeof oldSetEvent === "function") {
-      oldSetEvent(args);
-    }
-  };
-  const oldAppOnEvent = window$1.AppOnEvent;
-  window$1.AppOnEvent = (event, ...args) => {
-    if (Remote.remoteType === "proxy") {
-      if (EventManager._proxyHandlers[event] === void 0) return;
-      EventManager._proxyHandlers[event].map((_cb) => {
-        _cb({ event, args });
-      });
-    } else {
-      if (EventManager.callbacks[event] === void 0) return;
-      EventManager.callbacks[event].map((_cb) => {
-        _cb({ event, args });
-      });
-    }
-    if (typeof oldAppOnEvent === "function") {
-      oldAppOnEvent(event);
-    }
-  };
-  const oldOnEvent = window$1.OnEvent;
-  window$1.OnEvent = (event, item, ...eventArgs) => {
-    if (event === "itemremovedfromscene" && versionCompare(getVersion()).is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
-      event = "itemdestroyed";
-    }
-    if (Remote.remoteType === "proxy") {
-      if (EventManager._proxyHandlers[event + "_" + item] === void 0) return;
-      EventManager._proxyHandlers[event + "_" + item].map((_cb) => {
-        _cb(...eventArgs);
-      });
-    } else {
-      if (EventManager.callbacks[event + "_" + item] === void 0) return;
-      EventManager.callbacks[event + "_" + item].map((_cb) => {
-        _cb(...eventArgs);
-      });
-    }
-    if (typeof oldOnEvent === "function") {
-      oldOnEvent(event);
-    }
-  };
-  class StreamInfo {
-    /** StreamInfo constructor (only used internally) */
-    constructor(props) {
-      this._name = props.name;
-      this._stat = props.stat;
-      this._channel = props.channel;
-    }
-    /**
-     *  return: Promise<StreamInfo[]>
-     *
-     *  Gets the list of currently active channels.
-     */
-    static getActiveStreamChannels() {
-      return new Promise((resolve2) => {
-        App$1.getAsList("recstat").then((activeStreams) => {
-          if (activeStreams.length === 0) {
-            resolve2([]);
-          } else {
-            let channels = [];
-            for (var i = 0; i < activeStreams.length; ++i) {
-              channels.push(new StreamInfo({
-                name: activeStreams[i]["name"],
-                stat: activeStreams[i].children.filter((child) => {
-                  return child.tag.toLowerCase() === "stat";
-                })[0],
-                channel: activeStreams[i].children.filter((child) => {
-                  return child.tag.toLowerCase() === "channel";
-                })[0]
-              }));
-            }
-            resolve2(channels);
-          }
-        });
-      });
-    }
-    /**
-     *  return: Promise<string>
-     *
-     *  Gets the name of the channel.
-     */
-    getName() {
-      return new Promise((resolve2) => {
-        resolve2(this._name.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&"));
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames dropped
-     */
-    getStreamDrops() {
-      return new Promise((resolve2) => {
-        App$1.get("streamdrops:" + this._name).then((val) => {
-          var drops = val.split(","), dropped = Number(drops[0]) || 0;
-          resolve2(dropped);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of GOP frames dropped
-     */
-    getGOPDrops() {
-      return new Promise((resolve2) => {
-        let usage;
-        App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
-          usage = JSON.parse(result);
-          for (var i = 0; i < usage.length; i++) {
-            if (usage[i].ChannelName === this._name) {
-              resolve2(usage[i].Dropped);
-            }
-          }
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames rendered
-     */
-    getStreamRenderedFrames() {
-      return new Promise((resolve2) => {
-        App$1.get("streamdrops:" + this._name).then((val) => {
-          var drops = val.split(","), rendered = Number(drops[1]) || 0;
-          resolve2(rendered);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the current duration of the stream in microseconds
-     */
-    getStreamTime() {
-      return new Promise((resolve2) => {
-        App$1.get("streamtime:" + this._name).then((val) => {
-          var duration = Number(val) / 10;
-          resolve2(duration);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the current bandwidth usage of the stream
-     */
-    getBandwidthUsage() {
-      return new Promise((resolve2) => {
-        let usage;
-        if (this._name !== "Local Recording") {
-          App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
-            usage = JSON.parse(result);
-            for (var i = 0; i < usage.length; i++) {
-              if (usage[i].ChannelName === this._name) {
-                resolve2(usage[i].AvgBitrate);
-              }
-            }
-          });
-        } else {
-          resolve2(0);
-        }
-      });
-    }
-  }
-  class ChannelManager extends EventEmitter {
-    static {
-      this._emitter = new ChannelManager();
-    }
-    /**
-     *  param: (event: string, ...params: any[])
-     *
-     *  Allows this class to emit an event.
-     */
-    static emit(event, ...params) {
-      params.unshift(event);
-      ChannelManager._emitter.emit.apply(ChannelManager._emitter, params);
-    }
-    static {
-      this._proxyCallbacks = {};
-    }
-    static {
-      this._remoteCallbacks = {};
-    }
-    /**
-     *  param: (event: string, handler: Function)
-     *
-     *  Allows listening to events that this class emits. Currently there are three:
-     *  `stream-start`, `stream-end` and `recording-renamed`.
-     *
-     *  #### Usage:
-     *
-     * ```javascript
-     * ChannelManager.on('stream-start', function(res) {
-     *   if (!res.error) { // No error
-     *     var channel = res.channel; // Channel Object
-     *     var streamTime = res.streamTime;
-     *   }
-     * });
-     * ```
-     */
-    static on(event, handler) {
-      if (Environment.isSourceProps()) {
-        console.warn("Channel Manager: stream-related events are not received via the Source Properties");
-      }
-      ChannelManager._emitter.on(event, (params) => {
-        try {
-          let channelInfoObj = JSON.parse(decodeURIComponent(params));
-          if (channelInfoObj.hasOwnProperty("ChannelName")) {
-            let channelName = channelInfoObj["ChannelName"];
-            let infoJSON = JSON$1.parse(channelInfoObj["Settings"]);
-            let statJSON;
-            let addedInfo = {};
-            if (event === "stream-end") {
-              channelInfoObj["Dropped"] = Number(channelInfoObj["Dropped"]) || 0;
-              channelInfoObj["NotDropped"] = Number(channelInfoObj["NotDropped"]) || 0;
-              channelInfoObj["StreamTime"] = Number(channelInfoObj["StreamTime"] / 10) || 0;
-              channelInfoObj["Audio"] = Number(channelInfoObj["Audio"]) || 0;
-              channelInfoObj["Video"] = Number(channelInfoObj["Video"]) || 0;
-              channelInfoObj["Output"] = Number(channelInfoObj["Output"]) || 0;
-              statJSON = JSON$1.parse('<stat video="' + channelInfoObj["Video"] + '" audio="' + channelInfoObj["Audio"] + '" output="' + channelInfoObj["Output"] + '" frmdropped="' + channelInfoObj["Dropped"] + '" frmcoded="' + channelInfoObj["NotDropped"] + '" />');
-              addedInfo["streamTime"] = channelInfoObj["StreamTime"];
-            } else if (event === "stream-start") {
-              statJSON = JSON$1.parse("<stat />");
-            }
-            let eventChannel = new StreamInfo({
-              name: channelName,
-              stat: statJSON,
-              channel: infoJSON
-            });
-            handler.call(this, {
-              error: false,
-              channel: eventChannel,
-              streamTime: addedInfo["streamTime"]
-            });
-          } else if (channelInfoObj.hasOwnProperty("new") && channelInfoObj.hasOwnProperty("old")) {
-            if (event === "recording-renamed") {
-              const name = decodeURIComponent(channelInfoObj["new"]).replace(/\\/g, "/");
-              const nameArr = name.split("/");
-              const newName = nameArr[nameArr.length - 1];
-              handler.call(this, {
-                error: false,
-                recordingInfo: {
-                  oldName: channelInfoObj["old"],
-                  newName,
-                  fullPath: decodeURIComponent(channelInfoObj["new"])
-                }
-              });
-            }
-          }
-        } catch (e) {
-          handler.call(this, { error: true });
-        }
-      });
-    }
-    static off(event, handler) {
-      ChannelManager._emitter.off(event, handler);
-    }
-  }
-  function _subscribeEventManager() {
-    EventManager.subscribe(
-      ["StreamStart", "StreamEnd", "RecordingRenamed"],
-      (settingsObj) => {
-        let eventString;
-        if (settingsObj.hasOwnProperty("event") && settingsObj.hasOwnProperty("info")) {
-          eventString = settingsObj["event"];
-          if (settingsObj["event"] === "StreamStart") {
-            eventString = "stream-start";
-          } else if (settingsObj["event"] === "StreamEnd") {
-            eventString = "stream-end";
-          }
-          ChannelManager.emit(eventString, settingsObj["info"]);
-        }
-        if (settingsObj.hasOwnProperty("event") && settingsObj.hasOwnProperty("old") && settingsObj.hasOwnProperty("new")) {
-          eventString = settingsObj["event"];
-          if (settingsObj["event"] === "RecordingRenamed") {
-            eventString = "recording-renamed";
-            const renameInfo = {
-              old: settingsObj["old"],
-              new: settingsObj["new"]
-            };
-            ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
-          }
-        }
-      }
-    );
-  }
-  let isReady = false;
-  let isInit = false;
-  let readyResolve;
-  function readyPromise() {
-    return new Promise((resolve2) => {
-      if (typeof document !== "undefined") {
-        document.addEventListener("xsplit-js-ready", () => {
-          resolve2();
-        });
-      }
-      if (isReady) {
-        resolve2();
-      }
-    });
-  }
-  function finishReady(config) {
-    return new Promise((resolve2) => {
-      if (config && config["version"] !== void 0) {
-        setMockVersion(config["version"]);
-      }
-      setReady();
-      if (isReady && !isInit) {
-        _subscribeEventManager();
-        setOnce();
-        init(config);
-      }
-      if (readyResolve !== void 0 && Remote.remoteType === "remote") {
-        readyResolve.call(this, null);
-      }
-      resolve2(readyPromise);
-    });
-  }
-  function ready(config) {
-    return new Promise((resolve2, reject2) => {
-      Environment.initialize();
-      if (config && config["remote"] !== void 0) {
-        if (config["remote"]["type"] !== void 0) {
-          Remote.remoteType = config["remote"]["type"];
-        }
-        if (config["remote"]["sendMessage"] !== void 0 && config["remote"]["sendMessage"] instanceof Function) {
-          Remote.sendMessage = config["remote"]["sendMessage"];
-        } else {
-          reject2(Error("Send message should be instance of function."));
-        }
-      }
-      if (Remote.remoteType === "remote") {
-        readyResolve = () => {
-          resolve2(void 0);
+      if (Global.isListenToItemAdd()) {
+        const prevAppOnItemAdded = window$1.AppOnItemAdded;
+        window$1.AppOnItemAdded = (...args) => {
+          this.emit(args[0], args[1]);
+          if (typeof prevAppOnItemAdded === "function") prevAppOnItemAdded(...args);
         };
-        Remote.sendMessage("getVersion");
-      } else {
-        resolve2(finishReady(config));
+        exec("AppSubscribeEvents");
       }
-    });
-  }
-  function setReady() {
-    isReady = true;
-  }
-  function setOnce() {
-    isInit = true;
-  }
-  class Extension {
-    static {
-      this._proxyCallback = {};
     }
-    static {
-      this._remoteCallback = {};
-    }
-    static {
-      this._callback = {};
-    }
-    /**
-     *  Gets the instance of the Extension class. Use this instead of the constructor.
-     */
+    //Gets/Creates the instance of the AddToSceneEventEmitter class.
     static getInstance() {
-      if (Extension._instance === void 0) {
-        Extension._instance = new Extension();
+      if (AddToSceneEventEmitter._instance === void 0) {
+        AddToSceneEventEmitter._instance = new AddToSceneEventEmitter();
       }
-      Extension._instance.getId().then((id) => {
-        Extension._instance._id = String(id);
-      });
-      return Extension._instance;
-    }
-    constructor() {
-      if (Environment.isExtension()) {
-        this._presName = window$1.location.href;
-      } else {
-        throw new Error("Extension class can only be used on Extension Plugins");
-      }
-    }
-    /**
-     * param: (configObj: JSON)
-     * ```
-     * return: Promise<ExtensionWindow|Error>
-     * ```
-     *
-     * Save the configuration object to the presentation
-     */
-    saveConfig(configObj) {
-      return new Promise((resolve2, reject2) => {
-        if ({}.toString.call(configObj) === "[object Object]") {
-          exec(
-            "SetPresProperty",
-            this._presName,
-            JSON.stringify(configObj)
-          ).then((result) => {
-            resolve2(this);
-          });
-        } else {
-          reject2(Error("Configuration object should be in JSON format"));
-        }
-      });
-    }
-    /**
-     * return: Promise<JSON>
-     *
-     * Get the saved configuration from the presentation
-     */
-    loadConfig() {
-      return new Promise((resolve2) => {
-        const getConfig = (mapId) => {
-          return new Promise((resolveConfig) => {
-            exec("GetPresProperty", mapId, (configData) => {
-              let configObj = null;
-              try {
-                if (configData) {
-                  configObj = JSON.parse(configData);
-                }
-              } catch (err) {
-                console.error("Error on load config", err);
-              }
-              resolveConfig(configObj);
-            });
-          });
-        };
-        const defaultConfig = {};
-        getConfig(this._presName).then((config) => {
-          if (!config && this._presName.indexOf("file:///") > -1) {
-            return getConfig(this._presName.replace("file:///", "file://"));
-          } else {
-            return Promise.resolve(config);
-          }
-        }).then((config) => {
-          if (config) {
-            resolve2(config);
-          } else {
-            resolve2(defaultConfig);
-          }
-        });
-      });
-    }
-    /**
-     *  return: Promise<string>
-     *
-     *  Get the extension id.
-     */
-    getId(handler) {
-      return new Promise((resolve2) => {
-        if (this._id === void 0) {
-          if (Remote.remoteType === "remote") {
-            let message = {
-              type: "extWindow",
-              instance: Extension._instance
-            };
-            Extension._remoteCallback["ExtensionWindowID"] = { resolve: resolve2 };
-            Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
-          } else if (Remote.remoteType === "proxy") {
-            Extension._proxyCallback["ExtensionWindowID"] = handler;
-            App$1.postMessage("8");
-          } else {
-            Extension._callback["ExtensionWindowID"] = { resolve: resolve2 };
-            App$1.postMessage("8");
-          }
-        } else {
-          resolve2(this._id);
-        }
-      });
-    }
-    static _finalCallback(message) {
-      return new Promise((resolve2) => {
-        const result = JSON.parse(decodeURIComponent(message));
-        Extension._remoteCallback["ExtensionWindowID"].resolve(result["result"]);
-      });
+      return AddToSceneEventEmitter._instance;
     }
   }
-  const oldSetid = window$1.Setid;
-  window$1.Setid = function(id) {
-    if (Remote.remoteType === "proxy") {
-      if (Extension._proxyCallback["ExtensionWindowID"] === void 0) return;
-      Extension._proxyCallback["ExtensionWindowID"].call(this, id);
-    } else {
-      Extension._callback["ExtensionWindowID"].resolve(id);
-    }
-    if (typeof oldSetid === "function") {
-      oldSetid(id);
-    }
-  };
+  function guid(a) {
+    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ("10000000-1000-4000-8000" + -1e11).replace(/[018]/g, guid);
+  }
+  function addToSceneHandler(cmd, ...args) {
+    return new Promise((resolve2, reject2) => {
+      const eventId = "EVENT-XJS-CREATE-" + guid(null) + "-" + Date.now();
+      if (Global.isListenToItemAdd()) {
+        const _addToScene = AddToSceneEventEmitter.getInstance();
+        const itemCreated = (itemId) => {
+          _addToScene.off(eventId, itemCreated);
+          resolve2(itemId);
+        };
+        _addToScene.on(eventId, itemCreated);
+      }
+      App$1.callFunc("e:" + eventId + "|" + cmd, ...args).then(() => {
+        if (!Global.isListenToItemAdd()) resolve2(true);
+      }).catch((err) => {
+        reject2(err);
+      });
+    });
+  }
   function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach((baseCtor) => {
       Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
@@ -1964,1387 +923,6 @@ var XJS = (function(exports) {
       }
     }
   }
-  var ItemTypes = /* @__PURE__ */ ((ItemTypes2) => {
-    ItemTypes2[ItemTypes2["UNDEFINED"] = 0] = "UNDEFINED";
-    ItemTypes2[ItemTypes2["FILE"] = 1] = "FILE";
-    ItemTypes2[ItemTypes2["LIVE"] = 2] = "LIVE";
-    ItemTypes2[ItemTypes2["TEXT"] = 3] = "TEXT";
-    ItemTypes2[ItemTypes2["BITMAP"] = 4] = "BITMAP";
-    ItemTypes2[ItemTypes2["SCREEN"] = 5] = "SCREEN";
-    ItemTypes2[ItemTypes2["FLASHFILE"] = 6] = "FLASHFILE";
-    ItemTypes2[ItemTypes2["GAMESOURCE"] = 7] = "GAMESOURCE";
-    ItemTypes2[ItemTypes2["HTML"] = 8] = "HTML";
-    ItemTypes2[ItemTypes2["THREEDS"] = 9] = "THREEDS";
-    ItemTypes2[ItemTypes2["PPTFILE"] = 10] = "PPTFILE";
-    ItemTypes2[ItemTypes2["SCENE"] = 11] = "SCENE";
-    ItemTypes2[ItemTypes2["GROUP"] = 12] = "GROUP";
-    ItemTypes2[ItemTypes2["REPLAY"] = 13] = "REPLAY";
-    ItemTypes2[ItemTypes2["VIEW"] = 14] = "VIEW";
-    return ItemTypes2;
-  })(ItemTypes || {});
-  class iSource {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
-    }
-    setName(value2) {
-      return new Promise((resolve2) => {
-        this._name = value2;
-        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          Item$1.set("prop:name", this._name, this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setName", true);
-            Item$1.set("prop:name", this._name, this._id).then(() => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet("prop:name", this._name, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-              resolve2(this);
-            });
-          }
-        }
-      });
-    }
-    getName() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getName", true);
-          this._checkPromise = Item$1.get("prop:name", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:name",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          this._name = String(val);
-          resolve2(val);
-        });
-      });
-    }
-    setCustomName(value2) {
-      return new Promise((resolve2) => {
-        this._cname = value2;
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setCustomName", true);
-          Item$1.set("prop:cname", this._cname, this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet("prop:cname", this._cname, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getCustomName() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getCustomName", true);
-          Item$1.get("prop:cname", this._id).then((val) => {
-            resolve2(val);
-          });
-        } else {
-          Item$1.wrapGet(
-            "prop:cname",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(val);
-          });
-        }
-      });
-    }
-    getValue() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getValue", true);
-          this._checkPromise = Item$1.get("prop:item", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:item",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          val = val === "null" ? "" : val;
-          if (val === "") {
-            this._value = "";
-            resolve2(val);
-          } else {
-            try {
-              this._value = XML.parseJSON(JSON$1.parse(val));
-              resolve2(this._value);
-            } catch (e) {
-              this._value = val;
-              resolve2(val);
-            }
-          }
-        });
-      });
-    }
-    setValue(value2) {
-      return new Promise((resolve2, reject2) => {
-        var val = typeof value2 === "string" ? value2 : value2.toString();
-        if (typeof value2 !== "string") {
-          this._value = JSON$1.parse(val);
-        } else {
-          this._value = val;
-        }
-        let typeCheck = this.getValue().then((origVal) => {
-          return new Promise((typeRes, typeRej) => {
-            if (String(origVal).toUpperCase().indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") !== -1 && val.toUpperCase().indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") === -1 && this._type === 2) {
-              typeRej(Error("Value is not a valid Audio source"));
-            } else {
-              typeRes(true);
-            }
-          });
-        });
-        typeCheck.then(() => {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setValue", true);
-            Item$1.set("prop:item", val, this._id).then(() => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet("prop:srcitem", val, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-              resolve2(this);
-            });
-          }
-        });
-      });
-    }
-    getKeepLoaded() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getKeepLoaded", true);
-          this._checkPromise = Item$1.get("prop:keeploaded", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:keeploaded",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          this._keepLoaded = val === "1";
-          resolve2(this._keepLoaded);
-        });
-      });
-    }
-    setKeepLoaded(value2) {
-      return new Promise((resolve2) => {
-        this._keepLoaded = value2;
-        this._globalsrc = value2;
-        if (versionCompare(getVersion()).is.lessThan(globalsrcMinVersion)) {
-          Item$1.set("prop:globalsrc", this._globalsrc ? "1" : "0", this._id);
-        }
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setKeepLoaded", true);
-          Item$1.set("prop:keeploaded", this._keepLoaded ? "1" : "0", this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet(
-            "prop:keeploaded",
-            this._keepLoaded ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getId() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          resolve2(this._id);
-        } else {
-          if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-            reject2(Error("Only available on versions above " + minVersion));
-          } else {
-            Item$1.wrapGet("prop:srcid", this._srcId, this._id, this._updateId.bind(this)).then((srcid) => {
-              resolve2(srcid);
-            });
-          }
-        }
-      });
-    }
-    refresh() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Item$1.set("refresh", "", this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet(
-            "refresh",
-            "",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getItemList() {
-      return new Promise((resolve2, reject2) => {
-        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          Scene.searchItemsById(this._id).then((item) => {
-            const itemArray = [];
-            itemArray.push(item);
-            resolve2(itemArray);
-          });
-        } else {
-          if (this._isItemCall) {
-            this._checkPromise = Item$1.get("itemlist", this._id);
-          } else {
-            this._checkPromise = Item$1.wrapGet(
-              "itemlist",
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            );
-          }
-          this._checkPromise.then((itemlist) => {
-            const promiseArray = [];
-            const itemsArray = String(itemlist).split(",");
-            itemsArray.forEach((itemId) => {
-              promiseArray.push(new Promise((itemResolve) => {
-                Scene.searchItemsById(itemId).then((item) => {
-                  itemResolve(item);
-                }).catch(() => itemResolve(null));
-              }));
-            });
-            Promise.all(promiseArray).then((results) => {
-              resolve2(results.filter((res) => res !== null));
-            });
-          });
-        }
-      });
-    }
-    getType() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          this._checkPromise = Item$1.get("prop:type", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:type",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          this._type = ItemTypes[ItemTypes[Number(val)]];
-          resolve2(this._type);
-        });
-      });
-    }
-  }
-  class Source {
-    constructor(props) {
-      props = props ? props : {};
-      this._name = props["name"];
-      this._cname = props["cname"];
-      this._id = props["id"];
-      this._srcId = props["srcid"];
-      this._sceneId = props["sceneId"];
-      this._value = props["value"];
-      this._keepLoaded = props["keeploaded"];
-      this._type = Number(props["type"]);
-      this._xmlparams = props;
-      this._isItemCall = false;
-    }
-    /**
-     * return: Promise<Source>
-     *
-     * Get the current source (when function is called by sources), or the source
-     * that was right-clicked to open the source properties window (when function is called
-     * from the source properties window)
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * xjs.Source.getCurrentSource().then(function(source) {
-     *   // This will fetch the current source (the plugin)
-     * }).catch(function(err) {
-     *   // Handle the error here. Errors would only occur
-     *   // if we try to execute this method on Extension plugins
-     * });
-     * ```
-     */
-    static getCurrentSource() {
-      return new Promise((resolve2, reject2) => {
-        if (Environment.isExtension()) {
-          reject2(Error("Extensions do not have sources associated with them."));
-        } else if ((Environment.isSourcePlugin() || Environment.isSourceProps()) && versionCompare(getVersion()).is.greaterThan(minVersion)) {
-          Item$1.get("itemlist").then((itemlist) => {
-            const itemId = itemlist.split(",")[0];
-            Scene.searchItemsById(itemId).then((item) => {
-              return item.getSource();
-            }).then((source) => {
-              resolve2(source);
-            }).catch(() => resolve2(null));
-          });
-        } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-          Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
-            return item.getSource();
-          }).then((source) => {
-            resolve2(source);
-          });
-        }
-      });
-    }
-    /**
-     * return: Promise<Item[]>
-     *
-     * Get the item List of the current Source.
-     * The item list is a list of items linked to a single Source.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * xjs.Source.getItemList()
-     * .then(function(items) {
-     *   // This will fetch the item list of the current Source
-     *   for (var i = 0 ; i < items.length ; i++) {
-     *     // Manipulate each item here
-     *   }
-     * });
-     * ```
-     *
-     * This is just the shorter way of getting items that are linked to a single
-     * source. See the long version below:
-     * ```javascript
-     * xjs.Source.getCurrentSource()
-     * .then(source.getItemList)
-     * .then(function(items) {
-     * // Manipulate the items here
-     * })
-     * ```
-     */
-    static getItemList() {
-      return new Promise((resolve2, reject2) => {
-        if (Environment.isExtension()) {
-          reject2(Error("Extensions do not have default items associated with them."));
-        } else if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
-            const itemArray = [];
-            itemArray.push(item);
-            resolve2(itemArray);
-          });
-        } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-          Item$1.get("itemlist").then((itemlist) => {
-            const promiseArray = [];
-            const itemsArray = itemlist.split(",");
-            itemsArray.forEach((itemId) => {
-              promiseArray.push(new Promise((itemResolve) => {
-                Scene.searchItemsById(itemId).then((item) => {
-                  itemResolve(item);
-                }).catch(() => itemResolve(null));
-              }));
-            });
-            Promise.all(promiseArray).then((results) => {
-              resolve2(results.filter((res) => res !== null));
-            });
-          });
-        }
-      });
-    }
-    /**
-     * return: Promise<Source[]>
-     *
-     * Get all unique Source from every scene.
-     * Total number of Sources returned may be less than total number of items on
-     * all the scenes due to `Linked` items only having a single Source.
-     *
-     * #### Usage
-     * ```javascript
-     * xjs.Source.getAllSources().then(function(sources) {
-     *   for(var i = 0 ; i < sources.length ; i++) {
-     *      if(sources[i] instanceof xjs.HtmlSource) {
-     *        // Manipulate HTML Source here
-     *      }
-     *    }
-     * })
-     * ```
-     */
-    static getAllSources() {
-      return new Promise((resolve2, reject2) => {
-        let allJson = [];
-        let allSrc = [];
-        let uniqueObj = {};
-        let uniqueSrc = [];
-        let promiseArray = [];
-        App$1.getAsItemList("sceneconfig").then((jsonArr) => {
-          allJson = jsonArr;
-          let sourcePromise = (srcid) => new Promise((sourceResolve) => {
-            Scene.searchSourcesById(srcid).then((result) => {
-              allSrc = allSrc.concat(result);
-              sourceResolve(result);
-            }).catch((err) => {
-              sourceResolve(null);
-            });
-          });
-          for (var i = 0; i < allJson.length; i++) {
-            if (typeof allJson[i] !== "undefined") {
-              promiseArray.push(sourcePromise(allJson[i]["srcid"]));
-            }
-          }
-          Promise.all(promiseArray).then((results) => {
-            for (var h = 0; h < allSrc.length; h++) {
-              if (allSrc[h] !== null) {
-                for (var key in allSrc[h]) {
-                  if (key === "_srcId") {
-                    uniqueObj[allSrc[h][key]] = allSrc[h];
-                  }
-                }
-              }
-            }
-            for (var j in uniqueObj) {
-              if (uniqueObj.hasOwnProperty(j)) {
-                uniqueSrc.push(uniqueObj[j]);
-              }
-            }
-            resolve2(uniqueSrc);
-          });
-        }).catch((err) => {
-          reject2(err);
-        });
-      });
-    }
-  }
-  applyMixins(Source, [iSource]);
-  class ItemLayout {
-    _getCanvasAndZRotate(value2) {
-      var rotationObject = {};
-      if (value2 >= -180 && value2 <= -135) {
-        rotationObject["canvasRotate"] = 180;
-        rotationObject["zRotate"] = value2 + 180;
-        rotationObject["orientation"] = "landscape";
-      } else if (value2 > -135 && value2 < -45) {
-        rotationObject["canvasRotate"] = 270;
-        rotationObject["zRotate"] = value2 + 90;
-        rotationObject["orientation"] = "portrait";
-      } else if (value2 >= -45 && value2 <= 45) {
-        rotationObject["canvasRotate"] = 0;
-        rotationObject["zRotate"] = value2;
-        rotationObject["orientation"] = "landscape";
-      } else if (value2 > 45 && value2 < 135) {
-        rotationObject["canvasRotate"] = 90;
-        rotationObject["zRotate"] = value2 - 90;
-        rotationObject["orientation"] = "portrait";
-      } else if (value2 >= 135 && value2 <= 180) {
-        rotationObject["canvasRotate"] = 180;
-        rotationObject["zRotate"] = value2 - 180;
-        rotationObject["orientation"] = "landscape";
-      }
-      return rotationObject;
-    }
-    _adjustRotation(value2) {
-      if (value2 > 180) {
-        value2 -= 360;
-      } else if (value2 < -180) {
-        value2 += 360;
-      }
-      return value2;
-    }
-    isKeepAspectRatio() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:keep_ar", this._id).then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    setKeepAspectRatio(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:keep_ar", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    isPositionLocked() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:lockmove", this._id).then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    setPositionLocked(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:lockmove", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    isEnhancedResizeEnabled() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:mipmaps", this._id).then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    setEnhancedResizeEnabled(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:mipmaps", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    getPosition(output = 0) {
-      return new Promise((resolve2) => {
-        Item$1.get(`prop:pos:${output}`, this._id).then((val) => {
-          var [left, top, right, bottom] = String(val).split(",");
-          this.position = Rectangle.fromCoordinates(
-            Number(left),
-            Number(top),
-            Number(right),
-            Number(bottom)
-          );
-          resolve2(this.position);
-        });
-      });
-    }
-    setPosition(value2, output = 0) {
-      return new Promise((resolve2, reject2) => {
-        try {
-          Item$1.set(`prop:pos:${output}`, value2.toCoordinateString(), this._id).then(() => {
-            resolve2(this);
-          });
-        } catch (err) {
-          reject2(err);
-        }
-      });
-    }
-    getRotateY() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:rotate_y", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
-    }
-    setRotateY(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
-        } else {
-          Item$1.set("prop:rotate_y", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getRotateX() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:rotate_x", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
-    }
-    setRotateX(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
-        } else {
-          Item$1.set("prop:rotate_x", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getRotateZ() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:rotate_z", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
-    }
-    setRotateZ(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
-        } else {
-          Item$1.set("prop:rotate_z", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getCropping() {
-      return new Promise((resolve2) => {
-        var cropObject = {};
-        Item$1.get("prop:crop", this._id).then((val) => {
-          var [left, top, right, bottom] = String(val).split(",");
-          cropObject["left"] = Number(left);
-          cropObject["top"] = Number(top);
-          cropObject["right"] = Number(right);
-          cropObject["bottom"] = Number(bottom);
-          resolve2(cropObject);
-        });
-      });
-    }
-    setCropping(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (value2.hasOwnProperty("top") && value2.hasOwnProperty("left") && value2.hasOwnProperty("right") && value2.hasOwnProperty("bottom")) {
-          Item$1.set("prop:crop", value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6), this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          reject2(Error("Error setting cropping, insufficient properties (left, top, right, bottom)"));
-        }
-      });
-    }
-    getCanvasRotate() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:rotate_canvas", this._id).then((val) => {
-          var value2 = Number(val);
-          if ([0, 90, 180, 270].indexOf(value2) < 0) {
-            resolve2(0);
-          } else {
-            resolve2(value2);
-          }
-        });
-      });
-    }
-    setCanvasRotate(value2) {
-      return new Promise((resolve2, reject2) => {
-        if ([0, 90, 180, 270].indexOf(value2) < 0) {
-          reject2(
-            Error("Invalid value. Only possible values are 0, 90, 180 and 270")
-          );
-        } else {
-          Item$1.set("prop:rotate_canvas", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getEnhancedRotate() {
-      return new Promise((resolve2) => {
-        var rotateZ;
-        var rotateCanvas;
-        var rotateValue;
-        Item$1.get("prop:rotate_z", this._id).then((val) => {
-          rotateZ = Number(val);
-          return Item$1.get("prop:rotate_canvas", this._id);
-        }).then((val) => {
-          rotateCanvas = Number(val);
-          rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
-          resolve2(rotateValue);
-        });
-      });
-    }
-    setEnhancedRotate(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -180 || value2 > 180) {
-          reject2(Error("Invalid value. Min: -180, Max: 180"));
-        } else {
-          var formerObject;
-          var valueObject = this._getCanvasAndZRotate(Number(value2));
-          this.getEnhancedRotate().then((val) => {
-            formerObject = this._getCanvasAndZRotate(Number(val));
-            return Item$1.set(
-              "prop:rotate_z",
-              String(valueObject["zRotate"]),
-              this._id
-            );
-          }).then(() => {
-            return Item$1.set(
-              "prop:rotate_canvas",
-              String(valueObject["canvasRotate"]),
-              this._id
-            );
-          }).then(() => {
-            if (formerObject["orientation"] !== valueObject["orientation"]) {
-              var outputResolution;
-              var widthMax;
-              var heightMax;
-              Item$1.get("mixerresolution", this._id).then((val) => {
-                outputResolution = val.split(",");
-                widthMax = Number(outputResolution[0]);
-                heightMax = Number(outputResolution[1]);
-                return Item$1.get("prop:pos", this._id);
-              }).then((val) => {
-                var position = val.split(",");
-                var leftPosition = parseFloat(position[0]) * widthMax;
-                var topPosition = parseFloat(position[1]) * heightMax;
-                var rightPosition = parseFloat(position[2]) * widthMax;
-                var bottomPosition = parseFloat(position[3]) * heightMax;
-                var newLeft;
-                var newRight;
-                var newTop;
-                var newBottom;
-                var widthValue = Math.round(rightPosition - leftPosition);
-                var heightValue = Math.round(bottomPosition - topPosition);
-                if (heightValue > widthMax) {
-                  newLeft = 0;
-                  newRight = widthMax;
-                } else {
-                  var xCenter = leftPosition + (rightPosition - leftPosition) / 2;
-                  newLeft = xCenter - heightValue / 2;
-                  newRight = xCenter + heightValue / 2;
-                }
-                if (widthValue > heightMax) {
-                  newTop = 0;
-                  newBottom = heightMax;
-                } else {
-                  var yCenter = topPosition + (bottomPosition - topPosition) / 2;
-                  newTop = yCenter - widthValue / 2;
-                  newBottom = yCenter + widthValue / 2;
-                }
-                var leftPos = newLeft / widthMax;
-                var topPos = newTop / heightMax;
-                var rightPos = newRight / widthMax;
-                var bottomPos = newBottom / heightMax;
-                return Item$1.set("prop:pos", leftPos.toFixed(6) + "," + topPos.toFixed(6) + "," + rightPos.toFixed(6) + "," + bottomPos.toFixed(6), this._id);
-              }).then(() => {
-                return Item$1.get("prop:posaspect", this._id);
-              }).then((val) => {
-                return Item$1.set("prop:pos", val, this._id);
-              }).then(() => {
-                resolve2(this);
-              });
-            } else {
-              resolve2(this);
-            }
-          });
-        }
-      });
-    }
-    setCroppingEnhanced(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (value2.hasOwnProperty("top") && value2.hasOwnProperty("left") && value2.hasOwnProperty("right") && value2.hasOwnProperty("bottom")) {
-          var originalWidth;
-          var originalHeight;
-          var outputResolution;
-          var position;
-          var canvasRotate;
-          var preCropPosition = {};
-          Item$1.get("mixerresolution", this._id).then((val) => {
-            outputResolution = val.split(",");
-            return Item$1.get("prop:pos", this._id);
-          }).then((val) => {
-            position = val.split(",");
-            return Item$1.get("prop:rotate_canvas", this._id);
-          }).then((val) => {
-            canvasRotate = val;
-            return Item$1.get("prop:crop", this._id);
-          }).then((val) => {
-            var mixerWidth = parseInt(outputResolution[0]);
-            var mixerHeight = parseInt(outputResolution[1]);
-            var leftPositionInit = parseFloat(position[0]) * mixerWidth;
-            var topPositionInit = parseFloat(position[1]) * mixerHeight;
-            var rightPositionInit = parseFloat(position[2]) * mixerWidth;
-            var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
-            var widthValue = rightPositionInit - leftPositionInit;
-            var heightValue = bottomPositionInit - topPositionInit;
-            var crop = val.split(",");
-            var leftCropRaw = parseFloat(crop[0]);
-            var topCropRaw = parseFloat(crop[1]);
-            var rightCropRaw = parseFloat(crop[2]);
-            var bottomCropRaw = parseFloat(crop[3]);
-            var leftValue = Math.round(leftCropRaw * 100);
-            var topValue = Math.round(topCropRaw * 100);
-            var rightValue = Math.round(rightCropRaw * 100);
-            var bottomValue = Math.round(bottomCropRaw * 100);
-            var isNoCropping = leftValue == 0 && topValue == 0 && rightValue == 0 && bottomValue == 0;
-            if (canvasRotate == 270) {
-              if (isNoCropping) {
-                preCropPosition = position;
-                originalHeight = widthValue;
-                originalWidth = heightValue;
-              } else {
-                var leftPosition = parseFloat(position[3]);
-                var topPosition = parseFloat(position[0]);
-                var rightPosition = parseFloat(position[1]);
-                var bottomPosition = parseFloat(position[2]);
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
-                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
-                  var leftDifference = originalWidth * leftCropRaw / mixerHeight;
-                  preCropPosition[3] = leftPosition + leftDifference;
-                  var rightDifference = originalWidth * rightCropRaw / mixerHeight;
-                  preCropPosition[1] = rightPosition - rightDifference;
-                } else {
-                  originalWidth = heightValue;
-                }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
-                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
-                  var topDifference = originalHeight * topCropRaw / mixerWidth;
-                  preCropPosition[0] = topPosition - topDifference;
-                  var bottomDifference = originalHeight * bottomCropRaw / mixerWidth;
-                  preCropPosition[2] = bottomPosition + bottomDifference;
-                } else {
-                  originalHeight = widthValue;
-                }
-                if (leftCropRaw == 0) {
-                  preCropPosition[3] = position[3];
-                }
-                if (topCropRaw == 0) {
-                  preCropPosition[0] = position[0];
-                }
-                if (rightCropRaw == 0) {
-                  preCropPosition[1] = position[1];
-                }
-                if (bottomCropRaw == 0) {
-                  preCropPosition[2] = position[2];
-                }
-              }
-            } else if (canvasRotate == 180) {
-              if (isNoCropping) {
-                preCropPosition = position;
-                originalWidth = widthValue;
-                originalHeight = heightValue;
-              } else {
-                var leftPosition = parseFloat(position[2]);
-                var topPosition = parseFloat(position[3]);
-                var rightPosition = parseFloat(position[0]);
-                var bottomPosition = parseFloat(position[1]);
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
-                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
-                  var leftDifference = originalWidth * leftCropRaw / mixerWidth;
-                  preCropPosition[2] = leftPosition + leftDifference;
-                  var rightDifference = originalWidth * rightCropRaw / mixerWidth;
-                  preCropPosition[0] = rightPosition - rightDifference;
-                } else {
-                  originalWidth = widthValue;
-                }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
-                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
-                  var topDifference = originalHeight * topCropRaw / mixerHeight;
-                  preCropPosition[3] = topPosition + topDifference;
-                  var bottomDifference = originalHeight * bottomCropRaw / mixerHeight;
-                  preCropPosition[1] = bottomPosition - bottomDifference;
-                } else {
-                  originalHeight = heightValue;
-                }
-                if (leftCropRaw == 0) {
-                  preCropPosition[2] = position[2];
-                }
-                if (topCropRaw == 0) {
-                  preCropPosition[3] = position[3];
-                }
-                if (rightCropRaw == 0) {
-                  preCropPosition[0] = position[0];
-                }
-                if (bottomCropRaw == 0) {
-                  preCropPosition[1] = position[1];
-                }
-              }
-            } else if (canvasRotate == 90) {
-              if (isNoCropping) {
-                preCropPosition = position;
-                originalHeight = widthValue;
-                originalWidth = heightValue;
-              } else {
-                var leftPosition = parseFloat(position[1]);
-                var topPosition = parseFloat(position[2]);
-                var rightPosition = parseFloat(position[3]);
-                var bottomPosition = parseFloat(position[0]);
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
-                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
-                  var leftDifference = originalWidth * leftCropRaw / mixerHeight;
-                  preCropPosition[1] = leftPosition - leftDifference;
-                  var rightDifference = originalWidth * rightCropRaw / mixerHeight;
-                  preCropPosition[3] = rightPosition + rightDifference;
-                } else {
-                  originalWidth = heightValue;
-                }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
-                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
-                  var topDifference = originalHeight * topCropRaw / mixerWidth;
-                  preCropPosition[2] = topPosition + topDifference;
-                  var bottomDifference = originalHeight * bottomCropRaw / mixerWidth;
-                  preCropPosition[0] = bottomPosition - bottomDifference;
-                } else {
-                  originalHeight = widthValue;
-                }
-                if (leftCropRaw == 0) {
-                  preCropPosition[1] = position[1];
-                }
-                if (topCropRaw == 0) {
-                  preCropPosition[2] = position[2];
-                }
-                if (rightCropRaw == 0) {
-                  preCropPosition[3] = position[3];
-                }
-                if (bottomCropRaw == 0) {
-                  preCropPosition[0] = position[0];
-                }
-              }
-            } else {
-              if (isNoCropping) {
-                preCropPosition = position;
-                originalHeight = heightValue;
-                originalWidth = widthValue;
-              } else {
-                var leftPosition = parseFloat(position[0]);
-                var topPosition = parseFloat(position[1]);
-                var rightPosition = parseFloat(position[2]);
-                var bottomPosition = parseFloat(position[3]);
-                if (leftCropRaw != 0 || rightCropRaw != 0) {
-                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
-                  var leftDifference = originalWidth * leftCropRaw / mixerWidth;
-                  preCropPosition[0] = leftPosition - leftDifference;
-                  var rightDifference = originalWidth * rightCropRaw / mixerWidth;
-                  preCropPosition[2] = rightPosition + rightDifference;
-                } else {
-                  originalWidth = widthValue;
-                }
-                if (topCropRaw != 0 || bottomCropRaw != 0) {
-                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
-                  var topDifference = originalHeight * topCropRaw / mixerHeight;
-                  preCropPosition[1] = topPosition - topDifference;
-                  var bottomDifference = originalHeight * bottomCropRaw / mixerHeight;
-                  preCropPosition[3] = bottomPosition + bottomDifference;
-                } else {
-                  originalHeight = heightValue;
-                }
-                if (leftCropRaw == 0) {
-                  preCropPosition[0] = position[0];
-                }
-                if (topCropRaw == 0) {
-                  preCropPosition[1] = position[1];
-                }
-                if (rightCropRaw == 0) {
-                  preCropPosition[2] = position[2];
-                }
-                if (bottomCropRaw == 0) {
-                  preCropPosition[3] = position[3];
-                }
-              }
-            }
-            var leftCrop = value2["left"];
-            var topCrop = value2["top"];
-            var rightCrop = value2["right"];
-            var bottomCrop = value2["bottom"];
-            var leftPosition = parseFloat(preCropPosition[0]);
-            var topPosition = parseFloat(preCropPosition[1]);
-            var rightPosition = parseFloat(preCropPosition[2]);
-            var bottomPosition = parseFloat(preCropPosition[3]);
-            var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
-            var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
-            var newLeft, newTop, newRight, newBottom;
-            if (canvasRotate == 270) {
-              newLeft = topCrop * sourceWidth / mixerWidth + leftPosition;
-              newTop = rightCrop * sourceHeight / mixerHeight + topPosition;
-              newRight = rightPosition - bottomCrop * sourceWidth / mixerWidth;
-              newBottom = bottomPosition - leftCrop * sourceHeight / mixerHeight;
-            } else if (canvasRotate == 180) {
-              newLeft = rightCrop * sourceWidth / mixerWidth + leftPosition;
-              newTop = bottomCrop * sourceHeight / mixerHeight + topPosition;
-              newRight = rightPosition - leftCrop * sourceWidth / mixerWidth;
-              newBottom = bottomPosition - topCrop * sourceHeight / mixerHeight;
-            } else if (canvasRotate == 90) {
-              newLeft = bottomCrop * sourceWidth / mixerWidth + leftPosition;
-              newTop = leftCrop * sourceHeight / mixerHeight + topPosition;
-              newRight = rightPosition - topCrop * sourceWidth / mixerWidth;
-              newBottom = bottomPosition - rightCrop * sourceHeight / mixerHeight;
-            } else {
-              newLeft = leftCrop * sourceWidth / mixerWidth + leftPosition;
-              newTop = topCrop * sourceHeight / mixerHeight + topPosition;
-              newRight = rightPosition - rightCrop * sourceWidth / mixerWidth;
-              newBottom = bottomPosition - bottomCrop * sourceHeight / mixerHeight;
-            }
-            Item$1.set("prop:crop", value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6), this._id).then(() => {
-              return Item$1.set("prop:pos", newLeft.toFixed(6) + "," + newTop.toFixed(6) + "," + newRight.toFixed(6) + "," + newBottom.toFixed(6), this._id);
-            }).then(() => {
-              resolve2(this);
-            });
-          });
-        } else {
-          reject2(Error("Error setting cropping, insufficient properties (left, top, right, bottom)"));
-        }
-      });
-    }
-    bringForward() {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:zorder", "+", this._id).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    sendBackward() {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:zorder", "-", this._id).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    bringToFront() {
-      return new Promise((resolve2) => {
-        let itemsLength = 0;
-        let itemIndex = -1;
-        let forwardStep = 0;
-        Scene.searchScenesByItemId(this._id).then((itemScene) => {
-          return itemScene.getItems();
-        }).then((sceneItems) => {
-          itemsLength = sceneItems.length;
-          for (var i = 0; i < itemsLength; ++i) {
-            if (sceneItems[i]["_id"] === this._id) {
-              itemIndex = i;
-              break;
-            }
-          }
-          if (itemsLength > 0 && itemIndex > -1) {
-            forwardStep = itemsLength - 1 - itemIndex;
-          }
-          let promiseArray = [];
-          let zorderPromise = (itemId, idx) => new Promise((zorderResolve) => {
-            Item$1.set("prop:zorder", "+", this._id).then(() => {
-              zorderResolve();
-            });
-          });
-          for (var i = forwardStep - 1; i >= 0; i--) {
-            promiseArray.push(zorderPromise(this._id));
-          }
-          Promise.all(promiseArray).then(() => {
-            resolve2(this);
-          });
-        });
-      });
-    }
-    sendToBack() {
-      return new Promise((resolve2) => {
-        let itemsLength = 0;
-        let itemIndex = -1;
-        let backwardStep = 0;
-        Scene.searchScenesByItemId(this._id).then((itemScene) => {
-          return itemScene.getItems();
-        }).then((sceneItems) => {
-          itemsLength = sceneItems.length;
-          for (var i = 0; i < itemsLength; ++i) {
-            if (sceneItems[i]["_id"] === this._id) {
-              itemIndex = i;
-              break;
-            }
-          }
-          if (itemsLength > 0 && itemIndex > -1) {
-            backwardStep = itemIndex;
-          }
-          let promiseArray = [];
-          let zorderPromise = (itemId, idx) => new Promise((zorderResolve) => {
-            Item$1.set("prop:zorder", "-", this._id).then(() => {
-              zorderResolve();
-            });
-          });
-          for (var i = backwardStep - 1; i >= 0; i--) {
-            promiseArray.push(zorderPromise(this._id));
-          }
-          Promise.all(promiseArray).then(() => {
-            resolve2(this);
-          });
-        });
-      });
-    }
-  }
-  function splitMode() {
-    return new Promise((resolve2) => {
-      App$1.getGlobalProperty("splitmode").then((mode) => {
-        resolve2(mode === "1" ? 1 : 0);
-      });
-    });
-  }
-  function checkSplitmode(value2) {
-    let scenePrefix = "";
-    let scenePromise;
-    return new Promise((resolve2, reject2) => {
-      scenePromise = new Promise((sceneResolve) => {
-        splitMode().then((res) => {
-          if (res === 1 && !value2) {
-            Scene.getActiveScene().then((val) => {
-              value2 = val;
-              sceneResolve(value2);
-            });
-          } else {
-            sceneResolve(value2);
-          }
-        });
-      });
-      scenePromise.then((val) => {
-        if (typeof val === "number" || val instanceof Scene) {
-          Scene.getSceneCount().then((sceneCount) => {
-            if (typeof val === "number") {
-              let int = Math.floor(val);
-              if (int > sceneCount || int === 0) {
-                reject2(Error("Scene does not exist."));
-              } else {
-                scenePrefix = "s:" + (int - 1) + "|";
-                resolve2(scenePrefix);
-              }
-            } else {
-              val.getSceneNumber().then((int) => {
-                if (int > sceneCount || int === 0) {
-                  reject2(Error("Scene does not exist."));
-                } else {
-                  scenePrefix = "s:" + (int - 1) + "|";
-                  resolve2(scenePrefix);
-                }
-              });
-            }
-          });
-        } else if (typeof val === "undefined") {
-          resolve2("");
-        } else {
-          reject2(Error("Optional parameter 'scene' only accepts integers or an XJS.Scene object"));
-        }
-      });
-    });
-  }
-  class AddToSceneEventEmitter extends EventEmitter {
-    constructor() {
-      super();
-      if (Global.isListenToItemAdd()) {
-        const prevAppOnItemAdded = window$1.AppOnItemAdded;
-        window$1.AppOnItemAdded = (...args) => {
-          this.emit(args[0], args[1]);
-          if (typeof prevAppOnItemAdded === "function")
-            prevAppOnItemAdded(...args);
-        };
-        exec("AppSubscribeEvents");
-      }
-    }
-    //Gets/Creates the instance of the AddToSceneEventEmitter class.
-    static getInstance() {
-      if (AddToSceneEventEmitter._instance === void 0) {
-        AddToSceneEventEmitter._instance = new AddToSceneEventEmitter();
-      }
-      return AddToSceneEventEmitter._instance;
-    }
-  }
-  function guid(a) {
-    return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ("10000000-1000-4000-8000" + -1e11).replace(/[018]/g, guid);
-  }
-  function addToSceneHandler(cmd, ...args) {
-    return new Promise((resolve2, reject2) => {
-      const eventId = "EVENT-XJS-CREATE-" + guid(null) + "-" + Date.now();
-      if (Global.isListenToItemAdd()) {
-        const _addToScene = AddToSceneEventEmitter.getInstance();
-        const itemCreated = (itemId) => {
-          _addToScene.off(eventId, itemCreated);
-          resolve2(itemId);
-        };
-        _addToScene.on(eventId, itemCreated);
-      }
-      App$1.callFunc("e:" + eventId + "|" + cmd, ...args).then(() => {
-        if (!Global.isListenToItemAdd()) resolve2(true);
-      }).catch((err) => {
-        reject2(err);
-      });
-    });
-  }
-  const MIN_FPS = 24;
-  const MAX_FPS = 300;
-  class iSourceGame {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
-    }
-    isSpecialOptimizationEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isSpecialOptimizationEnabled", true);
-          Item$1.get("GameCapSurfSharing", this._id).then((res) => {
-            resolve2(res === "1");
-          });
-        } else {
-          Item$1.wrapGet("GameCapSurfSharing", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
-            resolve2(res === "1");
-          });
-        }
-      });
-    }
-    setSpecialOptimizationEnabled(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setSpecialOptimizationEnabled", true);
-          Item$1.set(
-            "GameCapSurfSharing",
-            value2 ? "1" : "0",
-            this._id
-          ).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet(
-            "GameCapSurfSharing",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    isShowMouseEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isShowMouseEnabled", true);
-          Item$1.get("GameCapShowMouse", this._id).then((res) => {
-            resolve2(res === "1");
-          });
-        } else {
-          Item$1.wrapGet("GameCapShowMouse", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
-            resolve2(res === "1");
-          });
-        }
-      });
-    }
-    setShowMouseEnabled(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setShowMouseEnabled", true);
-          Item$1.set("GameCapShowMouse", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet("GameCapShowMouse", value2 ? "1" : "0", this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    setOfflineImage(path) {
-      if (this._isItemCall) {
-        Logger.warn("sourceWarning", "setOfflineImage", true);
-      }
-      return new Promise((resolve2, reject2) => {
-        if (this._type !== ItemTypes.GAMESOURCE) {
-          reject2(Error("Current item should be a game item"));
-        } else if (Environment.isSourcePlugin()) {
-          reject2(
-            Error("Source plugins cannot update offline images of other items")
-          );
-        } else if (!(this._value instanceof XML)) {
-          this.getValue().then(() => {
-            this.setOfflineImage(path).then((itemObj) => {
-              resolve2(itemObj);
-            });
-          });
-        } else {
-          var regExp = new RegExp('^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*)).(png|gif|jpg|jpeg|tif)$');
-          if (regExp.test(path.toLowerCase()) || path === "") {
-            var valueObj = JSON$1.parse(this._value.toString());
-            valueObj["replace"] = path;
-            this.setValue(XML.parseJSON(valueObj)).then(() => {
-              resolve2(this);
-            });
-          } else {
-            reject2(
-              Error("Invalid file path or type is provided.")
-            );
-          }
-        }
-      });
-    }
-    getOfflineImage() {
-      if (this._isItemCall) {
-        Logger.warn("sourceWarning", "getOfflineImage", true);
-      }
-      return new Promise((resolve2, reject2) => {
-        if (this._type !== ItemTypes.GAMESOURCE) {
-          reject2(Error("Current item should be a game item"));
-        } else {
-          this.getValue().then((value2) => {
-            var valueObj = JSON$1.parse(this._value.toString());
-            resolve2(valueObj["replace"] ? valueObj["replace"] : "");
-          });
-        }
-      });
-    }
-    isTransparent() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isTransparent", true);
-          this._checkPromise = Item$1.get("prop:GameCapAlpha", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet("prop:GameCapAlpha", this._srcId, this._id, this._updateId.bind(this));
-        }
-        this._checkPromise.then((res) => {
-          resolve2(res === "1");
-        });
-      });
-    }
-    setTransparent(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setTransparent", true);
-          this._checkPromise = Item$1.set("prop:GameCapAlpha", value2 ? "1" : "0", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet("prop:GameCapAlpha", value2 ? "1" : "0", this._srcId, this._id, this._updateId.bind(this));
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    getGameFPSCap() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getGameFPSCap", true);
-          this._checkPromise = Item$1.get("prop:GameCapFrameTimeLimit", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet("prop:GameCapFrameTimeLimit", this._srcId, this._id, this._updateId.bind(this));
-        }
-        this._checkPromise.then((res) => {
-          if (res === "0" || res === "" || res === 0) {
-            resolve2(0);
-          } else {
-            let fps = Math.floor(1e7 / Number(res));
-            fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
-            resolve2(fps);
-          }
-        });
-      });
-    }
-    setGameFPSCap(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 !== 0 && (Number(value2) < MIN_FPS || Number(value2) > MAX_FPS)) {
-          reject2(RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS}.`));
-        } else {
-          let frametime = value2 > 0 ? Math.floor(1e7 / Number(value2)) : 0;
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setGameFPSCap", true);
-            Item$1.set("prop:GameCapFrameTimeLimit", String(frametime), this._id).then(() => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet("prop:GameCapFrameTimeLimit", String(frametime), this._srcId, this._id, this._updateId.bind(this)).then(() => {
-              resolve2(this);
-            });
-          }
-        }
-      });
-    }
-  }
-  class GameSource extends Source {
-  }
-  applyMixins(GameSource, [iSourceGame]);
   class Audio {
     _updateId(id, sceneId) {
       this._id = id;
@@ -3518,35 +1096,44 @@ var XJS = (function(exports) {
       });
     }
   }
-  class CameraDevice {
-    constructor(props) {
-      this._id = props["id"];
-      this._name = props["name"];
+  class MicrophoneDevice {
+    /**
+     * param: (deviceJXON: JXON)
+     * ```
+     * return MicrophoneDevice
+     * ```
+     * Create a MicrophoneDevice onject based on a JXON object
+     *
+     */
+    static parse(jxon) {
+      var m = new MicrophoneDevice();
+      m._disp = jxon["disp"];
+      m._name = jxon["name"];
+      return m;
     }
     /**
      * return: string
      *
-     * Get the ID of the device. The ID of the device is based on the `disp`
-     * attribute of the devices XML
+     * Gets the display ID
      *
      * #### Usage
      *
      * ```javascript
-     * var cameraID = device.getId();
+     * var micDisplayId = device.getDisplayId();
      * ```
      */
-    getId() {
-      return this._id;
+    getDisplayId() {
+      return this._disp;
     }
     /**
      * return: string
      *
-     * Get the Name of the device.
+     * Gets the device name
      *
      * #### Usage
      *
      * ```javascript
-     * var cameraName = device.getName();
+     * var micName = device.getName();
      * ```
      */
     getName() {
@@ -3555,40 +1142,22 @@ var XJS = (function(exports) {
     /**
      * return: XML
      *
-     * Convert the current CameraDevice object to XML
+     * Converts Microphone object into an XML object
      *
      * #### Usage
      *
      * ```javascript
-     * var xml = device.toXML();
+     * var microphoneXML = microphone.toXML();
      * ```
      */
     toXML() {
-      var json = new JSON$1();
-      json["disp"] = this._id;
-      json["name"] = this._name;
-      return XML.parseJSON(json);
-    }
-    /**
-     * param: (deviceJSON: JXON)
-     * ```
-     * return: CameraDevice
-     * ```
-     *
-     * Create a CameraDevice object based on a JXON object
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var camera = CameraDevice.parse(JSONObj);
-     * ```
-     */
-    static parse(deviceJSON) {
-      var cam = new CameraDevice({
-        id: deviceJSON["disp"].replace(/&amp;/ig, "&"),
-        name: deviceJSON["name"]
-      });
-      return cam;
+      var microphone = new JSON$1();
+      microphone.tag = "item";
+      microphone["item"] = this._disp;
+      microphone["name"] = this._name;
+      microphone["type"] = "2";
+      microphone["selfclosing"] = true;
+      return XML.parseJSON(microphone);
     }
     /**
      * param: (value?: number | Scene)
@@ -3596,7 +1165,7 @@ var XJS = (function(exports) {
      * return: Promise<any>
      * ```
      *
-     * Adds this camera device to the current scene by default.
+     * Adds this microphone device to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
@@ -3607,7 +1176,7 @@ var XJS = (function(exports) {
     addToScene(value2) {
       return new Promise((resolve2, reject2) => {
         checkSplitmode(value2).then((scenePrefix) => {
-          return addToSceneHandler(scenePrefix + "addcamera", "dev:" + this._id);
+          return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
         }).then((result) => {
           resolve2(result);
         }).catch((err) => {
@@ -3616,6 +1185,140 @@ var XJS = (function(exports) {
       });
     }
   }
+  class Dll extends EventEmitter {
+    /**
+     *  param: (path: string)
+     *
+     *  Loads one or more DLLs for the plugin to use. Currently, only Xjs.dll is
+     *  auto-loaded and does not require loading. Loading DLLs will trigger a
+     *  notification for the user, requesting access to be granted to DLL files.
+     *  Your plugin should only call this once, at the beginning of execution.
+     *
+     *  Paths are relative to the main XBC application folder, so sample usage is:
+     *
+     *  ```javascript
+     *  Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']);
+     *  ```
+     */
+    static load(path) {
+      return new Promise((resolve2) => {
+        exec("LoadDll", path.join(",")).then((result) => {
+          resolve2(result);
+        });
+      });
+    }
+    static {
+      this._emitter = new Dll();
+    }
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits. Currently there are two:
+     *  `access-granted` and `access-revoked`.
+     */
+    static on(event, handler) {
+      Dll._emitter.on(event, handler);
+    }
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event. Generally only useful for testing.
+     */
+    static emit(event, ...params) {
+      params.unshift(event);
+      Dll._emitter.emit.apply(Dll._emitter, params);
+    }
+    /**
+     *  param: (funcName: string, ...params: string[])
+     *
+     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
+     *
+     *  Calls a function from a loaded "safe" DLL. The only safe DLL we are
+     *  currently exposing is `Xjs.dll`.
+     */
+    static call(func, ...params) {
+      return new Promise((resolve2, reject2) => {
+        const funcCall = "CallDll";
+        params.unshift(func);
+        params.unshift(funcCall);
+        exec.apply(Dll, params).then((retValue) => {
+          if (retValue !== void 0) {
+            resolve2(retValue);
+          } else {
+            reject2(Error("DLL call not accessible."));
+          }
+        });
+      });
+    }
+    /**
+     *  param: (funcName: string, ...params: string[])
+     *
+     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
+     *
+     *  Calls a function from a loaded "unsafe" DLL. The first DLL containing
+     *  the function name will be called, so you need to ensure there are no
+     *  function name collisions among DLLs for functions you require.
+     *
+     *  Some DLLs have callbacks. Assign a handler function to that callback in
+     *  the global namespace (`window.callbackName = ...`), and the DLL will call
+     *  that function accordingly.
+     *
+     *  See the documentation of your specific DLL for more details.
+     */
+    static callEx(func, ...params) {
+      return new Promise((resolve2, reject2) => {
+        const funcCall = "CallDllEx";
+        params.unshift(func);
+        params.unshift(funcCall);
+        exec.apply(Dll, params).then((retValue) => {
+          if (retValue !== void 0) {
+            resolve2(retValue);
+          } else {
+            reject2(Error("DLL call not accessible."));
+          }
+        });
+      });
+    }
+    /**
+     *  return: Promise<boolean>
+     *
+     *  Determines if user has granted DLL access for this plugin. This also
+     *  resolves to true if DLL security is disabled altogether.
+     */
+    static isAccessGranted() {
+      return new Promise((resolve2) => {
+        exec("CheckDllGrant").then((result) => {
+          resolve2(result === "1");
+        });
+      });
+    }
+  }
+  const oldUpdateLocalProperty = window$1.UpdateLocalProperty;
+  window$1.UpdateLocalProperty = (prop, value2) => {
+    if (prop === "prop:dlldogrant") {
+      const granted = value2 === "1";
+      if (granted) {
+        Dll.emit("access-granted");
+      } else {
+        Dll.emit("access-revoked");
+      }
+    }
+    if (typeof oldUpdateLocalProperty === "function") {
+      oldUpdateLocalProperty(prop, value2);
+    }
+  };
+  const oldSetdlldogrant = window$1.Setdlldogrant;
+  window$1.Setdlldogrant = (value2) => {
+    const granted = value2 === "1";
+    if (granted) {
+      Dll.emit("access-granted");
+    } else {
+      Dll.emit("access-revoked");
+    }
+    if (typeof oldSetdlldogrant === "function") {
+      oldSetdlldogrant(value2);
+    }
+  };
   class AudioDevice {
     constructor(props) {
       this._defaultConsole = false;
@@ -3949,51 +1652,50 @@ var XJS = (function(exports) {
           }
           audio._setLevel(volume * 100)._setEnabled(enabled)._setDelay(delay);
         }
-        audio._setSystemLevel(Number(deviceJXON["hwlevel"] !== void 0 ? deviceJXON["hwlevel"] * 100 : -100))._setSystemEnabled(Number(deviceJXON["hwenable"] !== void 0 ? deviceJXON["hwenable"] : 255));
+        audio._setSystemLevel(
+          Number(deviceJXON["hwlevel"] !== void 0 ? deviceJXON["hwlevel"] * 100 : -100)
+        )._setSystemEnabled(
+          Number(deviceJXON["hwenable"] !== void 0 ? deviceJXON["hwenable"] : 255)
+        );
       } else {
-        audio._setLevel(Number(deviceJXON["level"] !== void 0 ? deviceJXON["level"] * 100 : 100))._setEnabled(deviceJXON["enable"] !== void 0 ? deviceJXON["enable"] === "1" : true)._setSystemLevel(Number(deviceJXON["hwlevel"] !== void 0 ? deviceJXON["hwlevel"] * 100 : -100))._setSystemEnabled(Number(deviceJXON["hwenable"] !== void 0 ? deviceJXON["hwenable"] : 255))._setDelay(Number(deviceJXON["delay"] !== void 0 ? deviceJXON["delay"] : 0));
+        audio._setLevel(Number(deviceJXON["level"] !== void 0 ? deviceJXON["level"] * 100 : 100))._setEnabled(deviceJXON["enable"] !== void 0 ? deviceJXON["enable"] === "1" : true)._setSystemLevel(
+          Number(deviceJXON["hwlevel"] !== void 0 ? deviceJXON["hwlevel"] * 100 : -100)
+        )._setSystemEnabled(
+          Number(deviceJXON["hwenable"] !== void 0 ? deviceJXON["hwenable"] : 255)
+        )._setDelay(Number(deviceJXON["delay"] !== void 0 ? deviceJXON["delay"] : 0));
       }
       return audio;
     }
   }
-  class MicrophoneDevice {
-    /**
-     * param: (deviceJXON: JXON)
-     * ```
-     * return MicrophoneDevice
-     * ```
-     * Create a MicrophoneDevice onject based on a JXON object
-     *
-     */
-    static parse(jxon) {
-      var m = new MicrophoneDevice();
-      m._disp = jxon["disp"];
-      m._name = jxon["name"];
-      return m;
+  class CameraDevice {
+    constructor(props) {
+      this._id = props["id"];
+      this._name = props["name"];
     }
     /**
      * return: string
      *
-     * Gets the display ID
+     * Get the ID of the device. The ID of the device is based on the `disp`
+     * attribute of the devices XML
      *
      * #### Usage
      *
      * ```javascript
-     * var micDisplayId = device.getDisplayId();
+     * var cameraID = device.getId();
      * ```
      */
-    getDisplayId() {
-      return this._disp;
+    getId() {
+      return this._id;
     }
     /**
      * return: string
      *
-     * Gets the device name
+     * Get the Name of the device.
      *
      * #### Usage
      *
      * ```javascript
-     * var micName = device.getName();
+     * var cameraName = device.getName();
      * ```
      */
     getName() {
@@ -4002,22 +1704,40 @@ var XJS = (function(exports) {
     /**
      * return: XML
      *
-     * Converts Microphone object into an XML object
+     * Convert the current CameraDevice object to XML
      *
      * #### Usage
      *
      * ```javascript
-     * var microphoneXML = microphone.toXML();
+     * var xml = device.toXML();
      * ```
      */
     toXML() {
-      var microphone = new JSON$1();
-      microphone.tag = "item";
-      microphone["item"] = this._disp;
-      microphone["name"] = this._name;
-      microphone["type"] = "2";
-      microphone["selfclosing"] = true;
-      return XML.parseJSON(microphone);
+      var json = new JSON$1();
+      json["disp"] = this._id;
+      json["name"] = this._name;
+      return XML.parseJSON(json);
+    }
+    /**
+     * param: (deviceJSON: JXON)
+     * ```
+     * return: CameraDevice
+     * ```
+     *
+     * Create a CameraDevice object based on a JXON object
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var camera = CameraDevice.parse(JSONObj);
+     * ```
+     */
+    static parse(deviceJSON) {
+      var cam = new CameraDevice({
+        id: deviceJSON["disp"].replace(/&amp;/gi, "&"),
+        name: deviceJSON["name"]
+      });
+      return cam;
     }
     /**
      * param: (value?: number | Scene)
@@ -4025,7 +1745,7 @@ var XJS = (function(exports) {
      * return: Promise<any>
      * ```
      *
-     * Adds this microphone device to the current scene by default.
+     * Adds this camera device to the current scene by default.
      * Accepts an optional parameter value, which, when supplied,
      * points to the scene where item will be added instead.
      * If ready config {listenToItemAdd: true} it returns item id,
@@ -4036,13 +1756,195 @@ var XJS = (function(exports) {
     addToScene(value2) {
       return new Promise((resolve2, reject2) => {
         checkSplitmode(value2).then((scenePrefix) => {
-          return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
+          return addToSceneHandler(scenePrefix + "addcamera", "dev:" + this._id);
         }).then((result) => {
           resolve2(result);
         }).catch((err) => {
           reject2(err);
         });
       });
+    }
+  }
+  class Rectangle {
+    /** Gets the top value */
+    getTop() {
+      return this._top;
+    }
+    /** Sets the top value */
+    setTop(top) {
+      this._top = top;
+      if (this._bottom !== void 0 && this._height !== this._top - this._bottom) {
+        this.setHeight(Math.abs(this._top - this._bottom));
+      } else if (this._height !== void 0 && this._bottom !== this._top + this._height) {
+        this.setBottom(this._top + this._height);
+      }
+      return this;
+    }
+    /** Gets the left value */
+    getLeft() {
+      return this._left;
+    }
+    /** Sets the left value */
+    setLeft(left) {
+      this._left = left;
+      if (this._right !== void 0 && this._width !== Math.abs(this._right - this._left)) {
+        this.setWidth(Math.abs(this._right - this._left));
+      } else if (this._width !== void 0 && this._height !== this._left + this._width) {
+        this.setRight(this._left + this._width);
+      }
+      return this;
+    }
+    /** Gets the right value */
+    getRight() {
+      return this._right;
+    }
+    /** Sets the right value */
+    setRight(right) {
+      this._right = right;
+      if (this._left !== void 0 && this._width !== Math.abs(this._right - this._left)) {
+        this.setWidth(Math.abs(this._right - this._left));
+      } else if (this._width !== void 0 && this._left !== this._right - this._width) {
+        this.setLeft(this._right - this._width);
+      }
+      return this;
+    }
+    /** Gets the bottom value */
+    getBottom() {
+      return this._bottom;
+    }
+    /** Sets the bottom value */
+    setBottom(bottom) {
+      this._bottom = bottom;
+      if (this._top !== void 0 && this._height !== Math.abs(this._top - this._bottom)) {
+        this.setHeight(Math.abs(this._top - this._bottom));
+      } else if (this._height !== void 0 && this._top !== this._bottom - this._height) {
+        this.setTop(this._bottom - this._height);
+      }
+      return this;
+    }
+    /** Gets the width value */
+    getWidth() {
+      return this._width;
+    }
+    /** Sets the width value */
+    setWidth(width) {
+      this._width = width;
+      if (this._right !== void 0 && this._left !== this._right - this._width) {
+        this.setLeft(this._right - this._width);
+      } else if (this._left !== void 0 && this._right !== this._left + this._width) {
+        this.setRight(this._left + this._width);
+      }
+      return this;
+    }
+    /** Gets the height value */
+    getHeight() {
+      return this._height;
+    }
+    /** Sets the height value */
+    setHeight(height) {
+      this._height = height;
+      if (this._top !== void 0 && this._bottom !== this._top + this._height) {
+        this.setBottom(this._top + this._height);
+      } else if (this._bottom !== void 0 && this._top !== this._bottom - this._height) {
+        this.setTop(this._bottom - this._height);
+      }
+      return this;
+    }
+    /**
+     *  param: (width: number, height: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from width and height dimensions. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
+    static fromDimensions(width, height) {
+      if (width < 0 || height < 0) {
+        throw new Error("Rectangle dimensions cannot be negative.");
+      }
+      const rect = new Rectangle();
+      rect._width = width;
+      rect._height = height;
+      return rect;
+    }
+    /**
+     *  param: (left: number, top: number, right: number, bottom: number)
+     *  ```
+     *  return: Rectangle
+     *  ```
+     *  Creates a rectangle from coordinates. Absolute (pixels)
+     *  and relative (0-1) dimensions are accepted. Refer to the documentation
+     *  of each individual function to see which one is necessary.
+     */
+    static fromCoordinates(left, top, right, bottom) {
+      if (top > bottom) {
+        throw new Error("Top coordinate must be smaller than bottom.");
+      } else if (left > right) {
+        throw new Error("Right coordinate must be smaller than left.");
+      }
+      const rect = new Rectangle();
+      rect._top = top;
+      rect._left = left;
+      rect.setRight(right);
+      rect.setBottom(bottom);
+      return rect;
+    }
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the width and height values.
+     */
+    toDimensionString() {
+      return this._width + "," + this._height;
+    }
+    /**
+     *  return: string
+     *
+     *  Returns a comma-separated string containing the coordinates in the order:
+     *  left, top, right, bottom.
+     */
+    toCoordinateString() {
+      if ([this._left, this._right, this._top, this._bottom].indexOf(void 0) > -1) {
+        throw new Error("This Rectangle instance does not have coordinates.");
+      } else {
+        return this._left + "," + this._top + "," + this._right + "," + this._bottom;
+      }
+    }
+    /**
+     *  return: string
+     *  ```
+     *  param: (format ?: string)
+     *  ```
+     *  Returns a string representation of the Rectangle object. If the format
+     *  optional parameter is omitted, then this is simply the string from
+     *  `toDimensionString()`. Sample usage:
+     *
+     *  ```javascript
+     *  console.log(rect.toString('Origin is at (:left, :top)'));```
+     *
+     *  You can format the output string by specifying the following markers in
+     *  the parameter:
+     *  - :left
+     *  - :top
+     *  - :right
+     *  - :bottom
+     *  - :width
+     *  - :height
+     */
+    toString(value2) {
+      if (value2 === void 0) {
+        return this.toDimensionString();
+      } else {
+        let format = value2;
+        format = format.replace(":left", String(this._left));
+        format = format.replace(":top", String(this._top));
+        format = format.replace(":right", String(this._right));
+        format = format.replace(":bottom", String(this._bottom));
+        format = format.replace(":width", String(this._width));
+        format = format.replace(":height", String(this._height));
+        return format;
+      }
     }
   }
   class Game {
@@ -4297,7 +2199,7 @@ var XJS = (function(exports) {
     static autoDetect() {
       if (Game._autoDetect === void 0) {
         Game._autoDetect = new Game();
-        let ad = Game._autoDetect;
+        const ad = Game._autoDetect;
         ad._pid = 0;
         ad._handle = 0;
         ad._hwnd = 0;
@@ -4310,50 +2212,48 @@ var XJS = (function(exports) {
         ad._fpsRender = 0;
         ad._fpsCapture = 0;
         ad._imagename = "";
-        Game._autoDetect.addToScene = function(value2) {
-          return new Promise((resolve2, reject2) => {
-            checkSplitmode(value2).then((scenePrefix) => {
-              var defposPromise;
-              if (Environment.isSourcePlugin()) {
-                defposPromise = new Promise((defposResolve) => {
-                  App$1.get("sceneconfig:-1").then((presetConfig) => {
-                    let placementJSON = JSON$1.parse(presetConfig);
-                    defposResolve(placementJSON["defpos"]);
-                  });
+        Game._autoDetect.addToScene = (value2) => new Promise((resolve2, reject2) => {
+          checkSplitmode(value2).then((scenePrefix) => {
+            var defposPromise;
+            if (Environment.isSourcePlugin()) {
+              defposPromise = new Promise((defposResolve) => {
+                App$1.get("sceneconfig:-1").then((presetConfig) => {
+                  const placementJSON = JSON$1.parse(presetConfig);
+                  defposResolve(placementJSON["defpos"]);
                 });
-              } else {
-                defposPromise = new Promise((defposResolve) => {
-                  App$1.get("scene:0").then((main) => {
-                    return App$1.get("sceneconfig:" + main);
-                  }).then(function(presetConfig) {
-                    let placementJSON = JSON$1.parse(presetConfig);
-                    defposResolve(placementJSON["defpos"]);
-                  });
-                });
-              }
-              defposPromise.then((defpos) => {
-                let posString;
-                if (defpos === "0") {
-                  posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
-                } else if (defpos === "1") {
-                  posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
-                } else if (defpos === "2") {
-                  posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
-                } else if (defpos === "3") {
-                  posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
-                } else {
-                  posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
-                }
-                let adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + " />";
-                return addToSceneHandler(scenePrefix + "additem", adstring);
-              }).then((result) => {
-                resolve2(result);
               });
-            }).catch((err) => {
-              reject2(err);
+            } else {
+              defposPromise = new Promise((defposResolve) => {
+                App$1.get("scene:0").then((main) => {
+                  return App$1.get("sceneconfig:" + main);
+                }).then((presetConfig) => {
+                  const placementJSON = JSON$1.parse(presetConfig);
+                  defposResolve(placementJSON["defpos"]);
+                });
+              });
+            }
+            defposPromise.then((defpos) => {
+              let posString;
+              if (defpos === "0") {
+                posString = 'pos_left="0" pos_top="0" pos_right="0.5" pos_bottom="0.5"';
+              } else if (defpos === "1") {
+                posString = 'pos_left="0.5" pos_top="0" pos_right="1" pos_bottom="0.5"';
+              } else if (defpos === "2") {
+                posString = 'pos_left="0" pos_top="0.5" pos_right="0.5" pos_bottom="1"';
+              } else if (defpos === "3") {
+                posString = 'pos_left="0.5" pos_top="0.5" pos_right="1" pos_bottom="1"';
+              } else {
+                posString = 'pos_left="0.25" pos_top="0.25" pos_right="0.75" pos_bottom="0.75"';
+              }
+              const adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + " />";
+              return addToSceneHandler(scenePrefix + "additem", adstring);
+            }).then((result) => {
+              resolve2(result);
             });
+          }).catch((err) => {
+            reject2(err);
           });
-        };
+        });
       }
       return Game._autoDetect;
     }
@@ -4441,148 +2341,14 @@ var XJS = (function(exports) {
      */
     static parse(screenInfo) {
       var screen = new Screen({
-        "title": screenInfo["title"],
-        "class": screenInfo["class"],
-        "processDetail": screenInfo["processDetail"],
-        "hwnd": screenInfo["hwnd"]
+        title: screenInfo["title"],
+        class: screenInfo["class"],
+        processDetail: screenInfo["processDetail"],
+        hwnd: screenInfo["hwnd"]
       });
       return screen;
     }
   }
-  class Dll extends EventEmitter {
-    /**
-     *  param: (path: string)
-     *
-     *  Loads one or more DLLs for the plugin to use. Currently, only Xjs.dll is
-     *  auto-loaded and does not require loading. Loading DLLs will trigger a
-     *  notification for the user, requesting access to be granted to DLL files.
-     *  Your plugin should only call this once, at the beginning of execution.
-     *
-     *  Paths are relative to the main XBC application folder, so sample usage is:
-     *
-     *  ```javascript
-     *  Dll.load(['Scriptdlls\\SplitMediaLabs\\XjsEx.dll']);
-     *  ```
-     */
-    static load(path) {
-      return new Promise((resolve2) => {
-        exec("LoadDll", path.join(",")).then((result) => {
-          resolve2(result);
-        });
-      });
-    }
-    static {
-      this._emitter = new Dll();
-    }
-    /**
-     *  param: (event: string, handler: Function)
-     *
-     *  Allows listening to events that this class emits. Currently there are two:
-     *  `access-granted` and `access-revoked`.
-     */
-    static on(event, handler) {
-      Dll._emitter.on(event, handler);
-    }
-    /**
-     *  param: (event: string, ...params: any[])
-     *
-     *  Allows this class to emit an event. Generally only useful for testing.
-     */
-    static emit(event, ...params) {
-      params.unshift(event);
-      Dll._emitter.emit.apply(Dll._emitter, params);
-    }
-    /**
-     *  param: (funcName: string, ...params: string[])
-     *
-     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
-     *
-     *  Calls a function from a loaded "safe" DLL. The only safe DLL we are
-     *  currently exposing is `Xjs.dll`.
-     */
-    static call(func, ...params) {
-      return new Promise((resolve2, reject2) => {
-        const funcCall = "CallDll";
-        params.unshift(func);
-        params.unshift(funcCall);
-        exec.apply(this, params).then((retValue) => {
-          if (retValue !== void 0) {
-            resolve2(retValue);
-          } else {
-            reject2(Error("DLL call not accessible."));
-          }
-        });
-      });
-    }
-    /**
-     *  param: (funcName: string, ...params: string[])
-     *
-     *  return: Promise<string> (see {@link tutorials.html#/dll DLL documentation})
-     *
-     *  Calls a function from a loaded "unsafe" DLL. The first DLL containing
-     *  the function name will be called, so you need to ensure there are no
-     *  function name collisions among DLLs for functions you require.
-     *
-     *  Some DLLs have callbacks. Assign a handler function to that callback in
-     *  the global namespace (`window.callbackName = ...`), and the DLL will call
-     *  that function accordingly.
-     *
-     *  See the documentation of your specific DLL for more details.
-     */
-    static callEx(func, ...params) {
-      return new Promise((resolve2, reject2) => {
-        const funcCall = "CallDllEx";
-        params.unshift(func);
-        params.unshift(funcCall);
-        exec.apply(this, params).then((retValue) => {
-          if (retValue !== void 0) {
-            resolve2(retValue);
-          } else {
-            reject2(Error("DLL call not accessible."));
-          }
-        });
-      });
-    }
-    /**
-     *  return: Promise<boolean>
-     *
-     *  Determines if user has granted DLL access for this plugin. This also
-     *  resolves to true if DLL security is disabled altogether.
-     */
-    static isAccessGranted() {
-      return new Promise((resolve2) => {
-        exec("CheckDllGrant").then((result) => {
-          resolve2(result === "1");
-        });
-      });
-    }
-  }
-  const oldUpdateLocalProperty = window$1.UpdateLocalProperty;
-  window$1.UpdateLocalProperty = (prop, value2) => {
-    if (prop === "prop:dlldogrant") {
-      const granted = value2 === "1";
-      if (granted) {
-        Dll.emit("access-granted");
-      } else {
-        Dll.emit("access-revoked");
-      }
-    }
-    if (typeof oldUpdateLocalProperty === "function") {
-      oldUpdateLocalProperty(prop, value2);
-    }
-  };
-  const oldSetdlldogrant = window$1.Setdlldogrant;
-  window$1.Setdlldogrant = (value2) => {
-    const granted = value2 === "1";
-    if (granted) {
-      Dll.emit("access-granted");
-    } else {
-      Dll.emit("access-revoked");
-    }
-    if (typeof oldSetdlldogrant === "function") {
-      oldSetdlldogrant(value2);
-    }
-  };
   var AudioDeviceDataflow = /* @__PURE__ */ ((AudioDeviceDataflow2) => {
     AudioDeviceDataflow2[AudioDeviceDataflow2["RENDER"] = 1] = "RENDER";
     AudioDeviceDataflow2[AudioDeviceDataflow2["CAPTURE"] = 2] = "CAPTURE";
@@ -4619,16 +2385,16 @@ var XJS = (function(exports) {
     static getAudioDevices(dataflow = 3, state = 1) {
       return new Promise((resolve2) => {
         App$1.getAsList("wasapienum").then((devicesJXON) => {
-          let devices = [];
+          const devices = [];
           if (devicesJXON !== void 0) {
             var devicesJXONLength = devicesJXON.length;
             for (var i = 0; i < devicesJXONLength; ++i) {
-              let device = devicesJXON[i];
-              let bitsState = AudioDeviceState[String(device["State"]).toUpperCase().replace(/\s+/g, "")];
+              const device = devicesJXON[i];
+              const bitsState = AudioDeviceState[String(device["State"]).toUpperCase().replace(/\s+/g, "")];
               if ((bitsState & state) !== bitsState) {
                 continue;
               }
-              let bitsFlow = AudioDeviceDataflow[String(device["DataFlow"]).toUpperCase()];
+              const bitsFlow = AudioDeviceDataflow[String(device["DataFlow"]).toUpperCase()];
               if ((bitsFlow & dataflow) !== bitsFlow) {
                 continue;
               }
@@ -4660,9 +2426,9 @@ var XJS = (function(exports) {
     static getCameraDevices() {
       return new Promise((resolve2) => {
         App$1.getAsList("dshowenum:vsrc").then((devicesJSON) => {
-          let devices = [];
+          const devices = [];
           if (devicesJSON !== void 0) {
-            for (let device of devicesJSON) {
+            for (const device of devicesJSON) {
               const dispUpperCase = String(device["disp"]).toUpperCase();
               if (dispUpperCase.indexOf("XSPLIT") === -1 && dispUpperCase !== "@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}" && String(device["name"]).toLowerCase().indexOf("Intel(R) RealSense(TM) 3D Camera Virtual Driver".toLowerCase()) === -1 && String(device["name"]).toLowerCase().indexOf("Intel(R) RealSense(TM) Camera SR300 Virtual Driver".toLowerCase()) === -1 && dispUpperCase.indexOf("@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#") === -1 && dispUpperCase.indexOf("@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#") === -1) {
                 devices.push(CameraDevice.parse(device));
@@ -4691,7 +2457,7 @@ var XJS = (function(exports) {
     static getGames() {
       return new Promise((resolve2) => {
         App$1.getAsList("gsenum").then((gamesJXON) => {
-          let games = [];
+          const games = [];
           if (gamesJXON !== void 0) {
             var gamesJXONLength = gamesJXON.length;
             for (var i = 0; i < gamesJXONLength; ++i) {
@@ -4719,9 +2485,9 @@ var XJS = (function(exports) {
     static getMicrophones() {
       return new Promise((resolve2) => {
         App$1.getAsList("dshowenum:asrc").then((micsJXON) => {
-          let mics = [];
+          const mics = [];
           if (micsJXON !== void 0) {
-            let micsJXONLength = micsJXON.length;
+            const micsJXONLength = micsJXON.length;
             for (var i = 0; i < micsJXONLength; ++i) {
               if (micsJXON[i]["WaveInId"] !== void 0) {
                 mics.push(MicrophoneDevice.parse(micsJXON[i]));
@@ -4748,26 +2514,32 @@ var XJS = (function(exports) {
      */
     static getAvailableScreens() {
       return new Promise((resolve2) => {
-        let screens = [];
+        const screens = [];
         const getParentWindows = Dll.call("xsplit.EnumParentWindows");
         getParentWindows.then((list) => {
-          let processArray = list.split(",");
-          return Promise.all(processArray.map((process) => {
-            return Promise.all([
-              Dll.call("xsplit.GetWindowTitle", process),
-              Dll.call("xsplit.GetWindowClassName", process),
-              Dll.call("xsplit.GetWindowProcessId", process),
-              Promise.resolve(process)
-            ]);
-          }));
+          const processArray = list.split(",");
+          return Promise.all(
+            processArray.map((process) => {
+              return Promise.all([
+                Dll.call("xsplit.GetWindowTitle", process),
+                Dll.call("xsplit.GetWindowClassName", process),
+                Dll.call("xsplit.GetWindowProcessId", process),
+                Promise.resolve(process)
+              ]);
+            })
+          );
         }).then((windowDetailsArr) => {
-          let devices2 = windowDetailsArr.filter((windowDetail) => windowDetail[0] !== "").filter((windowDetail) => windowDetail[0].toUpperCase().indexOf("XSPLIT BROADCASTER") !== 0).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("SHELL_TRAYWND") !== 0).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("BUTTON") !== 0).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("WINDOWS.UI.CORE.COREWINDOW") !== 0).map((windowDetail) => {
+          const devices2 = windowDetailsArr.filter((windowDetail) => windowDetail[0] !== "").filter(
+            (windowDetail) => windowDetail[0].toUpperCase().indexOf("XSPLIT BROADCASTER") !== 0
+          ).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("SHELL_TRAYWND") !== 0).filter((windowDetail) => windowDetail[1].toUpperCase().indexOf("BUTTON") !== 0).filter(
+            (windowDetail) => windowDetail[1].toUpperCase().indexOf("WINDOWS.UI.CORE.COREWINDOW") !== 0
+          ).map((windowDetail) => {
             Dll.call("xsplit.GetProcessDetailsKernel", windowDetail[2]).then((detail) => {
-              let dev = {
-                "title": windowDetail[0],
-                "class": windowDetail[1],
-                "processDetail": detail.toLocaleLowerCase(),
-                "hwnd": windowDetail[3]
+              const dev = {
+                title: windowDetail[0],
+                class: windowDetail[1],
+                processDetail: detail.toLocaleLowerCase(),
+                hwnd: windowDetail[3]
               };
               return screens.push(Screen.parse(dev));
             });
@@ -4873,6 +2645,850 @@ var XJS = (function(exports) {
       });
     }
   }
+  class SourceAudio {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    isSilenceDetectionEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isSilenceDetectionEnabled", true);
+          Item$1.get("prop:AudioGainEnable", this._id).then((val) => {
+            resolve2(val === "1");
+          });
+        } else {
+          Item$1.wrapGet("prop:AudioGainEnable", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(val === "1");
+          });
+        }
+      });
+    }
+    setSilenceDetectionEnabled(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setSilenceDetectionEnabled", true);
+          Item$1.set("prop:AudioGainEnable", value2 ? "1" : "0", this._id).then((res) => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet(
+            "prop:AudioGainEnable",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          ).then((res) => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getSilenceThreshold() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getSilenceThreshold", true);
+          Item$1.get("prop:AudioGain", this._id).then((val) => {
+            resolve2(Number(val));
+          });
+        } else {
+          Item$1.wrapGet("prop:AudioGain", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(Number(val));
+          });
+        }
+      });
+    }
+    setSilenceThreshold(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(Error("Only numbers are acceptable values for threshold"));
+        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 128) {
+          reject2(Error("Only integers in the range 0-128 are acceptable for threshold"));
+        } else {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setSilenceThreshold", true);
+            Item$1.set("prop:AudioGain", String(value2), this._id).then((res) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:AudioGain",
+              String(value2),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((res) => {
+              resolve2(this);
+            });
+          }
+        }
+      });
+    }
+    getSilencePeriod() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getSilencePeriod", true);
+          Item$1.get("prop:AudioGainLatency", this._id).then((val) => {
+            resolve2(Number(val));
+          });
+        } else {
+          Item$1.wrapGet("prop:AudioGainLatency", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(Number(val));
+          });
+        }
+      });
+    }
+    setSilencePeriod(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(Error("Only numbers are acceptable values for period"));
+        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 1e4) {
+          reject2(Error("Only integers in the range 0-10000 are acceptable for period"));
+        } else {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setSilencePeriod", true);
+            Item$1.set("prop:AudioGainLatency", String(value2), this._id).then((res) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:AudioGainLatency",
+              String(value2),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((res) => {
+              resolve2(this);
+            });
+          }
+        }
+      });
+    }
+    getAudioOffset() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getAudioOffset", true);
+          Item$1.get("prop:AudioDelay", this._id).then((val) => {
+            resolve2(Number(val));
+          });
+        } else {
+          Item$1.wrapGet("prop:AudioDelay", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(Number(val));
+          });
+        }
+      });
+    }
+    setAudioOffset(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(Error("Only numbers are acceptable values for period"));
+        } else if (value2 < 0) {
+          reject2(Error("Audio offset cannot be negative"));
+        } else {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setAudioOffset", true);
+            Item$1.set("prop:AudioDelay", String(value2), this._id).then((res) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:AudioDelay",
+              String(value2),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((res) => {
+              resolve2(this);
+            });
+          }
+        }
+      });
+    }
+    getValue() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getValue", true);
+          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:srcitem",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((filename) => {
+          resolve2(filename);
+        });
+      });
+    }
+    setValue(micDevice) {
+      return new Promise((resolve2, reject2) => {
+        let audioName;
+        let _getName;
+        if (micDevice instanceof MicrophoneDevice) {
+          _getName = new Promise((innerResolve) => {
+            const name = micDevice.getName();
+            micDevice = micDevice.getDisplayId();
+            innerResolve(name);
+          });
+        } else if (typeof micDevice === "string") {
+          _getName = new Promise((innerResolve) => {
+            System.getMicrophones().then((micDevices) => {
+              const camGiven = micDevices.filter((cam) => {
+                return cam.getDisplayId().toUpperCase() === micDevice.toUpperCase();
+              });
+              if (camGiven) {
+                innerResolve(camGiven[0].getName());
+              } else {
+                innerResolve("");
+              }
+            });
+          });
+        } else {
+          reject2(TypeError("Parameter should either be a MicrophoneDevice or string."));
+        }
+        _getName.then((name) => {
+          audioName = name;
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setValue", true);
+            return Item$1.set("prop:item", micDevice, this._id);
+          } else {
+            return Item$1.wrapSet(
+              "prop:srcitem",
+              micDevice,
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            );
+          }
+        }).then(() => {
+          return Item$1.set("prop:name", audioName, this._id);
+        }).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+  }
+  class EventManager {
+    static {
+      this.callbacks = {};
+    }
+    static {
+      this._remoteHandlers = {};
+    }
+    static {
+      this._proxyHandlers = {};
+    }
+    static {
+      this._appEventsList = [
+        "OnSceneAddByUser",
+        "OnSceneAdd",
+        "OnSceneDelete",
+        "OnSceneDeleteAll",
+        "scenedlg:1"
+      ];
+    }
+    static subscribe(event, _cb, id) {
+      return new Promise((resolve2) => {
+        event = event instanceof Array ? event : [event];
+        if (Remote.remoteType === "remote") {
+          const message = {
+            event,
+            id,
+            type: "event-manager"
+          };
+          event.forEach((_event) => {
+            if (EventManager._remoteHandlers[_event] === void 0) {
+              EventManager._remoteHandlers[_event] = [];
+            }
+            if (EventManager._appEventsList.indexOf(_event) > -1) {
+              exec("AppSubscribeEvents");
+            } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
+              const itemID = _event.split("_")[1];
+              exec("ItemSubscribeEvents", itemID);
+            }
+            EventManager._remoteHandlers[_event].push(_cb);
+          });
+          Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+        } else if (Remote.remoteType === "proxy") {
+          event.forEach((_event) => {
+            if (EventManager._proxyHandlers[_event] === void 0) {
+              EventManager._proxyHandlers[_event] = [];
+            }
+            if (EventManager._appEventsList.indexOf(_event) > -1) {
+              exec("AppSubscribeEvents");
+            } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
+              const itemID = _event.split("_")[1];
+              exec("ItemSubscribeEvents", itemID);
+            }
+            EventManager._proxyHandlers[_event].push(_cb);
+          });
+        } else {
+          if (event instanceof Array) {
+            event.forEach((_event) => {
+              if (EventManager.callbacks[_event] === void 0) {
+                EventManager.callbacks[_event] = [];
+              }
+              if (EventManager._appEventsList.indexOf(_event) > -1) {
+                exec("AppSubscribeEvents");
+              } else if (_event.startsWith("itempropchange_") || _event.startsWith("itemdestroyed_") || _event.startsWith("itempropchangeinscene_") || _event.startsWith("srcopened_") || _event.startsWith("srcclosed_") || _event.startsWith("srcassociatedprocessclosed_")) {
+                const itemID = _event.split("_")[1];
+                exec("ItemSubscribeEvents", itemID);
+              }
+              EventManager.callbacks[_event].push(_cb);
+            });
+          }
+          resolve2(EventManager);
+        }
+      });
+    }
+    static _setCallback(message) {
+      return new Promise((resolve2) => {
+        if (EventManager._proxyHandlers[message[0]] === void 0) {
+          EventManager._proxyHandlers[message[0]] = [];
+        }
+        resolve2(EventManager._proxyHandlers[message[0]].push(message[1]));
+      });
+    }
+    static _finalCallback(message) {
+      return new Promise((resolve2) => {
+        const result = JSON.parse(decodeURIComponent(message));
+        if (EventManager._remoteHandlers[result["event"]] !== void 0) {
+          result["result"]["id"] = result["id"];
+          for (const handler of EventManager._remoteHandlers[result["event"]]) {
+            handler.apply(EventManager, [result["result"]]);
+          }
+        }
+      });
+    }
+  }
+  window$1.OnMetersUpdate = (evt) => {
+  };
+  window$1.AppOnShowSettings = (evt) => {
+  };
+  const oldSetEvent = window$1.SetEvent;
+  window$1.SetEvent = (args) => {
+    let settings = [];
+    settings = args.split("&");
+    const settingsObj = {};
+    settings.map((el) => {
+      const _split = el.split("=");
+      settingsObj[_split[0]] = _split[1];
+    });
+    if (Remote.remoteType === "proxy") {
+      if (EventManager._proxyHandlers[settingsObj["event"]] === void 0) return;
+      EventManager._proxyHandlers[settingsObj["event"]].map((_cb) => {
+        _cb(settingsObj);
+      });
+    } else {
+      if (EventManager.callbacks[settingsObj["event"]] === void 0) return;
+      EventManager.callbacks[settingsObj["event"]].map((_cb) => {
+        _cb(settingsObj);
+      });
+    }
+    if (typeof oldSetEvent === "function") {
+      oldSetEvent(args);
+    }
+  };
+  const oldAppOnEvent = window$1.AppOnEvent;
+  window$1.AppOnEvent = (event, ...args) => {
+    if (Remote.remoteType === "proxy") {
+      if (EventManager._proxyHandlers[event] === void 0) return;
+      EventManager._proxyHandlers[event].map((_cb) => {
+        _cb({ event, args });
+      });
+    } else {
+      if (EventManager.callbacks[event] === void 0) return;
+      EventManager.callbacks[event].map((_cb) => {
+        _cb({ event, args });
+      });
+    }
+    if (typeof oldAppOnEvent === "function") {
+      oldAppOnEvent(event);
+    }
+  };
+  const oldOnEvent = window$1.OnEvent;
+  window$1.OnEvent = (event, item, ...eventArgs) => {
+    if (event === "itemremovedfromscene" && versionCompare(getVersion()).is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
+      event = "itemdestroyed";
+    }
+    if (Remote.remoteType === "proxy") {
+      if (EventManager._proxyHandlers[event + "_" + item] === void 0) return;
+      EventManager._proxyHandlers[event + "_" + item].map((_cb) => {
+        _cb(...eventArgs);
+      });
+    } else {
+      if (EventManager.callbacks[event + "_" + item] === void 0) return;
+      EventManager.callbacks[event + "_" + item].map((_cb) => {
+        _cb(...eventArgs);
+      });
+    }
+    if (typeof oldOnEvent === "function") {
+      oldOnEvent(event);
+    }
+  };
+  var ItemTypes = /* @__PURE__ */ ((ItemTypes2) => {
+    ItemTypes2[ItemTypes2["UNDEFINED"] = 0] = "UNDEFINED";
+    ItemTypes2[ItemTypes2["FILE"] = 1] = "FILE";
+    ItemTypes2[ItemTypes2["LIVE"] = 2] = "LIVE";
+    ItemTypes2[ItemTypes2["TEXT"] = 3] = "TEXT";
+    ItemTypes2[ItemTypes2["BITMAP"] = 4] = "BITMAP";
+    ItemTypes2[ItemTypes2["SCREEN"] = 5] = "SCREEN";
+    ItemTypes2[ItemTypes2["FLASHFILE"] = 6] = "FLASHFILE";
+    ItemTypes2[ItemTypes2["GAMESOURCE"] = 7] = "GAMESOURCE";
+    ItemTypes2[ItemTypes2["HTML"] = 8] = "HTML";
+    ItemTypes2[ItemTypes2["THREEDS"] = 9] = "THREEDS";
+    ItemTypes2[ItemTypes2["PPTFILE"] = 10] = "PPTFILE";
+    ItemTypes2[ItemTypes2["SCENE"] = 11] = "SCENE";
+    ItemTypes2[ItemTypes2["GROUP"] = 12] = "GROUP";
+    ItemTypes2[ItemTypes2["REPLAY"] = 13] = "REPLAY";
+    ItemTypes2[ItemTypes2["VIEW"] = 14] = "VIEW";
+    return ItemTypes2;
+  })(ItemTypes || {});
+  class iSource {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    setName(value2) {
+      return new Promise((resolve2) => {
+        this._name = value2;
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          Item$1.set("prop:name", this._name, this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setName", true);
+            Item$1.set("prop:name", this._name, this._id).then(() => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet("prop:name", this._name, this._srcId, this._id, this._updateId.bind(this)).then(() => {
+              resolve2(this);
+            });
+          }
+        }
+      });
+    }
+    getName() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getName", true);
+          this._checkPromise = Item$1.get("prop:name", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:name",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          this._name = String(val);
+          resolve2(val);
+        });
+      });
+    }
+    setCustomName(value2) {
+      return new Promise((resolve2) => {
+        this._cname = value2;
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setCustomName", true);
+          Item$1.set("prop:cname", this._cname, this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet("prop:cname", this._cname, this._srcId, this._id, this._updateId.bind(this)).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getCustomName() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getCustomName", true);
+          Item$1.get("prop:cname", this._id).then((val) => {
+            resolve2(val);
+          });
+        } else {
+          Item$1.wrapGet("prop:cname", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(val);
+          });
+        }
+      });
+    }
+    getValue() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getValue", true);
+          this._checkPromise = Item$1.get("prop:item", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:item",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          val = val === "null" ? "" : val;
+          if (val === "") {
+            this._value = "";
+            resolve2(val);
+          } else {
+            try {
+              this._value = XML.parseJSON(JSON$1.parse(val));
+              resolve2(this._value);
+            } catch (e) {
+              this._value = val;
+              resolve2(val);
+            }
+          }
+        });
+      });
+    }
+    setValue(value2) {
+      return new Promise((resolve2, reject2) => {
+        var val = typeof value2 === "string" ? value2 : value2.toString();
+        if (typeof value2 !== "string") {
+          this._value = JSON$1.parse(val);
+        } else {
+          this._value = val;
+        }
+        const typeCheck = this.getValue().then((origVal) => {
+          return new Promise((typeRes, typeRej) => {
+            if (String(origVal).toUpperCase().indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") !== -1 && val.toUpperCase().indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") === -1 && this._type === 2) {
+              typeRej(Error("Value is not a valid Audio source"));
+            } else {
+              typeRes(true);
+            }
+          });
+        });
+        typeCheck.then(() => {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setValue", true);
+            Item$1.set("prop:item", val, this._id).then(() => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet("prop:srcitem", val, this._srcId, this._id, this._updateId.bind(this)).then(() => {
+              resolve2(this);
+            });
+          }
+        });
+      });
+    }
+    getKeepLoaded() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getKeepLoaded", true);
+          this._checkPromise = Item$1.get("prop:keeploaded", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:keeploaded",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          this._keepLoaded = val === "1";
+          resolve2(this._keepLoaded);
+        });
+      });
+    }
+    setKeepLoaded(value2) {
+      return new Promise((resolve2) => {
+        this._keepLoaded = value2;
+        this._globalsrc = value2;
+        if (versionCompare(getVersion()).is.lessThan(globalsrcMinVersion)) {
+          Item$1.set("prop:globalsrc", this._globalsrc ? "1" : "0", this._id);
+        }
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setKeepLoaded", true);
+          Item$1.set("prop:keeploaded", this._keepLoaded ? "1" : "0", this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet(
+            "prop:keeploaded",
+            this._keepLoaded ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          ).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getId() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          resolve2(this._id);
+        } else {
+          if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+            reject2(Error("Only available on versions above " + minVersion));
+          } else {
+            Item$1.wrapGet("prop:srcid", this._srcId, this._id, this._updateId.bind(this)).then((srcid) => {
+              resolve2(srcid);
+            });
+          }
+        }
+      });
+    }
+    refresh() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Item$1.set("refresh", "", this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet("refresh", "", this._srcId, this._id, this._updateId.bind(this)).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getItemList() {
+      return new Promise((resolve2, reject2) => {
+        if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          Scene.searchItemsById(this._id).then((item) => {
+            const itemArray = [];
+            itemArray.push(item);
+            resolve2(itemArray);
+          });
+        } else {
+          if (this._isItemCall) {
+            this._checkPromise = Item$1.get("itemlist", this._id);
+          } else {
+            this._checkPromise = Item$1.wrapGet(
+              "itemlist",
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            );
+          }
+          this._checkPromise.then((itemlist) => {
+            const promiseArray = [];
+            const itemsArray = String(itemlist).split(",");
+            itemsArray.forEach((itemId) => {
+              promiseArray.push(
+                new Promise((itemResolve) => {
+                  Scene.searchItemsById(itemId).then((item) => {
+                    itemResolve(item);
+                  }).catch(() => itemResolve(null));
+                })
+              );
+            });
+            Promise.all(promiseArray).then((results) => {
+              resolve2(results.filter((res) => res !== null));
+            });
+          });
+        }
+      });
+    }
+    getType() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          this._checkPromise = Item$1.get("prop:type", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:type",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          this._type = ItemTypes[ItemTypes[Number(val)]];
+          resolve2(this._type);
+        });
+      });
+    }
+  }
+  class Source {
+    constructor(props) {
+      props = props ? props : {};
+      this._name = props["name"];
+      this._cname = props["cname"];
+      this._id = props["id"];
+      this._srcId = props["srcid"];
+      this._sceneId = props["sceneId"];
+      this._value = props["value"];
+      this._keepLoaded = props["keeploaded"];
+      this._type = Number(props["type"]);
+      this._xmlparams = props;
+      this._isItemCall = false;
+    }
+    /**
+     * return: Promise<Source>
+     *
+     * Get the current source (when function is called by sources), or the source
+     * that was right-clicked to open the source properties window (when function is called
+     * from the source properties window)
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * xjs.Source.getCurrentSource().then(function(source) {
+     *   // This will fetch the current source (the plugin)
+     * }).catch(function(err) {
+     *   // Handle the error here. Errors would only occur
+     *   // if we try to execute this method on Extension plugins
+     * });
+     * ```
+     */
+    static getCurrentSource() {
+      return new Promise((resolve2, reject2) => {
+        if (Environment.isExtension()) {
+          reject2(Error("Extensions do not have sources associated with them."));
+        } else if ((Environment.isSourcePlugin() || Environment.isSourceProps()) && versionCompare(getVersion()).is.greaterThan(minVersion)) {
+          Item$1.get("itemlist").then((itemlist) => {
+            const itemId = itemlist.split(",")[0];
+            Scene.searchItemsById(itemId).then((item) => {
+              return item.getSource();
+            }).then((source) => {
+              resolve2(source);
+            }).catch(() => resolve2(null));
+          });
+        } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
+          Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
+            return item.getSource();
+          }).then((source) => {
+            resolve2(source);
+          });
+        }
+      });
+    }
+    /**
+     * return: Promise<Item[]>
+     *
+     * Get the item List of the current Source.
+     * The item list is a list of items linked to a single Source.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * xjs.Source.getItemList()
+     * .then(function(items) {
+     *   // This will fetch the item list of the current Source
+     *   for (var i = 0 ; i < items.length ; i++) {
+     *     // Manipulate each item here
+     *   }
+     * });
+     * ```
+     *
+     * This is just the shorter way of getting items that are linked to a single
+     * source. See the long version below:
+     * ```javascript
+     * xjs.Source.getCurrentSource()
+     * .then(source.getItemList)
+     * .then(function(items) {
+     * // Manipulate the items here
+     * })
+     * ```
+     */
+    static getItemList() {
+      return new Promise((resolve2, reject2) => {
+        if (Environment.isExtension()) {
+          reject2(Error("Extensions do not have default items associated with them."));
+        } else if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+          Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
+            const itemArray = [];
+            itemArray.push(item);
+            resolve2(itemArray);
+          });
+        } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
+          Item$1.get("itemlist").then((itemlist) => {
+            const promiseArray = [];
+            const itemsArray = itemlist.split(",");
+            itemsArray.forEach((itemId) => {
+              promiseArray.push(
+                new Promise((itemResolve) => {
+                  Scene.searchItemsById(itemId).then((item) => {
+                    itemResolve(item);
+                  }).catch(() => itemResolve(null));
+                })
+              );
+            });
+            Promise.all(promiseArray).then((results) => {
+              resolve2(results.filter((res) => res !== null));
+            });
+          });
+        }
+      });
+    }
+    /**
+     * return: Promise<Source[]>
+     *
+     * Get all unique Source from every scene.
+     * Total number of Sources returned may be less than total number of items on
+     * all the scenes due to `Linked` items only having a single Source.
+     *
+     * #### Usage
+     * ```javascript
+     * xjs.Source.getAllSources().then(function(sources) {
+     *   for(var i = 0 ; i < sources.length ; i++) {
+     *      if(sources[i] instanceof xjs.HtmlSource) {
+     *        // Manipulate HTML Source here
+     *      }
+     *    }
+     * })
+     * ```
+     */
+    static getAllSources() {
+      return new Promise((resolve2, reject2) => {
+        let allJson = [];
+        let allSrc = [];
+        const uniqueObj = {};
+        const uniqueSrc = [];
+        const promiseArray = [];
+        App$1.getAsItemList("sceneconfig").then((jsonArr) => {
+          allJson = jsonArr;
+          const sourcePromise = (srcid) => new Promise((sourceResolve) => {
+            Scene.searchSourcesById(srcid).then((result) => {
+              allSrc = allSrc.concat(result);
+              sourceResolve(result);
+            }).catch((err) => {
+              sourceResolve(null);
+            });
+          });
+          for (var i = 0; i < allJson.length; i++) {
+            if (typeof allJson[i] !== "undefined") {
+              promiseArray.push(sourcePromise(allJson[i]["srcid"]));
+            }
+          }
+          Promise.all(promiseArray).then((results) => {
+            for (var h = 0; h < allSrc.length; h++) {
+              if (allSrc[h] !== null) {
+                for (var key in allSrc[h]) {
+                  if (key === "_srcId") {
+                    uniqueObj[allSrc[h][key]] = allSrc[h];
+                  }
+                }
+              }
+            }
+            for (var j in uniqueObj) {
+              if (Object.prototype.hasOwnProperty.call(uniqueObj, j)) {
+                uniqueSrc.push(uniqueObj[j]);
+              }
+            }
+            resolve2(uniqueSrc);
+          });
+        }).catch((err) => {
+          reject2(err);
+        });
+      });
+    }
+  }
+  applyMixins(Source, [iSource]);
+  class AudioSource extends Source {
+  }
+  applyMixins(AudioSource, [Audio, SourceAudio]);
   const _delayExclusionObject = {
     roxio: "vid_1b80&pid_e0(01|11|12)",
     hauppauge1: "vid_2040&pid_49(0[0-3]|8[0-3])",
@@ -4956,19 +3572,11 @@ var XJS = (function(exports) {
           if (value2 >= 0) {
             return Item$1.set("prop:StreamDelay", String(delay * 1e4), this._id);
           } else {
-            return Item$1.set(
-              "prop:StreamDelay",
-              String((delay + value2 * -1) * 1e4),
-              this._id
-            );
+            return Item$1.set("prop:StreamDelay", String((delay + value2 * -1) * 1e4), this._id);
           }
         }).then((val) => {
           if (value2 >= 0) {
-            return Item$1.set(
-              "prop:AudioDelay",
-              String((delay + value2) * 1e4),
-              this._id
-            );
+            return Item$1.set("prop:AudioDelay", String((delay + value2) * 1e4), this._id);
           } else {
             return Item$1.set("prop:AudioDelay", String(delay * 1e4), this._id);
           }
@@ -5054,11 +3662,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setStreamPaused", true);
-          this._checkPromise = Item$1.set(
-            "prop:StreamPause",
-            value2 ? "1" : "0",
-            this._id
-          );
+          this._checkPromise = Item$1.set("prop:StreamPause", value2 ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:StreamPause",
@@ -5128,12 +3732,7 @@ var XJS = (function(exports) {
           Logger.warn("sourceWarning", "getDelay", true);
           this._checkPromise = Item$1.get("prop:StreamDelay", this._id);
         } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:StreamDelay",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then((val) => {
+          this._checkPromise = Item$1.wrapGet("prop:StreamDelay", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
             streamDelay = Number(val);
             return Item$1.get("prop:AudioDelay", this._id);
           });
@@ -5165,10 +3764,7 @@ var XJS = (function(exports) {
           }
         }).then((val) => {
           for (var key in _delayExclusionObject) {
-            var regex = new RegExp(
-              _delayExclusionObject[key].toLowerCase(),
-              "g"
-            );
+            var regex = new RegExp(_delayExclusionObject[key].toLowerCase(), "g");
             if (typeof val === "string" && val.toLowerCase().match(regex) != null) {
               reject2(Error("Cannot set delay to specific device"));
               break;
@@ -5182,7 +3778,13 @@ var XJS = (function(exports) {
             if (this._isItemCall) {
               return Item$1.set("prop:StreamDelay", String(value2 * 1e4), this._id);
             } else {
-              return Item$1.wrapSet("prop:StreamDelay", String(value2 * 1e4), this._srcId, this._id, this._updateId.bind(this));
+              return Item$1.wrapSet(
+                "prop:StreamDelay",
+                String(value2 * 1e4),
+                this._srcId,
+                this._id,
+                this._updateId.bind(this)
+              );
             }
           } else {
             isPositive = false;
@@ -5194,11 +3796,7 @@ var XJS = (function(exports) {
           }
         }).then((val) => {
           if (isPositive) {
-            return Item$1.set(
-              "prop:AudioDelay",
-              String((value2 + audioOffset) * 1e4),
-              this._id
-            );
+            return Item$1.set("prop:AudioDelay", String((value2 + audioOffset) * 1e4), this._id);
           } else {
             return Item$1.set("prop:AudioDelay", String(value2 * 1e4), this._id);
           }
@@ -5310,181 +3908,101 @@ var XJS = (function(exports) {
   class CameraSource extends Source {
   }
   applyMixins(CameraSource, [Audio, SourceCamera]);
-  class SourceAudio {
+  class SourceFlash {
     _updateId(id, sceneId) {
       this._id = id;
       this._sceneId = sceneId;
     }
-    isSilenceDetectionEnabled() {
+    getCustomResolution() {
       return new Promise((resolve2) => {
+        let customSize;
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isSilenceDetectionEnabled", true);
-          Item$1.get("prop:AudioGainEnable", this._id).then((val) => {
-            resolve2(val === "1");
-          });
+          Logger.warn("sourceWarning", "getCustomResolution", true);
+          this._checkPromise = Item$1.get("prop:BrowserSize", this._id);
         } else {
-          Item$1.wrapGet(
-            "prop:AudioGainEnable",
+          this._checkPromise = Item$1.wrapGet(
+            "prop:BrowserSize",
             this._srcId,
             this._id,
             this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(val === "1");
-          });
+          );
         }
+        this._checkPromise.then((val) => {
+          if (val !== "") {
+            var [width, height] = decodeURIComponent(val).split(",");
+            customSize = Rectangle.fromDimensions(Number(width), Number(height));
+          } else {
+            customSize = Rectangle.fromDimensions(0, 0);
+          }
+          resolve2(customSize);
+        });
       });
     }
-    setSilenceDetectionEnabled(value2) {
-      return new Promise((resolve2, reject2) => {
+    setCustomResolution(value2) {
+      return new Promise((resolve2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setSilenceDetectionEnabled", true);
-          Item$1.set("prop:AudioGainEnable", value2 ? "1" : "0", this._id).then((res) => {
+          Logger.warn("sourceWarning", "setCustomResolution", true);
+          Item$1.set("prop:BrowserSize", value2.toDimensionString(), this._id).then(() => {
             resolve2(this);
           });
         } else {
           Item$1.wrapSet(
-            "prop:AudioGainEnable",
-            value2 ? "1" : "0",
+            "prop:BrowserSize",
+            value2.toDimensionString(),
             this._srcId,
             this._id,
             this._updateId.bind(this)
-          ).then((res) => {
+          ).then(() => {
             resolve2(this);
           });
         }
       });
     }
-    getSilenceThreshold() {
+    getAllowRightClick() {
       return new Promise((resolve2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getSilenceThreshold", true);
-          Item$1.get("prop:AudioGain", this._id).then((val) => {
-            resolve2(Number(val));
+          Logger.warn("sourceWarning", "getAllowRightClick", true);
+          Item$1.get("prop:BrowserRightClick", this._id).then((val) => {
+            resolve2(val === "1");
           });
         } else {
-          Item$1.wrapGet("prop:AudioGain", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(Number(val));
+          Item$1.wrapGet("prop:BrowserRightClick", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(val === "1");
           });
         }
       });
     }
-    setSilenceThreshold(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for threshold"));
-        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 128) {
-          reject2(
-            Error("Only integers in the range 0-128 are acceptable for threshold")
-          );
-        } else {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setSilenceThreshold", true);
-            Item$1.set("prop:AudioGain", String(value2), this._id).then((res) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:AudioGain",
-              String(value2),
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((res) => {
-              resolve2(this);
-            });
-          }
-        }
-      });
-    }
-    getSilencePeriod() {
+    setAllowRightClick(value2) {
       return new Promise((resolve2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getSilencePeriod", true);
-          Item$1.get("prop:AudioGainLatency", this._id).then((val) => {
-            resolve2(Number(val));
+          Logger.warn("sourceWarning", "setAllowRightClick", true);
+          Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id).then(() => {
+            resolve2(this);
           });
         } else {
-          Item$1.wrapGet(
-            "prop:AudioGainLatency",
+          Item$1.wrapSet(
+            "prop:BrowserRightClick",
+            value2 ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(Number(val));
+          ).then(() => {
+            resolve2(this);
           });
         }
       });
     }
-    setSilencePeriod(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for period"));
-        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 1e4) {
-          reject2(
-            Error("Only integers in the range 0-10000 are acceptable for period")
-          );
-        } else {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setSilencePeriod", true);
-            Item$1.set("prop:AudioGainLatency", String(value2), this._id).then((res) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:AudioGainLatency",
-              String(value2),
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((res) => {
-              resolve2(this);
-            });
-          }
-        }
-      });
-    }
-    getAudioOffset() {
+    isSourceAvailable() {
       return new Promise((resolve2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getAudioOffset", true);
-          Item$1.get("prop:AudioDelay", this._id).then((val) => {
-            resolve2(Number(val));
+          Logger.warn("sourceWarning", "isSourceAvailable", true);
+          Item$1.get("prop:itemavail", this._id).then((val) => {
+            resolve2(val === "1");
           });
         } else {
-          Item$1.wrapGet(
-            "prop:AudioDelay",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(Number(val));
+          Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(val === "1");
           });
-        }
-      });
-    }
-    setAudioOffset(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for period"));
-        } else if (value2 < 0) {
-          reject2(Error("Audio offset cannot be negative"));
-        } else {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setAudioOffset", true);
-            Item$1.set("prop:AudioDelay", String(value2), this._id).then((res) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:AudioDelay",
-              String(value2),
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((res) => {
-              resolve2(this);
-            });
-          }
         }
       });
     }
@@ -5506,57 +4024,1034 @@ var XJS = (function(exports) {
         });
       });
     }
-    setValue(micDevice) {
-      return new Promise((resolve2, reject2) => {
-        let audioName;
-        let _getName;
-        if (micDevice instanceof MicrophoneDevice) {
-          _getName = new Promise((innerResolve) => {
-            const name = micDevice.getName();
-            micDevice = micDevice.getDisplayId();
-            innerResolve(name);
-          });
-        } else if (typeof micDevice === "string") {
-          _getName = new Promise((innerResolve) => {
-            System.getMicrophones().then((micDevices) => {
-              const camGiven = micDevices.filter((cam) => {
-                return cam.getDisplayId().toUpperCase() === micDevice.toUpperCase();
-              });
-              if (camGiven) {
-                innerResolve(camGiven[0].getName());
-              } else {
-                innerResolve("");
-              }
-            });
-          });
+    setValue(filename) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setValue", true);
+          this._checkPromise = Item$1.set("prop:item", filename, this._id);
         } else {
-          reject2(TypeError("Parameter should either be a MicrophoneDevice or string."));
+          this._checkPromise = Item$1.wrapSet(
+            "prop:srcitem",
+            filename,
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
         }
-        _getName.then((name) => {
-          audioName = name;
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setValue", true);
-            return Item$1.set("prop:item", micDevice, this._id);
-          } else {
-            return Item$1.wrapSet(
-              "prop:srcitem",
-              micDevice,
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            );
-          }
-        }).then(() => {
-          return Item$1.set("prop:name", audioName, this._id);
+        this._checkPromise.then(() => {
+          return Item$1.set("prop:name", filename, this._id);
         }).then(() => {
           resolve2(this);
         });
       });
     }
   }
-  class AudioSource extends Source {
+  class FlashSource extends Source {
   }
-  applyMixins(AudioSource, [Audio, SourceAudio]);
+  applyMixins(FlashSource, [Audio, SourceFlash]);
+  const MIN_FPS = 24;
+  const MAX_FPS = 300;
+  class iSourceGame {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    isSpecialOptimizationEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isSpecialOptimizationEnabled", true);
+          Item$1.get("GameCapSurfSharing", this._id).then((res) => {
+            resolve2(res === "1");
+          });
+        } else {
+          Item$1.wrapGet("GameCapSurfSharing", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
+            resolve2(res === "1");
+          });
+        }
+      });
+    }
+    setSpecialOptimizationEnabled(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setSpecialOptimizationEnabled", true);
+          Item$1.set("GameCapSurfSharing", value2 ? "1" : "0", this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet(
+            "GameCapSurfSharing",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          ).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    isShowMouseEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isShowMouseEnabled", true);
+          Item$1.get("GameCapShowMouse", this._id).then((res) => {
+            resolve2(res === "1");
+          });
+        } else {
+          Item$1.wrapGet("GameCapShowMouse", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
+            resolve2(res === "1");
+          });
+        }
+      });
+    }
+    setShowMouseEnabled(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setShowMouseEnabled", true);
+          Item$1.set("GameCapShowMouse", value2 ? "1" : "0", this._id).then(() => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet(
+            "GameCapShowMouse",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          ).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    setOfflineImage(path) {
+      if (this._isItemCall) {
+        Logger.warn("sourceWarning", "setOfflineImage", true);
+      }
+      return new Promise((resolve2, reject2) => {
+        if (this._type !== ItemTypes.GAMESOURCE) {
+          reject2(Error("Current item should be a game item"));
+        } else if (Environment.isSourcePlugin()) {
+          reject2(Error("Source plugins cannot update offline images of other items"));
+        } else if (!(this._value instanceof XML)) {
+          this.getValue().then(() => {
+            this.setOfflineImage(path).then((itemObj) => {
+              resolve2(itemObj);
+            });
+          });
+        } else {
+          var regExp = new RegExp(
+            '^(([A-Z|a-z]:\\\\[^*|"<>?\n]*)|(\\\\\\\\.*?\\\\.*)|([A-Za-z]+\\\\[^*|"<>?\\n]*)).(png|gif|jpg|jpeg|tif)$'
+          );
+          if (regExp.test(path.toLowerCase()) || path === "") {
+            var valueObj = JSON$1.parse(this._value.toString());
+            valueObj["replace"] = path;
+            this.setValue(XML.parseJSON(valueObj)).then(() => {
+              resolve2(this);
+            });
+          } else {
+            reject2(Error("Invalid file path or type is provided."));
+          }
+        }
+      });
+    }
+    getOfflineImage() {
+      if (this._isItemCall) {
+        Logger.warn("sourceWarning", "getOfflineImage", true);
+      }
+      return new Promise((resolve2, reject2) => {
+        if (this._type !== ItemTypes.GAMESOURCE) {
+          reject2(Error("Current item should be a game item"));
+        } else {
+          this.getValue().then((value2) => {
+            var valueObj = JSON$1.parse(this._value.toString());
+            resolve2(valueObj["replace"] ? valueObj["replace"] : "");
+          });
+        }
+      });
+    }
+    isTransparent() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isTransparent", true);
+          this._checkPromise = Item$1.get("prop:GameCapAlpha", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:GameCapAlpha",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((res) => {
+          resolve2(res === "1");
+        });
+      });
+    }
+    setTransparent(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setTransparent", true);
+          this._checkPromise = Item$1.set("prop:GameCapAlpha", value2 ? "1" : "0", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:GameCapAlpha",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    getGameFPSCap() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getGameFPSCap", true);
+          this._checkPromise = Item$1.get("prop:GameCapFrameTimeLimit", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:GameCapFrameTimeLimit",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((res) => {
+          if (res === "0" || res === "" || res === 0) {
+            resolve2(0);
+          } else {
+            let fps = Math.floor(1e7 / Number(res));
+            fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
+            resolve2(fps);
+          }
+        });
+      });
+    }
+    setGameFPSCap(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 !== 0 && (Number(value2) < MIN_FPS || Number(value2) > MAX_FPS)) {
+          reject2(
+            RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS}.`)
+          );
+        } else {
+          const frametime = value2 > 0 ? Math.floor(1e7 / Number(value2)) : 0;
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setGameFPSCap", true);
+            Item$1.set("prop:GameCapFrameTimeLimit", String(frametime), this._id).then(() => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:GameCapFrameTimeLimit",
+              String(frametime),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then(() => {
+              resolve2(this);
+            });
+          }
+        }
+      });
+    }
+  }
+  class GameSource extends Source {
+  }
+  applyMixins(GameSource, [iSourceGame]);
+  const LoadStatus = {
+    loaded: "LOADED",
+    not_loaded: "NOT LOADED",
+    load_error: "LOAD ERROR",
+    unknown: "UNKNOWN"
+  };
+  const toStableNumber = (value2) => Number(value2.toFixed(12));
+  class iSourceHtml {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    /**
+     * param: (func: string, arg: string)
+     * ```
+     * return: Promise<ISourceHtml>
+     * ```
+     *
+     * Allow this item to call a pre-exposed function within the HTML Item
+     */
+    call(func, arg) {
+      return new Promise((resolve2) => {
+        let slot;
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "call", true);
+          this._checkPromise = Item$1.attach(this._id);
+        } else {
+          this._checkPromise = Item$1.attach(this._id);
+        }
+        this._checkPromise.then((res) => {
+          slot = res;
+          exec("CallInner" + (String(slot) === "0" ? "" : slot + 1), func, arg);
+          resolve2(this);
+        });
+      });
+    }
+    /**
+     * return: Promise<string>
+     *
+     * Gets the URL of this webpage item.
+     */
+    getURL() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getURL", true);
+          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:srcitem",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((url) => {
+          const _url = String(url).split("*");
+          url = _url[0];
+          resolve2(url);
+        });
+      });
+    }
+    /**
+     * param: (url: string)
+     * ```
+     * return: Promise<ISourceHtml>
+     * ```
+     *
+     * Sets the URL of this webpage item.
+     *
+     * *Chainable.*
+     */
+    setURL(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setURL", true);
+          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:srcitem",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((url) => {
+          const _url = String(url).split("*");
+          _url[0] = value2;
+          return Item$1.set(
+            this._isItemCall ? "prop:item" : "prop:srcitem",
+            _url.join("*"),
+            this._id
+          );
+        }).then((code) => {
+          if (code) {
+            return Item$1.set("prop:name", value2, this._id);
+          } else {
+            return Promise.resolve(code);
+          }
+        }).then((code) => {
+          if (code) {
+            resolve2(this);
+          } else {
+            reject2(Error("Invalid value"));
+          }
+        });
+      });
+    }
+    isBrowserTransparent() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isBrowserTransparent", true);
+          this._checkPromise = Item$1.get("prop:BrowserTransparent", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:BrowserTransparent",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((isTransparent) => {
+          resolve2(isTransparent === "1");
+        });
+      });
+    }
+    enableBrowserTransparency(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "enableBrowserTransparency", true);
+          this._checkPromise = Item$1.set("prop:BrowserTransparent", value2 ? "1" : "0", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:BrowserTransparent",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isBrowser60FPS() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isBrowser60FPS", true);
+          this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:Browser60fps",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((isBrowser60FPS) => {
+          resolve2(isBrowser60FPS === "1");
+        });
+      });
+    }
+    enableBrowser60FPS(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isBrowser60FPS", true);
+          this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:Browser60fps",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((isBrowser60FPS) => {
+          if (isBrowser60FPS === "1" !== value2) {
+            Item$1.set("prop:Browser60fps", value2 ? "1" : "0", this._id);
+          }
+          resolve2(this);
+        });
+      });
+    }
+    getBrowserCustomSize() {
+      return new Promise((resolve2) => {
+        let customSize;
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getBrowserCustomSize", true);
+          this._checkPromise = Item$1.get("prop:BrowserSize", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:BrowserSize",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          if (val !== "") {
+            var [width, height] = decodeURIComponent(val).split(",");
+            customSize = Rectangle.fromDimensions(
+              toStableNumber(Number(width) / window.devicePixelRatio),
+              toStableNumber(Number(height) / window.devicePixelRatio)
+            );
+          } else {
+            customSize = Rectangle.fromDimensions(0, 0);
+          }
+          resolve2(customSize);
+        });
+      });
+    }
+    setBrowserCustomSize(value2) {
+      return new Promise((resolve2) => {
+        const browserSize = Rectangle.fromDimensions(
+          value2.getWidth() * window.devicePixelRatio,
+          value2.getHeight() * window.devicePixelRatio
+        );
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setBrowserCustomSize", true);
+          this._checkPromise = Item$1.set(
+            "prop:BrowserSize",
+            browserSize.toDimensionString(),
+            this._id
+          );
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:BrowserSize",
+            browserSize.toDimensionString(),
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    getAllowRightClick() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getAllowRightClick", true);
+          this._checkPromise = Item$1.get("prop:BrowserRightClick", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:BrowserRightClick",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    setAllowRightClick(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setAllowRightClick", true);
+          this._checkPromise = Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:BrowserRightClick",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    getBrowserJS() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getBrowserJS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customJS = "";
+          try {
+            const customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+              customJS = customObject2["customJS"];
+            }
+          } catch (e) {
+          }
+          resolve2(customJS);
+        });
+      });
+    }
+    getPolicyStringFunction(customCSS) {
+      let retrievedPolicyStringFunction = "";
+      if (window.trustedTypes) {
+        retrievedPolicyStringFunction = `var retrievedPolicy = null;
+        if (window.trustedTypes) {                          
+          if (window.trustedTypes.defaultPolicy === null) {
+            retrievedPolicy = window.trustedTypes.createPolicy('default', {
+              createHTML: (input) => { return input; },
+              createScriptURL: (input) => { return input; },
+              createScript: (input) => { return input; }, 
+            });            
+          } else {
+            retrievedPolicy = window.trustedTypes.defaultPolicy;
+          }          
+        }  
+        
+        var h = document.querySelector('head');
+        var existing = document.querySelector('head #splitmedialabsCSSOverwrite');
+        if (existing != null) h.removeChild(existing);
+        var xjsCSSOverwrite = document.createElement("style");
+        xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";
+        xjsCSSOverwrite.type = "text/css";
+        xjsCSSOverwrite.innerHTML = "${customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "")}";
+        var xjsCSSOverwriteHTML = retrievedPolicy.createHTML(xjsCSSOverwrite.outerHTML);
+        
+        if (xjsCSSOverwriteHTML) {
+          const htmlString = xjsCSSOverwriteHTML.toString();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlString, 'text/html');
+          const styleElement = doc.querySelector('style');
+          if (styleElement) {            
+            h.appendChild(styleElement);
+          }
+        }        
+        `;
+      }
+      return retrievedPolicyStringFunction;
+    }
+    setBrowserJS(value2, refresh = false) {
+      return new Promise((resolve2, reject2) => {
+        let customObject2 = {};
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setBrowserJS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customCSS = "";
+          let scriptString = " ";
+          let scriptEnabled = true;
+          let cssEnabled = true;
+          try {
+            customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+              cssEnabled = customObject2["cssEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+              scriptEnabled = customObject2["scriptEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+              customCSS = customObject2["customCSS"];
+            }
+          } catch (e) {
+          }
+          customObject2["cssEnabled"] = cssEnabled.toString();
+          customObject2["scriptEnabled"] = scriptEnabled.toString();
+          customObject2["customCSS"] = customCSS;
+          customObject2["customJS"] = value2;
+          if (cssEnabled === true) {
+            let cssScript2 = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + "';h.appendChild(xjsCSSOverwrite);";
+            const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+            if (retrievedPolicyFunction) {
+              cssScript2 = retrievedPolicyFunction;
+            }
+            scriptString = scriptString + cssScript2;
+          }
+          if (value2 !== "" && scriptEnabled === true) {
+            scriptString = scriptString + value2;
+          }
+          return Item$1.set("prop:BrowserJs", scriptString, this._id);
+        }).then(() => {
+          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+        }).then(() => {
+          if (refresh) {
+            Item$1.set("refresh", "", this._id).then(() => {
+              resolve2(this);
+            });
+          } else {
+            resolve2(this);
+          }
+        });
+      });
+    }
+    isBrowserJSEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isBrowserJSEnabled", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let enabled = true;
+          try {
+            const customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+              enabled = customObject2["scriptEnabled"] === "true";
+            }
+          } catch (e) {
+          }
+          resolve2(enabled);
+        });
+      });
+    }
+    enableBrowserJS(value2) {
+      return new Promise((resolve2, reject2) => {
+        let customObject2 = {};
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "enableBrowserJS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customJS = "";
+          let customCSS = "";
+          let scriptString = " ";
+          let cssEnabled = true;
+          try {
+            customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+              cssEnabled = customObject2["cssEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+              customJS = customObject2["customJS"];
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+              customCSS = customObject2["customCSS"];
+            }
+          } catch (e) {
+          }
+          customObject2["cssEnabled"] = cssEnabled.toString();
+          customObject2["scriptEnabled"] = value2.toString();
+          customObject2["customJS"] = customJS;
+          customObject2["customCSS"] = customCSS;
+          if (cssEnabled === true) {
+            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";"h.appendChild(xjsCSSOverwrite);';
+            const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+            if (retrievedPolicyFunction) {
+              cssScript2 = retrievedPolicyFunction;
+            }
+            scriptString = scriptString + cssScript2;
+          }
+          if (customJS !== "" && value2 === true) {
+            scriptString = scriptString + customJS;
+          }
+          return Item$1.set("prop:BrowserJs", scriptString, this._id);
+        }).then(() => {
+          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+        }).then(() => {
+          if (!value2) {
+            Item$1.set("refresh", "", this._id).then(() => {
+              resolve2(this);
+            });
+          } else {
+            resolve2(this);
+          }
+        });
+      });
+    }
+    getCustomCSS() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getCustomCSS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customCSS = "";
+          try {
+            const customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customCSS")) {
+              customCSS = customObject2["customCSS"];
+            }
+          } catch (e) {
+          }
+          resolve2(customCSS);
+        });
+      });
+    }
+    setCustomCSS(value2) {
+      return new Promise((resolve2, reject2) => {
+        let customObject2 = {};
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setCustomCSS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customJS = "";
+          let scriptString = " ";
+          let scriptEnabled = true;
+          let cssEnabled = true;
+          try {
+            customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+              cssEnabled = customObject2["cssEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "scriptEnabled")) {
+              scriptEnabled = customObject2["scriptEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject2, "customJS")) {
+              customJS = customObject2["customJS"];
+            }
+          } catch (e) {
+          }
+          customObject2["cssEnabled"] = cssEnabled.toString();
+          customObject2["scriptEnabled"] = scriptEnabled.toString();
+          customObject2["customJS"] = customJS;
+          customObject2["customCSS"] = value2;
+          if (cssEnabled === true) {
+            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + value2.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
+            const retrievedPolicyFunction = this.getPolicyStringFunction(value2);
+            if (retrievedPolicyFunction) {
+              cssScript2 = retrievedPolicyFunction;
+            }
+            scriptString = scriptString + cssScript2;
+          }
+          if (customJS !== "" && scriptEnabled === true) {
+            scriptString = scriptString + customJS;
+          }
+          return Item$1.set("prop:BrowserJs", scriptString, this._id);
+        }).then(() => {
+          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+        }).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isCustomCSSEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isCustomCSSEnabled", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let enabled = true;
+          try {
+            const customObject2 = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject2, "cssEnabled")) {
+              enabled = customObject2["cssEnabled"] === "true";
+            }
+          } catch (e) {
+          }
+          resolve2(enabled);
+        });
+      });
+    }
+    enableCustomCSS(value) {
+      return new Promise((resolve, reject) => {
+        let customObject = {};
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "enableCustomCSS", true);
+          this._checkPromise = Item$1.get("prop:custom", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:custom",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((custom) => {
+          let customJS = "";
+          let customCSS = "";
+          let scriptString = " ";
+          let scriptEnabled = true;
+          try {
+            customObject = JSON.parse(custom);
+            if (Object.prototype.hasOwnProperty.call(customObject, "scriptEnabled")) {
+              scriptEnabled = customObject["scriptEnabled"] === "true";
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject, "customJS")) {
+              customJS = customObject["customJS"];
+            }
+            if (Object.prototype.hasOwnProperty.call(customObject, "customCSS")) {
+              customCSS = customObject["customCSS"];
+            }
+          } catch (e) {
+          }
+          customObject["scriptEnabled"] = scriptEnabled.toString();
+          customObject["cssEnabled"] = value.toString();
+          customObject["customJS"] = customJS;
+          customObject["customCSS"] = customCSS;
+          if (value === true) {
+            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
+            const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
+            if (retrievedPolicyFunction) {
+              cssScript2 = retrievedPolicyFunction;
+            }
+            scriptString = scriptString + cssScript2;
+          }
+          if (customJS !== "" && value === scriptEnabled) {
+            scriptString = scriptString + customJS;
+          }
+          return Item$1.set("prop:BrowserJs", scriptString, this._id);
+        }).then(() => {
+          return Item$1.set("prop:custom", JSON.stringify(customObject), this._id);
+        }).then(() => {
+          if (!value) {
+            const cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
+            if (Environment.isSourcePlugin()) {
+              eval(cssScript);
+            } else {
+              exec("CallInner", "eval", cssScript);
+            }
+            resolve(this);
+          } else {
+            resolve(this);
+          }
+        });
+      });
+    }
+    isBrowserOptimized() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isBrowserOptimized", true);
+          this._checkPromise = Item$1.get("prop:GameCapSurfSharingCurrent", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:GameCapSurfSharingCurrent",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    getBrowserLoadStatus() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getBrowserLoadStatus", true);
+          this._checkPromise = Item$1.get("BrowserLoadStatus", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "BrowserLoadStatus",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((loadStatus) => {
+          if (loadStatus === "null") {
+            resolve2("UNAVAILABLE");
+          } else {
+            resolve2(LoadStatus[loadStatus]);
+          }
+        });
+      });
+    }
+    isReloadOnShowEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
+          this._checkPromise = Item$1.get("prop:RefreshOnSrcShow", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:RefreshOnSrcShow",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    enableReloadOnShow(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "enableReloadOnShow", true);
+          this._checkPromise = Item$1.set("prop:RefreshOnSrcShow", value2 ? "1" : "0", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:RefreshOnSrcShow",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isReloadOnSceneEnterEnabled() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
+          this._checkPromise = Item$1.get("prop:RefreshOnScnLoad", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:RefreshOnScnLoad",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    enableReloadOnSceneEnter(value2) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "enableReloadOnShow", true);
+          this._checkPromise = Item$1.set("prop:RefreshOnScnLoad", value2 ? "1" : "0", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:RefreshOnScnLoad",
+            value2 ? "1" : "0",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isSourceAvailable() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isSourceAvailable", true);
+          Item$1.get("prop:itemavail", this._id).then((val) => {
+            resolve2(val === "1");
+          });
+        } else {
+          Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(val === "1");
+          });
+        }
+      });
+    }
+  }
   class SourceConfigurable {
     _updateId(id, sceneId) {
       this._id = id;
@@ -5575,16 +5070,14 @@ var XJS = (function(exports) {
             this._updateId.bind(this)
           );
         }
-        this._checkPromise.then(
-          (config) => {
-            let configObj = config === "null" ? {} : JSON.parse(config);
-            let persist = Global.getPersistentConfig();
-            for (var key in persist) {
-              delete configObj[key];
-            }
-            resolve2(configObj);
+        this._checkPromise.then((config) => {
+          const configObj = config === "null" ? {} : JSON.parse(config);
+          const persist = Global.getPersistentConfig();
+          for (var key in persist) {
+            delete configObj[key];
           }
-        );
+          resolve2(configObj);
+        });
       });
     }
     saveConfig(configObj) {
@@ -5606,27 +5099,29 @@ var XJS = (function(exports) {
             }
             if (savingAllowed) {
               if ({}.toString.call(configObj) === "[object Object]") {
-                let persist = Global.getPersistentConfig();
+                const persist = Global.getPersistentConfig();
                 for (var key in persist) {
                   configObj[key] = persist[key];
                 }
-                exec(
-                  "SetBrowserProperty",
-                  "Configuration",
-                  JSON.stringify(configObj)
-                );
+                exec("SetBrowserProperty", "Configuration", JSON.stringify(configObj));
                 resolve2(this);
               } else {
                 reject2(Error("Configuration object should be in JSON format."));
               }
             } else {
-              reject2(Error("Sources may only request other Sources to save a configuration. Consider calling requestSaveConfig() on this Source instance instead."));
+              reject2(
+                Error(
+                  "Sources may only request other Sources to save a configuration. Consider calling requestSaveConfig() on this Source instance instead."
+                )
+              );
             }
           });
         } else {
-          reject2(Error(
-            "Extensions and source properties windows are not allowed to directly save configuration objects. Call requestSaveConfig() instead."
-          ));
+          reject2(
+            Error(
+              "Extensions and source properties windows are not allowed to directly save configuration objects. Call requestSaveConfig() instead."
+            )
+          );
         }
       });
     }
@@ -5642,8 +5137,8 @@ var XJS = (function(exports) {
             "CallInner" + (slot === 0 ? "" : slot + 1),
             "MessageSource",
             JSON.stringify({
-              "request": "saveConfig",
-              "data": configObj
+              request: "saveConfig",
+              data: configObj
             })
           );
           resolve2(this);
@@ -5662,8 +5157,8 @@ var XJS = (function(exports) {
             "CallInner" + (slot === 0 ? "" : slot + 1),
             "MessageSource",
             JSON.stringify({
-              "request": "applyConfig",
-              "data": configObj
+              request: "applyConfig",
+              data: configObj
             })
           );
           resolve2(this);
@@ -5671,135 +5166,13 @@ var XJS = (function(exports) {
       });
     }
   }
-  class SourceVideoPlaylist {
+  class HtmlSource extends Source {
+  }
+  applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, Audio]);
+  class SourceImage {
     _updateId(id, sceneId) {
       this._id = id;
       this._sceneId = sceneId;
-    }
-    getVideoNowPlaying() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getVideoNowPlaying", true);
-          this._checkPromise = Item$1.get("prop:srcitem", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:srcitem",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((playlist) => {
-          let _playlist = String(playlist).slice(0, playlist.indexOf("*"));
-          resolve2(_playlist);
-        });
-      });
-    }
-    setVideoNowPlaying(value2) {
-      let file;
-      let _playlist;
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setVideoNowPlaying", true);
-          this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:FilePlaylist",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((playlist) => {
-          _playlist = String(playlist).split("|");
-          for (var i = 0; i < _playlist.length; i++) {
-            _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf("*"));
-          }
-          return _playlist;
-        }).then((list) => {
-          if (typeof value2 === "string") {
-            if (_playlist.indexOf(value2) === -1) {
-              reject2(Error("File not found on Playlist."));
-            } else {
-              let index = _playlist.indexOf(value2);
-              file = _playlist[index] + "*" + index;
-              Item$1.set("prop:srcitem", file, this._id).then((fileplaylist) => {
-                resolve2(this);
-              });
-            }
-          } else if (typeof value2 === "number" && value2 <= _playlist.length) {
-            file = _playlist[value2] + "*" + value2;
-            Item$1.set("prop:srcitem", file, this._id).then(function(fileplaylist) {
-              resolve2(this);
-            });
-          } else {
-            reject2(Error("Invalid parameter. Value can only be either filename string or its index equivalent in the VideoPlaylist files array"));
-          }
-        });
-      });
-    }
-    getVideoPlaylistSources() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getVideoPlaylistSources", true);
-          this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:FilePlaylist",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((playlist) => {
-          let _playlist = String(playlist).split("|");
-          for (var i = 0; i < _playlist.length; i++) {
-            _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf("*"));
-          }
-          resolve2(_playlist);
-        });
-      });
-    }
-    setVideoPlaylistSources(fileItems) {
-      if (this._isItemCall) {
-        Logger.warn("sourceWarning", "setVideoPlaylistSources", true);
-      }
-      let fileString;
-      let filePromises = fileItems.map((filename) => {
-        return IO.getVideoDuration(filename);
-      });
-      return new Promise((resolve2, reject2) => {
-        Promise.all(filePromises).then((duration) => {
-          for (var i = 0; i < fileItems.length; i++) {
-            if (fileString === void 0) {
-              fileString = fileItems[i] + "*" + i + "*1*" + duration[i] + "*100*0*0*0*0*0|";
-            } else {
-              fileString += fileItems[i] + "*" + i + "*1*" + duration[i] + "*100*0*0*0*0*0";
-              if (i + 1 < fileItems.length) {
-                fileString += "|";
-              }
-            }
-          }
-          if (this._isItemCall) {
-            Item$1.set("prop:srcitem", fileItems[0] + "*0", this._id);
-          } else {
-            Item$1.wrapSet(
-              "prop:srcitem",
-              fileItems[0] + "*0",
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            );
-          }
-          return fileString;
-        }).then((fileString2) => {
-          Item$1.set("prop:FilePlaylist", fileString2, this._id).then((fileplaylist) => {
-            resolve2(this);
-          });
-        }).catch((err) => {
-          reject2(err);
-        });
-      });
     }
     isSourceAvailable() {
       return new Promise((resolve2) => {
@@ -5815,7 +5188,49 @@ var XJS = (function(exports) {
         }
       });
     }
+    getValue() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getValue", true);
+          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:srcitem",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((filename) => {
+          resolve2(filename);
+        });
+      });
+    }
+    setValue(filename) {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setValue", true);
+          this._checkPromise = Item$1.set("prop:item", filename, this._id);
+        } else {
+          this._checkPromise = Item$1.wrapSet(
+            "prop:srcitem",
+            filename,
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then(() => {
+          return Item$1.set("prop:name", filename, this._id);
+        }).then(() => {
+          resolve2(this);
+        });
+      });
+    }
   }
+  class ImageSource extends Source {
+  }
+  applyMixins(ImageSource, [SourceImage]);
   class CuePoint {
     constructor(time, action) {
       this._time = time;
@@ -5864,10 +5279,7 @@ var XJS = (function(exports) {
       return this._action;
     }
     static _fromString(value2) {
-      const [time, action] = [
-        value2.substring(0, value2.length - 1),
-        value2.charAt(value2.length - 1)
-      ];
+      const [time, action] = [value2.substring(0, value2.length - 1), value2.charAt(value2.length - 1)];
       return new CuePoint(Number(time), action);
     }
     static {
@@ -6399,781 +5811,50 @@ var XJS = (function(exports) {
       });
     }
   }
-  class VideoPlaylistSource extends Source {
-  }
-  applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio]);
-  const LoadStatus = {
-    loaded: "LOADED",
-    not_loaded: "NOT LOADED",
-    load_error: "LOAD ERROR",
-    unknown: "UNKNOWN"
-  };
-  const toStableNumber = function(value2) {
-    return Number(value2.toFixed(12));
-  };
-  class iSourceHtml {
+  class SourceMedia {
     _updateId(id, sceneId) {
       this._id = id;
       this._sceneId = sceneId;
     }
-    /**
-     * param: (func: string, arg: string)
-     * ```
-     * return: Promise<ISourceHtml>
-     * ```
-     *
-     * Allow this item to call a pre-exposed function within the HTML Item
-     */
-    call(func, arg) {
-      return new Promise((resolve2) => {
-        let slot;
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "call", true);
-          this._checkPromise = Item$1.attach(this._id);
-        } else {
-          this._checkPromise = Item$1.attach(this._id);
-        }
-        this._checkPromise.then((res) => {
-          slot = res;
-          exec(
-            "CallInner" + (String(slot) === "0" ? "" : slot + 1),
-            func,
-            arg
-          );
-          resolve2(this);
-        });
-      });
-    }
-    /**
-     * return: Promise<string>
-     *
-     * Gets the URL of this webpage item.
-     */
-    getURL() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getURL", true);
-          this._checkPromise = Item$1.get("prop:srcitem", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:srcitem",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((url) => {
-          let _url = String(url).split("*");
-          url = _url[0];
-          resolve2(url);
-        });
-      });
-    }
-    /**
-     * param: (url: string)
-     * ```
-     * return: Promise<ISourceHtml>
-     * ```
-     *
-     * Sets the URL of this webpage item.
-     *
-     * *Chainable.*
-     */
-    setURL(value2) {
+    getFileInfo() {
       return new Promise((resolve2, reject2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setURL", true);
-          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+          Logger.warn("sourceWarning", "getFileInfo", true);
+          this._checkPromise = Item$1.get("FileInfo", this._id);
         } else {
           this._checkPromise = Item$1.wrapGet(
-            "prop:srcitem",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((url) => {
-          const _url = String(url).split("*");
-          _url[0] = value2;
-          return Item$1.set(this._isItemCall ? "prop:item" : "prop:srcitem", _url.join("*"), this._id);
-        }).then((code) => {
-          if (code) {
-            return Item$1.set("prop:name", value2, this._id);
-          } else {
-            return Promise.resolve(code);
-          }
-        }).then((code) => {
-          if (code) {
-            resolve2(this);
-          } else {
-            reject2(Error("Invalid value"));
-          }
-        });
-      });
-    }
-    isBrowserTransparent() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isBrowserTransparent", true);
-          this._checkPromise = Item$1.get("prop:BrowserTransparent", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:BrowserTransparent",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((isTransparent) => {
-          resolve2(isTransparent === "1");
-        });
-      });
-    }
-    enableBrowserTransparency(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "enableBrowserTransparency", true);
-          this._checkPromise = Item$1.set(
-            "prop:BrowserTransparent",
-            value2 ? "1" : "0",
-            this._id
-          );
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:BrowserTransparent",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    isBrowser60FPS() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isBrowser60FPS", true);
-          this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:Browser60fps",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((isBrowser60FPS) => {
-          resolve2(isBrowser60FPS === "1");
-        });
-      });
-    }
-    enableBrowser60FPS(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isBrowser60FPS", true);
-          this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:Browser60fps",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((isBrowser60FPS) => {
-          if (isBrowser60FPS === "1" !== value2) {
-            Item$1.set("prop:Browser60fps", value2 ? "1" : "0", this._id);
-          }
-          resolve2(this);
-        });
-      });
-    }
-    getBrowserCustomSize() {
-      return new Promise((resolve2) => {
-        let customSize;
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getBrowserCustomSize", true);
-          this._checkPromise = Item$1.get("prop:BrowserSize", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:BrowserSize",
+            "FileInfo",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then((val) => {
-          if (val !== "") {
-            var [width, height] = decodeURIComponent(val).split(",");
-            customSize = Rectangle.fromDimensions(
-              toStableNumber(Number(width) / window.devicePixelRatio),
-              toStableNumber(Number(height) / window.devicePixelRatio)
-            );
-          } else {
-            customSize = Rectangle.fromDimensions(0, 0);
-          }
-          resolve2(customSize);
-        });
-      });
-    }
-    setBrowserCustomSize(value2) {
-      return new Promise((resolve2) => {
-        const browserSize = Rectangle.fromDimensions(
-          value2.getWidth() * window.devicePixelRatio,
-          value2.getHeight() * window.devicePixelRatio
-        );
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setBrowserCustomSize", true);
-          this._checkPromise = Item$1.set("prop:BrowserSize", browserSize.toDimensionString(), this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:BrowserSize",
-            browserSize.toDimensionString(),
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    getAllowRightClick() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getAllowRightClick", true);
-          this._checkPromise = Item$1.get("prop:BrowserRightClick", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:BrowserRightClick",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    setAllowRightClick(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setAllowRightClick", true);
-          this._checkPromise = Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:BrowserRightClick",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    getBrowserJS() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getBrowserJS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customJS = "";
           try {
-            let customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("customJS")) {
-              customJS = customObject2["customJS"];
-            }
-          } catch (e) {
-          }
-          resolve2(customJS);
-        });
-      });
-    }
-    getPolicyStringFunction(customCSS) {
-      let retrievedPolicyStringFunction = "";
-      if (window.trustedTypes) {
-        retrievedPolicyStringFunction = `var retrievedPolicy = null;
-        if (window.trustedTypes) {                          
-          if (window.trustedTypes.defaultPolicy === null) {
-            retrievedPolicy = window.trustedTypes.createPolicy('default', {
-              createHTML: (input) => { return input; },
-              createScriptURL: (input) => { return input; },
-              createScript: (input) => { return input; }, 
-            });            
-          } else {
-            retrievedPolicy = window.trustedTypes.defaultPolicy;
-          }          
-        }  
-        
-        var h = document.querySelector('head');
-        var existing = document.querySelector('head #splitmedialabsCSSOverwrite');
-        if (existing != null) h.removeChild(existing);
-        var xjsCSSOverwrite = document.createElement("style");
-        xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";
-        xjsCSSOverwrite.type = "text/css";
-        xjsCSSOverwrite.innerHTML = "${customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "")}";
-        var xjsCSSOverwriteHTML = retrievedPolicy.createHTML(xjsCSSOverwrite.outerHTML);
-        
-        if (xjsCSSOverwriteHTML) {
-          const htmlString = xjsCSSOverwriteHTML.toString();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(htmlString, 'text/html');
-          const styleElement = doc.querySelector('style');
-          if (styleElement) {            
-            h.appendChild(styleElement);
-          }
-        }        
-        `;
-      }
-      return retrievedPolicyStringFunction;
-    }
-    setBrowserJS(value2, refresh = false) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setBrowserJS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customCSS = "";
-          let scriptString = " ";
-          let scriptEnabled = true;
-          let cssEnabled = true;
-          try {
-            customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] == "true";
-            }
-            if (customObject2.hasOwnProperty("scriptEnabled")) {
-              scriptEnabled = customObject2["scriptEnabled"] == "true";
-            }
-            if (customObject2.hasOwnProperty("customCSS")) {
-              customCSS = customObject2["customCSS"];
-            }
-          } catch (e) {
-          }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = scriptEnabled.toString();
-          customObject2["customCSS"] = customCSS;
-          customObject2["customJS"] = value2;
-          if (cssEnabled === true) {
-            let cssScript2 = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + "';h.appendChild(xjsCSSOverwrite);";
-            let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
-            if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
-            }
-            scriptString = scriptString + cssScript2;
-          }
-          if (value2 !== "" && scriptEnabled === true) {
-            scriptString = scriptString + value2;
-          }
-          return Item$1.set("prop:BrowserJs", scriptString, this._id);
-        }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
-        }).then(() => {
-          if (refresh) {
-            Item$1.set("refresh", "", this._id).then(() => {
-              resolve2(this);
-            });
-          } else {
-            resolve2(this);
-          }
-        });
-      });
-    }
-    isBrowserJSEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isBrowserJSEnabled", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let enabled = true;
-          try {
-            let customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("scriptEnabled")) {
-              enabled = customObject2["scriptEnabled"] == "true";
-            }
-          } catch (e) {
-          }
-          resolve2(enabled);
-        });
-      });
-    }
-    enableBrowserJS(value2) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "enableBrowserJS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customJS = "";
-          let customCSS = "";
-          let scriptString = " ";
-          let cssEnabled = true;
-          try {
-            customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] == "true";
-            }
-            if (customObject2.hasOwnProperty("customJS")) {
-              customJS = customObject2["customJS"];
-            }
-            if (customObject2.hasOwnProperty("customCSS")) {
-              customCSS = customObject2["customCSS"];
-            }
-          } catch (e) {
-          }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = value2.toString();
-          customObject2["customJS"] = customJS;
-          customObject2["customCSS"] = customCSS;
-          if (cssEnabled === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";"h.appendChild(xjsCSSOverwrite);';
-            let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
-            if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
-            }
-            scriptString = scriptString + cssScript2;
-          }
-          if (customJS !== "" && value2 === true) {
-            scriptString = scriptString + customJS;
-          }
-          return Item$1.set("prop:BrowserJs", scriptString, this._id);
-        }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
-        }).then(() => {
-          if (!value2) {
-            Item$1.set("refresh", "", this._id).then(() => {
-              resolve2(this);
-            });
-          } else {
-            resolve2(this);
-          }
-        });
-      });
-    }
-    getCustomCSS() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getCustomCSS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customCSS = "";
-          try {
-            let customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("customCSS")) {
-              customCSS = customObject2["customCSS"];
-            }
-          } catch (e) {
-          }
-          resolve2(customCSS);
-        });
-      });
-    }
-    setCustomCSS(value2) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setCustomCSS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customJS = "";
-          let scriptString = " ";
-          let scriptEnabled = true;
-          let cssEnabled = true;
-          try {
-            customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] == "true";
-            }
-            if (customObject2.hasOwnProperty("scriptEnabled")) {
-              scriptEnabled = customObject2["scriptEnabled"] == "true";
-            }
-            if (customObject2.hasOwnProperty("customJS")) {
-              customJS = customObject2["customJS"];
-            }
-          } catch (e) {
-          }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = scriptEnabled.toString();
-          customObject2["customJS"] = customJS;
-          customObject2["customCSS"] = value2;
-          if (cssEnabled === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + value2.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
-            let retrievedPolicyFunction = this.getPolicyStringFunction(value2);
-            if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
-            }
-            scriptString = scriptString + cssScript2;
-          }
-          if (customJS !== "" && scriptEnabled === true) {
-            scriptString = scriptString + customJS;
-          }
-          return Item$1.set("prop:BrowserJs", scriptString, this._id);
-        }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
-        }).then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    isCustomCSSEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isCustomCSSEnabled", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let enabled = true;
-          try {
-            let customObject2 = JSON.parse(custom);
-            if (customObject2.hasOwnProperty("cssEnabled")) {
-              enabled = customObject2["cssEnabled"] == "true";
-            }
-          } catch (e) {
-          }
-          resolve2(enabled);
-        });
-      });
-    }
-    enableCustomCSS(value) {
-      return new Promise((resolve, reject) => {
-        let customObject = {};
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "enableCustomCSS", true);
-          this._checkPromise = Item$1.get("prop:custom", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:custom",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((custom) => {
-          let customJS = "";
-          let customCSS = "";
-          let scriptString = " ";
-          let scriptEnabled = true;
-          try {
-            customObject = JSON.parse(custom);
-            if (customObject.hasOwnProperty("scriptEnabled")) {
-              scriptEnabled = customObject["scriptEnabled"] == "true";
-            }
-            if (customObject.hasOwnProperty("customJS")) {
-              customJS = customObject["customJS"];
-            }
-            if (customObject.hasOwnProperty("customCSS")) {
-              customCSS = customObject["customCSS"];
-            }
-          } catch (e) {
-          }
-          customObject["scriptEnabled"] = scriptEnabled.toString();
-          customObject["cssEnabled"] = value.toString();
-          customObject["customJS"] = customJS;
-          customObject["customCSS"] = customCSS;
-          if (value === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
-            let retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
-            if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
-            }
-            scriptString = scriptString + cssScript2;
-          }
-          if (customJS !== "" && value === scriptEnabled) {
-            scriptString = scriptString + customJS;
-          }
-          return Item$1.set("prop:BrowserJs", scriptString, this._id);
-        }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject), this._id);
-        }).then(() => {
-          if (!value) {
-            let cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
-            if (Environment.isSourcePlugin()) {
-              eval(cssScript);
+            const fileInfoObj = {};
+            const fileInfoJXON = JSON$1.parse(val);
+            if (typeof fileInfoJXON["children"] !== "undefined" && fileInfoJXON["children"].length > 0) {
+              const fileInfoChildren = fileInfoJXON["children"];
+              for (var i = fileInfoChildren.length - 1; i >= 0; i--) {
+                var child = fileInfoChildren[i];
+                var childObj = {};
+                var childObjKeys = Object.keys(child);
+                for (var j = childObjKeys.length - 1; j >= 0; j--) {
+                  var key = childObjKeys[j];
+                  if (key !== "value" && key !== "tag") {
+                    childObj[key] = child[key];
+                  }
+                }
+                var tag = child["tag"];
+                fileInfoObj[tag] = childObj;
+              }
+              resolve2(fileInfoObj);
             } else {
-              exec("CallInner", "eval", cssScript);
+              resolve2(fileInfoObj);
             }
-            resolve(this);
-          } else {
-            resolve(this);
+          } catch (e) {
+            reject2(Error("Error retrieving file information"));
           }
-        });
-      });
-    }
-    isBrowserOptimized() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isBrowserOptimized", true);
-          this._checkPromise = Item$1.get("prop:GameCapSurfSharingCurrent", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:GameCapSurfSharingCurrent",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    getBrowserLoadStatus() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getBrowserLoadStatus", true);
-          this._checkPromise = Item$1.get("BrowserLoadStatus", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "BrowserLoadStatus",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((loadStatus) => {
-          if (loadStatus === "null") {
-            resolve2("UNAVAILABLE");
-          } else {
-            resolve2(LoadStatus[loadStatus]);
-          }
-        });
-      });
-    }
-    isReloadOnShowEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
-          this._checkPromise = Item$1.get("prop:RefreshOnSrcShow", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:RefreshOnSrcShow",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    enableReloadOnShow(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "enableReloadOnShow", true);
-          this._checkPromise = Item$1.set("prop:RefreshOnSrcShow", value2 ? "1" : "0", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:RefreshOnSrcShow",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-    isReloadOnSceneEnterEnabled() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
-          this._checkPromise = Item$1.get("prop:RefreshOnScnLoad", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:RefreshOnScnLoad",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    enableReloadOnSceneEnter(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "enableReloadOnShow", true);
-          this._checkPromise = Item$1.set("prop:RefreshOnScnLoad", value2 ? "1" : "0", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:RefreshOnScnLoad",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
         });
       });
     }
@@ -7192,109 +5873,297 @@ var XJS = (function(exports) {
       });
     }
   }
-  class HtmlSource extends Source {
+  const MediaTypes = [
+    ".mp3",
+    ".aac",
+    ".cda",
+    ".ogg",
+    ".m4a",
+    ".flac",
+    ".wma",
+    ".aiff",
+    ".aif",
+    ".wav",
+    ".mid",
+    ".midi",
+    ".rma",
+    ".avi",
+    ".flv",
+    ".mkv",
+    ".mp4",
+    ".mpg",
+    ".wmv",
+    ".3gp",
+    ".3g2",
+    ".asf",
+    ".f4v",
+    ".mov",
+    ".mpeg",
+    ".vob",
+    ".webm"
+  ];
+  class MediaSource extends Source {
   }
-  applyMixins(HtmlSource, [iSourceHtml, SourceConfigurable, Audio]);
-  class SourceFlash {
+  applyMixins(MediaSource, [SourcePlayback, Audio, SourceMedia]);
+  const BUFFER_MAX = 120;
+  class SourceReplay {
     _updateId(id, sceneId) {
       this._id = id;
       this._sceneId = sceneId;
     }
-    getCustomResolution() {
-      return new Promise((resolve2) => {
-        let customSize;
+    getChannel() {
+      return new Promise((resolve2, reject2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getCustomResolution", true);
-          this._checkPromise = Item$1.get("prop:BrowserSize", this._id);
+          Logger.warn("sourceWarning", "getChannelName", true);
+          this._checkPromise = Item$1.get("prop:presproperty:channelName", this._id);
         } else {
           this._checkPromise = Item$1.wrapGet(
-            "prop:BrowserSize",
+            "prop:presproperty:channelName",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((channel) => {
+          resolve2(channel);
+        }).catch((err) => reject2(err));
+      });
+    }
+    setChannel(channel) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof channel === "string") {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setChannelName", true);
+            Item$1.set("prop:presproperty:channelName", channel, this._id).then((val) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:presproperty:channelName",
+              channel,
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((val) => {
+              resolve2(this);
+            });
+          }
+        } else {
+          reject2(
+            Error("Invalid parameter. setChannelName method only accepts channel name as a string.")
+          );
+        }
+      });
+    }
+    getHotkey() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getHotkey", true);
+          this._checkPromise = Item$1.get("prop:presproperty:hotkey", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:presproperty:hotkey",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((hotkey) => {
+          resolve2(Number(hotkey));
+        }).catch((err) => reject2(err));
+      });
+    }
+    setHotkey(hotkey) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof hotkey === "number") {
+          if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setHotkey", true);
+            Item$1.set("prop:presproperty:hotkey", String(hotkey), this._id).then((val) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:presproperty:hotkey",
+              String(hotkey),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((val) => {
+              resolve2(this);
+            });
+          }
+        } else {
+          reject2(Error("Invalid parameter. setHotkey method only accepts hotkey as a number."));
+        }
+      });
+    }
+    getReplayTime() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getReplayTime", true);
+          this._checkPromise = Item$1.get("prop:presproperty:buffer", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:presproperty:buffer",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((buffer) => {
+          resolve2(Number(buffer));
+        }).catch((err) => reject2(err));
+      });
+    }
+    setReplayTime(buffer) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof buffer === "number") {
+          if (buffer > 120 || buffer < 0) {
+            reject2(
+              Error(
+                `Invalid parameter. setReplaytime method only accepts numbers up to ${BUFFER_MAX}.`
+              )
+            );
+          } else if (this._isItemCall) {
+            Logger.warn("sourceWarning", "setReplayTime", true);
+            Item$1.set("prop:presproperty:buffer", String(buffer), this._id).then((val) => {
+              resolve2(this);
+            });
+          } else {
+            Item$1.wrapSet(
+              "prop:presproperty:buffer",
+              String(buffer),
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            ).then((val) => {
+              resolve2(this);
+            });
+          }
+        } else {
+          reject2(Error("Invalid parameter. setReplaytime method only accepts buffer as a number."));
+        }
+      });
+    }
+    startReplay() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "startReplay", true);
+          Item$1.set("prop:ReplayActive", "1", this._id).then((val) => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet("prop:ReplayActive", "1", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    stopReplay() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "stopReplay", true);
+          Item$1.set("prop:ReplayActive", "0", this._id).then((val) => {
+            resolve2(this);
+          });
+        } else {
+          Item$1.wrapSet("prop:ReplayActive", "0", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getReplayState() {
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getReplayState", true);
+          this._checkPromise = Item$1.get("prop:ReplayActive", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:ReplayActive",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((activeState) => resolve2(Number(activeState))).catch((err) => reject2(err));
+      });
+    }
+    isAutostartOnSceneLoad() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "isAutostartOnSceneLoad", true);
+          this._checkPromise = Item$1.get("prop:StartOnLoad", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:StartOnLoad",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then((val) => {
-          if (val !== "") {
-            var [width, height] = decodeURIComponent(val).split(",");
-            customSize = Rectangle.fromDimensions(Number(width), Number(height));
-          } else {
-            customSize = Rectangle.fromDimensions(0, 0);
-          }
-          resolve2(customSize);
+          resolve2(val === "1");
         });
       });
     }
-    setCustomResolution(value2) {
+    setAutostartOnSceneLoad(value2) {
       return new Promise((resolve2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setCustomResolution", true);
-          Item$1.set(
-            "prop:BrowserSize",
-            value2.toDimensionString(),
-            this._id
-          ).then(() => {
-            resolve2(this);
-          });
+          Logger.warn("sourceWarning", "setAutostartOnSceneLoad", true);
+          this._checkPromise = Item$1.set("prop:StartOnLoad", value2 ? "1" : "0", this._id);
         } else {
-          Item$1.wrapSet(
-            "prop:BrowserSize",
-            value2.toDimensionString(),
+          this._checkPromise = Item$1.wrapSet(
+            "prop:StartOnLoad",
+            value2 ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
-          ).then(() => {
-            resolve2(this);
-          });
+          );
         }
+        this._checkPromise.then(() => {
+          resolve2(this);
+        });
       });
     }
-    getAllowRightClick() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getAllowRightClick", true);
-          Item$1.get("prop:BrowserRightClick", this._id).then((val) => {
-            resolve2(val === "1");
-          });
+  }
+  class ReplaySource extends Source {
+  }
+  applyMixins(ReplaySource, [Audio, SourceReplay]);
+  class SourceScene {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    _setScene(itemType, uid, name, resolve2, reject2) {
+      if (this._isItemCall) {
+        Logger.warn("sourceWarning", "setScene", true);
+        this._checkPromise = Item$1.set("prop:srctype", `${itemType},${uid}`, this._id);
+      } else {
+        this._checkPromise = Item$1.wrapSet(
+          "prop:srctype",
+          `${itemType},${uid}`,
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
+      }
+      var code;
+      this._checkPromise.then((result) => {
+        code = result;
+        return Item$1.set("prop:name", `Scene: ${name}`);
+      }).then(() => {
+        if (code) {
+          resolve2(this);
         } else {
-          Item$1.wrapGet("prop:BrowserRightClick", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
-          });
+          reject2(Error("Invalid value"));
         }
-      });
+      }).catch((err) => reject2(err));
     }
-    setAllowRightClick(value2) {
-      return new Promise((resolve2) => {
+    getScene() {
+      return new Promise((resolve2, reject2) => {
         if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setAllowRightClick", true);
-          Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet("prop:BrowserRightClick", value2 ? "1" : "0", this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    isSourceAvailable() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isSourceAvailable", true);
-          Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
-          });
-        } else {
-          Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
-          });
-        }
-      });
-    }
-    getValue() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getValue", true);
+          Logger.warn("sourceWarning", "getScene", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
         } else {
           this._checkPromise = Item$1.wrapGet(
@@ -7304,36 +6173,50 @@ var XJS = (function(exports) {
             this._updateId.bind(this)
           );
         }
-        this._checkPromise.then((filename) => {
-          resolve2(filename);
-        });
+        this._checkPromise.then((scene) => {
+          if (scene === "0") {
+            resolve2(Scene.liveScene());
+          } else {
+            return Scene.getBySceneUid(scene);
+          }
+        }).then((sceneObj) => resolve2(sceneObj)).catch((err) => reject2(err));
       });
     }
-    setValue(filename) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setValue", true);
-          this._checkPromise = Item$1.set("prop:item", filename, this._id);
+    setScene(scene) {
+      return new Promise((resolve2, reject2) => {
+        if (scene instanceof Scene || typeof scene === "number" && scene >= 0 && Number["isInteger"](Number(scene))) {
+          var itemType = "11";
+          if (scene instanceof Scene) {
+            var sceneUID = scene["_uid"];
+            var name = scene["_name"];
+            itemType = sceneUID === "0" ? String(ItemTypes.VIEW) : String(ItemTypes.SCENE);
+            this._setScene(itemType, sceneUID, name, resolve2, reject2);
+          } else if (typeof scene === "number") {
+            var name = "";
+            var targetScene;
+            Scene.getBySceneIndex(scene).then((sceneByID) => {
+              targetScene = sceneByID;
+              return targetScene.getName();
+            }).then((sceneName) => {
+              name = sceneName;
+              return targetScene.getSceneUid();
+            }).then((uid) => {
+              this._setScene(itemType, uid, name, resolve2, reject2);
+            }).catch((err) => reject2(err));
+          }
         } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:srcitem",
-            filename,
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
+          if (typeof scene === "number" && (scene < 1 || !Number["isInteger"](Number(scene)))) {
+            reject2(Error("Invalid parameters. Valid range is greater than 0."));
+          } else {
+            reject2(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
+          }
         }
-        this._checkPromise.then(() => {
-          return Item$1.set("prop:name", filename, this._id);
-        }).then(() => {
-          resolve2(this);
-        });
       });
     }
   }
-  class FlashSource extends Source {
+  class SceneSource extends Source {
   }
-  applyMixins(FlashSource, [Audio, SourceFlash]);
+  applyMixins(SceneSource, [SourceScene]);
   class iSourceScreen {
     _updateId(id, sceneId) {
       this._id = id;
@@ -7536,13 +6419,15 @@ var XJS = (function(exports) {
           if (!(val instanceof XML)) {
             resolve2(Rectangle.fromCoordinates(0, 0, 0, 0));
           } else {
-            let _value = JSON$1.parse(val);
-            resolve2(Rectangle.fromCoordinates(
-              Number(_value["left"]),
-              Number(_value["top"]),
-              Number(_value["width"]) + Number(_value["left"]),
-              Number(_value["height"]) + Number(_value["top"])
-            ));
+            const _value = JSON$1.parse(val);
+            resolve2(
+              Rectangle.fromCoordinates(
+                Number(_value["left"]),
+                Number(_value["top"]),
+                Number(_value["width"]) + Number(_value["left"]),
+                Number(_value["height"]) + Number(_value["top"])
+              )
+            );
           }
         });
       });
@@ -7565,7 +6450,7 @@ var XJS = (function(exports) {
               );
             }
             this._checkPromise.then((res) => {
-              let _res = res.split(",");
+              const _res = res.split(",");
               iResolve({
                 value: val,
                 res: Rectangle.fromCoordinates(
@@ -7611,7 +6496,7 @@ var XJS = (function(exports) {
           if (!(val instanceof XML)) {
             resolve2(false);
           } else {
-            let _value = JSON$1.parse(val);
+            const _value = JSON$1.parse(val);
             resolve2(_value["wclient"] === "1");
           }
         });
@@ -7648,430 +6533,355 @@ var XJS = (function(exports) {
   class ScreenSource extends Source {
   }
   applyMixins(ScreenSource, [iSourceScreen]);
-  class SourceImage {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
-    }
-    isSourceAvailable() {
+  class IO {
+    /**
+     * param: (path: string)
+     * ```
+     * return: Promise<string>
+     * ```
+     *
+     * Returns a base-64 encoded string of the target file's contents.
+     * UTF-8 encoded files may be decoded through:
+     * ```javascript
+     * IO.getFileContent('C:\\text.txt').then(function(base64Content) {
+     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+     * });
+     * ```
+     */
+    static getFileContent(path) {
       return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isSourceAvailable", true);
-          Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
-          });
-        } else {
-          Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
-          });
-        }
+        resolve2(exec("GetFileContent", path));
       });
     }
-    getValue() {
+    /**
+     * param: (url: string)
+     * ```
+     * return: Promise<string>
+     * ```
+     *
+     * Returns a base-64 encoded string of the target endpoint's contents.
+     * Redirects are resolved, and this bypasses access-control-allow-origin.
+     *
+     * UTF-8 encoded content may be decoded through:
+     * ```javascript
+     * IO.getWebContent('http://example.com').then(function(base64Content) {
+     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
+     * });
+     * ```
+     */
+    static getWebContent(url) {
       return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getValue", true);
-          this._checkPromise = Item$1.get("prop:srcitem", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:srcitem",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((filename) => {
-          resolve2(filename);
+        exec("GetWebContent", url, (encoded) => {
+          resolve2(encoded);
         });
       });
     }
-    setValue(filename) {
+    /**
+     * param: (url: string)
+     *
+     * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
+     *
+     */
+    static openUrl(url) {
       return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setValue", true);
-          this._checkPromise = Item$1.set("prop:item", filename, this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:srcitem",
-            filename,
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          return Item$1.set("prop:name", filename, this._id);
-        }).then(() => {
-          resolve2(this);
+        exec("OpenUrl", url).then((res) => {
+          resolve2(res);
         });
       });
     }
-  }
-  class ImageSource extends Source {
-  }
-  applyMixins(ImageSource, [SourceImage]);
-  const BUFFER_MAX = 120;
-  class SourceReplay {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
+    static {
+      this._ALLOW_MULTI_SELECT = 512;
     }
-    getChannel() {
+    static {
+      this._FILE_MUST_EXIST = 4096;
+    }
+    static {
+      this._FORCE_SHOW_HIDDEN = 268435456;
+    }
+    /**
+     * param: ([options] [, filter]) -- see below
+     * ```
+     * return: Promise<string[]>
+     * ```
+     * Opens a file dialog for the user to select a file (or multiple files).
+     * Resolves with an array of strings, each of which contains the full path
+     * and filename of a selected file. Rejects when the dialog is canceled.
+     *
+     * The first (optional) argument is a JSON object that can be used to indicate
+     * that certain flags should be true. These are documented as follows:
+     * - `allowMultiSelect`: allows users to select multiple files.
+     * - `fileMustExist`: prevents users from typing a name of a nonexistent file
+     * - `forceShowHidden`: lets the dialog show files marked as System or Hidden
+     *  (but not both)
+     *
+     * The second argument (also optional) is a JSON object used to specify the
+     * filter for items to be displayed. It takes two members:
+     * - `name`: the description of the filter (for example: Image Files)
+     * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
+     */
+    static openFileDialog(optionBag, filter) {
       return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getChannelName", true);
-          this._checkPromise = Item$1.get("prop:presproperty:channelName", this._id);
+        if (Environment.isSourcePlugin()) {
+          reject2(Error("function is not available for source"));
         } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:presproperty:channelName",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((channel) => {
-          resolve2(channel);
-        }).catch((err) => reject2(err));
-      });
-    }
-    setChannel(channel) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof channel === "string") {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setChannelName", true);
-            Item$1.set("prop:presproperty:channelName", channel, this._id).then((val) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:presproperty:channelName",
-              channel,
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((val) => {
-              resolve2(this);
-            });
-          }
-        } else {
-          reject2(Error("Invalid parameter. setChannelName method only accepts channel name as a string."));
-        }
-      });
-    }
-    getHotkey() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getHotkey", true);
-          this._checkPromise = Item$1.get("prop:presproperty:hotkey", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:presproperty:hotkey",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((hotkey) => {
-          resolve2(Number(hotkey));
-        }).catch((err) => reject2(err));
-      });
-    }
-    setHotkey(hotkey) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof hotkey === "number") {
-          if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setHotkey", true);
-            Item$1.set("prop:presproperty:hotkey", String(hotkey), this._id).then((val) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:presproperty:hotkey",
-              String(hotkey),
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((val) => {
-              resolve2(this);
-            });
-          }
-        } else {
-          reject2(Error("Invalid parameter. setHotkey method only accepts hotkey as a number."));
-        }
-      });
-    }
-    getReplayTime() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getReplayTime", true);
-          this._checkPromise = Item$1.get("prop:presproperty:buffer", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:presproperty:buffer",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((buffer) => {
-          resolve2(Number(buffer));
-        }).catch((err) => reject2(err));
-      });
-    }
-    setReplayTime(buffer) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof buffer === "number") {
-          if (buffer > 120 || buffer < 0) {
-            reject2(Error(`Invalid parameter. setReplaytime method only accepts numbers up to ${BUFFER_MAX}.`));
-          } else if (this._isItemCall) {
-            Logger.warn("sourceWarning", "setReplayTime", true);
-            Item$1.set("prop:presproperty:buffer", String(buffer), this._id).then((val) => {
-              resolve2(this);
-            });
-          } else {
-            Item$1.wrapSet(
-              "prop:presproperty:buffer",
-              String(buffer),
-              this._srcId,
-              this._id,
-              this._updateId.bind(this)
-            ).then((val) => {
-              resolve2(this);
-            });
-          }
-        } else {
-          reject2(Error("Invalid parameter. setReplaytime method only accepts buffer as a number."));
-        }
-      });
-    }
-    startReplay() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "startReplay", true);
-          Item$1.set("prop:ReplayActive", "1", this._id).then((val) => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet(
-            "prop:ReplayActive",
-            "1",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    stopReplay() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "stopReplay", true);
-          Item$1.set("prop:ReplayActive", "0", this._id).then((val) => {
-            resolve2(this);
-          });
-        } else {
-          Item$1.wrapSet(
-            "prop:ReplayActive",
-            "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          ).then((val) => {
-            resolve2(this);
-          });
-        }
-      });
-    }
-    getReplayState() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getReplayState", true);
-          this._checkPromise = Item$1.get("prop:ReplayActive", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:ReplayActive",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((activeState) => resolve2(Number(activeState))).catch((err) => reject2(err));
-      });
-    }
-    isAutostartOnSceneLoad() {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "isAutostartOnSceneLoad", true);
-          this._checkPromise = Item$1.get("prop:StartOnLoad", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:StartOnLoad",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          resolve2(val === "1");
-        });
-      });
-    }
-    setAutostartOnSceneLoad(value2) {
-      return new Promise((resolve2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "setAutostartOnSceneLoad", true);
-          this._checkPromise = Item$1.set("prop:StartOnLoad", value2 ? "1" : "0", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapSet(
-            "prop:StartOnLoad",
-            value2 ? "1" : "0",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then(() => {
-          resolve2(this);
-        });
-      });
-    }
-  }
-  class ReplaySource extends Source {
-  }
-  applyMixins(ReplaySource, [Audio, SourceReplay]);
-  class SourceScene {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
-    }
-    _setScene(itemType, uid, name, resolve2, reject2) {
-      if (this._isItemCall) {
-        Logger.warn("sourceWarning", "setScene", true);
-        this._checkPromise = Item$1.set("prop:srctype", `${itemType},${uid}`, this._id);
-      } else {
-        this._checkPromise = Item$1.wrapSet(
-          "prop:srctype",
-          `${itemType},${uid}`,
-          this._srcId,
-          this._id,
-          this._updateId.bind(this)
-        );
-      }
-      var code;
-      this._checkPromise.then((result) => {
-        code = result;
-        return Item$1.set("prop:name", `Scene: ${name}`);
-      }).then(() => {
-        if (code) {
-          resolve2(this);
-        } else {
-          reject2(Error("Invalid value"));
-        }
-      }).catch((err) => reject2(err));
-    }
-    getScene() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getScene", true);
-          this._checkPromise = Item$1.get("prop:srcitem", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "prop:srcitem",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((scene) => {
-          if (scene === "0") {
-            resolve2(Scene.liveScene());
-          } else {
-            return Scene.getBySceneUid(scene);
-          }
-        }).then((sceneObj) => resolve2(sceneObj)).catch((err) => reject2(err));
-      });
-    }
-    setScene(scene) {
-      return new Promise((resolve2, reject2) => {
-        if (scene instanceof Scene || typeof scene === "number" && scene >= 0 && Number["isInteger"](Number(scene))) {
-          var itemType = "11";
-          if (scene instanceof Scene) {
-            var sceneUID = scene["_uid"];
-            var name = scene["_name"];
-            itemType = sceneUID === "0" ? String(ItemTypes.VIEW) : String(ItemTypes.SCENE);
-            this._setScene(itemType, sceneUID, name, resolve2, reject2);
-          } else if (typeof scene === "number") {
-            var name = "";
-            var targetScene;
-            Scene.getBySceneIndex(scene).then((sceneByID) => {
-              targetScene = sceneByID;
-              return targetScene.getName();
-            }).then((sceneName) => {
-              name = sceneName;
-              return targetScene.getSceneUid();
-            }).then((uid) => {
-              this._setScene(itemType, uid, name, resolve2, reject2);
-            }).catch((err) => reject2(err));
-          }
-        } else {
-          if (typeof scene === "number" && (scene < 1 || !Number["isInteger"](Number(scene)))) {
-            reject2(Error("Invalid parameters. Valid range is greater than 0."));
-          } else {
-            reject2(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
-          }
-        }
-      });
-    }
-  }
-  class SceneSource extends Source {
-  }
-  applyMixins(SceneSource, [SourceScene]);
-  class SourceMedia {
-    _updateId(id, sceneId) {
-      this._id = id;
-      this._sceneId = sceneId;
-    }
-    getFileInfo() {
-      return new Promise((resolve2, reject2) => {
-        if (this._isItemCall) {
-          Logger.warn("sourceWarning", "getFileInfo", true);
-          this._checkPromise = Item$1.get("FileInfo", this._id);
-        } else {
-          this._checkPromise = Item$1.wrapGet(
-            "FileInfo",
-            this._srcId,
-            this._id,
-            this._updateId.bind(this)
-          );
-        }
-        this._checkPromise.then((val) => {
-          try {
-            let fileInfoObj = {};
-            let fileInfoJXON = JSON$1.parse(val);
-            if (typeof fileInfoJXON["children"] !== "undefined" && fileInfoJXON["children"].length > 0) {
-              let fileInfoChildren = fileInfoJXON["children"];
-              for (var i = fileInfoChildren.length - 1; i >= 0; i--) {
-                var child = fileInfoChildren[i];
-                var childObj = {};
-                var childObjKeys = Object.keys(child);
-                for (var j = childObjKeys.length - 1; j >= 0; j--) {
-                  var key = childObjKeys[j];
-                  if (key !== "value" && key !== "tag") {
-                    childObj[key] = child[key];
-                  }
-                }
-                var tag = child["tag"];
-                fileInfoObj[tag] = childObj;
-              }
-              resolve2(fileInfoObj);
-            } else {
-              resolve2(fileInfoObj);
+          let flags = 0;
+          if (optionBag !== void 0 && optionBag !== null) {
+            if (optionBag.allowMultiSelect === true) {
+              flags = flags | IO._ALLOW_MULTI_SELECT;
             }
-          } catch (e) {
-            reject2(Error("Error retrieving file information"));
+            if (optionBag.fileMustExist === true) {
+              flags = flags | IO._FILE_MUST_EXIST;
+            }
+            if (optionBag.forceShowHidden === true) {
+              flags = flags | IO._FORCE_SHOW_HIDDEN;
+            }
           }
+          let filterString = "";
+          if (filter !== void 0 && filter !== null && filter.name !== void 0 && filter.extensions !== void 0) {
+            filterString = filter.name + "|";
+            filterString += filter.extensions.map((val) => {
+              return "*." + val;
+            }).join(";");
+            filterString += "||";
+          }
+          exec("OpenFileDialogAsync", null, null, String(flags), filterString, (path) => {
+            if (path !== "null") {
+              resolve2(path.split("|"));
+            } else {
+              reject2(Error("File selection cancelled."));
+            }
+          });
+        }
+      });
+    }
+    static {
+      this._callback = {};
+    }
+    static {
+      this._remoteCallback = {};
+    }
+    static {
+      this._proxyCallback = {};
+    }
+    /**
+     * param: (file: string)
+     *
+     * return: Promise<number>
+     *
+     * Returns the duration of a video file on the local system, specified in
+     * units of 10^-7 seconds.
+     */
+    static getVideoDuration(file) {
+      return new Promise((resolve2, reject2) => {
+        if (Environment.isSourcePlugin()) {
+          reject2(Error("function is not available for source"));
+        } else {
+          if (typeof file !== "undefined") {
+            if (Remote.remoteType === "remote") {
+              const message = {
+                file,
+                type: "window"
+              };
+              if (IO._remoteCallback[file] === void 0) {
+                IO._remoteCallback[file] = [];
+              }
+              IO._remoteCallback[file].push({ resolve: resolve2, reject: reject2 });
+              Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
+            } else if (Remote.remoteType === "proxy") {
+              if (IO._proxyCallback[file[0]] === void 0) {
+                IO._proxyCallback[file[0]] = [];
+              }
+              IO._proxyCallback[file[0]].push(file[1]);
+              exec("GetVideoDuration", file[0]);
+            } else {
+              if (IO._callback[file] === void 0) {
+                IO._callback[file] = [];
+              }
+              IO._callback[file].push({ resolve: resolve2, reject: reject2 });
+              exec("GetVideoDuration", file);
+            }
+          } else {
+            reject2(Error("No file indicated."));
+          }
+        }
+      });
+    }
+    static _finalCallback(message) {
+      return new Promise((resolve2) => {
+        const result = JSON.parse(decodeURIComponent(message));
+        if (result["result"] !== void 0) {
+          IO._remoteCallback[result["file"]].shift().resolve(result["result"]);
+        } else {
+          IO._remoteCallback[decodeURIComponent(result["file"])].shift().reject(
+            Error(
+              `Invalid file path or cannot get file duration: '${decodeURIComponent(result["file"])}'`
+            )
+          );
+        }
+      });
+    }
+  }
+  const oldOnGetVideoDuration = window$1.OnGetVideoDuration;
+  window$1.OnGetVideoDuration = function(file, duration) {
+    if (Remote.remoteType === "proxy") {
+      IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
+    } else {
+      IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
+      if (IO._callback[decodeURIComponent(file)].length === 0) {
+        delete IO._callback[decodeURIComponent(file)];
+      }
+    }
+    if (typeof oldOnGetVideoDuration === "function") {
+      oldOnGetVideoDuration(file, duration);
+    }
+  };
+  const oldOnGetVideoDurationFailed = window$1.OnGetVideoDurationFailed;
+  window$1.OnGetVideoDurationFailed = function(file) {
+    if (Remote.remoteType === "proxy") {
+      IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [void 0, file]);
+    } else {
+      IO._callback[decodeURIComponent(file)].shift().reject(
+        Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(file)}'`)
+      );
+      if (IO._callback[decodeURIComponent(file)].length === 0) {
+        delete IO._callback[decodeURIComponent(file)];
+      }
+    }
+    if (typeof oldOnGetVideoDurationFailed === "function") {
+      oldOnGetVideoDuration(file);
+    }
+  };
+  class SourceVideoPlaylist {
+    _updateId(id, sceneId) {
+      this._id = id;
+      this._sceneId = sceneId;
+    }
+    getVideoNowPlaying() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getVideoNowPlaying", true);
+          this._checkPromise = Item$1.get("prop:srcitem", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:srcitem",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((playlist) => {
+          const _playlist = String(playlist).slice(0, playlist.indexOf("*"));
+          resolve2(_playlist);
+        });
+      });
+    }
+    setVideoNowPlaying(value2) {
+      let file;
+      let _playlist;
+      return new Promise((resolve2, reject2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "setVideoNowPlaying", true);
+          this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:FilePlaylist",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((playlist) => {
+          _playlist = String(playlist).split("|");
+          for (var i = 0; i < _playlist.length; i++) {
+            _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf("*"));
+          }
+          return _playlist;
+        }).then((list) => {
+          if (typeof value2 === "string") {
+            if (_playlist.indexOf(value2) === -1) {
+              reject2(Error("File not found on Playlist."));
+            } else {
+              const index = _playlist.indexOf(value2);
+              file = _playlist[index] + "*" + index;
+              Item$1.set("prop:srcitem", file, this._id).then((fileplaylist) => {
+                resolve2(this);
+              });
+            }
+          } else if (typeof value2 === "number" && value2 <= _playlist.length) {
+            file = _playlist[value2] + "*" + value2;
+            Item$1.set("prop:srcitem", file, this._id).then(function(fileplaylist) {
+              resolve2(this);
+            });
+          } else {
+            reject2(
+              Error(
+                "Invalid parameter. Value can only be either filename string or its index equivalent in the VideoPlaylist files array"
+              )
+            );
+          }
+        });
+      });
+    }
+    getVideoPlaylistSources() {
+      return new Promise((resolve2) => {
+        if (this._isItemCall) {
+          Logger.warn("sourceWarning", "getVideoPlaylistSources", true);
+          this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
+        } else {
+          this._checkPromise = Item$1.wrapGet(
+            "prop:FilePlaylist",
+            this._srcId,
+            this._id,
+            this._updateId.bind(this)
+          );
+        }
+        this._checkPromise.then((playlist) => {
+          const _playlist = String(playlist).split("|");
+          for (var i = 0; i < _playlist.length; i++) {
+            _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf("*"));
+          }
+          resolve2(_playlist);
+        });
+      });
+    }
+    setVideoPlaylistSources(fileItems) {
+      if (this._isItemCall) {
+        Logger.warn("sourceWarning", "setVideoPlaylistSources", true);
+      }
+      let fileString;
+      const filePromises = fileItems.map((filename) => {
+        return IO.getVideoDuration(filename);
+      });
+      return new Promise((resolve2, reject2) => {
+        Promise.all(filePromises).then((duration) => {
+          for (var i = 0; i < fileItems.length; i++) {
+            if (fileString === void 0) {
+              fileString = fileItems[i] + "*" + i + "*1*" + duration[i] + "*100*0*0*0*0*0|";
+            } else {
+              fileString += fileItems[i] + "*" + i + "*1*" + duration[i] + "*100*0*0*0*0*0";
+              if (i + 1 < fileItems.length) {
+                fileString += "|";
+              }
+            }
+          }
+          if (this._isItemCall) {
+            Item$1.set("prop:srcitem", fileItems[0] + "*0", this._id);
+          } else {
+            Item$1.wrapSet(
+              "prop:srcitem",
+              fileItems[0] + "*0",
+              this._srcId,
+              this._id,
+              this._updateId.bind(this)
+            );
+          }
+          return fileString;
+        }).then((fileString2) => {
+          Item$1.set("prop:FilePlaylist", fileString2, this._id).then((fileplaylist) => {
+            resolve2(this);
+          });
+        }).catch((err) => {
+          reject2(err);
         });
       });
     }
@@ -8090,38 +6900,9 @@ var XJS = (function(exports) {
       });
     }
   }
-  const MediaTypes = [
-    ".mp3",
-    ".aac",
-    ".cda",
-    ".ogg",
-    ".m4a",
-    ".flac",
-    ".wma",
-    ".aiff",
-    ".aif",
-    ".wav",
-    ".mid",
-    ".midi",
-    ".rma",
-    ".avi",
-    ".flv",
-    ".mkv",
-    ".mp4",
-    ".mpg",
-    ".wmv",
-    ".3gp",
-    ".3g2",
-    ".asf",
-    ".f4v",
-    ".mov",
-    ".mpeg",
-    ".vob",
-    ".webm"
-  ];
-  class MediaSource extends Source {
+  class VideoPlaylistSource extends Source {
   }
-  applyMixins(MediaSource, [SourcePlayback, Audio, SourceMedia]);
+  applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio]);
   function SourceTypeResolve(source) {
     let srcType;
     const type = Number(source["type"]);
@@ -8139,13 +6920,9 @@ var XJS = (function(exports) {
       srcType = new ImageSource(source);
     } else if (type === ItemTypes.FILE && /\.(gif|xbs)$/i.test(sourceValue) === false && /^(rtsp|rtmp):\/\//i.test(sourceValue) === false && (VIDEO_REGEX.test(sourceValue.split("*")[0]) || AUDIO_REGEX.test(sourceValue.split("*")[0]))) {
       srcType = new MediaSource(source);
-    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf(
-      "{33D9A762-90C8-11D0-BD43-00A0C911CE86}"
-    ) === -1) {
+    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") === -1) {
       srcType = new CameraSource(source);
-    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf(
-      "{33D9A762-90C8-11D0-BD43-00A0C911CE86}"
-    ) !== -1) {
+    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") !== -1) {
       srcType = new AudioSource(source);
     } else if (type === ItemTypes.FLASHFILE) {
       srcType = new FlashSource(source);
@@ -8157,6 +6934,646 @@ var XJS = (function(exports) {
       srcType = new Source(source);
     }
     return srcType;
+  }
+  class ItemLayout {
+    _getCanvasAndZRotate(value2) {
+      var rotationObject = {};
+      if (value2 >= -180 && value2 <= -135) {
+        rotationObject["canvasRotate"] = 180;
+        rotationObject["zRotate"] = value2 + 180;
+        rotationObject["orientation"] = "landscape";
+      } else if (value2 > -135 && value2 < -45) {
+        rotationObject["canvasRotate"] = 270;
+        rotationObject["zRotate"] = value2 + 90;
+        rotationObject["orientation"] = "portrait";
+      } else if (value2 >= -45 && value2 <= 45) {
+        rotationObject["canvasRotate"] = 0;
+        rotationObject["zRotate"] = value2;
+        rotationObject["orientation"] = "landscape";
+      } else if (value2 > 45 && value2 < 135) {
+        rotationObject["canvasRotate"] = 90;
+        rotationObject["zRotate"] = value2 - 90;
+        rotationObject["orientation"] = "portrait";
+      } else if (value2 >= 135 && value2 <= 180) {
+        rotationObject["canvasRotate"] = 180;
+        rotationObject["zRotate"] = value2 - 180;
+        rotationObject["orientation"] = "landscape";
+      }
+      return rotationObject;
+    }
+    _adjustRotation(value2) {
+      if (value2 > 180) {
+        value2 -= 360;
+      } else if (value2 < -180) {
+        value2 += 360;
+      }
+      return value2;
+    }
+    isKeepAspectRatio() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:keep_ar", this._id).then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    setKeepAspectRatio(value2) {
+      return new Promise((resolve2) => {
+        Item$1.set("prop:keep_ar", value2 ? "1" : "0", this._id).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isPositionLocked() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:lockmove", this._id).then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    setPositionLocked(value2) {
+      return new Promise((resolve2) => {
+        Item$1.set("prop:lockmove", value2 ? "1" : "0", this._id).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    isEnhancedResizeEnabled() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:mipmaps", this._id).then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    setEnhancedResizeEnabled(value2) {
+      return new Promise((resolve2) => {
+        Item$1.set("prop:mipmaps", value2 ? "1" : "0", this._id).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    getPosition(output = 0) {
+      return new Promise((resolve2) => {
+        Item$1.get(`prop:pos:${output}`, this._id).then((val) => {
+          var [left, top, right, bottom] = String(val).split(",");
+          this.position = Rectangle.fromCoordinates(
+            Number(left),
+            Number(top),
+            Number(right),
+            Number(bottom)
+          );
+          resolve2(this.position);
+        });
+      });
+    }
+    setPosition(value2, output = 0) {
+      return new Promise((resolve2, reject2) => {
+        try {
+          Item$1.set(`prop:pos:${output}`, value2.toCoordinateString(), this._id).then(() => {
+            resolve2(this);
+          });
+        } catch (err) {
+          reject2(err);
+        }
+      });
+    }
+    getRotateY() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:rotate_y", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setRotateY(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -360 || value2 > 360) {
+          reject2(Error("Invalid value. Min: -360, Max: 360"));
+        } else {
+          Item$1.set("prop:rotate_y", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getRotateX() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:rotate_x", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setRotateX(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -360 || value2 > 360) {
+          reject2(Error("Invalid value. Min: -360, Max: 360"));
+        } else {
+          Item$1.set("prop:rotate_x", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getRotateZ() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:rotate_z", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setRotateZ(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -360 || value2 > 360) {
+          reject2(Error("Invalid value. Min: -360, Max: 360"));
+        } else {
+          Item$1.set("prop:rotate_z", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getCropping() {
+      return new Promise((resolve2) => {
+        var cropObject = {};
+        Item$1.get("prop:crop", this._id).then((val) => {
+          var [left, top, right, bottom] = String(val).split(",");
+          cropObject["left"] = Number(left);
+          cropObject["top"] = Number(top);
+          cropObject["right"] = Number(right);
+          cropObject["bottom"] = Number(bottom);
+          resolve2(cropObject);
+        });
+      });
+    }
+    setCropping(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (Object.prototype.hasOwnProperty.call(value2, "top") && Object.prototype.hasOwnProperty.call(value2, "left") && Object.prototype.hasOwnProperty.call(value2, "right") && Object.prototype.hasOwnProperty.call(value2, "bottom")) {
+          Item$1.set(
+            "prop:crop",
+            value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6),
+            this._id
+          ).then(() => {
+            resolve2(this);
+          });
+        } else {
+          reject2(
+            Error("Error setting cropping, insufficient properties (left, top, right, bottom)")
+          );
+        }
+      });
+    }
+    getCanvasRotate() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:rotate_canvas", this._id).then((val) => {
+          var value2 = Number(val);
+          if ([0, 90, 180, 270].indexOf(value2) < 0) {
+            resolve2(0);
+          } else {
+            resolve2(value2);
+          }
+        });
+      });
+    }
+    setCanvasRotate(value2) {
+      return new Promise((resolve2, reject2) => {
+        if ([0, 90, 180, 270].indexOf(value2) < 0) {
+          reject2(Error("Invalid value. Only possible values are 0, 90, 180 and 270"));
+        } else {
+          Item$1.set("prop:rotate_canvas", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getEnhancedRotate() {
+      return new Promise((resolve2) => {
+        var rotateZ;
+        var rotateCanvas;
+        var rotateValue;
+        Item$1.get("prop:rotate_z", this._id).then((val) => {
+          rotateZ = Number(val);
+          return Item$1.get("prop:rotate_canvas", this._id);
+        }).then((val) => {
+          rotateCanvas = Number(val);
+          rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
+          resolve2(rotateValue);
+        });
+      });
+    }
+    setEnhancedRotate(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -180 || value2 > 180) {
+          reject2(Error("Invalid value. Min: -180, Max: 180"));
+        } else {
+          var formerObject;
+          var valueObject = this._getCanvasAndZRotate(Number(value2));
+          this.getEnhancedRotate().then((val) => {
+            formerObject = this._getCanvasAndZRotate(Number(val));
+            return Item$1.set("prop:rotate_z", String(valueObject["zRotate"]), this._id);
+          }).then(() => {
+            return Item$1.set("prop:rotate_canvas", String(valueObject["canvasRotate"]), this._id);
+          }).then(() => {
+            if (formerObject["orientation"] !== valueObject["orientation"]) {
+              var outputResolution;
+              var widthMax;
+              var heightMax;
+              Item$1.get("mixerresolution", this._id).then((val) => {
+                outputResolution = val.split(",");
+                widthMax = Number(outputResolution[0]);
+                heightMax = Number(outputResolution[1]);
+                return Item$1.get("prop:pos", this._id);
+              }).then((val) => {
+                var position = val.split(",");
+                var leftPosition = parseFloat(position[0]) * widthMax;
+                var topPosition = parseFloat(position[1]) * heightMax;
+                var rightPosition = parseFloat(position[2]) * widthMax;
+                var bottomPosition = parseFloat(position[3]) * heightMax;
+                var newLeft;
+                var newRight;
+                var newTop;
+                var newBottom;
+                var widthValue = Math.round(rightPosition - leftPosition);
+                var heightValue = Math.round(bottomPosition - topPosition);
+                if (heightValue > widthMax) {
+                  newLeft = 0;
+                  newRight = widthMax;
+                } else {
+                  var xCenter = leftPosition + (rightPosition - leftPosition) / 2;
+                  newLeft = xCenter - heightValue / 2;
+                  newRight = xCenter + heightValue / 2;
+                }
+                if (widthValue > heightMax) {
+                  newTop = 0;
+                  newBottom = heightMax;
+                } else {
+                  var yCenter = topPosition + (bottomPosition - topPosition) / 2;
+                  newTop = yCenter - widthValue / 2;
+                  newBottom = yCenter + widthValue / 2;
+                }
+                var leftPos = newLeft / widthMax;
+                var topPos = newTop / heightMax;
+                var rightPos = newRight / widthMax;
+                var bottomPos = newBottom / heightMax;
+                return Item$1.set(
+                  "prop:pos",
+                  leftPos.toFixed(6) + "," + topPos.toFixed(6) + "," + rightPos.toFixed(6) + "," + bottomPos.toFixed(6),
+                  this._id
+                );
+              }).then(() => {
+                return Item$1.get("prop:posaspect", this._id);
+              }).then((val) => {
+                return Item$1.set("prop:pos", val, this._id);
+              }).then(() => {
+                resolve2(this);
+              });
+            } else {
+              resolve2(this);
+            }
+          });
+        }
+      });
+    }
+    setCroppingEnhanced(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (Object.prototype.hasOwnProperty.call(value2, "top") && Object.prototype.hasOwnProperty.call(value2, "left") && Object.prototype.hasOwnProperty.call(value2, "right") && Object.prototype.hasOwnProperty.call(value2, "bottom")) {
+          var originalWidth;
+          var originalHeight;
+          var outputResolution;
+          var position;
+          var canvasRotate;
+          var preCropPosition = {};
+          Item$1.get("mixerresolution", this._id).then((val) => {
+            outputResolution = val.split(",");
+            return Item$1.get("prop:pos", this._id);
+          }).then((val) => {
+            position = val.split(",");
+            return Item$1.get("prop:rotate_canvas", this._id);
+          }).then((val) => {
+            canvasRotate = val;
+            return Item$1.get("prop:crop", this._id);
+          }).then((val) => {
+            var mixerWidth = parseInt(outputResolution[0]);
+            var mixerHeight = parseInt(outputResolution[1]);
+            var leftPositionInit = parseFloat(position[0]) * mixerWidth;
+            var topPositionInit = parseFloat(position[1]) * mixerHeight;
+            var rightPositionInit = parseFloat(position[2]) * mixerWidth;
+            var bottomPositionInit = parseFloat(position[3]) * mixerHeight;
+            var widthValue = rightPositionInit - leftPositionInit;
+            var heightValue = bottomPositionInit - topPositionInit;
+            var crop = val.split(",");
+            var leftCropRaw = parseFloat(crop[0]);
+            var topCropRaw = parseFloat(crop[1]);
+            var rightCropRaw = parseFloat(crop[2]);
+            var bottomCropRaw = parseFloat(crop[3]);
+            var leftValue = Math.round(leftCropRaw * 100);
+            var topValue = Math.round(topCropRaw * 100);
+            var rightValue = Math.round(rightCropRaw * 100);
+            var bottomValue = Math.round(bottomCropRaw * 100);
+            var isNoCropping = leftValue === 0 && topValue === 0 && rightValue === 0 && bottomValue === 0;
+            if (canvasRotate === 270) {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalHeight = widthValue;
+                originalWidth = heightValue;
+              } else {
+                var leftPosition = parseFloat(position[3]);
+                var topPosition = parseFloat(position[0]);
+                var rightPosition = parseFloat(position[1]);
+                var bottomPosition = parseFloat(position[2]);
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
+                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+                  var leftDifference = originalWidth * leftCropRaw / mixerHeight;
+                  preCropPosition[3] = leftPosition + leftDifference;
+                  var rightDifference = originalWidth * rightCropRaw / mixerHeight;
+                  preCropPosition[1] = rightPosition - rightDifference;
+                } else {
+                  originalWidth = heightValue;
+                }
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
+                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+                  var topDifference = originalHeight * topCropRaw / mixerWidth;
+                  preCropPosition[0] = topPosition - topDifference;
+                  var bottomDifference = originalHeight * bottomCropRaw / mixerWidth;
+                  preCropPosition[2] = bottomPosition + bottomDifference;
+                } else {
+                  originalHeight = widthValue;
+                }
+                if (leftCropRaw === 0) {
+                  preCropPosition[3] = position[3];
+                }
+                if (topCropRaw === 0) {
+                  preCropPosition[0] = position[0];
+                }
+                if (rightCropRaw === 0) {
+                  preCropPosition[1] = position[1];
+                }
+                if (bottomCropRaw === 0) {
+                  preCropPosition[2] = position[2];
+                }
+              }
+            } else if (canvasRotate === 180) {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalWidth = widthValue;
+                originalHeight = heightValue;
+              } else {
+                var leftPosition = parseFloat(position[2]);
+                var topPosition = parseFloat(position[3]);
+                var rightPosition = parseFloat(position[0]);
+                var bottomPosition = parseFloat(position[1]);
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
+                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+                  var leftDifference = originalWidth * leftCropRaw / mixerWidth;
+                  preCropPosition[2] = leftPosition + leftDifference;
+                  var rightDifference = originalWidth * rightCropRaw / mixerWidth;
+                  preCropPosition[0] = rightPosition - rightDifference;
+                } else {
+                  originalWidth = widthValue;
+                }
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
+                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+                  var topDifference = originalHeight * topCropRaw / mixerHeight;
+                  preCropPosition[3] = topPosition + topDifference;
+                  var bottomDifference = originalHeight * bottomCropRaw / mixerHeight;
+                  preCropPosition[1] = bottomPosition - bottomDifference;
+                } else {
+                  originalHeight = heightValue;
+                }
+                if (leftCropRaw === 0) {
+                  preCropPosition[2] = position[2];
+                }
+                if (topCropRaw === 0) {
+                  preCropPosition[3] = position[3];
+                }
+                if (rightCropRaw === 0) {
+                  preCropPosition[0] = position[0];
+                }
+                if (bottomCropRaw === 0) {
+                  preCropPosition[1] = position[1];
+                }
+              }
+            } else if (canvasRotate === 90) {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalHeight = widthValue;
+                originalWidth = heightValue;
+              } else {
+                var leftPosition = parseFloat(position[1]);
+                var topPosition = parseFloat(position[2]);
+                var rightPosition = parseFloat(position[3]);
+                var bottomPosition = parseFloat(position[0]);
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
+                  originalWidth = heightValue / (1 - rightCropRaw - leftCropRaw);
+                  var leftDifference = originalWidth * leftCropRaw / mixerHeight;
+                  preCropPosition[1] = leftPosition - leftDifference;
+                  var rightDifference = originalWidth * rightCropRaw / mixerHeight;
+                  preCropPosition[3] = rightPosition + rightDifference;
+                } else {
+                  originalWidth = heightValue;
+                }
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
+                  originalHeight = widthValue / (1 - bottomCropRaw - topCropRaw);
+                  var topDifference = originalHeight * topCropRaw / mixerWidth;
+                  preCropPosition[2] = topPosition + topDifference;
+                  var bottomDifference = originalHeight * bottomCropRaw / mixerWidth;
+                  preCropPosition[0] = bottomPosition - bottomDifference;
+                } else {
+                  originalHeight = widthValue;
+                }
+                if (leftCropRaw === 0) {
+                  preCropPosition[1] = position[1];
+                }
+                if (topCropRaw === 0) {
+                  preCropPosition[2] = position[2];
+                }
+                if (rightCropRaw === 0) {
+                  preCropPosition[3] = position[3];
+                }
+                if (bottomCropRaw === 0) {
+                  preCropPosition[0] = position[0];
+                }
+              }
+            } else {
+              if (isNoCropping) {
+                preCropPosition = position;
+                originalHeight = heightValue;
+                originalWidth = widthValue;
+              } else {
+                var leftPosition = parseFloat(position[0]);
+                var topPosition = parseFloat(position[1]);
+                var rightPosition = parseFloat(position[2]);
+                var bottomPosition = parseFloat(position[3]);
+                if (leftCropRaw !== 0 || rightCropRaw !== 0) {
+                  originalWidth = widthValue / (1 - rightCropRaw - leftCropRaw);
+                  var leftDifference = originalWidth * leftCropRaw / mixerWidth;
+                  preCropPosition[0] = leftPosition - leftDifference;
+                  var rightDifference = originalWidth * rightCropRaw / mixerWidth;
+                  preCropPosition[2] = rightPosition + rightDifference;
+                } else {
+                  originalWidth = widthValue;
+                }
+                if (topCropRaw !== 0 || bottomCropRaw !== 0) {
+                  originalHeight = heightValue / (1 - bottomCropRaw - topCropRaw);
+                  var topDifference = originalHeight * topCropRaw / mixerHeight;
+                  preCropPosition[1] = topPosition - topDifference;
+                  var bottomDifference = originalHeight * bottomCropRaw / mixerHeight;
+                  preCropPosition[3] = bottomPosition + bottomDifference;
+                } else {
+                  originalHeight = heightValue;
+                }
+                if (leftCropRaw === 0) {
+                  preCropPosition[0] = position[0];
+                }
+                if (topCropRaw === 0) {
+                  preCropPosition[1] = position[1];
+                }
+                if (rightCropRaw === 0) {
+                  preCropPosition[2] = position[2];
+                }
+                if (bottomCropRaw === 0) {
+                  preCropPosition[3] = position[3];
+                }
+              }
+            }
+            var leftCrop = value2["left"];
+            var topCrop = value2["top"];
+            var rightCrop = value2["right"];
+            var bottomCrop = value2["bottom"];
+            var leftPosition = parseFloat(preCropPosition[0]);
+            var topPosition = parseFloat(preCropPosition[1]);
+            var rightPosition = parseFloat(preCropPosition[2]);
+            var bottomPosition = parseFloat(preCropPosition[3]);
+            var sourceHeight = (bottomPosition - topPosition) * mixerHeight;
+            var sourceWidth = (rightPosition - leftPosition) * mixerWidth;
+            var newLeft, newTop, newRight, newBottom;
+            if (canvasRotate === 270) {
+              newLeft = topCrop * sourceWidth / mixerWidth + leftPosition;
+              newTop = rightCrop * sourceHeight / mixerHeight + topPosition;
+              newRight = rightPosition - bottomCrop * sourceWidth / mixerWidth;
+              newBottom = bottomPosition - leftCrop * sourceHeight / mixerHeight;
+            } else if (canvasRotate === 180) {
+              newLeft = rightCrop * sourceWidth / mixerWidth + leftPosition;
+              newTop = bottomCrop * sourceHeight / mixerHeight + topPosition;
+              newRight = rightPosition - leftCrop * sourceWidth / mixerWidth;
+              newBottom = bottomPosition - topCrop * sourceHeight / mixerHeight;
+            } else if (canvasRotate === 90) {
+              newLeft = bottomCrop * sourceWidth / mixerWidth + leftPosition;
+              newTop = leftCrop * sourceHeight / mixerHeight + topPosition;
+              newRight = rightPosition - topCrop * sourceWidth / mixerWidth;
+              newBottom = bottomPosition - rightCrop * sourceHeight / mixerHeight;
+            } else {
+              newLeft = leftCrop * sourceWidth / mixerWidth + leftPosition;
+              newTop = topCrop * sourceHeight / mixerHeight + topPosition;
+              newRight = rightPosition - rightCrop * sourceWidth / mixerWidth;
+              newBottom = bottomPosition - bottomCrop * sourceHeight / mixerHeight;
+            }
+            Item$1.set(
+              "prop:crop",
+              value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6),
+              this._id
+            ).then(() => {
+              return Item$1.set(
+                "prop:pos",
+                newLeft.toFixed(6) + "," + newTop.toFixed(6) + "," + newRight.toFixed(6) + "," + newBottom.toFixed(6),
+                this._id
+              );
+            }).then(() => {
+              resolve2(this);
+            });
+          });
+        } else {
+          reject2(
+            Error("Error setting cropping, insufficient properties (left, top, right, bottom)")
+          );
+        }
+      });
+    }
+    bringForward() {
+      return new Promise((resolve2) => {
+        Item$1.set("prop:zorder", "+", this._id).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    sendBackward() {
+      return new Promise((resolve2) => {
+        Item$1.set("prop:zorder", "-", this._id).then(() => {
+          resolve2(this);
+        });
+      });
+    }
+    bringToFront() {
+      return new Promise((resolve2) => {
+        let itemsLength = 0;
+        let itemIndex = -1;
+        let forwardStep = 0;
+        Scene.searchScenesByItemId(this._id).then((itemScene) => {
+          return itemScene.getItems();
+        }).then((sceneItems) => {
+          itemsLength = sceneItems.length;
+          for (var i = 0; i < itemsLength; ++i) {
+            if (sceneItems[i]["_id"] === this._id) {
+              itemIndex = i;
+              break;
+            }
+          }
+          if (itemsLength > 0 && itemIndex > -1) {
+            forwardStep = itemsLength - 1 - itemIndex;
+          }
+          const promiseArray = [];
+          const zorderPromise = (itemId, idx) => new Promise((zorderResolve) => {
+            Item$1.set("prop:zorder", "+", this._id).then(() => {
+              zorderResolve();
+            });
+          });
+          for (var i = forwardStep - 1; i >= 0; i--) {
+            promiseArray.push(zorderPromise(this._id));
+          }
+          Promise.all(promiseArray).then(() => {
+            resolve2(this);
+          });
+        });
+      });
+    }
+    sendToBack() {
+      return new Promise((resolve2) => {
+        let itemsLength = 0;
+        let itemIndex = -1;
+        let backwardStep = 0;
+        Scene.searchScenesByItemId(this._id).then((itemScene) => {
+          return itemScene.getItems();
+        }).then((sceneItems) => {
+          itemsLength = sceneItems.length;
+          for (var i = 0; i < itemsLength; ++i) {
+            if (sceneItems[i]["_id"] === this._id) {
+              itemIndex = i;
+              break;
+            }
+          }
+          if (itemsLength > 0 && itemIndex > -1) {
+            backwardStep = itemIndex;
+          }
+          const promiseArray = [];
+          const zorderPromise = (itemId, idx) => new Promise((zorderResolve) => {
+            Item$1.set("prop:zorder", "-", this._id).then(() => {
+              zorderResolve();
+            });
+          });
+          for (var i = backwardStep - 1; i >= 0; i--) {
+            promiseArray.push(zorderPromise(this._id));
+          }
+          Promise.all(promiseArray).then(() => {
+            resolve2(this);
+          });
+        });
+      });
+    }
   }
   var ViewTypes = /* @__PURE__ */ ((ViewTypes2) => {
     ViewTypes2[ViewTypes2["MAIN"] = 0] = "MAIN";
@@ -8210,7 +7627,9 @@ var XJS = (function(exports) {
      */
     on(event, handler) {
       Item._emitter.on(event + "_" + this._id, handler);
-      let isItemSubscribeEventsSupported = versionCompare(getVersion()).is.greaterThanOrEqualTo(itemSubscribeEventVersion);
+      const isItemSubscribeEventsSupported = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+        itemSubscribeEventVersion
+      );
       if (event === "item-changed" && isItemSubscribeEventsSupported && !Environment.isSourceProps() && Item._subscriptions.indexOf("itempropchange_" + this._id) < 0) {
         Item._subscriptions.push("itempropchange_" + this._id);
         EventManager.subscribe("itempropchange_" + this._id, (...eventArgs) => {
@@ -8323,7 +7742,7 @@ var XJS = (function(exports) {
         }).then(() => {
           return Item$1.get("stats:frames", this._id);
         }).then((frames) => {
-          let final = frames === "null" || frames === "" ? 0 : Number(frames);
+          const final = frames === "null" || frames === "" ? 0 : Number(frames);
           resolve2(final - initial);
         });
       });
@@ -8397,8 +7816,8 @@ var XJS = (function(exports) {
      */
     toXML() {
       var item = new JSON$1();
-      for (let prop in this._xmlparams) {
-        if (!{}.hasOwnProperty.call(this._xmlparams, prop)) continue;
+      for (const prop in this._xmlparams) {
+        if (!Object.prototype.hasOwnProperty.call(this._xmlparams, prop)) continue;
         item[prop] = this._xmlparams[prop];
       }
       item["tag"] = "item";
@@ -8537,8 +7956,8 @@ var XJS = (function(exports) {
     getSource() {
       return new Promise((resolve2, reject2) => {
         Item$1.get("config", this._id).then((config) => {
-          let item = JSON$1.parse(config);
-          let srcType = SourceTypeResolve(item);
+          const item = JSON$1.parse(config);
+          const srcType = SourceTypeResolve(item);
           resolve2(srcType);
         }).catch((err) => {
           reject2(err);
@@ -8604,159 +8023,90 @@ var XJS = (function(exports) {
     }
   }
   applyMixins(Item, [iSource, ItemLayout]);
-  class ItemColor {
-    getTransparency() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:alpha", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
+  class AudioItem extends Item {
+  }
+  applyMixins(AudioItem, [Audio, SourceAudio]);
+  class Color {
+    constructor(props) {
+      if (props["rgb"] !== void 0) {
+        this.setRgb(props["rgb"]);
+      } else if (props["irgb"] !== void 0) {
+        this.setIrgb(props["irgb"]);
+      } else if (props["bgr"] !== void 0) {
+        this.setBgr(props["bgr"]);
+      } else if (props["ibgr"] !== void 0) {
+        this.setIbgr(props["ibgr"]);
+      } else if (props["isTransparent"] !== void 0 && props["isTransparent"] === true) {
+        this.setTransparent();
+      } else {
+        throw new Error("Do not call Color constructor without parameters.");
+      }
     }
-    setTransparency(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Transparency may only be in the range 0-255."));
-        } else {
-          Item$1.set("prop:alpha", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    static fromRGBString(rgb) {
+      return new Color({ rgb });
     }
-    getBrightness() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:cc_brightness", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
+    static fromRGBInt(irgb) {
+      return new Color({ irgb });
     }
-    setBrightness(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Brightness may only be in the range -100 to 100."));
-        } else {
-          Item$1.set("prop:cc_brightness", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    static fromBGRString(bgr) {
+      return new Color({ bgr });
     }
-    getContrast() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:cc_contrast", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
+    static fromBGRInt(ibgr) {
+      return new Color({ ibgr });
     }
-    setContrast(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Contrast may only be in the range -100 to 100."));
-        } else {
-          Item$1.set("prop:cc_contrast", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    static fromTransparent() {
+      return new Color({ isTransparent: true });
     }
-    getHue() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:cc_hue", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
+    getRgb() {
+      return this._rgb;
     }
-    setHue(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -180 || value2 > 180) {
-          reject2(RangeError("Contrast may only be in the range -180 to 180."));
-        } else {
-          Item$1.set("prop:cc_hue", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    setRgb(rgb) {
+      this._rgb = rgb.replace(/^#/, "").toUpperCase();
+      this._irgb = parseInt(this._rgb, 16);
+      this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4), this._rgb.substring(0, 2)].join("").toUpperCase();
+      this._ibgr = parseInt(this._bgr, 16);
+      this._transparent = false;
+      return this;
     }
-    getSaturation() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:cc_saturation", this._id).then((val) => {
-          resolve2(Number(val));
-        });
-      });
+    getBgr() {
+      return this._bgr;
     }
-    setSaturation(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Saturation may only be in the range -100 to 100"));
-        } else {
-          Item$1.set("prop:cc_saturation", String(value2), this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    setBgr(bgr) {
+      this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4), bgr.substring(0, 2)].join(""));
+      return this;
     }
-    getBorderColor() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:border", this._id).then((val) => {
-          var color;
-          if (val === "0") {
-            color = Color.fromTransparent();
-          } else {
-            var bgr = Number(val) - 2147483648;
-            color = Color.fromBGRInt(bgr);
-          }
-          resolve2(color);
-        });
-      });
+    getIrgb() {
+      return this._irgb;
     }
-    setBorderColor(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (!(value2 instanceof Color)) {
-          reject2(TypeError("Use a Color object as the parameter."));
-        } else {
-          var colorString;
-          if (value2.isTransparent()) {
-            colorString = "0";
-          } else {
-            colorString = String(value2.getIbgr() - 2147483648);
-          }
-          Item$1.set("prop:border", colorString, this._id).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    setIrgb(irgb) {
+      let rgb = irgb.toString(16);
+      while (rgb.length < 6) {
+        rgb = "0" + rgb;
+      }
+      this.setRgb(rgb);
+      return this;
     }
-    isFullDynamicColorRange() {
-      return new Promise((resolve2) => {
-        Item$1.get("prop:cc_dynamicrange", this._id).then((val) => {
-          resolve2(val === "1");
-        });
-      });
+    getIbgr() {
+      return this._ibgr;
     }
-    setFullDynamicColorRange(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "boolean") {
-          reject2(TypeError("Parameter should be boolean."));
-        } else {
-          Item$1.set(
-            "prop:cc_dynamicrange",
-            value2 ? "1" : "0",
-            this._id
-          ).then(() => {
-            resolve2(this);
-          });
-        }
-      });
+    setIbgr(ibgr) {
+      var bgr = ibgr.toString(16);
+      while (bgr.length < 6) {
+        bgr = "0" + bgr;
+      }
+      this.setBgr(bgr);
+      return this;
+    }
+    setTransparent() {
+      this._rgb = "0";
+      this._irgb = 0;
+      this._bgr = "0";
+      this._ibgr = 0;
+      this._transparent = true;
+      return this;
+    }
+    isTransparent() {
+      return this._transparent;
     }
   }
   var KeyingType = /* @__PURE__ */ ((KeyingType2) => {
@@ -8790,11 +8140,7 @@ var XJS = (function(exports) {
         if (typeof value2 !== "boolean") {
           reject2(TypeError("Parameter should be boolean."));
         } else {
-          Item$1.set(
-            "prop:key_chromakey",
-            value2 ? "1" : "0",
-            this._id
-          ).then(() => {
+          Item$1.set("prop:key_chromakey", value2 ? "1" : "0", this._id).then(() => {
             resolve2(this);
           });
         }
@@ -8814,11 +8160,7 @@ var XJS = (function(exports) {
         } else if (value2 < 0 || value2 > 2) {
           reject2(RangeError("Use a KeyingType value as the parameter."));
         } else {
-          Item$1.set(
-            "prop:key_chromakeytype",
-            String(value2),
-            this._id
-          ).then(() => {
+          Item$1.set("prop:key_chromakeytype", String(value2), this._id).then(() => {
             resolve2(this);
           });
         }
@@ -9050,7 +8392,7 @@ var XJS = (function(exports) {
     getChromaColorKeyColor() {
       return new Promise((resolve2) => {
         Item$1.get("prop:key_colorrgb", this._id).then((val) => {
-          let color = Color.fromBGRString(val);
+          const color = Color.fromBGRString(val);
           resolve2(color);
         });
       });
@@ -9060,11 +8402,158 @@ var XJS = (function(exports) {
         if (!(value2 instanceof Color)) {
           reject2(TypeError("Use a Color object as the parameter."));
         } else {
-          Item$1.set(
-            "prop:key_colorrgb",
-            String(value2.getIbgr()),
-            this._id
-          ).then(() => {
+          Item$1.set("prop:key_colorrgb", String(value2.getIbgr()), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+  }
+  class ItemColor {
+    getTransparency() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:alpha", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setTransparency(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < 0 || value2 > 255) {
+          reject2(RangeError("Transparency may only be in the range 0-255."));
+        } else {
+          Item$1.set("prop:alpha", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getBrightness() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:cc_brightness", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setBrightness(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -100 || value2 > 100) {
+          reject2(RangeError("Brightness may only be in the range -100 to 100."));
+        } else {
+          Item$1.set("prop:cc_brightness", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getContrast() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:cc_contrast", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setContrast(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -100 || value2 > 100) {
+          reject2(RangeError("Contrast may only be in the range -100 to 100."));
+        } else {
+          Item$1.set("prop:cc_contrast", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getHue() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:cc_hue", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setHue(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -180 || value2 > 180) {
+          reject2(RangeError("Contrast may only be in the range -180 to 180."));
+        } else {
+          Item$1.set("prop:cc_hue", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getSaturation() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:cc_saturation", this._id).then((val) => {
+          resolve2(Number(val));
+        });
+      });
+    }
+    setSaturation(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "number") {
+          reject2(TypeError("Use an integer as the parameter."));
+        } else if (value2 < -100 || value2 > 100) {
+          reject2(RangeError("Saturation may only be in the range -100 to 100"));
+        } else {
+          Item$1.set("prop:cc_saturation", String(value2), this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    getBorderColor() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:border", this._id).then((val) => {
+          var color;
+          if (val === "0") {
+            color = Color.fromTransparent();
+          } else {
+            var bgr = Number(val) - 2147483648;
+            color = Color.fromBGRInt(bgr);
+          }
+          resolve2(color);
+        });
+      });
+    }
+    setBorderColor(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (!(value2 instanceof Color)) {
+          reject2(TypeError("Use a Color object as the parameter."));
+        } else {
+          var colorString;
+          if (value2.isTransparent()) {
+            colorString = "0";
+          } else {
+            colorString = String(value2.getIbgr() - 2147483648);
+          }
+          Item$1.set("prop:border", colorString, this._id).then(() => {
+            resolve2(this);
+          });
+        }
+      });
+    }
+    isFullDynamicColorRange() {
+      return new Promise((resolve2) => {
+        Item$1.get("prop:cc_dynamicrange", this._id).then((val) => {
+          resolve2(val === "1");
+        });
+      });
+    }
+    setFullDynamicColorRange(value2) {
+      return new Promise((resolve2, reject2) => {
+        if (typeof value2 !== "boolean") {
+          reject2(TypeError("Parameter should be boolean."));
+        } else {
+          Item$1.set("prop:cc_dynamicrange", value2 ? "1" : "0", this._id).then(() => {
             resolve2(this);
           });
         }
@@ -9176,17 +8665,17 @@ var XJS = (function(exports) {
     return MaskEffect2;
   })(MaskEffect || {});
   const _DEFAULT_EFFECT_VALUES = {
-    "MASK_EFFECT": 0,
-    "BORDER_RADIUS": 0,
-    "BORDER_THICKNESS": 0,
-    "BORDER_OPACITY": 100,
-    "BORDER_COLOR": Color.fromRGBString("#FFFFFF"),
-    "SHADOW_COLOR": Color.fromRGBString("#FFFFFF"),
-    "SHADOW_THICKNESS": 0,
-    "SHADOW_BLUR": 0,
-    "SHADOW_OPACITY": 100,
-    "SHADOW_OFFSET_X": 0,
-    "SHADOW_OFFSET_Y": 0
+    MASK_EFFECT: 0,
+    BORDER_RADIUS: 0,
+    BORDER_THICKNESS: 0,
+    BORDER_OPACITY: 100,
+    BORDER_COLOR: Color.fromRGBString("#FFFFFF"),
+    SHADOW_COLOR: Color.fromRGBString("#FFFFFF"),
+    SHADOW_THICKNESS: 0,
+    SHADOW_BLUR: 0,
+    SHADOW_OPACITY: 100,
+    SHADOW_OFFSET_X: 0,
+    SHADOW_OFFSET_Y: 0
   };
   const _DEFAULT_EDGE_EFFECT_CONFIG = "0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1";
   class ItemEffect {
@@ -9426,9 +8915,11 @@ var XJS = (function(exports) {
         parameterObject["arrayIndex"] = 0;
         parameterObject["indIndex"] = [1, 2, 3];
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Color.fromRGBString(
-            "#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])
-          ));
+          resolve2(
+            Color.fromRGBString(
+              "#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])
+            )
+          );
         }).catch((err) => {
           resolve2(_DEFAULT_EFFECT_VALUES["BORDER_COLOR"]);
         });
@@ -9455,7 +8946,11 @@ var XJS = (function(exports) {
         parameterObject["arrayIndex"] = 3;
         parameterObject["indIndex"] = [1, 2, 3];
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Color.fromRGBString("#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])));
+          resolve2(
+            Color.fromRGBString(
+              "#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])
+            )
+          );
         }).catch((err) => {
           resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_COLOR"]);
         });
@@ -9860,7 +9355,7 @@ var XJS = (function(exports) {
               var transitionArray = JSON.parse(transitionString);
               for (var i = transitionArray.length - 1; i >= 0; i--) {
                 var transitionObject = transitionArray[i];
-                if (transitionObject.hasOwnProperty("Id") && transitionObject.hasOwnProperty("Name")) {
+                if (Object.prototype.hasOwnProperty.call(transitionObject, "Id") && Object.prototype.hasOwnProperty.call(transitionObject, "Name")) {
                   transitions.push(new Transition(transitionObject["Id"], transitionObject["Name"]));
                 }
               }
@@ -9933,17 +9428,6 @@ var XJS = (function(exports) {
       });
     }
   }
-  class GameItem extends Item {
-  }
-  applyMixins(GameItem, [
-    Item,
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    ItemEffect,
-    iSourceGame
-  ]);
   class CameraItem extends Item {
     // special color options pinning
     /**
@@ -10014,33 +9498,6 @@ var XJS = (function(exports) {
     ItemEffect,
     SourceCamera
   ]);
-  class AudioItem extends Item {
-  }
-  applyMixins(AudioItem, [Audio, SourceAudio]);
-  class VideoPlaylistItem extends Item {
-  }
-  applyMixins(VideoPlaylistItem, [
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    SourceConfigurable,
-    SourceVideoPlaylist,
-    SourcePlayback,
-    Audio
-  ]);
-  class HtmlItem extends Item {
-  }
-  applyMixins(HtmlItem, [
-    iSourceHtml,
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    SourceConfigurable,
-    Audio,
-    ItemEffect
-  ]);
   class FlashItem extends Item {
   }
   applyMixins(FlashItem, [
@@ -10052,54 +9509,22 @@ var XJS = (function(exports) {
     ItemEffect,
     SourceFlash
   ]);
-  class ScreenItem extends Item {
+  class GameItem extends Item {
   }
-  applyMixins(ScreenItem, [
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    ItemEffect,
-    iSourceScreen
-  ]);
-  class ImageItem extends Item {
-  }
-  applyMixins(ImageItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect, SourceImage]);
-  class MediaItem extends Item {
-  }
-  applyMixins(MediaItem, [
+  applyMixins(GameItem, [
     Item,
     ItemLayout,
     ItemColor,
     ItemChroma,
     ItemTransition,
-    SourcePlayback,
-    Audio,
     ItemEffect,
-    SourceMedia
-  ]);
-  class SceneItem extends Item {
-  }
-  applyMixins(SceneItem, [
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    Audio,
-    ItemEffect,
-    SourceScene
+    iSourceGame
   ]);
   class GenericItem extends Item {
   }
-  applyMixins(GenericItem, [
-    ItemLayout,
-    ItemColor,
-    ItemChroma,
-    ItemTransition,
-    ItemEffect
-  ]);
+  applyMixins(GenericItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect]);
   const findItem = (presetArray, id) => {
-    let itemViaID = void 0;
+    let itemViaID;
     presetArray.find((item) => {
       const children = item.children || [];
       const result = children.find((child) => child["id"] === id);
@@ -10191,13 +9616,42 @@ var XJS = (function(exports) {
   }
   class GroupItem extends Item {
   }
-  applyMixins(GroupItem, [
+  applyMixins(GroupItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition, ItemEffect, ItemGroup]);
+  class HtmlItem extends Item {
+  }
+  applyMixins(HtmlItem, [
+    iSourceHtml,
+    ItemLayout,
+    ItemColor,
+    ItemChroma,
+    ItemTransition,
+    SourceConfigurable,
+    Audio,
+    ItemEffect
+  ]);
+  class ImageItem extends Item {
+  }
+  applyMixins(ImageItem, [
+    Item,
     ItemLayout,
     ItemColor,
     ItemChroma,
     ItemTransition,
     ItemEffect,
-    ItemGroup
+    SourceImage
+  ]);
+  class MediaItem extends Item {
+  }
+  applyMixins(MediaItem, [
+    Item,
+    ItemLayout,
+    ItemColor,
+    ItemChroma,
+    ItemTransition,
+    SourcePlayback,
+    Audio,
+    ItemEffect,
+    SourceMedia
   ]);
   class ReplayItem extends Item {
   }
@@ -10209,6 +9663,39 @@ var XJS = (function(exports) {
     Audio,
     ItemEffect,
     SourceReplay
+  ]);
+  class SceneItem extends Item {
+  }
+  applyMixins(SceneItem, [
+    ItemLayout,
+    ItemColor,
+    ItemChroma,
+    ItemTransition,
+    Audio,
+    ItemEffect,
+    SourceScene
+  ]);
+  class ScreenItem extends Item {
+  }
+  applyMixins(ScreenItem, [
+    ItemLayout,
+    ItemColor,
+    ItemChroma,
+    ItemTransition,
+    ItemEffect,
+    iSourceScreen
+  ]);
+  class VideoPlaylistItem extends Item {
+  }
+  applyMixins(VideoPlaylistItem, [
+    ItemLayout,
+    ItemColor,
+    ItemChroma,
+    ItemTransition,
+    SourceConfigurable,
+    SourceVideoPlaylist,
+    SourcePlayback,
+    Audio
   ]);
   function ItemTypeResolve(item) {
     let itemType;
@@ -10227,13 +9714,9 @@ var XJS = (function(exports) {
       itemType = new ImageItem(item);
     } else if (type === ItemTypes.FILE && /\.(gif|xbs)$/i.test(itemValue) === false && /^(rtsp|rtmp):\/\//i.test(itemValue) === false && (VIDEO_REGEX.test(itemValue.split("*")[0]) || AUDIO_REGEX.test(itemValue.split("*")[0]))) {
       itemType = new MediaItem(item);
-    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf(
-      "{33D9A762-90C8-11D0-BD43-00A0C911CE86}"
-    ) === -1) {
+    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") === -1) {
       itemType = new CameraItem(item);
-    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf(
-      "{33D9A762-90C8-11D0-BD43-00A0C911CE86}"
-    ) !== -1) {
+    } else if (type === ItemTypes.LIVE && uppercaseValue.indexOf("{33D9A762-90C8-11D0-BD43-00A0C911CE86}") !== -1) {
       itemType = new AudioItem(item);
     } else if (type === ItemTypes.FLASHFILE) {
       itemType = new FlashItem(item);
@@ -10336,12 +9819,16 @@ var XJS = (function(exports) {
             if (Scene._scenePool[cnt]._id === "i12") {
               resolve2(Scene._scenePool[cnt]);
             } else {
-              reject2(Error("Invalid parameter. Valid range is 1 to total number of available scenes."));
+              reject2(
+                Error("Invalid parameter. Valid range is 1 to total number of available scenes.")
+              );
             }
           } else {
             try {
               if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === "undefined") {
-                reject2(Error("Invalid parameter. Valid range is 1 to total number of available scenes."));
+                reject2(
+                  Error("Invalid parameter. Valid range is 1 to total number of available scenes.")
+                );
               } else {
                 resolve2(Scene._scenePool[sceneNum - 1]);
               }
@@ -10406,13 +9893,13 @@ var XJS = (function(exports) {
      */
     static getBySceneUid(sceneUid) {
       return new Promise((resolve2, reject2) => {
-        let isID = /^{[A-F0-9-]*}$/i.test(sceneUid);
+        const isID = /^{[A-F0-9-]*}$/i.test(sceneUid);
         if (!isID) {
           reject2(Error("Not a valid Unique ID format for a Scene"));
         } else {
-          this._initializeScenePoolAsync().then(() => {
-            const sceneLength = this._scenePool.length;
-            this._scenePool.map((scene, idx) => {
+          Scene._initializeScenePoolAsync().then(() => {
+            const sceneLength = Scene._scenePool.length;
+            Scene._scenePool.map((scene, idx) => {
               scene.getSceneUid().then((uid) => {
                 if (uid === sceneUid) {
                   resolve2(scene);
@@ -10441,9 +9928,9 @@ var XJS = (function(exports) {
      */
     static getByName(sceneName) {
       return new Promise((resolve2) => {
-        let sceneArr = [];
-        this._initializeScenePoolAsync().then((count) => {
-          this._scenePool.map((scene, idx) => {
+        const sceneArr = [];
+        Scene._initializeScenePoolAsync().then((count) => {
+          Scene._scenePool.map((scene, idx) => {
             scene.getName().then((name) => {
               if (name === sceneName) {
                 sceneArr.push(scene);
@@ -10539,15 +10026,15 @@ var XJS = (function(exports) {
      */
     static searchItemsById(id) {
       return new Promise((resolve2, reject2) => {
-        let isID = /^{[A-F0-9\-]*}$/i.test(id);
+        const isID = /^{[A-F0-9-]*}$/i.test(id);
         if (!isID) {
           reject2(Error("Not a valid ID format for items"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
             let found = false;
-            let promiseArray = [];
-            let scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
+            const promiseArray = [];
+            const scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
               if (match === null) {
                 scene.getItems().then((items) => {
                   found = items.some((item) => {
@@ -10595,15 +10082,15 @@ var XJS = (function(exports) {
      */
     static searchScenesByItemId(id) {
       return new Promise((resolve2, reject2) => {
-        let isID = /^{[A-F0-9-]*}$/i.test(id);
+        const isID = /^{[A-F0-9-]*}$/i.test(id);
         if (!isID) {
           reject2(Error("Not a valid ID format for items"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
             let found = false;
-            let promiseArray = [];
-            let scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
+            const promiseArray = [];
+            const scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
               if (match === null) {
                 scene.getItems().then((items) => {
                   found = items.some((item) => {
@@ -10657,7 +10144,7 @@ var XJS = (function(exports) {
      */
     static searchItemsByName(param) {
       return new Promise((resolve2) => {
-        this.filterItems((item, filterResolve) => {
+        Scene.filterItems((item, filterResolve) => {
           if (item["_cname"] === param) {
             filterResolve(true);
           } else if (item["_name"] === param) {
@@ -10696,32 +10183,36 @@ var XJS = (function(exports) {
     static filterItems(func) {
       return new Promise((resolve2, reject2) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
-          let matches = [];
+          const matches = [];
           if (typeof func === "function") {
-            return Promise.all(Scene._scenePool.map((scene) => {
-              return new Promise((resolveScene) => {
-                scene.getItems().then((items) => {
-                  if (items.length === 0) {
-                    resolveScene();
-                  } else {
-                    return Promise.all(items.map((item) => {
-                      return new Promise((resolveItem) => {
-                        func(item, (checker) => {
-                          if (checker) {
-                            matches.push(item);
-                          }
-                          resolveItem();
-                        });
-                      });
-                    })).then(() => {
+            return Promise.all(
+              Scene._scenePool.map((scene) => {
+                return new Promise((resolveScene) => {
+                  scene.getItems().then((items) => {
+                    if (items.length === 0) {
                       resolveScene();
-                    });
-                  }
-                }).catch(() => {
-                  resolveScene();
+                    } else {
+                      return Promise.all(
+                        items.map((item) => {
+                          return new Promise((resolveItem) => {
+                            func(item, (checker) => {
+                              if (checker) {
+                                matches.push(item);
+                              }
+                              resolveItem();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
+                      });
+                    }
+                  }).catch(() => {
+                    resolveScene();
+                  });
                 });
-              });
-            })).then(() => {
+              })
+            ).then(() => {
               resolve2(matches);
             });
           } else {
@@ -10754,30 +10245,34 @@ var XJS = (function(exports) {
     static filterScenesByItems(func) {
       return new Promise((resolve2, reject2) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
-          let matches = [];
+          const matches = [];
           if (typeof func === "function") {
-            return Promise.all(Scene._scenePool.map((scene) => {
-              return new Promise((resolveScene) => {
-                scene.getItems().then((items) => {
-                  if (items.length === 0) {
-                    resolveScene();
-                  } else {
-                    return Promise.all(items.map((item) => {
-                      return new Promise((resolveItem) => {
-                        func(item, (checker) => {
-                          if (checker) {
-                            matches.push(scene);
-                          }
-                          resolveItem();
-                        });
-                      });
-                    })).then(() => {
+            return Promise.all(
+              Scene._scenePool.map((scene) => {
+                return new Promise((resolveScene) => {
+                  scene.getItems().then((items) => {
+                    if (items.length === 0) {
                       resolveScene();
-                    });
-                  }
-                }).catch(() => resolveScene());
-              });
-            })).then(() => {
+                    } else {
+                      return Promise.all(
+                        items.map((item) => {
+                          return new Promise((resolveItem) => {
+                            func(item, (checker) => {
+                              if (checker) {
+                                matches.push(scene);
+                              }
+                              resolveItem();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
+                      });
+                    }
+                  }).catch(() => resolveScene());
+                });
+              })
+            ).then(() => {
               resolve2(matches);
             });
           } else {
@@ -10806,15 +10301,15 @@ var XJS = (function(exports) {
      */
     static searchSourcesById(srcId) {
       return new Promise((resolve2, reject2) => {
-        let isID = /^{[A-F0-9\-]*}$/i.test(srcId);
+        const isID = /^{[A-F0-9-]*}$/i.test(srcId);
         if (!isID) {
           reject2(Error("Not a valid ID format for sources"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
             let found = false;
-            let promiseArray = [];
-            let scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
+            const promiseArray = [];
+            const scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
               if (match === null) {
                 scene.getSources().then((sources) => {
                   found = sources.some((source) => {
@@ -10839,7 +10334,7 @@ var XJS = (function(exports) {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
-              let finalResults = [];
+              const finalResults = [];
               for (var i = 0; i < results.length; i++) {
                 if (results[i] !== null) {
                   finalResults.push(results[i]);
@@ -10868,15 +10363,15 @@ var XJS = (function(exports) {
      */
     static searchScenesBySourceId(srcId) {
       return new Promise((resolve2, reject2) => {
-        let isID = /^{[A-F0-9-]*}$/i.test(srcId);
+        const isID = /^{[A-F0-9-]*}$/i.test(srcId);
         if (!isID) {
           reject2(Error("Not a valid ID format for sources"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
             let found = false;
-            let promiseArray = [];
-            let scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
+            const promiseArray = [];
+            const scenePromise = (scene, idx, arr) => new Promise((sceneResolve) => {
               if (match === null) {
                 scene.getSources().then((sources) => {
                   found = sources.some((source) => {
@@ -10901,7 +10396,7 @@ var XJS = (function(exports) {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
-              let finalResults = [];
+              const finalResults = [];
               for (var i = 0; i < results.length; i++) {
                 if (results[i] !== null) {
                   finalResults.push(results[i]);
@@ -10932,7 +10427,7 @@ var XJS = (function(exports) {
      */
     static searchSourcesByName(param) {
       return new Promise((resolve2) => {
-        this.filterSources((source, filterResolve) => {
+        Scene.filterSources((source, filterResolve) => {
           source.getCustomName().then((cname) => {
             if (cname.match(param)) {
               filterResolve(true);
@@ -10985,32 +10480,36 @@ var XJS = (function(exports) {
     static filterSources(func) {
       return new Promise((resolve2, reject2) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
-          let matches = [];
+          const matches = [];
           if (typeof func === "function") {
-            return Promise.all(Scene._scenePool.map((scene) => {
-              return new Promise((resolveScene) => {
-                scene.getSources().then((sources) => {
-                  if (sources.length === 0) {
-                    resolveScene();
-                  } else {
-                    return Promise.all(sources.map((source) => {
-                      return new Promise((resolveSource) => {
-                        func(source, (checker) => {
-                          if (checker) {
-                            matches.push(source);
-                          }
-                          resolveSource();
-                        });
-                      });
-                    })).then(() => {
+            return Promise.all(
+              Scene._scenePool.map((scene) => {
+                return new Promise((resolveScene) => {
+                  scene.getSources().then((sources) => {
+                    if (sources.length === 0) {
                       resolveScene();
-                    });
-                  }
-                }).catch(() => {
-                  resolveScene();
+                    } else {
+                      return Promise.all(
+                        sources.map((source) => {
+                          return new Promise((resolveSource) => {
+                            func(source, (checker) => {
+                              if (checker) {
+                                matches.push(source);
+                              }
+                              resolveSource();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
+                      });
+                    }
+                  }).catch(() => {
+                    resolveScene();
+                  });
                 });
-              });
-            })).then(() => {
+              })
+            ).then(() => {
               resolve2(matches);
             });
           } else {
@@ -11043,30 +10542,34 @@ var XJS = (function(exports) {
     static filterScenesBySources(func) {
       return new Promise((resolve2, reject2) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
-          let matches = [];
+          const matches = [];
           if (typeof func === "function") {
-            return Promise.all(Scene._scenePool.map((scene) => {
-              return new Promise((resolveScene) => {
-                scene.getSources().then((sources) => {
-                  if (sources.length === 0) {
-                    resolveScene();
-                  } else {
-                    return Promise.all(sources.map((source) => {
-                      return new Promise((resolveSource) => {
-                        func(source, (checker) => {
-                          if (checker) {
-                            matches.push(scene);
-                          }
-                          resolveSource();
-                        });
-                      });
-                    })).then(() => {
+            return Promise.all(
+              Scene._scenePool.map((scene) => {
+                return new Promise((resolveScene) => {
+                  scene.getSources().then((sources) => {
+                    if (sources.length === 0) {
                       resolveScene();
-                    });
-                  }
+                    } else {
+                      return Promise.all(
+                        sources.map((source) => {
+                          return new Promise((resolveSource) => {
+                            func(source, (checker) => {
+                              if (checker) {
+                                matches.push(scene);
+                              }
+                              resolveSource();
+                            });
+                          });
+                        })
+                      ).then(() => {
+                        resolveScene();
+                      });
+                    }
+                  });
                 });
-              });
-            })).then(() => {
+              })
+            ).then(() => {
               resolve2(matches);
             });
           } else {
@@ -11369,11 +10872,11 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         App$1.getAsItemList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
-          let uniqueObj = {};
-          let uniqueSrc = [];
-          let typePromise = (index) => new Promise((typeResolve) => {
-            let source = jsonArr[index];
-            let srcType = SourceTypeResolve(source);
+          const uniqueObj = {};
+          const uniqueSrc = [];
+          const typePromise = (index) => new Promise((typeResolve) => {
+            const source = jsonArr[index];
+            const srcType = SourceTypeResolve(source);
             typeResolve(srcType);
           });
           if (Array.isArray(jsonArr)) {
@@ -11391,7 +10894,7 @@ var XJS = (function(exports) {
               }
             }
             for (var j in uniqueObj) {
-              if (uniqueObj.hasOwnProperty(j)) {
+              if (Object.prototype.hasOwnProperty.call(uniqueObj, j)) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }
@@ -11420,7 +10923,7 @@ var XJS = (function(exports) {
      */
     getSceneNumber() {
       return new Promise((resolve2) => {
-        let curUid = this._uid;
+        const curUid = this._uid;
         if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
           if (typeof this._id === "number") {
             resolve2(Number(this._id) + 1);
@@ -11452,7 +10955,7 @@ var XJS = (function(exports) {
      */
     getSceneIndex() {
       return new Promise((resolve2) => {
-        let curUid = this._uid;
+        const curUid = this._uid;
         if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
           if (typeof this._id !== "number") {
             resolve2(Number(this._id));
@@ -11555,7 +11058,7 @@ var XJS = (function(exports) {
     }
     /**
      * param: (list: string)
-     * Set the transition source scene list.   
+     * Set the transition source scene list.
      * #### Usage
      *
      * ```javascript
@@ -11599,7 +11102,7 @@ var XJS = (function(exports) {
           if (val === "") {
             resolve2(Transition.NONE);
           } else {
-            let currTransition = Transition[val.toUpperCase()];
+            const currTransition = Transition[val.toUpperCase()];
             if (typeof currTransition !== "undefined") {
               resolve2(currTransition);
             } else {
@@ -11645,10 +11148,15 @@ var XJS = (function(exports) {
         if (Environment.isSourcePlugin()) {
           reject2(Error("Scene transition overrides are readonly for source plugins."));
         } else {
-          App$1.set("scenetransitionid:" + this._refID + (sourceScene ? `:${sourceScene}` : ""), value2 instanceof Transition ? value2.toString() : value2).then((value22) => {
+          App$1.set(
+            "scenetransitionid:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
+            value2 instanceof Transition ? value2.toString() : value2
+          ).then((value22) => {
             resolve2(value22);
           }).catch((err) => {
-            reject2(Error("Invalid parameter. Only Transition objects or transition strings are allowed."));
+            reject2(
+              Error("Invalid parameter. Only Transition objects or transition strings are allowed.")
+            );
           });
         }
       });
@@ -11696,7 +11204,10 @@ var XJS = (function(exports) {
         if (Environment.isSourcePlugin()) {
           reject2(Error("Scene transition overrides are readonly for source plugins."));
         } else {
-          App$1.set("scenetransitiontime:" + this._refID + (sourceScene ? `:${sourceScene}` : ""), String(time)).then((value2) => {
+          App$1.set(
+            "scenetransitiontime:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
+            String(time)
+          ).then((value2) => {
             resolve2(value2);
           });
         }
@@ -11745,7 +11256,10 @@ var XJS = (function(exports) {
         if (Environment.isSourcePlugin()) {
           reject2(Error("Scene transition overrides are readonly for source plugins."));
         } else {
-          App$1.set("scenetransitionvolume:" + this._refID + (sourceScene ? `:${sourceScene}` : ""), String(volume)).then((value2) => {
+          App$1.set(
+            "scenetransitionvolume:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
+            String(volume)
+          ).then((value2) => {
             resolve2(value2);
           });
         }
@@ -11769,9 +11283,9 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         App$1.getAsItemList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
-          let typePromise = (index) => new Promise((typeResolve) => {
-            let item = jsonArr[index];
-            let itemType = ItemTypeResolve(item);
+          const typePromise = (index) => new Promise((typeResolve) => {
+            const item = jsonArr[index];
+            const itemType = ItemTypeResolve(item);
             typeResolve(itemType);
           });
           if (Array.isArray(jsonArr)) {
@@ -11806,9 +11320,9 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         App$1.getAsList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
-          let typePromise = (index) => new Promise((typeResolve) => {
-            let item = jsonArr[index];
-            let itemType = ItemTypeResolve(item);
+          const typePromise = (index) => new Promise((typeResolve) => {
+            const item = jsonArr[index];
+            const itemType = ItemTypeResolve(item);
             typeResolve(itemType);
           });
           if (Array.isArray(jsonArr)) {
@@ -11868,16 +11382,18 @@ var XJS = (function(exports) {
               return el instanceof Source || el instanceof Item;
             })) {
               return new Promise((resolve22) => {
-                let promises = [];
-                for (let i in items) {
-                  promises.push(((_i) => {
-                    return new Promise((resolve3) => {
-                      items[_i].getId().then((id) => {
-                        ids[_i] = id;
-                        resolve3(this);
+                const promises = [];
+                for (const i in items) {
+                  promises.push(
+                    ((_i) => {
+                      return new Promise((resolve3) => {
+                        items[_i].getId().then((id) => {
+                          ids[_i] = id;
+                          resolve3(this);
+                        });
                       });
-                    });
-                  })(i));
+                    })(i)
+                  );
                 }
                 Promise.all(promises).then(() => {
                   return scene.getSceneNumber();
@@ -11899,12 +11415,12 @@ var XJS = (function(exports) {
                 sceneName = name;
                 return App$1.getAsList("sceneconfig:" + this._refID);
               }).then((jsonArr) => {
-                let newOrder = new JSON$1();
+                const newOrder = new JSON$1();
                 newOrder.children = [];
                 newOrder["tag"] = "placement";
                 newOrder["name"] = sceneName;
                 if (Array.isArray(jsonArr)) {
-                  let attrs = ["name", "cname", "item"];
+                  const attrs = ["name", "cname", "item"];
                   for (let i = 0; i < jsonArr.length; i++) {
                     for (let a = 0; a < attrs.length; a++) {
                       jsonArr[i][attrs[a]] = jsonArr[i][attrs[a]].replace(/\\/g, "\\\\");
@@ -11949,7 +11465,7 @@ var XJS = (function(exports) {
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
           reject2(Error("Not supported in this XBC version"));
         } else {
-          let presetArray = ["{00000000-0000-0000-0000-000000000000}"];
+          const presetArray = ["{00000000-0000-0000-0000-000000000000}"];
           App$1.get("scenepresetlist:" + this._uid).then((presetlist) => {
             if (presetlist !== "") {
               presetArray.push(...presetlist.split(","));
@@ -12209,6 +11725,135 @@ var XJS = (function(exports) {
       });
     }
   }
+  class StreamInfo {
+    /** StreamInfo constructor (only used internally) */
+    constructor(props) {
+      this._name = props.name;
+      this._stat = props.stat;
+      this._channel = props.channel;
+    }
+    /**
+     *  return: Promise<StreamInfo[]>
+     *
+     *  Gets the list of currently active channels.
+     */
+    static getActiveStreamChannels() {
+      return new Promise((resolve2) => {
+        App$1.getAsList("recstat").then((activeStreams) => {
+          if (activeStreams.length === 0) {
+            resolve2([]);
+          } else {
+            const channels = [];
+            for (var i = 0; i < activeStreams.length; ++i) {
+              channels.push(
+                new StreamInfo({
+                  name: activeStreams[i]["name"],
+                  stat: activeStreams[i].children.filter((child) => {
+                    return child.tag.toLowerCase() === "stat";
+                  })[0],
+                  channel: activeStreams[i].children.filter((child) => {
+                    return child.tag.toLowerCase() === "channel";
+                  })[0]
+                })
+              );
+            }
+            resolve2(channels);
+          }
+        });
+      });
+    }
+    /**
+     *  return: Promise<string>
+     *
+     *  Gets the name of the channel.
+     */
+    getName() {
+      return new Promise((resolve2) => {
+        resolve2(
+          this._name.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
+        );
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames dropped
+     */
+    getStreamDrops() {
+      return new Promise((resolve2) => {
+        App$1.get("streamdrops:" + this._name).then((val) => {
+          var drops = val.split(","), dropped = Number(drops[0]) || 0;
+          resolve2(dropped);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of GOP frames dropped
+     */
+    getGOPDrops() {
+      return new Promise((resolve2) => {
+        let usage;
+        App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
+          usage = JSON.parse(result);
+          for (var i = 0; i < usage.length; i++) {
+            if (usage[i].ChannelName === this._name) {
+              resolve2(usage[i].Dropped);
+            }
+          }
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames rendered
+     */
+    getStreamRenderedFrames() {
+      return new Promise((resolve2) => {
+        App$1.get("streamdrops:" + this._name).then((val) => {
+          var drops = val.split(","), rendered = Number(drops[1]) || 0;
+          resolve2(rendered);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current duration of the stream in microseconds
+     */
+    getStreamTime() {
+      return new Promise((resolve2) => {
+        App$1.get("streamtime:" + this._name).then((val) => {
+          var duration = Number(val) / 10;
+          resolve2(duration);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current bandwidth usage of the stream
+     */
+    getBandwidthUsage() {
+      return new Promise((resolve2) => {
+        let usage;
+        if (this._name !== "Local Recording") {
+          App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
+            usage = JSON.parse(result);
+            for (var i = 0; i < usage.length; i++) {
+              if (usage[i].ChannelName === this._name) {
+                resolve2(usage[i].AvgBitrate);
+              }
+            }
+          });
+        } else {
+          resolve2(0);
+        }
+      });
+    }
+  }
   class Output {
     static {
       this._callback = {};
@@ -12262,26 +11907,30 @@ var XJS = (function(exports) {
           _checkId = Extension.getInstance().getId();
         } else if (Environment.isSourcePlugin()) {
           _checkId = Item$1.get("itemlist").then((result) => {
-            let results = result.split(",");
+            const results = result.split(",");
             return results[0];
           });
         } else {
           _checkId = new Promise((innerResolve, innerReject) => {
-            innerReject(Error("Outputs class is only accessible from Source Plugins and Extensions."));
+            innerReject(
+              Error("Outputs class is only accessible from Source Plugins and Extensions.")
+            );
           });
         }
         _checkId.then((id) => {
           Output._getBroadcastChannels(id).then((result) => {
             const results = JSON$1.parse(result);
-            let channels = [];
+            const channels = [];
             for (var i = 0; i < results.children.length; i++) {
-              channels.push(new Output({
-                name: results.children[i]["name"].replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
-              }));
+              channels.push(
+                new Output({
+                  name: results.children[i]["name"].replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
+                })
+              );
             }
             resolve2(channels);
           });
-        }).catch(function(err) {
+        }).catch((err) => {
           reject2(err);
         });
       });
@@ -12507,13 +12156,13 @@ var XJS = (function(exports) {
       }
       return new Promise((resolve2, reject2) => {
         if (Environment.isSourcePlugin()) {
-          let isID = /^{[A-F0-9\-]*}$/i.test(Output._id);
+          const isID = /^{[A-F0-9-]*}$/i.test(Output._id);
           if (!isID) {
             reject2(Error("Not a valid ID format for items"));
           }
         }
         if (Remote.remoteType === "remote") {
-          let message = {
+          const message = {
             type: "broadcastChannels",
             id,
             name: name ? name : void 0
@@ -12572,6 +12221,466 @@ var XJS = (function(exports) {
       oldSetBroadcastChannelXml(channelXML);
     }
   };
+  class ChannelManager extends EventEmitter {
+    static {
+      this._emitter = new ChannelManager();
+    }
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
+    static emit(event, ...params) {
+      params.unshift(event);
+      ChannelManager._emitter.emit.apply(ChannelManager._emitter, params);
+    }
+    static {
+      this._proxyCallbacks = {};
+    }
+    static {
+      this._remoteCallbacks = {};
+    }
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits. Currently there are three:
+     *  `stream-start`, `stream-end` and `recording-renamed`.
+     *
+     *  #### Usage:
+     *
+     * ```javascript
+     * ChannelManager.on('stream-start', function(res) {
+     *   if (!res.error) { // No error
+     *     var channel = res.channel; // Channel Object
+     *     var streamTime = res.streamTime;
+     *   }
+     * });
+     * ```
+     */
+    static on(event, handler) {
+      if (Environment.isSourceProps()) {
+        console.warn(
+          "Channel Manager: stream-related events are not received via the Source Properties"
+        );
+      }
+      ChannelManager._emitter.on(event, (params) => {
+        try {
+          const channelInfoObj = JSON.parse(decodeURIComponent(params));
+          if (Object.prototype.hasOwnProperty.call(channelInfoObj, "ChannelName")) {
+            const channelName = channelInfoObj["ChannelName"];
+            const infoJSON = JSON$1.parse(channelInfoObj["Settings"]);
+            let statJSON;
+            const addedInfo = {};
+            if (event === "stream-end") {
+              channelInfoObj["Dropped"] = Number(channelInfoObj["Dropped"]) || 0;
+              channelInfoObj["NotDropped"] = Number(channelInfoObj["NotDropped"]) || 0;
+              channelInfoObj["StreamTime"] = Number(channelInfoObj["StreamTime"] / 10) || 0;
+              channelInfoObj["Audio"] = Number(channelInfoObj["Audio"]) || 0;
+              channelInfoObj["Video"] = Number(channelInfoObj["Video"]) || 0;
+              channelInfoObj["Output"] = Number(channelInfoObj["Output"]) || 0;
+              statJSON = JSON$1.parse(
+                '<stat video="' + channelInfoObj["Video"] + '" audio="' + channelInfoObj["Audio"] + '" output="' + channelInfoObj["Output"] + '" frmdropped="' + channelInfoObj["Dropped"] + '" frmcoded="' + channelInfoObj["NotDropped"] + '" />'
+              );
+              addedInfo["streamTime"] = channelInfoObj["StreamTime"];
+            } else if (event === "stream-start") {
+              statJSON = JSON$1.parse("<stat />");
+            }
+            const eventChannel = new StreamInfo({
+              name: channelName,
+              stat: statJSON,
+              channel: infoJSON
+            });
+            handler.call(ChannelManager, {
+              error: false,
+              channel: eventChannel,
+              streamTime: addedInfo["streamTime"]
+            });
+          } else if (Object.prototype.hasOwnProperty.call(channelInfoObj, "new") && Object.prototype.hasOwnProperty.call(channelInfoObj, "old")) {
+            if (event === "recording-renamed") {
+              const name = decodeURIComponent(channelInfoObj["new"]).replace(/\\/g, "/");
+              const nameArr = name.split("/");
+              const newName = nameArr[nameArr.length - 1];
+              handler.call(ChannelManager, {
+                error: false,
+                recordingInfo: {
+                  oldName: channelInfoObj["old"],
+                  newName,
+                  fullPath: decodeURIComponent(channelInfoObj["new"])
+                }
+              });
+            }
+          }
+        } catch (e) {
+          handler.call(ChannelManager, { error: true });
+        }
+      });
+    }
+    static off(event, handler) {
+      ChannelManager._emitter.off(event, handler);
+    }
+  }
+  function _subscribeEventManager() {
+    EventManager.subscribe(
+      ["StreamStart", "StreamEnd", "RecordingRenamed"],
+      (settingsObj) => {
+        let eventString;
+        if (Object.prototype.hasOwnProperty.call(settingsObj, "event") && Object.prototype.hasOwnProperty.call(settingsObj, "info")) {
+          eventString = settingsObj["event"];
+          if (settingsObj["event"] === "StreamStart") {
+            eventString = "stream-start";
+          } else if (settingsObj["event"] === "StreamEnd") {
+            eventString = "stream-end";
+          }
+          ChannelManager.emit(eventString, settingsObj["info"]);
+        }
+        if (Object.prototype.hasOwnProperty.call(settingsObj, "event") && Object.prototype.hasOwnProperty.call(settingsObj, "old") && Object.prototype.hasOwnProperty.call(settingsObj, "new")) {
+          eventString = settingsObj["event"];
+          if (settingsObj["event"] === "RecordingRenamed") {
+            eventString = "recording-renamed";
+            const renameInfo = {
+              old: settingsObj["old"],
+              new: settingsObj["new"]
+            };
+            ChannelManager.emit(eventString, encodeURIComponent(JSON.stringify(renameInfo)));
+          }
+        }
+      }
+    );
+  }
+  class SourcePropsWindow extends EventEmitter {
+    static {
+      this._MODE_FULL = "full";
+    }
+    static {
+      this._MODE_TABBED = "embedded";
+    }
+    /**
+     *  Gets the instance of the window utility. Use this instead of the constructor.
+     */
+    static getInstance() {
+      if (SourcePropsWindow._instance === void 0) {
+        SourcePropsWindow._instance = new SourcePropsWindow();
+      }
+      return SourcePropsWindow._instance;
+    }
+    /**
+     *  Use getInstance() instead.
+     */
+    constructor() {
+      super();
+      if (!Environment.isSourceProps()) {
+        throw new Error("SourcePropsWindow class is only available for source properties");
+      }
+      if (Remote.remoteType === "remote") {
+        throw new Error("Unable to listen to SourcePropsWindow events through Remote");
+      } else {
+        window.addEventListener(
+          "message",
+          function(event) {
+            try {
+              var data = JSON.parse(event.data);
+            } catch (e) {
+              return;
+            }
+            switch (data.event) {
+              // currently, restrict messages to selected set
+              case "set-selected-tab":
+                this.emit(data.event, data.value);
+                break;
+              case "async-callback":
+                this.emit(data.event, {
+                  asyncId: data.value.asyncId,
+                  result: data.value.result
+                });
+                break;
+            }
+          }.bind(this)
+        );
+        this.on("config-load", () => {
+          this._informConfigLoaded();
+        });
+        SourcePropsWindow._instance = this;
+      }
+    }
+    // helper function to communicate with built-in container
+    _notify(obj) {
+      window.parent.postMessage(JSON.stringify(obj), "*");
+    }
+    /**
+     *  Informs the application that the plugin intends to use the entire window for rendering its configuration.
+     */
+    useFullWindow() {
+      this._setRenderMode(SourcePropsWindow._MODE_FULL);
+      this.resize(354, 390);
+    }
+    /**
+     *  param: ({customTabs: string[], tabOrder: string[]})
+     *
+     *  Informs the application that the plugin intends to use the existing tab
+     *  system to render its properties window.
+     *
+     *  The `customTabs` node should contain a list of tab titles that the plugin
+     *  will create for itself.
+     *
+     *  The `tabOrder` node contains the desired order of tabs. This list comes
+     *  from the specified custom tabs, and the set of reusable XSplit tabs:
+     *  'Color', 'Layout' and 'Transition'.
+     */
+    useTabbedWindow(config) {
+      this._setRenderMode(SourcePropsWindow._MODE_TABBED);
+      this._declareCustomTabs(config.customTabs);
+      this._setTabOrder(config.tabOrder);
+    }
+    _setRenderMode(renderMode) {
+      this._mode = renderMode;
+      this._notify({
+        event: "set-mode",
+        value: renderMode
+      });
+    }
+    _setTabOrder(tabArray) {
+      this._notify({
+        event: "set-tab-order",
+        value: JSON.stringify(tabArray)
+      });
+    }
+    _declareCustomTabs(tabArray) {
+      this._notify({
+        event: "set-custom-tabs",
+        value: JSON.stringify(tabArray)
+      });
+    }
+    _informConfigLoaded() {
+      this._notify({ event: "load" });
+    }
+    /**
+     *  param: width<number>, height<number>
+     *
+     *  Resizes the properties window. Currently only works when using full
+     *  window mode.
+     */
+    resize(width, height) {
+      this._notify({
+        event: "resize",
+        value: JSON.stringify({
+          width,
+          height
+        })
+      });
+    }
+    /**
+     *  param: name<string>
+     *
+     *  Changes the title of the source properties dialog.
+     *  Note: The title change is temporary, as re-opening the source properties
+     *  resets the title to the display name of the source
+     *  (custom name takes precedence over name)
+     */
+    requestDialogTitleChange(name) {
+      this._notify({
+        event: "change-dialog-title",
+        value: name
+      });
+    }
+    /** Closes the properties window. */
+    close() {
+      return new Promise((resolve2) => {
+        resolve2(exec("Close"));
+      });
+    }
+    /**
+     *  param: show<boolean>
+     *
+     *  Toggles on/off the load indicator of the source properties dialog
+     */
+    showLoading(show) {
+      this._notify({
+        event: "show-overlay",
+        value: show
+      });
+    }
+  }
+  function resolveRelativePath(path, base) {
+    if (path.substring(0, 7) === "http://" || path.substring(0, 8) === "https://") {
+      return path;
+    } else if (path.substring(0, 2) === "//") {
+      return base.split("://")[0] + ":" + path;
+    } else if (path.substring(0, 3) === "../") {
+      let upDirectoryCount = 0;
+      while (path.substring(0, 3) === "../") {
+        path = path.substring(3);
+        ++upDirectoryCount;
+      }
+      let baseDirectories = base.split("/");
+      baseDirectories = baseDirectories.slice(0, length - 1 - upDirectoryCount);
+      baseDirectories.push(path);
+      return baseDirectories.join("/");
+    } else {
+      if (path.substring(0, 2) === "./") {
+        path = path.substring(2);
+      }
+      const baseSegments = base.split("/");
+      baseSegments[baseSegments.length - 1] = path;
+      return baseSegments.join("/");
+    }
+  }
+  function readMetaConfigUrl() {
+    return new Promise((resolve2) => {
+      if (Environment.isSourcePlugin()) {
+        var configObj = {};
+        var promise = new Promise((resolveInner) => {
+          exec("GetLocalPropertyAsync", "prop:BrowserConfiguration", (result) => {
+            resolveInner(result);
+          });
+        });
+        promise.then((browserConfig) => {
+          try {
+            if (browserConfig === "" || browserConfig === "null") {
+              browserConfig = exec("GetConfiguration");
+            }
+            configObj = JSON.parse(browserConfig);
+          } catch (e) {
+          } finally {
+            var metas = document.getElementsByTagName("meta");
+            for (var i = metas.length - 1; i >= 0; i--) {
+              if (metas[i].name === "xsplit:config-url") {
+                const url = resolveRelativePath(metas[i].content, window.location.href);
+                configObj["configUrl"] = url;
+                var persist = {
+                  configUrl: url
+                };
+                Global.setPersistentConfig(persist);
+                break;
+              }
+            }
+            exec("SetBrowserProperty", "Configuration", JSON.stringify(configObj));
+            resolve2();
+          }
+        });
+      } else {
+        resolve2();
+      }
+    });
+  }
+  function getCurrentSourceId() {
+    return new Promise((resolve2) => {
+      if (Environment.isSourceProps() || Environment.isSourcePlugin() && versionCompare(getVersion()).is.lessThan(minVersion)) {
+        exec("GetLocalPropertyAsync", "prop:id", (result) => {
+          const id = result;
+          Item$1.setBaseId(id);
+          if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
+            Item$1.lockSourceSlot(id);
+          }
+          resolve2();
+        });
+      } else {
+        resolve2();
+      }
+    });
+  }
+  function informWhenConfigLoaded() {
+    return new Promise((resolve2) => {
+      if (Environment.isSourceProps()) {
+        window.addEventListener("load", () => {
+          try {
+            SourcePropsWindow.getInstance().emit("config-load");
+          } catch (e) {
+          }
+          resolve2();
+        });
+      } else {
+        resolve2();
+      }
+    });
+  }
+  function setAudioengineUsed() {
+    return new Promise((resolve2) => {
+      exec("CallHostFunc", "getProperty", "experimental:audioengine", (isExperimental) => {
+        const isNewAudioEngine = parseInt(isExperimental) === 1;
+        Global.setNewAudioEngine(isNewAudioEngine);
+        resolve2();
+      });
+    });
+  }
+  function init(config) {
+    Global.addInitializationPromise(readMetaConfigUrl());
+    Global.addInitializationPromise(getCurrentSourceId());
+    Global.addInitializationPromise(setAudioengineUsed());
+    if (!(config && config["deferLoad"] !== void 0)) {
+      Global.addInitializationPromise(informWhenConfigLoaded());
+    }
+    if (config && config["listenToItemAdd"] !== void 0) {
+      Global.setListenToItemAdd();
+    }
+    Promise.all(Global.getInitializationPromises()).then(() => {
+      document.dispatchEvent(
+        new CustomEvent("xsplit-js-ready", {
+          bubbles: true
+        })
+      );
+    });
+  }
+  let isReady = false;
+  let isInit = false;
+  let readyResolve;
+  function readyPromise() {
+    return new Promise((resolve2) => {
+      if (typeof document !== "undefined") {
+        document.addEventListener("xsplit-js-ready", () => {
+          resolve2();
+        });
+      }
+      if (isReady) {
+        resolve2();
+      }
+    });
+  }
+  function finishReady(config) {
+    return new Promise((resolve2) => {
+      if (config && config["version"] !== void 0) {
+        setMockVersion(config["version"]);
+      }
+      setReady();
+      if (isReady && !isInit) {
+        _subscribeEventManager();
+        setOnce();
+        init(config);
+      }
+      if (readyResolve !== void 0 && Remote.remoteType === "remote") {
+        readyResolve.call(this, null);
+      }
+      resolve2(readyPromise);
+    });
+  }
+  function ready(config) {
+    return new Promise((resolve2, reject2) => {
+      Environment.initialize();
+      if (config && config["remote"] !== void 0) {
+        if (config["remote"]["type"] !== void 0) {
+          Remote.remoteType = config["remote"]["type"];
+        }
+        if (config["remote"]["sendMessage"] !== void 0 && config["remote"]["sendMessage"] instanceof Function) {
+          Remote.sendMessage = config["remote"]["sendMessage"];
+        } else {
+          reject2(Error("Send message should be instance of function."));
+        }
+      }
+      if (Remote.remoteType === "remote") {
+        readyResolve = () => {
+          resolve2(void 0);
+        };
+        Remote.sendMessage("getVersion");
+      } else {
+        resolve2(finishReady(config));
+      }
+    });
+  }
+  function setReady() {
+    isReady = true;
+  }
+  function setOnce() {
+    isInit = true;
+  }
   class Remote {
     static {
       this._isVersion = false;
@@ -12591,13 +12700,17 @@ var XJS = (function(exports) {
      * `Note: This may break handling of calls if the type is not returned to its original assignment`
      */
     static setRemoteType(val) {
-      let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+      const xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
       const isInXBC = navigator.appVersion.match(xbcPattern);
       return new Promise((resolve2, reject2) => {
         if (Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
           resolve2(true);
         } else {
-          reject2(Error("Unable to change the remoteType: Make sure the type is correct and the extension is in XBC."));
+          reject2(
+            Error(
+              "Unable to change the remoteType: Make sure the type is correct and the extension is in XBC."
+            )
+          );
         }
       });
     }
@@ -12627,7 +12740,7 @@ var XJS = (function(exports) {
         if (Remote.remoteType === "remote" && !Remote._isVersion && message.indexOf("setVersion") !== -1) {
           Remote._isVersion = true;
           let mockVersion2 = message;
-          let msgArray = message.split("::");
+          const msgArray = message.split("::");
           if (typeof msgArray[1] !== "undefined") {
             mockVersion2 = msgArray[1];
           }
@@ -12682,24 +12795,20 @@ var XJS = (function(exports) {
           let messageObj = {};
           return new Promise((resolve22, reject2) => {
             messageObj = JSON.parse(decodeURIComponent(message));
-            messageObj["callback"] = ((result) => {
-              let retObj = {
+            messageObj["callback"] = (result) => {
+              const retObj = {
                 result,
                 asyncId: Number(messageObj["asyncId"]),
                 type: "exec"
               };
-              resolve22(
-                Remote.sendMessage(
-                  encodeURIComponent(JSON.stringify(retObj))
-                )
-              );
-            });
-            let messageArr = [
+              resolve22(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+            };
+            const messageArr = [
               messageObj["funcName"],
               ...messageObj["args"],
               messageObj["callback"]
             ];
-            exec.apply(this, messageArr);
+            exec.apply(Remote, messageArr);
           });
         }
       });
@@ -12710,26 +12819,18 @@ var XJS = (function(exports) {
         if (Remote.remoteType === "remote") {
           EventEmitter._finalCallback(message);
         } else if (Remote.remoteType === "proxy") {
-          let messageObj = JSON.parse(decodeURIComponent(message));
-          messageObj["callback"] = ((result) => {
-            let retObj = {
+          const messageObj = JSON.parse(decodeURIComponent(message));
+          messageObj["callback"] = (result) => {
+            const retObj = {
               result,
               type: "event-emitter",
               id: messageObj["id"],
               event: messageObj["event"]
             };
-            resolve2(
-              Remote.sendMessage(
-                encodeURIComponent(JSON.stringify(retObj))
-              )
-            );
-          });
-          let messageArr = [
-            messageObj["event"],
-            messageObj["callback"],
-            messageObj["id"]
-          ];
-          EventEmitter._setCallback.call(this, messageArr);
+            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+          };
+          const messageArr = [messageObj["event"], messageObj["callback"], messageObj["id"]];
+          EventEmitter._setCallback.call(Remote, messageArr);
         }
       });
     }
@@ -12738,33 +12839,25 @@ var XJS = (function(exports) {
         if (Remote.remoteType === "remote") {
           EventManager._finalCallback(message);
         } else if (Remote.remoteType === "proxy") {
-          let messageObj = JSON.parse(decodeURIComponent(message));
-          messageObj["callback"] = ((result) => {
-            let retObj = {
+          const messageObj = JSON.parse(decodeURIComponent(message));
+          messageObj["callback"] = (result) => {
+            const retObj = {
               result,
               type: "event-manager",
               id: messageObj["id"],
               event: messageObj["event"]
             };
-            resolve2(
-              Remote.sendMessage(
-                encodeURIComponent(JSON.stringify(retObj))
-              )
-            );
-          });
-          let messageArr = [
-            messageObj["event"],
-            messageObj["callback"],
-            messageObj["id"]
-          ];
-          EventManager._setCallback.call(this, messageArr);
+            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+          };
+          const messageArr = [messageObj["event"], messageObj["callback"], messageObj["id"]];
+          EventManager._setCallback.call(Remote, messageArr);
         }
       });
     }
     static _allWindowHandler(message) {
       return new Promise((resolve2) => {
         if (Remote.remoteType === "remote") {
-          let messageObj = JSON.parse(decodeURIComponent(message));
+          const messageObj = JSON.parse(decodeURIComponent(message));
           if (messageObj["type"] === "window") {
             IO._finalCallback(message);
           } else if (messageObj["type"] === "extWindow") {
@@ -12775,30 +12868,27 @@ var XJS = (function(exports) {
             EventManager._finalCallback(message);
           }
         } else if (Remote.remoteType === "proxy") {
-          let messageObj = JSON.parse(decodeURIComponent(message));
-          messageObj["callback"] = ((result) => {
-            let retObj = {
+          const messageObj = JSON.parse(decodeURIComponent(message));
+          messageObj["callback"] = (result) => {
+            const retObj = {
               result,
               file: messageObj["file"],
               type: messageObj["type"]
             };
-            resolve2(
-              Remote.sendMessage(
-                encodeURIComponent(JSON.stringify(retObj))
-              )
-            );
-          });
+            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+          };
           if (messageObj["type"] === "window") {
-            let messageArr = [
-              messageObj["file"],
-              messageObj["callback"]
-            ];
-            IO.getVideoDuration.call(this, messageArr);
+            const messageArr = [messageObj["file"], messageObj["callback"]];
+            IO.getVideoDuration.call(Remote, messageArr);
           } else if (messageObj["type"] === "extWindow") {
-            let Ext = messageObj["instance"] = new Extension();
+            const Ext = messageObj["instance"] = new Extension();
             Ext.getId(messageObj["callback"]);
           } else if (messageObj["type"] === "broadcastChannels") {
-            Output._getBroadcastChannels(messageObj["id"], messageObj["name"], messageObj["callback"]);
+            Output._getBroadcastChannels(
+              messageObj["id"],
+              messageObj["name"],
+              messageObj["callback"]
+            );
           } else if (messageObj["type"] === "event-manager") {
             EventManager._finalCallback(messageObj["event"]);
           }
@@ -12806,9 +12896,9 @@ var XJS = (function(exports) {
       });
     }
   }
-  let _callbacks = {};
-  let _proxyCallbacks = {};
-  let _remoteCallbacks = {};
+  const _callbacks = {};
+  const _proxyCallbacks = {};
+  const _remoteCallbacks = {};
   let counter = 0;
   function exec(funcName, ...args) {
     return new Promise((resolve2, reject2) => {
@@ -12861,7 +12951,7 @@ var XJS = (function(exports) {
       }
       if (Remote.remoteType === "proxy" && typeof ret !== "number") {
         if (_proxyCallbacks[ret] !== void 0) {
-          let result = _proxyCallbacks[ret](decodeURIComponent(ret));
+          const result = _proxyCallbacks[ret](decodeURIComponent(ret));
           delete _proxyCallbacks[ret];
           resolve2(result);
         } else {
@@ -12883,8 +12973,8 @@ var XJS = (function(exports) {
       }
     });
   }
-  let asyncCallback = window$1.OnAsyncCallback;
-  window$1.OnAsyncCallback = function(asyncID, ...result) {
+  const asyncCallback = window$1.OnAsyncCallback;
+  window$1.OnAsyncCallback = (asyncID, ...result) => {
     let formattedResult;
     try {
       formattedResult = result.map((res) => decodeURIComponent(res));
@@ -12892,13 +12982,13 @@ var XJS = (function(exports) {
       formattedResult = result;
     }
     if (Remote.remoteType === "proxy") {
-      let callback = _proxyCallbacks[asyncID];
+      const callback = _proxyCallbacks[asyncID];
       if (callback instanceof Function) {
         callback(...formattedResult);
         delete _proxyCallbacks[asyncID];
       }
     } else {
-      let callback = _callbacks[asyncID];
+      const callback = _callbacks[asyncID];
       if (callback instanceof Function) {
         callback(...formattedResult);
         delete _callbacks[asyncID];
@@ -12908,290 +12998,116 @@ var XJS = (function(exports) {
       asyncCallback(asyncID, ...result);
     }
   };
-  class IO {
-    /**
-     * param: (path: string)
-     * ```
-     * return: Promise<string>
-     * ```
-     *
-     * Returns a base-64 encoded string of the target file's contents.
-     * UTF-8 encoded files may be decoded through:
-     * ```javascript
-     * IO.getFileContent('C:\\text.txt').then(function(base64Content) {
-     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
-     * });
-     * ```
-     */
-    static getFileContent(path) {
+  let App$1 = class App2 {
+    /** Get the value of the given property */
+    static get(name) {
       return new Promise((resolve2) => {
-        resolve2(exec("GetFileContent", path));
+        exec("AppGetPropertyAsync", name, resolve2);
       });
     }
-    /**
-     * param: (url: string)
-     * ```
-     * return: Promise<string>
-     * ```
-     *
-     * Returns a base-64 encoded string of the target endpoint's contents.
-     * Redirects are resolved, and this bypasses access-control-allow-origin.
-     *
-     * UTF-8 encoded content may be decoded through:
-     * ```javascript
-     * IO.getWebContent('http://example.com').then(function(base64Content) {
-     *   var actualContent = decodeURIComponent(escape(window.atob(base64Content));
-     * });
-     * ```
-     */
-    static getWebContent(url) {
+    /** Sets the value of a property */
+    static set(name, value2) {
       return new Promise((resolve2) => {
-        exec("GetWebContent", url, (encoded) => {
-          resolve2(encoded);
+        exec("AppSetPropertyAsync", name, value2, (ret) => {
+          resolve2(Number(ret) < 0 ? false : true);
         });
       });
     }
-    /**
-     * param: (url: string)
-     *
-     * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
-     *
-     */
-    static openUrl(url) {
-      return new Promise((resolve2) => {
-        exec("OpenUrl", url).then((res) => {
-          resolve2(res);
+    /** Gets the value of the given property as list */
+    static getAsList(name) {
+      return new Promise((resolve2, reject2) => {
+        App2.get(name).then((xml) => {
+          try {
+            let propsJSON = JSON$1.parse(xml), propsArr = [];
+            if (propsJSON.children && propsJSON.children.length > 0) {
+              propsArr = propsJSON.children;
+            }
+            resolve2(propsArr);
+          } catch (e) {
+            reject2(e);
+          }
         });
       });
     }
-    static {
-      this._ALLOW_MULTI_SELECT = 512;
-    }
-    static {
-      this._FILE_MUST_EXIST = 4096;
-    }
-    static {
-      this._FORCE_SHOW_HIDDEN = 268435456;
-    }
-    /**
-     * param: ([options] [, filter]) -- see below
-     * ```
-     * return: Promise<string[]>
-     * ```
-     * Opens a file dialog for the user to select a file (or multiple files).
-     * Resolves with an array of strings, each of which contains the full path
-     * and filename of a selected file. Rejects when the dialog is canceled.
-     *
-     * The first (optional) argument is a JSON object that can be used to indicate
-     * that certain flags should be true. These are documented as follows:
-     * - `allowMultiSelect`: allows users to select multiple files.
-     * - `fileMustExist`: prevents users from typing a name of a nonexistent file
-     * - `forceShowHidden`: lets the dialog show files marked as System or Hidden
-     *  (but not both)
-     *
-     * The second argument (also optional) is a JSON object used to specify the
-     * filter for items to be displayed. It takes two members:
-     * - `name`: the description of the filter (for example: Image Files)
-     * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
-     */
-    static openFileDialog(optionBag, filter) {
+    /** Gets all the items of the given condition as list */
+    static getAsItemList(name) {
       return new Promise((resolve2, reject2) => {
-        if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
-        } else {
-          let flags = 0;
-          if (optionBag !== void 0 && optionBag !== null) {
-            if (optionBag.allowMultiSelect === true) {
-              flags = flags | IO._ALLOW_MULTI_SELECT;
-            }
-            if (optionBag.fileMustExist === true) {
-              flags = flags | IO._FILE_MUST_EXIST;
-            }
-            if (optionBag.forceShowHidden === true) {
-              flags = flags | IO._FORCE_SHOW_HIDDEN;
-            }
-          }
-          let filterString = "";
-          if (filter !== void 0 && filter !== null && filter.name !== void 0 && filter.extensions !== void 0) {
-            filterString = filter.name + "|";
-            filterString += filter.extensions.map((val) => {
-              return "*." + val;
-            }).join(";");
-            filterString += "||";
-          }
-          exec(
-            "OpenFileDialogAsync",
-            null,
-            null,
-            String(flags),
-            filterString,
-            (path) => {
-              if (path !== "null") {
-                resolve2(path.split("|"));
-              } else {
-                reject2(Error("File selection cancelled."));
-              }
-            }
-          );
-        }
-      });
-    }
-    static {
-      this._callback = {};
-    }
-    static {
-      this._remoteCallback = {};
-    }
-    static {
-      this._proxyCallback = {};
-    }
-    /**
-     * param: (file: string)
-     *
-     * return: Promise<number>
-     *
-     * Returns the duration of a video file on the local system, specified in
-     * units of 10^-7 seconds.
-     */
-    static getVideoDuration(file) {
-      return new Promise((resolve2, reject2) => {
-        if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
-        } else {
-          if (typeof file !== "undefined") {
-            if (Remote.remoteType === "remote") {
-              let message = {
-                file,
-                type: "window"
-              };
-              if (IO._remoteCallback[file] === void 0) {
-                IO._remoteCallback[file] = [];
-              }
-              IO._remoteCallback[file].push({ resolve: resolve2, reject: reject2 });
-              Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
-            } else if (Remote.remoteType === "proxy") {
-              if (IO._proxyCallback[file[0]] === void 0) {
-                IO._proxyCallback[file[0]] = [];
-              }
-              IO._proxyCallback[file[0]].push(file[1]);
-              exec("GetVideoDuration", file[0]);
-            } else {
-              if (IO._callback[file] === void 0) {
-                IO._callback[file] = [];
-              }
-              IO._callback[file].push({ resolve: resolve2, reject: reject2 });
-              exec("GetVideoDuration", file);
-            }
-          } else {
-            reject2(Error("No file indicated."));
-          }
-        }
-      });
-    }
-    static _finalCallback(message) {
-      return new Promise((resolve2) => {
-        const result = JSON.parse(decodeURIComponent(message));
-        if (result["result"] !== void 0) {
-          IO._remoteCallback[result["file"]].shift().resolve(result["result"]);
-        } else {
-          IO._remoteCallback[decodeURIComponent(result["file"])].shift().reject(
-            Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(result["file"])}'`)
-          );
-        }
-      });
-    }
-  }
-  const oldOnGetVideoDuration = window$1.OnGetVideoDuration;
-  window$1.OnGetVideoDuration = function(file, duration) {
-    if (Remote.remoteType === "proxy") {
-      IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
-    } else {
-      IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
-      if (IO._callback[decodeURIComponent(file)].length === 0) {
-        delete IO._callback[decodeURIComponent(file)];
-      }
-    }
-    if (typeof oldOnGetVideoDuration === "function") {
-      oldOnGetVideoDuration(file, duration);
-    }
-  };
-  const oldOnGetVideoDurationFailed = window$1.OnGetVideoDurationFailed;
-  window$1.OnGetVideoDurationFailed = function(file) {
-    if (Remote.remoteType === "proxy") {
-      IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [void 0, file]);
-    } else {
-      IO._callback[decodeURIComponent(file)].shift().reject(
-        Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(file)}'`)
-      );
-      if (IO._callback[decodeURIComponent(file)].length === 0) {
-        delete IO._callback[decodeURIComponent(file)];
-      }
-    }
-    if (typeof oldOnGetVideoDurationFailed === "function") {
-      oldOnGetVideoDuration(file);
-    }
-  };
-  class Thumbnail {
-    /**
-     * param?: scene<id|Scene|undefined>
-     * ```
-     * return: Promise<string>
-     * ```
-     *
-     * Returns a base64 png url of a specified or current scene.
-     *
-     * #### Usage
-     *
-     * ```javascript
-     * var sceneThumbnail
-     *
-     * Thumbnail.getSceneThumbnail().then(function(image) {
-     *   sceneThumbnail = image;
-     *   // can be used as:
-     *   // div.style.backgroundImage = 'url(data:image/png;base64, image)'
-     * })
-     */
-    static getSceneThumbnail(scene) {
-      let scenePromise;
-      return new Promise((resolve2, reject2) => {
-        scenePromise = new Promise((innerResolve) => {
-          if (scene instanceof Scene) {
-            scene.getSceneUid().then((sceneUid) => innerResolve(sceneUid));
-          } else if (typeof scene === "number") {
-            if (scene < 0) {
-              reject2(Error("Invalid parameters. Valid range is 0 or higher"));
-            } else {
-              Scene.getBySceneIndex(scene).then((curScene) => {
-                return curScene.getSceneUid();
-              }).then((sceneUid) => {
-                innerResolve(sceneUid);
+        const propsArr = [];
+        App2.get(name).then((xml) => {
+          try {
+            const propsJSON = JSON$1.parse(xml);
+            const recursion = (children) => {
+              children.forEach((child) => {
+                if (child["tag"] === "item") propsArr.push(child);
+                if (child["type"] === "12" && child.children && child.children.length > 0) {
+                  child.children.forEach((placement) => {
+                    if (placement["tag"] === "placement" && placement.children && placement.children.length > 0) {
+                      recursion(placement.children);
+                    }
+                  });
+                }
               });
+            };
+            if (propsJSON["tag"] === "configuration" && propsJSON.children && propsJSON.children.length > 0) {
+              propsJSON.children.forEach((placement) => {
+                if (placement["tag"] === "placement" && placement.children && placement.children.length > 0) {
+                  recursion(placement.children);
+                }
+              });
+            } else if (propsJSON["tag"] === "placement" && propsJSON.children && propsJSON.children.length > 0) {
+              recursion(propsJSON.children);
             }
-          } else if (!scene) {
-            Scene.getActiveScene().then((curScene) => {
-              return curScene.getSceneUid();
-            }).then((sceneUid) => {
-              innerResolve(sceneUid);
-            });
-          } else {
-            reject2(Error("Invalid parameters. Valid parameter is scene or scene index"));
+            resolve2(propsArr);
+          } catch (e) {
+            resolve2(propsArr);
           }
-        });
-        scenePromise.then((sceneUid) => {
-          App$1.get(`scenethumbnail:${sceneUid}`).then((thumb) => {
-            resolve2(thumb);
-          });
         });
       });
     }
-  }
+    /** Get the value of the given global property */
+    static getGlobalProperty(name) {
+      return new Promise((resolve2) => {
+        exec("GetGlobalProperty", name).then((result) => {
+          resolve2(result);
+        });
+      });
+    }
+    /** Calls a DLL function synchronously */
+    static callDll(func, ...arg) {
+      var args = [].slice.call(arguments);
+      return new Promise((resolve2) => {
+        args.unshift("CallDll");
+        exec.apply(App2, args).then((result) => {
+          resolve2(result);
+        });
+      });
+    }
+    /** Calls an application method asynchronously */
+    static callFunc(func, ...args) {
+      return new Promise((resolve2) => {
+        exec("AppCallFuncAsync", func, ...args, (ret) => {
+          resolve2(ret);
+        });
+      });
+    }
+    static postMessage(key, ...args) {
+      return new Promise((resolve2) => {
+        args.unshift(key);
+        args.unshift("PostMessageToParent");
+        args.push((val) => {
+          resolve2(val);
+        });
+        exec.apply(App2, args);
+      });
+    }
+  };
   var DEFAULT_SILENCE_DETECTION_THRESHOLD = 5;
   var DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE = 0.04;
   var DEFAULT_SILENCE_DETECTION_PERIOD = 1e3;
   var DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE = 1e7;
-  const arrayToObj = function(array, separator) {
+  const arrayToObj = (array, separator) => {
     var obj = {};
-    array.map(function(el) {
+    array.map((el) => {
       var separatorIndex = el.indexOf(separator);
       var key = el.substring(0, separatorIndex);
       obj[key] = el.substring(separatorIndex + 1);
@@ -13204,35 +13120,30 @@ var XJS = (function(exports) {
   };
   const updateMicrophoneEffects = (effectId, configSeparator, valueSeparator, effect, value2) => {
     return new Promise((resolve2) => {
-      exec(
-        "CallHostFunc",
-        "getProperty",
-        `audiodevprop:000:effect:${effectId}\\config`,
-        (config) => {
-          const values = config ? config.split(configSeparator) : config;
-          let newValue = "";
-          let separator = "";
-          if (values) {
-            values.forEach((keyValues) => {
-              const keyValue = keyValues.split(valueSeparator);
-              if (keyValue[0] !== effect) {
-                newValue = `${newValue}${separator}${keyValues}`;
-                separator = configSeparator;
-              }
-            });
-          }
-          newValue = `${newValue}${separator}${effect}${valueSeparator}${value2}`;
-          exec(
-            "CallHostFunc",
-            "setProperty",
-            `audiodevprop:000:effect:${effectId}\\config`,
-            newValue,
-            (setVal) => {
-              resolve2(setVal);
+      exec("CallHostFunc", "getProperty", `audiodevprop:000:effect:${effectId}\\config`, (config) => {
+        const values = config ? config.split(configSeparator) : config;
+        let newValue = "";
+        let separator = "";
+        if (values) {
+          values.forEach((keyValues) => {
+            const keyValue = keyValues.split(valueSeparator);
+            if (keyValue[0] !== effect) {
+              newValue = `${newValue}${separator}${keyValues}`;
+              separator = configSeparator;
             }
-          );
+          });
         }
-      );
+        newValue = `${newValue}${separator}${effect}${valueSeparator}${value2}`;
+        exec(
+          "CallHostFunc",
+          "setProperty",
+          `audiodevprop:000:effect:${effectId}\\config`,
+          newValue,
+          (setVal) => {
+            resolve2(setVal);
+          }
+        );
+      });
     });
   };
   class App {
@@ -13282,10 +13193,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         App$1.get("resolution").then((val) => {
           var dimensions = val.split(",");
-          resolve2(Rectangle.fromDimensions(
-            parseInt(dimensions[0]),
-            parseInt(dimensions[1])
-          ));
+          resolve2(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
         });
       });
     }
@@ -13309,10 +13217,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         App$1.get("viewport").then((val) => {
           var dimensions = val.split(",");
-          resolve2(Rectangle.fromDimensions(
-            parseInt(dimensions[0]),
-            parseInt(dimensions[1])
-          ));
+          resolve2(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
         });
       });
     }
@@ -13378,7 +13283,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (Global.isNewAudioEngine()) {
           exec("CallHostFunc", "getProperty", "audiodev:000", (resultXml) => {
-            let audioJson = JSON$1.parse(resultXml);
+            const audioJson = JSON$1.parse(resultXml);
             const audio = AudioDevice.parse(audioJson);
             resolve2(audio);
           });
@@ -13415,7 +13320,7 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (Global.isNewAudioEngine()) {
           exec("CallHostFunc", "getProperty", "audiodev:001", (resultXml) => {
-            let audioJson = JSON$1.parse(resultXml);
+            const audioJson = JSON$1.parse(resultXml);
             const audio = AudioDevice.parse(audioJson);
             resolve2(audio);
           });
@@ -13457,9 +13362,15 @@ var XJS = (function(exports) {
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
           const value2 = `volume:${vol.toFixed(6)}&enable:1`;
-          exec("CallHostFunc", "setProperty", `audiodevprop:000:effect:volume\\config`, value2, (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            `audiodevprop:000:effect:volume\\config`,
+            value2,
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimaryMicLevel", err);
             reject2("Unable to setPrimaryMicLevel");
           });
@@ -13509,9 +13420,15 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (Global.isNewAudioEngine()) {
           const value2 = `volume:1.000000&enable:${enabled ? 1 : 0}`;
-          exec("CallHostFunc", "setProperty", "audiodevprop:000:effect:mute\\config", value2, (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:000:effect:mute\\config",
+            value2,
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimaryMicEnabled", err);
             reject2("Unable to setPrimaryMicEnabled");
           });
@@ -13619,9 +13536,15 @@ var XJS = (function(exports) {
           reject2(Error("Value can only be 0, 1 or 255"));
         }
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "setProperty", "audiodevprop:000:hwenable", hwenabled.toString(), (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:000:hwenable",
+            hwenabled.toString(),
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimaryMicSystemEnabled", err);
             reject2("Unable to setPrimaryMicSystemEnabled");
           });
@@ -13673,9 +13596,15 @@ var XJS = (function(exports) {
           reject2(Error("Delay can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "setProperty", "audiodevprop:000:param\\delay", delay.toString(), (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:000:param\\delay",
+            delay.toString(),
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimaryMicDelay", err);
             reject2("Unable to setPrimaryMicDelay");
           });
@@ -13729,9 +13658,15 @@ var XJS = (function(exports) {
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
           const value2 = `volume:${vol.toFixed(6)}&enable:1`;
-          exec("CallHostFunc", "setProperty", `audiodevprop:001:effect:volume\\config`, value2, (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            `audiodevprop:001:effect:volume\\config`,
+            value2,
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimarySpeakerLevel", err);
             reject2("Unable to setPrimarySpeakerLevel");
           });
@@ -13781,9 +13716,15 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (Global.isNewAudioEngine()) {
           const value2 = `volume:1.000000&enable:${enabled ? 1 : 0}`;
-          exec("CallHostFunc", "setProperty", "audiodevprop:001:effect:mute\\config", value2, (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:001:effect:mute\\config",
+            value2,
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimarySpeakerEnabled", err);
             reject2("Unable to setPrimarySpeakerEnabled");
           });
@@ -13891,9 +13832,15 @@ var XJS = (function(exports) {
           reject2(Error("Value can only be 0, 1 or 255"));
         }
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "setProperty", "audiodevprop:001:hwenable", hwenabled.toString(), (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:001:hwenable",
+            hwenabled.toString(),
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimarySpeakerSystemEnabled", err);
             reject2("Unable to setPrimarySpeakerSystemEnabled");
           });
@@ -13945,9 +13892,15 @@ var XJS = (function(exports) {
           reject2(Error("Delay can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "setProperty", "audiodevprop:001:param\\delay", delay.toString(), (setVal) => {
-            resolve2(setVal);
-          }).catch((err) => {
+          exec(
+            "CallHostFunc",
+            "setProperty",
+            "audiodevprop:001:param\\delay",
+            delay.toString(),
+            (setVal) => {
+              resolve2(setVal);
+            }
+          ).catch((err) => {
             console.error("setPrimarySpeakerDelay", err);
             reject2("Unable to setPrimarySpeakerDelay");
           });
@@ -13993,19 +13946,24 @@ var XJS = (function(exports) {
     isSilenceDetectionEnabled() {
       return new Promise((resolve2) => {
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "getProperty", "audiodevprop:000:effect:mic_dsp_ng\\config", (config) => {
-            if (config) {
-              const values = config.split("&");
-              const queryObj = arrayToObj(values, ":");
-              resolve2(queryObj["enable"] === "1");
-            } else {
-              resolve2(false);
+          exec(
+            "CallHostFunc",
+            "getProperty",
+            "audiodevprop:000:effect:mic_dsp_ng\\config",
+            (config) => {
+              if (config) {
+                const values = config.split("&");
+                const queryObj = arrayToObj(values, ":");
+                resolve2(queryObj["enable"] === "1");
+              } else {
+                resolve2(false);
+              }
             }
-          });
+          );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(micGainObj["enable"] == "1");
+            resolve2(micGainObj["enable"] === "1");
           });
         }
       });
@@ -14061,19 +14019,28 @@ var XJS = (function(exports) {
     getSilenceDetectionPeriod() {
       return new Promise((resolve2) => {
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "getProperty", "audiodevprop:000:effect:mic_dsp_ng\\config", (config) => {
-            if (config) {
-              const values = config.split("&");
-              const queryObj = arrayToObj(values, ":");
-              resolve2(queryObj["latency"] !== void 0 ? Number(queryObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
-            } else {
-              resolve2(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
+          exec(
+            "CallHostFunc",
+            "getProperty",
+            "audiodevprop:000:effect:mic_dsp_ng\\config",
+            (config) => {
+              if (config) {
+                const values = config.split("&");
+                const queryObj = arrayToObj(values, ":");
+                resolve2(
+                  queryObj["latency"] !== void 0 ? Number(queryObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE
+                );
+              } else {
+                resolve2(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
+              }
             }
-          });
+          );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(micGainObj["latency"] !== void 0 ? Number(micGainObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD);
+            resolve2(
+              micGainObj["latency"] !== void 0 ? Number(micGainObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD
+            );
           });
         }
       });
@@ -14099,10 +14066,14 @@ var XJS = (function(exports) {
       return new Promise((resolve2, reject2) => {
         if (typeof sdPeriod !== "number") {
           reject2(Error("Silence detection period must be a number"));
-        } else if (sdPeriod % 1 != 0) {
+        } else if (sdPeriod % 1 !== 0) {
           reject2(Error("Silence detection period must be an integer"));
         } else if (sdPeriod < 0 || sdPeriod > 6e4 && !Global.isNewAudioEngine()) {
-          reject2(Error(`Silence detection must be in the range. ${!Global.isNewAudioEngine() ? "Range is 0-60000" : ""}`));
+          reject2(
+            Error(
+              `Silence detection must be in the range. ${!Global.isNewAudioEngine() ? "Range is 0-60000" : ""}`
+            )
+          );
         }
         if (Global.isNewAudioEngine()) {
           const value2 = sdPeriod.toString();
@@ -14136,19 +14107,28 @@ var XJS = (function(exports) {
     getSilenceDetectionThreshold() {
       return new Promise((resolve2) => {
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "getProperty", "audiodevprop:000:effect:mic_dsp_ng\\config", (config) => {
-            if (config) {
-              const values = config.split("&");
-              const queryObj = arrayToObj(values, ":");
-              resolve2(queryObj["gain"] !== void 0 ? Number(queryObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
-            } else {
-              resolve2(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
+          exec(
+            "CallHostFunc",
+            "getProperty",
+            "audiodevprop:000:effect:mic_dsp_ng\\config",
+            (config) => {
+              if (config) {
+                const values = config.split("&");
+                const queryObj = arrayToObj(values, ":");
+                resolve2(
+                  queryObj["gain"] !== void 0 ? Number(queryObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE
+                );
+              } else {
+                resolve2(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
+              }
             }
-          });
+          );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(micGainObj["gain"] !== void 0 ? Number(micGainObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD);
+            resolve2(
+              micGainObj["gain"] !== void 0 ? Number(micGainObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD
+            );
           });
         }
       });
@@ -14183,7 +14163,7 @@ var XJS = (function(exports) {
             resolve2(setVal);
           });
         } else {
-          if (sdThreshold % 1 != 0) {
+          if (sdThreshold % 1 !== 0) {
             reject2(Error("Silence detection threshold must be an integer"));
           } else if (sdThreshold < 0 || sdThreshold > 128) {
             reject2(Error("Silence detection threshold must be in the range 0-128."));
@@ -14214,15 +14194,20 @@ var XJS = (function(exports) {
     isNoiseSuppressionEnabled() {
       return new Promise((resolve2) => {
         if (Global.isNewAudioEngine()) {
-          exec("CallHostFunc", "getProperty", "audiodevprop:000:effect:mic_dsp_ns\\config", (config) => {
-            if (config) {
-              const values = config.split(",");
-              const queryObj = arrayToObj(values, "=");
-              resolve2(queryObj["Enabled"] === "1");
-            } else {
-              resolve2(false);
+          exec(
+            "CallHostFunc",
+            "getProperty",
+            "audiodevprop:000:effect:mic_dsp_ns\\config",
+            (config) => {
+              if (config) {
+                const values = config.split(",");
+                const queryObj = arrayToObj(values, "=");
+                resolve2(queryObj["Enabled"] === "1");
+              } else {
+                resolve2(false);
+              }
             }
-          });
+          );
         } else {
           exec("CallHostFunc", "getProperty", "sound_ns", (queryString) => {
             var queryParams = queryString.split("&");
@@ -14252,9 +14237,11 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         if (Global.isNewAudioEngine()) {
           const value2 = enabled ? "1" : "0";
-          updateMicrophoneEffects(effectIds.noiseSuppression, ",", "=", "Enabled", value2).then((setVal) => {
-            resolve2(setVal);
-          });
+          updateMicrophoneEffects(effectIds.noiseSuppression, ",", "=", "Enabled", value2).then(
+            (setVal) => {
+              resolve2(setVal);
+            }
+          );
         } else {
           exec("CallHostFunc", "setProperty", "sound_ns", `Enabled=${Number(enabled)}`, (setVal) => {
             resolve2(setVal);
@@ -14284,7 +14271,7 @@ var XJS = (function(exports) {
           if (val === "") {
             resolve2(Transition.NONE);
           } else {
-            let currTransition = Transition[val.toUpperCase()];
+            const currTransition = Transition[val.toUpperCase()];
             if (typeof currTransition !== "undefined") {
               resolve2(currTransition);
             } else {
@@ -14498,7 +14485,7 @@ var XJS = (function(exports) {
      */
     static on(event, handler) {
       LanguageInfo._emitter.on(event, (lang) => {
-        handler.call(this, { lang });
+        handler.call(LanguageInfo, { lang });
       });
     }
     static getCode() {
@@ -14509,19 +14496,223 @@ var XJS = (function(exports) {
       });
     }
   }
-  EventManager.subscribe(
-    ["LanguageChanged"],
-    (langObj) => {
-      let eventString;
-      if (langObj.hasOwnProperty("event") && langObj.hasOwnProperty("lang")) {
-        eventString = langObj["event"];
-        if (langObj["event"] === "LanguageChanged") {
-          eventString = "language-change";
-        }
-        LanguageInfo.emit(eventString, langObj["lang"]);
+  EventManager.subscribe(["LanguageChanged"], (langObj) => {
+    let eventString;
+    if (Object.prototype.hasOwnProperty.call(langObj, "event") && Object.prototype.hasOwnProperty.call(langObj, "lang")) {
+      eventString = langObj["event"];
+      if (langObj["event"] === "LanguageChanged") {
+        eventString = "language-change";
       }
+      LanguageInfo.emit(eventString, langObj["lang"]);
     }
-  );
+  });
+  class Thumbnail {
+    /**
+     * param?: scene<id|Scene|undefined>
+     * ```
+     * return: Promise<string>
+     * ```
+     *
+     * Returns a base64 png url of a specified or current scene.
+     *
+     * #### Usage
+     *
+     * ```javascript
+     * var sceneThumbnail
+     *
+     * Thumbnail.getSceneThumbnail().then(function(image) {
+     *   sceneThumbnail = image;
+     *   // can be used as:
+     *   // div.style.backgroundImage = 'url(data:image/png;base64, image)'
+     * })
+     */
+    static getSceneThumbnail(scene) {
+      let scenePromise;
+      return new Promise((resolve2, reject2) => {
+        scenePromise = new Promise((innerResolve) => {
+          if (scene instanceof Scene) {
+            scene.getSceneUid().then((sceneUid) => innerResolve(sceneUid));
+          } else if (typeof scene === "number") {
+            if (scene < 0) {
+              reject2(Error("Invalid parameters. Valid range is 0 or higher"));
+            } else {
+              Scene.getBySceneIndex(scene).then((curScene) => {
+                return curScene.getSceneUid();
+              }).then((sceneUid) => {
+                innerResolve(sceneUid);
+              });
+            }
+          } else if (!scene) {
+            Scene.getActiveScene().then((curScene) => {
+              return curScene.getSceneUid();
+            }).then((sceneUid) => {
+              innerResolve(sceneUid);
+            });
+          } else {
+            reject2(Error("Invalid parameters. Valid parameter is scene or scene index"));
+          }
+        });
+        scenePromise.then((sceneUid) => {
+          App$1.get(`scenethumbnail:${sceneUid}`).then((thumb) => {
+            resolve2(thumb);
+          });
+        });
+      });
+    }
+  }
+  class File {
+    /**
+     *  param: (file: string)
+     *
+     *  Creates a File object pertaining to a file's full path.
+     */
+    constructor(file) {
+      this._path = file;
+    }
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this file to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    addToScene(value2) {
+      return new Promise((resolve2, reject2) => {
+        checkSplitmode(value2).then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + "addfile", this._path);
+        }).then((result) => {
+          resolve2(result);
+        }).catch((err) => {
+          reject2(err);
+        });
+      });
+    }
+  }
+  class Group {
+    constructor(itemArray) {
+      this._items = itemArray;
+    }
+    toStringArray() {
+      var itemStringArray = this._items.map((item) => {
+        if (item instanceof Item) {
+          return item._id;
+        } else {
+          return item;
+        }
+      });
+      return itemStringArray;
+    }
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this group to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    addToScene(value2) {
+      return new Promise((resolve2, reject2) => {
+        var splitScene;
+        var activeSceneIdx;
+        App$1.get("scene").then((sceneIdx) => {
+          activeSceneIdx = sceneIdx;
+          return checkSplitmode(value2);
+        }).then((scenePrefix) => {
+          splitScene = scenePrefix;
+          if (scenePrefix.split(":")[1]) {
+            activeSceneIdx = scenePrefix.split(":")[1];
+          }
+          return App$1.get(`scenecanaddgroup:${activeSceneIdx}:${this.toStringArray().join(",")}`);
+        }).then((canAdd) => {
+          if (canAdd === "1") {
+            return addToSceneHandler(splitScene + "addgroup", ...this.toStringArray());
+          } else {
+            reject2("Items provided cannot be grouped");
+          }
+        }).then((result) => {
+          resolve2(result);
+        }).catch((err) => {
+          reject2(err);
+        });
+      });
+    }
+  }
+  var REPLAY_INCREMENT_COUNTER = 0;
+  const generateReplayName = () => {
+    REPLAY_INCREMENT_COUNTER++;
+    return Date.now() + `_replay#${REPLAY_INCREMENT_COUNTER}`;
+  };
+  class Replay {
+    constructor(replayOptions) {
+      this._buffer = replayOptions && replayOptions["buffer"] || 10;
+      this._channelName = replayOptions && replayOptions["channelName"] || "auto";
+      this._hotkey = replayOptions && replayOptions["hotkey"] || 0;
+      this._propName = "Replay";
+    }
+    toXML() {
+      var replay = new JSON$1();
+      replay.tag = "item";
+      replay["item"] = generateReplayName();
+      replay["name"] = this._propName;
+      replay["type"] = "13";
+      replay["selfclosing"] = false;
+      var bufferJXON = new JSON$1();
+      bufferJXON.tag = "presproperty";
+      bufferJXON.value = String(this._buffer);
+      bufferJXON["__map_id"] = "buffer";
+      bufferJXON["selfclosing"] = false;
+      var channelNameJXON = new JSON$1();
+      channelNameJXON.tag = "presproperty";
+      channelNameJXON.value = this._channelName;
+      channelNameJXON["__map_id"] = "channelName";
+      channelNameJXON["selfclosing"] = false;
+      var hotkeyJXON = new JSON$1();
+      hotkeyJXON.tag = "presproperty";
+      hotkeyJXON.value = String(this._hotkey);
+      hotkeyJXON["__map_id"] = "hotkey";
+      hotkeyJXON["selfclosing"] = false;
+      replay.children = [bufferJXON, channelNameJXON, hotkeyJXON];
+      return XML.parseJSON(replay);
+    }
+    /**
+     * param: (value?: number | Scene)
+     * ```
+     * return: Promise<any>
+     * ```
+     *
+     * Adds this replay object to the current scene by default.
+     * Accepts an optional parameter value, which, when supplied,
+     * points to the scene where item will be added instead.
+     * If ready config {listenToItemAdd: true} it returns item id,
+     * else returns boolean.
+     *
+     * Note: There is yet no way to detect error responses for this action.
+     */
+    addToScene(value2) {
+      return new Promise((resolve2, reject2) => {
+        checkSplitmode(value2).then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
+        }).then((result) => {
+          resolve2(result);
+        }).catch((err) => {
+          reject2(err);
+        });
+      });
+    }
+  }
   class Url {
     /**
      *  param: (url: string)
@@ -14574,41 +14765,6 @@ var XJS = (function(exports) {
       });
     }
   }
-  class File {
-    /**
-     *  param: (file: string)
-     *
-     *  Creates a File object pertaining to a file's full path.
-     */
-    constructor(file) {
-      this._path = file;
-    }
-    /**
-     * param: (value?: number | Scene)
-     * ```
-     * return: Promise<any>
-     * ```
-     *
-     * Adds this file to the current scene by default.
-     * Accepts an optional parameter value, which, when supplied,
-     * points to the scene where item will be added instead.
-     * If ready config {listenToItemAdd: true} it returns item id,
-     * else returns boolean.
-     *
-     * Note: There is yet no way to detect error responses for this action.
-     */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
-          return addToSceneHandler(scenePrefix + "addfile", this._path);
-        }).then((result) => {
-          resolve2(result);
-        }).catch((err) => {
-          reject2(err);
-        });
-      });
-    }
-  }
   class VideoPlaylist {
     /**
      *  param: (files: string[])
@@ -14628,7 +14784,7 @@ var XJS = (function(exports) {
      */
     toXML() {
       return new Promise((resolve2, reject2) => {
-        let filePromises = this._playlist.map((filename) => {
+        const filePromises = this._playlist.map((filename) => {
           return new Promise((ioResolve) => {
             IO.getVideoDuration(filename).then((duration) => {
               ioResolve(duration);
@@ -14648,13 +14804,11 @@ var XJS = (function(exports) {
               }
               this._fileplaylist += this._playlist[i] + "*" + i + "*1*" + duration[i] + "*100*0*0*0*0*0|";
             }
-            let _inner_this = this;
+            const _inner_this = this;
             if (!isError) {
-              App$1.get("scene:0").then(function(main) {
-                return App$1.get("sceneconfig:" + main);
-              }).then(function(presetConfig) {
-                let placementJSON = JSON$1.parse(presetConfig);
-                let defpos = placementJSON["defpos"];
+              App$1.get("scene:0").then((main) => App$1.get("sceneconfig:" + main)).then((presetConfig) => {
+                const placementJSON = JSON$1.parse(presetConfig);
+                const defpos = placementJSON["defpos"];
                 fileItems.tag = "item";
                 fileItems["type"] = "1";
                 fileItems["name"] = "Video Playlist";
@@ -14732,611 +14886,6 @@ var XJS = (function(exports) {
       });
     }
   }
-  class Group {
-    constructor(itemArray) {
-      this._items = itemArray;
-    }
-    toStringArray() {
-      var itemStringArray = this._items.map((item) => {
-        if (item instanceof Item) {
-          return item._id;
-        } else {
-          return item;
-        }
-      });
-      return itemStringArray;
-    }
-    /**
-     * param: (value?: number | Scene)
-     * ```
-     * return: Promise<any>
-     * ```
-     *
-     * Adds this group to the current scene by default.
-     * Accepts an optional parameter value, which, when supplied,
-     * points to the scene where item will be added instead.
-     * If ready config {listenToItemAdd: true} it returns item id,
-     * else returns boolean.
-     *
-     * Note: There is yet no way to detect error responses for this action.
-     */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        var splitScene;
-        var activeSceneIdx;
-        App$1.get("scene").then((sceneIdx) => {
-          activeSceneIdx = sceneIdx;
-          return checkSplitmode(value2);
-        }).then((scenePrefix) => {
-          splitScene = scenePrefix;
-          if (scenePrefix.split(":")[1]) {
-            activeSceneIdx = scenePrefix.split(":")[1];
-          }
-          return App$1.get(`scenecanaddgroup:${activeSceneIdx}:${this.toStringArray().join(",")}`);
-        }).then((canAdd) => {
-          if (canAdd === "1") {
-            return addToSceneHandler(splitScene + "addgroup", ...this.toStringArray());
-          } else {
-            reject2("Items provided cannot be grouped");
-          }
-        }).then((result) => {
-          resolve2(result);
-        }).catch((err) => {
-          reject2(err);
-        });
-      });
-    }
-  }
-  var REPLAY_INCREMENT_COUNTER = 0;
-  const generateReplayName = function() {
-    REPLAY_INCREMENT_COUNTER++;
-    return Date.now() + `_replay#${REPLAY_INCREMENT_COUNTER}`;
-  };
-  class Replay {
-    constructor(replayOptions) {
-      this._buffer = replayOptions && replayOptions["buffer"] || 10;
-      this._channelName = replayOptions && replayOptions["channelName"] || "auto";
-      this._hotkey = replayOptions && replayOptions["hotkey"] || 0;
-      this._propName = "Replay";
-    }
-    toXML() {
-      var replay = new JSON$1();
-      replay.tag = "item";
-      replay["item"] = generateReplayName();
-      replay["name"] = this._propName;
-      replay["type"] = "13";
-      replay["selfclosing"] = false;
-      var bufferJXON = new JSON$1();
-      bufferJXON.tag = "presproperty";
-      bufferJXON.value = String(this._buffer);
-      bufferJXON["__map_id"] = "buffer";
-      bufferJXON["selfclosing"] = false;
-      var channelNameJXON = new JSON$1();
-      channelNameJXON.tag = "presproperty";
-      channelNameJXON.value = this._channelName;
-      channelNameJXON["__map_id"] = "channelName";
-      channelNameJXON["selfclosing"] = false;
-      var hotkeyJXON = new JSON$1();
-      hotkeyJXON.tag = "presproperty";
-      hotkeyJXON.value = String(this._hotkey);
-      hotkeyJXON["__map_id"] = "hotkey";
-      hotkeyJXON["selfclosing"] = false;
-      replay.children = [bufferJXON, channelNameJXON, hotkeyJXON];
-      return XML.parseJSON(replay);
-    }
-    /**
-     * param: (value?: number | Scene)
-     * ```
-     * return: Promise<any>
-     * ```
-     *
-     * Adds this replay object to the current scene by default.
-     * Accepts an optional parameter value, which, when supplied,
-     * points to the scene where item will be added instead.
-     * If ready config {listenToItemAdd: true} it returns item id,
-     * else returns boolean.
-     *
-     * Note: There is yet no way to detect error responses for this action.
-     */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
-          return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
-        }).then((result) => {
-          resolve2(result);
-        }).catch((err) => {
-          reject2(err);
-        });
-      });
-    }
-  }
-  class SourcePluginWindow extends EventEmitter {
-    static {
-      this._subscriptions = [];
-    }
-    /**
-     * ** For deprecation, the need for getting the instance of a SourcePluginWindow looks redundant,
-     * `** since a SourcePluginWindow should technically have a single instance`
-     *
-     * Gets the instance of the window utility. Use this instead of the constructor.
-     */
-    static getInstance() {
-      if (SourcePluginWindow._instance === void 0) {
-        SourcePluginWindow._instance = new SourcePluginWindow();
-      }
-      return SourcePluginWindow._instance;
-    }
-    /**
-     *  ** For Deprecation
-     *
-     *  Use getInstance()
-     */
-    constructor() {
-      super();
-      if (!Environment.isSourcePlugin()) {
-        throw new Error("SourcePluginWindow class is only available for source plugins");
-      }
-      this.on("message-source", function(message) {
-        if (message.request !== void 0) {
-          if (message.request === "saveConfig") {
-            this.emit("save-config", this._hideGlobalConfig(message.data));
-          } else if (message.request === "applyConfig") {
-            this.emit("apply-config", this._hideGlobalConfig(message.data));
-          }
-        }
-      });
-      SourcePluginWindow._instance = this;
-      SourcePluginWindow._subscriptions = [];
-    }
-    /**
-     *  param: (event: string, ...params: any[])
-     *
-     *  Allows this class to emit an event.
-     */
-    static emit(event, ...params) {
-      params.unshift(event);
-      try {
-        SourcePluginWindow.getInstance().emit.apply(SourcePluginWindow._instance, params);
-      } catch (event2) {
-        SourcePluginWindow._instance.emit.apply(SourcePluginWindow._instance, params);
-      }
-    }
-    /**
-     *  param: (event: string, handler: Function)
-     *
-     *  Allows listening to events that this class emits. 
-     *
-     */
-    static on(event, handler) {
-      SourcePluginWindow.getInstance().on(event, handler);
-      let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
-      if (event === "scene-delete" && isDeleteSceneEventFixed) {
-        if (SourcePluginWindow._subscriptions.indexOf("SceneDeleted") < 0) {
-          EventManager.subscribe("SceneDeleted", function(settingsObj) {
-            if (Environment.isSourcePlugin()) {
-              SourcePluginWindow.emit(event, settingsObj["index"] === "" ? null : Number(settingsObj["index"]) + 1);
-            }
-          });
-        }
-      } else if (["set-background-color", "scene-load", "apply-config", "save-config"].indexOf(event) >= 0) ;
-      else {
-        console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
-      }
-    }
-    static off(event, handler) {
-      SourcePluginWindow.getInstance().off(event, handler);
-    }
-    // We modify the configuration sent from the source properties window
-    // so that we do not see 'persistent' configuration such as config-url.
-    // When saving, this is restored back to the config object through
-    // Item#saveConfig().
-    //
-    // Note that we could have chosen to hide this from Item#requestSaveConfig()
-    // or Item#applyConfig() calls, but unfortunately, the context of the source
-    // properties window cannot always correctly determine the global config nodes
-    // when dealing with sources other than the current source (right-clicked.)
-    _hideGlobalConfig(data) {
-      let persist = Global.getPersistentConfig();
-      for (var key in persist) {
-        delete data[key];
-      }
-      return data;
-    }
-  }
-  window$1.MessageSource = function(message) {
-    SourcePluginWindow.emit(
-      "message-source",
-      JSON.parse(message)
-    );
-  };
-  window$1.SetConfiguration = function(configObj) {
-    try {
-      var data = JSON.parse(configObj);
-      SourcePluginWindow.emit("apply-config", data);
-      SourcePluginWindow.emit("save-config", data);
-    } catch (e) {
-      return;
-    }
-  };
-  window$1.setBackGroundColor = function(color) {
-    SourcePluginWindow.emit("set-background-color", color);
-  };
-  let prevOnSceneLoad = window$1.OnSceneLoad;
-  window$1.OnSceneLoad = function(...args) {
-    if (Environment.isSourcePlugin()) {
-      SourcePluginWindow.emit("scene-load");
-    }
-    if (prevOnSceneLoad !== void 0) {
-      prevOnSceneLoad(...args);
-    }
-  };
-  const _RESIZE = "2";
-  class ExtensionWindow extends EventEmitter {
-    static {
-      this._subscriptions = [];
-    }
-    static {
-      this._encounteredFirstSceneChange = false;
-    }
-    /**
-     * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
-     * `** since an ExtensionWinow should technically have a single instance`
-     *
-     * Gets the instance of the window utility. Use this instead of the constructor.
-     */
-    static getInstance() {
-      if (ExtensionWindow._instance === void 0) {
-        ExtensionWindow._instance = new ExtensionWindow();
-      }
-      return ExtensionWindow._instance;
-    }
-    /**
-     *  ** For Deprecation
-     *
-     *  Use getInstance()
-     */
-    constructor() {
-      super();
-      if (!Environment.isExtension()) {
-        throw new Error("ExtensionWindow class is only available for extensions");
-      }
-      ExtensionWindow._instance = this;
-      ExtensionWindow._subscriptions = [];
-      ExtensionWindow._encounteredFirstSceneChange = false;
-    }
-    /**
-     *  param: (event: string, ...params: any[])
-     *
-     *  Allows this class to emit an event.
-     */
-    static emit(event, ...params) {
-      params.unshift(event);
-      try {
-        ExtensionWindow.getInstance().emit.apply(ExtensionWindow._instance, params);
-      } catch (event2) {
-        ExtensionWindow._instance.emit.apply(ExtensionWindow._instance, params);
-      }
-    }
-    /**
-     *  param: (event: string, handler: Function)
-     *
-     *  Allows listening to events that this class emits.
-     *
-     */
-    static on(event, handler) {
-      return new Promise((resolve2, reject2) => {
-        let id = (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
-        ExtensionWindow.getInstance().on(event, handler, id);
-        let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
-        let isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(addSceneEventFixVersion);
-        let isSceneUidParamAvailable = versionCompare(getVersion()).is.greaterThanOrEqualTo(sceneUidAddDeleteVersion);
-        if (event === "scene-delete" && isDeleteSceneEventFixed) {
-          let eventSubscribe = isSceneUidParamAvailable ? "OnSceneDelete" : "SceneDeleted";
-          if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
-            ExtensionWindow._subscriptions.push(eventSubscribe);
-            EventManager.subscribe(eventSubscribe, function(settingsObj) {
-              if (Environment.isExtension()) {
-                if (isSceneUidParamAvailable) {
-                  let returnObj = {};
-                  const sceneId = settingsObj["args"][1].split("&")[1].split(":");
-                  const sceneNum = settingsObj["args"][1].split("&")[2].split(":");
-                  returnObj[sceneId[0]] = sceneId[1];
-                  returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
-                  ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, returnObj["scene"], returnObj["sceneid"]);
-                } else {
-                  ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, settingsObj["index"] === "" ? null : Number(settingsObj["index"]) + 1);
-                }
-              }
-              resolve2(this);
-            }, id);
-          } else {
-            resolve2(this);
-          }
-        } else if (event === "scene-add" && isAddSceneEventFixed) {
-          let eventSubscribe = isSceneUidParamAvailable ? "OnSceneAdd" : "OnSceneAddByUser";
-          if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
-            ExtensionWindow._subscriptions.push(eventSubscribe);
-            EventManager.subscribe(eventSubscribe, function(settingsObj) {
-              if (isSceneUidParamAvailable) {
-                let returnObj = {};
-                const sceneId = settingsObj["args"][1].split("&")[1].split(":");
-                const sceneNum = settingsObj["args"][1].split("&")[2].split(":");
-                returnObj[sceneId[0]] = sceneId[1];
-                returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
-                ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, returnObj["scene"], returnObj["sceneid"]);
-              } else {
-                Scene.getSceneCount().then(function(count) {
-                  if (Environment.isExtension()) {
-                    ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, count);
-                    resolve2(this);
-                  } else {
-                    reject2(Error("ExtensionWindow class is only available for extensions."));
-                  }
-                });
-              }
-            }, id);
-          } else {
-            resolve2(this);
-          }
-        } else if (event === "scene-delete-all" && isSceneUidParamAvailable) {
-          if (ExtensionWindow._subscriptions.indexOf("OnSceneDeleteAll") < 0) {
-            ExtensionWindow._subscriptions.push("OnSceneDeleteAll");
-            EventManager.subscribe("OnSceneDeleteAll", function(settingsObj) {
-              if (Environment.isExtension()) {
-                ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, settingsObj["args"][0]);
-              }
-              resolve2(this);
-            }, id);
-          } else {
-            resolve2(this);
-          }
-        } else if (event === "bscn-load") {
-          if (ExtensionWindow._subscriptions.indexOf("OnPropertyChange") < 0) {
-            ExtensionWindow._subscriptions.push("OnPropertyChange");
-            EventManager.subscribe("OnPropertyChange", function(settingsObj) {
-              if (Environment.isExtension()) {
-                let property = settingsObj["args"][0];
-                let newValue = settingsObj["args"][1];
-                if (property.startsWith("sceneconfign:") || property.startsWith("sceneconfig:")) {
-                  let changedIndex = property.split(":")[1];
-                  Scene.getActiveScene().then((scene) => {
-                    return scene.getSceneNumber();
-                  }).then((sceneNumber) => {
-                    if (typeof sceneNumber === "number") {
-                      sceneNumber = sceneNumber - 1;
-                    }
-                    if (changedIndex === String(sceneNumber)) {
-                      var placementJXON = JSON$1.parse(newValue);
-                      ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, sceneNumber, placementJXON["id"]);
-                    }
-                  });
-                }
-              }
-              resolve2(this);
-            }, id);
-          } else {
-            resolve2(this);
-          }
-        } else if (event === "push-to-live") {
-          if (ExtensionWindow._subscriptions.indexOf("scenedlg:1") < 0 && Environment.isExtension()) {
-            ExtensionWindow._subscriptions.push("scenedlg:1");
-            EventManager.subscribe("scenedlg:1", function() {
-              ExtensionWindow._encounteredFirstSceneChange = false;
-            }, id);
-            if (ExtensionWindow._subscriptions.indexOf("SceneChange") < 0) {
-              ExtensionWindow._subscriptions.push("SceneChange");
-              EventManager.subscribe("SceneChange", function(settingsObj) {
-                let isSplitMode = false;
-                const viewId = parseInt(settingsObj["args"][0]);
-                const sceneIndex = parseInt(settingsObj["args"][1]);
-                App$1.getGlobalProperty("splitmode").then((split) => {
-                  isSplitMode = split === "1" ? true : false;
-                  if (isSplitMode) {
-                    if (!ExtensionWindow._encounteredFirstSceneChange) {
-                      if (viewId === 1) {
-                        ExtensionWindow._encounteredFirstSceneChange = true;
-                        ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, sceneIndex);
-                      }
-                    }
-                  } else {
-                    if (viewId === 0) ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, sceneIndex);
-                  }
-                });
-              }, id);
-            }
-            resolve2(this);
-          } else {
-            resolve2(this);
-          }
-        } else if ([
-          "sources-list-highlight",
-          "sources-list-select",
-          "sources-list-update",
-          "scene-load"
-        ].indexOf(event) >= 0) {
-          if ([
-            "sources-list-highlight",
-            "sources-list-select",
-            "sources-list-update"
-          ].indexOf(event) >= 0) {
-            try {
-              exec("SourcesListSubscribeEvents", ViewTypes.MAIN.toString()).then((res) => {
-                return exec("SourcesListSubscribeEvents", ViewTypes.PREVIEW.toString());
-              }).then((res) => {
-                resolve2(this);
-              }).catch((err) => {
-                resolve2(this);
-              });
-            } catch (ex) {
-            }
-          } else {
-            resolve2(this);
-          }
-        } else {
-          reject2(Error('Warning! The event "' + event + '" is not yet supported.'));
-        }
-      });
-    }
-    static off(event, handler) {
-      ExtensionWindow.getInstance().off(event, handler);
-    }
-    /** param: (width: number, height: number)
-     *
-     *  Resizes this extension's window.
-     */
-    static resize(width, height) {
-      App$1.postMessage(_RESIZE, String(width), String(height));
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     */
-    resize(width, height) {
-      App$1.postMessage(_RESIZE, String(width), String(height));
-    }
-    /**
-     * param: (value: string)
-     *
-     * Renames the extension window.
-     */
-    static setTitle(value2) {
-      return new Promise((resolve2) => {
-        let ext = Extension.getInstance();
-        ext.getId().then((id) => {
-          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
-            resolve2(res);
-          });
-        });
-      });
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     */
-    setTitle(value2) {
-      return new Promise((resolve2) => {
-        let ext = Extension.getInstance();
-        ext.getId().then((id) => {
-          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
-            resolve2(res);
-          });
-        });
-      });
-    }
-    /**
-     * param (flag: number)
-     *
-     * Modifies this extension's window border.
-     *
-     * '4' is th e base command on setting border flags.
-     *
-     * Flags can be:
-     *     (bit 0 - enable border)
-     *     (bit 1 - enable caption)
-     *     (bit 2 - enable sizing)
-     *     (bit 3 - enable minimize btn)
-     *     (bit 4 - enable maximize btn)
-     */
-    static setBorder(flag) {
-      App$1.postMessage("4", String(flag));
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     * */
-    setBorder(flag) {
-      App$1.postMessage("4", String(flag));
-    }
-    /**
-     * Closes this extension window
-     */
-    static close() {
-      App$1.postMessage("1");
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     * */
-    close() {
-      App$1.postMessage("1");
-    }
-    /**
-     * Disable Close Button on this extension's window
-     */
-    static disableClose() {
-      App$1.postMessage("5", "0");
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     * */
-    disableClose() {
-      App$1.postMessage("5", "0");
-    }
-    /**
-     * Enable Close Button on this extension's window
-     */
-    static enableClose() {
-      App$1.postMessage("5", "1");
-    }
-    /**
-     * `** For deprecation, please use the static method instead`
-     * */
-    enableClose() {
-      App$1.postMessage("5", "1");
-    }
-  }
-  const oldSourcesListUpdate = window$1.SourcesListUpdate;
-  window$1.SourcesListUpdate = (view, sources) => {
-    App$1.getGlobalProperty("splitmode").then((res) => {
-      const checkSplit = res === "1" ? 1 : 0;
-      if (Number(view) === checkSplit) {
-        let propsJSON = JSON$1.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
-        if (propsJSON.children && propsJSON.children.length > 0) {
-          propsArr = propsJSON.children;
-          for (var i = 0; i < propsArr.length; i++) {
-            ids.push(propsArr[i]["id"]);
-          }
-        }
-        ExtensionWindow.emit("sources-list-update", ids.join(","));
-      }
-      if (typeof oldSourcesListUpdate === "function") {
-        oldSourcesListUpdate(view, sources);
-      }
-    });
-  };
-  const oldSourcesListHighlight = window$1.SourcesListHighlight;
-  window$1.SourcesListHighlight = (view, id) => {
-    splitMode().then((checkSplit) => {
-      if (Number(view) === checkSplit) {
-        ExtensionWindow.emit("sources-list-highlight", id === "" ? null : id);
-      }
-      if (typeof oldSourcesListHighlight === "function") {
-        oldSourcesListHighlight(view, id);
-      }
-    });
-  };
-  const oldSourcesListSelect = window$1.SourcesListSelect;
-  window$1.SourcesListSelect = (view, id) => {
-    splitMode().then((checkSplit) => {
-      if (Number(view) === checkSplit) {
-        ExtensionWindow.emit("sources-list-select", id === "" ? null : id);
-      }
-      if (typeof oldSourcesListSelect === "function") {
-        oldSourcesListSelect(view, id);
-      }
-    });
-  };
-  const oldOnSceneLoad = window$1.OnSceneLoad;
-  window$1.OnSceneLoad = function(...args) {
-    splitMode().then((checkSplit) => {
-      if (Environment.isExtension()) {
-        let view = args[0];
-        let scene = args[1];
-        if (Number(view) === checkSplit && scene !== "i12") {
-          ExtensionWindow.emit("scene-load", Number(scene));
-        }
-      }
-      if (typeof oldOnSceneLoad === "function") {
-        oldOnSceneLoad(...args);
-      }
-    });
-  };
   let dialogProxy;
   class Dialog {
     constructor() {
@@ -15347,7 +14896,7 @@ var XJS = (function(exports) {
           throw new Error("Unable to listen to Dialog window events through Remote");
         }
         this._result = null;
-        let eventListener = (e) => {
+        const eventListener = (e) => {
           e.target.removeEventListener(e.type, eventListener);
           if (typeof dialogProxy !== "undefined" && typeof Proxy !== "undefined") {
             dialogProxy._result = e.detail;
@@ -15372,7 +14921,7 @@ var XJS = (function(exports) {
      * *Chainable.*
      */
     static createDialog(url) {
-      let dialog = new Dialog();
+      const dialog = new Dialog();
       dialog._url = url;
       return dialog;
     }
@@ -15390,7 +14939,7 @@ var XJS = (function(exports) {
       if (Environment.isSourceProps()) {
         throw new Error("Auto dialogs are not available for config windows.");
       } else {
-        let dialog = new Dialog();
+        const dialog = new Dialog();
         dialog._url = url;
         dialog._autoclose = true;
         return dialog;
@@ -15511,7 +15060,12 @@ var XJS = (function(exports) {
       return new Promise((resolve2) => {
         this._result = null;
         if (this._autoclose) {
-          exec("NewAutoDialog", this._url, "", this._size === void 0 ? void 0 : this._size.getWidth() + "," + this._size.getHeight()).then((result) => {
+          exec(
+            "NewAutoDialog",
+            this._url,
+            "",
+            this._size === void 0 ? void 0 : this._size.getWidth() + "," + this._size.getHeight()
+          ).then((result) => {
             resolve2(this);
           });
         } else {
@@ -15569,7 +15123,7 @@ var XJS = (function(exports) {
         if (this._result !== null) {
           resolve2(this._result);
         } else if (this._resultListener === null) {
-          let eventListener = (e) => {
+          const eventListener = (e) => {
             e.target.removeEventListener(e.type, eventListener);
             this._result = e.detail;
             this._resultListener = null;
@@ -15579,7 +15133,7 @@ var XJS = (function(exports) {
           this._resultListener = eventListener;
         } else if (typeof Proxy === "undefined") {
           Object.observe(this, (changes) => {
-            let change = changes.filter((elem) => {
+            const change = changes.filter((elem) => {
               return elem.name === "_result";
             });
             if (change !== void 0 && change.length > 0) {
@@ -15628,14 +15182,556 @@ var XJS = (function(exports) {
     }
   }
   const oldOnDialogResult = window$1.OnDialogResult;
-  window$1.OnDialogResult = function(result) {
+  window$1.OnDialogResult = (result) => {
     if (Environment.isSourceProps() || Environment.isExtension()) {
-      document.dispatchEvent(new CustomEvent("xsplit-dialog-result", {
-        detail: result
-      }));
+      document.dispatchEvent(
+        new CustomEvent("xsplit-dialog-result", {
+          detail: result
+        })
+      );
     }
     if (typeof oldOnDialogResult === "function") {
       oldOnDialogResult(result);
+    }
+  };
+  const _RESIZE = "2";
+  class ExtensionWindow extends EventEmitter {
+    static {
+      this._subscriptions = [];
+    }
+    static {
+      this._encounteredFirstSceneChange = false;
+    }
+    /**
+     * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
+     * `** since an ExtensionWinow should technically have a single instance`
+     *
+     * Gets the instance of the window utility. Use this instead of the constructor.
+     */
+    static getInstance() {
+      if (ExtensionWindow._instance === void 0) {
+        ExtensionWindow._instance = new ExtensionWindow();
+      }
+      return ExtensionWindow._instance;
+    }
+    /**
+     *  ** For Deprecation
+     *
+     *  Use getInstance()
+     */
+    constructor() {
+      super();
+      if (!Environment.isExtension()) {
+        throw new Error("ExtensionWindow class is only available for extensions");
+      }
+      ExtensionWindow._instance = this;
+      ExtensionWindow._subscriptions = [];
+      ExtensionWindow._encounteredFirstSceneChange = false;
+    }
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
+    static emit(event, ...params) {
+      params.unshift(event);
+      try {
+        ExtensionWindow.getInstance().emit.apply(ExtensionWindow._instance, params);
+      } catch (event2) {
+        ExtensionWindow._instance.emit.apply(ExtensionWindow._instance, params);
+      }
+    }
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits.
+     *
+     */
+    static on(event, handler) {
+      return new Promise((resolve2, reject2) => {
+        const id = (/* @__PURE__ */ new Date()).getTime() + "_" + Math.floor(Math.random() * 1e3);
+        ExtensionWindow.getInstance().on(event, handler, id);
+        const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+          deleteSceneEventFixVersion
+        );
+        const isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+          addSceneEventFixVersion
+        );
+        const isSceneUidParamAvailable = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+          sceneUidAddDeleteVersion
+        );
+        if (event === "scene-delete" && isDeleteSceneEventFixed) {
+          const eventSubscribe = isSceneUidParamAvailable ? "OnSceneDelete" : "SceneDeleted";
+          if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
+            ExtensionWindow._subscriptions.push(eventSubscribe);
+            EventManager.subscribe(
+              eventSubscribe,
+              function(settingsObj) {
+                if (Environment.isExtension()) {
+                  if (isSceneUidParamAvailable) {
+                    const returnObj = {};
+                    const sceneId = settingsObj["args"][1].split("&")[1].split(":");
+                    const sceneNum = settingsObj["args"][1].split("&")[2].split(":");
+                    returnObj[sceneId[0]] = sceneId[1];
+                    returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
+                    ExtensionWindow.emit(
+                      settingsObj["id"] ? settingsObj["id"] : event,
+                      returnObj["scene"],
+                      returnObj["sceneid"]
+                    );
+                  } else {
+                    ExtensionWindow.emit(
+                      settingsObj["id"] ? settingsObj["id"] : event,
+                      settingsObj["index"] === "" ? null : Number(settingsObj["index"]) + 1
+                    );
+                  }
+                }
+                resolve2(this);
+              },
+              id
+            );
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else if (event === "scene-add" && isAddSceneEventFixed) {
+          const eventSubscribe = isSceneUidParamAvailable ? "OnSceneAdd" : "OnSceneAddByUser";
+          if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
+            ExtensionWindow._subscriptions.push(eventSubscribe);
+            EventManager.subscribe(
+              eventSubscribe,
+              (settingsObj) => {
+                if (isSceneUidParamAvailable) {
+                  const returnObj = {};
+                  const sceneId = settingsObj["args"][1].split("&")[1].split(":");
+                  const sceneNum = settingsObj["args"][1].split("&")[2].split(":");
+                  returnObj[sceneId[0]] = sceneId[1];
+                  returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
+                  ExtensionWindow.emit(
+                    settingsObj["id"] ? settingsObj["id"] : event,
+                    returnObj["scene"],
+                    returnObj["sceneid"]
+                  );
+                } else {
+                  Scene.getSceneCount().then(function(count) {
+                    if (Environment.isExtension()) {
+                      ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, count);
+                      resolve2(this);
+                    } else {
+                      reject2(Error("ExtensionWindow class is only available for extensions."));
+                    }
+                  });
+                }
+              },
+              id
+            );
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else if (event === "scene-delete-all" && isSceneUidParamAvailable) {
+          if (ExtensionWindow._subscriptions.indexOf("OnSceneDeleteAll") < 0) {
+            ExtensionWindow._subscriptions.push("OnSceneDeleteAll");
+            EventManager.subscribe(
+              "OnSceneDeleteAll",
+              function(settingsObj) {
+                if (Environment.isExtension()) {
+                  ExtensionWindow.emit(
+                    settingsObj["id"] ? settingsObj["id"] : event,
+                    settingsObj["args"][0]
+                  );
+                }
+                resolve2(this);
+              },
+              id
+            );
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else if (event === "bscn-load") {
+          if (ExtensionWindow._subscriptions.indexOf("OnPropertyChange") < 0) {
+            ExtensionWindow._subscriptions.push("OnPropertyChange");
+            EventManager.subscribe(
+              "OnPropertyChange",
+              function(settingsObj) {
+                if (Environment.isExtension()) {
+                  const property = settingsObj["args"][0];
+                  const newValue = settingsObj["args"][1];
+                  if (property.startsWith("sceneconfign:") || property.startsWith("sceneconfig:")) {
+                    const changedIndex = property.split(":")[1];
+                    Scene.getActiveScene().then((scene) => {
+                      return scene.getSceneNumber();
+                    }).then((sceneNumber) => {
+                      if (typeof sceneNumber === "number") {
+                        sceneNumber = sceneNumber - 1;
+                      }
+                      if (changedIndex === String(sceneNumber)) {
+                        var placementJXON = JSON$1.parse(newValue);
+                        ExtensionWindow.emit(
+                          settingsObj["id"] ? settingsObj["id"] : event,
+                          sceneNumber,
+                          placementJXON["id"]
+                        );
+                      }
+                    });
+                  }
+                }
+                resolve2(this);
+              },
+              id
+            );
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else if (event === "push-to-live") {
+          if (ExtensionWindow._subscriptions.indexOf("scenedlg:1") < 0 && Environment.isExtension()) {
+            ExtensionWindow._subscriptions.push("scenedlg:1");
+            EventManager.subscribe(
+              "scenedlg:1",
+              () => {
+                ExtensionWindow._encounteredFirstSceneChange = false;
+              },
+              id
+            );
+            if (ExtensionWindow._subscriptions.indexOf("SceneChange") < 0) {
+              ExtensionWindow._subscriptions.push("SceneChange");
+              EventManager.subscribe(
+                "SceneChange",
+                (settingsObj) => {
+                  let isSplitMode = false;
+                  const viewId = parseInt(settingsObj["args"][0]);
+                  const sceneIndex = parseInt(settingsObj["args"][1]);
+                  App$1.getGlobalProperty("splitmode").then((split) => {
+                    isSplitMode = split === "1" ? true : false;
+                    if (isSplitMode) {
+                      if (!ExtensionWindow._encounteredFirstSceneChange) {
+                        if (viewId === 1) {
+                          ExtensionWindow._encounteredFirstSceneChange = true;
+                          ExtensionWindow.emit(
+                            settingsObj["id"] ? settingsObj["id"] : event,
+                            sceneIndex
+                          );
+                        }
+                      }
+                    } else {
+                      if (viewId === 0)
+                        ExtensionWindow.emit(
+                          settingsObj["id"] ? settingsObj["id"] : event,
+                          sceneIndex
+                        );
+                    }
+                  });
+                },
+                id
+              );
+            }
+            resolve2(ExtensionWindow);
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else if ([
+          "sources-list-highlight",
+          "sources-list-select",
+          "sources-list-update",
+          "scene-load"
+        ].indexOf(event) >= 0) {
+          if (["sources-list-highlight", "sources-list-select", "sources-list-update"].indexOf(event) >= 0) {
+            try {
+              exec("SourcesListSubscribeEvents", ViewTypes.MAIN.toString()).then((res) => {
+                return exec("SourcesListSubscribeEvents", ViewTypes.PREVIEW.toString());
+              }).then((res) => {
+                resolve2(ExtensionWindow);
+              }).catch((err) => {
+                resolve2(ExtensionWindow);
+              });
+            } catch (ex) {
+            }
+          } else {
+            resolve2(ExtensionWindow);
+          }
+        } else {
+          reject2(Error('Warning! The event "' + event + '" is not yet supported.'));
+        }
+      });
+    }
+    static off(event, handler) {
+      ExtensionWindow.getInstance().off(event, handler);
+    }
+    /** param: (width: number, height: number)
+     *
+     *  Resizes this extension's window.
+     */
+    static resize(width, height) {
+      App$1.postMessage(_RESIZE, String(width), String(height));
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     */
+    resize(width, height) {
+      App$1.postMessage(_RESIZE, String(width), String(height));
+    }
+    /**
+     * param: (value: string)
+     *
+     * Renames the extension window.
+     */
+    static setTitle(value2) {
+      return new Promise((resolve2) => {
+        const ext = Extension.getInstance();
+        ext.getId().then((id) => {
+          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
+            resolve2(res);
+          });
+        });
+      });
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     */
+    setTitle(value2) {
+      return new Promise((resolve2) => {
+        const ext = Extension.getInstance();
+        ext.getId().then((id) => {
+          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
+            resolve2(res);
+          });
+        });
+      });
+    }
+    /**
+     * param (flag: number)
+     *
+     * Modifies this extension's window border.
+     *
+     * '4' is th e base command on setting border flags.
+     *
+     * Flags can be:
+     *     (bit 0 - enable border)
+     *     (bit 1 - enable caption)
+     *     (bit 2 - enable sizing)
+     *     (bit 3 - enable minimize btn)
+     *     (bit 4 - enable maximize btn)
+     */
+    static setBorder(flag) {
+      App$1.postMessage("4", String(flag));
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
+    setBorder(flag) {
+      App$1.postMessage("4", String(flag));
+    }
+    /**
+     * Closes this extension window
+     */
+    static close() {
+      App$1.postMessage("1");
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
+    close() {
+      App$1.postMessage("1");
+    }
+    /**
+     * Disable Close Button on this extension's window
+     */
+    static disableClose() {
+      App$1.postMessage("5", "0");
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
+    disableClose() {
+      App$1.postMessage("5", "0");
+    }
+    /**
+     * Enable Close Button on this extension's window
+     */
+    static enableClose() {
+      App$1.postMessage("5", "1");
+    }
+    /**
+     * `** For deprecation, please use the static method instead`
+     * */
+    enableClose() {
+      App$1.postMessage("5", "1");
+    }
+  }
+  const oldSourcesListUpdate = window$1.SourcesListUpdate;
+  window$1.SourcesListUpdate = (view, sources) => {
+    App$1.getGlobalProperty("splitmode").then((res) => {
+      const checkSplit = res === "1" ? 1 : 0;
+      if (Number(view) === checkSplit) {
+        let propsJSON = JSON$1.parse(decodeURIComponent(sources)), propsArr = [], ids = [];
+        if (propsJSON.children && propsJSON.children.length > 0) {
+          propsArr = propsJSON.children;
+          for (var i = 0; i < propsArr.length; i++) {
+            ids.push(propsArr[i]["id"]);
+          }
+        }
+        ExtensionWindow.emit("sources-list-update", ids.join(","));
+      }
+      if (typeof oldSourcesListUpdate === "function") {
+        oldSourcesListUpdate(view, sources);
+      }
+    });
+  };
+  const oldSourcesListHighlight = window$1.SourcesListHighlight;
+  window$1.SourcesListHighlight = (view, id) => {
+    splitMode().then((checkSplit) => {
+      if (Number(view) === checkSplit) {
+        ExtensionWindow.emit("sources-list-highlight", id === "" ? null : id);
+      }
+      if (typeof oldSourcesListHighlight === "function") {
+        oldSourcesListHighlight(view, id);
+      }
+    });
+  };
+  const oldSourcesListSelect = window$1.SourcesListSelect;
+  window$1.SourcesListSelect = (view, id) => {
+    splitMode().then((checkSplit) => {
+      if (Number(view) === checkSplit) {
+        ExtensionWindow.emit("sources-list-select", id === "" ? null : id);
+      }
+      if (typeof oldSourcesListSelect === "function") {
+        oldSourcesListSelect(view, id);
+      }
+    });
+  };
+  const oldOnSceneLoad = window$1.OnSceneLoad;
+  window$1.OnSceneLoad = (...args) => {
+    splitMode().then((checkSplit) => {
+      if (Environment.isExtension()) {
+        const view = args[0];
+        const scene = args[1];
+        if (Number(view) === checkSplit && scene !== "i12") {
+          ExtensionWindow.emit("scene-load", Number(scene));
+        }
+      }
+      if (typeof oldOnSceneLoad === "function") {
+        oldOnSceneLoad(...args);
+      }
+    });
+  };
+  class SourcePluginWindow extends EventEmitter {
+    static {
+      this._subscriptions = [];
+    }
+    /**
+     * ** For deprecation, the need for getting the instance of a SourcePluginWindow looks redundant,
+     * `** since a SourcePluginWindow should technically have a single instance`
+     *
+     * Gets the instance of the window utility. Use this instead of the constructor.
+     */
+    static getInstance() {
+      if (SourcePluginWindow._instance === void 0) {
+        SourcePluginWindow._instance = new SourcePluginWindow();
+      }
+      return SourcePluginWindow._instance;
+    }
+    /**
+     *  ** For Deprecation
+     *
+     *  Use getInstance()
+     */
+    constructor() {
+      super();
+      if (!Environment.isSourcePlugin()) {
+        throw new Error("SourcePluginWindow class is only available for source plugins");
+      }
+      this.on("message-source", function(message) {
+        if (message.request !== void 0) {
+          if (message.request === "saveConfig") {
+            this.emit("save-config", this._hideGlobalConfig(message.data));
+          } else if (message.request === "applyConfig") {
+            this.emit("apply-config", this._hideGlobalConfig(message.data));
+          }
+        }
+      });
+      SourcePluginWindow._instance = this;
+      SourcePluginWindow._subscriptions = [];
+    }
+    /**
+     *  param: (event: string, ...params: any[])
+     *
+     *  Allows this class to emit an event.
+     */
+    static emit(event, ...params) {
+      params.unshift(event);
+      try {
+        SourcePluginWindow.getInstance().emit.apply(SourcePluginWindow._instance, params);
+      } catch (event2) {
+        SourcePluginWindow._instance.emit.apply(SourcePluginWindow._instance, params);
+      }
+    }
+    /**
+     *  param: (event: string, handler: Function)
+     *
+     *  Allows listening to events that this class emits.
+     *
+     */
+    static on(event, handler) {
+      SourcePluginWindow.getInstance().on(event, handler);
+      const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+        deleteSceneEventFixVersion
+      );
+      if (event === "scene-delete" && isDeleteSceneEventFixed) {
+        if (SourcePluginWindow._subscriptions.indexOf("SceneDeleted") < 0) {
+          EventManager.subscribe("SceneDeleted", (settingsObj) => {
+            if (Environment.isSourcePlugin()) {
+              SourcePluginWindow.emit(
+                event,
+                settingsObj["index"] === "" ? null : Number(settingsObj["index"]) + 1
+              );
+            }
+          });
+        }
+      } else if (["set-background-color", "scene-load", "apply-config", "save-config"].indexOf(event) >= 0) ;
+      else {
+        console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
+      }
+    }
+    static off(event, handler) {
+      SourcePluginWindow.getInstance().off(event, handler);
+    }
+    // We modify the configuration sent from the source properties window
+    // so that we do not see 'persistent' configuration such as config-url.
+    // When saving, this is restored back to the config object through
+    // Item#saveConfig().
+    //
+    // Note that we could have chosen to hide this from Item#requestSaveConfig()
+    // or Item#applyConfig() calls, but unfortunately, the context of the source
+    // properties window cannot always correctly determine the global config nodes
+    // when dealing with sources other than the current source (right-clicked.)
+    _hideGlobalConfig(data) {
+      const persist = Global.getPersistentConfig();
+      for (var key in persist) {
+        delete data[key];
+      }
+      return data;
+    }
+  }
+  window$1.MessageSource = (message) => {
+    SourcePluginWindow.emit("message-source", JSON.parse(message));
+  };
+  window$1.SetConfiguration = (configObj) => {
+    try {
+      var data = JSON.parse(configObj);
+      SourcePluginWindow.emit("apply-config", data);
+      SourcePluginWindow.emit("save-config", data);
+    } catch (e) {
+      return;
+    }
+  };
+  window$1.setBackGroundColor = (color) => {
+    SourcePluginWindow.emit("set-background-color", color);
+  };
+  const prevOnSceneLoad = window$1.OnSceneLoad;
+  window$1.OnSceneLoad = (...args) => {
+    if (Environment.isSourcePlugin()) {
+      SourcePluginWindow.emit("scene-load");
+    }
+    if (prevOnSceneLoad !== void 0) {
+      prevOnSceneLoad(...args);
     }
   };
   exports.ActionAfterPlayback = ActionAfterPlayback;

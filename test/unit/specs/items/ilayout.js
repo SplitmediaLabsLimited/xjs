@@ -42,7 +42,7 @@ describe('Layout interface', () => {
 
     if (property === 'mixerresolution') {
       xCallback(asyncId, '1920,1080');
-    } else if (local[attachedId] !== undefined && Object.hasOwn(local[attachedId], property)) {
+    } else if (local[attachedId] !== undefined && Object.prototype.hasOwnProperty.call(local[attachedId], property)) {
       xCallback(asyncId, local[attachedId][property]);
     } else {
       var placement = parseXml(mockPresetConfig).getElementsByTagName('placement')[0];

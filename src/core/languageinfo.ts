@@ -61,7 +61,7 @@ export class LanguageInfo extends EventEmitter {
 
 EventManager.subscribe(['LanguageChanged'], (langObj: string) => {
   let eventString;
-  if (Object.hasOwn(langObj, 'event') && Object.hasOwn(langObj, 'lang')) {
+  if (Object.prototype.hasOwnProperty.call(langObj, 'event') && Object.prototype.hasOwnProperty.call(langObj, 'lang')) {
     eventString = langObj['event'];
     if (langObj['event'] === 'LanguageChanged') {
       eventString = 'language-change';

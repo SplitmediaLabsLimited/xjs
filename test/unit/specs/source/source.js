@@ -108,7 +108,7 @@ describe('Source ===', () => {
       }
     } else if (
       typeof local['{C878A0BF-F03A-4274-9398-EBD638D07680}'] !== 'undefined' &&
-      Object.hasOwn(local['{C878A0BF-F03A-4274-9398-EBD638D07680}'], property)
+      Object.prototype.hasOwnProperty.call(local['{C878A0BF-F03A-4274-9398-EBD638D07680}'], property)
     ) {
       xCallback(asyncId, local['{C878A0BF-F03A-4274-9398-EBD638D07680}'][property]);
     } else {
@@ -154,7 +154,7 @@ describe('Source ===', () => {
       }
     } else if (
       typeof local[attachedId] !== 'undefined' &&
-      Object.hasOwn(local[attachedId], property)
+      Object.prototype.hasOwnProperty.call(local[attachedId], property)
     ) {
       xCallback(asyncId, local[attachedId][property]);
     } else {

@@ -48,7 +48,7 @@ describe('ScreenSource Interface', () => {
 
     if (property === 'screenresolution') {
       xCallback(asyncId, '0,0,1920,1080');
-    } else if (local[attachedID] !== undefined && Object.hasOwn(local[attachedID], property)) {
+    } else if (local[attachedID] !== undefined && Object.prototype.hasOwnProperty.call(local[attachedID], property)) {
       xCallback(asyncId, local[attachedID][property]);
     } else {
       var placement = parseXml(mockPresetConfig).getElementsByTagName('placement')[0];

@@ -46,7 +46,7 @@ describe('MediaItem', () => {
       }
 
       case 'prop:srcitem':
-        if (Object.hasOwn(local, 'item')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'item')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.item);
           }, 10);

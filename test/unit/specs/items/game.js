@@ -51,7 +51,7 @@ describe('GameItem', () => {
       }
 
       case 'GameCapSurfSharing':
-        if (Object.hasOwn(local, 'GameCapSurfSharing')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'GameCapSurfSharing')) {
           var irand = rand;
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.GameCapSurfSharing);
@@ -70,7 +70,7 @@ describe('GameItem', () => {
         break;
 
       case 'GameCapShowMouse':
-        if (Object.hasOwn(local, 'GameCapShowMouse')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'GameCapShowMouse')) {
           var irand = rand;
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.GameCapShowMouse);
@@ -90,7 +90,7 @@ describe('GameItem', () => {
 
       case 'prop:srcitem':
       case 'prop:item':
-        if (Object.hasOwn(local, 'item')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'item')) {
           var irand = rand;
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.item);

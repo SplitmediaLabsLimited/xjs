@@ -44,7 +44,7 @@ describe('CameraItem', () => {
       xCallback(asyncId, '');
     } else if (
       typeof local[attachedId] !== 'undefined' &&
-      Object.hasOwn(local[attachedId], property)
+      Object.prototype.hasOwnProperty.call(local[attachedId], property)
     ) {
       xCallback(asyncId, local[attachedId][property]);
     } else {

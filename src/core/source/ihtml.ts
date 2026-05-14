@@ -597,7 +597,7 @@ export class iSourceHtml implements ISourceHtml {
         let customJS = '';
         try {
           const customObject = JSON.parse(custom);
-          if (Object.hasOwn(customObject, 'customJS')) {
+          if (Object.prototype.hasOwnProperty.call(customObject, 'customJS')) {
             customJS = customObject['customJS'];
           }
         } catch (e) {}
@@ -675,13 +675,13 @@ export class iSourceHtml implements ISourceHtml {
 
           try {
             customObject = JSON.parse(custom);
-            if (Object.hasOwn(customObject, 'cssEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'cssEnabled')) {
               cssEnabled = customObject['cssEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'scriptEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'scriptEnabled')) {
               scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'customCSS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customCSS')) {
               customCSS = customObject['customCSS'];
             }
           } catch (e) {}
@@ -744,7 +744,7 @@ export class iSourceHtml implements ISourceHtml {
         let enabled = true;
         try {
           const customObject = JSON.parse(custom);
-          if (Object.hasOwn(customObject, 'scriptEnabled')) {
+          if (Object.prototype.hasOwnProperty.call(customObject, 'scriptEnabled')) {
             enabled = customObject['scriptEnabled'] === 'true';
           }
         } catch (e) {}
@@ -778,13 +778,13 @@ export class iSourceHtml implements ISourceHtml {
 
           try {
             customObject = JSON.parse(custom);
-            if (Object.hasOwn(customObject, 'cssEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'cssEnabled')) {
               cssEnabled = customObject['cssEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'customJS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customJS')) {
               customJS = customObject['customJS'];
             }
-            if (Object.hasOwn(customObject, 'customCSS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customCSS')) {
               customCSS = customObject['customCSS'];
             }
           } catch (e) {}
@@ -855,7 +855,7 @@ export class iSourceHtml implements ISourceHtml {
         let customCSS = '';
         try {
           const customObject = JSON.parse(custom);
-          if (Object.hasOwn(customObject, 'customCSS')) {
+          if (Object.prototype.hasOwnProperty.call(customObject, 'customCSS')) {
             customCSS = customObject['customCSS'];
           }
         } catch (e) {}
@@ -889,13 +889,13 @@ export class iSourceHtml implements ISourceHtml {
 
           try {
             customObject = JSON.parse(custom);
-            if (Object.hasOwn(customObject, 'cssEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'cssEnabled')) {
               cssEnabled = customObject['cssEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'scriptEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'scriptEnabled')) {
               scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'customJS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customJS')) {
               customJS = customObject['customJS'];
             }
           } catch (e) {}
@@ -959,7 +959,7 @@ export class iSourceHtml implements ISourceHtml {
         let enabled = true;
         try {
           const customObject = JSON.parse(custom);
-          if (Object.hasOwn(customObject, 'cssEnabled')) {
+          if (Object.prototype.hasOwnProperty.call(customObject, 'cssEnabled')) {
             enabled = customObject['cssEnabled'] === 'true';
           }
         } catch (e) {}
@@ -993,13 +993,13 @@ export class iSourceHtml implements ISourceHtml {
 
           try {
             customObject = JSON.parse(custom);
-            if (Object.hasOwn(customObject, 'scriptEnabled')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'scriptEnabled')) {
               scriptEnabled = customObject['scriptEnabled'] === 'true';
             }
-            if (Object.hasOwn(customObject, 'customJS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customJS')) {
               customJS = customObject['customJS'];
             }
-            if (Object.hasOwn(customObject, 'customCSS')) {
+            if (Object.prototype.hasOwnProperty.call(customObject, 'customCSS')) {
               customCSS = customObject['customCSS'];
             }
           } catch (e) {}

@@ -26,7 +26,7 @@ Environment.prototype.set = function (env) {
 
   for (var prop in this.xjs.Environment) {
     if (
-      Object.hasOwn(this.xjs.Environment, prop) &&
+      Object.prototype.hasOwnProperty.call(this.xjs.Environment, prop) &&
       typeof this.xjs.Environment[prop] === 'boolean'
     ) {
       this.xjs.Environment[prop] = prop.toLowerCase().indexOf(String(env).toLowerCase()) !== -1;

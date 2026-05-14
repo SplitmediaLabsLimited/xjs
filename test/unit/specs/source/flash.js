@@ -48,7 +48,7 @@ describe('Flash Source', () => {
       }
 
       case 'prop:srcitem':
-        if (Object.hasOwn(local, 'item')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'item')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.item);
           }, 10);
@@ -65,7 +65,7 @@ describe('Flash Source', () => {
         break;
 
       case 'prop:BrowserSize':
-        if (Object.hasOwn(local, 'browserSize')) {
+        if (Object.prototype.hasOwnProperty.call(local, 'browserSize')) {
           setTimeout(() => {
             window.OnAsyncCallback(irand, local.browserSize);
           }, 10);
