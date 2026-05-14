@@ -28,6 +28,12 @@ npm run test:xsplit:cdp:attached
 
 That wrapper navigates an existing XSplit CEF target to `http://localhost:3999/xsplit-extension/index.html`. Each run writes timestamped artifacts under `artifacts/xsplit-cdp/` and updates `artifacts/xsplit-cdp/latest-summary.json` with the latest result path, pass/fail state, browser metadata, and screenshot path.
 
+If XSplit Broadcaster is running on another machine or inside a tunnel where `localhost:3999` points at the Windows host instead of this examples server, pass the reachable URL explicitly:
+
+```sh
+XJS_EXTENSION_NAVIGATE_URL=http://10.1.0.101:3999/xsplit-extension/index.html npm run test:xsplit:cdp:attached
+```
+
 ## Release build notes
 
 Generated modern package artifacts are intentionally ignored by git. Run `npm run build` before any local package validation or publish flow. The build regenerates `dist/xjs.mjs`, `dist/xjs.cjs`, `dist/xjs.js`, `dist/xjs.min.js`, and `dist/index.d.ts` from `src/`.
