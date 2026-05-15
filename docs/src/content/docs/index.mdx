@@ -3,11 +3,8 @@ title: XJS Framework
 description: The development framework for building XSplit Broadcaster plugins.
 template: splash
 hero:
-  title: ""
+  title: XJS Framework
   tagline: The development framework for building awesome XSplit Broadcaster Plugins
-  image:
-    file: ../../assets/img_logo.png
-    alt: XSplit JS Framework
   actions:
     - text: Get Started
       link: /quick-start/
@@ -17,23 +14,46 @@ hero:
       variant: secondary
 ---
 
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
 XJS Framework provides JavaScript APIs for XSplit Broadcaster extensions, source
 plugins, dialogs, scenes, sources, items, system devices, and output workflows.
 
-The modern docs are generated from the TypeScript source where possible.
-Component examples use the same fixture metadata that powers the XSplit
-regression extension, with MDX notes layered on top for human guidance.
+<CardGrid>
+  <LinkCard
+    href="/quick-start/"
+    title="Quick Start"
+    description="Install XJS, load it in a Broadcaster extension, and connect to the host runtime."
+  />
+  <LinkCard
+    href="/api/"
+    title="API Reference"
+    description="Browse generated API docs for the package entry point and public classes."
+  />
+  <LinkCard
+    href="/components/"
+    title="Component Fixtures"
+    description="Review tested component examples shared with the XSplit regression harness."
+  />
+  <LinkCard
+    href="/internals/"
+    title="Contributor Reference"
+    description="Inspect generated source-level docs for maintainers and contributors."
+  />
+</CardGrid>
 
-## Documentation Model
+Use these docs to install XJS, connect extensions and source plugins to XSplit
+Broadcaster, and inspect the APIs available to integrations.
 
-- API pages are generated from TypeDoc and source JSDoc.
-- Component pages are backed by tested fixture metadata.
-- Contributor reference pages expose internal modules for migration work and
-  public repository contributors, but they are not the stable package API.
-- The old Dgeni/Angular docs stack is preserved in `docs-old/` as migration
-  reference material.
+## What You Can Find Here
 
-## Compatibility Notes
+- Quick Start covers the package setup and host connection flow.
+- API Reference documents the supported package entry point and public classes.
+- Component Fixtures show rendered examples used by the regression harness.
+- Contributor Reference exposes source-level docs for maintainers, separate from
+  the stable public API.
 
-The package API remains stable during this modernization. The browser bundle and
-XSplit harness continue to target CEF 103 compatibility.
+## Runtime Compatibility
+
+The package API remains stable. The browser bundle and XSplit harness target CEF
+103 compatibility for XSplit Broadcaster-hosted integrations.

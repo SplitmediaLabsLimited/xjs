@@ -73,9 +73,9 @@
 
 .hero {
   position: relative;
-  min-height: 440px;
+  min-height: 310px;
   margin-inline: calc(50% - 50vw);
-  padding: 4rem max(1.5rem, calc((100vw - var(--sl-content-width)) / 2)) 4.5rem;
+  padding: 2.5rem max(1.5rem, calc((100vw - var(--sl-content-width)) / 2)) 2.75rem;
   overflow: hidden;
   background-color: var(--xjs-navy);
   background-image:
@@ -86,6 +86,18 @@
   grid-template-columns: 1fr;
 }
 
+.hero::before {
+  display: block;
+  width: min(82vw, 640px);
+  aspect-ratio: 745 / 114;
+  margin-inline: auto;
+  content: "";
+  background-image: url("../assets/img_logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
 .hero::after {
   position: absolute;
   inset: auto 0 0;
@@ -94,33 +106,29 @@
   background: linear-gradient(90deg, transparent, var(--xjs-blue-bright), transparent);
 }
 
-.hero > img,
-.hero > .hero-html {
-  width: min(88vw, 745px);
-  margin-inline: auto;
-  order: 0;
-}
-
-.xjs-hero-logo {
-  display: block;
-  width: min(88vw, 745px);
-  height: auto;
-}
-
 .hero .stack {
   align-items: center;
+  gap: 1.25rem;
   text-align: center;
 }
 
 .hero h1 {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero .tagline {
   max-width: 960px;
   margin-inline: auto;
   color: var(--xjs-blue-soft);
-  font-size: clamp(1.45rem, 1.05rem + 1.5vw, 2rem);
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.65rem);
   font-weight: 300;
   line-height: 1.2;
 }
@@ -153,7 +161,7 @@
 
 html[data-has-hero] .sl-markdown-content > p:first-child {
   max-width: 58rem;
-  margin: 2.5rem auto 3rem;
+  margin: 1.5rem auto 1.75rem;
   color: var(--xjs-text);
   font-size: 1.25rem;
   line-height: 1.55;
@@ -202,6 +210,19 @@ code {
   border-color: var(--sl-color-hairline);
 }
 
+html[data-has-hero] .card-grid {
+  max-width: 64rem;
+  margin: 0 auto 2rem;
+}
+
+html[data-has-hero][data-theme="light"] .sl-link-card .title {
+  color: var(--xjs-blue);
+}
+
+html[data-has-hero][data-theme="light"] .sl-link-card .description {
+  color: var(--xjs-text);
+}
+
 .xjs-fixture {
   border: 1px solid var(--sl-color-hairline);
   border-radius: 4px;
@@ -234,8 +255,12 @@ code {
   }
 
   .hero {
-    min-height: 380px;
-    padding-block: 3rem;
+    min-height: 300px;
+    padding-block: 2.25rem;
+  }
+
+  .hero::before {
+    width: min(86vw, 520px);
   }
 
   .hero .actions a {
