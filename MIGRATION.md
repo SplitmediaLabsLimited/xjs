@@ -24,7 +24,7 @@ When existing behavior is awkward or legacy-shaped, add modern regression covera
 - Modern bundlers: import from the package root through the conditional ESM export.
 - CommonJS projects: require from the package root through the conditional CommonJS export.
 - XSplit Broadcaster: load the browser bundle from `dist/xjs.js` or `dist/xjs.min.js`, both built for CEF 103.
-- npm package consumers: install `@splitmedialabs/xjs`; keep `xjs-framework` for historical versions and the final old-package `2.11.0` transition release only.
+- npm package consumers: install `@splitmedialabs/xjs`; keep `xjs-framework` for historical versions through the final published old-package `2.10.2` release only.
 - Transitional legacy users: keep `dist/xjs-es2015.js` and `dist/xjs-es2015.min.js` tracked for one deprecated compatibility window.
 
 ## Current Checkpoints

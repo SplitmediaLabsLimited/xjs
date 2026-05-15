@@ -4,7 +4,7 @@
 
 > **Package rename:** maintained releases now publish as
 > `@splitmedialabs/xjs`. The old `xjs-framework` npm package is kept for
-> historical releases and the final `2.11.0` transition release.
+> historical releases; `2.10.2` remains its final published release.
 
 The XSplit JS Framework is the JavaScript/TypeScript library used to build
 extensions and plugins for XSplit Broadcaster. This repository contains the
@@ -289,15 +289,14 @@ generator workflow as active dependencies.
 
 The modern package name is `@splitmedialabs/xjs`. The historical npm package,
 `xjs-framework`, remains the compatibility package for already-published
-versions such as `2.10.2` and the final old-package transition release
-`2.11.0`. New modernization releases should be published under
+versions such as `2.10.2`. New modernization releases should be published under
 `@splitmedialabs/xjs`.
 
 The intended registry transition is:
 
-1. Publish `xjs-framework@2.11.0` from the final old-package branch.
+1. Keep `xjs-framework@2.10.2` as the final published old-package release.
 2. Publish `@splitmedialabs/xjs@2.13.0` from the modernized branch.
-3. Add an npm deprecation notice to `xjs-framework` pointing users to
+3. Add an npm deprecation notice to `xjs-framework@<=2.10.2` pointing users to
    `@splitmedialabs/xjs`.
 
 Keep the browser bundle loader name `require('xjs')` unchanged for XSplit-hosted
