@@ -32,7 +32,7 @@ function resolveRequest(url) {
 
   const normalized = normalize(pathname).replace(/^(\.\.[/\\])+/, '');
   const file = join(root, normalized);
-  const allowedRoots = ['examples', 'dist', 'docs'].map((dir) => join(root, dir));
+  const allowedRoots = ['examples', 'dist', 'docs', 'docs-old'].map((dir) => join(root, dir));
   if (!allowedRoots.some((allowed) => file === allowed || file.startsWith(allowed + sep))) {
     return { status: 403, body: 'Forbidden' };
   }

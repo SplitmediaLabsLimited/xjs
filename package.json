@@ -21,6 +21,7 @@
     "test:legacy": "karma start --single-run --browsers Firefox",
     "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
     "test:xsplit:cdp:attached": "node scripts/xsplit-cdp-attached.mjs",
+    "test:xsplit:components:screenshots": "node scripts/xsplit-component-screenshots.mjs",
     "pack:check": "npm pack --dry-run"
   },
   "main": "./dist/xjs.cjs",

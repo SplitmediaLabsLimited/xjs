@@ -5,6 +5,21 @@ body {
   margin: 0;
 }
 
+.component-capture-page {
+  background: #f8fafc;
+}
+
+.component-capture-page main {
+  margin: 0;
+  max-width: none;
+  min-height: auto;
+  padding: 8px;
+}
+
+.component-capture-page .component-preview {
+  margin: 0;
+}
+
 .xsplit-navbar {
   align-items: center;
   background: #17202a;

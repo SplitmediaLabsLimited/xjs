@@ -12,6 +12,14 @@ const fixtureGallery = await readFile(
   new URL('examples/xsplit-extension/component-fixture-gallery.js', root),
   'utf8'
 );
+const fixtureCapture = await readFile(
+  new URL('examples/xsplit-extension/component-capture.js', root),
+  'utf8'
+);
+const fixtureCapturePage = await readFile(
+  new URL('examples/xsplit-extension/component-capture.html', root),
+  'utf8'
+);
 const fixtures = await readFile(
   new URL('examples/xsplit-extension/component-fixtures.json', root),
   'utf8'
@@ -71,6 +79,16 @@ assert.match(
   fixtureLoader,
   /__xjsComponentFixtures/,
   'fixture loader should expose component fixture metadata'
+);
+assert.match(
+  fixtureCapturePage,
+  /component-capture-preview/,
+  'capture page should expose a stable preview root'
+);
+assert.match(
+  fixtureCapturePage,
+  /\.\/component-capture\.js/,
+  'capture page should load the single-fixture renderer'
 );
 assert.match(fixtureLoader, /component-fixtures\.json/, 'fixture loader should read shared JSON data');
 assert.match(fixtures, /xsplit-navbar/, 'fixture manifest should include the docs navbar fixture');
@@ -169,5 +187,24 @@ for (const expected of [
   );
 }
 
+for (const expected of [
+  '__xjsComponentFixturesReady',
+  'component-capture',
+  'component-capture-preview',
+  'data-fixture-id',
+  'data-ready',
+]) {
+  assert.match(
+    fixtureCapture,
+    new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    `capture renderer should include ${expected}`
+  );
+}
+
 assert.match(server, /3999/, 'examples server should default to port 3999');
 assert.match(server, /examples/, 'examples server should serve the examples directory');
+assert.match(
+  server,
+  /docs-old/,
+  'examples server should serve the legacy component scripts used by the harness'
+);

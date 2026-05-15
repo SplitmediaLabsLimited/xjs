@@ -1,5 +1,6 @@
 node_modules/
 .astro/
+artifacts/
 docs/src/content/docs/api/
 docs/src/content/docs/internals/
 *.sublime-project

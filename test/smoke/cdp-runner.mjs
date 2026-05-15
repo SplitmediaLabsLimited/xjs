@@ -9,6 +9,10 @@ const attachedSource = await readFile(
   new URL('../../scripts/xsplit-cdp-attached.mjs', import.meta.url),
   'utf8'
 );
+const componentScreenshotSource = await readFile(
+  new URL('../../scripts/xsplit-component-screenshots.mjs', import.meta.url),
+  'utf8'
+);
 const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8'));
 const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
 
@@ -83,5 +87,30 @@ assert.match(
   'attached runner should navigate to the local extension page'
 );
 assert.equal(pkg.scripts['test:xsplit:cdp:attached'], 'node scripts/xsplit-cdp-attached.mjs');
+assert.equal(
+  pkg.scripts['test:xsplit:components:screenshots'],
+  'node scripts/xsplit-component-screenshots.mjs'
+);
+for (const expected of [
+  'component-fixtures',
+  'component-capture.html',
+  'component-capture-preview',
+  'renderedReadyValue',
+  'Page.captureScreenshot',
+  'captureBeyondViewport',
+  'latest-summary.json',
+  'sha256',
+]) {
+  assert.match(
+    componentScreenshotSource,
+    new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    `component screenshot runner should include ${expected}`
+  );
+}
+assert.doesNotMatch(
+  componentScreenshotSource,
+  /connectOverCDP|playwright/i,
+  'component screenshot runner should stay raw CDP first'
+);
 assert.match(readme, /test:xsplit:cdp:attached/, 'README should document attached XSplit CDP run');
 assert.match(readme, /latest-summary\.json/, 'README should document the latest artifact summary');
