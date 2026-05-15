@@ -127,9 +127,20 @@ function informWhenConfigLoaded(): Promise<any> {
   });
 }
 
+function setAudioengineUsed(): Promise<any> {
+  return new Promise(resolve => {
+    exec('CallHostFunc', 'getProperty', 'experimental:audioengine', isExperimental => {
+      const isNewAudioEngine = parseInt(isExperimental) === 1;
+      Global.setNewAudioEngine(isNewAudioEngine);      
+      resolve();
+    });
+  });
+}
+
 export default function init(config: Object): void {
   Global.addInitializationPromise(readMetaConfigUrl());
   Global.addInitializationPromise(getCurrentSourceId());
+  Global.addInitializationPromise(setAudioengineUsed());
 
   if (!(config && config['deferLoad'] !== undefined)) {
     Global.addInitializationPromise(informWhenConfigLoaded());

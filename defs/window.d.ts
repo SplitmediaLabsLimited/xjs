@@ -19,4 +19,5 @@ interface Window {
   OnEvent: Function;
   SourcesListUpdate: Function;
   SetBroadcastChannelList: Function;
+  trustedTypes: any;
 }
