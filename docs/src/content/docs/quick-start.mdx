@@ -26,7 +26,23 @@ load it from your HTML:
 <script src="js/main.js"></script>
 ```
 
-For bundled projects, use the package entry and wait for the host bridge:
+For bundled projects, install the package and import the framework entry from
+your application code:
+
+```sh
+npm install xjs-framework
+```
+
+```js
+import * as xjs from 'xjs-framework';
+
+xjs.ready().then(() => {
+  // XJS calls are safe here.
+});
+```
+
+If your plugin is intentionally written as browser-script code, the browser
+bundle still exposes the historical CommonJS-style loader:
 
 ```js
 const xjs = require('xjs');
@@ -76,6 +92,9 @@ body {
 }
 ```
 
+Add the page to Broadcaster by dragging the HTML file onto the stage or by adding
+the hosted page through **Sources > Other > Webpage URL**.
+
 ## Creating Your First Extension Plugin
 
 Extension plugins control or inspect Broadcaster itself. A simple extension can
@@ -98,6 +117,36 @@ xjs.ready()
   });
 ```
 
+Add custom extensions through **Extensions > Add custom extension...**. Extension
+windows are not rendered into the scene; they are controller UIs for inspecting
+or manipulating Broadcaster.
+
+## Sample Snippets
+
+Many APIs are most useful from an extension or a source properties window:
+
+```js
+xjs.Dialog.createDialog('https://www.xsplit.com/')
+  .setSize(300, 300)
+  .setTitle('Sample dialog')
+  .setBorderOptions(true, false)
+  .setButtons(true, true)
+  .show();
+```
+
+```js
+output.startBroadcast();
+output.stopBroadcast();
+```
+
+```js
+if (source instanceof xjs.MediaSource) {
+  source.setPlaying(true);
+}
+```
+
+Use the generated API reference to confirm which host context can call each API.
+
 ## What's Next?
 
 - Read the [tutorial overview](/tutorials/) for source, extension,
@@ -105,3 +154,15 @@ xjs.ready()
 - Check the [API Reference](/api/) for generated TypeScript API pages.
 - Open [Components](/components/) for tested documentation component
   fixtures used by the regression harness.
+
+## Sample Plugins
+
+The original documentation linked several small plugins that are still useful as
+examples of plugin shape:
+
+- [Scene Rotator](https://github.com/xjsframework/scene-rotator) demonstrates an
+  extension that switches scenes on a timer.
+- [Source Toggler](https://github.com/xjsframework/source-toggler) demonstrates
+  a source plugin manipulating item layout.
+- [Twitch Chat Viewer](https://github.com/xjsframework/twitch-chat-viewer-popout)
+  demonstrates adapting an existing webpage with injected JavaScript and CSS.

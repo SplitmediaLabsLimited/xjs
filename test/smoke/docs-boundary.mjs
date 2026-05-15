@@ -9,7 +9,15 @@ const docsConfig = await readFile(new URL('docs/astro.config.mjs', root), 'utf8'
 const docsCheck = await readFile(new URL('scripts/check-docs.mjs', root), 'utf8');
 const docsHome = await readFile(new URL('docs/src/content/docs/index.mdx', root), 'utf8');
 const docsQuickStart = await readFile(new URL('docs/src/content/docs/quick-start.mdx', root), 'utf8');
-const docsTutorials = await readFile(new URL('docs/src/content/docs/tutorials.mdx', root), 'utf8');
+const docsTutorials = await readFile(new URL('docs/src/content/docs/tutorials/index.mdx', root), 'utf8');
+const docsSourcePlugins = await readFile(
+  new URL('docs/src/content/docs/tutorials/source-plugins.mdx', root),
+  'utf8'
+);
+const docsModernBundlers = await readFile(
+  new URL('docs/src/content/docs/tutorials/modern-bundlers.mdx', root),
+  'utf8'
+);
 const pagesWorkflow = await readFile(new URL('.github/workflows/pages.yml', root), 'utf8');
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 const tsconfig = JSON.parse(await readFile(new URL('tsconfig.json', root), 'utf8'));
@@ -98,6 +106,27 @@ for (const expected of [
 
 for (const content of [docsHome, docsQuickStart, docsTutorials]) {
   assert.doesNotMatch(content, /\/xjs\//, 'authored docs should not hard-code the GitHub Pages base path');
+}
+
+for (const expected of [
+  'Types of Plugins',
+  'Developing Source Plugins',
+  'Developing Source Properties Windows',
+  'Remote XJS',
+]) {
+  assert.match(docsTutorials, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+for (const expected of [
+  'SourcePluginWindow.getInstance()',
+  'Configuration Objects',
+  'Source.getCurrentSource',
+]) {
+  assert.match(docsSourcePlugins, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+for (const expected of ['Modern Bundlers and ESM', 'import * as xjs', 'CEF 103 compatibility']) {
+  assert.match(docsModernBundlers, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }
 
 for (const entry of ['./src/core/render.ts', './src/internal/render.ts']) {

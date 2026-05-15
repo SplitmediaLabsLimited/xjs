@@ -1,0 +1,55 @@
+---
+title: Modern Bundlers and ESM
+description: Use XJS from ESM, CommonJS, and browser-script plugin projects.
+sidebar:
+  order: 9
+---
+
+The original documentation described ES2015 projects through Webpack and
+Browserify. The current package keeps compatibility with that style, but the
+preferred workflow is Vite plus the package exports.
+
+## ESM
+
+Modern projects can import the framework directly:
+
+```js
+import * as xjs from 'xjs-framework';
+
+await xjs.ready();
+
+const scene = await xjs.Scene.getActiveScene();
+const items = await scene.getItems();
+```
+
+## CommonJS
+
+CommonJS consumers can require the package entry:
+
+```js
+const xjs = require('xjs-framework');
+
+xjs.ready()
+  .then(xjs.Scene.getActiveScene)
+  .then((scene) => scene.getItems());
+```
+
+## Browser Scripts
+
+Pages that load the browser bundle from HTML should use the historical loader
+name:
+
+```html
+<script src="js/xjs.js"></script>
+<script src="js/main.js"></script>
+```
+
+```js
+const xjs = require('xjs');
+```
+
+## Compatibility Target
+
+The browser bundle and XSplit harness are built for CEF 103 compatibility. The
+modern ESM package output is intended for current tooling and does not replace
+the CEF-targeted browser bundle for host-loaded pages.

@@ -1,0 +1,50 @@
+---
+title: Authenticating to External Services
+description: Use dialog-based authorization flows for service-backed plugins.
+sidebar:
+  order: 13
+---
+
+Many plugins need service authentication before they can display alerts, chat,
+analytics, or account-specific data.
+
+Source properties windows are not ideal for OAuth-style flows because they can
+auto-hide when focus changes. Prefer opening a dialog to a URL you control,
+letting the service complete authorization there, and returning a string result
+to the original plugin window.
+
+## Recommended Pattern
+
+1. Add an authorization button to the extension or source properties window.
+2. Check whether saved auth data exists for the current Broadcaster user.
+3. Open a dialog to your authorization URL.
+4. Complete the external service flow inside the dialog.
+5. Return the token or result string with `Dialog.return()`.
+6. Save the returned string with the current user hash.
+7. Clear browser cookies when deauthorizing or when a new auth flow starts.
+
+## User-Scoped Storage
+
+Use `App.getUserIdHash()` to associate saved auth data with the current
+Broadcaster user:
+
+```js
+const userHash = await xjs.App.getUserIdHash();
+localStorage.setItem(`${userHash}:service-token`, token);
+```
+
+This prevents multiple Broadcaster users on the same machine from sharing the
+same external service token.
+
+## Dialog Return
+
+Pages that load XJS can call `Dialog.return()`. Lightweight pages can also use
+the host bridge directly:
+
+```js
+external.SetDialogResult('token-or-result');
+external.Close();
+```
+
+Tokens should not rely on cookies alone because any plugin can clear
+Broadcaster's embedded browser cookies.

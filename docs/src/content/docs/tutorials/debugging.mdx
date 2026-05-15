@@ -1,0 +1,47 @@
+---
+title: Debugging Your Plugins
+description: Use Broadcaster developer mode and CDP to inspect plugin pages.
+sidebar:
+  order: 8
+---
+
+XSplit Broadcaster exposes Chromium DevTools Protocol targets for plugin pages
+when developer mode is enabled.
+
+## Enable Developer Mode
+
+Open **Tools > Settings > Advanced** and enable developer mode, then restart
+Broadcaster. The default remote debugging page is:
+
+```text
+http://localhost:9222
+```
+
+You can also launch Broadcaster with a `remotedebug:<port>` startup parameter if
+you need a different port.
+
+## Select a Target
+
+Open the debugging page in a browser. Each target is labeled by its page title or
+URL. Select the target for your source, extension, or source properties window.
+
+For the regression harness in this repository, the expected extension URL starts
+with:
+
+```text
+http://localhost:3999/xsplit-extension/
+```
+
+The raw CDP runner uses this URL to select the XSplit-hosted target and run the
+regression suite from the host CEF runtime.
+
+## Source Properties Windows
+
+Source properties windows are harder to inspect because they are hosted by the
+Broadcaster properties surface. If you need to debug that page, open the source
+properties window first, then select the matching properties debugger target from
+the remote debugging page.
+
+CEF 103 is the compatibility target for XSplit-hosted pages in this repository.
+Modern Chrome smoke tests are useful, but the CDP runner is the authority for
+hosted regression data.

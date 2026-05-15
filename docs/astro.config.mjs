@@ -66,6 +66,10 @@ export default defineConfig({
           label: 'Components',
           items: [{ autogenerate: { directory: 'components' } }],
         },
+        {
+          label: 'Tutorials',
+          items: [{ autogenerate: { directory: 'tutorials' } }],
+        },
         publicTypeDocSidebarGroup,
         internalTypeDocSidebarGroup,
       ],

@@ -1,0 +1,55 @@
+---
+title: Developing Extension Plugins
+description: Build application-level controller windows for Broadcaster.
+sidebar:
+  order: 6
+---
+
+Extensions are HTML plugins that manipulate the application, scenes, sources, and
+outputs. They open in their own window and are not captured as part of a scene.
+
+Add a custom extension through **Extensions > Add custom extension...** and point
+Broadcaster at your extension HTML file or dev-server URL.
+
+## Basic Initialization
+
+```js
+const xjs = require('xjs');
+
+xjs.ready().then(() => {
+  const extensionWindow = xjs.ExtensionWindow.getInstance();
+  extensionWindow.setTitle('My Extension');
+});
+```
+
+## What Extensions Can Do
+
+Extensions can:
+
+- Add supported system sources to the active scene through classes such as
+  `CameraDevice`, `Screen`, and `Game`.
+- Manipulate existing sources and items, including layout and configuration.
+- Change application-wide settings such as transitions.
+- Listen to application events through `ExtensionWindow`.
+- Open dialogs for authentication, setup flows, and supporting pages.
+
+For example, a scene switcher can enumerate scenes and create a control for each
+one:
+
+```js
+xjs.ready()
+  .then(() => xjs.Scene.getSceneCount())
+  .then((count) => {
+    for (let sceneId = 1; sceneId <= count; sceneId += 1) {
+      xjs.Scene.getById(sceneId).then((scene) => {
+        const button = document.createElement('button');
+        button.textContent = `Scene ${sceneId}`;
+        button.addEventListener('click', () => xjs.Scene.setActiveScene(scene));
+        document.body.append(button);
+      });
+    }
+  });
+```
+
+Extensions usually have broader permissions than sources. Keep destructive host
+actions behind explicit user controls.

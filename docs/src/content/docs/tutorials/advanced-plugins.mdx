@@ -1,0 +1,63 @@
+---
+title: Advanced Plugins
+description: Compose XJS APIs, DLL calls, and external services into richer plugins.
+sidebar:
+  order: 7
+---
+
+Advanced plugins usually combine multiple XJS areas: application events, scene
+controls, item layout, DLL calls, dialogs, and third-party services.
+
+All host-facing calls should be made after `xjs.ready()` resolves, including
+environment checks, `getInstance()` calls, scene lookups, and output control.
+
+## Orchestrating Your Stream
+
+An extension can coordinate a stream flow. For example, play an intro media
+source when streaming starts, then switch scenes when the media finishes:
+
+```js
+const xjs = require('xjs');
+
+let introVideo;
+
+xjs.ready()
+  .then(() => xjs.Scene.getActiveScene())
+  .then((scene) => scene.getItems())
+  .then((items) => {
+    introVideo = items.find((item) => item instanceof xjs.MediaItem);
+  });
+
+xjs.ChannelManager.on('stream-start', () => {
+  if (!introVideo) return;
+
+  introVideo.getPlaybackDuration().then((duration) => {
+    introVideo.setPlaybackPosition(0);
+    introVideo.setPlaying(true);
+
+    setTimeout(() => {
+      xjs.Scene.setActiveScene(2);
+    }, duration * 1000);
+  });
+});
+```
+
+Treat this as a pattern, not a drop-in production script. Real plugins should
+handle missing sources, user cancellation, and output errors.
+
+## DLL Utilization
+
+DLLs let plugins call Windows-native functionality exposed by Broadcaster or a
+custom DLL. Load unsafe DLLs during initialization, handle permission failures,
+and keep visible feedback in the UI when access is unavailable.
+
+See [Using DLLs for Extensibility](/tutorials/dll/) for the full flow.
+
+## External APIs
+
+Plugins often integrate services such as chat, alerts, dashboards, or
+authentication providers. Prefer dialog-based authorization flows so source
+properties windows do not need to stay focused during external login.
+
+See [Authenticating to External Services](/tutorials/authentication/) for the
+recommended pattern.

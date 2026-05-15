@@ -1,0 +1,102 @@
+---
+title: Developing Source Properties Windows
+description: Configure source plugins with tabbed or full-window properties UIs.
+sidebar:
+  order: 5
+---
+
+A source properties window gives users a place to configure a source without
+putting controls into the captured source page.
+
+## Prerequisites
+
+- The source page imports XJS and waits for `xjs.ready()`.
+- The source page points to its configuration page:
+
+```html
+<meta name="xsplit:config-url" content="./config.html">
+```
+
+- The properties page imports XJS and waits for `xjs.ready()`.
+- The properties page chooses either tabbed mode or full-window mode.
+
+## Window Layouts
+
+Tabbed mode reuses XSplit's source properties tabs and adds your custom tabs:
+
+```js
+const xjs = require('xjs');
+
+xjs.ready().then(() => {
+  const propsWindow = xjs.SourcePropsWindow.getInstance();
+
+  propsWindow.useTabbedWindow({
+    customTabs: ['Custom'],
+    tabOrder: ['Custom', 'Layout', 'Color', 'Transition'],
+  });
+});
+```
+
+Full-window mode gives your page the whole configurable area:
+
+```js
+xjs.ready().then(() => {
+  const propsWindow = xjs.SourcePropsWindow.getInstance();
+  propsWindow.useFullWindow();
+});
+```
+
+## Custom Tabs
+
+When using tabbed mode, listen for `set-selected-tab` to render the correct UI
+for the selected custom tab:
+
+```js
+xjs.ready().then(() => {
+  const propsWindow = xjs.SourcePropsWindow.getInstance();
+
+  propsWindow.on('set-selected-tab', (selectedTab) => {
+    renderTab(selectedTab);
+  });
+});
+```
+
+## Manipulating Configuration
+
+The properties window can load the current source configuration to populate its
+controls:
+
+```js
+const xjs = require('xjs');
+const { Source } = xjs;
+
+xjs.ready()
+  .then(Source.getCurrentSource)
+  .then((source) => source.loadConfig())
+  .then((config) => {
+    updateControls(config);
+  });
+```
+
+The properties window requests saves; the source page performs the actual save:
+
+```js
+// config.html
+saveButton.addEventListener('click', () => {
+  source.requestSaveConfig(readControls());
+});
+```
+
+```js
+// source.html
+xjs.ready().then(() => {
+  const sourceWindow = xjs.SourcePluginWindow.getInstance();
+
+  sourceWindow.on('save-config', (config) => {
+    xjs.Source.getCurrentSource().then((source) => source.saveConfig(config));
+  });
+});
+```
+
+For preview-only changes, call `applyConfig()` from the properties page and
+handle `apply-config` in the source page without saving.
