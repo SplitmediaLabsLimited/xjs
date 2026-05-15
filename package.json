@@ -1,5 +1,5 @@
 {
-  "name": "xjs-framework",
+  "name": "@splitmedialabs/xjs",
   "version": "2.13.0",
   "description": "XSplit JS Framework",
   "scripts": {
@@ -41,6 +41,9 @@
     "./browser": "./dist/xjs.js",
     "./browser.min": "./dist/xjs.min.js",
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=22.12.0"

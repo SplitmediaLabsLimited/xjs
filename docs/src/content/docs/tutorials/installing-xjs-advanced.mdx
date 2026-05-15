@@ -13,13 +13,13 @@ now starts from npm and the generated package outputs.
 Install XJS into a plugin project:
 
 ```sh
-npm install xjs-framework
+npm install @splitmedialabs/xjs
 ```
 
 Bundled projects should import from the package entry:
 
 ```js
-import * as xjs from 'xjs-framework';
+import * as xjs from '@splitmedialabs/xjs';
 
 await xjs.ready();
 ```
@@ -27,7 +27,7 @@ await xjs.ready();
 CommonJS projects can still load the package entry:
 
 ```js
-const xjs = require('xjs-framework');
+const xjs = require('@splitmedialabs/xjs');
 
 xjs.ready().then(() => {
   // Use host APIs here.

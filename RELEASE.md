@@ -2,6 +2,12 @@
 
 This document describes how to release a new version of XSplit JS Framework
 
+Modern releases are published to the scoped npm package `@splitmedialabs/xjs`.
+The historical `xjs-framework` package remains available for old releases such
+as `2.10.2` and any explicitly approved transition release. After the scoped
+package is available, deprecate the old package on npm with a message directing
+users to `@splitmedialabs/xjs`.
+
 1. **Make sure that tests are green**
 
   Before the release, make sure that all required checks pass. Execute
@@ -34,7 +40,8 @@ to `xjsframework.github.io`'s repository and update the tutorials if needed.
 
   - Merge release branch to master and add the version tag.
   - Draft a new release in Github
-  - Publish to NPM
+  - Publish `@splitmedialabs/xjs` to NPM
+  - Deprecate `xjs-framework` on NPM after the scoped package is live
   - Upload the latest generated xjs files to CDN
   - If XSplit Broadcaster is available, run `npm run examples`, attach
     `http://localhost:3999/xsplit-extension/index.html`, and collect

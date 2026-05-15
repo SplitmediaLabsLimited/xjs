@@ -16,10 +16,15 @@ assert.match(
 
 assert.equal(pkg.scripts.prepare, 'npm run build');
 assert.equal(pkg.scripts['pack:check'], 'npm pack --dry-run');
+assert.equal(pkg.name, '@splitmedialabs/xjs');
+assert.equal(pkg.publishConfig?.access, 'public');
 assert.ok(pkg.files.includes('dist/'), 'published package should include generated dist output');
 
 for (const expected of [
   '## Release build notes',
+  '@splitmedialabs/xjs',
+  'xjs-framework',
+  'deprecation',
   'Generated modern package artifacts are intentionally ignored by git',
   'npm run build',
   'npm run pack:check',

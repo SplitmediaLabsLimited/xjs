@@ -14,7 +14,7 @@ preferred workflow is Vite plus the package exports.
 Modern projects can import the framework directly:
 
 ```js
-import * as xjs from 'xjs-framework';
+import * as xjs from '@splitmedialabs/xjs';
 
 await xjs.ready();
 
@@ -27,7 +27,7 @@ const items = await scene.getItems();
 CommonJS consumers can require the package entry:
 
 ```js
-const xjs = require('xjs-framework');
+const xjs = require('@splitmedialabs/xjs');
 
 xjs.ready()
   .then(xjs.Scene.getActiveScene)

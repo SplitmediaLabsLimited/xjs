@@ -30,6 +30,6 @@ const browserBundle = await import('node:fs/promises').then((fs) =>
 assert.match(browserBundle, /require\(['"]xjs['"]\)/, 'browser bundle documents xjs require shim');
 assert.match(
   browserBundle,
-  /chrome103|CEF 103|xjs-framework/i,
+  /chrome103|CEF 103|XSplit JS Framework/i,
   'browser bundle should retain an identifiable banner'
 );

@@ -5,6 +5,7 @@ This plan tracks the codebase-wide migration away from legacy package and build 
 ## Goals
 
 - Complete Bower Removal and keep active source free of legacy package-manager paths and HTML imports.
+- Move new npm releases from the historical `xjs-framework` package to `@splitmedialabs/xjs`.
 - Keep the ESM Transition usable for modern consumers through `dist/xjs.mjs`, while preserving `dist/xjs.cjs` for CommonJS users.
 - Build CEF 103 compatible browser artifacts for XSplit-hosted extension usage.
 - Use Vite as the build foundation and avoid reintroducing Browserify or Gulp tasks.
@@ -23,6 +24,7 @@ When existing behavior is awkward or legacy-shaped, add modern regression covera
 - Modern bundlers: import from the package root through the conditional ESM export.
 - CommonJS projects: require from the package root through the conditional CommonJS export.
 - XSplit Broadcaster: load the browser bundle from `dist/xjs.js` or `dist/xjs.min.js`, both built for CEF 103.
+- npm package consumers: install `@splitmedialabs/xjs`; keep `xjs-framework` for historical versions and approved transition releases only.
 - Transitional legacy users: keep `dist/xjs-es2015.js` and `dist/xjs-es2015.min.js` tracked for one deprecated compatibility window.
 
 ## Current Checkpoints

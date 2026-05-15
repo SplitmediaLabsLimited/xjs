@@ -283,6 +283,18 @@ generator workflow as active dependencies.
 
 ## Release build notes
 
+The modern package name is `@splitmedialabs/xjs`. The historical npm package,
+`xjs-framework`, remains the compatibility package for already-published
+versions such as `2.10.2` and any explicit transition release maintainers choose
+to publish there. New modernization releases should be published under
+`@splitmedialabs/xjs`.
+
+When the scoped package is published, maintainers should add an npm deprecation
+notice to the old `xjs-framework` package pointing users to
+`@splitmedialabs/xjs`. Keep the browser bundle loader name `require('xjs')`
+unchanged for XSplit-hosted script usage; that name is a bundle shim, not the
+npm package name.
+
 Generated modern package artifacts are intentionally ignored by git. Run
 `npm run build` before any local package validation or publish flow. The build
 regenerates:
