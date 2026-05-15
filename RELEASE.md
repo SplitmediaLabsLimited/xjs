@@ -4,9 +4,20 @@ This document describes how to release a new version of XSplit JS Framework
 
 Modern releases are published to the scoped npm package `@splitmedialabs/xjs`.
 The historical `xjs-framework` package remains available for old releases such
-as `2.10.2` and any explicitly approved transition release. After the scoped
-package is available, deprecate the old package on npm with a message directing
-users to `@splitmedialabs/xjs`.
+as `2.10.2` and the final old-package transition release `2.11.0`. After the
+scoped package is available, deprecate the old package on npm with a message
+directing users to `@splitmedialabs/xjs`.
+
+For the package rename transition:
+
+1. Publish `xjs-framework@2.11.0` from the final old-package branch. This can be
+   the `latest` dist-tag for the old package line.
+2. Publish `@splitmedialabs/xjs@2.13.0` from the modernized branch.
+3. Deprecate `xjs-framework` after the scoped package is live:
+
+   ```sh
+   npm deprecate "xjs-framework@<=2.11.0" "XJS has moved to @splitmedialabs/xjs. Install @splitmedialabs/xjs for maintained releases."
+   ```
 
 1. **Make sure that tests are green**
 
