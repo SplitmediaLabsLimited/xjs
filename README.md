@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/xjsframework/xjs.svg?branch=master)](https://travis-ci.org/xjsframework/xjs)
 
+> **Package rename:** maintained releases now publish as
+> `@splitmedialabs/xjs`. The old `xjs-framework` npm package is kept for
+> historical releases and the final `2.11.0` transition release.
+
 The XSplit JS Framework is the JavaScript/TypeScript library used to build
 extensions and plugins for XSplit Broadcaster. This repository contains the
 runtime API wrappers, browser bundles, generated type declarations, examples,
