@@ -241,6 +241,25 @@ html[data-has-hero] .card-grid {
   margin-top: 0;
 }
 
+.xjs-fixture__preview {
+  margin: 0 0 1rem;
+}
+
+.xjs-fixture__preview img {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 4px;
+  background: #f8fafc;
+}
+
+.xjs-fixture__preview figcaption {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+  margin-top: 0.5rem;
+}
+
 .xjs-fixture dl {
   display: grid;
   grid-template-columns: max-content 1fr;

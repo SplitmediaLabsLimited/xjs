@@ -157,7 +157,12 @@ async function waitForCapture(socket, fixture, timeoutMs = 10000) {
             : null,
           text: preview ? preview.innerText : '',
           rect: rect
-            ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+            ? {
+                x: rect.x,
+                y: rect.y,
+                width: Math.max(rect.width, preview.scrollWidth),
+                height: Math.max(rect.height, preview.scrollHeight),
+              }
             : null,
         };
       })()`,
@@ -186,10 +191,21 @@ async function waitForCapture(socket, fixture, timeoutMs = 10000) {
   );
 }
 
-async function capturePage(socket) {
+async function capturePage(socket, pageState) {
+  const padding = 8;
+  const clip = pageState.rect
+    ? {
+        x: Math.max(0, pageState.rect.x - padding),
+        y: Math.max(0, pageState.rect.y - padding),
+        width: Math.ceil(pageState.rect.width + padding * 2),
+        height: Math.ceil(pageState.rect.height + padding * 2),
+        scale: 1,
+      }
+    : undefined;
   const screenshot = await send(socket, 'Page.captureScreenshot', {
     format: 'png',
     captureBeyondViewport: true,
+    ...(clip ? { clip } : {}),
   });
   return Buffer.from(screenshot.data, 'base64');
 }
@@ -226,6 +242,12 @@ await trySend(socket, 'Runtime.enable');
 await trySend(socket, 'Log.enable');
 await trySend(socket, 'Page.enable');
 await trySend(socket, 'Network.enable');
+await trySend(socket, 'Emulation.setDeviceMetricsOverride', {
+  width: 900,
+  height: 700,
+  deviceScaleFactor: 1,
+  mobile: false,
+});
 
 const captureOrigin = getCaptureOrigin(target, navigatedFrom);
 diagnostics.cdp.captureOrigin = captureOrigin;
@@ -238,7 +260,7 @@ for (const fixture of fixtures) {
   const captureUrl = captureUrlForFixture(captureOrigin, fixture);
   await send(socket, 'Page.navigate', { url: captureUrl });
   const pageState = await waitForCapture(socket, fixture);
-  const buffer = await capturePage(socket);
+  const buffer = await capturePage(socket, pageState);
   const fileName = `${fileSafe(fixture.id)}.png`;
   const relativePath = `${artifactRelativeDir}/${fileName}`;
   await writeFile(resolve(artifactDir, fileName), buffer);

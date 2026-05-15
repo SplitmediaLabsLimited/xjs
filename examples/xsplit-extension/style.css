@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   background: #f7fbff;
   color: #26313d;
@@ -7,6 +13,7 @@ body {
 
 .component-capture-page {
   background: #f8fafc;
+  min-width: 900px;
 }
 
 .component-capture-page main {
@@ -14,6 +21,7 @@ body {
   max-width: none;
   min-height: auto;
   padding: 8px;
+  width: 884px;
 }
 
 .component-capture-page .component-preview {

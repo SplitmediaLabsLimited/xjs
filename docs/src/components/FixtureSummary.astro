@@ -1,8 +1,10 @@
 ---
 import fixtures from '../../../examples/xsplit-extension/component-fixtures.json';
+import screenshotManifest from '../assets/component-fixtures.json';
 
 const { fixtureId } = Astro.props;
 const fixture = fixtures.find((item) => item.id === fixtureId);
+const screenshot = screenshotManifest.fixtures.find((item) => item.id === fixtureId);
 
 if (!fixture) {
   throw new Error(`Unknown component fixture: ${fixtureId}`);
@@ -11,6 +13,17 @@ if (!fixture) {
 
 <section class="xjs-fixture">
   <h2>Tested Fixture</h2>
+  {
+    screenshot && (
+      <figure class="xjs-fixture__preview">
+        <img src={screenshot.src} alt={`${fixture.title || fixture.label} rendered example`} />
+        <figcaption>
+          Captured from the XSplit regression extension fixture
+          <code>{fixture.id}</code>.
+        </figcaption>
+      </figure>
+    )
+  }
   <dl>
     <dt>Fixture</dt>
     <dd><code>{fixture.id}</code></dd>

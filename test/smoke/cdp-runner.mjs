@@ -13,6 +13,10 @@ const componentScreenshotSource = await readFile(
   new URL('../../scripts/xsplit-component-screenshots.mjs', import.meta.url),
   'utf8'
 );
+const componentDocsAssetSource = await readFile(
+  new URL('../../scripts/update-component-doc-assets.mjs', import.meta.url),
+  'utf8'
+);
 const pkg = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8'));
 const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
 
@@ -91,10 +95,16 @@ assert.equal(
   pkg.scripts['test:xsplit:components:screenshots'],
   'node scripts/xsplit-component-screenshots.mjs'
 );
+assert.equal(pkg.scripts['docs:components:capture'], 'node scripts/xsplit-component-screenshots.mjs');
+assert.equal(
+  pkg.scripts['docs:components:update'],
+  'npm run docs:components:capture && node scripts/update-component-doc-assets.mjs && npm run docs:check'
+);
 for (const expected of [
   'component-fixtures',
   'component-capture.html',
   'component-capture-preview',
+  'Emulation.setDeviceMetricsOverride',
   'renderedReadyValue',
   'Page.captureScreenshot',
   'captureBeyondViewport',
@@ -112,5 +122,17 @@ assert.doesNotMatch(
   /connectOverCDP|playwright/i,
   'component screenshot runner should stay raw CDP first'
 );
+for (const expected of [
+  'docs/public/component-fixtures',
+  'docs/src/assets/component-fixtures.json',
+  'latest-summary.json',
+  'sha256',
+]) {
+  assert.match(
+    componentDocsAssetSource,
+    new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    `component docs asset updater should include ${expected}`
+  );
+}
 assert.match(readme, /test:xsplit:cdp:attached/, 'README should document attached XSplit CDP run');
 assert.match(readme, /latest-summary\.json/, 'README should document the latest artifact summary');

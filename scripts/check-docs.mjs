@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { access, readdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
 const fixturesPath = join(root, 'examples/xsplit-extension/component-fixtures.json');
 const componentsDir = join(root, 'docs/src/content/docs/components');
+const componentScreenshotManifestPath = join(root, 'docs/src/assets/component-fixtures.json');
+const componentScreenshotDir = join(root, 'docs/public/component-fixtures');
 
 const fixtures = JSON.parse(await readFile(fixturesPath, 'utf8'));
+const screenshotManifest = JSON.parse(await readFile(componentScreenshotManifestPath, 'utf8'));
 const fixtureIds = new Set();
 const componentIds = new Set();
 
@@ -94,6 +97,25 @@ assert.deepEqual(
   [...documentedFixtureIds].sort(),
   [...fixtureIds].sort(),
   'every tested component fixture should have a component docs page'
+);
+
+const screenshotFixtureIds = new Set();
+for (const screenshot of screenshotManifest.fixtures || []) {
+  assert.ok(fixtureIds.has(screenshot.id), `${screenshot.id} screenshot should match a fixture`);
+  assert.match(
+    screenshot.src,
+    new RegExp(`^/component-fixtures/${screenshot.id}\\.png$`),
+    `${screenshot.id} screenshot should use the public component fixture path`
+  );
+  assert.equal(typeof screenshot.sha256, 'string', `${screenshot.id} screenshot should have a hash`);
+  await access(join(componentScreenshotDir, `${screenshot.id}.png`));
+  screenshotFixtureIds.add(screenshot.id);
+}
+
+assert.deepEqual(
+  [...screenshotFixtureIds].sort(),
+  [...fixtureIds].sort(),
+  'every tested component fixture should have a docs screenshot'
 );
 
 const oldDocsInfo = await stat(join(root, 'docs-old/docs-package'));
