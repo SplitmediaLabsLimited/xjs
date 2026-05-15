@@ -6,6 +6,7 @@ const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 const travis = await readFile(new URL('.travis.yml', root), 'utf8');
 const buildScript = await readFile(new URL('scripts/build.mjs', root), 'utf8');
 const viteConfig = await readFile(new URL('vite.config.mjs', root), 'utf8');
+const sourceHtmlMixin = await readFile(new URL('src/core/source/ihtml.ts', root), 'utf8');
 
 const legacyBuildTools = /gulp|browserify|gulp-|traceur|dgeni(?:-packages)?/i;
 const packageWorkflow = JSON.stringify({
@@ -42,6 +43,16 @@ assert.doesNotMatch(
   'build wrapper should not call legacy build tools'
 );
 assert.match(viteConfig, /chrome103/, 'Vite config should preserve the CEF 103 browser target');
+assert.doesNotMatch(
+  sourceHtmlMixin,
+  /\beval\s*\(/,
+  'source HTML mixin should avoid direct eval so Vite/Rollup builds stay quiet'
+);
+assert.match(
+  sourceHtmlMixin,
+  /removeSourcePluginCustomCssElement/,
+  'source HTML mixin should use DOM cleanup instead of local eval for source plugins'
+);
 
 for (const legacyEntryPoint of [
   'tools',

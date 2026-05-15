@@ -18,6 +18,13 @@ const LoadStatus = {
 // point noise into regression assertions.
 const toStableNumber = (value: number): number => Number(value.toFixed(12));
 
+const removeSourcePluginCustomCssElement = (): void => {
+  // Source plugins run in the same page that owns the injected style element,
+  // so local cleanup does not need the host-side eval transport.
+  const styleElement = document.querySelector('head #splitmedialabsCSSOverwrite');
+  styleElement?.parentElement?.removeChild(styleElement);
+};
+
 export interface ISourceHtml {
   /**
    * param: (func: string, arg: string)
@@ -1051,7 +1058,7 @@ export class iSourceHtml implements ISourceHtml {
             const cssScript =
               "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
             if (Environment.isSourcePlugin()) {
-              eval(cssScript);
+              removeSourcePluginCustomCssElement();
             } else {
               exec('CallInner', 'eval', cssScript);
             }

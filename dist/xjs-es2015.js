@@ -132,13 +132,13 @@ var XJS = (function(exports) {
      * Save the configuration object to the presentation
      */
     saveConfig(configObj) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if ({}.toString.call(configObj) === "[object Object]") {
           exec("SetPresProperty", this._presName, JSON.stringify(configObj)).then((result) => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
-          reject2(Error("Configuration object should be in JSON format"));
+          reject(Error("Configuration object should be in JSON format"));
         }
       });
     }
@@ -148,7 +148,7 @@ var XJS = (function(exports) {
      * Get the saved configuration from the presentation
      */
     loadConfig() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const getConfig = (mapId) => {
           return new Promise((resolveConfig) => {
             exec("GetPresProperty", mapId, (configData) => {
@@ -173,9 +173,9 @@ var XJS = (function(exports) {
           }
         }).then((config) => {
           if (config) {
-            resolve2(config);
+            resolve(config);
           } else {
-            resolve2(defaultConfig);
+            resolve(defaultConfig);
           }
         });
       });
@@ -186,29 +186,29 @@ var XJS = (function(exports) {
      *  Get the extension id.
      */
     getId(handler) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._id === void 0) {
           if (Remote.remoteType === "remote") {
             const message = {
               type: "extWindow",
               instance: Extension._instance
             };
-            Extension._remoteCallback["ExtensionWindowID"] = { resolve: resolve2 };
+            Extension._remoteCallback["ExtensionWindowID"] = { resolve };
             Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
           } else if (Remote.remoteType === "proxy") {
             Extension._proxyCallback["ExtensionWindowID"] = handler;
             App$1.postMessage("8");
           } else {
-            Extension._callback["ExtensionWindowID"] = { resolve: resolve2 };
+            Extension._callback["ExtensionWindowID"] = { resolve };
             App$1.postMessage("8");
           }
         } else {
-          resolve2(this._id);
+          resolve(this._id);
         }
       });
     }
     static _finalCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const result = JSON.parse(decodeURIComponent(message));
         Extension._remoteCallback["ExtensionWindowID"].resolve(result["result"]);
       });
@@ -297,7 +297,7 @@ var XJS = (function(exports) {
     }
     /** Prepare an item for manipulation */
     static attach(itemID, callBack) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let slot = Item2.itemSlotMap.indexOf(itemID);
         if (slot === -1) {
           slot = ++Item2.lastSlot % Item2.MAX_SLOTS;
@@ -320,7 +320,7 @@ var XJS = (function(exports) {
         if (callBack) {
           callBack.call(Item2, slot);
         } else {
-          resolve2(slot);
+          resolve(slot);
         }
       });
     }
@@ -338,10 +338,10 @@ var XJS = (function(exports) {
      * Helper function to check if the supplied item id still exist.
      */
     static wrapGet(name, srcId, id, updateId) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           Item2.get(name, id).then((val) => {
-            resolve2(val);
+            resolve(val);
           });
         } else {
           Item2.get("itemlist", id).then((itemlist) => {
@@ -402,7 +402,7 @@ var XJS = (function(exports) {
             });
           }).then((resultId) => {
             Item2.get(name, resultId).then((val) => {
-              resolve2(val);
+              resolve(val);
             });
           });
         }
@@ -410,7 +410,7 @@ var XJS = (function(exports) {
     }
     /** Get an item's local property asynchronously */
     static get(name, id) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const hasGlobalSources = versionCompare(getVersion()).is.greaterThan(minVersion);
         const execCallFunc = (slot) => {
           if (!Environment.isSourcePlugin() && String(slot) === "0" || Environment.isSourcePlugin() && String(slot) === "0" && !hasGlobalSources) {
@@ -420,7 +420,7 @@ var XJS = (function(exports) {
             "GetLocalPropertyAsync" + (String(slot) === "-1" ? "" : Number(slot) + 1),
             name,
             (val) => {
-              resolve2(val);
+              resolve(val);
             }
           );
         };
@@ -437,11 +437,11 @@ var XJS = (function(exports) {
     /**
      * Helper function to check if the supplied item id still exist.
      */
-    static wrapSet(name, value2, srcId, id, updateId) {
-      return new Promise((resolve2) => {
+    static wrapSet(name, value, srcId, id, updateId) {
+      return new Promise((resolve) => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-          Item2.set(name, value2, id).then((val) => {
-            resolve2(val);
+          Item2.set(name, value, id).then((val) => {
+            resolve(val);
           });
         } else {
           Item2.get("itemlist", id).then((itemlist) => {
@@ -501,16 +501,16 @@ var XJS = (function(exports) {
               }
             });
           }).then((resultId) => {
-            Item2.set(name, value2, resultId).then((val) => {
-              resolve2(val);
+            Item2.set(name, value, resultId).then((val) => {
+              resolve(val);
             });
           });
         }
       });
     }
     /** Sets an item's local property */
-    static set(name, value2, id) {
-      return new Promise((resolve2) => {
+    static set(name, value, id) {
+      return new Promise((resolve) => {
         let slotPromise;
         let slot;
         if (id !== void 0 && id !== null) {
@@ -533,9 +533,9 @@ var XJS = (function(exports) {
           exec(
             "SetLocalPropertyAsync" + (String(slot) === "-1" ? "" : slot + 1),
             name,
-            value2,
+            value,
             (val) => {
-              resolve2(!(Number(val) < 0));
+              resolve(!(Number(val) < 0));
             }
           );
         });
@@ -664,25 +664,25 @@ var XJS = (function(exports) {
     }
   };
   function splitMode() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       App$1.getGlobalProperty("splitmode").then((mode) => {
-        resolve2(mode === "1" ? 1 : 0);
+        resolve(mode === "1" ? 1 : 0);
       });
     });
   }
-  function checkSplitmode(value2) {
+  function checkSplitmode(value) {
     let scenePrefix = "";
     let scenePromise;
-    return new Promise((resolve2, reject2) => {
+    return new Promise((resolve, reject) => {
       scenePromise = new Promise((sceneResolve) => {
         splitMode().then((res) => {
-          if (res === 1 && !value2) {
+          if (res === 1 && !value) {
             Scene.getActiveScene().then((val) => {
-              value2 = val;
-              sceneResolve(value2);
+              value = val;
+              sceneResolve(value);
             });
           } else {
-            sceneResolve(value2);
+            sceneResolve(value);
           }
         });
       });
@@ -692,26 +692,26 @@ var XJS = (function(exports) {
             if (typeof val === "number") {
               const int = Math.floor(val);
               if (int > sceneCount || int === 0) {
-                reject2(Error("Scene does not exist."));
+                reject(Error("Scene does not exist."));
               } else {
                 scenePrefix = "s:" + (int - 1) + "|";
-                resolve2(scenePrefix);
+                resolve(scenePrefix);
               }
             } else {
               val.getSceneNumber().then((int) => {
                 if (int > sceneCount || int === 0) {
-                  reject2(Error("Scene does not exist."));
+                  reject(Error("Scene does not exist."));
                 } else {
                   scenePrefix = "s:" + (int - 1) + "|";
-                  resolve2(scenePrefix);
+                  resolve(scenePrefix);
                 }
               });
             }
           });
         } else if (typeof val === "undefined") {
-          resolve2("");
+          resolve("");
         } else {
-          reject2(Error("Optional parameter 'scene' only accepts integers or an XJS.Scene object"));
+          reject(Error("Optional parameter 'scene' only accepts integers or an XJS.Scene object"));
         }
       });
     });
@@ -842,22 +842,22 @@ var XJS = (function(exports) {
       }
     }
     static _setCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (EventEmitter._proxyHandlers[message[0]] === void 0) {
           EventEmitter._proxyHandlers[message[0]] = [];
         }
-        resolve2(EventEmitter._proxyHandlers[message[0]].push(message[1]));
+        resolve(EventEmitter._proxyHandlers[message[0]].push(message[1]));
       });
     }
     static _finalCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const result = JSON.parse(decodeURIComponent(message));
         if (EventEmitter._remoteHandlers[result["id"]] !== void 0) {
           for (const handler of EventEmitter._remoteHandlers[result["id"]]) {
             handler.apply(EventEmitter, [result["result"]]);
           }
         }
-        resolve2();
+        resolve();
       });
     }
   }
@@ -885,20 +885,20 @@ var XJS = (function(exports) {
     return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ("10000000-1000-4000-8000" + -1e11).replace(/[018]/g, guid);
   }
   function addToSceneHandler(cmd, ...args) {
-    return new Promise((resolve2, reject2) => {
+    return new Promise((resolve, reject) => {
       const eventId = "EVENT-XJS-CREATE-" + guid(null) + "-" + Date.now();
       if (Global.isListenToItemAdd()) {
         const _addToScene = AddToSceneEventEmitter.getInstance();
         const itemCreated = (itemId) => {
           _addToScene.off(eventId, itemCreated);
-          resolve2(itemId);
+          resolve(itemId);
         };
         _addToScene.on(eventId, itemCreated);
       }
       App$1.callFunc("e:" + eventId + "|" + cmd, ...args).then(() => {
-        if (!Global.isListenToItemAdd()) resolve2(true);
+        if (!Global.isListenToItemAdd()) resolve(true);
       }).catch((err) => {
-        reject2(err);
+        reject(err);
       });
     });
   }
@@ -942,7 +942,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getVolume() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getVolume", true);
           this._checkPromise = Item$1.get("prop:volume", this._id);
@@ -955,32 +955,32 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setVolume(value2) {
-      return new Promise((resolve2) => {
-        value2 = value2 < 0 ? 0 : value2 > 100 ? 100 : value2;
+    setVolume(value) {
+      return new Promise((resolve) => {
+        value = value < 0 ? 0 : value > 100 ? 100 : value;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setVolume", true);
-          this._checkPromise = Item$1.set("prop:volume", String(value2), this._id);
+          this._checkPromise = Item$1.set("prop:volume", String(value), this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:volume",
-            String(value2),
+            String(value),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isMute() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isMute", true);
           this._checkPromise = Item$1.get("prop:mute", this._id);
@@ -993,31 +993,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setMute(value2) {
-      return new Promise((resolve2) => {
+    setMute(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setMute", true);
-          this._checkPromise = Item$1.set("prop:mute", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:mute", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:mute",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isAutoMute() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isAutoMute", true);
           this._checkPromise = Item$1.get("prop:keepaudio", this._id);
@@ -1030,31 +1030,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val !== "1");
+          resolve(val !== "1");
         });
       });
     }
-    setAutoMute(value2) {
-      return new Promise((resolve2) => {
+    setAutoMute(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAutoMute", true);
-          this._checkPromise = Item$1.set("prop:keepaudio", value2 ? "0" : "1", this._id);
+          this._checkPromise = Item$1.set("prop:keepaudio", value ? "0" : "1", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:keepaudio",
-            value2 ? "0" : "1",
+            value ? "0" : "1",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isStreamOnlyAudio() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isStreamOnlyAudio", true);
           this._checkPromise = Item$1.get("prop:sounddev", this._id);
@@ -1067,31 +1067,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setStreamOnlyAudio(value2) {
-      return new Promise((resolve2) => {
+    setStreamOnlyAudio(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setStreamOnlyAudio", true);
-          this._checkPromise = Item$1.set("prop:sounddev", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:sounddev", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:sounddev",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isAudioAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isAudioAvailable", true);
           this._checkPromise = Item$1.get("prop:audioavail", this._id);
@@ -1104,7 +1104,7 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
@@ -1186,14 +1186,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -1214,9 +1214,9 @@ var XJS = (function(exports) {
      *  ```
      */
     static load(path) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("LoadDll", path.join(",")).then((result) => {
-          resolve2(result);
+          resolve(result);
         });
       });
     }
@@ -1250,15 +1250,15 @@ var XJS = (function(exports) {
      *  currently exposing is `Xjs.dll`.
      */
     static call(func, ...params) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const funcCall = "CallDll";
         params.unshift(func);
         params.unshift(funcCall);
         exec.apply(Dll, params).then((retValue) => {
           if (retValue !== void 0) {
-            resolve2(retValue);
+            resolve(retValue);
           } else {
-            reject2(Error("DLL call not accessible."));
+            reject(Error("DLL call not accessible."));
           }
         });
       });
@@ -1279,15 +1279,15 @@ var XJS = (function(exports) {
      *  See the documentation of your specific DLL for more details.
      */
     static callEx(func, ...params) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const funcCall = "CallDllEx";
         params.unshift(func);
         params.unshift(funcCall);
         exec.apply(Dll, params).then((retValue) => {
           if (retValue !== void 0) {
-            resolve2(retValue);
+            resolve(retValue);
           } else {
-            reject2(Error("DLL call not accessible."));
+            reject(Error("DLL call not accessible."));
           }
         });
       });
@@ -1299,17 +1299,17 @@ var XJS = (function(exports) {
      *  resolves to true if DLL security is disabled altogether.
      */
     static isAccessGranted() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CheckDllGrant").then((result) => {
-          resolve2(result === "1");
+          resolve(result === "1");
         });
       });
     }
   }
   const oldUpdateLocalProperty = window$1.UpdateLocalProperty;
-  window$1.UpdateLocalProperty = (prop, value2) => {
+  window$1.UpdateLocalProperty = (prop, value) => {
     if (prop === "prop:dlldogrant") {
-      const granted = value2 === "1";
+      const granted = value === "1";
       if (granted) {
         Dll.emit("access-granted");
       } else {
@@ -1317,19 +1317,19 @@ var XJS = (function(exports) {
       }
     }
     if (typeof oldUpdateLocalProperty === "function") {
-      oldUpdateLocalProperty(prop, value2);
+      oldUpdateLocalProperty(prop, value);
     }
   };
   const oldSetdlldogrant = window$1.Setdlldogrant;
-  window$1.Setdlldogrant = (value2) => {
-    const granted = value2 === "1";
+  window$1.Setdlldogrant = (value) => {
+    const granted = value === "1";
     if (granted) {
       Dll.emit("access-granted");
     } else {
       Dll.emit("access-revoked");
     }
     if (typeof oldSetdlldogrant === "function") {
-      oldSetdlldogrant(value2);
+      oldSetdlldogrant(value);
     }
   };
   class AudioDevice {
@@ -1766,14 +1766,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "addcamera", "dev:" + this._id);
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -1945,11 +1945,11 @@ var XJS = (function(exports) {
      *  - :width
      *  - :height
      */
-    toString(value2) {
-      if (value2 === void 0) {
+    toString(value) {
+      if (value === void 0) {
         return this.toDimensionString();
       } else {
-        let format = value2;
+        let format = value;
         format = format.replace(":left", String(this._left));
         format = format.replace(":top", String(this._top));
         format = format.replace(":right", String(this._right));
@@ -2184,14 +2184,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "addgamesource", "dev:" + this.toXML());
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -2225,8 +2225,8 @@ var XJS = (function(exports) {
         ad._fpsRender = 0;
         ad._fpsCapture = 0;
         ad._imagename = "";
-        Game._autoDetect.addToScene = (value2) => new Promise((resolve2, reject2) => {
-          checkSplitmode(value2).then((scenePrefix) => {
+        Game._autoDetect.addToScene = (value) => new Promise((resolve, reject) => {
+          checkSplitmode(value).then((scenePrefix) => {
             var defposPromise;
             if (Environment.isSourcePlugin()) {
               defposPromise = new Promise((defposResolve) => {
@@ -2261,10 +2261,10 @@ var XJS = (function(exports) {
               const adstring = '<item GameCapTrackActive="1" GameCapTrackActiveFullscreen="0" item="&lt;src pid=&quot;0&quot; handle=&quot;0&quot; hwnd=&quot;0&quot; GapiType=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot; flags=&quot;0&quot; wndname=&quot;&quot; lastframets=&quot;0&quot; fpsRender=&quot;0.000000&quot; fpsCapture=&quot;0.000000&quot; imagename=&quot;&quot;/&gt; " name="Game: Auto Detect"  type="7" ' + posString + " />";
               return addToSceneHandler(scenePrefix + "additem", adstring);
             }).then((result) => {
-              resolve2(result);
+              resolve(result);
             });
           }).catch((err) => {
-            reject2(err);
+            reject(err);
           });
         });
       }
@@ -2292,22 +2292,22 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
         let scenePrefix = "";
         if (this instanceof Screen && !Environment.isSourcePlugin()) {
-          checkSplitmode(value2).then((prefix) => {
+          checkSplitmode(value).then((prefix) => {
             scenePrefix = prefix;
             return `<screen module="${this._processDetail}" window="${this._title}" class="${this._class}" hwnd="${this._hwnd}" wclient="1" left="0" top="0" width="0" height="0" />`;
           }).then((screen) => {
             return addToSceneHandler(scenePrefix + "addscreen", screen);
           }).then((result) => {
-            resolve2(result);
+            resolve(result);
           }).catch((err) => {
-            reject2(err);
+            reject(err);
           });
         } else {
-          reject2(Error("Instance is not a Screen"));
+          reject(Error("Instance is not a Screen"));
         }
       });
     }
@@ -2326,14 +2326,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    static addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    static addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "addscreen", null);
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -2396,7 +2396,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getAudioDevices(dataflow = 3, state = 1) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getAsList("wasapienum").then((devicesJXON) => {
           const devices = [];
           if (devicesJXON !== void 0) {
@@ -2417,7 +2417,7 @@ var XJS = (function(exports) {
               devices.push(AudioDevice.parse(device));
             }
           }
-          resolve2(devices);
+          resolve(devices);
         });
       });
     }
@@ -2437,7 +2437,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getCameraDevices() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getAsList("dshowenum:vsrc").then((devicesJSON) => {
           const devices = [];
           if (devicesJSON !== void 0) {
@@ -2447,7 +2447,7 @@ var XJS = (function(exports) {
                 devices.push(CameraDevice.parse(device));
               }
             }
-            resolve2(devices);
+            resolve(devices);
           }
         });
       });
@@ -2468,7 +2468,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getGames() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getAsList("gsenum").then((gamesJXON) => {
           const games = [];
           if (gamesJXON !== void 0) {
@@ -2477,7 +2477,7 @@ var XJS = (function(exports) {
               games.push(Game.parse(gamesJXON[i]));
             }
           }
-          resolve2(games);
+          resolve(games);
         });
       });
     }
@@ -2496,7 +2496,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getMicrophones() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getAsList("dshowenum:asrc").then((micsJXON) => {
           const mics = [];
           if (micsJXON !== void 0) {
@@ -2507,7 +2507,7 @@ var XJS = (function(exports) {
               }
             }
           }
-          resolve2(mics);
+          resolve(mics);
         });
       });
     }
@@ -2526,7 +2526,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getAvailableScreens() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const screens = [];
         const getParentWindows = Dll.call("xsplit.EnumParentWindows");
         getParentWindows.then((list) => {
@@ -2560,7 +2560,7 @@ var XJS = (function(exports) {
           });
           return devices2;
         }).then((res) => {
-          resolve2(screens);
+          resolve(screens);
         });
       });
     }
@@ -2585,16 +2585,16 @@ var XJS = (function(exports) {
      * ```
      */
     static getFonts() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else {
           App$1.get("html:fontlist").then((fontlist) => {
             if (typeof fontlist === "string" && fontlist !== "") {
               var fontArray = fontlist.split(",");
-              resolve2(fontArray);
+              resolve(fontArray);
             } else {
-              reject2(Error("cannot fetch list of available system fonts"));
+              reject(Error("cannot fetch list of available system fonts"));
             }
           });
         }
@@ -2615,9 +2615,9 @@ var XJS = (function(exports) {
      * ```
      */
     static getCursorPosition() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else {
           let res;
           exec("GetCursorPos").then((result) => {
@@ -2627,9 +2627,9 @@ var XJS = (function(exports) {
               var pos = {};
               pos["x"] = Number(posArr[0]);
               pos["y"] = Number(posArr[1]);
-              resolve2(pos);
+              resolve(pos);
             } else {
-              reject2(Error("cannot fetch current cursor position"));
+              reject(Error("cannot fetch current cursor position"));
             }
           });
         }
@@ -2647,14 +2647,14 @@ var XJS = (function(exports) {
      * ```
      */
     static setCursorPosition(pos) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else if (typeof pos.x !== "number" || typeof pos.y !== "number") {
-          reject2(Error('Invalid parameters. Valid format is:: "JSON: {x: number, y: number}"'));
+          reject(Error('Invalid parameters. Valid format is:: "JSON: {x: number, y: number}"'));
         } else {
           exec("SetCursorPos", String(pos.x), String(pos.y));
-          resolve2(true);
+          resolve(true);
         }
       });
     }
@@ -2665,161 +2665,161 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     isSilenceDetectionEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSilenceDetectionEnabled", true);
           Item$1.get("prop:AudioGainEnable", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:AudioGainEnable", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
     }
-    setSilenceDetectionEnabled(value2) {
-      return new Promise((resolve2, reject2) => {
+    setSilenceDetectionEnabled(value) {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setSilenceDetectionEnabled", true);
-          Item$1.set("prop:AudioGainEnable", value2 ? "1" : "0", this._id).then((res) => {
-            resolve2(this);
+          Item$1.set("prop:AudioGainEnable", value ? "1" : "0", this._id).then((res) => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "prop:AudioGainEnable",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then((res) => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getSilenceThreshold() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getSilenceThreshold", true);
           Item$1.get("prop:AudioGain", this._id).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         } else {
           Item$1.wrapGet("prop:AudioGain", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         }
       });
     }
-    setSilenceThreshold(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for threshold"));
-        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 128) {
-          reject2(Error("Only integers in the range 0-128 are acceptable for threshold"));
+    setSilenceThreshold(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(Error("Only numbers are acceptable values for threshold"));
+        } else if (value % 1 !== 0 || value < 0 || value > 128) {
+          reject(Error("Only integers in the range 0-128 are acceptable for threshold"));
         } else {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setSilenceThreshold", true);
-            Item$1.set("prop:AudioGain", String(value2), this._id).then((res) => {
-              resolve2(this);
+            Item$1.set("prop:AudioGain", String(value), this._id).then((res) => {
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
               "prop:AudioGain",
-              String(value2),
+              String(value),
               this._srcId,
               this._id,
               this._updateId.bind(this)
             ).then((res) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
       });
     }
     getSilencePeriod() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getSilencePeriod", true);
           Item$1.get("prop:AudioGainLatency", this._id).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         } else {
           Item$1.wrapGet("prop:AudioGainLatency", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         }
       });
     }
-    setSilencePeriod(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for period"));
-        } else if (value2 % 1 !== 0 || value2 < 0 || value2 > 1e4) {
-          reject2(Error("Only integers in the range 0-10000 are acceptable for period"));
+    setSilencePeriod(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(Error("Only numbers are acceptable values for period"));
+        } else if (value % 1 !== 0 || value < 0 || value > 1e4) {
+          reject(Error("Only integers in the range 0-10000 are acceptable for period"));
         } else {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setSilencePeriod", true);
-            Item$1.set("prop:AudioGainLatency", String(value2), this._id).then((res) => {
-              resolve2(this);
+            Item$1.set("prop:AudioGainLatency", String(value), this._id).then((res) => {
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
               "prop:AudioGainLatency",
-              String(value2),
+              String(value),
               this._srcId,
               this._id,
               this._updateId.bind(this)
             ).then((res) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
       });
     }
     getAudioOffset() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getAudioOffset", true);
           Item$1.get("prop:AudioDelay", this._id).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         } else {
           Item$1.wrapGet("prop:AudioDelay", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(Number(val));
+            resolve(Number(val));
           });
         }
       });
     }
-    setAudioOffset(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(Error("Only numbers are acceptable values for period"));
-        } else if (value2 < 0) {
-          reject2(Error("Audio offset cannot be negative"));
+    setAudioOffset(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(Error("Only numbers are acceptable values for period"));
+        } else if (value < 0) {
+          reject(Error("Audio offset cannot be negative"));
         } else {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setAudioOffset", true);
-            Item$1.set("prop:AudioDelay", String(value2), this._id).then((res) => {
-              resolve2(this);
+            Item$1.set("prop:AudioDelay", String(value), this._id).then((res) => {
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
               "prop:AudioDelay",
-              String(value2),
+              String(value),
               this._srcId,
               this._id,
               this._updateId.bind(this)
             ).then((res) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -2832,12 +2832,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(filename);
+          resolve(filename);
         });
       });
     }
     setValue(micDevice) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         let audioName;
         let _getName;
         if (micDevice instanceof MicrophoneDevice) {
@@ -2860,7 +2860,7 @@ var XJS = (function(exports) {
             });
           });
         } else {
-          reject2(TypeError("Parameter should either be a MicrophoneDevice or string."));
+          reject(TypeError("Parameter should either be a MicrophoneDevice or string."));
         }
         _getName.then((name) => {
           audioName = name;
@@ -2879,7 +2879,7 @@ var XJS = (function(exports) {
         }).then(() => {
           return Item$1.set("prop:name", audioName, this._id);
         }).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -2911,7 +2911,7 @@ var XJS = (function(exports) {
      * before those global bridge functions fan events back out to handlers.
      */
     static subscribe(event, _cb, id) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         event = Array.isArray(event) ? event : [event];
         if (Remote.remoteType === "remote") {
           const message = {
@@ -2960,20 +2960,20 @@ var XJS = (function(exports) {
               EventManager.callbacks[_event].push(_cb);
             });
           }
-          resolve2(EventManager);
+          resolve(EventManager);
         }
       });
     }
     static _setCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (EventManager._proxyHandlers[message[0]] === void 0) {
           EventManager._proxyHandlers[message[0]] = [];
         }
-        resolve2(EventManager._proxyHandlers[message[0]].push(message[1]));
+        resolve(EventManager._proxyHandlers[message[0]].push(message[1]));
       });
     }
     static _finalCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const result = JSON.parse(decodeURIComponent(message));
         if (EventManager._remoteHandlers[result["event"]] !== void 0) {
           result["result"]["id"] = result["id"];
@@ -3072,29 +3072,29 @@ var XJS = (function(exports) {
       this._id = id;
       this._sceneId = sceneId;
     }
-    setName(value2) {
-      return new Promise((resolve2) => {
-        this._name = value2;
+    setName(value) {
+      return new Promise((resolve) => {
+        this._name = value;
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           Item$1.set("prop:name", this._name, this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setName", true);
             Item$1.set("prop:name", this._name, this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet("prop:name", this._name, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
       });
     }
     getName() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getName", true);
           this._checkPromise = Item$1.get("prop:name", this._id);
@@ -3108,41 +3108,41 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           this._name = String(val);
-          resolve2(val);
+          resolve(val);
         });
       });
     }
-    setCustomName(value2) {
-      return new Promise((resolve2) => {
-        this._cname = value2;
+    setCustomName(value) {
+      return new Promise((resolve) => {
+        this._cname = value;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setCustomName", true);
           Item$1.set("prop:cname", this._cname, this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           Item$1.wrapSet("prop:cname", this._cname, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getCustomName() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getCustomName", true);
           Item$1.get("prop:cname", this._id).then((val) => {
-            resolve2(val);
+            resolve(val);
           });
         } else {
           Item$1.wrapGet("prop:cname", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val);
+            resolve(val);
           });
         }
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:item", this._id);
@@ -3158,23 +3158,23 @@ var XJS = (function(exports) {
           val = val === "null" ? "" : val;
           if (val === "") {
             this._value = "";
-            resolve2(val);
+            resolve(val);
           } else {
             try {
               this._value = XML.parseJSON(JSON$1.parse(val));
-              resolve2(this._value);
+              resolve(this._value);
             } catch (e) {
               this._value = val;
-              resolve2(val);
+              resolve(val);
             }
           }
         });
       });
     }
-    setValue(value2) {
-      return new Promise((resolve2, reject2) => {
-        var val = typeof value2 === "string" ? value2 : value2.toString();
-        if (typeof value2 !== "string") {
+    setValue(value) {
+      return new Promise((resolve, reject) => {
+        var val = typeof value === "string" ? value : value.toString();
+        if (typeof value !== "string") {
           this._value = JSON$1.parse(val);
         } else {
           this._value = val;
@@ -3192,18 +3192,18 @@ var XJS = (function(exports) {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setValue", true);
             Item$1.set("prop:item", val, this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet("prop:srcitem", val, this._srcId, this._id, this._updateId.bind(this)).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           }
         });
       });
     }
     getKeepLoaded() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getKeepLoaded", true);
           this._checkPromise = Item$1.get("prop:keeploaded", this._id);
@@ -3217,21 +3217,21 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           this._keepLoaded = val === "1";
-          resolve2(this._keepLoaded);
+          resolve(this._keepLoaded);
         });
       });
     }
-    setKeepLoaded(value2) {
-      return new Promise((resolve2) => {
-        this._keepLoaded = value2;
-        this._globalsrc = value2;
+    setKeepLoaded(value) {
+      return new Promise((resolve) => {
+        this._keepLoaded = value;
+        this._globalsrc = value;
         if (versionCompare(getVersion()).is.lessThan(globalsrcMinVersion)) {
           Item$1.set("prop:globalsrc", this._globalsrc ? "1" : "0", this._id);
         }
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setKeepLoaded", true);
           Item$1.set("prop:keeploaded", this._keepLoaded ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
@@ -3241,46 +3241,46 @@ var XJS = (function(exports) {
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getId() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
-          resolve2(this._id);
+          resolve(this._id);
         } else {
           if (versionCompare(getVersion()).is.lessThan(minVersion)) {
-            reject2(Error("Only available on versions above " + minVersion));
+            reject(Error("Only available on versions above " + minVersion));
           } else {
             Item$1.wrapGet("prop:srcid", this._srcId, this._id, this._updateId.bind(this)).then((srcid) => {
-              resolve2(srcid);
+              resolve(srcid);
             });
           }
         }
       });
     }
     refresh() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Item$1.set("refresh", "", this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           Item$1.wrapSet("refresh", "", this._srcId, this._id, this._updateId.bind(this)).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getItemList() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           Scene.searchItemsById(this._id).then((item) => {
             const itemArray = [];
             itemArray.push(item);
-            resolve2(itemArray);
+            resolve(itemArray);
           });
         } else {
           if (this._isItemCall) {
@@ -3306,14 +3306,14 @@ var XJS = (function(exports) {
               );
             });
             Promise.all(promiseArray).then((results) => {
-              resolve2(results.filter((res) => res !== null));
+              resolve(results.filter((res) => res !== null));
             });
           });
         }
       });
     }
     getType() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           this._checkPromise = Item$1.get("prop:type", this._id);
         } else {
@@ -3326,7 +3326,7 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           this._type = ItemTypes[ItemTypes[Number(val)]];
-          resolve2(this._type);
+          resolve(this._type);
         });
       });
     }
@@ -3364,23 +3364,23 @@ var XJS = (function(exports) {
      * ```
      */
     static getCurrentSource() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isExtension()) {
-          reject2(Error("Extensions do not have sources associated with them."));
+          reject(Error("Extensions do not have sources associated with them."));
         } else if ((Environment.isSourcePlugin() || Environment.isSourceProps()) && versionCompare(getVersion()).is.greaterThan(minVersion)) {
           Item$1.get("itemlist").then((itemlist) => {
             const itemId = itemlist.split(",")[0];
             Scene.searchItemsById(itemId).then((item) => {
               return item.getSource();
             }).then((source) => {
-              resolve2(source);
-            }).catch(() => resolve2(null));
+              resolve(source);
+            }).catch(() => resolve(null));
           });
         } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
           Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
             return item.getSource();
           }).then((source) => {
-            resolve2(source);
+            resolve(source);
           });
         }
       });
@@ -3414,14 +3414,14 @@ var XJS = (function(exports) {
      * ```
      */
     static getItemList() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isExtension()) {
-          reject2(Error("Extensions do not have default items associated with them."));
+          reject(Error("Extensions do not have default items associated with them."));
         } else if (versionCompare(getVersion()).is.lessThan(minVersion)) {
           Scene.searchItemsById(Item$1.getBaseId()).then((item) => {
             const itemArray = [];
             itemArray.push(item);
-            resolve2(itemArray);
+            resolve(itemArray);
           });
         } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
           Item$1.get("itemlist").then((itemlist) => {
@@ -3437,7 +3437,7 @@ var XJS = (function(exports) {
               );
             });
             Promise.all(promiseArray).then((results) => {
-              resolve2(results.filter((res) => res !== null));
+              resolve(results.filter((res) => res !== null));
             });
           });
         }
@@ -3462,7 +3462,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getAllSources() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         let allJson = [];
         let allSrc = [];
         const uniqueObj = {};
@@ -3498,10 +3498,10 @@ var XJS = (function(exports) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }
-            resolve2(uniqueSrc);
+            resolve(uniqueSrc);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -3521,29 +3521,29 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getDeviceId() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getDeviceId", true);
           Item$1.get("prop:item", this._id).then((val) => {
-            resolve2(val);
+            resolve(val);
           });
         } else {
           Item$1.wrapGet("prop:item", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val);
+            resolve(val);
           });
         }
       });
     }
     getResolution() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:resolution", this._id).then((val) => {
           const [width, height] = val.split(",").map(Number);
-          resolve2(Rectangle.fromDimensions(width, height));
+          resolve(Rectangle.fromDimensions(width, height));
         });
       });
     }
     getAudioOffset() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var streamDelay, audioDelay;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getAudioOffset", true);
@@ -3552,7 +3552,7 @@ var XJS = (function(exports) {
             return Item$1.get("prop:AudioDelay", this._id);
           }).then((val) => {
             audioDelay = Number(val);
-            resolve2((audioDelay - streamDelay) / 1e4);
+            resolve((audioDelay - streamDelay) / 1e4);
           });
         } else {
           Item$1.wrapGet("prop:StreamDelay", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
@@ -3560,13 +3560,13 @@ var XJS = (function(exports) {
             return Item$1.get("prop:AudioDelay", this._id);
           }).then((val) => {
             audioDelay = Number(val);
-            resolve2((audioDelay - streamDelay) / 1e4);
+            resolve((audioDelay - streamDelay) / 1e4);
           });
         }
       });
     }
-    setAudioOffset(value2) {
-      return new Promise((resolve2, reject2) => {
+    setAudioOffset(value) {
+      return new Promise((resolve, reject) => {
         var itemAudio, delay;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAudioOffset", true);
@@ -3584,30 +3584,30 @@ var XJS = (function(exports) {
           return this.isAudioAvailable();
         }).then((val) => {
           if (val === false && itemAudio === "") {
-            reject2(Error("Device has no audio"));
+            reject(Error("Device has no audio"));
           } else {
             return this.getDelay();
           }
         }).then((val) => {
           delay = val;
-          if (value2 >= 0) {
+          if (value >= 0) {
             return Item$1.set("prop:StreamDelay", String(delay * 1e4), this._id);
           } else {
-            return Item$1.set("prop:StreamDelay", String((delay + value2 * -1) * 1e4), this._id);
+            return Item$1.set("prop:StreamDelay", String((delay + value * -1) * 1e4), this._id);
           }
         }).then((val) => {
-          if (value2 >= 0) {
-            return Item$1.set("prop:AudioDelay", String((delay + value2) * 1e4), this._id);
+          if (value >= 0) {
+            return Item$1.set("prop:AudioDelay", String((delay + value) * 1e4), this._id);
           } else {
             return Item$1.set("prop:AudioDelay", String(delay * 1e4), this._id);
           }
         }).then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getAudioInput() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         var itemAudioId;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getAudioInput", true);
@@ -3622,7 +3622,7 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           if (val === "") {
-            reject2(Error("No tied audio input"));
+            reject(Error("No tied audio input"));
           } else {
             itemAudioId = val;
             return System.getMicrophones();
@@ -3638,56 +3638,56 @@ var XJS = (function(exports) {
             }
           }
           if (micDevice !== void 0) {
-            resolve2(micDevice);
+            resolve(micDevice);
           } else {
-            reject2(Error("Tied audio input not present"));
+            reject(Error("Tied audio input not present"));
           }
         });
       });
     }
-    setAudioInput(value2) {
-      return new Promise((resolve2, reject2) => {
+    setAudioInput(value) {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAudioInput", true);
-          Item$1.set("prop:itemaudio", value2.getDisplayId(), this._id).then((val) => {
-            resolve2(this);
+          Item$1.set("prop:itemaudio", value.getDisplayId(), this._id).then((val) => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "prop:itemaudio",
-            value2.getDisplayId(),
+            value.getDisplayId(),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then((val) => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     isStreamPaused() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isStreamPaused", true);
           Item$1.get("prop:StreamPause", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:StreamPause", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
     }
-    setStreamPaused(value2) {
-      return new Promise((resolve2, reject2) => {
+    setStreamPaused(value) {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setStreamPaused", true);
-          this._checkPromise = Item$1.set("prop:StreamPause", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:StreamPause", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:StreamPause",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
@@ -3696,16 +3696,16 @@ var XJS = (function(exports) {
         this._checkPromise.then(() => {
           return Item$1.get("prop:StreamPause", this._id);
         }).then((val) => {
-          if (value2 === (val === "1")) {
-            resolve2(this);
+          if (value === (val === "1")) {
+            resolve(this);
           } else {
-            reject2(Error("Camera feed cannot be paused/resumed or is not present"));
+            reject(Error("Camera feed cannot be paused/resumed or is not present"));
           }
         });
       });
     }
     isHardwareEncoder() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isHardwareEncoder", true);
           this._checkPromise = Item$1.get("prop:hwencoder", this._id);
@@ -3719,13 +3719,13 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           if (val === "1") {
-            resolve2(true);
+            resolve(true);
           } else {
             this.isActive().then((isActive) => {
               if (isActive) {
-                resolve2(false);
+                resolve(false);
               } else {
-                reject2(Error("Cannot check hardware encoding. Device not present"));
+                reject(Error("Cannot check hardware encoding. Device not present"));
               }
             });
           }
@@ -3733,21 +3733,21 @@ var XJS = (function(exports) {
       });
     }
     isActive() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isActive", true);
           Item$1.get("prop:activestate", this._id).then((val) => {
-            resolve2(val === "active");
+            resolve(val === "active");
           });
         } else {
           Item$1.wrapGet("prop:activestate", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "active");
+            resolve(val === "active");
           });
         }
       });
     }
     getDelay() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var streamDelay, audioDelay;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getDelay", true);
@@ -3764,22 +3764,22 @@ var XJS = (function(exports) {
         }).then((val) => {
           audioDelay = Number(val);
           if (streamDelay < audioDelay) {
-            resolve2(streamDelay / 1e4);
+            resolve(streamDelay / 1e4);
           } else {
-            resolve2(audioDelay / 1e4);
+            resolve(audioDelay / 1e4);
           }
         });
       });
     }
-    setDelay(value2) {
+    setDelay(value) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "setDelay", true);
       }
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         var isPositive, audioOffset;
         this.isHardwareEncoder().then((val) => {
           if (val === true) {
-            reject2(Error("Cannot set delay to hardware encoder devices"));
+            reject(Error("Cannot set delay to hardware encoder devices"));
           } else {
             return this.getValue();
           }
@@ -3787,7 +3787,7 @@ var XJS = (function(exports) {
           for (var key in _delayExclusionObject) {
             var regex = new RegExp(_delayExclusionObject[key].toLowerCase(), "g");
             if (typeof val === "string" && val.toLowerCase().match(regex) != null) {
-              reject2(Error("Cannot set delay to specific device"));
+              reject(Error("Cannot set delay to specific device"));
               break;
             }
           }
@@ -3797,11 +3797,11 @@ var XJS = (function(exports) {
           if (audioOffset >= 0) {
             isPositive = true;
             if (this._isItemCall) {
-              return Item$1.set("prop:StreamDelay", String(value2 * 1e4), this._id);
+              return Item$1.set("prop:StreamDelay", String(value * 1e4), this._id);
             } else {
               return Item$1.wrapSet(
                 "prop:StreamDelay",
-                String(value2 * 1e4),
+                String(value * 1e4),
                 this._srcId,
                 this._id,
                 this._updateId.bind(this)
@@ -3811,57 +3811,57 @@ var XJS = (function(exports) {
             isPositive = false;
             return Item$1.set(
               "prop:StreamDelay",
-              String((value2 + audioOffset * -1) * 1e4),
+              String((value + audioOffset * -1) * 1e4),
               this._id
             );
           }
         }).then((val) => {
           if (isPositive) {
-            return Item$1.set("prop:AudioDelay", String((value2 + audioOffset) * 1e4), this._id);
+            return Item$1.set("prop:AudioDelay", String((value + audioOffset) * 1e4), this._id);
           } else {
-            return Item$1.set("prop:AudioDelay", String(value2 * 1e4), this._id);
+            return Item$1.set("prop:AudioDelay", String(value * 1e4), this._id);
           }
         }).then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isForceDeinterlace() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isForceDeinterlace", true);
           Item$1.get("prop:fdeinterlace", this._id).then((val) => {
-            resolve2(val === "3");
+            resolve(val === "3");
           });
         } else {
           Item$1.wrapGet("prop:fdeinterlace", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "3");
+            resolve(val === "3");
           });
         }
       });
     }
-    setForceDeinterlace(value2) {
-      return new Promise((resolve2) => {
+    setForceDeinterlace(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setForceDeinterlace", true);
-          Item$1.set("prop:fdeinterlace", value2 ? "3" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:fdeinterlace", value ? "3" : "0", this._id).then(() => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "prop:fdeinterlace",
-            value2 ? "3" : "0",
+            value ? "3" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -3874,12 +3874,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(filename);
+          resolve(filename);
         });
       });
     }
     setValue(camDevice) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         let camName;
         let _getName;
         if (camDevice instanceof CameraDevice) {
@@ -3902,7 +3902,7 @@ var XJS = (function(exports) {
             });
           });
         } else {
-          reject2(TypeError("Parameter should either be a CameraDevice or string."));
+          reject(TypeError("Parameter should either be a CameraDevice or string."));
         }
         _getName.then((name) => {
           camName = name;
@@ -3921,7 +3921,7 @@ var XJS = (function(exports) {
         }).then(() => {
           return Item$1.set("prop:name", camName, this._id);
         }).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -3935,7 +3935,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getCustomResolution() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let customSize;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getCustomResolution", true);
@@ -3955,80 +3955,80 @@ var XJS = (function(exports) {
           } else {
             customSize = Rectangle.fromDimensions(0, 0);
           }
-          resolve2(customSize);
+          resolve(customSize);
         });
       });
     }
-    setCustomResolution(value2) {
-      return new Promise((resolve2) => {
+    setCustomResolution(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setCustomResolution", true);
-          Item$1.set("prop:BrowserSize", value2.toDimensionString(), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:BrowserSize", value.toDimensionString(), this._id).then(() => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "prop:BrowserSize",
-            value2.toDimensionString(),
+            value.toDimensionString(),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getAllowRightClick() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getAllowRightClick", true);
           Item$1.get("prop:BrowserRightClick", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:BrowserRightClick", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
     }
-    setAllowRightClick(value2) {
-      return new Promise((resolve2) => {
+    setAllowRightClick(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAllowRightClick", true);
-          Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:BrowserRightClick", value ? "1" : "0", this._id).then(() => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "prop:BrowserRightClick",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     isSourceAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSourceAvailable", true);
           Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -4041,12 +4041,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(filename);
+          resolve(filename);
         });
       });
     }
     setValue(filename) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setValue", true);
           this._checkPromise = Item$1.set("prop:item", filename, this._id);
@@ -4062,7 +4062,7 @@ var XJS = (function(exports) {
         this._checkPromise.then(() => {
           return Item$1.set("prop:name", filename, this._id);
         }).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -4078,69 +4078,69 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     isSpecialOptimizationEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSpecialOptimizationEnabled", true);
           Item$1.get("GameCapSurfSharing", this._id).then((res) => {
-            resolve2(res === "1");
+            resolve(res === "1");
           });
         } else {
           Item$1.wrapGet("GameCapSurfSharing", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
-            resolve2(res === "1");
+            resolve(res === "1");
           });
         }
       });
     }
-    setSpecialOptimizationEnabled(value2) {
-      return new Promise((resolve2) => {
+    setSpecialOptimizationEnabled(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setSpecialOptimizationEnabled", true);
-          Item$1.set("GameCapSurfSharing", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("GameCapSurfSharing", value ? "1" : "0", this._id).then(() => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "GameCapSurfSharing",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     isShowMouseEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isShowMouseEnabled", true);
           Item$1.get("GameCapShowMouse", this._id).then((res) => {
-            resolve2(res === "1");
+            resolve(res === "1");
           });
         } else {
           Item$1.wrapGet("GameCapShowMouse", this._srcId, this._id, this._updateId.bind(this)).then((res) => {
-            resolve2(res === "1");
+            resolve(res === "1");
           });
         }
       });
     }
-    setShowMouseEnabled(value2) {
-      return new Promise((resolve2) => {
+    setShowMouseEnabled(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setShowMouseEnabled", true);
-          Item$1.set("GameCapShowMouse", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("GameCapShowMouse", value ? "1" : "0", this._id).then(() => {
+            resolve(this);
           });
         } else {
           Item$1.wrapSet(
             "GameCapShowMouse",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
@@ -4149,15 +4149,15 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "setOfflineImage", true);
       }
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._type !== ItemTypes.GAMESOURCE) {
-          reject2(Error("Current item should be a game item"));
+          reject(Error("Current item should be a game item"));
         } else if (Environment.isSourcePlugin()) {
-          reject2(Error("Source plugins cannot update offline images of other items"));
+          reject(Error("Source plugins cannot update offline images of other items"));
         } else if (!(this._value instanceof XML)) {
           this.getValue().then(() => {
             this.setOfflineImage(path).then((itemObj) => {
-              resolve2(itemObj);
+              resolve(itemObj);
             });
           });
         } else {
@@ -4168,10 +4168,10 @@ var XJS = (function(exports) {
             var valueObj = JSON$1.parse(this._value.toString());
             valueObj["replace"] = path;
             this.setValue(XML.parseJSON(valueObj)).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
-            reject2(Error("Invalid file path or type is provided."));
+            reject(Error("Invalid file path or type is provided."));
           }
         }
       });
@@ -4180,19 +4180,19 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "getOfflineImage", true);
       }
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._type !== ItemTypes.GAMESOURCE) {
-          reject2(Error("Current item should be a game item"));
+          reject(Error("Current item should be a game item"));
         } else {
-          this.getValue().then((value2) => {
+          this.getValue().then((value) => {
             var valueObj = JSON$1.parse(this._value.toString());
-            resolve2(valueObj["replace"] ? valueObj["replace"] : "");
+            resolve(valueObj["replace"] ? valueObj["replace"] : "");
           });
         }
       });
     }
     isTransparent() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isTransparent", true);
           this._checkPromise = Item$1.get("prop:GameCapAlpha", this._id);
@@ -4205,31 +4205,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((res) => {
-          resolve2(res === "1");
+          resolve(res === "1");
         });
       });
     }
-    setTransparent(value2) {
-      return new Promise((resolve2) => {
+    setTransparent(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setTransparent", true);
-          this._checkPromise = Item$1.set("prop:GameCapAlpha", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:GameCapAlpha", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:GameCapAlpha",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getGameFPSCap() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getGameFPSCap", true);
           this._checkPromise = Item$1.get("prop:GameCapFrameTimeLimit", this._id);
@@ -4243,29 +4243,29 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((res) => {
           if (res === "0" || res === "" || res === 0) {
-            resolve2(0);
+            resolve(0);
           } else {
             let fps = Math.floor(1e7 / Number(res));
             fps = Math.min(Math.max(fps, MIN_FPS), MAX_FPS);
-            resolve2(fps);
+            resolve(fps);
           }
         });
       });
     }
-    setGameFPSCap(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 !== 0 && (Number(value2) < MIN_FPS || Number(value2) > MAX_FPS)) {
-          reject2(
+    setGameFPSCap(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value !== 0 && (Number(value) < MIN_FPS || Number(value) > MAX_FPS)) {
+          reject(
             RangeError(`Game FPS cap may only be 0 or in the range of ${MIN_FPS} to ${MAX_FPS}.`)
           );
         } else {
-          const frametime = value2 > 0 ? Math.floor(1e7 / Number(value2)) : 0;
+          const frametime = value > 0 ? Math.floor(1e7 / Number(value)) : 0;
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setGameFPSCap", true);
             Item$1.set("prop:GameCapFrameTimeLimit", String(frametime), this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
@@ -4275,7 +4275,7 @@ var XJS = (function(exports) {
               this._id,
               this._updateId.bind(this)
             ).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
@@ -4291,7 +4291,11 @@ var XJS = (function(exports) {
     load_error: "LOAD ERROR",
     unknown: "UNKNOWN"
   };
-  const toStableNumber = (value2) => Number(value2.toFixed(12));
+  const toStableNumber = (value) => Number(value.toFixed(12));
+  const removeSourcePluginCustomCssElement = () => {
+    const styleElement = document.querySelector("head #splitmedialabsCSSOverwrite");
+    styleElement?.parentElement?.removeChild(styleElement);
+  };
   class iSourceHtml {
     _updateId(id, sceneId) {
       this._id = id;
@@ -4306,7 +4310,7 @@ var XJS = (function(exports) {
      * Allow this item to call a pre-exposed function within the HTML Item
      */
     call(func, arg) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let slot;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "call", true);
@@ -4317,7 +4321,7 @@ var XJS = (function(exports) {
         this._checkPromise.then((res) => {
           slot = res;
           exec("CallInner" + (String(slot) === "0" ? "" : slot + 1), func, arg);
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -4327,7 +4331,7 @@ var XJS = (function(exports) {
      * Gets the URL of this webpage item.
      */
     getURL() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getURL", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -4342,7 +4346,7 @@ var XJS = (function(exports) {
         this._checkPromise.then((url) => {
           const _url = String(url).split("*");
           url = _url[0];
-          resolve2(url);
+          resolve(url);
         });
       });
     }
@@ -4356,8 +4360,8 @@ var XJS = (function(exports) {
      *
      * *Chainable.*
      */
-    setURL(value2) {
-      return new Promise((resolve2, reject2) => {
+    setURL(value) {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setURL", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -4371,7 +4375,7 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((url) => {
           const _url = String(url).split("*");
-          _url[0] = value2;
+          _url[0] = value;
           return Item$1.set(
             this._isItemCall ? "prop:item" : "prop:srcitem",
             _url.join("*"),
@@ -4379,21 +4383,21 @@ var XJS = (function(exports) {
           );
         }).then((code) => {
           if (code) {
-            return Item$1.set("prop:name", value2, this._id);
+            return Item$1.set("prop:name", value, this._id);
           } else {
             return Promise.resolve(code);
           }
         }).then((code) => {
           if (code) {
-            resolve2(this);
+            resolve(this);
           } else {
-            reject2(Error("Invalid value"));
+            reject(Error("Invalid value"));
           }
         });
       });
     }
     isBrowserTransparent() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isBrowserTransparent", true);
           this._checkPromise = Item$1.get("prop:BrowserTransparent", this._id);
@@ -4406,31 +4410,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((isTransparent) => {
-          resolve2(isTransparent === "1");
+          resolve(isTransparent === "1");
         });
       });
     }
-    enableBrowserTransparency(value2) {
-      return new Promise((resolve2) => {
+    enableBrowserTransparency(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "enableBrowserTransparency", true);
-          this._checkPromise = Item$1.set("prop:BrowserTransparent", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:BrowserTransparent", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:BrowserTransparent",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isBrowser60FPS() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isBrowser60FPS", true);
           this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
@@ -4443,12 +4447,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((isBrowser60FPS) => {
-          resolve2(isBrowser60FPS === "1");
+          resolve(isBrowser60FPS === "1");
         });
       });
     }
-    enableBrowser60FPS(value2) {
-      return new Promise((resolve2) => {
+    enableBrowser60FPS(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isBrowser60FPS", true);
           this._checkPromise = Item$1.get("prop:Browser60fps", this._id);
@@ -4461,15 +4465,15 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((isBrowser60FPS) => {
-          if (isBrowser60FPS === "1" !== value2) {
-            Item$1.set("prop:Browser60fps", value2 ? "1" : "0", this._id);
+          if (isBrowser60FPS === "1" !== value) {
+            Item$1.set("prop:Browser60fps", value ? "1" : "0", this._id);
           }
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getBrowserCustomSize() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let customSize;
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getBrowserCustomSize", true);
@@ -4492,15 +4496,15 @@ var XJS = (function(exports) {
           } else {
             customSize = Rectangle.fromDimensions(0, 0);
           }
-          resolve2(customSize);
+          resolve(customSize);
         });
       });
     }
-    setBrowserCustomSize(value2) {
-      return new Promise((resolve2) => {
+    setBrowserCustomSize(value) {
+      return new Promise((resolve) => {
         const browserSize = Rectangle.fromDimensions(
-          value2.getWidth() * window.devicePixelRatio,
-          value2.getHeight() * window.devicePixelRatio
+          value.getWidth() * window.devicePixelRatio,
+          value.getHeight() * window.devicePixelRatio
         );
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setBrowserCustomSize", true);
@@ -4519,12 +4523,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getAllowRightClick() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getAllowRightClick", true);
           this._checkPromise = Item$1.get("prop:BrowserRightClick", this._id);
@@ -4537,31 +4541,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setAllowRightClick(value2) {
-      return new Promise((resolve2) => {
+    setAllowRightClick(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAllowRightClick", true);
-          this._checkPromise = Item$1.set("prop:BrowserRightClick", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:BrowserRightClick", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:BrowserRightClick",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getBrowserJS() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getBrowserJS", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4576,13 +4580,13 @@ var XJS = (function(exports) {
         this._checkPromise.then((custom) => {
           let customJS = "";
           try {
-            const customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "customJS")) {
-              customJS = customObject2["customJS"];
+            const customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "customJS")) {
+              customJS = customObject["customJS"];
             }
           } catch (e) {
           }
-          resolve2(customJS);
+          resolve(customJS);
         });
       });
     }
@@ -4624,9 +4628,9 @@ var XJS = (function(exports) {
       }
       return retrievedPolicyStringFunction;
     }
-    setBrowserJS(value2, refresh = false) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
+    setBrowserJS(value, refresh = false) {
+      return new Promise((resolve, reject) => {
+        let customObject = {};
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setBrowserJS", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4644,49 +4648,49 @@ var XJS = (function(exports) {
           let scriptEnabled = true;
           let cssEnabled = true;
           try {
-            customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] === "true";
+            customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "cssEnabled")) {
+              cssEnabled = customObject["cssEnabled"] === "true";
             }
-            if (Object.hasOwn(customObject2, "scriptEnabled")) {
-              scriptEnabled = customObject2["scriptEnabled"] === "true";
+            if (Object.hasOwn(customObject, "scriptEnabled")) {
+              scriptEnabled = customObject["scriptEnabled"] === "true";
             }
-            if (Object.hasOwn(customObject2, "customCSS")) {
-              customCSS = customObject2["customCSS"];
+            if (Object.hasOwn(customObject, "customCSS")) {
+              customCSS = customObject["customCSS"];
             }
           } catch (e) {
           }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = scriptEnabled.toString();
-          customObject2["customCSS"] = customCSS;
-          customObject2["customJS"] = value2;
+          customObject["cssEnabled"] = cssEnabled.toString();
+          customObject["scriptEnabled"] = scriptEnabled.toString();
+          customObject["customCSS"] = customCSS;
+          customObject["customJS"] = value;
           if (cssEnabled === true) {
-            let cssScript2 = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + "';h.appendChild(xjsCSSOverwrite);";
+            let cssScript = "var xjsCSSOverwrite = document.createElement('style');xjsCSSOverwrite.id = 'splitmedialabsCSSOverwrite';xjsCSSOverwrite.type = 'text/css';var h = document.querySelector('head');var existing = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = '" + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + "';h.appendChild(xjsCSSOverwrite);";
             const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
             if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
+              cssScript = retrievedPolicyFunction;
             }
-            scriptString = scriptString + cssScript2;
+            scriptString = scriptString + cssScript;
           }
-          if (value2 !== "" && scriptEnabled === true) {
-            scriptString = scriptString + value2;
+          if (value !== "" && scriptEnabled === true) {
+            scriptString = scriptString + value;
           }
           return Item$1.set("prop:BrowserJs", scriptString, this._id);
         }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+          return Item$1.set("prop:custom", JSON.stringify(customObject), this._id);
         }).then(() => {
           if (refresh) {
             Item$1.set("refresh", "", this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
-            resolve2(this);
+            resolve(this);
           }
         });
       });
     }
     isBrowserJSEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isBrowserJSEnabled", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4701,19 +4705,19 @@ var XJS = (function(exports) {
         this._checkPromise.then((custom) => {
           let enabled = true;
           try {
-            const customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "scriptEnabled")) {
-              enabled = customObject2["scriptEnabled"] === "true";
+            const customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "scriptEnabled")) {
+              enabled = customObject["scriptEnabled"] === "true";
             }
           } catch (e) {
           }
-          resolve2(enabled);
+          resolve(enabled);
         });
       });
     }
-    enableBrowserJS(value2) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
+    enableBrowserJS(value) {
+      return new Promise((resolve, reject) => {
+        let customObject = {};
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "enableBrowserJS", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4731,49 +4735,49 @@ var XJS = (function(exports) {
           let scriptString = " ";
           let cssEnabled = true;
           try {
-            customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] === "true";
+            customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "cssEnabled")) {
+              cssEnabled = customObject["cssEnabled"] === "true";
             }
-            if (Object.hasOwn(customObject2, "customJS")) {
-              customJS = customObject2["customJS"];
+            if (Object.hasOwn(customObject, "customJS")) {
+              customJS = customObject["customJS"];
             }
-            if (Object.hasOwn(customObject2, "customCSS")) {
-              customCSS = customObject2["customCSS"];
+            if (Object.hasOwn(customObject, "customCSS")) {
+              customCSS = customObject["customCSS"];
             }
           } catch (e) {
           }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = value2.toString();
-          customObject2["customJS"] = customJS;
-          customObject2["customCSS"] = customCSS;
+          customObject["cssEnabled"] = cssEnabled.toString();
+          customObject["scriptEnabled"] = value.toString();
+          customObject["customJS"] = customJS;
+          customObject["customCSS"] = customCSS;
           if (cssEnabled === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";"h.appendChild(xjsCSSOverwrite);';
+            let cssScript = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";"h.appendChild(xjsCSSOverwrite);';
             const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
             if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
+              cssScript = retrievedPolicyFunction;
             }
-            scriptString = scriptString + cssScript2;
+            scriptString = scriptString + cssScript;
           }
-          if (customJS !== "" && value2 === true) {
+          if (customJS !== "" && value === true) {
             scriptString = scriptString + customJS;
           }
           return Item$1.set("prop:BrowserJs", scriptString, this._id);
         }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+          return Item$1.set("prop:custom", JSON.stringify(customObject), this._id);
         }).then(() => {
-          if (!value2) {
+          if (!value) {
             Item$1.set("refresh", "", this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
-            resolve2(this);
+            resolve(this);
           }
         });
       });
     }
     getCustomCSS() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getCustomCSS", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4788,19 +4792,19 @@ var XJS = (function(exports) {
         this._checkPromise.then((custom) => {
           let customCSS = "";
           try {
-            const customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "customCSS")) {
-              customCSS = customObject2["customCSS"];
+            const customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "customCSS")) {
+              customCSS = customObject["customCSS"];
             }
           } catch (e) {
           }
-          resolve2(customCSS);
+          resolve(customCSS);
         });
       });
     }
-    setCustomCSS(value2) {
-      return new Promise((resolve2, reject2) => {
-        let customObject2 = {};
+    setCustomCSS(value) {
+      return new Promise((resolve, reject) => {
+        let customObject = {};
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setCustomCSS", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4818,43 +4822,43 @@ var XJS = (function(exports) {
           let scriptEnabled = true;
           let cssEnabled = true;
           try {
-            customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "cssEnabled")) {
-              cssEnabled = customObject2["cssEnabled"] === "true";
+            customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "cssEnabled")) {
+              cssEnabled = customObject["cssEnabled"] === "true";
             }
-            if (Object.hasOwn(customObject2, "scriptEnabled")) {
-              scriptEnabled = customObject2["scriptEnabled"] === "true";
+            if (Object.hasOwn(customObject, "scriptEnabled")) {
+              scriptEnabled = customObject["scriptEnabled"] === "true";
             }
-            if (Object.hasOwn(customObject2, "customJS")) {
-              customJS = customObject2["customJS"];
+            if (Object.hasOwn(customObject, "customJS")) {
+              customJS = customObject["customJS"];
             }
           } catch (e) {
           }
-          customObject2["cssEnabled"] = cssEnabled.toString();
-          customObject2["scriptEnabled"] = scriptEnabled.toString();
-          customObject2["customJS"] = customJS;
-          customObject2["customCSS"] = value2;
+          customObject["cssEnabled"] = cssEnabled.toString();
+          customObject["scriptEnabled"] = scriptEnabled.toString();
+          customObject["customJS"] = customJS;
+          customObject["customCSS"] = value;
           if (cssEnabled === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + value2.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
-            const retrievedPolicyFunction = this.getPolicyStringFunction(value2);
+            let cssScript = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + value.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
+            const retrievedPolicyFunction = this.getPolicyStringFunction(value);
             if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
+              cssScript = retrievedPolicyFunction;
             }
-            scriptString = scriptString + cssScript2;
+            scriptString = scriptString + cssScript;
           }
           if (customJS !== "" && scriptEnabled === true) {
             scriptString = scriptString + customJS;
           }
           return Item$1.set("prop:BrowserJs", scriptString, this._id);
         }).then(() => {
-          return Item$1.set("prop:custom", JSON.stringify(customObject2), this._id);
+          return Item$1.set("prop:custom", JSON.stringify(customObject), this._id);
         }).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isCustomCSSEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isCustomCSSEnabled", true);
           this._checkPromise = Item$1.get("prop:custom", this._id);
@@ -4869,13 +4873,13 @@ var XJS = (function(exports) {
         this._checkPromise.then((custom) => {
           let enabled = true;
           try {
-            const customObject2 = JSON.parse(custom);
-            if (Object.hasOwn(customObject2, "cssEnabled")) {
-              enabled = customObject2["cssEnabled"] === "true";
+            const customObject = JSON.parse(custom);
+            if (Object.hasOwn(customObject, "cssEnabled")) {
+              enabled = customObject["cssEnabled"] === "true";
             }
           } catch (e) {
           }
-          resolve2(enabled);
+          resolve(enabled);
         });
       });
     }
@@ -4916,12 +4920,12 @@ var XJS = (function(exports) {
           customObject["customJS"] = customJS;
           customObject["customCSS"] = customCSS;
           if (value === true) {
-            let cssScript2 = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
+            let cssScript = 'var xjsCSSOverwrite = document.createElement("style");xjsCSSOverwrite.id = "splitmedialabsCSSOverwrite";xjsCSSOverwrite.type = "text/css";var h = document.querySelector("head");var existing = document.querySelector("head #splitmedialabsCSSOverwrite");if (existing != null)h.removeChild(existing);xjsCSSOverwrite.innerHTML = "' + customCSS.replace(/(\r\n|\n|\r)/gm, "").replace(/\s{2,}/g, " ").replace(/(\[br\])/gm, "") + '";h.appendChild(xjsCSSOverwrite);';
             const retrievedPolicyFunction = this.getPolicyStringFunction(customCSS);
             if (retrievedPolicyFunction) {
-              cssScript2 = retrievedPolicyFunction;
+              cssScript = retrievedPolicyFunction;
             }
-            scriptString = scriptString + cssScript2;
+            scriptString = scriptString + cssScript;
           }
           if (customJS !== "" && value === scriptEnabled) {
             scriptString = scriptString + customJS;
@@ -4933,7 +4937,7 @@ var XJS = (function(exports) {
           if (!value) {
             const cssScript = "var h = document.querySelector('head');var existing3 = document.querySelector('head #splitmedialabsCSSOverwrite');if (existing3 != null)h.removeChild(existing3);";
             if (Environment.isSourcePlugin()) {
-              eval(cssScript);
+              removeSourcePluginCustomCssElement();
             } else {
               exec("CallInner", "eval", cssScript);
             }
@@ -4945,7 +4949,7 @@ var XJS = (function(exports) {
       });
     }
     isBrowserOptimized() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isBrowserOptimized", true);
           this._checkPromise = Item$1.get("prop:GameCapSurfSharingCurrent", this._id);
@@ -4958,12 +4962,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
     getBrowserLoadStatus() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getBrowserLoadStatus", true);
           this._checkPromise = Item$1.get("BrowserLoadStatus", this._id);
@@ -4977,15 +4981,15 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((loadStatus) => {
           if (loadStatus === "null") {
-            resolve2("UNAVAILABLE");
+            resolve("UNAVAILABLE");
           } else {
-            resolve2(LoadStatus[loadStatus]);
+            resolve(LoadStatus[loadStatus]);
           }
         });
       });
     }
     isReloadOnShowEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
           this._checkPromise = Item$1.get("prop:RefreshOnSrcShow", this._id);
@@ -4998,31 +5002,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    enableReloadOnShow(value2) {
-      return new Promise((resolve2) => {
+    enableReloadOnShow(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "enableReloadOnShow", true);
-          this._checkPromise = Item$1.set("prop:RefreshOnSrcShow", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:RefreshOnSrcShow", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:RefreshOnSrcShow",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isReloadOnSceneEnterEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isReloadOnShowEnabled", true);
           this._checkPromise = Item$1.get("prop:RefreshOnScnLoad", this._id);
@@ -5035,39 +5039,39 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    enableReloadOnSceneEnter(value2) {
-      return new Promise((resolve2) => {
+    enableReloadOnSceneEnter(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "enableReloadOnShow", true);
-          this._checkPromise = Item$1.set("prop:RefreshOnScnLoad", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:RefreshOnScnLoad", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:RefreshOnScnLoad",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isSourceAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSourceAvailable", true);
           Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
@@ -5079,7 +5083,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     loadConfig() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "loadConfig", true);
           this._checkPromise = Item$1.get("prop:BrowserConfiguration", this._id);
@@ -5097,7 +5101,7 @@ var XJS = (function(exports) {
           for (var key in persist) {
             delete configObj[key];
           }
-          resolve2(configObj);
+          resolve(configObj);
         });
       });
     }
@@ -5105,7 +5109,7 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "saveConfig", true);
       }
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin) {
           let slot;
           let savingAllowed = false;
@@ -5125,12 +5129,12 @@ var XJS = (function(exports) {
                   configObj[key] = persist[key];
                 }
                 exec("SetBrowserProperty", "Configuration", JSON.stringify(configObj));
-                resolve2(this);
+                resolve(this);
               } else {
-                reject2(Error("Configuration object should be in JSON format."));
+                reject(Error("Configuration object should be in JSON format."));
               }
             } else {
-              reject2(
+              reject(
                 Error(
                   "Sources may only request other Sources to save a configuration. Consider calling requestSaveConfig() on this Source instance instead."
                 )
@@ -5138,7 +5142,7 @@ var XJS = (function(exports) {
             }
           });
         } else {
-          reject2(
+          reject(
             Error(
               "Extensions and source properties windows are not allowed to directly save configuration objects. Call requestSaveConfig() instead."
             )
@@ -5150,7 +5154,7 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "requestSaveConfig", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let slot;
         Item$1.attach(this._id).then((res) => {
           slot = res;
@@ -5162,7 +5166,7 @@ var XJS = (function(exports) {
               data: configObj
             })
           );
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -5170,7 +5174,7 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "applyConfig", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let slot;
         Item$1.attach(this._id).then((res) => {
           slot = res;
@@ -5182,7 +5186,7 @@ var XJS = (function(exports) {
               data: configObj
             })
           );
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -5196,21 +5200,21 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     isSourceAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSourceAvailable", true);
           Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -5223,12 +5227,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(filename);
+          resolve(filename);
         });
       });
     }
     setValue(filename) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setValue", true);
           this._checkPromise = Item$1.set("prop:item", filename, this._id);
@@ -5244,7 +5248,7 @@ var XJS = (function(exports) {
         this._checkPromise.then(() => {
           return Item$1.set("prop:name", filename, this._id);
         }).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -5299,8 +5303,8 @@ var XJS = (function(exports) {
     getAction() {
       return this._action;
     }
-    static _fromString(value2) {
-      const [time, action] = [value2.substring(0, value2.length - 1), value2.charAt(value2.length - 1)];
+    static _fromString(value) {
+      const [time, action] = [value.substring(0, value.length - 1), value.charAt(value.length - 1)];
       return new CuePoint(Number(time), action);
     }
     static {
@@ -5329,7 +5333,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     isSeekable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSeekable", true);
           this._checkPromise = Item$1.get("sync:syncable", this._id);
@@ -5342,12 +5346,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1" ? true : false);
+          resolve(val === "1" ? true : false);
         });
       });
     }
     getPlaybackPosition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getPlaybackPosition", true);
           this._checkPromise = Item$1.get("sync:position", this._id);
@@ -5360,31 +5364,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val) / 1e7);
+          resolve(Number(val) / 1e7);
         });
       });
     }
-    setPlaybackPosition(value2) {
-      return new Promise((resolve2) => {
+    setPlaybackPosition(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setPlaybackPosition", true);
-          this._checkPromise = Item$1.set("sync:position", String(value2 * 1e7), this._id);
+          this._checkPromise = Item$1.set("sync:position", String(value * 1e7), this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "sync:position",
-            String(value2 * 1e7),
+            String(value * 1e7),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getPlaybackDuration() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getPlaybackDuration", true);
           this._checkPromise = Item$1.get("sync:duration", this._id);
@@ -5397,12 +5401,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val) / 1e7);
+          resolve(Number(val) / 1e7);
         });
       });
     }
     isPlaying() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isPlaying", true);
           this._checkPromise = Item$1.get("sync:state", this._id);
@@ -5415,31 +5419,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "running");
+          resolve(val === "running");
         });
       });
     }
-    setPlaying(value2) {
-      return new Promise((resolve2) => {
+    setPlaying(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setPlaying", true);
-          this._checkPromise = Item$1.set("sync:state", value2 ? "running" : "stopped", this._id);
+          this._checkPromise = Item$1.set("sync:state", value ? "running" : "stopped", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "sync:state",
-            value2 ? "running" : "stopped",
+            value ? "running" : "stopped",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getPlaybackStartPosition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getPlaybackStartPosition", true);
           this._checkPromise = Item$1.get("prop:InPoint", this._id);
@@ -5452,31 +5456,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val) / 1e7);
+          resolve(Number(val) / 1e7);
         });
       });
     }
-    setPlaybackStartPosition(value2) {
-      return new Promise((resolve2) => {
+    setPlaybackStartPosition(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setPlaybackStartPosition", true);
-          this._checkPromise = Item$1.set("prop:InPoint", String(value2 * 1e7), this._id);
+          this._checkPromise = Item$1.set("prop:InPoint", String(value * 1e7), this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:InPoint",
-            String(value2 * 1e7),
+            String(value * 1e7),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getPlaybackEndPosition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getPlaybackEndPosition", true);
           this._checkPromise = Item$1.get("prop:OutPoint", this._id);
@@ -5489,31 +5493,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val) / 1e7);
+          resolve(Number(val) / 1e7);
         });
       });
     }
-    setPlaybackEndPosition(value2) {
-      return new Promise((resolve2) => {
+    setPlaybackEndPosition(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setPlaybackEndPosition", true);
-          this._checkPromise = Item$1.set("prop:OutPoint", String(value2 * 1e7), this._id);
+          this._checkPromise = Item$1.set("prop:OutPoint", String(value * 1e7), this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:OutPoint",
-            String(value2 * 1e7),
+            String(value * 1e7),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getActionAfterPlayback() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getActionAfterPlayback", true);
           this._checkPromise = Item$1.get("prop:OpWhenFinished", this._id);
@@ -5526,31 +5530,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setActionAfterPlayback(value2) {
-      return new Promise((resolve2) => {
+    setActionAfterPlayback(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setActionAfterPlayback", true);
-          this._checkPromise = Item$1.set("prop:OpWhenFinished", String(value2), this._id);
+          this._checkPromise = Item$1.set("prop:OpWhenFinished", String(value), this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:OpWhenFinished",
-            String(value2),
+            String(value),
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isAutostartOnSceneLoad() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isAutostartOnSceneLoad", true);
           this._checkPromise = Item$1.get("prop:StartOnLoad", this._id);
@@ -5563,31 +5567,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setAutostartOnSceneLoad(value2) {
-      return new Promise((resolve2) => {
+    setAutostartOnSceneLoad(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAutostartOnSceneLoad", true);
-          this._checkPromise = Item$1.set("prop:StartOnLoad", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:StartOnLoad", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:StartOnLoad",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isForceDeinterlace() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isForceDeinterlace", true);
           this._checkPromise = Item$1.get("prop:fdeinterlace", this._id);
@@ -5600,31 +5604,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "3");
+          resolve(val === "3");
         });
       });
     }
-    setForceDeinterlace(value2) {
-      return new Promise((resolve2) => {
+    setForceDeinterlace(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setForceDeinterlace", true);
-          this._checkPromise = Item$1.set("prop:fdeinterlace", value2 ? "3" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:fdeinterlace", value ? "3" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:fdeinterlace",
-            value2 ? "3" : "0",
+            value ? "3" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isRememberingPlaybackPosition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isRememberingPlaybackPosition", true);
           this._checkPromise = Item$1.get("prop:RememberPosition", this._id);
@@ -5637,31 +5641,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setRememberingPlaybackPosition(value2) {
-      return new Promise((resolve2) => {
+    setRememberingPlaybackPosition(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setRememberingPlaybackPosition", true);
-          this._checkPromise = Item$1.set("prop:RememberPosition", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:RememberPosition", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:RememberPosition",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isShowingPlaybackPosition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isShowingPlaybackPosition", true);
           this._checkPromise = Item$1.get("prop:ShowPosition", this._id);
@@ -5674,31 +5678,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setShowingPlaybackPosition(value2) {
-      return new Promise((resolve2) => {
+    setShowingPlaybackPosition(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setShowingPlaybackPosition", true);
-          this._checkPromise = Item$1.set("prop:ShowPosition", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:ShowPosition", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ShowPosition",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getCuePoints() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getCuePoints", true);
           this._checkPromise = Item$1.get("prop:CuePoints", this._id);
@@ -5712,20 +5716,20 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((cuePointString) => {
           if (cuePointString === "") {
-            resolve2([]);
+            resolve([]);
           } else {
             const cuePointStrings = cuePointString.split(",");
             const cuePoints = cuePointStrings.map(
               (string) => CuePoint._fromString(string)
             );
-            resolve2(cuePoints);
+            resolve(cuePoints);
           }
         });
       });
     }
     setCuePoints(cuePoints) {
       const cuePointString = cuePoints.map((point) => point.toString()).join(",");
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setCuePoints", true);
           this._checkPromise = Item$1.set("prop:CuePoints", cuePointString, this._id);
@@ -5739,12 +5743,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     isAudio() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isAudio", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -5757,12 +5761,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(AUDIO_REGEX.test(filename));
+          resolve(AUDIO_REGEX.test(filename));
         });
       });
     }
     isVideo() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isVideo", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -5775,12 +5779,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(VIDEO_REGEX.test(filename));
+          resolve(VIDEO_REGEX.test(filename));
         });
       });
     }
     getValue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getValue", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -5793,12 +5797,12 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((filename) => {
-          resolve2(filename);
+          resolve(filename);
         });
       });
     }
     setValue(filename) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         filename = filename.split("*")[0];
         if (VIDEO_REGEX.test(filename) || AUDIO_REGEX.test(filename)) {
           if (this._isItemCall) {
@@ -5824,10 +5828,10 @@ var XJS = (function(exports) {
               return Promise.resolve(true);
             }
           }).then(() => Item$1.set("prop:name", filename, this._id)).then(() => Item$1.set("prop:CuePoints", "", this._id)).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
-          reject2(Error("You can only set the value to a valid media type"));
+          reject(Error("You can only set the value to a valid media type"));
         }
       });
     }
@@ -5838,7 +5842,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getFileInfo() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getFileInfo", true);
           this._checkPromise = Item$1.get("FileInfo", this._id);
@@ -5869,26 +5873,26 @@ var XJS = (function(exports) {
                 var tag = child["tag"];
                 fileInfoObj[tag] = childObj;
               }
-              resolve2(fileInfoObj);
+              resolve(fileInfoObj);
             } else {
-              resolve2(fileInfoObj);
+              resolve(fileInfoObj);
             }
           } catch (e) {
-            reject2(Error("Error retrieving file information"));
+            reject(Error("Error retrieving file information"));
           }
         });
       });
     }
     isSourceAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSourceAvailable", true);
           Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
@@ -5933,7 +5937,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getChannel() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getChannelName", true);
           this._checkPromise = Item$1.get("prop:presproperty:channelName", this._id);
@@ -5946,17 +5950,17 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((channel) => {
-          resolve2(channel);
-        }).catch((err) => reject2(err));
+          resolve(channel);
+        }).catch((err) => reject(err));
       });
     }
     setChannel(channel) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (typeof channel === "string") {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setChannelName", true);
             Item$1.set("prop:presproperty:channelName", channel, this._id).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
@@ -5966,18 +5970,18 @@ var XJS = (function(exports) {
               this._id,
               this._updateId.bind(this)
             ).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         } else {
-          reject2(
+          reject(
             Error("Invalid parameter. setChannelName method only accepts channel name as a string.")
           );
         }
       });
     }
     getHotkey() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getHotkey", true);
           this._checkPromise = Item$1.get("prop:presproperty:hotkey", this._id);
@@ -5990,17 +5994,17 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((hotkey) => {
-          resolve2(Number(hotkey));
-        }).catch((err) => reject2(err));
+          resolve(Number(hotkey));
+        }).catch((err) => reject(err));
       });
     }
     setHotkey(hotkey) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (typeof hotkey === "number") {
           if (this._isItemCall) {
             Logger.warn("sourceWarning", "setHotkey", true);
             Item$1.set("prop:presproperty:hotkey", String(hotkey), this._id).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
@@ -6010,16 +6014,16 @@ var XJS = (function(exports) {
               this._id,
               this._updateId.bind(this)
             ).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         } else {
-          reject2(Error("Invalid parameter. setHotkey method only accepts hotkey as a number."));
+          reject(Error("Invalid parameter. setHotkey method only accepts hotkey as a number."));
         }
       });
     }
     getReplayTime() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getReplayTime", true);
           this._checkPromise = Item$1.get("prop:presproperty:buffer", this._id);
@@ -6032,15 +6036,15 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((buffer) => {
-          resolve2(Number(buffer));
-        }).catch((err) => reject2(err));
+          resolve(Number(buffer));
+        }).catch((err) => reject(err));
       });
     }
     setReplayTime(buffer) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (typeof buffer === "number") {
           if (buffer > 120 || buffer < 0) {
-            reject2(
+            reject(
               Error(
                 `Invalid parameter. setReplaytime method only accepts numbers up to ${BUFFER_MAX}.`
               )
@@ -6048,7 +6052,7 @@ var XJS = (function(exports) {
           } else if (this._isItemCall) {
             Logger.warn("sourceWarning", "setReplayTime", true);
             Item$1.set("prop:presproperty:buffer", String(buffer), this._id).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.wrapSet(
@@ -6058,44 +6062,44 @@ var XJS = (function(exports) {
               this._id,
               this._updateId.bind(this)
             ).then((val) => {
-              resolve2(this);
+              resolve(this);
             });
           }
         } else {
-          reject2(Error("Invalid parameter. setReplaytime method only accepts buffer as a number."));
+          reject(Error("Invalid parameter. setReplaytime method only accepts buffer as a number."));
         }
       });
     }
     startReplay() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "startReplay", true);
           Item$1.set("prop:ReplayActive", "1", this._id).then((val) => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           Item$1.wrapSet("prop:ReplayActive", "1", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     stopReplay() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "stopReplay", true);
           Item$1.set("prop:ReplayActive", "0", this._id).then((val) => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           Item$1.wrapSet("prop:ReplayActive", "0", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getReplayState() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getReplayState", true);
           this._checkPromise = Item$1.get("prop:ReplayActive", this._id);
@@ -6107,11 +6111,11 @@ var XJS = (function(exports) {
             this._updateId.bind(this)
           );
         }
-        this._checkPromise.then((activeState) => resolve2(Number(activeState))).catch((err) => reject2(err));
+        this._checkPromise.then((activeState) => resolve(Number(activeState))).catch((err) => reject(err));
       });
     }
     isAutostartOnSceneLoad() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isAutostartOnSceneLoad", true);
           this._checkPromise = Item$1.get("prop:StartOnLoad", this._id);
@@ -6124,26 +6128,26 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setAutostartOnSceneLoad(value2) {
-      return new Promise((resolve2) => {
+    setAutostartOnSceneLoad(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setAutostartOnSceneLoad", true);
-          this._checkPromise = Item$1.set("prop:StartOnLoad", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:StartOnLoad", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:StartOnLoad",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -6156,7 +6160,7 @@ var XJS = (function(exports) {
       this._id = id;
       this._sceneId = sceneId;
     }
-    _setScene(itemType, uid, name, resolve2, reject2) {
+    _setScene(itemType, uid, name, resolve, reject) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "setScene", true);
         this._checkPromise = Item$1.set("prop:srctype", `${itemType},${uid}`, this._id);
@@ -6175,14 +6179,14 @@ var XJS = (function(exports) {
         return Item$1.set("prop:name", `Scene: ${name}`);
       }).then(() => {
         if (code) {
-          resolve2(this);
+          resolve(this);
         } else {
-          reject2(Error("Invalid value"));
+          reject(Error("Invalid value"));
         }
-      }).catch((err) => reject2(err));
+      }).catch((err) => reject(err));
     }
     getScene() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getScene", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -6196,22 +6200,22 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((scene) => {
           if (scene === "0") {
-            resolve2(Scene.liveScene());
+            resolve(Scene.liveScene());
           } else {
             return Scene.getBySceneUid(scene);
           }
-        }).then((sceneObj) => resolve2(sceneObj)).catch((err) => reject2(err));
+        }).then((sceneObj) => resolve(sceneObj)).catch((err) => reject(err));
       });
     }
     setScene(scene) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (scene instanceof Scene || typeof scene === "number" && scene >= 0 && Number["isInteger"](Number(scene))) {
           var itemType = "11";
           if (scene instanceof Scene) {
             var sceneUID = scene["_uid"];
             var name = scene["_name"];
             itemType = sceneUID === "0" ? String(ItemTypes.VIEW) : String(ItemTypes.SCENE);
-            this._setScene(itemType, sceneUID, name, resolve2, reject2);
+            this._setScene(itemType, sceneUID, name, resolve, reject);
           } else if (typeof scene === "number") {
             var name = "";
             var targetScene;
@@ -6222,14 +6226,14 @@ var XJS = (function(exports) {
               name = sceneName;
               return targetScene.getSceneUid();
             }).then((uid) => {
-              this._setScene(itemType, uid, name, resolve2, reject2);
-            }).catch((err) => reject2(err));
+              this._setScene(itemType, uid, name, resolve, reject);
+            }).catch((err) => reject(err));
           }
         } else {
           if (typeof scene === "number" && (scene < 1 || !Number["isInteger"](Number(scene)))) {
-            reject2(Error("Invalid parameters. Valid range is greater than 0."));
+            reject(Error("Invalid parameters. Valid range is greater than 0."));
           } else {
-            reject2(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
+            reject(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
           }
         }
       });
@@ -6244,7 +6248,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     isStickToTitle() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isStickToTitle", true);
           this._checkPromise = Item$1.get("prop:ScrCapTrackWindowTitle", this._id);
@@ -6257,31 +6261,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "0");
+          resolve(val === "0");
         });
       });
     }
-    setStickToTitle(value2) {
-      return new Promise((resolve2) => {
+    setStickToTitle(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setStickToTitle", true);
-          this._checkPromise = Item$1.set("prop:ScrCapTrackWindowTitle", value2 ? "0" : "1", this._id);
+          this._checkPromise = Item$1.set("prop:ScrCapTrackWindowTitle", value ? "0" : "1", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ScrCapTrackWindowTitle",
-            value2 ? "0" : "1",
+            value ? "0" : "1",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getCaptureLayered() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getCaptureLayered", true);
           this._checkPromise = Item$1.get("prop:ScrCapLayered", this._id);
@@ -6294,31 +6298,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setCaptureLayered(value2) {
-      return new Promise((resolve2) => {
+    setCaptureLayered(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setCaptureLayered", true);
-          this._checkPromise = Item$1.set("prop:ScrCapLayered", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:ScrCapLayered", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ScrCapLayered",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getOptimizedCapture() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getOptimizedCapture", true);
           this._checkPromise = Item$1.get("prop:ScrCapOptCapture1", this._id);
@@ -6331,31 +6335,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setOptimizedCapture(value2) {
-      return new Promise((resolve2) => {
+    setOptimizedCapture(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setOptimizedCapture", true);
-          this._checkPromise = Item$1.set("prop:ScrCapOptCapture1", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:ScrCapOptCapture1", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ScrCapOptCapture1",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getShowMouseClicks() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getShowMouseClicks", true);
           this._checkPromise = Item$1.get("prop:ScrCapShowClicks", this._id);
@@ -6368,31 +6372,31 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setShowMouseClicks(value2) {
-      return new Promise((resolve2) => {
+    setShowMouseClicks(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setShowMouseClicks", true);
-          this._checkPromise = Item$1.set("prop:ScrCapShowClicks", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:ScrCapShowClicks", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ScrCapShowClicks",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getShowMouse() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getShowMouse", true);
           this._checkPromise = Item$1.get("prop:ScrCapShowMouse", this._id);
@@ -6405,19 +6409,19 @@ var XJS = (function(exports) {
           );
         }
         this._checkPromise.then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setShowMouse(value2) {
-      return new Promise((resolve2) => {
+    setShowMouse(value) {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setShowMouse", true);
-          this._checkPromise = Item$1.set("prop:ScrCapShowMouse", value2 ? "1" : "0", this._id);
+          this._checkPromise = Item$1.set("prop:ScrCapShowMouse", value ? "1" : "0", this._id);
         } else {
           this._checkPromise = Item$1.wrapSet(
             "prop:ScrCapShowMouse",
-            value2 ? "1" : "0",
+            value ? "1" : "0",
             this._srcId,
             this._id,
             this._updateId.bind(this)
@@ -6425,9 +6429,9 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((val) => {
           if (val === true) {
-            Item$1.set("prop:ScrCapShowClicks", value2 ? "1" : "0", this._id);
+            Item$1.set("prop:ScrCapShowClicks", value ? "1" : "0", this._id);
           }
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -6435,13 +6439,13 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "getCaptureArea", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this.getValue().then((val) => {
           if (!(val instanceof XML)) {
-            resolve2(Rectangle.fromCoordinates(0, 0, 0, 0));
+            resolve(Rectangle.fromCoordinates(0, 0, 0, 0));
           } else {
             const _value = JSON$1.parse(val);
-            resolve2(
+            resolve(
               Rectangle.fromCoordinates(
                 Number(_value["left"]),
                 Number(_value["top"]),
@@ -6457,7 +6461,7 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "setCaptureArea", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this.getValue().then((val) => {
           return new Promise((iResolve) => {
             if (this._isItemCall) {
@@ -6503,7 +6507,7 @@ var XJS = (function(exports) {
           _config["width"] = dimension.getWidth() <= obj.res.getWidth() ? dimension.getWidth() : Number(_config["width"]) <= obj.res.getWidth() ? _config["width"] : obj.res.getWidth();
           _config["height"] = dimension.getHeight() <= obj.res.getHeight() ? dimension.getHeight() : Number(_config["height"]) <= obj.res.getHeight() ? _config["height"] : obj.res.getHeight();
           this.setValue(XML.parseJSON(_config)).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         });
       });
@@ -6512,22 +6516,22 @@ var XJS = (function(exports) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "isClientArea", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this.getValue().then((val) => {
           if (!(val instanceof XML)) {
-            resolve2(false);
+            resolve(false);
           } else {
             const _value = JSON$1.parse(val);
-            resolve2(_value["wclient"] === "1");
+            resolve(_value["wclient"] === "1");
           }
         });
       });
     }
-    setClientArea(value2) {
+    setClientArea(value) {
       if (this._isItemCall) {
         Logger.warn("sourceWarning", "setClientArea", true);
       }
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this.getValue().then((val) => {
           let _config = new JSON$1();
           if (!(val instanceof XML)) {
@@ -6543,9 +6547,9 @@ var XJS = (function(exports) {
           } else {
             _config = JSON$1.parse(val);
           }
-          _config["wclient"] = value2 ? "1" : "0";
+          _config["wclient"] = value ? "1" : "0";
           this.setValue(XML.parseJSON(_config)).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         });
       });
@@ -6570,8 +6574,8 @@ var XJS = (function(exports) {
      * ```
      */
     static getFileContent(path) {
-      return new Promise((resolve2) => {
-        resolve2(exec("GetFileContent", path));
+      return new Promise((resolve) => {
+        resolve(exec("GetFileContent", path));
       });
     }
     /**
@@ -6591,9 +6595,9 @@ var XJS = (function(exports) {
      * ```
      */
     static getWebContent(url) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("GetWebContent", url, (encoded) => {
-          resolve2(encoded);
+          resolve(encoded);
         });
       });
     }
@@ -6604,9 +6608,9 @@ var XJS = (function(exports) {
      *
      */
     static openUrl(url) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("OpenUrl", url).then((res) => {
-          resolve2(res);
+          resolve(res);
         });
       });
     }
@@ -6641,9 +6645,9 @@ var XJS = (function(exports) {
      * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
      */
     static openFileDialog(optionBag, filter) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else {
           let flags = 0;
           if (optionBag !== void 0 && optionBag !== null) {
@@ -6667,9 +6671,9 @@ var XJS = (function(exports) {
           }
           exec("OpenFileDialogAsync", null, null, String(flags), filterString, (path) => {
             if (path !== "null") {
-              resolve2(path.split("|"));
+              resolve(path.split("|"));
             } else {
-              reject2(Error("File selection cancelled."));
+              reject(Error("File selection cancelled."));
             }
           });
         }
@@ -6693,9 +6697,9 @@ var XJS = (function(exports) {
      * units of 10^-7 seconds.
      */
     static getVideoDuration(file) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else {
           if (typeof file !== "undefined") {
             if (Remote.remoteType === "remote") {
@@ -6706,7 +6710,7 @@ var XJS = (function(exports) {
               if (IO._remoteCallback[file] === void 0) {
                 IO._remoteCallback[file] = [];
               }
-              IO._remoteCallback[file].push({ resolve: resolve2, reject: reject2 });
+              IO._remoteCallback[file].push({ resolve, reject });
               Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
             } else if (Remote.remoteType === "proxy") {
               if (IO._proxyCallback[file[0]] === void 0) {
@@ -6718,17 +6722,17 @@ var XJS = (function(exports) {
               if (IO._callback[file] === void 0) {
                 IO._callback[file] = [];
               }
-              IO._callback[file].push({ resolve: resolve2, reject: reject2 });
+              IO._callback[file].push({ resolve, reject });
               exec("GetVideoDuration", file);
             }
           } else {
-            reject2(Error("No file indicated."));
+            reject(Error("No file indicated."));
           }
         }
       });
     }
     static _finalCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const result = JSON.parse(decodeURIComponent(message));
         if (result["result"] !== void 0) {
           IO._remoteCallback[result["file"]].shift().resolve(result["result"]);
@@ -6778,7 +6782,7 @@ var XJS = (function(exports) {
       this._sceneId = sceneId;
     }
     getVideoNowPlaying() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getVideoNowPlaying", true);
           this._checkPromise = Item$1.get("prop:srcitem", this._id);
@@ -6792,14 +6796,14 @@ var XJS = (function(exports) {
         }
         this._checkPromise.then((playlist) => {
           const _playlist = String(playlist).slice(0, playlist.indexOf("*"));
-          resolve2(_playlist);
+          resolve(_playlist);
         });
       });
     }
-    setVideoNowPlaying(value2) {
+    setVideoNowPlaying(value) {
       let file;
       let _playlist;
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "setVideoNowPlaying", true);
           this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
@@ -6818,23 +6822,23 @@ var XJS = (function(exports) {
           }
           return _playlist;
         }).then((list) => {
-          if (typeof value2 === "string") {
-            if (_playlist.indexOf(value2) === -1) {
-              reject2(Error("File not found on Playlist."));
+          if (typeof value === "string") {
+            if (_playlist.indexOf(value) === -1) {
+              reject(Error("File not found on Playlist."));
             } else {
-              const index = _playlist.indexOf(value2);
+              const index = _playlist.indexOf(value);
               file = _playlist[index] + "*" + index;
               Item$1.set("prop:srcitem", file, this._id).then((fileplaylist) => {
-                resolve2(this);
+                resolve(this);
               });
             }
-          } else if (typeof value2 === "number" && value2 <= _playlist.length) {
-            file = _playlist[value2] + "*" + value2;
+          } else if (typeof value === "number" && value <= _playlist.length) {
+            file = _playlist[value] + "*" + value;
             Item$1.set("prop:srcitem", file, this._id).then(function(fileplaylist) {
-              resolve2(this);
+              resolve(this);
             });
           } else {
-            reject2(
+            reject(
               Error(
                 "Invalid parameter. Value can only be either filename string or its index equivalent in the VideoPlaylist files array"
               )
@@ -6844,7 +6848,7 @@ var XJS = (function(exports) {
       });
     }
     getVideoPlaylistSources() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "getVideoPlaylistSources", true);
           this._checkPromise = Item$1.get("prop:FilePlaylist", this._id);
@@ -6861,7 +6865,7 @@ var XJS = (function(exports) {
           for (var i = 0; i < _playlist.length; i++) {
             _playlist[i] = _playlist[i].slice(0, _playlist[i].indexOf("*"));
           }
-          resolve2(_playlist);
+          resolve(_playlist);
         });
       });
     }
@@ -6873,7 +6877,7 @@ var XJS = (function(exports) {
       const filePromises = fileItems.map((filename) => {
         return IO.getVideoDuration(filename);
       });
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Promise.all(filePromises).then((duration) => {
           for (var i = 0; i < fileItems.length; i++) {
             if (fileString === void 0) {
@@ -6899,23 +6903,23 @@ var XJS = (function(exports) {
           return fileString;
         }).then((fileString2) => {
           Item$1.set("prop:FilePlaylist", fileString2, this._id).then((fileplaylist) => {
-            resolve2(this);
+            resolve(this);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
     isSourceAvailable() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._isItemCall) {
           Logger.warn("sourceWarning", "isSourceAvailable", true);
           Item$1.get("prop:itemavail", this._id).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         } else {
           Item$1.wrapGet("prop:itemavail", this._srcId, this._id, this._updateId.bind(this)).then((val) => {
-            resolve2(val === "1");
+            resolve(val === "1");
           });
         }
       });
@@ -6957,83 +6961,83 @@ var XJS = (function(exports) {
     return srcType;
   }
   class ItemLayout {
-    _getCanvasAndZRotate(value2) {
+    _getCanvasAndZRotate(value) {
       var rotationObject = {};
-      if (value2 >= -180 && value2 <= -135) {
+      if (value >= -180 && value <= -135) {
         rotationObject["canvasRotate"] = 180;
-        rotationObject["zRotate"] = value2 + 180;
+        rotationObject["zRotate"] = value + 180;
         rotationObject["orientation"] = "landscape";
-      } else if (value2 > -135 && value2 < -45) {
+      } else if (value > -135 && value < -45) {
         rotationObject["canvasRotate"] = 270;
-        rotationObject["zRotate"] = value2 + 90;
+        rotationObject["zRotate"] = value + 90;
         rotationObject["orientation"] = "portrait";
-      } else if (value2 >= -45 && value2 <= 45) {
+      } else if (value >= -45 && value <= 45) {
         rotationObject["canvasRotate"] = 0;
-        rotationObject["zRotate"] = value2;
+        rotationObject["zRotate"] = value;
         rotationObject["orientation"] = "landscape";
-      } else if (value2 > 45 && value2 < 135) {
+      } else if (value > 45 && value < 135) {
         rotationObject["canvasRotate"] = 90;
-        rotationObject["zRotate"] = value2 - 90;
+        rotationObject["zRotate"] = value - 90;
         rotationObject["orientation"] = "portrait";
-      } else if (value2 >= 135 && value2 <= 180) {
+      } else if (value >= 135 && value <= 180) {
         rotationObject["canvasRotate"] = 180;
-        rotationObject["zRotate"] = value2 - 180;
+        rotationObject["zRotate"] = value - 180;
         rotationObject["orientation"] = "landscape";
       }
       return rotationObject;
     }
-    _adjustRotation(value2) {
-      if (value2 > 180) {
-        value2 -= 360;
-      } else if (value2 < -180) {
-        value2 += 360;
+    _adjustRotation(value) {
+      if (value > 180) {
+        value -= 360;
+      } else if (value < -180) {
+        value += 360;
       }
-      return value2;
+      return value;
     }
     isKeepAspectRatio() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:keep_ar", this._id).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setKeepAspectRatio(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:keep_ar", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setKeepAspectRatio(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:keep_ar", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
     isPositionLocked() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:lockmove", this._id).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setPositionLocked(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:lockmove", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setPositionLocked(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:lockmove", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
     isEnhancedResizeEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:mipmaps", this._id).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setEnhancedResizeEnabled(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:mipmaps", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setEnhancedResizeEnabled(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:mipmaps", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
     getPosition(output = 0) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get(`prop:pos:${output}`, this._id).then((val) => {
           var [left, top, right, bottom] = String(val).split(",");
           this.position = Rectangle.fromCoordinates(
@@ -7042,83 +7046,83 @@ var XJS = (function(exports) {
             Number(right),
             Number(bottom)
           );
-          resolve2(this.position);
+          resolve(this.position);
         });
       });
     }
-    setPosition(value2, output = 0) {
-      return new Promise((resolve2, reject2) => {
+    setPosition(value, output = 0) {
+      return new Promise((resolve, reject) => {
         try {
-          Item$1.set(`prop:pos:${output}`, value2.toCoordinateString(), this._id).then(() => {
-            resolve2(this);
+          Item$1.set(`prop:pos:${output}`, value.toCoordinateString(), this._id).then(() => {
+            resolve(this);
           });
         } catch (err) {
-          reject2(err);
+          reject(err);
         }
       });
     }
     getRotateY() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:rotate_y", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setRotateY(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
+    setRotateY(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -360 || value > 360) {
+          reject(Error("Invalid value. Min: -360, Max: 360"));
         } else {
-          Item$1.set("prop:rotate_y", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:rotate_y", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getRotateX() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:rotate_x", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setRotateX(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
+    setRotateX(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -360 || value > 360) {
+          reject(Error("Invalid value. Min: -360, Max: 360"));
         } else {
-          Item$1.set("prop:rotate_x", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:rotate_x", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getRotateZ() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:rotate_z", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setRotateZ(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -360 || value2 > 360) {
-          reject2(Error("Invalid value. Min: -360, Max: 360"));
+    setRotateZ(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -360 || value > 360) {
+          reject(Error("Invalid value. Min: -360, Max: 360"));
         } else {
-          Item$1.set("prop:rotate_z", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:rotate_z", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getCropping() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var cropObject = {};
         Item$1.get("prop:crop", this._id).then((val) => {
           var [left, top, right, bottom] = String(val).split(",");
@@ -7126,52 +7130,52 @@ var XJS = (function(exports) {
           cropObject["top"] = Number(top);
           cropObject["right"] = Number(right);
           cropObject["bottom"] = Number(bottom);
-          resolve2(cropObject);
+          resolve(cropObject);
         });
       });
     }
-    setCropping(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (Object.hasOwn(value2, "top") && Object.hasOwn(value2, "left") && Object.hasOwn(value2, "right") && Object.hasOwn(value2, "bottom")) {
+    setCropping(value) {
+      return new Promise((resolve, reject) => {
+        if (Object.hasOwn(value, "top") && Object.hasOwn(value, "left") && Object.hasOwn(value, "right") && Object.hasOwn(value, "bottom")) {
           Item$1.set(
             "prop:crop",
-            value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6),
+            value["left"].toFixed(6) + "," + value["top"].toFixed(6) + "," + value["right"].toFixed(6) + "," + value["bottom"].toFixed(6),
             this._id
           ).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
-          reject2(
+          reject(
             Error("Error setting cropping, insufficient properties (left, top, right, bottom)")
           );
         }
       });
     }
     getCanvasRotate() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:rotate_canvas", this._id).then((val) => {
-          var value2 = Number(val);
-          if ([0, 90, 180, 270].indexOf(value2) < 0) {
-            resolve2(0);
+          var value = Number(val);
+          if ([0, 90, 180, 270].indexOf(value) < 0) {
+            resolve(0);
           } else {
-            resolve2(value2);
+            resolve(value);
           }
         });
       });
     }
-    setCanvasRotate(value2) {
-      return new Promise((resolve2, reject2) => {
-        if ([0, 90, 180, 270].indexOf(value2) < 0) {
-          reject2(Error("Invalid value. Only possible values are 0, 90, 180 and 270"));
+    setCanvasRotate(value) {
+      return new Promise((resolve, reject) => {
+        if ([0, 90, 180, 270].indexOf(value) < 0) {
+          reject(Error("Invalid value. Only possible values are 0, 90, 180 and 270"));
         } else {
-          Item$1.set("prop:rotate_canvas", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:rotate_canvas", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getEnhancedRotate() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var rotateZ;
         var rotateCanvas;
         var rotateValue;
@@ -7181,19 +7185,19 @@ var XJS = (function(exports) {
         }).then((val) => {
           rotateCanvas = Number(val);
           rotateValue = this._adjustRotation(rotateCanvas + rotateZ);
-          resolve2(rotateValue);
+          resolve(rotateValue);
         });
       });
     }
-    setEnhancedRotate(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -180 || value2 > 180) {
-          reject2(Error("Invalid value. Min: -180, Max: 180"));
+    setEnhancedRotate(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -180 || value > 180) {
+          reject(Error("Invalid value. Min: -180, Max: 180"));
         } else {
           var formerObject;
-          var valueObject = this._getCanvasAndZRotate(Number(value2));
+          var valueObject = this._getCanvasAndZRotate(Number(value));
           this.getEnhancedRotate().then((val) => {
             formerObject = this._getCanvasAndZRotate(Number(val));
             return Item$1.set("prop:rotate_z", String(valueObject["zRotate"]), this._id);
@@ -7251,18 +7255,18 @@ var XJS = (function(exports) {
               }).then((val) => {
                 return Item$1.set("prop:pos", val, this._id);
               }).then(() => {
-                resolve2(this);
+                resolve(this);
               });
             } else {
-              resolve2(this);
+              resolve(this);
             }
           });
         }
       });
     }
-    setCroppingEnhanced(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (Object.hasOwn(value2, "top") && Object.hasOwn(value2, "left") && Object.hasOwn(value2, "right") && Object.hasOwn(value2, "bottom")) {
+    setCroppingEnhanced(value) {
+      return new Promise((resolve, reject) => {
+        if (Object.hasOwn(value, "top") && Object.hasOwn(value, "left") && Object.hasOwn(value, "right") && Object.hasOwn(value, "bottom")) {
           var originalWidth;
           var originalHeight;
           var outputResolution;
@@ -7462,10 +7466,10 @@ var XJS = (function(exports) {
                 }
               }
             }
-            var leftCrop = value2["left"];
-            var topCrop = value2["top"];
-            var rightCrop = value2["right"];
-            var bottomCrop = value2["bottom"];
+            var leftCrop = value["left"];
+            var topCrop = value["top"];
+            var rightCrop = value["right"];
+            var bottomCrop = value["bottom"];
             var leftPosition = parseFloat(preCropPosition[0]);
             var topPosition = parseFloat(preCropPosition[1]);
             var rightPosition = parseFloat(preCropPosition[2]);
@@ -7496,7 +7500,7 @@ var XJS = (function(exports) {
             }
             Item$1.set(
               "prop:crop",
-              value2["left"].toFixed(6) + "," + value2["top"].toFixed(6) + "," + value2["right"].toFixed(6) + "," + value2["bottom"].toFixed(6),
+              value["left"].toFixed(6) + "," + value["top"].toFixed(6) + "," + value["right"].toFixed(6) + "," + value["bottom"].toFixed(6),
               this._id
             ).then(() => {
               return Item$1.set(
@@ -7505,32 +7509,32 @@ var XJS = (function(exports) {
                 this._id
               );
             }).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           });
         } else {
-          reject2(
+          reject(
             Error("Error setting cropping, insufficient properties (left, top, right, bottom)")
           );
         }
       });
     }
     bringForward() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.set("prop:zorder", "+", this._id).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     sendBackward() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.set("prop:zorder", "-", this._id).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     bringToFront() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let itemsLength = 0;
         let itemIndex = -1;
         let forwardStep = 0;
@@ -7557,13 +7561,13 @@ var XJS = (function(exports) {
             promiseArray.push(zorderPromise(this._id));
           }
           Promise.all(promiseArray).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         });
       });
     }
     sendToBack() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let itemsLength = 0;
         let itemIndex = -1;
         let backwardStep = 0;
@@ -7590,7 +7594,7 @@ var XJS = (function(exports) {
             promiseArray.push(zorderPromise(this._id));
           }
           Promise.all(promiseArray).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         });
       });
@@ -7735,8 +7739,8 @@ var XJS = (function(exports) {
      * `xjs.Item.getCurrentSource()` -> `source.getItemList()`
      */
     static getItemList() {
-      return new Promise((resolve2) => {
-        resolve2(Source.getItemList());
+      return new Promise((resolve) => {
+        resolve(Source.getItemList());
       });
     }
     /**
@@ -7753,7 +7757,7 @@ var XJS = (function(exports) {
      * ```
      */
     getFPS() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let initial;
         Item$1.get("stats:frames", this._id).then((frames) => {
           initial = frames === "null" || frames === "" ? 0 : Number(frames);
@@ -7764,7 +7768,7 @@ var XJS = (function(exports) {
           return Item$1.get("stats:frames", this._id);
         }).then((frames) => {
           const final = frames === "null" || frames === "" ? 0 : Number(frames);
-          resolve2(final - initial);
+          resolve(final - initial);
         });
       });
     }
@@ -7785,7 +7789,7 @@ var XJS = (function(exports) {
      * ```
      */
     getView() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:viewid", this._id).then((viewId) => {
           let view = 0;
           if (viewId === "1") {
@@ -7793,10 +7797,10 @@ var XJS = (function(exports) {
             App$1.getGlobalProperty("preview_editor_opened").then((result) => {
               preview = result;
               view = preview === "1" ? 1 : 2;
-              resolve2(view);
+              resolve(view);
             });
           } else {
-            resolve2(view);
+            resolve(view);
           }
         });
       });
@@ -7815,11 +7819,11 @@ var XJS = (function(exports) {
      * ```
      */
     getSceneId() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (String(this._sceneId) === "i12") {
-          resolve2("i12");
+          resolve("i12");
         } else {
-          resolve2(Number(this._sceneId) + 1);
+          resolve(Number(this._sceneId) + 1);
         }
       });
     }
@@ -7874,7 +7878,7 @@ var XJS = (function(exports) {
      * ```
      */
     duplicate(options) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         let cmd = "additem";
         const getItem = (res) => {
           return new Promise((innerResolve, innerReject) => {
@@ -7912,9 +7916,9 @@ var XJS = (function(exports) {
         }).then((result) => {
           return getItem(result);
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -7936,9 +7940,9 @@ var XJS = (function(exports) {
      *
      */
     unlink() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.set("prop:globalsrc", "0", this._id).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -7953,9 +7957,9 @@ var XJS = (function(exports) {
      * ```
      */
     remove() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.set("remove", "", this._id).then(() => {
-          resolve2(true);
+          resolve(true);
         });
       });
     }
@@ -7975,13 +7979,13 @@ var XJS = (function(exports) {
      * ```
      */
     getSource() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Item$1.get("config", this._id).then((config) => {
           const item = JSON$1.parse(config);
           const srcType = SourceTypeResolve(item);
-          resolve2(srcType);
+          resolve(srcType);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -7999,13 +8003,13 @@ var XJS = (function(exports) {
      * ```
      */
     isChildItem() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Scene.searchScenesByItemId(this._id).then((scene) => {
           return scene.getSceneIndex();
         }).then((sceneIndex) => {
           return App$1.get(`scenefindgroup:${sceneIndex}:${this._id}`);
         }).then((groupID) => {
-          resolve2(groupID !== "" && groupID !== null);
+          resolve(groupID !== "" && groupID !== null);
         });
       });
     }
@@ -8024,21 +8028,21 @@ var XJS = (function(exports) {
      * ```
      */
     getParentItem() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene.searchScenesByItemId(this._id).then((scene) => {
           return scene.getSceneIndex();
         }).then((sceneIndex) => {
           return App$1.get(`scenefindgroup:${sceneIndex}:${this._id}`);
         }).then((groupID) => {
           if (groupID.trim() === "" || groupID === null) {
-            reject2("Item is not a child item or non-existent");
+            reject("Item is not a child item or non-existent");
           } else {
             return Scene.searchItemsById(groupID);
           }
         }).then((groupItem) => {
-          resolve2(groupItem);
+          resolve(groupItem);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -8150,281 +8154,281 @@ var XJS = (function(exports) {
   })(ChromaAntiAliasLevel || {});
   class ItemChroma {
     isChromaEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromakey", this._id).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setChromaEnabled(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "boolean") {
-          reject2(TypeError("Parameter should be boolean."));
+    setChromaEnabled(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "boolean") {
+          reject(TypeError("Parameter should be boolean."));
         } else {
-          Item$1.set("prop:key_chromakey", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromakey", value ? "1" : "0", this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getKeyingType() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromakeytype", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setKeyingType(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a KeyingType value as the parameter."));
-        } else if (value2 < 0 || value2 > 2) {
-          reject2(RangeError("Use a KeyingType value as the parameter."));
+    setKeyingType(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a KeyingType value as the parameter."));
+        } else if (value < 0 || value > 2) {
+          reject(RangeError("Use a KeyingType value as the parameter."));
         } else {
-          Item$1.set("prop:key_chromakeytype", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromakeytype", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaAntiAliasLevel() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_antialiasing", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaAntiAliasLevel(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a ChromaAntiAliasLevel value as the parameter."));
-        } else if (value2 < 0 || value2 > 2) {
-          reject2(RangeError("Use a ChromaAntiAliasLevel value as the parameter."));
+    setChromaAntiAliasLevel(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a ChromaAntiAliasLevel value as the parameter."));
+        } else if (value < 0 || value > 2) {
+          reject(RangeError("Use a ChromaAntiAliasLevel value as the parameter."));
         } else {
-          Item$1.set("prop:key_antialiasing", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_antialiasing", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     // CHROMA LEGACY MODE FUNCTIONS
     getChromaLegacyBrightness() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromabr", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaLegacyBrightness(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaLegacyBrightness(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromabr", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromabr", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaLegacySaturation() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromasat", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaLegacySaturation(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaLegacySaturation(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromasat", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromasat", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaLegacyHue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromahue", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaLegacyHue(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 180) {
-          reject2(RangeError("Valid value is an integer from 0-180."));
+    setChromaLegacyHue(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 180) {
+          reject(RangeError("Valid value is an integer from 0-180."));
         } else {
-          Item$1.set("prop:key_chromahue", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromahue", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaLegacyThreshold() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromarang", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaLegacyThreshold(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaLegacyThreshold(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromarang", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromarang", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaLegacyAlphaSmoothing() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromaranga", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaLegacyAlphaSmoothing(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaLegacyAlphaSmoothing(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromaranga", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromaranga", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     // CHROMA RGB KEY FUNCTIONS
     getChromaRGBKeyPrimaryColor() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromargbkeyprimary", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaRGBKeyPrimaryColor(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a ChromaPrimaryColors value as the parameter."));
-        } else if (value2 < 0 || value2 > 2) {
-          reject2(RangeError("Use a ChromaPrimaryColors value as the parameter."));
+    setChromaRGBKeyPrimaryColor(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a ChromaPrimaryColors value as the parameter."));
+        } else if (value < 0 || value > 2) {
+          reject(RangeError("Use a ChromaPrimaryColors value as the parameter."));
         } else {
-          Item$1.set("prop:key_chromargbkeyprimary", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromargbkeyprimary", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaRGBKeyThreshold() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromargbkeythresh", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaRGBKeyThreshold(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaRGBKeyThreshold(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromargbkeythresh", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromargbkeythresh", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaRGBKeyExposure() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_chromargbkeybalance", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaRGBKeyExposure(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaRGBKeyExposure(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_chromargbkeybalance", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_chromargbkeybalance", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     // CHROMA COLOR KEY FUNCTIONS
     getChromaColorKeyThreshold() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_colorrang", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaColorKeyThreshold(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaColorKeyThreshold(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_colorrang", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_colorrang", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaColorKeyExposure() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_colorranga", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setChromaColorKeyExposure(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Valid value is an integer from 0-255."));
+    setChromaColorKeyExposure(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Valid value is an integer from 0-255."));
         } else {
-          Item$1.set("prop:key_colorranga", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_colorranga", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getChromaColorKeyColor() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_colorrgb", this._id).then((val) => {
           const color = Color.fromBGRString(val);
-          resolve2(color);
+          resolve(color);
         });
       });
     }
-    setChromaColorKeyColor(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (!(value2 instanceof Color)) {
-          reject2(TypeError("Use a Color object as the parameter."));
+    setChromaColorKeyColor(value) {
+      return new Promise((resolve, reject) => {
+        if (!(value instanceof Color)) {
+          reject(TypeError("Use a Color object as the parameter."));
         } else {
-          Item$1.set("prop:key_colorrgb", String(value2.getIbgr()), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:key_colorrgb", String(value.getIbgr()), this._id).then(() => {
+            resolve(this);
           });
         }
       });
@@ -8432,107 +8436,107 @@ var XJS = (function(exports) {
   }
   class ItemColor {
     getTransparency() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:alpha", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setTransparency(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 255) {
-          reject2(RangeError("Transparency may only be in the range 0-255."));
+    setTransparency(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 255) {
+          reject(RangeError("Transparency may only be in the range 0-255."));
         } else {
-          Item$1.set("prop:alpha", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:alpha", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getBrightness() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_brightness", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setBrightness(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Brightness may only be in the range -100 to 100."));
+    setBrightness(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -100 || value > 100) {
+          reject(RangeError("Brightness may only be in the range -100 to 100."));
         } else {
-          Item$1.set("prop:cc_brightness", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:cc_brightness", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getContrast() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_contrast", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setContrast(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Contrast may only be in the range -100 to 100."));
+    setContrast(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -100 || value > 100) {
+          reject(RangeError("Contrast may only be in the range -100 to 100."));
         } else {
-          Item$1.set("prop:cc_contrast", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:cc_contrast", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getHue() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_hue", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setHue(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -180 || value2 > 180) {
-          reject2(RangeError("Contrast may only be in the range -180 to 180."));
+    setHue(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -180 || value > 180) {
+          reject(RangeError("Contrast may only be in the range -180 to 180."));
         } else {
-          Item$1.set("prop:cc_hue", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:cc_hue", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getSaturation() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_saturation", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setSaturation(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Saturation may only be in the range -100 to 100"));
+    setSaturation(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < -100 || value > 100) {
+          reject(RangeError("Saturation may only be in the range -100 to 100"));
         } else {
-          Item$1.set("prop:cc_saturation", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:cc_saturation", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getBorderColor() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:border", this._id).then((val) => {
           var color;
           if (val === "0") {
@@ -8541,41 +8545,41 @@ var XJS = (function(exports) {
             var bgr = Number(val) - 2147483648;
             color = Color.fromBGRInt(bgr);
           }
-          resolve2(color);
+          resolve(color);
         });
       });
     }
-    setBorderColor(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (!(value2 instanceof Color)) {
-          reject2(TypeError("Use a Color object as the parameter."));
+    setBorderColor(value) {
+      return new Promise((resolve, reject) => {
+        if (!(value instanceof Color)) {
+          reject(TypeError("Use a Color object as the parameter."));
         } else {
           var colorString;
-          if (value2.isTransparent()) {
+          if (value.isTransparent()) {
             colorString = "0";
           } else {
-            colorString = String(value2.getIbgr() - 2147483648);
+            colorString = String(value.getIbgr() - 2147483648);
           }
           Item$1.set("prop:border", colorString, this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     isFullDynamicColorRange() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_dynamicrange", this._id).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
-    setFullDynamicColorRange(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "boolean") {
-          reject2(TypeError("Parameter should be boolean."));
+    setFullDynamicColorRange(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "boolean") {
+          reject(TypeError("Parameter should be boolean."));
         } else {
-          Item$1.set("prop:cc_dynamicrange", value2 ? "1" : "0", this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:cc_dynamicrange", value ? "1" : "0", this._id).then(() => {
+            resolve(this);
           });
         }
       });
@@ -8631,10 +8635,10 @@ var XJS = (function(exports) {
       this.LUT = new Filter("LUT");
     }
     constructor(key) {
-      var value2 = Filter._filterMap[key];
-      if (typeof value2 !== "undefined") {
+      var value = Filter._filterMap[key];
+      if (typeof value !== "undefined") {
         this._key = key;
-        this._value = value2;
+        this._value = value;
       } else {
         this._key = key;
         this._value = key.toLowerCase();
@@ -8672,9 +8676,9 @@ var XJS = (function(exports) {
      * ```
      */
     static getFilters() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var filters = Object.keys(Filter._filterMap).map((key) => new Filter(key));
-        resolve2(filters);
+        resolve(filters);
       });
     }
   }
@@ -8700,20 +8704,20 @@ var XJS = (function(exports) {
   };
   const _DEFAULT_EDGE_EFFECT_CONFIG = "0,1.00,1.00,1.00,1|1,0,0,0,1|2,0,0,0,0|3,1.00,1.00,1.00,1";
   class ItemEffect {
-    _convertToHex(value2) {
-      var hex = parseInt(String(Number(value2) * 255)).toString(16);
+    _convertToHex(value) {
+      var hex = parseInt(String(Number(value) * 255)).toString(16);
       if (hex.length < 2) {
         hex = "0" + hex;
       }
       return hex;
     }
-    _getEdgeEffectValue(value2) {
-      return new Promise((resolve2, reject2) => {
+    _getEdgeEffectValue(value) {
+      return new Promise((resolve, reject) => {
         Item$1.get("prop:edgeeffectcfg", this._id).then((val) => {
           if (val !== "" && val !== null) {
             var edgeConfig = val.split("|");
-            var arrayIndex = value2["arrayIndex"];
-            var individualIndex = value2["indIndex"];
+            var arrayIndex = value["arrayIndex"];
+            var individualIndex = value["indIndex"];
             if (typeof edgeConfig[arrayIndex] !== "undefined") {
               var cfgArray = edgeConfig[arrayIndex].split(",");
               if (Array.isArray(individualIndex)) {
@@ -8722,21 +8726,21 @@ var XJS = (function(exports) {
                   var config = individualIndex[i];
                   newArray.push(cfgArray[config]);
                 }
-                resolve2(newArray);
+                resolve(newArray);
               } else {
-                resolve2(cfgArray[individualIndex]);
+                resolve(cfgArray[individualIndex]);
               }
             } else {
-              reject2(RangeError("Invalid parameter. Array index given not included."));
+              reject(RangeError("Invalid parameter. Array index given not included."));
             }
           } else {
-            reject2(ReferenceError("Edge effect configuration not set."));
+            reject(ReferenceError("Edge effect configuration not set."));
           }
         });
       });
     }
-    _setEdgeEffectValue(value2) {
-      return new Promise((resolve2, reject2) => {
+    _setEdgeEffectValue(value) {
+      return new Promise((resolve, reject) => {
         Item$1.get("prop:edgeeffectcfg", this._id).then((val) => {
           var edgeConfig = [];
           var edgeEffectString;
@@ -8750,9 +8754,9 @@ var XJS = (function(exports) {
           for (var i = 0; i < edgeArrayLength; ++i) {
             edgeConfig.push(edgeArray[i].split(","));
           }
-          var arrayIndex = value2["arrayIndex"];
-          var individualIndex = value2["indIndex"];
-          var setValue = value2["value"];
+          var arrayIndex = value["arrayIndex"];
+          var individualIndex = value["indIndex"];
+          var setValue = value["value"];
           if (typeof edgeConfig[arrayIndex] !== "undefined") {
             var oldArray = edgeConfig[arrayIndex];
             if (Array.isArray(individualIndex)) {
@@ -8772,431 +8776,431 @@ var XJS = (function(exports) {
               }
             }
             Item$1.set("prop:edgeeffectcfg", edgeEffectStringValue, this._id).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
-            reject2(RangeError("Invalid parameter. Array index given not included."));
+            reject(RangeError("Invalid parameter. Array index given not included."));
           }
         });
       });
     }
-    _getRGBArray(value2) {
-      var hex = value2.getRgb();
+    _getRGBArray(value) {
+      var hex = value.getRgb();
       var r = parseInt(hex.substring(0, 2), 16) / 255;
       var g = parseInt(hex.substring(2, 4), 16) / 255;
       var b = parseInt(hex.substring(4), 16) / 255;
       return [r, g, b];
     }
     getMaskEffect() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:edgeeffectid", this._id).then((val) => {
           if (val === "border") {
-            resolve2(
+            resolve(
               1
               /* SHAPE */
             );
           } else {
             Item$1.get("prop:edgeeffectmaskmode", this._id).then((val2) => {
               if (val2 === "1" || val2 === "3") {
-                resolve2(
+                resolve(
                   2
                   /* FILE_BIND_TO_SOURCE */
                 );
               } else if (val2 === "2" || val2 === "4") {
-                resolve2(
+                resolve(
                   3
                   /* FILE_BIND_TO_STAGE */
                 );
               } else {
-                resolve2(_DEFAULT_EFFECT_VALUES["MASK_EFFECT"]);
+                resolve(_DEFAULT_EFFECT_VALUES["MASK_EFFECT"]);
               }
             });
           }
         });
       });
     }
-    setMaskEffect(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a MaskEffect value as the parameter."));
-        } else if (value2 < 0 || value2 > 3) {
-          reject2(RangeError("Use a MaskEffect value as the parameter."));
+    setMaskEffect(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a MaskEffect value as the parameter."));
+        } else if (value < 0 || value > 3) {
+          reject(RangeError("Use a MaskEffect value as the parameter."));
         } else {
-          if (value2 === 1) {
+          if (value === 1) {
             Item$1.set("prop:edgeeffectmaskmode", "0", this._id).then(() => {
               return Item$1.set("prop:edgeeffectid", "border", this._id);
             }).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           } else {
             Item$1.set("prop:edgeeffectid", "", this._id).then(() => {
-              if (value2 === 2 || value2 === 3) {
-                value2 = value2 - 1;
+              if (value === 2 || value === 3) {
+                value = value - 1;
               } else {
-                value2 = 0;
+                value = 0;
               }
-              return Item$1.set("prop:edgeeffectmaskmode", String(value2), this._id);
+              return Item$1.set("prop:edgeeffectmaskmode", String(value), this._id);
             }).then(() => {
-              resolve2(this);
+              resolve(this);
             });
           }
         }
       });
     }
     getBorderEffectRadius() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 1;
         parameterObject["indIndex"] = 1;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["BORDER_RADIUS"]);
+          resolve(_DEFAULT_EFFECT_VALUES["BORDER_RADIUS"]);
         });
       });
     }
-    setBorderEffectRadius(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setBorderEffectRadius(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 1;
           parameterObject["indIndex"] = 1;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getBorderEffectThickness() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 1;
         parameterObject["indIndex"] = 2;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["BORDER_THICKNESS"]);
+          resolve(_DEFAULT_EFFECT_VALUES["BORDER_THICKNESS"]);
         });
       });
     }
-    setBorderEffectThickness(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setBorderEffectThickness(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 1;
           parameterObject["indIndex"] = 2;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getBorderEffectOpacity() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 0;
         parameterObject["indIndex"] = 4;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["BORDER_OPACITY"]);
+          resolve(_DEFAULT_EFFECT_VALUES["BORDER_OPACITY"]);
         });
       });
     }
-    setBorderEffectOpacity(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setBorderEffectOpacity(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 0;
           parameterObject["indIndex"] = 4;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getBorderEffectColor() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 0;
         parameterObject["indIndex"] = [1, 2, 3];
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(
+          resolve(
             Color.fromRGBString(
               "#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])
             )
           );
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["BORDER_COLOR"]);
+          resolve(_DEFAULT_EFFECT_VALUES["BORDER_COLOR"]);
         });
       });
     }
-    setBorderEffectColor(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (!(value2 instanceof Color)) {
-          reject2(TypeError("Use a Color object as the parameter."));
+    setBorderEffectColor(value) {
+      return new Promise((resolve, reject) => {
+        if (!(value instanceof Color)) {
+          reject(TypeError("Use a Color object as the parameter."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 0;
           parameterObject["indIndex"] = [1, 2, 3];
-          parameterObject["value"] = this._getRGBArray(value2);
+          parameterObject["value"] = this._getRGBArray(value);
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getShadowEffectColor() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 3;
         parameterObject["indIndex"] = [1, 2, 3];
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(
+          resolve(
             Color.fromRGBString(
               "#" + this._convertToHex(val[0]) + this._convertToHex(val[1]) + this._convertToHex(val[2])
             )
           );
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_COLOR"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_COLOR"]);
         });
       });
     }
-    setShadowEffectColor(value2) {
-      return new Promise((resolve2, reject2) => {
+    setShadowEffectColor(value) {
+      return new Promise((resolve, reject) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 3;
         parameterObject["indIndex"] = [1, 2, 3];
-        parameterObject["value"] = this._getRGBArray(value2);
+        parameterObject["value"] = this._getRGBArray(value);
         this._setEdgeEffectValue(parameterObject).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getShadowEffectThickness() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 1;
         parameterObject["indIndex"] = 3;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_THICKNESS"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_THICKNESS"]);
         });
       });
     }
-    setShadowEffectThickness(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setShadowEffectThickness(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 1;
           parameterObject["indIndex"] = 3;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getShadowEffectBlur() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 2;
         parameterObject["indIndex"] = 3;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_BLUR"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_BLUR"]);
         });
       });
     }
-    setShadowEffectBlur(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setShadowEffectBlur(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 2;
           parameterObject["indIndex"] = 3;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getShadowEffectOpacity() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 3;
         parameterObject["indIndex"] = 4;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_OPACITY"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_OPACITY"]);
         });
       });
     }
-    setShadowEffectOpacity(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < 0 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from 0 - 100."));
+    setShadowEffectOpacity(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < 0 || value > 100) {
+          reject(RangeError("Valid value is a number from 0 - 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 3;
           parameterObject["indIndex"] = 4;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getShadowEffectOffsetX() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 2;
         parameterObject["indIndex"] = 1;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_OFFSET_X"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_OFFSET_X"]);
         });
       });
     }
-    setShadowEffectOffsetX(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from -100 to 100."));
+    setShadowEffectOffsetX(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < -100 || value > 100) {
+          reject(RangeError("Valid value is a number from -100 to 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 2;
           parameterObject["indIndex"] = 1;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getShadowEffectOffsetY() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var parameterObject = {};
         parameterObject["arrayIndex"] = 2;
         parameterObject["indIndex"] = 2;
         this._getEdgeEffectValue(parameterObject).then((val) => {
-          resolve2(Number(val) * 100);
+          resolve(Number(val) * 100);
         }).catch((err) => {
-          resolve2(_DEFAULT_EFFECT_VALUES["SHADOW_OFFSET_Y"]);
+          resolve(_DEFAULT_EFFECT_VALUES["SHADOW_OFFSET_Y"]);
         });
       });
     }
-    setShadowEffectOffsetY(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use a number as the parameter."));
-        } else if (value2 < -100 || value2 > 100) {
-          reject2(RangeError("Valid value is a number from -100 to 100."));
+    setShadowEffectOffsetY(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use a number as the parameter."));
+        } else if (value < -100 || value > 100) {
+          reject(RangeError("Valid value is a number from -100 to 100."));
         } else {
           var parameterObject = {};
           parameterObject["arrayIndex"] = 2;
           parameterObject["indIndex"] = 2;
-          parameterObject["value"] = value2 / 100;
+          parameterObject["value"] = value / 100;
           this._setEdgeEffectValue(parameterObject).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     getFileMask() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:edgeeffectmask", this._id).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
-    setFileMask(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:edgeeffectmask", value2, this._id).then(() => {
-          resolve2(this);
+    setFileMask(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:edgeeffectmask", value, this._id).then(() => {
+          resolve(this);
         });
       });
     }
     isFileMaskingGuideVisible() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Item$1.get("prop:edgeeffectmaskmode", this._id).then((val) => {
           if (val === "4" || val === "3") {
-            resolve2(true);
+            resolve(true);
           } else if (val === "2" || val === "1") {
-            resolve2(false);
+            resolve(false);
           } else {
-            reject2(Error("This method is not available if filemasking is not enabled."));
+            reject(Error("This method is not available if filemasking is not enabled."));
           }
         });
       });
     }
-    showFileMaskingGuide(value2) {
-      return new Promise((resolve2, reject2) => {
+    showFileMaskingGuide(value) {
+      return new Promise((resolve, reject) => {
         Item$1.get("prop:edgeeffectmaskmode", this._id).then((val) => {
           if (val === "1" || val === "3") {
-            Item$1.set("prop:edgeeffectmaskmode", value2 ? "3" : "1", this._id).then(() => {
-              resolve2(this);
+            Item$1.set("prop:edgeeffectmaskmode", value ? "3" : "1", this._id).then(() => {
+              resolve(this);
             });
           } else if (val === "2" || val === "4") {
-            Item$1.set("prop:edgeeffectmaskmode", value2 ? "4" : "2", this._id).then(() => {
-              resolve2(this);
+            Item$1.set("prop:edgeeffectmaskmode", value ? "4" : "2", this._id).then(() => {
+              resolve(this);
             });
           } else {
-            reject2(Error("This method is not available if filemasking is not enabled."));
+            reject(Error("This method is not available if filemasking is not enabled."));
           }
         });
       });
     }
     getFilter() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:effects", this._id).then((val) => {
           try {
             var effectsJXON = JSON$1.parse(val);
-            resolve2(new Filter(effectsJXON["children"][0]["id"]));
+            resolve(new Filter(effectsJXON["children"][0]["id"]));
           } catch (e) {
-            resolve2(Filter.NONE);
+            resolve(Filter.NONE);
           }
         });
       });
     }
-    setFilter(value2, config) {
-      return new Promise((resolve2, reject2) => {
+    setFilter(value, config) {
+      return new Promise((resolve, reject) => {
         config = config ? config : {};
         const intensity = config["intensity"] ? config["intensity"] / 100 : 1;
         const intensityConfig = `0,${intensity},0,0,0`;
-        const filterValue = value2 instanceof Filter ? value2.toString() : value2;
+        const filterValue = value instanceof Filter ? value.toString() : value;
         if (!filterValue || Object.keys(Filter._filterMap).indexOf(filterValue.toUpperCase()) < 0) {
-          reject2(Error("Filter non-existent"));
+          reject(Error("Filter non-existent"));
         } else {
           var configString = "";
           var effectString = "";
@@ -9216,20 +9220,20 @@ var XJS = (function(exports) {
           }
           const effect = `<effects>${effectString}</effects>`;
           Item$1.set("prop:effects", effect, this._id).then(() => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
     }
     removeFilter() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Item$1.set("prop:effects", "<effects/>", this._id).then(() => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
     getFilterConfig() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Item$1.get("prop:effects", this._id).then((val) => {
           const configObj = {};
           try {
@@ -9243,7 +9247,7 @@ var XJS = (function(exports) {
             }
           } catch (e) {
           }
-          resolve2(configObj);
+          resolve(configObj);
         });
       });
     }
@@ -9306,10 +9310,10 @@ var XJS = (function(exports) {
       this.WAVE = new Transition("WAVE");
     }
     constructor(key, setValue = null) {
-      var value2 = Transition._transitionMap[key];
-      if (typeof value2 !== "undefined") {
+      var value = Transition._transitionMap[key];
+      if (typeof value !== "undefined") {
         this._key = key;
-        this._value = value2;
+        this._value = value;
       } else if (key.substring(0, 8) === "stinger:") {
         if (typeof setValue !== "undefined" && setValue !== null) {
           this._key = setValue;
@@ -9366,7 +9370,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getSceneTransitions() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         var transitions = [];
         let transitionString;
         App$1.getGlobalProperty("transitions").then((result) => {
@@ -9380,9 +9384,9 @@ var XJS = (function(exports) {
                   transitions.push(new Transition(transitionObject["Id"], transitionObject["Name"]));
                 }
               }
-              resolve2(transitions);
+              resolve(transitions);
             } else {
-              resolve2(transitions);
+              resolve(transitions);
             }
           } catch (e) {
             throw new Error("Error retrieving available transitions");
@@ -9393,57 +9397,57 @@ var XJS = (function(exports) {
   }
   class ItemTransition {
     isVisible() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:visible", this._id).then((val) => {
-          resolve2(val === "1" ? true : false);
+          resolve(val === "1" ? true : false);
         });
       });
     }
-    setVisible(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:visible", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setVisible(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:visible", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
     getTransition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:transitionid", this._id).then((val) => {
           if (val === "") {
-            resolve2(Transition.NONE);
+            resolve(Transition.NONE);
           } else {
-            resolve2(Transition[val.toUpperCase()]);
+            resolve(Transition[val.toUpperCase()]);
           }
         });
       });
     }
-    setTransition(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (!(value2 instanceof Transition)) {
-          reject2(TypeError("Parameter should be a Transition object."));
+    setTransition(value) {
+      return new Promise((resolve, reject) => {
+        if (!(value instanceof Transition)) {
+          reject(TypeError("Parameter should be a Transition object."));
         } else {
-          Item$1.set("prop:transitionid", value2.toString(), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:transitionid", value.toString(), this._id).then(() => {
+            resolve(this);
           });
         }
       });
     }
     getTransitionTime() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:transitiontime", this._id).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
-    setTransitionTime(value2) {
-      return new Promise((resolve2, reject2) => {
-        if (typeof value2 !== "number") {
-          reject2(TypeError("Use an integer as the parameter."));
-        } else if (value2 < 0 || value2 > 6e4) {
-          reject2(RangeError("Transparency may only be in the range 0 to 60000."));
+    setTransitionTime(value) {
+      return new Promise((resolve, reject) => {
+        if (typeof value !== "number") {
+          reject(TypeError("Use an integer as the parameter."));
+        } else if (value < 0 || value > 6e4) {
+          reject(RangeError("Transparency may only be in the range 0 to 60000."));
         } else {
-          Item$1.set("prop:transitiontime", String(value2), this._id).then(() => {
-            resolve2(this);
+          Item$1.set("prop:transitiontime", String(value), this._id).then(() => {
+            resolve(this);
           });
         }
       });
@@ -9459,10 +9463,10 @@ var XJS = (function(exports) {
      *
      * *Chainable.*
      */
-    setColorOptionsPinned(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:cc_pin", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setColorOptionsPinned(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:cc_pin", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
@@ -9473,9 +9477,9 @@ var XJS = (function(exports) {
      * this camera device on the stage.
      */
     getColorOptionsPinned() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:cc_pin", this._id).then((val) => {
-          resolve2(val === "1" ? true : false);
+          resolve(val === "1" ? true : false);
         });
       });
     }
@@ -9488,10 +9492,10 @@ var XJS = (function(exports) {
      *
      * *Chainable.*
      */
-    setKeyingOptionsPinned(value2) {
-      return new Promise((resolve2) => {
-        Item$1.set("prop:key_pin", value2 ? "1" : "0", this._id).then(() => {
-          resolve2(this);
+    setKeyingOptionsPinned(value) {
+      return new Promise((resolve) => {
+        Item$1.set("prop:key_pin", value ? "1" : "0", this._id).then(() => {
+          resolve(this);
         });
       });
     }
@@ -9502,9 +9506,9 @@ var XJS = (function(exports) {
      * this camera device on the stage.
      */
     getKeyingOptionsPinned() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Item$1.get("prop:key_pin", this._id).then((val) => {
-          resolve2(val === "1" ? true : false);
+          resolve(val === "1" ? true : false);
         });
       });
     }
@@ -9574,63 +9578,63 @@ var XJS = (function(exports) {
   };
   class ItemGroup {
     getItems() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         App$1.getAsList("sceneconfig").then((jsonArray) => {
           const groupItem = findItem(jsonArray, this._id);
           const children = groupItem && groupItem.children[0].children ? groupItem.children[0].children : [];
           const childItems = children.map((item) => ItemTypeResolve(item));
-          resolve2(childItems);
+          resolve(childItems);
         }).catch((err) => {
-          reject2(Error("Group item non-existent"));
+          reject(Error("Group item non-existent"));
         });
       });
     }
     addItems(items) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const itemArrayString = toItemString(items);
         Item$1.get("prop:scene", this._id).then((sceneIndex) => {
           if (sceneIndex === "") {
-            reject2(Error("Item is not a group item or non-existent"));
+            reject(Error("Item is not a group item or non-existent"));
           }
           return App$1.get(`scenecanaddtogroup:${sceneIndex}:${this._id},${itemArrayString}`);
         }).then((canAdd) => {
           if (canAdd === "1") {
             return App$1.callFunc("addtogroup", `${this._id},${itemArrayString}`);
           } else {
-            reject2(Error("One or more items provided cannot be added to the group"));
+            reject(Error("One or more items provided cannot be added to the group"));
           }
         }).then((result) => {
-          resolve2(this);
+          resolve(this);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
     removeItems(items) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const itemArrayString = toItemString(items);
         Item$1.get("prop:scene", this._id).then((sceneIndex) => {
           if (sceneIndex === "") {
-            reject2(Error("Item is not a group item or non-existent"));
+            reject(Error("Item is not a group item or non-existent"));
           }
           return App$1.get(`scenecanremovefromgroup:${sceneIndex}:${this._id},${itemArrayString}`);
         }).then((canRemove) => {
           if (canRemove === "1" || canRemove === "2") {
             return App$1.callFunc("removefromgroup", `${this._id},${itemArrayString}`);
           } else {
-            reject2(Error("One or more items provided cannot be removed from the group"));
+            reject(Error("One or more items provided cannot be removed from the group"));
           }
         }).then((result) => {
-          resolve2(this);
+          resolve(this);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
     unGroup() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.callFunc("removefromgroupall", this._id).then((val) => {
-          resolve2(this);
+          resolve(this);
         });
       });
     }
@@ -9777,7 +9781,7 @@ var XJS = (function(exports) {
       }
     }
     static _initializeScenePoolAsync() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Scene._scenePool = [];
         App$1.getAsList("sceneconfig").then((jsonArr) => {
           if (versionCompare(getVersion()).is.lessThan(minVersion)) {
@@ -9787,7 +9791,7 @@ var XJS = (function(exports) {
               Scene._scenePool[i] = new Scene(i);
             }
             Scene._scenePool.push(new Scene("i12"));
-            resolve2(Scene._maxScenes);
+            resolve(Scene._maxScenes);
           } else {
             let count = 0;
             jsonArr.filter((json) => json["tag"] === "placement").forEach((scene, index) => {
@@ -9795,7 +9799,7 @@ var XJS = (function(exports) {
               Scene._scenePool[index] = new Scene(index, scene["name"], scene["id"]);
             });
             Scene._scenePool.push(new Scene("i12", "i12", "i12"));
-            resolve2(count);
+            resolve(count);
           }
         });
       });
@@ -9812,9 +9816,9 @@ var XJS = (function(exports) {
      * ```
      */
     static getSceneCount() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Scene._initializeScenePoolAsync().then((count) => {
-          resolve2(count);
+          resolve(count);
         });
       });
     }
@@ -9834,27 +9838,27 @@ var XJS = (function(exports) {
      * ** For deprecation, please use getBySceneIndex instead.
      */
     static getById(sceneNum) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           if (sceneNum === "i12") {
             if (Scene._scenePool[cnt]._id === "i12") {
-              resolve2(Scene._scenePool[cnt]);
+              resolve(Scene._scenePool[cnt]);
             } else {
-              reject2(
+              reject(
                 Error("Invalid parameter. Valid range is 1 to total number of available scenes.")
               );
             }
           } else {
             try {
               if (sceneNum > cnt || typeof Scene._scenePool[sceneNum - 1] === "undefined") {
-                reject2(
+                reject(
                   Error("Invalid parameter. Valid range is 1 to total number of available scenes.")
                 );
               } else {
-                resolve2(Scene._scenePool[sceneNum - 1]);
+                resolve(Scene._scenePool[sceneNum - 1]);
               }
             } catch (e) {
-              reject2(Error("Parameter must be a number"));
+              reject(Error("Parameter must be a number"));
             }
           }
         });
@@ -9875,23 +9879,23 @@ var XJS = (function(exports) {
      * ```
      */
     static getBySceneIndex(sceneIndex) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           if (sceneIndex === "i12") {
             if (Scene._scenePool[cnt]._id === "i12") {
-              resolve2(Scene._scenePool[cnt]);
+              resolve(Scene._scenePool[cnt]);
             } else {
-              reject2(Error("Invalid parameter"));
+              reject(Error("Invalid parameter"));
             }
           } else {
             try {
               if (sceneIndex > cnt || typeof Scene._scenePool[sceneIndex] === "undefined") {
-                reject2(Error("Invalid parameter"));
+                reject(Error("Invalid parameter"));
               } else {
-                resolve2(Scene._scenePool[sceneIndex]);
+                resolve(Scene._scenePool[sceneIndex]);
               }
             } catch (e) {
-              reject2(Error("Parameter must be a number"));
+              reject(Error("Parameter must be a number"));
             }
           }
         });
@@ -9913,20 +9917,20 @@ var XJS = (function(exports) {
      * ```
      */
     static getBySceneUid(sceneUid) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const isID = /^{[A-F0-9-]*}$/i.test(sceneUid);
         if (!isID) {
-          reject2(Error("Not a valid Unique ID format for a Scene"));
+          reject(Error("Not a valid Unique ID format for a Scene"));
         } else {
           Scene._initializeScenePoolAsync().then(() => {
             const sceneLength = Scene._scenePool.length;
             Scene._scenePool.forEach((scene, idx) => {
               scene.getSceneUid().then((uid) => {
                 if (uid === sceneUid) {
-                  resolve2(scene);
+                  resolve(scene);
                 }
                 if (sceneLength - 1 === idx) {
-                  reject2(Error("No matching Scene with the Unique ID provided."));
+                  reject(Error("No matching Scene with the Unique ID provided."));
                 }
               });
             });
@@ -9948,7 +9952,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getByName(sceneName) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const sceneArr = [];
         Scene._initializeScenePoolAsync().then((count) => {
           Scene._scenePool.forEach((scene, idx) => {
@@ -9957,7 +9961,7 @@ var XJS = (function(exports) {
                 sceneArr.push(scene);
               }
               if (idx + 1 === count) {
-                resolve2(sceneArr);
+                resolve(sceneArr);
               }
             });
           });
@@ -9979,16 +9983,16 @@ var XJS = (function(exports) {
      * ```
      */
     static getActiveScene() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else {
           App$1.getGlobalProperty("splitmode").then((res) => {
             const preset = res === "1" ? "scene:1" : "scene:0";
             App$1.get(preset).then((id) => {
               return Scene.getBySceneIndex(Number(id));
             }).then((scene) => {
-              resolve2(scene);
+              resolve(scene);
             });
           });
         }
@@ -10003,26 +10007,26 @@ var XJS = (function(exports) {
      * Change active scene. Does not work on source plugins.
      */
     static setActiveScene(scene) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else {
           App$1.getGlobalProperty("splitmode").then((res) => {
             const preset = res === "1" ? "scene:1" : "scene:0";
             if (scene instanceof Scene) {
               App$1.set(preset, String(scene._id)).then((res2) => {
-                resolve2(res2);
+                resolve(res2);
               });
             } else if (typeof scene === "number") {
               if (scene < 1 || !Number["isInteger"](Number(scene))) {
-                reject2(Error("Invalid parameters. Valid range is greater than 0."));
+                reject(Error("Invalid parameters. Valid range is greater than 0."));
               } else {
                 App$1.set(preset, String(scene - 1)).then((res2) => {
-                  resolve2(res2);
+                  resolve(res2);
                 });
               }
             } else {
-              reject2(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
+              reject(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
             }
           });
         }
@@ -10046,10 +10050,10 @@ var XJS = (function(exports) {
      *
      */
     static searchItemsById(id) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const isID = /^{[A-F0-9-]*}$/i.test(id);
         if (!isID) {
-          reject2(Error("Not a valid ID format for items"));
+          reject(Error("Not a valid ID format for items"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
@@ -10080,7 +10084,7 @@ var XJS = (function(exports) {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
-              resolve2(match);
+              resolve(match);
             });
           });
         }
@@ -10102,10 +10106,10 @@ var XJS = (function(exports) {
      *
      */
     static searchScenesByItemId(id) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const isID = /^{[A-F0-9-]*}$/i.test(id);
         if (!isID) {
-          reject2(Error("Not a valid ID format for items"));
+          reject(Error("Not a valid ID format for items"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
@@ -10136,7 +10140,7 @@ var XJS = (function(exports) {
               promiseArray.push(scenePromise(scene, idx, arr));
             });
             Promise.all(promiseArray).then((results) => {
-              resolve2(match);
+              resolve(match);
             });
           });
         }
@@ -10164,7 +10168,7 @@ var XJS = (function(exports) {
      *
      */
     static searchItemsByName(param) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Scene.filterItems((item, filterResolve) => {
           if (item["_cname"] === param) {
             filterResolve(true);
@@ -10176,7 +10180,7 @@ var XJS = (function(exports) {
             filterResolve(false);
           }
         }).then((items) => {
-          resolve2(items);
+          resolve(items);
         });
       });
     }
@@ -10202,7 +10206,7 @@ var XJS = (function(exports) {
      * ```
      */
     static filterItems(func) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           const matches = [];
           if (typeof func === "function") {
@@ -10234,10 +10238,10 @@ var XJS = (function(exports) {
                 });
               })
             ).then(() => {
-              resolve2(matches);
+              resolve(matches);
             });
           } else {
-            reject2(Error("Parameter is not a function"));
+            reject(Error("Parameter is not a function"));
           }
         });
       });
@@ -10264,7 +10268,7 @@ var XJS = (function(exports) {
      * ```
      */
     static filterScenesByItems(func) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           const matches = [];
           if (typeof func === "function") {
@@ -10294,10 +10298,10 @@ var XJS = (function(exports) {
                 });
               })
             ).then(() => {
-              resolve2(matches);
+              resolve(matches);
             });
           } else {
-            reject2(Error("Parameter is not a function"));
+            reject(Error("Parameter is not a function"));
           }
         });
       });
@@ -10321,10 +10325,10 @@ var XJS = (function(exports) {
      *
      */
     static searchSourcesById(srcId) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const isID = /^{[A-F0-9-]*}$/i.test(srcId);
         if (!isID) {
-          reject2(Error("Not a valid ID format for sources"));
+          reject(Error("Not a valid ID format for sources"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
@@ -10361,7 +10365,7 @@ var XJS = (function(exports) {
                   finalResults.push(results[i]);
                 }
               }
-              resolve2(finalResults);
+              resolve(finalResults);
             });
           });
         }
@@ -10383,10 +10387,10 @@ var XJS = (function(exports) {
      *
      */
     static searchScenesBySourceId(srcId) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const isID = /^{[A-F0-9-]*}$/i.test(srcId);
         if (!isID) {
-          reject2(Error("Not a valid ID format for sources"));
+          reject(Error("Not a valid ID format for sources"));
         } else {
           Scene._initializeScenePoolAsync().then((cnt) => {
             let match = null;
@@ -10423,7 +10427,7 @@ var XJS = (function(exports) {
                   finalResults.push(results[i]);
                 }
               }
-              resolve2(finalResults);
+              resolve(finalResults);
             });
           });
         }
@@ -10447,7 +10451,7 @@ var XJS = (function(exports) {
      *
      */
     static searchSourcesByName(param) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Scene.filterSources((source, filterResolve) => {
           source.getCustomName().then((cname) => {
             if (cname.match(param)) {
@@ -10463,9 +10467,9 @@ var XJS = (function(exports) {
                 return source.getValue();
               }
             }
-          }).then((value2) => {
-            if (value2 !== void 0) {
-              if (value2.toString().match(param)) {
+          }).then((value) => {
+            if (value !== void 0) {
+              if (value.toString().match(param)) {
                 filterResolve(true);
               } else {
                 filterResolve(false);
@@ -10473,7 +10477,7 @@ var XJS = (function(exports) {
             }
           });
         }).then((sources) => {
-          resolve2(sources);
+          resolve(sources);
         });
       });
     }
@@ -10499,7 +10503,7 @@ var XJS = (function(exports) {
      * ```
      */
     static filterSources(func) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           const matches = [];
           if (typeof func === "function") {
@@ -10531,10 +10535,10 @@ var XJS = (function(exports) {
                 });
               })
             ).then(() => {
-              resolve2(matches);
+              resolve(matches);
             });
           } else {
-            reject2(Error("Parameter is not a function"));
+            reject(Error("Parameter is not a function"));
           }
         });
       });
@@ -10561,7 +10565,7 @@ var XJS = (function(exports) {
      * ```
      */
     static filterScenesBySources(func) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         Scene._initializeScenePoolAsync().then((cnt) => {
           const matches = [];
           if (typeof func === "function") {
@@ -10591,10 +10595,10 @@ var XJS = (function(exports) {
                 });
               })
             ).then(() => {
-              resolve2(matches);
+              resolve(matches);
             });
           } else {
-            reject2(Error("Parameter is not a function"));
+            reject(Error("Parameter is not a function"));
           }
         });
       });
@@ -10620,22 +10624,22 @@ var XJS = (function(exports) {
        * ```
        */
     static initializeScenes() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("function is not available for source"));
+          reject(Error("function is not available for source"));
         } else {
           if (versionCompare(getVersion()).is.lessThan(minVersion)) {
             App$1.get("scenecount").then((cnt) => {
               if (Number(cnt) < 12) {
                 App$1.set("sceneconfig:11", '<placement name="Scene 12" defpos="0" />').then((res) => {
-                  resolve2(res);
+                  resolve(res);
                 });
               } else {
-                resolve2(true);
+                resolve(true);
               }
             });
           } else {
-            resolve2(true);
+            resolve(true);
           }
         }
       });
@@ -10661,174 +10665,174 @@ var XJS = (function(exports) {
       if (Scene._liveScene === void 0) {
         Scene._liveScene = new Scene("LIVE", "Live Scene", "0");
         Scene._liveScene.getSources = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getSources();
             }).then((sources) => {
-              resolve2(sources);
-            }).catch((err) => reject2(err));
+              resolve(sources);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getSceneNumber = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getSceneNumber();
             }).then((sceneNumber) => {
-              resolve2(sceneNumber);
-            }).catch((err) => reject2(err));
+              resolve(sceneNumber);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getSceneIndex = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getSceneIndex();
             }).then((sceneIndex) => {
-              resolve2(sceneIndex);
-            }).catch((err) => reject2(err));
+              resolve(sceneIndex);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getSceneUid = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getSceneUid();
             }).then((sceneUID) => {
-              resolve2(sceneUID);
-            }).catch((err) => reject2(err));
+              resolve(sceneUID);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getName = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getName();
             }).then((name) => {
-              resolve2(name);
-            }).catch((err) => reject2(err));
+              resolve(name);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.setName = (name) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.setName(name);
             }).then((setFlag) => {
-              resolve2(setFlag);
-            }).catch((err) => reject2(err));
+              resolve(setFlag);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getItems = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getItems();
             }).then((items) => {
-              resolve2(items);
-            }).catch((err) => reject2(err));
+              resolve(items);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getTopLevelItems = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getTopLevelItems();
             }).then((items) => {
-              resolve2(items);
-            }).catch((err) => reject2(err));
+              resolve(items);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.isEmpty = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.isEmpty();
             }).then((empty) => {
-              resolve2(empty);
-            }).catch((err) => reject2(err));
+              resolve(empty);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.setItemOrder = (items) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.setItemOrder(items);
             }).then((sources) => {
-              resolve2(Scene._liveScene);
-            }).catch((err) => reject2(err));
+              resolve(Scene._liveScene);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getPresets = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getPresets();
             }).then((presets) => {
-              resolve2(presets);
-            }).catch((err) => reject2(err));
+              resolve(presets);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getActivePreset = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getActivePreset();
             }).then((preset) => {
-              resolve2(preset);
-            }).catch((err) => reject2(err));
+              resolve(preset);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.switchToPreset = (preset) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.switchToPreset(preset);
             }).then((setFlag) => {
-              resolve2(setFlag);
-            }).catch((err) => reject2(err));
+              resolve(setFlag);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.addPreset = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.addPreset();
             }).then((preset) => {
-              resolve2(preset);
-            }).catch((err) => reject2(err));
+              resolve(preset);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.removePreset = (preset) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.removePreset(preset);
             }).then((setFlag) => {
-              resolve2(setFlag);
-            }).catch((err) => reject2(err));
+              resolve(setFlag);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getPresetTransitionEasing = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getPresetTransitionEasing();
             }).then((easing) => {
-              resolve2(easing);
-            }).catch((err) => reject2(err));
+              resolve(easing);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.setPresetTransitionEasing = (presetTransitionEasing) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.setPresetTransitionEasing(presetTransitionEasing);
             }).then((setFlag) => {
-              resolve2(setFlag);
-            }).catch((err) => reject2(err));
+              resolve(setFlag);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.getPresetTransitionTime = () => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.getPresetTransitionTime();
             }).then((time) => {
-              resolve2(time);
-            }).catch((err) => reject2(err));
+              resolve(time);
+            }).catch((err) => reject(err));
           });
         };
         Scene._liveScene.setPresetTransitionTime = (presetTransitionTime) => {
-          return new Promise((resolve2, reject2) => {
+          return new Promise((resolve, reject) => {
             Scene.getActiveScene().then((activeScene) => {
               return activeScene.setPresetTransitionTime(presetTransitionTime);
             }).then((setFlag) => {
-              resolve2(setFlag);
-            }).catch((err) => reject2(err));
+              resolve(setFlag);
+            }).catch((err) => reject(err));
           });
         };
       }
@@ -10848,10 +10852,10 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addAsSource(value2) {
-      return new Promise((resolve2, reject2) => {
+    addAsSource(value) {
+      return new Promise((resolve, reject) => {
         if (!versionCompare(getVersion()).is.lessThan(sceneSourceVersion)) {
-          checkSplitmode(value2).then((scenePrefix) => {
+          checkSplitmode(value).then((scenePrefix) => {
             const sceneToAdd = new JSON$1();
             sceneToAdd.tag = "item";
             sceneToAdd["item"] = this._uid;
@@ -10861,12 +10865,12 @@ var XJS = (function(exports) {
             const sceneXML = XML.parseJSON(sceneToAdd);
             return addToSceneHandler(scenePrefix + "additem", sceneXML.toString());
           }).then((result) => {
-            resolve2(result);
+            resolve(result);
           }).catch((err) => {
-            reject2(err);
+            reject(err);
           });
         } else {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         }
       });
     }
@@ -10890,7 +10894,7 @@ var XJS = (function(exports) {
      * ```
      */
     getSources() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         App$1.getAsItemList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
           const uniqueObj = {};
@@ -10919,10 +10923,10 @@ var XJS = (function(exports) {
                 uniqueSrc.push(uniqueObj[j]);
               }
             }
-            resolve2(uniqueSrc);
+            resolve(uniqueSrc);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -10943,19 +10947,19 @@ var XJS = (function(exports) {
      * ** For deprecation, please use getSceneIndex instead.
      */
     getSceneNumber() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const curUid = this._uid;
         if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
           if (typeof this._id === "number") {
-            resolve2(Number(this._id) + 1);
+            resolve(Number(this._id) + 1);
           } else {
-            resolve2(Number(this._id));
+            resolve(Number(this._id));
           }
         } else {
           Scene._initializeScenePoolAsync().then(() => {
             return Scene.getBySceneUid(curUid);
           }).then((curScene) => {
-            resolve2(Number(curScene._id) + 1);
+            resolve(Number(curScene._id) + 1);
           });
         }
       });
@@ -10975,19 +10979,19 @@ var XJS = (function(exports) {
      * ```
      */
     getSceneIndex() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const curUid = this._uid;
         if (versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
           if (typeof this._id !== "number") {
-            resolve2(Number(this._id));
+            resolve(Number(this._id));
           } else {
-            resolve2(this._id);
+            resolve(this._id);
           }
         } else {
           Scene._initializeScenePoolAsync().then(() => {
             return Scene.getBySceneUid(curUid);
           }).then((curScene) => {
-            resolve2(Number(curScene._id));
+            resolve(Number(curScene._id));
           });
         }
       });
@@ -11007,11 +11011,11 @@ var XJS = (function(exports) {
      * ```
      */
     getSceneUid() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (!versionCompare(getVersion()).is.lessThan(sceneUidMinVersion)) {
-          resolve2(this._uid);
+          resolve(this._uid);
         } else {
-          reject2(Error("Scenes unique id is only available for XBC v.3.0.1704.2101 or higher"));
+          reject(Error("Scenes unique id is only available for XBC v.3.0.1704.2101 or higher"));
         }
       });
     }
@@ -11030,9 +11034,9 @@ var XJS = (function(exports) {
      * ```
      */
     getName() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("scenename:" + this._refID).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
@@ -11047,12 +11051,12 @@ var XJS = (function(exports) {
      * ```
      */
     setName(name) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (!Environment.isSourceProps()) {
-          reject2(Error("Scene names are readonly for source plugins and extensions."));
+          reject(Error("Scene names are readonly for source plugins and extensions."));
         } else {
-          App$1.set("scenename:" + this._refID, name).then((value2) => {
-            resolve2(value2);
+          App$1.set("scenename:" + this._refID, name).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11071,9 +11075,9 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionList() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("scenetransitionlist:" + this._refID).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
@@ -11087,14 +11091,14 @@ var XJS = (function(exports) {
      * ```
      */
     setTransitionList(list) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Scene transition overrides are readonly for source plugins."));
+          reject(Error("Scene transition overrides are readonly for source plugins."));
         } else {
-          App$1.set("scenetransitionlist:" + this._refID, list).then((value2) => {
-            resolve2(value2);
+          App$1.set("scenetransitionlist:" + this._refID, list).then((value) => {
+            resolve(value);
           }).catch((err) => {
-            reject2(Error("Invalid parameter. Only Source Transition List String allowed."));
+            reject(Error("Invalid parameter. Only Source Transition List String allowed."));
           });
         }
       });
@@ -11118,14 +11122,14 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionOverride(sourceScene = "") {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("scenetransitionid:" + this._refID + (sourceScene ? `:${sourceScene}` : "")).then((val) => {
           if (val === "") {
-            resolve2(Transition.NONE);
+            resolve(Transition.NONE);
           } else {
             const currTransition = Transition[val.toUpperCase()];
             if (typeof currTransition !== "undefined") {
-              resolve2(currTransition);
+              resolve(currTransition);
             } else {
               Transition.getSceneTransitions().then((transitions) => {
                 let inTransition = false;
@@ -11139,12 +11143,12 @@ var XJS = (function(exports) {
                   }
                 }
                 if (inTransition) {
-                  resolve2(transitionObj);
+                  resolve(transitionObj);
                 } else {
-                  resolve2(new Transition(val));
+                  resolve(new Transition(val));
                 }
               }).catch((err) => {
-                resolve2(new Transition(val));
+                resolve(new Transition(val));
               });
             }
           }
@@ -11164,18 +11168,18 @@ var XJS = (function(exports) {
      * myScene.setTransitionOverride('xjs.Transition.CLOCK');
      * ```
      */
-    setTransitionOverride(value2, sourceScene = "") {
-      return new Promise((resolve2, reject2) => {
+    setTransitionOverride(value, sourceScene = "") {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Scene transition overrides are readonly for source plugins."));
+          reject(Error("Scene transition overrides are readonly for source plugins."));
         } else {
           App$1.set(
             "scenetransitionid:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
-            value2 instanceof Transition ? value2.toString() : value2
-          ).then((value22) => {
-            resolve2(value22);
+            value instanceof Transition ? value.toString() : value
+          ).then((value2) => {
+            resolve(value2);
           }).catch((err) => {
-            reject2(
+            reject(
               Error("Invalid parameter. Only Transition objects or transition strings are allowed.")
             );
           });
@@ -11201,9 +11205,9 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionTime(sourceScene = "") {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("scenetransitiontime:" + this._refID + (sourceScene ? `:${sourceScene}` : "")).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -11221,15 +11225,15 @@ var XJS = (function(exports) {
      * ```
      */
     setTransitionTime(time, sourceScene = "") {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Scene transition overrides are readonly for source plugins."));
+          reject(Error("Scene transition overrides are readonly for source plugins."));
         } else {
           App$1.set(
             "scenetransitiontime:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
             String(time)
-          ).then((value2) => {
-            resolve2(value2);
+          ).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11253,9 +11257,9 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionVolume(sourceScene = "") {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("scenetransitionvolume:" + this._refID + (sourceScene ? `:${sourceScene}` : "")).then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -11273,15 +11277,15 @@ var XJS = (function(exports) {
      * ```
      */
     setTransitionVolume(volume, sourceScene = "") {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Scene transition overrides are readonly for source plugins."));
+          reject(Error("Scene transition overrides are readonly for source plugins."));
         } else {
           App$1.set(
             "scenetransitionvolume:" + this._refID + (sourceScene ? `:${sourceScene}` : ""),
             String(volume)
-          ).then((value2) => {
-            resolve2(value2);
+          ).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11301,7 +11305,7 @@ var XJS = (function(exports) {
      * ```
      */
     getItems() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         App$1.getAsItemList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
           const typePromise = (index) => new Promise((typeResolve) => {
@@ -11316,10 +11320,10 @@ var XJS = (function(exports) {
             }
           }
           Promise.all(promiseArray).then((results) => {
-            resolve2(results);
+            resolve(results);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -11338,7 +11342,7 @@ var XJS = (function(exports) {
      * ```
      */
     getTopLevelItems() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         App$1.getAsList("sceneconfig:" + this._refID).then((jsonArr) => {
           var promiseArray = [];
           const typePromise = (index) => new Promise((typeResolve) => {
@@ -11353,10 +11357,10 @@ var XJS = (function(exports) {
             }
           }
           Promise.all(promiseArray).then((results) => {
-            resolve2(results);
+            resolve(results);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -11376,9 +11380,9 @@ var XJS = (function(exports) {
      * ```
      */
     isEmpty() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("sceneisempty:" + this._refID).then((val) => {
-          resolve2(val === "1");
+          resolve(val === "1");
         });
       });
     }
@@ -11392,9 +11396,9 @@ var XJS = (function(exports) {
      * will be on top (will cover items below it).
      */
     setItemOrder(items) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("not available for source plugins"));
+          reject(Error("not available for source plugins"));
         } else {
           items.reverse();
           let ids = [];
@@ -11402,7 +11406,7 @@ var XJS = (function(exports) {
             if (items.every((el) => {
               return el instanceof Source || el instanceof Item;
             })) {
-              return new Promise((resolve22) => {
+              return new Promise((resolve2) => {
                 const promises = [];
                 for (const i in items) {
                   promises.push(
@@ -11419,7 +11423,7 @@ var XJS = (function(exports) {
                 Promise.all(promises).then(() => {
                   return scene.getSceneNumber();
                 }).then((id) => {
-                  resolve22(id);
+                  resolve2(id);
                 });
               });
             } else {
@@ -11429,7 +11433,7 @@ var XJS = (function(exports) {
           }).then((id) => {
             if (Number(id) - 1 === this._id && (Environment.isSourceProps() || Environment.isExtension)) {
               exec("SourcesListOrderSave", String(ViewTypes.MAIN), ids.join(","));
-              resolve2(this);
+              resolve(this);
             } else {
               let sceneName;
               this.getName().then((name) => {
@@ -11454,10 +11458,10 @@ var XJS = (function(exports) {
                     //Revert back the formatting from json when transforming to xml
                     XML.parseJSON(newOrder).toString().replace(/\\\\/g, "\\")
                   ).then(() => {
-                    resolve2(this);
+                    resolve(this);
                   });
                 } else {
-                  reject2(Error("Scene does not have any source"));
+                  reject(Error("Scene does not have any source"));
                 }
               });
             }
@@ -11480,18 +11484,18 @@ var XJS = (function(exports) {
      * ```
      */
     getPresets() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
           const presetArray = ["{00000000-0000-0000-0000-000000000000}"];
           App$1.get("scenepresetlist:" + this._uid).then((presetlist) => {
             if (presetlist !== "") {
               presetArray.push(...presetlist.split(","));
             }
-            resolve2(presetArray);
+            resolve(presetArray);
           });
         }
       });
@@ -11511,14 +11515,14 @@ var XJS = (function(exports) {
      * ```
      */
     getActivePreset() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
-          App$1.get("scenepreset:" + this._uid).then((value2) => {
-            resolve2(value2);
+          App$1.get("scenepreset:" + this._uid).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11546,17 +11550,17 @@ var XJS = (function(exports) {
      * ```
      */
     switchToPreset(preset) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
-          App$1.set("scenepreset:" + this._uid, preset).then((value2) => {
-            if (value2) {
-              resolve2(value2);
+          App$1.set("scenepreset:" + this._uid, preset).then((value) => {
+            if (value) {
+              resolve(value);
             } else {
-              reject2(Error("Cannot switch to preset or preset non-existent"));
+              reject(Error("Cannot switch to preset or preset non-existent"));
             }
           });
         }
@@ -11577,14 +11581,14 @@ var XJS = (function(exports) {
      * ```
      */
     addPreset() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
-          App$1.get("scenenewpreset:" + this._uid).then((value2) => {
-            resolve2(value2);
+          App$1.get("scenenewpreset:" + this._uid).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11608,19 +11612,19 @@ var XJS = (function(exports) {
      * ```
      */
     removePreset(preset) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else if (preset === "{00000000-0000-0000-0000-000000000000}") {
-          reject2(Error("Cannot delete the default preset"));
+          reject(Error("Cannot delete the default preset"));
         } else {
-          App$1.set("sceneremovepreset:" + this._uid, preset).then((value2) => {
-            if (value2) {
-              resolve2(value2);
+          App$1.set("sceneremovepreset:" + this._uid, preset).then((value) => {
+            if (value) {
+              resolve(value);
             } else {
-              reject2(Error("Cannot delete preset or preset non-existent"));
+              reject(Error("Cannot delete preset or preset non-existent"));
             }
           });
         }
@@ -11641,17 +11645,17 @@ var XJS = (function(exports) {
      * ```
      */
     getPresetTransitionEasing() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
-          App$1.get("scenepresettransitionfunc:" + this._uid).then((value2) => {
-            if (value2 === "") {
-              value2 = "none";
+          App$1.get("scenepresettransitionfunc:" + this._uid).then((value) => {
+            if (value === "") {
+              value = "none";
             }
-            resolve2(value2);
+            resolve(value);
           });
         }
       });
@@ -11673,17 +11677,17 @@ var XJS = (function(exports) {
      * ```
      */
     setPresetTransitionEasing(presetTransitionEasing) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else if (supportedPresetTransitionEasingFunctions.indexOf(presetTransitionEasing) < 0) {
-          reject2(Error("Easing function not supported for preset transitions"));
+          reject(Error("Easing function not supported for preset transitions"));
         } else {
           presetTransitionEasing = presetTransitionEasing === "none" ? "" : presetTransitionEasing;
-          App$1.set("scenepresettransitionfunc:" + this._uid, presetTransitionEasing).then((value2) => {
-            resolve2(value2);
+          App$1.set("scenepresettransitionfunc:" + this._uid, presetTransitionEasing).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11703,14 +11707,14 @@ var XJS = (function(exports) {
      * ```
      */
     getPresetTransitionTime() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else {
-          App$1.get("scenepresettransitiontime:" + this._uid).then((value2) => {
-            resolve2(Number(value2));
+          App$1.get("scenepresettransitiontime:" + this._uid).then((value) => {
+            resolve(Number(value));
           });
         }
       });
@@ -11731,16 +11735,16 @@ var XJS = (function(exports) {
      * ```
      */
     setPresetTransitionTime(presetTransitionTime) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
-          reject2(Error("Not supported on source plugins"));
+          reject(Error("Not supported on source plugins"));
         } else if (versionCompare(getVersion()).is.lessThan(scenePresetsVersion)) {
-          reject2(Error("Not supported in this XBC version"));
+          reject(Error("Not supported in this XBC version"));
         } else if (typeof presetTransitionTime !== "number") {
-          reject2(Error("Parameter must be a number"));
+          reject(Error("Parameter must be a number"));
         } else {
-          App$1.set("scenepresettransitiontime:" + this._uid, String(presetTransitionTime)).then((value2) => {
-            resolve2(value2);
+          App$1.set("scenepresettransitiontime:" + this._uid, String(presetTransitionTime)).then((value) => {
+            resolve(value);
           });
         }
       });
@@ -11759,10 +11763,10 @@ var XJS = (function(exports) {
      *  Gets the list of currently active channels.
      */
     static getActiveStreamChannels() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getAsList("recstat").then((activeStreams) => {
           if (activeStreams.length === 0) {
-            resolve2([]);
+            resolve([]);
           } else {
             const channels = [];
             for (var i = 0; i < activeStreams.length; ++i) {
@@ -11778,7 +11782,7 @@ var XJS = (function(exports) {
                 })
               );
             }
-            resolve2(channels);
+            resolve(channels);
           }
         });
       });
@@ -11789,8 +11793,8 @@ var XJS = (function(exports) {
      *  Gets the name of the channel.
      */
     getName() {
-      return new Promise((resolve2) => {
-        resolve2(
+      return new Promise((resolve) => {
+        resolve(
           this._name.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
         );
       });
@@ -11801,10 +11805,10 @@ var XJS = (function(exports) {
      * Gets the number of frames dropped
      */
     getStreamDrops() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("streamdrops:" + this._name).then((val) => {
           var drops = val.split(","), dropped = Number(drops[0]) || 0;
-          resolve2(dropped);
+          resolve(dropped);
         });
       });
     }
@@ -11814,13 +11818,13 @@ var XJS = (function(exports) {
      * Gets the number of GOP frames dropped
      */
     getGOPDrops() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let usage;
         App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
           usage = JSON.parse(result);
           for (var i = 0; i < usage.length; i++) {
             if (usage[i].ChannelName === this._name) {
-              resolve2(usage[i].Dropped);
+              resolve(usage[i].Dropped);
             }
           }
         });
@@ -11832,10 +11836,10 @@ var XJS = (function(exports) {
      * Gets the number of frames rendered
      */
     getStreamRenderedFrames() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("streamdrops:" + this._name).then((val) => {
           var drops = val.split(","), rendered = Number(drops[1]) || 0;
-          resolve2(rendered);
+          resolve(rendered);
         });
       });
     }
@@ -11845,10 +11849,10 @@ var XJS = (function(exports) {
      * Gets the current duration of the stream in microseconds
      */
     getStreamTime() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("streamtime:" + this._name).then((val) => {
           var duration = Number(val) / 10;
-          resolve2(duration);
+          resolve(duration);
         });
       });
     }
@@ -11858,19 +11862,19 @@ var XJS = (function(exports) {
      * Gets the current bandwidth usage of the stream
      */
     getBandwidthUsage() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         let usage;
         if (this._name !== "Local Recording") {
           App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
             usage = JSON.parse(result);
             for (var i = 0; i < usage.length; i++) {
               if (usage[i].ChannelName === this._name) {
-                resolve2(usage[i].AvgBitrate);
+                resolve(usage[i].AvgBitrate);
               }
             }
           });
         } else {
-          resolve2(0);
+          resolve(0);
         }
       });
     }
@@ -11922,7 +11926,7 @@ var XJS = (function(exports) {
      * ```
      */
     static getOutputList() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         let _checkId;
         if (Environment.isExtension()) {
           _checkId = Extension.getInstance().getId();
@@ -11949,10 +11953,10 @@ var XJS = (function(exports) {
                 })
               );
             }
-            resolve2(channels);
+            resolve(channels);
           });
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -11965,26 +11969,26 @@ var XJS = (function(exports) {
      * Sets a scene to record. Set to live scene or blank string to reset
      */
     static setSceneToRecord(scene) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (scene === "" || scene === Scene.liveScene()) {
           exec("CallHostFunc", "setSceneToRecord", "-1");
-          resolve2(true);
+          resolve(true);
         } else if (scene instanceof Scene) {
           scene.getSceneIndex().then((sceneIndex) => {
             exec("CallHostFunc", "setSceneToRecord", Number(sceneIndex));
-            resolve2(true);
+            resolve(true);
           }).catch((err) => {
-            reject2(err);
+            reject(err);
           });
         } else if (typeof scene === "number") {
           if (scene < 1 || !Number["isInteger"](Number(scene))) {
-            reject2(Error("Invalid parameters. Valid range is greater than 0."));
+            reject(Error("Invalid parameters. Valid range is greater than 0."));
           } else {
             exec("CallHostFunc", "setSceneToRecord", String(scene - 1));
-            resolve2(true);
+            resolve(true);
           }
         } else {
-          reject2(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
+          reject(Error("Invalid parameters. Valid range is greater than 0 or a Scene object."));
         }
       });
     }
@@ -11994,9 +11998,9 @@ var XJS = (function(exports) {
      * Start a local recording.
      */
     static startLocalRecording() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "startBroadcast", "Local Recording", "suppressPrestreamDialog=1");
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12005,9 +12009,9 @@ var XJS = (function(exports) {
      * Unpause a local recording.
      */
     static stopLocalRecording() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "stopBroadcast", "Local Recording");
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12016,9 +12020,9 @@ var XJS = (function(exports) {
      * Pause a local recording.
      */
     static pauseLocalRecording() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "pauseRecording", "Local Recording");
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12027,9 +12031,9 @@ var XJS = (function(exports) {
      * Unpause a local recording.
      */
     static unpauseLocalRecording() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "unpauseRecording", "Local Recording");
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12038,8 +12042,8 @@ var XJS = (function(exports) {
      *  Gets the actual name of the Output.
      */
     getName() {
-      return new Promise((resolve2) => {
-        resolve2(this._name);
+      return new Promise((resolve) => {
+        resolve(this._name);
       });
     }
     /**
@@ -12048,10 +12052,10 @@ var XJS = (function(exports) {
      *  Gets the name of the Output as displayed in the Outputs menu.
      */
     getDisplayName() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Output._getBroadcastChannels(Output._id, this._name).then((channelJXON) => {
           channelJXON["displayName"] = channelJXON["displayName"] ? channelJXON["displayName"].replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&") : this._name;
-          resolve2(channelJXON["displayName"]);
+          resolve(channelJXON["displayName"]);
         });
       });
     }
@@ -12070,13 +12074,13 @@ var XJS = (function(exports) {
      *  of the outputs supporting it, will use last settings provided
      */
     startBroadcast(optionBag) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) && typeof optionBag !== "undefined" && optionBag !== null && optionBag["suppressPrestreamDialog"]) {
           exec("CallHostFunc", "startBroadcast", this._name, "suppressPrestreamDialog=1");
-          resolve2(true);
+          resolve(true);
         } else {
           exec("CallHostFunc", "startBroadcast", this._name);
-          resolve2(true);
+          resolve(true);
         }
       });
     }
@@ -12086,9 +12090,9 @@ var XJS = (function(exports) {
      * Stop a broadcast of the provided channel.
      */
     stopBroadcast() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "stopBroadcast", this._name);
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12099,7 +12103,7 @@ var XJS = (function(exports) {
      * Pause a local recording.
      */
     pauseLocalRecording() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._name === "Local Recording") {
           StreamInfo.getActiveStreamChannels().then((channels) => {
             Output._localRecording = false;
@@ -12111,13 +12115,13 @@ var XJS = (function(exports) {
             }
             if (Output._localRecording) {
               exec("CallHostFunc", "pauseRecording");
-              resolve2(true);
+              resolve(true);
             } else {
-              reject2(Error("Local recording is not active."));
+              reject(Error("Local recording is not active."));
             }
           });
         } else {
-          reject2(Error("Output is not a local recording"));
+          reject(Error("Output is not a local recording"));
         }
       });
     }
@@ -12129,7 +12133,7 @@ var XJS = (function(exports) {
      * Unpause a local recording.
      */
     unpauseLocalRecording() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (this._name === "Local Recording") {
           StreamInfo.getActiveStreamChannels().then((channels) => {
             Output._localRecording = false;
@@ -12141,13 +12145,13 @@ var XJS = (function(exports) {
             }
             if (Output._localRecording) {
               exec("CallHostFunc", "unpauseRecording");
-              resolve2(true);
+              resolve(true);
             } else {
-              reject2(Error("Local recording is not active."));
+              reject(Error("Local recording is not active."));
             }
           });
         } else {
-          reject2(Error("Output is not a local recording"));
+          reject(Error("Output is not a local recording"));
         }
       });
     }
@@ -12175,11 +12179,11 @@ var XJS = (function(exports) {
       } else {
         Output._id = id;
       }
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Environment.isSourcePlugin()) {
           const isID = /^{[A-F0-9-]*}$/i.test(Output._id);
           if (!isID) {
-            reject2(Error("Not a valid ID format for items"));
+            reject(Error("Not a valid ID format for items"));
           }
         }
         if (Remote.remoteType === "remote") {
@@ -12188,7 +12192,7 @@ var XJS = (function(exports) {
             id,
             name: name ? name : void 0
           };
-          Extension._remoteCallback[name ? callbackName : Output._id] = { resolve: resolve2 };
+          Extension._remoteCallback[name ? callbackName : Output._id] = { resolve };
           Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
         } else if (Remote.remoteType === "proxy") {
           if (Output._proxyCallback[name ? callbackName : Output._id] === void 0) {
@@ -12202,7 +12206,7 @@ var XJS = (function(exports) {
           if (Output._callback[name ? callbackName : Output._id] === void 0) {
             Output._callback[name ? callbackName : Output._id] = [];
           }
-          Output._callback[name ? callbackName : Output._id] = { resolve: resolve2 };
+          Output._callback[name ? callbackName : Output._id] = { resolve };
           name ? exec("CallHostFunc", "getBroadcastChannelXml", name, "0", (channelXML) => {
             window$1.SetBroadcastChannelXml(channelXML, name);
           }) : exec("CallHostFunc", "getBroadcastChannelList", window$1.SetBroadcastChannelList);
@@ -12210,7 +12214,7 @@ var XJS = (function(exports) {
       });
     }
     static _finalCallback(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         const result = JSON.parse(decodeURIComponent(message));
         Extension._remoteCallback[Output._id].resolve(result["result"]);
       });
@@ -12505,8 +12509,8 @@ var XJS = (function(exports) {
     }
     /** Closes the properties window. */
     close() {
-      return new Promise((resolve2) => {
-        resolve2(exec("Close"));
+      return new Promise((resolve) => {
+        resolve(exec("Close"));
       });
     }
     /**
@@ -12546,7 +12550,7 @@ var XJS = (function(exports) {
     }
   }
   function readMetaConfigUrl() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       if (Environment.isSourcePlugin()) {
         var configObj = {};
         var promise = new Promise((resolveInner) => {
@@ -12575,16 +12579,16 @@ var XJS = (function(exports) {
               }
             }
             exec("SetBrowserProperty", "Configuration", JSON.stringify(configObj));
-            resolve2();
+            resolve();
           }
         });
       } else {
-        resolve2();
+        resolve();
       }
     });
   }
   function getCurrentSourceId() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       if (Environment.isSourceProps() || Environment.isSourcePlugin() && versionCompare(getVersion()).is.lessThan(minVersion)) {
         exec("GetLocalPropertyAsync", "prop:id", (result) => {
           const id = result;
@@ -12592,34 +12596,34 @@ var XJS = (function(exports) {
           if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
             Item$1.lockSourceSlot(id);
           }
-          resolve2();
+          resolve();
         });
       } else {
-        resolve2();
+        resolve();
       }
     });
   }
   function informWhenConfigLoaded() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       if (Environment.isSourceProps()) {
         window.addEventListener("load", () => {
           try {
             SourcePropsWindow.getInstance().emit("config-load");
           } catch (e) {
           }
-          resolve2();
+          resolve();
         });
       } else {
-        resolve2();
+        resolve();
       }
     });
   }
   function setAudioengineUsed() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       exec("CallHostFunc", "getProperty", "experimental:audioengine", (isExperimental) => {
         const isNewAudioEngine = parseInt(isExperimental) === 1;
         Global.setNewAudioEngine(isNewAudioEngine);
-        resolve2();
+        resolve();
       });
     });
   }
@@ -12645,19 +12649,19 @@ var XJS = (function(exports) {
   let isInit = false;
   let readyResolve;
   function readyPromise() {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       if (typeof document !== "undefined") {
         document.addEventListener("xsplit-js-ready", () => {
-          resolve2();
+          resolve();
         });
       }
       if (isReady) {
-        resolve2();
+        resolve();
       }
     });
   }
   function finishReady(config) {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       if (config && config["version"] !== void 0) {
         setMockVersion(config["version"]);
       }
@@ -12670,11 +12674,11 @@ var XJS = (function(exports) {
       if (readyResolve !== void 0 && Remote.remoteType === "remote") {
         readyResolve.call(this, null);
       }
-      resolve2(readyPromise);
+      resolve(readyPromise);
     });
   }
   function ready(config) {
-    return new Promise((resolve2, reject2) => {
+    return new Promise((resolve, reject) => {
       Environment.initialize();
       if (config && config["remote"] !== void 0) {
         if (config["remote"]["type"] !== void 0) {
@@ -12683,16 +12687,16 @@ var XJS = (function(exports) {
         if (config["remote"]["sendMessage"] !== void 0 && config["remote"]["sendMessage"] instanceof Function) {
           Remote.sendMessage = config["remote"]["sendMessage"];
         } else {
-          reject2(Error("Send message should be instance of function."));
+          reject(Error("Send message should be instance of function."));
         }
       }
       if (Remote.remoteType === "remote") {
         readyResolve = () => {
-          resolve2(void 0);
+          resolve(void 0);
         };
         Remote.sendMessage("getVersion");
       } else {
-        resolve2(finishReady(config));
+        resolve(finishReady(config));
       }
     });
   }
@@ -12723,11 +12727,11 @@ var XJS = (function(exports) {
     static setRemoteType(val) {
       const xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
       const isInXBC = navigator.appVersion.match(xbcPattern);
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
-          resolve2(true);
+          resolve(true);
         } else {
-          reject2(
+          reject(
             Error(
               "Unable to change the remoteType: Make sure the type is correct and the extension is in XBC."
             )
@@ -12742,9 +12746,9 @@ var XJS = (function(exports) {
      * is replaced.
      */
     static setSendMessage(newSendMessage) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         Remote.sendMessage = newSendMessage;
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -12757,7 +12761,7 @@ var XJS = (function(exports) {
      */
     static receiveMessage(message) {
       let messageObj = {};
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Remote.remoteType === "remote" && !Remote._isVersion && message.indexOf("setVersion") !== -1) {
           Remote._isVersion = true;
           let mockVersion2 = message;
@@ -12765,12 +12769,12 @@ var XJS = (function(exports) {
           if (typeof msgArray[1] !== "undefined") {
             mockVersion2 = msgArray[1];
           }
-          resolve2(finishReady({ version: mockVersion2 }));
+          resolve(finishReady({ version: mockVersion2 }));
         } else if (Remote.remoteType === "proxy" && message !== void 0 && message === "getVersion") {
           Remote.sendMessage("setVersion::" + window.navigator.appVersion);
-          resolve2(true);
+          resolve(true);
         } else if (Remote.remoteType === "local") {
-          reject2(Error("Remote calls do not work on local mode."));
+          reject(Error("Remote calls do not work on local mode."));
         }
         if (message !== void 0) {
           try {
@@ -12799,7 +12803,7 @@ var XJS = (function(exports) {
               Remote._allWindowHandler(message);
               break;
             default:
-              reject2(Error("Call type is undefined."));
+              reject(Error("Call type is undefined."));
               break;
           }
         }
@@ -12807,14 +12811,14 @@ var XJS = (function(exports) {
     }
     // Handle exec messages
     static _execHandler(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Remote.remoteType === "remote") {
           finalCallback(decodeURIComponent(message)).then((result) => {
-            resolve2(result);
+            resolve(result);
           });
         } else if (Remote.remoteType === "proxy") {
           let messageObj = {};
-          return new Promise((resolve22, reject2) => {
+          return new Promise((resolve2, reject) => {
             messageObj = JSON.parse(decodeURIComponent(message));
             messageObj["callback"] = (result) => {
               const retObj = {
@@ -12822,7 +12826,7 @@ var XJS = (function(exports) {
                 asyncId: Number(messageObj["asyncId"]),
                 type: "exec"
               };
-              resolve22(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+              resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
             };
             const messageArr = [
               messageObj["funcName"],
@@ -12836,7 +12840,7 @@ var XJS = (function(exports) {
     }
     // Handle emit on/off events
     static _eventEmitterHandler(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Remote.remoteType === "remote") {
           EventEmitter._finalCallback(message);
         } else if (Remote.remoteType === "proxy") {
@@ -12848,7 +12852,7 @@ var XJS = (function(exports) {
               id: messageObj["id"],
               event: messageObj["event"]
             };
-            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+            resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
           };
           const messageArr = [messageObj["event"], messageObj["callback"], messageObj["id"]];
           EventEmitter._setCallback.call(Remote, messageArr);
@@ -12856,7 +12860,7 @@ var XJS = (function(exports) {
       });
     }
     static _eventManagerHandler(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Remote.remoteType === "remote") {
           EventManager._finalCallback(message);
         } else if (Remote.remoteType === "proxy") {
@@ -12868,7 +12872,7 @@ var XJS = (function(exports) {
               id: messageObj["id"],
               event: messageObj["event"]
             };
-            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+            resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
           };
           const messageArr = [messageObj["event"], messageObj["callback"], messageObj["id"]];
           EventManager._setCallback.call(Remote, messageArr);
@@ -12876,7 +12880,7 @@ var XJS = (function(exports) {
       });
     }
     static _allWindowHandler(message) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Remote.remoteType === "remote") {
           const messageObj = JSON.parse(decodeURIComponent(message));
           if (messageObj["type"] === "window") {
@@ -12896,7 +12900,7 @@ var XJS = (function(exports) {
               file: messageObj["file"],
               type: messageObj["type"]
             };
-            resolve2(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+            resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
           };
           if (messageObj["type"] === "window") {
             const messageArr = [messageObj["file"], messageObj["callback"]];
@@ -12923,7 +12927,7 @@ var XJS = (function(exports) {
   const _remoteCallbacks = {};
   let counter = 0;
   function exec(funcName, ...args) {
-    return new Promise((resolve2, reject2) => {
+    return new Promise((resolve, reject) => {
       let callback = null;
       let ret = false;
       if (args.length > 0) {
@@ -12967,7 +12971,7 @@ var XJS = (function(exports) {
       } else {
         if (Remote.remoteType === "remote") {
           _remoteCallbacks[counter] = (result) => {
-            resolve2(result);
+            resolve(result);
           };
         }
       }
@@ -12975,23 +12979,23 @@ var XJS = (function(exports) {
         if (_proxyCallbacks[ret] !== void 0) {
           const result = _proxyCallbacks[ret](decodeURIComponent(ret));
           delete _proxyCallbacks[ret];
-          resolve2(result);
+          resolve(result);
         } else {
-          resolve2(ret);
+          resolve(ret);
         }
       } else if (Remote.remoteType === "local") {
-        resolve2(ret);
+        resolve(ret);
       }
     });
   }
   function finalCallback(message) {
-    return new Promise((resolve2) => {
+    return new Promise((resolve) => {
       const result = JSON.parse(message);
       if (typeof result["asyncId"] === "number" && _remoteCallbacks[result["asyncId"]] !== void 0) {
         _remoteCallbacks[result["asyncId"]](result["result"]);
         delete _remoteCallbacks[result["asyncId"]];
       } else {
-        resolve2(result["result"]);
+        resolve(result["result"]);
       }
     });
   }
@@ -13023,37 +13027,37 @@ var XJS = (function(exports) {
   let App$1 = class App2 {
     /** Get the value of the given property */
     static get(name) {
-      return new Promise((resolve2) => {
-        exec("AppGetPropertyAsync", name, resolve2);
+      return new Promise((resolve) => {
+        exec("AppGetPropertyAsync", name, resolve);
       });
     }
     /** Sets the value of a property */
-    static set(name, value2) {
-      return new Promise((resolve2) => {
-        exec("AppSetPropertyAsync", name, value2, (ret) => {
-          resolve2(Number(ret) < 0 ? false : true);
+    static set(name, value) {
+      return new Promise((resolve) => {
+        exec("AppSetPropertyAsync", name, value, (ret) => {
+          resolve(Number(ret) < 0 ? false : true);
         });
       });
     }
     /** Gets the value of the given property as list */
     static getAsList(name) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         App2.get(name).then((xml) => {
           try {
             let propsJSON = JSON$1.parse(xml), propsArr = [];
             if (propsJSON.children && propsJSON.children.length > 0) {
               propsArr = propsJSON.children;
             }
-            resolve2(propsArr);
+            resolve(propsArr);
           } catch (e) {
-            reject2(e);
+            reject(e);
           }
         });
       });
     }
     /** Gets all the items of the given condition as list */
     static getAsItemList(name) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const propsArr = [];
         App2.get(name).then((xml) => {
           try {
@@ -13079,45 +13083,45 @@ var XJS = (function(exports) {
             } else if (propsJSON["tag"] === "placement" && propsJSON.children && propsJSON.children.length > 0) {
               recursion(propsJSON.children);
             }
-            resolve2(propsArr);
+            resolve(propsArr);
           } catch (e) {
-            resolve2(propsArr);
+            resolve(propsArr);
           }
         });
       });
     }
     /** Get the value of the given global property */
     static getGlobalProperty(name) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("GetGlobalProperty", name).then((result) => {
-          resolve2(result);
+          resolve(result);
         });
       });
     }
     /** Calls a DLL function synchronously */
     static callDll(func, ...arg) {
       var args = [].slice.call(arguments);
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         args.unshift("CallDll");
         exec.apply(App2, args).then((result) => {
-          resolve2(result);
+          resolve(result);
         });
       });
     }
     /** Calls an application method asynchronously */
     static callFunc(func, ...args) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("AppCallFuncAsync", func, ...args, (ret) => {
-          resolve2(ret);
+          resolve(ret);
         });
       });
     }
     static postMessage(key, ...args) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         args.unshift(key);
         args.unshift("PostMessageToParent");
         args.push((val) => {
-          resolve2(val);
+          resolve(val);
         });
         exec.apply(App2, args);
       });
@@ -13140,8 +13144,8 @@ var XJS = (function(exports) {
     noiseSuppression: "mic_dsp_ns",
     noiseGate: "mic_dsp_ng"
   };
-  const updateMicrophoneEffects = (effectId, configSeparator, valueSeparator, effect, value2) => {
-    return new Promise((resolve2) => {
+  const updateMicrophoneEffects = (effectId, configSeparator, valueSeparator, effect, value) => {
+    return new Promise((resolve) => {
       exec("CallHostFunc", "getProperty", `audiodevprop:000:effect:${effectId}\\config`, (config) => {
         const values = config ? config.split(configSeparator) : config;
         let newValue = "";
@@ -13155,14 +13159,14 @@ var XJS = (function(exports) {
             }
           });
         }
-        newValue = `${newValue}${separator}${effect}${valueSeparator}${value2}`;
+        newValue = `${newValue}${separator}${effect}${valueSeparator}${value}`;
         exec(
           "CallHostFunc",
           "setProperty",
           `audiodevprop:000:effect:${effectId}\\config`,
           newValue,
           (setVal) => {
-            resolve2(setVal);
+            resolve(setVal);
           }
         );
       });
@@ -13183,9 +13187,9 @@ var XJS = (function(exports) {
      * ```
      */
     getFrameTime() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("frametime").then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -13212,10 +13216,10 @@ var XJS = (function(exports) {
      * ```
      */
     getResolution() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("resolution").then((val) => {
           var dimensions = val.split(",");
-          resolve2(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
+          resolve(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
         });
       });
     }
@@ -13236,10 +13240,10 @@ var XJS = (function(exports) {
      * ```
      */
     getViewport() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("viewport").then((val) => {
           var dimensions = val.split(",");
-          resolve2(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
+          resolve(Rectangle.fromDimensions(parseInt(dimensions[0]), parseInt(dimensions[1])));
         });
       });
     }
@@ -13257,11 +13261,11 @@ var XJS = (function(exports) {
      * ```
      */
     getVersion() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         try {
-          resolve2(getVersion());
+          resolve(getVersion());
         } catch (error) {
-          reject2(error);
+          reject(error);
         }
       });
     }
@@ -13279,9 +13283,9 @@ var XJS = (function(exports) {
      * ```
      */
     getFramesRendered() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("framesrendered").then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -13302,12 +13306,12 @@ var XJS = (function(exports) {
      * ```
      */
     getPrimaryMic() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Global.isNewAudioEngine()) {
           exec("CallHostFunc", "getProperty", "audiodev:000", (resultXml) => {
             const audioJson = JSON$1.parse(resultXml);
             const audio = AudioDevice.parse(audioJson);
-            resolve2(audio);
+            resolve(audio);
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13315,9 +13319,9 @@ var XJS = (function(exports) {
               return AudioDevice.parse(val);
             });
             if (audioDevices.length && audioDevices.length > 0) {
-              resolve2(audioDevices[0]);
+              resolve(audioDevices[0]);
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13339,12 +13343,12 @@ var XJS = (function(exports) {
      * ```
      */
     getPrimarySpeaker() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Global.isNewAudioEngine()) {
           exec("CallHostFunc", "getProperty", "audiodev:001", (resultXml) => {
             const audioJson = JSON$1.parse(resultXml);
             const audio = AudioDevice.parse(audioJson);
-            resolve2(audio);
+            resolve(audio);
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13352,9 +13356,9 @@ var XJS = (function(exports) {
               return AudioDevice.parse(val);
             });
             if (audioDevices.length && audioDevices.length > 1) {
-              resolve2(audioDevices[1]);
+              resolve(audioDevices[1]);
             } else {
-              reject2(Error("No audio device is set as primary speaker"));
+              reject(Error("No audio device is set as primary speaker"));
             }
           });
         }
@@ -13377,24 +13381,24 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimaryMicLevel(volume) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (volume < 0) {
-          reject2(Error("Volume can only be positive"));
+          reject(Error("Volume can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
-          const value2 = `volume:${vol.toFixed(6)}&enable:1`;
+          const value = `volume:${vol.toFixed(6)}&enable:1`;
           exec(
             "CallHostFunc",
             "setProperty",
             `audiodevprop:000:effect:volume\\config`,
-            value2,
+            value,
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimaryMicLevel", err);
-            reject2("Unable to setPrimaryMicLevel");
+            reject("Unable to setPrimaryMicLevel");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13413,10 +13417,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13439,20 +13443,20 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimaryMicEnabled(enabled) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Global.isNewAudioEngine()) {
-          const value2 = `volume:1.000000&enable:${enabled ? 1 : 0}`;
+          const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
           exec(
             "CallHostFunc",
             "setProperty",
             "audiodevprop:000:effect:mute\\config",
-            value2,
+            value,
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimaryMicEnabled", err);
-            reject2("Unable to setPrimaryMicEnabled");
+            reject("Unable to setPrimaryMicEnabled");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13471,10 +13475,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13497,18 +13501,18 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimaryMicSystemLevel(volume) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (volume < 0) {
-          reject2(Error("Volume can only be positive"));
+          reject(Error("Volume can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
-          const value2 = vol.toFixed(6);
-          exec("CallHostFunc", "setProperty", "audiodevprop:000:hwlevel", value2, (setVal) => {
-            resolve2(setVal);
+          const value = vol.toFixed(6);
+          exec("CallHostFunc", "setProperty", "audiodevprop:000:hwlevel", value, (setVal) => {
+            resolve(setVal);
           }).catch((err) => {
             console.error("setPrimaryMicSystemLevel", err);
-            reject2("Unable to setPrimaryMicSystemLevel");
+            reject("Unable to setPrimaryMicSystemLevel");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13527,10 +13531,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13553,9 +13557,9 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimaryMicSystemEnabled(hwenabled) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
-          reject2(Error("Value can only be 0, 1 or 255"));
+          reject(Error("Value can only be 0, 1 or 255"));
         }
         if (Global.isNewAudioEngine()) {
           exec(
@@ -13564,11 +13568,11 @@ var XJS = (function(exports) {
             "audiodevprop:000:hwenable",
             hwenabled.toString(),
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimaryMicSystemEnabled", err);
-            reject2("Unable to setPrimaryMicSystemEnabled");
+            reject("Unable to setPrimaryMicSystemEnabled");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13587,10 +13591,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13613,9 +13617,9 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimaryMicDelay(delay) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (delay < 0) {
-          reject2(Error("Delay can only be positive"));
+          reject(Error("Delay can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           exec(
@@ -13624,11 +13628,11 @@ var XJS = (function(exports) {
             "audiodevprop:000:param\\delay",
             delay.toString(),
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimaryMicDelay", err);
-            reject2("Unable to setPrimaryMicDelay");
+            reject("Unable to setPrimaryMicDelay");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13647,10 +13651,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary microphone"));
+              reject(Error("No audio device is set as primary microphone"));
             }
           });
         }
@@ -13673,24 +13677,24 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimarySpeakerLevel(volume) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (volume < 0) {
-          reject2(Error("Volume can only be positive"));
+          reject(Error("Volume can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
-          const value2 = `volume:${vol.toFixed(6)}&enable:1`;
+          const value = `volume:${vol.toFixed(6)}&enable:1`;
           exec(
             "CallHostFunc",
             "setProperty",
             `audiodevprop:001:effect:volume\\config`,
-            value2,
+            value,
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimarySpeakerLevel", err);
-            reject2("Unable to setPrimarySpeakerLevel");
+            reject("Unable to setPrimarySpeakerLevel");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13709,10 +13713,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary speaker/audio render device"));
+              reject(Error("No audio device is set as primary speaker/audio render device"));
             }
           });
         }
@@ -13735,20 +13739,20 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimarySpeakerEnabled(enabled) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (Global.isNewAudioEngine()) {
-          const value2 = `volume:1.000000&enable:${enabled ? 1 : 0}`;
+          const value = `volume:1.000000&enable:${enabled ? 1 : 0}`;
           exec(
             "CallHostFunc",
             "setProperty",
             "audiodevprop:001:effect:mute\\config",
-            value2,
+            value,
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimarySpeakerEnabled", err);
-            reject2("Unable to setPrimarySpeakerEnabled");
+            reject("Unable to setPrimarySpeakerEnabled");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13767,10 +13771,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary speaker/audio render device"));
+              reject(Error("No audio device is set as primary speaker/audio render device"));
             }
           });
         }
@@ -13793,18 +13797,18 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimarySpeakerSystemLevel(volume) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (volume < 0) {
-          reject2(Error("Volume can only be positive"));
+          reject(Error("Volume can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           const vol = volume / 100;
-          const value2 = vol.toFixed(6);
-          exec("CallHostFunc", "setProperty", "audiodevprop:001:hwlevel", value2, (setVal) => {
-            resolve2(setVal);
+          const value = vol.toFixed(6);
+          exec("CallHostFunc", "setProperty", "audiodevprop:001:hwlevel", value, (setVal) => {
+            resolve(setVal);
           }).catch((err) => {
             console.error("setPrimarySpeakerSystemLevel", err);
-            reject2("Unable to setPrimarySpeakerSystemLevel");
+            reject("Unable to setPrimarySpeakerSystemLevel");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13823,10 +13827,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary speaker/audio render device"));
+              reject(Error("No audio device is set as primary speaker/audio render device"));
             }
           });
         }
@@ -13849,9 +13853,9 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimarySpeakerSystemEnabled(hwenabled) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (hwenabled !== 0 && hwenabled !== 1 && hwenabled !== 255) {
-          reject2(Error("Value can only be 0, 1 or 255"));
+          reject(Error("Value can only be 0, 1 or 255"));
         }
         if (Global.isNewAudioEngine()) {
           exec(
@@ -13860,11 +13864,11 @@ var XJS = (function(exports) {
             "audiodevprop:001:hwenable",
             hwenabled.toString(),
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimarySpeakerSystemEnabled", err);
-            reject2("Unable to setPrimarySpeakerSystemEnabled");
+            reject("Unable to setPrimarySpeakerSystemEnabled");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13883,10 +13887,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary speaker/audio render device"));
+              reject(Error("No audio device is set as primary speaker/audio render device"));
             }
           });
         }
@@ -13909,9 +13913,9 @@ var XJS = (function(exports) {
      * ```
      */
     setPrimarySpeakerDelay(delay) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (delay < 0) {
-          reject2(Error("Delay can only be positive"));
+          reject(Error("Delay can only be positive"));
         }
         if (Global.isNewAudioEngine()) {
           exec(
@@ -13920,11 +13924,11 @@ var XJS = (function(exports) {
             "audiodevprop:001:param\\delay",
             delay.toString(),
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           ).catch((err) => {
             console.error("setPrimarySpeakerDelay", err);
-            reject2("Unable to setPrimarySpeakerDelay");
+            reject("Unable to setPrimarySpeakerDelay");
           });
         } else {
           App$1.getAsList("microphonedev2").then((arr) => {
@@ -13943,10 +13947,10 @@ var XJS = (function(exports) {
               }
               dev = "<devices>" + dev + "</devices>";
               App$1.set("microphonedev2", dev).then((setVal) => {
-                resolve2(setVal);
+                resolve(setVal);
               });
             } else {
-              reject2(Error("No audio device is set as primary speaker/audio render device"));
+              reject(Error("No audio device is set as primary speaker/audio render device"));
             }
           });
         }
@@ -13966,7 +13970,7 @@ var XJS = (function(exports) {
      * ```
      */
     isSilenceDetectionEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
           exec(
             "CallHostFunc",
@@ -13976,16 +13980,16 @@ var XJS = (function(exports) {
               if (config) {
                 const values = config.split("&");
                 const queryObj = arrayToObj(values, ":");
-                resolve2(queryObj["enable"] === "1");
+                resolve(queryObj["enable"] === "1");
               } else {
-                resolve2(false);
+                resolve(false);
               }
             }
           );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(micGainObj["enable"] === "1");
+            resolve(micGainObj["enable"] === "1");
           });
         }
       });
@@ -14007,18 +14011,18 @@ var XJS = (function(exports) {
      * ```
      */
     enableSilenceDetection(enabled) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
-          const value2 = enabled ? "1" : "0";
-          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "enable", value2).then((setVal) => {
-            resolve2(setVal);
+          const value = enabled ? "1" : "0";
+          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "enable", value).then((setVal) => {
+            resolve(setVal);
           });
         } else {
           App$1.get("microphonegain").then((val) => {
             var silenceDetectionObj = JSON$1.parse(val);
             silenceDetectionObj["enable"] = enabled ? "1" : "0";
             App$1.set("microphonegain", XML.parseJSON(silenceDetectionObj).toString()).then((setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             });
           });
         }
@@ -14039,7 +14043,7 @@ var XJS = (function(exports) {
      * ```
      */
     getSilenceDetectionPeriod() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
           exec(
             "CallHostFunc",
@@ -14049,18 +14053,18 @@ var XJS = (function(exports) {
               if (config) {
                 const values = config.split("&");
                 const queryObj = arrayToObj(values, ":");
-                resolve2(
+                resolve(
                   queryObj["latency"] !== void 0 ? Number(queryObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE
                 );
               } else {
-                resolve2(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
+                resolve(DEFAULT_SILENCE_DETECTION_PERIOD_NEW_ENGINE);
               }
             }
           );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(
+            resolve(
               micGainObj["latency"] !== void 0 ? Number(micGainObj["latency"]) : DEFAULT_SILENCE_DETECTION_PERIOD
             );
           });
@@ -14085,29 +14089,29 @@ var XJS = (function(exports) {
      * ```
      */
     setSilenceDetectionPeriod(sdPeriod) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (typeof sdPeriod !== "number") {
-          reject2(Error("Silence detection period must be a number"));
+          reject(Error("Silence detection period must be a number"));
         } else if (sdPeriod % 1 !== 0) {
-          reject2(Error("Silence detection period must be an integer"));
+          reject(Error("Silence detection period must be an integer"));
         } else if (sdPeriod < 0 || sdPeriod > 6e4 && !Global.isNewAudioEngine()) {
-          reject2(
+          reject(
             Error(
               `Silence detection must be in the range. ${!Global.isNewAudioEngine() ? "Range is 0-60000" : ""}`
             )
           );
         }
         if (Global.isNewAudioEngine()) {
-          const value2 = sdPeriod.toString();
-          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "latency", value2).then((setVal) => {
-            resolve2(setVal);
+          const value = sdPeriod.toString();
+          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "latency", value).then((setVal) => {
+            resolve(setVal);
           });
         } else {
           App$1.get("microphonegain").then((val) => {
             var silenceDetectionObj = JSON$1.parse(val);
             silenceDetectionObj["latency"] = sdPeriod.toString();
             App$1.set("microphonegain", XML.parseJSON(silenceDetectionObj).toString()).then((setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             });
           });
         }
@@ -14127,7 +14131,7 @@ var XJS = (function(exports) {
      * ```
      */
     getSilenceDetectionThreshold() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
           exec(
             "CallHostFunc",
@@ -14137,18 +14141,18 @@ var XJS = (function(exports) {
               if (config) {
                 const values = config.split("&");
                 const queryObj = arrayToObj(values, ":");
-                resolve2(
+                resolve(
                   queryObj["gain"] !== void 0 ? Number(queryObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE
                 );
               } else {
-                resolve2(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
+                resolve(DEFAULT_SILENCE_DETECTION_THRESHOLD_NEW_ENGINE);
               }
             }
           );
         } else {
           App$1.get("microphonegain").then((val) => {
             var micGainObj = JSON$1.parse(val);
-            resolve2(
+            resolve(
               micGainObj["gain"] !== void 0 ? Number(micGainObj["gain"]) : DEFAULT_SILENCE_DETECTION_THRESHOLD
             );
           });
@@ -14172,29 +14176,29 @@ var XJS = (function(exports) {
      * ```
      */
     setSilenceDetectionThreshold(sdThreshold) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (typeof sdThreshold !== "number") {
-          reject2(Error("Silence detection threshold must be a number"));
+          reject(Error("Silence detection threshold must be a number"));
         }
         if (Global.isNewAudioEngine()) {
           if (sdThreshold < 0 || sdThreshold > 1) {
-            reject2(Error("Silence detection threshold must be in the range 0-1."));
+            reject(Error("Silence detection threshold must be in the range 0-1."));
           }
-          const value2 = sdThreshold.toString();
-          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "gain", value2).then((setVal) => {
-            resolve2(setVal);
+          const value = sdThreshold.toString();
+          updateMicrophoneEffects(effectIds.noiseGate, "&", ":", "gain", value).then((setVal) => {
+            resolve(setVal);
           });
         } else {
           if (sdThreshold % 1 !== 0) {
-            reject2(Error("Silence detection threshold must be an integer"));
+            reject(Error("Silence detection threshold must be an integer"));
           } else if (sdThreshold < 0 || sdThreshold > 128) {
-            reject2(Error("Silence detection threshold must be in the range 0-128."));
+            reject(Error("Silence detection threshold must be in the range 0-128."));
           }
           App$1.get("microphonegain").then((val) => {
             var silenceDetectionObj = JSON$1.parse(val);
             silenceDetectionObj["gain"] = sdThreshold.toString();
             App$1.set("microphonegain", XML.parseJSON(silenceDetectionObj).toString()).then((setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             });
           });
         }
@@ -14214,7 +14218,7 @@ var XJS = (function(exports) {
      * ```
      */
     isNoiseSuppressionEnabled() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
           exec(
             "CallHostFunc",
@@ -14224,9 +14228,9 @@ var XJS = (function(exports) {
               if (config) {
                 const values = config.split(",");
                 const queryObj = arrayToObj(values, "=");
-                resolve2(queryObj["Enabled"] === "1");
+                resolve(queryObj["Enabled"] === "1");
               } else {
-                resolve2(false);
+                resolve(false);
               }
             }
           );
@@ -14234,7 +14238,7 @@ var XJS = (function(exports) {
           exec("CallHostFunc", "getProperty", "sound_ns", (queryString) => {
             var queryParams = queryString.split("&");
             var queryObj = arrayToObj(queryParams, "=");
-            resolve2(queryObj["Enabled"] === "1");
+            resolve(queryObj["Enabled"] === "1");
           });
         }
       });
@@ -14256,17 +14260,17 @@ var XJS = (function(exports) {
      * ```
      */
     enableNoiseSuppression(enabled) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (Global.isNewAudioEngine()) {
-          const value2 = enabled ? "1" : "0";
-          updateMicrophoneEffects(effectIds.noiseSuppression, ",", "=", "Enabled", value2).then(
+          const value = enabled ? "1" : "0";
+          updateMicrophoneEffects(effectIds.noiseSuppression, ",", "=", "Enabled", value).then(
             (setVal) => {
-              resolve2(setVal);
+              resolve(setVal);
             }
           );
         } else {
           exec("CallHostFunc", "setProperty", "sound_ns", `Enabled=${Number(enabled)}`, (setVal) => {
-            resolve2(setVal);
+            resolve(setVal);
           });
         }
       });
@@ -14288,14 +14292,14 @@ var XJS = (function(exports) {
      * ```
      */
     getTransition() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("transitionid").then((val) => {
           if (val === "") {
-            resolve2(Transition.NONE);
+            resolve(Transition.NONE);
           } else {
             const currTransition = Transition[val.toUpperCase()];
             if (typeof currTransition !== "undefined") {
-              resolve2(currTransition);
+              resolve(currTransition);
             } else {
               Transition.getSceneTransitions().then((transitions) => {
                 let inTransition = false;
@@ -14309,12 +14313,12 @@ var XJS = (function(exports) {
                   }
                 }
                 if (inTransition) {
-                  resolve2(transitionObj);
+                  resolve(transitionObj);
                 } else {
-                  resolve2(new Transition(val));
+                  resolve(new Transition(val));
                 }
               }).catch((err) => {
-                resolve2(new Transition(val));
+                resolve(new Transition(val));
               });
             }
           }
@@ -14344,9 +14348,9 @@ var XJS = (function(exports) {
        * ```
        */
     setTransition(transition) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.set("transitionid", transition.toString()).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
@@ -14364,9 +14368,9 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionTime() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("transitiontime").then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -14387,9 +14391,9 @@ var XJS = (function(exports) {
      * ```
      */
     setTransitionTime(time) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.set("transitiontime", time.toString()).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
@@ -14407,9 +14411,9 @@ var XJS = (function(exports) {
      * ```
      */
     getTransitionVolume() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.get("transitionvolume").then((val) => {
-          resolve2(Number(val));
+          resolve(Number(val));
         });
       });
     }
@@ -14430,9 +14434,9 @@ var XJS = (function(exports) {
      * ```
      */
     setTransitionVolume(volume) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.set("transitionvolume", volume.toString()).then((val) => {
-          resolve2(val);
+          resolve(val);
         });
       });
     }
@@ -14451,15 +14455,15 @@ var XJS = (function(exports) {
      * ```
      */
     clearBrowserCookies(cookiePath) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (cookiePath && cookiePath !== "" && typeof window.external["CallHostFunc"] === "function") {
           exec("CallHostFunc", "deleteCookie", cookiePath);
         } else if (Environment.isSourcePlugin()) {
-          reject2(Error("This method is not available to source plugins."));
+          reject(Error("This method is not available to source plugins."));
         } else {
           exec("CallHost", "deletecookie:videoitemprop");
         }
-        resolve2(true);
+        resolve(true);
       });
     }
     /**
@@ -14470,9 +14474,9 @@ var XJS = (function(exports) {
      * certain XSplit users only.
      */
     getUserIdHash() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         App$1.getGlobalProperty("userid").then((res) => {
-          resolve2(res);
+          resolve(res);
         });
       });
     }
@@ -14511,9 +14515,9 @@ var XJS = (function(exports) {
       });
     }
     static getCode() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         exec("CallHostFunc", "getProperty", "html:language", (langCode) => {
-          resolve2(langCode);
+          resolve(langCode);
         });
       });
     }
@@ -14550,13 +14554,13 @@ var XJS = (function(exports) {
      */
     static getSceneThumbnail(scene) {
       let scenePromise;
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         scenePromise = new Promise((innerResolve) => {
           if (scene instanceof Scene) {
             scene.getSceneUid().then((sceneUid) => innerResolve(sceneUid));
           } else if (typeof scene === "number") {
             if (scene < 0) {
-              reject2(Error("Invalid parameters. Valid range is 0 or higher"));
+              reject(Error("Invalid parameters. Valid range is 0 or higher"));
             } else {
               Scene.getBySceneIndex(scene).then((curScene) => {
                 return curScene.getSceneUid();
@@ -14571,12 +14575,12 @@ var XJS = (function(exports) {
               innerResolve(sceneUid);
             });
           } else {
-            reject2(Error("Invalid parameters. Valid parameter is scene or scene index"));
+            reject(Error("Invalid parameters. Valid parameter is scene or scene index"));
           }
         });
         scenePromise.then((sceneUid) => {
           App$1.get(`scenethumbnail:${sceneUid}`).then((thumb) => {
-            resolve2(thumb);
+            resolve(thumb);
           });
         });
       });
@@ -14605,14 +14609,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "addfile", this._path);
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -14645,13 +14649,13 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
         var splitScene;
         var activeSceneIdx;
         App$1.get("scene").then((sceneIdx) => {
           activeSceneIdx = sceneIdx;
-          return checkSplitmode(value2);
+          return checkSplitmode(value);
         }).then((scenePrefix) => {
           splitScene = scenePrefix;
           if (scenePrefix.split(":")[1]) {
@@ -14662,12 +14666,12 @@ var XJS = (function(exports) {
           if (canAdd === "1") {
             return addToSceneHandler(splitScene + "addgroup", ...this.toStringArray());
           } else {
-            reject2("Items provided cannot be grouped");
+            reject("Items provided cannot be grouped");
           }
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -14723,14 +14727,14 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
-        checkSplitmode(value2).then((scenePrefix) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
+        checkSplitmode(value).then((scenePrefix) => {
           return addToSceneHandler(scenePrefix + "additem", this.toXML().toString());
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -14745,13 +14749,13 @@ var XJS = (function(exports) {
       this._url = url;
     }
     _getUrl() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         if (/^https?:\/\//i.test(this._url)) {
-          resolve2(this._url);
+          resolve(this._url);
         } else if (/[a-z]+:\/\//i.test(this._url)) {
-          reject2(Error("You may only add HTTP or HTTPS URLs to the stage."));
+          reject(Error("You may only add HTTP or HTTPS URLs to the stage."));
         } else {
-          resolve2("http://" + this._url);
+          resolve("http://" + this._url);
         }
       });
     }
@@ -14771,18 +14775,18 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
         let scenePrefix = "";
-        checkSplitmode(value2).then((prefix) => {
+        checkSplitmode(value).then((prefix) => {
           scenePrefix = prefix;
           return this._getUrl();
         }).then((url) => {
           return addToSceneHandler(scenePrefix + "addurl", url);
         }).then((result) => {
-          resolve2(result);
+          resolve(result);
         }).catch((err) => {
-          reject2(err);
+          reject(err);
         });
       });
     }
@@ -14805,7 +14809,7 @@ var XJS = (function(exports) {
      * internally for the `addToScene` method.
      */
     toXML() {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const filePromises = this._playlist.map((filename) => {
           return new Promise((ioResolve) => {
             IO.getVideoDuration(filename).then((duration) => {
@@ -14862,13 +14866,13 @@ var XJS = (function(exports) {
                 }
                 fileItems["item"] = _inner_this._playlist[0] + "*0";
                 fileItems["FilePlaylist"] = _inner_this._fileplaylist;
-                resolve2(XML.parseJSON(fileItems));
+                resolve(XML.parseJSON(fileItems));
               });
             } else {
-              reject2(Error("One or more files included are invalid."));
+              reject(Error("One or more files included are invalid."));
             }
           } else {
-            reject2(Error("No media file included."));
+            reject(Error("No media file included."));
           }
         });
       });
@@ -14888,21 +14892,21 @@ var XJS = (function(exports) {
      *
      * Note: There is yet no way to detect error responses for this action.
      */
-    addToScene(value2) {
-      return new Promise((resolve2, reject2) => {
+    addToScene(value) {
+      return new Promise((resolve, reject) => {
         let scenePrefix = "";
         if (Environment.isSourcePlugin()) {
-          reject2(Error("This function is not available to sources."));
+          reject(Error("This function is not available to sources."));
         } else {
-          checkSplitmode(value2).then((prefix) => {
+          checkSplitmode(value).then((prefix) => {
             scenePrefix = prefix;
             return this.toXML();
           }).then((fileItem) => {
             return addToSceneHandler(scenePrefix + "additem", " " + fileItem);
           }).then((result) => {
-            resolve2(result);
+            resolve(result);
           }).catch((err) => {
-            reject2(err);
+            reject(err);
           });
         }
       });
@@ -14981,14 +14985,14 @@ var XJS = (function(exports) {
      *  ```
      */
     static return(result) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (result !== void 0) {
           exec("SetDialogResult", result).then((res) => {
-            resolve2(res);
+            resolve(res);
             exec("Close");
           });
         } else {
-          resolve2(exec("Close"));
+          resolve(exec("Close"));
         }
       });
     }
@@ -15079,7 +15083,7 @@ var XJS = (function(exports) {
      * *Chainable.*
      */
     show() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this._result = null;
         if (this._autoclose) {
           exec(
@@ -15088,7 +15092,7 @@ var XJS = (function(exports) {
             "",
             this._size === void 0 ? void 0 : this._size.getWidth() + "," + this._size.getHeight()
           ).then((result) => {
-            resolve2(this);
+            resolve(this);
           });
         } else {
           exec(
@@ -15100,7 +15104,7 @@ var XJS = (function(exports) {
             this._title,
             this._cookiePath === void 0 ? void 0 : `<configuration cookiepath="${this._cookiePath}" />`
           ).then((result) => {
-            resolve2(this);
+            resolve(this);
           });
         }
       });
@@ -15116,7 +15120,7 @@ var XJS = (function(exports) {
        * *Chainable.*
        */
     showWithJS(script) {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         this._result = null;
         let windowParams = this._size ? `cx:${this._size.getWidth()}&cy:${this._size.getHeight()}` : "";
         windowParams = this._calculateFlags() !== "0" ? `${windowParams}&flags:${this._calculateFlags()}` : windowParams;
@@ -15130,7 +15134,7 @@ var XJS = (function(exports) {
           script ? script : "",
           (result) => {
             this._result = result;
-            resolve2(this);
+            resolve(this);
           }
         );
       });
@@ -15141,15 +15145,15 @@ var XJS = (function(exports) {
      *  Gets the string result returned from the spawned dialog.
      */
     getResult() {
-      return new Promise((resolve2) => {
+      return new Promise((resolve) => {
         if (this._result !== null) {
-          resolve2(this._result);
+          resolve(this._result);
         } else if (this._resultListener === null) {
           const eventListener = (e) => {
             e.target.removeEventListener(e.type, eventListener);
             this._result = e.detail;
             this._resultListener = null;
-            resolve2(this._result);
+            resolve(this._result);
           };
           document.addEventListener("xsplit-dialog-result", eventListener);
           this._resultListener = eventListener;
@@ -15159,15 +15163,15 @@ var XJS = (function(exports) {
               return elem.name === "_result";
             });
             if (change !== void 0 && change.length > 0) {
-              resolve2(change[0].object._result);
+              resolve(change[0].object._result);
             }
           });
         } else {
           dialogProxy = new Proxy(this, {
-            set: (target, property, value2, receiver) => {
+            set: (target, property, value, receiver) => {
               if (property === "_result") {
-                this._result = value2;
-                resolve2(value2);
+                this._result = value;
+                resolve(value);
               }
               return true;
             }
@@ -15179,8 +15183,8 @@ var XJS = (function(exports) {
      *  Closes the dialog that this window spawned.
      */
     close() {
-      return new Promise((resolve2) => {
-        resolve2(exec("CloseDialog"));
+      return new Promise((resolve) => {
+        resolve(exec("CloseDialog"));
       });
     }
     _calculateFlags() {
@@ -15270,7 +15274,7 @@ var XJS = (function(exports) {
      *
      */
     static on(event, handler) {
-      return new Promise((resolve2, reject2) => {
+      return new Promise((resolve, reject) => {
         const id = Date.now() + "_" + Math.floor(Math.random() * 1e3);
         ExtensionWindow.getInstance().on(event, handler, id);
         const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
@@ -15308,12 +15312,12 @@ var XJS = (function(exports) {
                     );
                   }
                 }
-                resolve2(this);
+                resolve(this);
               },
               id
             );
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else if (event === "scene-add" && isAddSceneEventFixed) {
           const eventSubscribe = isSceneUidParamAvailable ? "OnSceneAdd" : "OnSceneAddByUser";
@@ -15337,9 +15341,9 @@ var XJS = (function(exports) {
                   Scene.getSceneCount().then(function(count) {
                     if (Environment.isExtension()) {
                       ExtensionWindow.emit(settingsObj["id"] ? settingsObj["id"] : event, count);
-                      resolve2(this);
+                      resolve(this);
                     } else {
-                      reject2(Error("ExtensionWindow class is only available for extensions."));
+                      reject(Error("ExtensionWindow class is only available for extensions."));
                     }
                   });
                 }
@@ -15347,7 +15351,7 @@ var XJS = (function(exports) {
               id
             );
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else if (event === "scene-delete-all" && isSceneUidParamAvailable) {
           if (ExtensionWindow._subscriptions.indexOf("OnSceneDeleteAll") < 0) {
@@ -15361,12 +15365,12 @@ var XJS = (function(exports) {
                     settingsObj["args"][0]
                   );
                 }
-                resolve2(this);
+                resolve(this);
               },
               id
             );
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else if (event === "bscn-load") {
           if (ExtensionWindow._subscriptions.indexOf("OnPropertyChange") < 0) {
@@ -15396,12 +15400,12 @@ var XJS = (function(exports) {
                     });
                   }
                 }
-                resolve2(this);
+                resolve(this);
               },
               id
             );
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else if (event === "push-to-live") {
           if (ExtensionWindow._subscriptions.indexOf("scenedlg:1") < 0 && Environment.isExtension()) {
@@ -15445,9 +15449,9 @@ var XJS = (function(exports) {
                 id
               );
             }
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else if ([
           "sources-list-highlight",
@@ -15460,17 +15464,17 @@ var XJS = (function(exports) {
               exec("SourcesListSubscribeEvents", ViewTypes.MAIN.toString()).then((res) => {
                 return exec("SourcesListSubscribeEvents", ViewTypes.PREVIEW.toString());
               }).then((res) => {
-                resolve2(ExtensionWindow);
+                resolve(ExtensionWindow);
               }).catch((err) => {
-                resolve2(ExtensionWindow);
+                resolve(ExtensionWindow);
               });
             } catch (ex) {
             }
           } else {
-            resolve2(ExtensionWindow);
+            resolve(ExtensionWindow);
           }
         } else {
-          reject2(Error('Warning! The event "' + event + '" is not yet supported.'));
+          reject(Error('Warning! The event "' + event + '" is not yet supported.'));
         }
       });
     }
@@ -15495,12 +15499,12 @@ var XJS = (function(exports) {
      *
      * Renames the extension window.
      */
-    static setTitle(value2) {
-      return new Promise((resolve2) => {
+    static setTitle(value) {
+      return new Promise((resolve) => {
         const ext = Extension.getInstance();
         ext.getId().then((id) => {
-          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
-            resolve2(res);
+          exec("CallHost", "setExtensionWindowTitle:" + id, value).then((res) => {
+            resolve(res);
           });
         });
       });
@@ -15508,12 +15512,12 @@ var XJS = (function(exports) {
     /**
      * `** For deprecation, please use the static method instead`
      */
-    setTitle(value2) {
-      return new Promise((resolve2) => {
+    setTitle(value) {
+      return new Promise((resolve) => {
         const ext = Extension.getInstance();
         ext.getId().then((id) => {
-          exec("CallHost", "setExtensionWindowTitle:" + id, value2).then((res) => {
-            resolve2(res);
+          exec("CallHost", "setExtensionWindowTitle:" + id, value).then((res) => {
+            resolve(res);
           });
         });
       });
