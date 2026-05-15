@@ -41,6 +41,8 @@
   --sl-color-bg-sidebar: #07121d;
   --sl-color-text-accent: var(--xjs-blue-soft);
   --sl-color-hairline: #17314a;
+  --xjs-panel: #0b1d2e;
+  --xjs-text: var(--sl-color-gray-2);
 }
 
 .site-title {
@@ -212,6 +214,10 @@ code {
   color: #005d8a;
 }
 
+:root[data-theme="dark"] code {
+  color: var(--xjs-blue-soft);
+}
+
 .card,
 .sl-markdown-content table {
   border-color: var(--sl-color-hairline);
@@ -228,6 +234,7 @@ html[data-has-hero] .card-grid {
   margin: 1rem 0;
   padding: 1rem;
   background: var(--xjs-panel);
+  color: var(--sl-color-text);
 }
 
 .xjs-fixture h2 {
