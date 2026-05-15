@@ -7,6 +7,9 @@ const buildDocs = await readFile(new URL('scripts/build-legacy-docs.mjs', root),
 const buildNewDocs = await readFile(new URL('scripts/build-docs.mjs', root), 'utf8');
 const docsConfig = await readFile(new URL('docs/astro.config.mjs', root), 'utf8');
 const docsCheck = await readFile(new URL('scripts/check-docs.mjs', root), 'utf8');
+const docsHome = await readFile(new URL('docs/src/content/docs/index.mdx', root), 'utf8');
+const docsQuickStart = await readFile(new URL('docs/src/content/docs/quick-start.mdx', root), 'utf8');
+const docsTutorials = await readFile(new URL('docs/src/content/docs/tutorials.mdx', root), 'utf8');
 const pagesWorkflow = await readFile(new URL('.github/workflows/pages.yml', root), 'utf8');
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
 
@@ -82,13 +85,17 @@ for (const expected of [
   'createStarlightTypeDocPlugin',
   "entryPoints: ['./src/index.ts']",
   "entryPoints: ['./src']",
-  "base: '/xjs'",
+  "site: 'https://xjs.xsplit.com'",
   "outDir: '../dist/docs'",
   "label: 'Quick Start'",
   "label: 'Tutorials'",
   "label: 'Support'",
 ]) {
   assert.match(docsConfig, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+}
+
+for (const content of [docsHome, docsQuickStart, docsTutorials]) {
+  assert.doesNotMatch(content, /\/xjs\//, 'authored docs should not hard-code the GitHub Pages base path');
 }
 
 for (const expected of [

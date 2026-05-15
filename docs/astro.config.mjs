@@ -14,8 +14,7 @@ const typeDocBase = {
 };
 
 export default defineConfig({
-  site: 'https://splitmedialabslimited.github.io',
-  base: '/xjs',
+  site: 'https://xjs.xsplit.com',
   outDir: '../dist/docs',
   integrations: [
     starlight({
