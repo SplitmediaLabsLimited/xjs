@@ -1,0 +1,107 @@
+---
+title: Quick Start
+description: Start building XSplit Broadcaster source and extension plugins with XJS.
+sidebar:
+  order: 1
+---
+
+Plugins are important tools for extending XSplit Broadcaster. XJS wraps host
+capabilities in a JavaScript API so plugin authors can build source visuals,
+extension windows, dialogs, scene tools, and integrations.
+
+This quick start mirrors the original path: install XJS, create a source plugin,
+create an extension plugin, then move into deeper tutorials and examples.
+
+## Installing XSplit JS Framework
+
+Use the latest official XSplit Broadcaster build when testing XJS plugins.
+
+[Download XSplit Broadcaster](https://xspl.it/download)
+
+For browser-script usage, place the browser bundle in your plugin project and
+load it from your HTML:
+
+```html
+<script src="js/xjs.js"></script>
+<script src="js/main.js"></script>
+```
+
+For bundled projects, use the package entry and wait for the host bridge:
+
+```js
+const xjs = require('xjs');
+
+xjs.ready().then(() => {
+  // XJS calls are safe here.
+});
+```
+
+All host-facing calls should happen after `xjs.ready()` resolves. That includes
+environment checks, window initialization, source or scene lookup, and extension
+setup.
+
+## Creating Your First Source Plugin
+
+Source plugins are browser-backed visuals that can be added to a scene and
+included in streams or recordings. A small source can listen for stream events
+and update its rendered state:
+
+```html
+<div id="stream-status">Stream is not Live</div>
+<script src="js/xjs.js"></script>
+<script src="js/main.js"></script>
+```
+
+```js
+const xjs = require('xjs');
+
+xjs.ready().then(() => {
+  xjs.ChannelManager.on('stream-start', () => {
+    document.getElementById('stream-status').textContent = 'Stream is Live';
+  });
+
+  xjs.ChannelManager.on('stream-end', () => {
+    document.getElementById('stream-status').textContent = 'Stream is not Live';
+  });
+});
+```
+
+For source visuals, keep the page background transparent when the scene should
+show only your rendered content:
+
+```css
+body {
+  background-color: transparent;
+  color: white;
+}
+```
+
+## Creating Your First Extension Plugin
+
+Extension plugins control or inspect Broadcaster itself. A simple extension can
+enumerate scenes and create buttons that switch the active scene:
+
+```js
+const xjs = require('xjs');
+
+xjs.ready()
+  .then(() => xjs.Scene.getSceneCount())
+  .then((count) => {
+    for (let i = 1; i < count + 1; i += 1) {
+      xjs.Scene.getById(i).then((scene) => {
+        const button = document.createElement('button');
+        button.textContent = `Scene:: ${i}`;
+        button.addEventListener('click', () => xjs.Scene.setActiveScene(scene));
+        document.getElementById('scene-id').appendChild(button);
+      });
+    }
+  });
+```
+
+## What's Next?
+
+- Read the [tutorial overview](/xjs/tutorials/) for source, extension,
+  debugging, and advanced plugin topics.
+- Check the [API Reference](/xjs/api/) for generated TypeScript API pages.
+- Open [Components](/xjs/components/) for tested documentation component
+  fixtures used by the regression harness.

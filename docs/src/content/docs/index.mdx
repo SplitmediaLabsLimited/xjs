@@ -1,11 +1,28 @@
 ---
 title: XJS Framework
-description: JavaScript framework for XSplit Broadcaster extensions and plugins.
+description: The development framework for building XSplit Broadcaster plugins.
+template: splash
+hero:
+  title: ""
+  tagline: The development framework for building awesome XSplit Broadcaster Plugins
+  image:
+    file: ../../assets/img_logo.png
+    alt: XSplit JS Framework
+  actions:
+    - text: Get Started
+      link: /xjs/quick-start/
+      variant: primary
+    - text: API Reference
+      link: /xjs/api/
+      variant: secondary
 ---
 
-XJS Framework provides JavaScript APIs for XSplit Broadcaster extensions, source plugins, dialogs, scenes, sources, items, system devices, and output workflows.
+XJS Framework provides JavaScript APIs for XSplit Broadcaster extensions, source
+plugins, dialogs, scenes, sources, items, system devices, and output workflows.
 
-The modern docs are generated from the TypeScript source where possible. Component examples use the same fixture metadata that powers the XSplit regression extension, with MDX notes layered on top for human guidance.
+The modern docs are generated from the TypeScript source where possible.
+Component examples use the same fixture metadata that powers the XSplit
+regression extension, with MDX notes layered on top for human guidance.
 
 ## Documentation Model
 
@@ -13,8 +30,10 @@ The modern docs are generated from the TypeScript source where possible. Compone
 - Component pages are backed by tested fixture metadata.
 - Contributor reference pages expose internal modules for migration work and
   public repository contributors, but they are not the stable package API.
-- The old Dgeni/Angular docs stack is preserved in `docs-old/` as migration reference material.
+- The old Dgeni/Angular docs stack is preserved in `docs-old/` as migration
+  reference material.
 
 ## Compatibility Notes
 
-The package API remains stable during this modernization. The browser bundle and XSplit harness continue to target CEF 103 compatibility.
+The package API remains stable during this modernization. The browser bundle and
+XSplit harness continue to target CEF 103 compatibility.

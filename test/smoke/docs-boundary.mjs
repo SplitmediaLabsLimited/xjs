@@ -47,10 +47,17 @@ assert.doesNotMatch(
 );
 
 assert.equal(pkg.scripts['docs:legacy:build'], 'node scripts/build-legacy-docs.mjs');
-assert.equal(pkg.scripts['docs:check'], 'node scripts/check-docs.mjs && npm run docs:lint');
+assert.equal(
+  pkg.scripts['docs:check'],
+  'node scripts/check-docs.mjs && npm run docs:lint && npm run docs:md:check'
+);
 assert.equal(
   pkg.scripts['docs:lint'],
   'biome check --diagnostic-level=error docs/astro.config.mjs docs/src'
+);
+assert.equal(
+  pkg.scripts['docs:md:check'],
+  'rumdl check docs/src/content/docs docs/src/typedoc && rumdl fmt --check docs/src/content/docs docs/src/typedoc'
 );
 assert.equal(
   pkg.scripts['docs:build'],
@@ -65,6 +72,7 @@ for (const dependency of [
   'starlight-typedoc',
   'typedoc',
   'typedoc-plugin-markdown',
+  'rumdl',
 ]) {
   assert.ok(pkg.devDependencies[dependency], `${dependency} should be a docs dev dependency`);
 }
@@ -76,6 +84,9 @@ for (const expected of [
   "entryPoints: ['./src']",
   "base: '/xjs'",
   "outDir: '../dist/docs'",
+  "label: 'Quick Start'",
+  "label: 'Tutorials'",
+  "label: 'Support'",
 ]) {
   assert.match(docsConfig, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 }

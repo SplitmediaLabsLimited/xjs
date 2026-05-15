@@ -20,6 +20,11 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'XJS Framework',
+      logo: {
+        src: './src/assets/img_logo_nav.png',
+        alt: 'XSplit JS Framework',
+        replacesTitle: true,
+      },
       customCss: ['./src/styles/xjs.css'],
       plugins: [
         publicTypeDoc({
@@ -50,7 +55,10 @@ export default defineConfig({
         {
           label: 'Guides',
           items: [
-            { label: 'Overview', link: '/' },
+            { label: 'Home', link: '/' },
+            { label: 'Quick Start', link: '/quick-start/' },
+            { label: 'Tutorials', link: '/tutorials/' },
+            { label: 'Support', link: '/support/' },
             { label: 'Components', link: '/components/' },
           ],
         },
