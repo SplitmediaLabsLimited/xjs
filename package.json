@@ -1,6 +1,6 @@
 {
   "name": "@splitmedialabs/xjs",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "XSplit JS Framework",
   "scripts": {
     "build": "node scripts/build.mjs",
