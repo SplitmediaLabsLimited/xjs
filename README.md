@@ -276,9 +276,9 @@ generator workflow as active dependencies.
   gate.
 - rumdl checks and formats Markdown/MDX docs content.
 - Web Test Runner covers modern component tests.
-- `npm run test:legacy` still exists for historical Karma/Jasmine coverage, but
-  it is not part of routine validation. Prefer the modern smoke, component, and
-  CDP tests for active maintenance.
+- The old Karma/Jasmine unit-test files and config remain in the tree as
+  historical reference, but the runner tooling is no longer installed. Prefer
+  the modern smoke, component, and CDP tests for active maintenance.
 - Raw CDP over `localhost:9222` is used for XSplit-hosted CEF regression.
 
 ## Release build notes
