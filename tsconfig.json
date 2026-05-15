@@ -17,6 +17,8 @@
     "types": []
   },
   "files": [
-    "./src/index.ts"
+    "./src/index.ts",
+    "./src/core/render.ts",
+    "./src/internal/render.ts"
   ]
 }

@@ -46,6 +46,7 @@ export default defineConfig({
           typeDoc: {
             ...typeDocBase,
             entryPointStrategy: 'expand',
+            exclude: ['./src/core/render.ts', './src/internal/render.ts'],
             readme: './docs/src/typedoc/internals.md',
           },
         }),

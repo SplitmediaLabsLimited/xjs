@@ -12,6 +12,7 @@ const docsQuickStart = await readFile(new URL('docs/src/content/docs/quick-start
 const docsTutorials = await readFile(new URL('docs/src/content/docs/tutorials.mdx', root), 'utf8');
 const pagesWorkflow = await readFile(new URL('.github/workflows/pages.yml', root), 'utf8');
 const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
+const tsconfig = JSON.parse(await readFile(new URL('tsconfig.json', root), 'utf8'));
 
 for (const expected of [
   'Legacy Documentation Source Boundary',
@@ -85,6 +86,7 @@ for (const expected of [
   'createStarlightTypeDocPlugin',
   "entryPoints: ['./src/index.ts']",
   "entryPoints: ['./src']",
+  "exclude: ['./src/core/render.ts', './src/internal/render.ts']",
   "site: 'https://xjs.xsplit.com'",
   "outDir: '../dist/docs'",
   "label: 'Quick Start'",
@@ -96,6 +98,10 @@ for (const expected of [
 
 for (const content of [docsHome, docsQuickStart, docsTutorials]) {
   assert.doesNotMatch(content, /\/xjs\//, 'authored docs should not hard-code the GitHub Pages base path');
+}
+
+for (const entry of ['./src/core/render.ts', './src/internal/render.ts']) {
+  assert.ok(tsconfig.files.includes(entry), `${entry} should be part of the TypeScript project`);
 }
 
 for (const expected of [
