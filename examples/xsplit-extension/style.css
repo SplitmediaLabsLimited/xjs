@@ -1,6 +1,7 @@
 body {
-  color: #1f2933;
-  font-family: Arial, sans-serif;
+  background: #f7fbff;
+  color: #26313d;
+  font-family: "Source Sans Pro", "Segoe UI", Arial, sans-serif;
   margin: 0;
 }
 
@@ -30,7 +31,7 @@ body {
 }
 
 main {
-  max-width: 900px;
+  max-width: 1120px;
   padding: 24px;
 }
 
@@ -58,20 +59,111 @@ section h2 {
 }
 
 section h3 {
-  font-size: 14px;
+  font-size: 18px;
   margin: 0 0 8px;
 }
 
-.docs-fixtures {
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin-bottom: 6px;
+}
+
+.section-heading p {
+  color: #5a7288;
+  margin: 0;
+}
+
+.component-gallery {
   display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 22px;
+  grid-template-columns: 1fr;
   margin-top: 18px;
 }
 
-.docs-fixtures > div {
-  border: 1px solid #d8dee6;
-  padding: 12px;
+.component-example-card {
+  background: #ffffff;
+  border: 1px solid #d4e0eb;
+  box-shadow: 0 8px 22px rgba(7, 18, 29, 0.08);
+  padding: 18px;
+}
+
+.component-example-header {
+  margin-bottom: 16px;
+}
+
+.component-example-header p {
+  margin: 0;
+}
+
+.component-kicker {
+  color: #0095de;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.component-preview {
+  background: #f8fafc;
+  border: 1px solid #d4e0eb;
+  margin-bottom: 16px;
+  min-height: 70px;
+  padding: 16px;
+}
+
+.component-code,
+.component-api,
+.component-regression {
+  margin-top: 16px;
+}
+
+.component-api-group {
+  border-top: 0;
+  padding: 0;
+}
+
+.component-api table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+
+.component-api th,
+.component-api td {
+  border: 1px solid #d4e0eb;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.component-api th {
+  background: #edf4f9;
+}
+
+.component-regression {
+  border: 1px solid #d4e0eb;
+  padding: 10px 12px;
+}
+
+.component-regression summary {
+  color: #0095de;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.regression-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 12px;
+}
+
+.regression-grid section {
+  border-top: 0;
+  padding: 0;
 }
 
 dl {
@@ -202,4 +294,14 @@ pre {
   overflow: auto;
   padding: 16px;
   white-space: pre-wrap;
+}
+
+@media (min-width: 960px) {
+  .component-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .component-example-card:first-child {
+    grid-column: 1 / -1;
+  }
 }

@@ -8,6 +8,10 @@ const fixtureLoader = await readFile(
   new URL('examples/xsplit-extension/component-fixtures.js', root),
   'utf8'
 );
+const fixtureGallery = await readFile(
+  new URL('examples/xsplit-extension/component-fixture-gallery.js', root),
+  'utf8'
+);
 const fixtures = await readFile(
   new URL('examples/xsplit-extension/component-fixtures.json', root),
   'utf8'
@@ -36,38 +40,8 @@ assert.match(
 );
 assert.match(
   index,
-  /<xsplit-navbar><\/xsplit-navbar>/,
-  'extension should render the docs navbar fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-search><\/xsplit-doc-search>/,
-  'extension should render the docs search fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-navigation><\/xsplit-doc-navigation>/,
-  'extension should render the docs navigation fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-quicklinks><\/xsplit-doc-quicklinks>/,
-  'extension should render the docs quicklinks fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-search-results><\/xsplit-doc-search-results>/,
-  'extension should render the docs search results fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-member-card><\/xsplit-doc-member-card>/,
-  'extension should render the docs member card fixture'
-);
-assert.match(
-  index,
-  /<xsplit-doc-code-sample><\/xsplit-doc-code-sample>/,
-  'extension should render the docs code sample fixture'
+  /\.\/component-fixture-gallery\.js/,
+  'extension should load the component fixture gallery renderer'
 );
 assert.match(
   index,
@@ -137,6 +111,8 @@ assert.match(
 );
 assert.match(fixtures, /expectedText/, 'fixture manifest should record expected rendered text');
 assert.match(fixtures, /expectedLinks/, 'fixture manifest should record expected rendered links');
+assert.match(fixtures, /exampleCode/, 'fixture manifest should include rendered example code');
+assert.match(fixtures, /"api"/, 'fixture manifest should include docs-facing API metadata');
 assert.match(
   fixtures,
   /expectedSelectors/,
@@ -177,6 +153,21 @@ assert.match(runner, /expectedText/, 'runner should verify expected rendered tex
 assert.match(runner, /expectedLinks/, 'runner should verify expected rendered links');
 assert.match(runner, /expectedSelectors/, 'runner should verify expected rendered selectors');
 assert.match(runner, /getBoundingClientRect/, 'runner should verify fixture layout dimensions');
+
+for (const expected of [
+  '__xjsComponentFixturesReady',
+  'component-example-card',
+  'data-component-preview',
+  'Example code',
+  'API surface',
+  'Regression coverage',
+]) {
+  assert.match(
+    fixtureGallery,
+    new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    `gallery renderer should include ${expected}`
+  );
+}
 
 assert.match(server, /3999/, 'examples server should default to port 3999');
 assert.match(server, /examples/, 'examples server should serve the examples directory');

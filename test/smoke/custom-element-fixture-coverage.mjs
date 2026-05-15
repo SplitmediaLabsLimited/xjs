@@ -10,6 +10,10 @@ const extensionIndex = await readFile(
 const fixtureManifest = JSON.parse(
   await readFile(new URL('examples/xsplit-extension/component-fixtures.json', root), 'utf8')
 );
+const fixtureGallery = await readFile(
+  new URL('examples/xsplit-extension/component-fixture-gallery.js', root),
+  'utf8'
+);
 const componentTests = await Promise.all([
   readFile(new URL('test/component/xsplit-navbar.test.js', root), 'utf8'),
   readFile(new URL('test/component/xsplit-doc-shell.test.js', root), 'utf8'),
@@ -72,11 +76,6 @@ assert.deepEqual(
 
 const testsSource = componentTests.join('\n');
 for (const tagName of definedElements) {
-  assert.match(
-    extensionIndex,
-    new RegExp(`<${tagName}></${tagName}>`),
-    `${tagName} should render in the extension page`
-  );
   assert.equal(
     fixtureManifest.some((fixture) => fixture.customElement === tagName),
     true,
@@ -94,9 +93,26 @@ for (const tagName of definedElements) {
   );
 }
 
+assert.match(
+  extensionIndex,
+  /component-fixture-gallery\.js/,
+  'extension should render component examples from fixture metadata'
+);
+assert.match(
+  fixtureGallery,
+  /exampleCode/,
+  'fixture gallery should render real custom element examples from fixture metadata'
+);
+
 const fixtureElements = new Set();
 for (const fixture of fixtureManifest) {
   fixtureElements.add(fixture.customElement);
+  assert.match(
+    fixture.exampleCode,
+    new RegExp(`<${fixture.customElement}></${fixture.customElement}>`),
+    `${fixture.id} should include a rendered custom element example`
+  );
+  assert.ok(fixture.api, `${fixture.id} should include component API metadata`);
 }
 
 assert.deepEqual(
