@@ -47,7 +47,11 @@ assert.doesNotMatch(
 );
 
 assert.equal(pkg.scripts['docs:legacy:build'], 'node scripts/build-legacy-docs.mjs');
-assert.equal(pkg.scripts['docs:check'], 'node scripts/check-docs.mjs');
+assert.equal(pkg.scripts['docs:check'], 'node scripts/check-docs.mjs && npm run docs:lint');
+assert.equal(
+  pkg.scripts['docs:lint'],
+  'biome check --diagnostic-level=error docs/astro.config.mjs docs/src'
+);
 assert.equal(
   pkg.scripts['docs:build'],
   'node scripts/build-docs.mjs',

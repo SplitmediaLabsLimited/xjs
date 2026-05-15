@@ -23,7 +23,16 @@
       "examples/**/*.mjs",
       "examples/**/*.html",
       "examples/**/*.css",
-      "examples/**/*.scss"
+      "examples/**/*.scss",
+      "docs/astro.config.mjs",
+      "docs/src/**/*.astro",
+      "docs/src/**/*.ts",
+      "docs/src/**/*.js",
+      "docs/src/**/*.mjs",
+      "docs/src/**/*.css",
+      "docs/src/**/*.scss",
+      "!docs/src/content/docs/api/**",
+      "!docs/src/content/docs/internals/**"
     ]
   },
   "formatter": {

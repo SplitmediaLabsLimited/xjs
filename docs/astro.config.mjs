@@ -56,7 +56,7 @@ export default defineConfig({
         },
         {
           label: 'Components',
-          autogenerate: { directory: 'components' },
+          items: [{ autogenerate: { directory: 'components' } }],
         },
         publicTypeDocSidebarGroup,
         internalTypeDocSidebarGroup,

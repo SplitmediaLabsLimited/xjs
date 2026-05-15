@@ -7,7 +7,8 @@
     "build:watch": "vite build --watch --config vite.config.mjs",
     "prepare": "npm run build",
     "docs:dev": "astro dev --root docs",
-    "docs:check": "node scripts/check-docs.mjs",
+    "docs:check": "node scripts/check-docs.mjs && npm run docs:lint",
+    "docs:lint": "biome check --diagnostic-level=error docs/astro.config.mjs docs/src",
     "docs:build": "node scripts/build-docs.mjs",
     "docs:legacy:build": "node scripts/build-legacy-docs.mjs",
     "examples": "node scripts/serve-examples.mjs",
@@ -39,10 +40,10 @@
     "./package.json": "./package.json"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.12.0"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.35.3",
+    "@astrojs/starlight": "^0.39.2",
     "@biomejs/biome": "^2.4.15",
     "@web/test-runner": "^0.20.2",
     "angular": "^1.8.3",
@@ -50,7 +51,7 @@
     "angular-aria": "^1.8.3",
     "angular-material": "^1.2.5",
     "angular-route": "^1.8.3",
-    "astro": "^5.18.1",
+    "astro": "^6.3.3",
     "canonical-path": "0.0.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.2",
@@ -60,7 +61,7 @@
     "karma-jasmine-html-reporter": "^0.1.8",
     "lefthook": "^2.1.6",
     "lodash": "^4.17.15",
-    "starlight-typedoc": "^0.21.5",
+    "starlight-typedoc": "^0.22.0",
     "string-to-comments": "^0.1.2",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
@@ -98,6 +99,6 @@
     "README.md"
   ],
   "volta": {
-    "node": "20.19.0"
+    "node": "22.20.0"
   }
 }
