@@ -17,6 +17,7 @@
 }
 
 :root[data-theme="light"] {
+  --sl-color-white: #07121d;
   --sl-color-bg: #ffffff;
   --sl-color-bg-nav: #000000;
   --sl-color-bg-sidebar: #f7f9fb;
@@ -24,13 +25,14 @@
   --sl-color-text: var(--xjs-text);
   --sl-color-text-accent: var(--xjs-blue);
   --sl-color-hairline: #d4e0eb;
-  --sl-color-gray-1: #f7fbff;
-  --sl-color-gray-2: #e6eef5;
-  --sl-color-gray-3: #ccd9e4;
+  --sl-color-gray-1: #273747;
+  --sl-color-gray-2: #445a6e;
+  --sl-color-gray-3: #5a7288;
   --sl-color-gray-4: #93a7b8;
-  --sl-color-gray-5: #5a7288;
-  --sl-color-gray-6: #273747;
-  --sl-color-black: #07121d;
+  --sl-color-gray-5: #ccd9e4;
+  --sl-color-gray-6: #e6eef5;
+  --sl-color-gray-7: #f7fbff;
+  --sl-color-black: #ffffff;
 }
 
 :root[data-theme="dark"] {
@@ -188,6 +190,11 @@ html[data-has-hero] .sl-markdown-content > p:nth-child(2) {
   text-decoration: none;
 }
 
+.sl-markdown-content a[href="https://xspl.it/download"]:hover,
+.sl-markdown-content a[href="https://xspl.it/download"]:focus {
+  color: #ffffff;
+}
+
 .sl-markdown-content li::marker {
   color: var(--xjs-blue);
 }
@@ -213,14 +220,6 @@ code {
 html[data-has-hero] .card-grid {
   max-width: 64rem;
   margin: 0 auto 2rem;
-}
-
-html[data-has-hero][data-theme="light"] .sl-link-card .title {
-  color: var(--xjs-blue);
-}
-
-html[data-has-hero][data-theme="light"] .sl-link-card .description {
-  color: var(--xjs-text);
 }
 
 .xjs-fixture {
