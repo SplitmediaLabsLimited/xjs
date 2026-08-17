@@ -1,7 +1,5 @@
 # XSplit JS Framework
 
-[![Build Status](https://travis-ci.org/xjsframework/xjs.svg?branch=master)](https://travis-ci.org/xjsframework/xjs)
-
 > **Package rename:** maintained releases now publish as
 > `@splitmedialabs/xjs`. The old `xjs-framework` npm package is kept for
 > historical releases; `2.10.2` remains its final published release.
