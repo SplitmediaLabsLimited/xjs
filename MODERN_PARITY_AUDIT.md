@@ -17,8 +17,9 @@ there is explicit approval for a future major-version redesign.
   absence, or exact script spelling.
 - XSplit host callback boundaries: the `exec`, app, DLL, IO, stream, and system
   smokes cover the highest-risk host shims.
-- Extension and window APIs: the extension configuration, window event, and
-  dialog smokes cover extension lifecycle, configuration, and dialog behavior.
+- Extension and window APIs: the extension configuration, window event,
+  source-plugin window event, and dialog smokes cover extension lifecycle,
+  scene add/delete callback normalization, configuration, and dialog behavior.
 - Runtime item, source, and scene APIs: the item, source, media, scene,
   transition, and type-resolution smokes cover the most-used public surfaces
   without changing their API shape.
@@ -44,15 +45,19 @@ there is explicit approval for a future major-version redesign.
 - `docs-old/**.spec.js` remains reference material only; the
   Dgeni/Broccoli/Angular docs pipeline is not part of the active build.
 
-## Remaining Parity Gaps
+## Remaining Acceptance Work
 
-- Scene lookup, active-scene switching, enumeration, search/filter helpers, item
-  ordering, transitions, presets, and `liveScene()` have modern smoke coverage;
-  add/delete event behavior still has only legacy coverage.
-- Public visual methods, common playback controls, and source configuration are
-  covered, but not every historical validation branch or malformed host reply.
-- The XSplit harness covers fixtures and CDP plumbing, but manual CEF 103
-  evidence remains necessary for authoritative host validation.
+- No deterministic API parity gap found in the current legacy inventory warrants
+  another broad modern suite. Scene lookup, active-scene switching, enumeration,
+  search/filter helpers, item ordering, transitions, presets, `liveScene()`, and
+  extension/source-plugin scene lifecycle events have active smoke coverage.
+- Historical validation branches and hypothetical malformed host replies are
+  reference inputs, not a coverage quota. Promote one into an active regression
+  when it reproduces a bug or protects an explicitly defined public failure
+  contract.
+- Live XSplit/CEF 103 evidence remains a release-candidate acceptance gate, not
+  a missing unit-test layer. Raw CDP must exercise the exact candidate build;
+  an older retained receipt proves only the build and host recorded by that run.
 
 ## Test Economy and Next Coverage
 

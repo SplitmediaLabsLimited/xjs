@@ -64,6 +64,10 @@ globalThis.external = {
     }
     return '';
   },
+  AppSubscribeEvents() {
+    hostCalls.push(['AppSubscribeEvents']);
+    return '0';
+  },
   SourcesListSubscribeEvents(view) {
     hostCalls.push(['SourcesListSubscribeEvents', view]);
     return '0';
@@ -118,6 +122,35 @@ globalThis.OnSceneLoad('0', '3');
 await waitForMicrotasks();
 assert.deepEqual(sceneLoadEvents, [3]);
 
+const sceneAddEvents = [];
+xjs.ExtensionWindow.on('scene-add', (index, uid) => {
+  sceneAddEvents.push([index, uid]);
+});
+globalThis.AppOnEvent(
+  'OnSceneAdd',
+  'ignored',
+  '&sceneid:{11111111-1111-4111-8111-111111111111}&scene:2'
+);
+assert.deepEqual(sceneAddEvents, [[3, '{11111111-1111-4111-8111-111111111111}']]);
+
+const sceneDeleteEvents = [];
+xjs.ExtensionWindow.on('scene-delete', (index, uid) => {
+  sceneDeleteEvents.push([index, uid]);
+});
+globalThis.AppOnEvent(
+  'OnSceneDelete',
+  'ignored',
+  '&sceneid:{22222222-2222-4222-8222-222222222222}&scene:4'
+);
+assert.deepEqual(sceneDeleteEvents, [[5, '{22222222-2222-4222-8222-222222222222}']]);
+
+const sceneDeleteAllEvents = [];
+xjs.ExtensionWindow.on('scene-delete-all', (type) => {
+  sceneDeleteAllEvents.push(type);
+});
+globalThis.AppOnEvent('OnSceneDeleteAll', 'newpres');
+assert.deepEqual(sceneDeleteAllEvents, ['newpres']);
+
 await assert.rejects(
   () => xjs.ExtensionWindow.on('some-other-event', () => {}),
   /not yet supported/
@@ -133,4 +166,8 @@ assert.deepEqual(
     ['SourcesListSubscribeEvents', '0'],
     ['SourcesListSubscribeEvents', '1'],
   ]
+);
+assert.equal(
+  hostCalls.filter((call) => call[0] === 'AppSubscribeEvents').length,
+  3
 );
