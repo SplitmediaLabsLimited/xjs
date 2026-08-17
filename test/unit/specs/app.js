@@ -1,8 +1,12 @@
 /* globals describe, it, expect, xdescribe, require, beforeAll, beforeEach, spyOn, jasmine, afterEach, afterAll */
 
-describe('App ===', () => {
-  var startsWith = (mainString, stringCompared) =>
-    mainString.toLowerCase().substring(0, stringCompared.length) === stringCompared.toLowerCase();
+describe('App ===', function() {
+  'use strict';
+
+  var startsWith = function(mainString, stringCompared) {
+    return mainString.toLowerCase().substring(0, stringCompared.length) ===
+      stringCompared.toLowerCase();
+  };
   var XJS = require('xjs');
   var App = new XJS.App();
   var Transition = XJS.Transition;
@@ -10,33 +14,38 @@ describe('App ===', () => {
   var environments = ['props', 'extension', 'plugin'];
   var appVersion = navigator.appVersion;
   var mix = new window.Mixin([
-    () => {
-      navigator.__defineGetter__('appVersion', () => 'XSplit Broadcaster 2.7.1702.2231 ');
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.7.1702.2231 ';
+      });
     },
-    () => {
-      navigator.__defineGetter__('appVersion', () => 'XSplit Broadcaster 2.8.1603.0401 ');
-    },
+    function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return 'XSplit Broadcaster 2.8.1603.0401 ';
+      });
+    }
   ]);
   var exec = mix.exec.bind(mix);
 
   var ctr = 0;
 
-  var xCallback = (id, result) => {
-    setTimeout(() => {
+  var xCallback = function(id, result) {
+    setTimeout(function() {
       window.OnAsyncCallback(id, result);
     }, 10);
   };
 
-  beforeAll((done) => {
-    XJS.ready().then(() => {
+  beforeAll(function(done) {
+    XJS.ready().then(function() {
       done();
     });
-  });
+  })
 
-  describe('should get frametime', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'frametime') {
+  describe('should get frametime', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'frametime') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '12');
@@ -45,14 +54,14 @@ describe('App ===', () => {
       });
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       var promise = App.getFrameTime();
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as a number', (done) => {
+    it('that always return as a number', function(done) {
       var promise = App.getFrameTime();
-      promise.then((count) => {
+      promise.then(function(count) {
         expect(count).toBeTypeOf('number');
         expect(count).not.toBeNaN();
         done();
@@ -60,10 +69,11 @@ describe('App ===', () => {
     });
   });
 
-  describe('should get resolution', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'resolution') {
+  describe('should get resolution', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'resolution') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '900, 600');
@@ -72,14 +82,15 @@ describe('App ===', () => {
       });
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       var promise = App.getResolution();
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as an object that has height and width', (done) => {
+    it('that always return as an object that has height and width',
+      function(done) {
       var promise = App.getResolution();
-      promise.then((resolution) => {
+      promise.then(function(resolution) {
         expect(resolution).toBeInstanceOf(Object);
         expect(resolution._width).toBeTypeOf('number');
         expect(resolution._width).not.toBeNaN();
@@ -90,10 +101,11 @@ describe('App ===', () => {
     });
   });
 
-  describe('should get viewport', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'viewport') {
+  describe('should get viewport', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'viewport') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '900, 600');
@@ -102,37 +114,42 @@ describe('App ===', () => {
       });
     });
 
-    afterEach(() => {
-      navigator.__defineGetter__('appVersion', () => appVersion);
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
     });
 
-    it('through a promise', (done) => {
-      exec((next) => {
+    it('through a promise', function(done) {
+      exec(function(next) {
         var promise = App.getViewport();
         expect(promise).toBeInstanceOf(Promise);
         next();
       }).then(done);
     });
 
-    it('that always return as an object that has height and width', (done) => {
-      exec((next) => {
-        var promise = App.getViewport();
-        promise.then((viewPort) => {
-          expect(viewPort).toBeTypeOf('object');
-          expect(viewPort._width).toBeTypeOf('number');
-          expect(viewPort._width).not.toBeNaN();
-          expect(viewPort._height).toBeTypeOf('number');
-          expect(viewPort._height).not.toBeNaN();
-          next();
-        });
-      }).then(done);
-    });
+    it('that always return as an object that has height and width',
+      function(done) {
+        exec(function(next) {
+          var promise = App.getViewport();
+          promise.then(function(viewPort) {
+            expect(viewPort).toBeTypeOf('object');
+            expect(viewPort._width).toBeTypeOf('number');
+            expect(viewPort._width).not.toBeNaN();
+            expect(viewPort._height).toBeTypeOf('number');
+            expect(viewPort._height).not.toBeNaN();
+            next();
+          });
+        }).then(done);
+      }
+    );
   });
 
-  describe('should get version', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'version') {
+  describe('should get version', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'version') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '1.3.0.429');
@@ -141,43 +158,44 @@ describe('App ===', () => {
       });
     });
 
-    afterEach(() => {
-      navigator.__defineGetter__('appVersion', () => appVersion);
+    afterEach(function() {
+      navigator.__defineGetter__('appVersion', function() {
+        return appVersion;
+      });
     });
 
-    it('through a promise', (done) => {
-      exec((next) => {
+    it('through a promise', function(done) {
+      exec(function(next) {
         var promise = App.getVersion();
         expect(promise).toBeInstanceOf(Promise);
         next();
       }).then(done);
     });
 
-    it('that always return as string', (done) => {
-      exec((next) => {
+    it('that always return as string', function(done) {
+      exec(function(next) {
         var promise = App.getVersion();
-        promise
-          .then((version) => {
-            if (/xsplit broadcaster/gi.test(navigator.appVersion)) {
-              expect(version).toBeDefined();
-              expect(version).toBeTypeOf('string');
-              next();
-            } else {
-              done.fail('Should reject if browser is not XBC');
-            }
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
+        promise.then(function(version) {
+          if (/xsplit broadcaster/ig.test(navigator.appVersion)) {
+            expect(version).toBeDefined();
+            expect(version).toBeTypeOf('string');
             next();
-          });
+          } else {
+            done.fail('Should reject if browser is not XBC');
+          }
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          next();
+        });
       }).then(done);
     });
   });
 
-  describe('should get frames rendered', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'framesrendered') {
+  describe('should get frames rendered', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'framesrendered') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '12683');
@@ -186,14 +204,14 @@ describe('App ===', () => {
       });
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       var promise = App.getFramesRendered();
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as a number', (done) => {
+    it('that always return as a number', function(done) {
       var promise = App.getFramesRendered();
-      promise.then((framesRendered) => {
+      promise.then(function(framesRendered) {
         expect(framesRendered).toBeTypeOf('number');
         expect(framesRendered).not.toBeNaN();
         done();
@@ -201,23 +219,23 @@ describe('App ===', () => {
     });
   });
 
-  describe('should be able to get audio devices', () => {
-    var micDev2Mock = encodeURIComponent(
-      '<devices>' +
-        '<dev id="default:1:0" level="0.900000" enable="1"' +
+  describe ('should be able to get audio devices', function() {
+    var micDev2Mock =
+    encodeURIComponent('<devices>' +
+      '<dev id="default:1:0" level="0.900000" enable="1"' +
         ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
-        '<dev id="default:0:0" level="1.500000" enable="1"' +
+      '<dev id="default:0:0" level="1.500000" enable="1"' +
         ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
-        '<dev id="{0.0.0.00000000}.' +
+      '<dev id="{0.0.0.00000000}.' +
         '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
         ' enable="1" hwlevel="-1.000000" hwenable="255"' +
         ' delay="0" mix="0"/>' +
-        '</devices>'
-    );
+      '</devices>');
 
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'microphonedev2') {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonedev2') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, micDev2Mock);
@@ -226,82 +244,73 @@ describe('App ===', () => {
       });
     });
 
-    describe('primary mic', () => {
+    describe ('primary mic', function() {
       var promise;
-      beforeEach(() => {
+      beforeEach(function() {
         promise = App.getPrimaryMic();
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
       // if this fails, please first check if the expected value corresponds to the supplied micDev2Mock
-      it('as an audioDevice', (done) => {
-        promise.then((audioDevice) => {
-          expect(audioDevice).hasMethods(
-            'getId, getName, getDataFlow,' +
-              ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
-              ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
-              ' _setSystemEnabled, getDelay, _setDelay, toString'
-          );
-          expect(audioDevice.toString()).toEqual(
-            '<dev id="default:1:0"' +
-              ' level="0.900000" enable="1" hwlevel="-1.000000" hwenable="255"' +
-              ' delay="0" mix="0"/>'
-          );
+      it('as an audioDevice', function(done) {
+        promise.then(function(audioDevice) {
+          expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
+          expect(audioDevice.toString()).toEqual('<dev id="default:1:0"' +
+            ' level="0.900000" enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>');
           done();
         });
       });
     });
 
-    describe('primary speaker', () => {
+    describe ('primary speaker', function() {
       var promise;
-      beforeEach(() => {
+      beforeEach(function() {
         promise = App.getPrimarySpeaker();
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
       // if this fails, please first check if the expected value corresponds to the supplied micDev2Mock
-      it('as an audioDevice', (done) => {
-        promise.then((audioDevice) => {
-          expect(audioDevice).hasMethods(
-            'getId, getName, getDataFlow,' +
-              ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
-              ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
-              ' _setSystemEnabled, getDelay, _setDelay, toString'
-          );
-          expect(audioDevice.toString()).toEqual(
-            '<dev id="default:0:0"' +
-              ' level="1.500000" enable="1" hwlevel="-1.000000" hwenable="255"' +
-              ' delay="0" mix="0"/>'
-          );
+      it('as an audioDevice', function(done) {
+        promise.then(function(audioDevice) {
+          expect(audioDevice).hasMethods('getId, getName, getDataFlow,' +
+            ' isDefaultDevice, getLevel, _setLevel, isEnabled, _setEnabled,' +
+            ' getSystemLevel, _setSystemLevel, getSystemEnabled,' +
+            ' _setSystemEnabled, getDelay, _setDelay, toString');
+          expect(audioDevice.toString()).toEqual('<dev id="default:0:0"' +
+            ' level="1.500000" enable="1" hwlevel="-1.000000" hwenable="255"' +
+            ' delay="0" mix="0"/>');
           done();
         });
       });
     });
   });
 
-  describe('should be able to set attributes of audio devices', () => {
-    window.micDev2 = encodeURIComponent(
-      '<devices>' +
+  describe ('should be able to set attributes of audio devices', function() {
+    window.micDev2 = encodeURIComponent('<devices>' +
         '<dev id="default:1:0" level="1.000000" enable="1"' +
-        ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+          ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
         '<dev id="default:0:0" level="1.000000" enable="1"' +
-        ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
+          ' hwlevel="-1.000000" hwenable="255" delay="0" mix="0"/>' +
         '<dev id="{0.0.0.00000000}.' +
-        '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
-        ' enable="1" hwlevel="-1.000000" hwenable="255"' +
-        ' delay="0" mix="0"/>' +
-        '</devices>'
-    );
+          '{8a37e9cb-90fd-42d9-9d5b-8d8c43bdb929}" level="1.000000"' +
+          ' enable="1" hwlevel="-1.000000" hwenable="255"' +
+          ' delay="0" mix="0"/>' +
+        '</devices>');
 
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'microphonedev2') {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonedev2') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, micDev2);
@@ -309,7 +318,9 @@ describe('App ===', () => {
         }
       });
 
-      spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
+      spyOn(window.external, 'AppSetPropertyAsync')
+        .and.callFake(function(funcName, value) {
+
         if (funcName === 'microphonedev2') {
           micDev2 = encodeURIComponent(value);
           ctr++;
@@ -320,317 +331,277 @@ describe('App ===', () => {
       });
     });
 
-    describe('primary mic level', () => {
+    describe ('primary mic level', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimaryMicLevel(45);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getLevel()).toEqual(45);
-            return App.setPrimaryMicLevel(-25);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimaryMicLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary mic enabled', () => {
+    describe ('primary mic enabled', function() {
       var promise;
 
-      it('through a promise as a boolean', (done) => {
+      it ('through a promise as a boolean', function(done) {
         promise = App.setPrimaryMicEnabled(false);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.isEnabled()).toBe(false);
-            return App.setPrimaryMicEnabled(true);
-          })
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.isEnabled()).toBe(true);
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(false);
+          return App.setPrimaryMicEnabled(true);
+        }).then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(true);
+          done();
+        });
       });
     });
 
-    describe('primary mic system level', () => {
+    describe ('primary mic system level', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimaryMicSystemLevel(25);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getSystemLevel()).toEqual(25);
-            return App.setPrimaryMicSystemLevel(-25);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimaryMicSystemLevel(-25)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary mic system enabled', () => {
+    describe ('primary mic system enabled', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimaryMicSystemEnabled(255);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getSystemEnabled()).toEqual(255);
-            return App.setPrimaryMicSystemEnabled(42);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimaryMicSystemEnabled(42)
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary mic delay', () => {
+    describe ('primary mic delay', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimaryMicDelay(5555);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimaryMic();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getDelay()).toEqual(5555);
-            return App.setPrimaryMicDelay(-20);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimaryMic();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimaryMicDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary speaker level', () => {
+    describe ('primary speaker level', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimarySpeakerLevel(45);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getLevel()).toEqual(45);
-            return App.setPrimarySpeakerLevel(-20);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getLevel()).toEqual(45);
+          return App.setPrimarySpeakerLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary speaker enabled', () => {
+    describe ('primary speaker enabled', function() {
       var promise;
 
-      it('through a promise as a boolean', (done) => {
+      it ('through a promise as a boolean', function(done) {
         promise = App.setPrimarySpeakerEnabled(false);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.isEnabled()).toBe(false);
-            return App.setPrimarySpeakerEnabled(true);
-          })
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.isEnabled()).toBe(true);
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(false);
+          return App.setPrimarySpeakerEnabled(true);
+        }).then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.isEnabled()).toBe(true);
+          done();
+        });
       });
     });
 
-    describe('primary speaker system level', () => {
+    describe ('primary speaker system level', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimarySpeakerSystemLevel(25);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getSystemLevel()).toEqual(25);
-            return App.setPrimarySpeakerSystemLevel(-20);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemLevel()).toEqual(25);
+          return App.setPrimarySpeakerSystemLevel(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary speaker system enabled', () => {
+    describe ('primary speaker system enabled', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimarySpeakerSystemEnabled(255);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getSystemEnabled()).toEqual(255);
-            return App.setPrimarySpeakerSystemEnabled(20);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getSystemEnabled()).toEqual(255);
+          return App.setPrimarySpeakerSystemEnabled(20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('primary speaker delay', () => {
+    describe ('primary speaker delay', function() {
       var promise;
 
-      it('through a promise as a number', (done) => {
+      it ('through a promise as a number', function(done) {
         promise = App.setPrimarySpeakerDelay(5555);
         expect(promise).toBeInstanceOf(Promise);
-        promise
-          .then((isSet) => {
-            expect(isSet).toBe(true);
-            return App.getPrimarySpeaker();
-          })
-          .then((audioDevice) => {
-            expect(audioDevice.getDelay()).toEqual(5555);
-            return App.setPrimarySpeakerDelay(-20);
-          })
-          .then((isSet) => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+        promise.then(function(isSet) {
+          expect(isSet).toBe(true);
+          return App.getPrimarySpeaker();
+        }).then(function(audioDevice) {
+          expect(audioDevice.getDelay()).toEqual(5555);
+          return App.setPrimarySpeakerDelay(-20);
+        }).then(function(isSet) {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
   });
 
-  describe('should be able to get silence detection values', () => {
+  describe ('should be able to get silence detection values', function() {
     var promise;
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'microphonegain') {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonegain') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
-          xCallback(
-            asyncId,
-            encodeURIComponent('<configuration enable="0" gain="5"' + ' latency="1000"/>')
-          );
+          xCallback(asyncId,
+              encodeURIComponent('<configuration enable="0" gain="5"' +
+                ' latency="1000"/>'));
           return asyncId;
         }
       });
     });
 
-    describe('if silence detection is enabled', () => {
-      beforeEach(() => {
+    describe ('if silence detection is enabled', function() {
+      beforeEach(function() {
         promise = App.isSilenceDetectionEnabled();
       });
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('that returns as a boolean', (done) => {
-        promise.then((isEnabled) => {
+      it('that returns as a boolean', function(done) {
+        promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('boolean');
           done();
         });
       });
     });
 
-    describe('silence detection threshold', () => {
-      beforeEach(() => {
+    describe ('silence detection threshold', function() {
+      beforeEach(function() {
         promise = App.getSilenceDetectionThreshold();
       });
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('that returns as a number', (done) => {
-        promise.then((sdThreshold) => {
+      it('that returns as a number', function(done) {
+        promise.then(function(sdThreshold) {
           expect(sdThreshold).toBeTypeOf('number');
           done();
         });
       });
     });
 
-    describe('silence detection period', () => {
-      beforeEach(() => {
+    describe ('silence detection period', function() {
+      beforeEach(function() {
         promise = App.getSilenceDetectionPeriod();
       });
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('that returns as a number', (done) => {
-        promise.then((sdPeriod) => {
+      it('that returns as a number', function(done) {
+        promise.then(function(sdPeriod) {
           expect(sdPeriod).toBeTypeOf('number');
           done();
         });
@@ -638,13 +609,14 @@ describe('App ===', () => {
     });
   });
 
-  describe('should be able to set silence detection values', () => {
-    var audioGainMock = encodeURIComponent(
-      '<configuration enable="0"' + ' gain="5" latency="1000"/>'
-    );
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'microphonegain') {
+  describe ('should be able to set silence detection values', function() {
+    var audioGainMock =
+      encodeURIComponent('<configuration enable="0"' +
+        ' gain="5" latency="1000"/>');
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'microphonegain') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, audioGainMock);
@@ -653,14 +625,15 @@ describe('App ===', () => {
       });
     });
 
-    describe('enable/disable silence detection', () => {
-      var audioGainResultEnable = encodeURIComponent(
-        '<configuration enable="1"' + ' gain="5" latency="1000"/>'
-      );
+    describe ('enable/disable silence detection', function() {
+      var audioGainResultEnable =
+        encodeURIComponent('<configuration enable="1"' +
+          ' gain="5" latency="1000"/>');
       var silenceDetectionEnabledSet;
       var promise;
-      beforeEach(() => {
-        spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
           silenceDetectionEnabledSet = false;
           if (funcName === 'microphonegain') {
             if (encodeURIComponent(value) === audioGainResultEnable) {
@@ -675,26 +648,27 @@ describe('App ===', () => {
         promise = App.enableSilenceDetection(true);
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('as a boolean', (done) => {
-        promise.then(() => {
+      it('as a boolean', function(done) {
+        promise.then(function() {
           expect(silenceDetectionEnabledSet).toBe(true);
           done();
         });
       });
     });
 
-    describe('silence detection threshold', () => {
-      var audioGainResultThreshold = encodeURIComponent(
-        '<configuration enable="0"' + ' gain="10" latency="1000"/>'
-      );
+    describe ('silence detection threshold', function() {
+      var audioGainResultThreshold =
+        encodeURIComponent('<configuration enable="0"' +
+          ' gain="10" latency="1000"/>');
       var silenceDetectionThresholdSet;
       var promise;
-      beforeEach(() => {
-        spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
           silenceDetectionThresholdSet = false;
           if (funcName === 'microphonegain') {
             if (encodeURIComponent(value) === audioGainResultThreshold) {
@@ -709,70 +683,63 @@ describe('App ===', () => {
         promise = App.setSilenceDetectionThreshold(10);
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('as a number', (done) => {
-        promise.then(() => {
+      it('as a number', function(done) {
+        promise.then(function() {
           expect(silenceDetectionThresholdSet).toBe(true);
           done();
         });
       });
 
-      it('should not be set below 0', (done) => {
-        promise = App.setSilenceDetectionThreshold(-1)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionThreshold(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should not be set above 128', (done) => {
-        promise = App.setSilenceDetectionThreshold(129)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not be set above 128', function(done) {
+        promise = App.setSilenceDetectionThreshold(129).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should not allow decimals', (done) => {
-        promise = App.setSilenceDetectionThreshold(5.5)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not allow decimals', function(done) {
+        promise = App.setSilenceDetectionThreshold(5.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should only accept numbers', (done) => {
-        promise = App.setSilenceDetectionThreshold('abcd')
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionThreshold('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
 
-    describe('silence detection period', () => {
-      var audioGainResultPeriod = encodeURIComponent(
-        '<configuration enable="0"' + ' gain="5" latency="5000"/>'
-      );
+    describe ('silence detection period', function() {
+      var audioGainResultPeriod =
+        encodeURIComponent('<configuration enable="0"' +
+          ' gain="5" latency="5000"/>');
       var silenceDetectionPeriodSet;
       var promise;
-      beforeEach(() => {
-        spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
+      beforeEach(function() {
+        spyOn(window.external, 'AppSetPropertyAsync')
+          .and.callFake(function(funcName, value) {
           silenceDetectionPeriodSet = false;
           if (funcName === 'microphonegain') {
             if (encodeURIComponent(value) === audioGainResultPeriod) {
@@ -787,67 +754,59 @@ describe('App ===', () => {
         promise = App.setSilenceDetectionPeriod(5000);
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('as a number', (done) => {
-        promise.then(() => {
+      it('as a number', function(done) {
+        promise.then(function() {
           expect(silenceDetectionPeriodSet).toBe(true);
           done();
         });
       });
 
-      it('should not be set below 0', (done) => {
-        promise = App.setSilenceDetectionPeriod(-1)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not be set below 0', function(done) {
+        promise = App.setSilenceDetectionPeriod(-1).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should not be set above 60000', (done) => {
-        promise = App.setSilenceDetectionPeriod(60001)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not be set above 60000', function(done) {
+        promise = App.setSilenceDetectionPeriod(60001).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should not accept decimals', (done) => {
-        promise = App.setSilenceDetectionPeriod(1000.5)
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should not accept decimals', function(done) {
+        promise = App.setSilenceDetectionPeriod(1000.5).then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
 
-      it('should only accept numbers', (done) => {
-        promise = App.setSilenceDetectionPeriod('abcd')
-          .then(() => {
-            done.fail('Invalid value was accepted');
-          })
-          .catch((err) => {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
+      it('should only accept numbers', function(done) {
+        promise = App.setSilenceDetectionPeriod('abcd').then(function() {
+          done.fail('Invalid value was accepted');
+        }).catch(function(err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
       });
     });
   });
 
-  describe('should be able to get and set noise suppression support', () => {
-    var arrayToObj = (array, separator) => {
+  describe ('should be able to get and set noise suppression support', function() {
+    var arrayToObj = function(array, separator) {
       var obj = {};
-      array.map((el) => {
+      array.map(function(el) {
         var separatorIndex = el.indexOf(separator);
         var key = el.substring(0, separatorIndex);
         obj[key] = el.substring(separatorIndex + 1);
@@ -857,14 +816,15 @@ describe('App ===', () => {
 
     var promise;
     var nsEnabled = false;
-    beforeEach(() => {
-      spyOn(window.external, 'CallHostFunc').and.callFake((funcName, ...param) => {
+    beforeEach(function() {
+      spyOn(window.external, 'CallHostFunc')
+        .and.callFake(function(funcName, ...param) {
         ctr++;
         var asyncId = 'iapp_' + ctr;
-        if (funcName === 'getProperty' && param[0] === 'sound_ns') {
+        if (funcName == 'getProperty' && param[0] === 'sound_ns') {
           xCallback(asyncId, `Enabled=${Number(nsEnabled)}`);
           return asyncId;
-        } else if (funcName === 'setProperty' && param[0] === 'sound_ns') {
+        } else if (funcName == 'setProperty' && param[0] === 'sound_ns') {
           var queryParams = param[1].split('&');
           var queryObj = arrayToObj(queryParams, '=');
           nsEnabled = queryObj['Enabled'] === '1';
@@ -874,57 +834,56 @@ describe('App ===', () => {
       });
     });
 
-    describe('get if noise suppression is enabled', () => {
-      beforeEach(() => {
+    describe ('get if noise suppression is enabled', function() {
+      beforeEach(function() {
         promise = App.isNoiseSuppressionEnabled();
       });
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('that returns as a boolean', (done) => {
-        promise.then((isEnabled) => {
+      it('that returns as a boolean', function(done) {
+        promise.then(function(isEnabled) {
           expect(isEnabled).toBeTypeOf('boolean');
           done();
         });
       });
     });
 
-    describe('enable/disable noise suppression', () => {
+    describe ('enable/disable noise suppression', function() {
       var promise;
-      beforeEach(() => {
+      beforeEach(function() {
         promise = App.enableNoiseSuppression(true);
       });
 
-      it('through a promise', () => {
+      it('through a promise', function() {
         expect(promise).toBeInstanceOf(Promise);
       });
 
-      it('as a boolean', (done) => {
-        promise.then(() => {
+      it('as a boolean', function(done) {
+        promise.then(function() {
           expect(nsEnabled).toBe(true);
           done();
         });
       });
 
-      it('and is correctly set', (done) => {
-        promise
-          .then(() => {
-            expect(nsEnabled).toBe(true);
-            return App.enableNoiseSuppression(false);
-          })
-          .then(() => {
-            expect(nsEnabled).toBe(false);
-            done();
-          });
+      it('and is correctly set', function(done) {
+        promise.then(function() {
+          expect(nsEnabled).toBe(true);
+          return App.enableNoiseSuppression(false);
+        }).then(function() {
+          expect(nsEnabled).toBe(false);
+          done();
+        });
       });
     });
-  });
+  })
 
-  describe('should get transition', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'transitionid') {
+  describe('should get transition', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'transitionid') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, 'clock');
@@ -933,19 +892,21 @@ describe('App ===', () => {
       });
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       var promise = App.getTransition();
       expect(promise).toBeInstanceOf(Promise);
     });
   });
 
-  describe('should be able to set transition', () => {
+  describe ('should be able to set transition', function() {
     var transitionSet;
     var promise;
-    beforeEach(() => {
+    beforeEach(function() {
       transitionSet = false;
-      spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
-        if (funcName === 'transitionid' && value === 'clock') {
+      spyOn(window.external, 'AppSetPropertyAsync')
+        .and.callFake(function(funcName, value) {
+
+        if (funcName === 'transitionid' && value == 'clock') {
           transitionSet = true;
           ctr++;
           var asyncId = 'iapp_' + ctr;
@@ -956,22 +917,23 @@ describe('App ===', () => {
       promise = App.setTransition(Transition.CLOCK);
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('as a Transition object', (done) => {
-      promise.then(() => {
+    it('as a Transition object', function(done) {
+      promise.then(function() {
         expect(transitionSet).toBe(true);
         done();
       });
     });
   });
 
-  describe('should get transition time', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'AppGetPropertyAsync').and.callFake((funcName) => {
-        if (funcName === 'transitiontime') {
+  describe('should get transition time', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'AppGetPropertyAsync')
+        .and.callFake(function(funcName) {
+        if (funcName == 'transitiontime') {
           ctr++;
           var asyncId = 'iapp_' + ctr;
           xCallback(asyncId, '3000');
@@ -980,14 +942,14 @@ describe('App ===', () => {
       });
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       var promise = App.getTransitionTime();
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('that always return as a number', (done) => {
+    it('that always return as a number', function(done) {
       var promise = App.getTransitionTime();
-      promise.then((count) => {
+      promise.then(function(count) {
         expect(count).toBeTypeOf('number');
         expect(count).not.toBeNaN();
         done();
@@ -995,13 +957,14 @@ describe('App ===', () => {
     });
   });
 
-  describe('should be able to set transtion time', () => {
+  describe ('should be able to set transtion time', function() {
     var transitionTimeSet;
     var promise;
-    beforeEach(() => {
+    beforeEach(function() {
       transitionTimeSet = false;
-      spyOn(window.external, 'AppSetPropertyAsync').and.callFake((funcName, value) => {
-        if (funcName === 'transitiontime' && typeof value === 'string' && value === '1000') {
+      spyOn(window.external, 'AppSetPropertyAsync')
+        .and.callFake(function(funcName, value) {
+        if (funcName === 'transitiontime' && typeof value == 'string' && value === '1000') {
           transitionTimeSet = true;
           ctr++;
           var asyncId = 'iapp_' + ctr;
@@ -1012,73 +975,62 @@ describe('App ===', () => {
       promise = App.setTransitionTime('1000');
     });
 
-    it('through a promise', () => {
+    it('through a promise', function() {
       expect(promise).toBeInstanceOf(Promise);
     });
 
-    it('as a string', (done) => {
-      promise.then(() => {
+    it('as a string', function(done) {
+      promise.then(function() {
         expect(transitionTimeSet).toBe(true);
         done();
       });
     });
   });
 
-  describe('should be able to clear cookies', () => {
-    it('but not for source plugin window', (done) => {
+  describe('should be able to clear cookies', function() {
+    it('but not for source plugin window', function(done) {
       env.set(environments[2]); // source plugin window
-      App.clearBrowserCookies()
-        .then(
-          () => {
-            done.fail('Clear browser cookies should reject on source plugin,');
-          },
-          () => {
-            env.set(environments[0]); // source config window
-          }
-        )
-        .then(App.clearBrowserCookies)
-        .then(
-          () => {
-            env.set(environments[1]); // extension window
-          },
-          () => {
-            done.fail('Clear browser cookies should work in source config window.');
-          }
-        )
-        .then(App.clearBrowserCookies)
-        .then(
-          () => {
-            expect(true).toBe(true);
-            done();
-          },
-          () => {
-            done.fail('Clear browser cookies should work in extensions.');
-          }
-        );
+      App.clearBrowserCookies().then(function() {
+        done.fail('Clear browser cookies should reject on source plugin,');
+      }, function() {
+        env.set(environments[0]); // source config window
+      }).then(App.clearBrowserCookies)
+      .then(function() {
+        env.set(environments[1]); // extension window
+      }, function() {
+        done.fail('Clear browser cookies should work in source config window.');
+      }).then(App.clearBrowserCookies)
+      .then(function() {
+        expect(true).toBe(true);
+        done();
+      }, function() {
+        done.fail('Clear browser cookies should work in extensions.');
+      });
     });
   });
 
-  describe('should be able to get hashed user identity', () => {
-    beforeEach(() => {
-      spyOn(window.external, 'GetGlobalProperty').and.callFake((prop) => {
-        if (prop === 'userid') {
-          return '+965Bu+jXY+jUvCCbSAJbQ==';
-        }
-      });
+  describe('should be able to get hashed user identity', function() {
+    beforeEach(function() {
+      spyOn(window.external, 'GetGlobalProperty')
+        .and.callFake(function(prop) {
+          if (prop === 'userid') {
+            return '+965Bu+jXY+jUvCCbSAJbQ==';
+          }
+        });
     });
 
-    it('as a string', (done) => {
-      App.getUserIdHash().then((hash) => {
+    it('as a string', function(done) {
+      App.getUserIdHash().then(function(hash) {
         expect(hash).toBeTypeOf('string');
         done();
       });
     });
 
-    it('encoded using some has function', (done) => {
+    it('encoded using some has function', function(done) {
       // simple checking of character set, not really testing other constraints
       var regex = /^[A-Za-z0-9+=]+$/;
 
-      App.getUserIdHash().then((hash) => {
+      App.getUserIdHash().then(function(hash) {
         expect(regex.test(hash)).toBe(true);
         done();
       });

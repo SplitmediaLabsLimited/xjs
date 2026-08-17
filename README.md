@@ -169,7 +169,7 @@ Run the default smoke suite:
 npm test
 ```
 
-Run all modern smoke and migration guard checks:
+Run the modern smoke suite plus the focused CEF compatibility contract:
 
 ```sh
 npm run test:full

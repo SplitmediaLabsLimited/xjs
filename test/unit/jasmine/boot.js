@@ -8,7 +8,8 @@
  [jasmine-gem]: http://github.com/pivotal/jasmine-gem
  */
 
-(() => {
+(function() {
+
   /**
    * ## Require &amp; Instantiate
    *
@@ -45,13 +46,13 @@
    */
 
   var queryString = new jasmine.QueryString({
-    getWindowLocation: () => window.location,
+    getWindowLocation: function() { return window.location; }
   });
 
-  var catchingExceptions = queryString.getParam('catch');
-  env.catchExceptions(typeof catchingExceptions === 'undefined' ? true : catchingExceptions);
+  var catchingExceptions = queryString.getParam("catch");
+  env.catchExceptions(typeof catchingExceptions === "undefined" ? true : catchingExceptions);
 
-  var throwingExpectationFailures = queryString.getParam('throwFailures');
+  var throwingExpectationFailures = queryString.getParam("throwFailures");
   env.throwOnExpectationFailure(throwingExpectationFailures);
 
   /**
@@ -60,21 +61,13 @@
    */
   var htmlReporter = new jasmine.HtmlReporter({
     env: env,
-    onRaiseExceptionsClick: () => {
-      queryString.navigateWithNewParam('catch', !env.catchingExceptions());
-    },
-    onThrowExpectationsClick: () => {
-      queryString.navigateWithNewParam('throwFailures', !env.throwingExpectationFailures());
-    },
-    addToExistingQueryString: (key, value) => queryString.fullStringWithNewParam(key, value),
-    getContainer: () => document.body,
-    createElement: function () {
-      return document.createElement.apply(document, arguments);
-    },
-    createTextNode: function () {
-      return document.createTextNode.apply(document, arguments);
-    },
-    timer: new jasmine.Timer(),
+    onRaiseExceptionsClick: function() { queryString.navigateWithNewParam("catch", !env.catchingExceptions()); },
+    onThrowExpectationsClick: function() { queryString.navigateWithNewParam("throwFailures", !env.throwingExpectationFailures()); },
+    addToExistingQueryString: function(key, value) { return queryString.fullStringWithNewParam(key, value); },
+    getContainer: function() { return document.body; },
+    createElement: function() { return document.createElement.apply(document, arguments); },
+    createTextNode: function() { return document.createTextNode.apply(document, arguments); },
+    timer: new jasmine.Timer()
   });
 
   /**
@@ -87,10 +80,12 @@
    * Filter which specs will be run by matching the start of the full name against the `spec` query param.
    */
   var specFilter = new jasmine.HtmlSpecFilter({
-    filterString: () => queryString.getParam('spec'),
+    filterString: function() { return queryString.getParam("spec"); }
   });
 
-  env.specFilter = (spec) => specFilter.matches(spec.getFullName());
+  env.specFilter = function(spec) {
+    return specFilter.matches(spec.getFullName());
+  };
 
   /**
    * Setting up timing functions to be able to be overridden. Certain browsers (Safari, IE 8, phantomjs) require this hack.
@@ -107,7 +102,7 @@
    */
   var currentWindowOnload = window.onload;
 
-  window.onload = () => {
+  window.onload = function() {
     if (currentWindowOnload) {
       currentWindowOnload();
     }
@@ -122,4 +117,5 @@
     for (var property in source) destination[property] = source[property];
     return destination;
   }
-})();
+
+}());

@@ -1,6 +1,8 @@
 /* globals Rose, require, console */
 
-(() => {
+(function() {
+  'use strict';
+
   var XJS = require('xjs');
   var Dialog = XJS.Dialog;
   var newDialog = Dialog.createDialog('http://localhost:9000');
@@ -10,75 +12,75 @@
     buttons: [
       {
         name: 'createDialog',
-        onClick: () => {
+        onClick: function() {
           newDialog = Dialog.createDialog('http://localhost:9000');
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'createAutoDialog',
-        onClick: () => {
+        onClick: function() {
           newDialog = Dialog.createAutoDialog('http://localhost:9000');
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'getResult',
-        onClick: () => {
-          newDialog.getResult().then((details) => {
+        onClick: function() {
+          newDialog.getResult().then(function(details) {
             Rose.output(details);
             console.log(details);
           });
-        },
+        }
       },
 
       {
         name: 'setSize',
-        onClick: () => {
+        onClick: function() {
           newDialog.setSize(500, 800);
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'setBorderOptions',
-        onClick: () => {
+        onClick: function() {
           newDialog.setBorderOptions(true, true);
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'setButtons',
-        onClick: () => {
+        onClick: function() {
           newDialog.setButtons(true, true);
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'setTitle',
-        onClick: () => {
+        onClick: function() {
           newDialog.setTitle('XJS Testing Thingy');
           Rose.output('Click Show!');
-        },
+        }
       },
 
       {
         name: 'show',
-        onClick: () => {
+        onClick: function() {
           newDialog.show();
-        },
+        }
       },
 
       {
         name: 'return',
-        onClick: () => {
-          Dialog.return(JSON.stringify({ 'xjs-test': 'true' }));
-        },
-      },
-    ],
+        onClick: function() {
+          Dialog.return(JSON.stringify({'xjs-test':'true'}));
+        }
+      }
+    ]
   });
 })();

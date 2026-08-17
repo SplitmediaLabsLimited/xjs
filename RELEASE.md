@@ -1,71 +1,85 @@
 # Releasing a New Version
 
-This document describes how to release a new version of XSplit JS Framework
+This document describes how to release XSplit JS Framework.
 
-Modern releases are published to the scoped npm package `@splitmedialabs/xjs`.
-The historical `xjs-framework` package remains available for old releases such
-as `2.10.2`. After the scoped package is available, deprecate the old package on
-npm with a message directing users to `@splitmedialabs/xjs`.
+## Package Transition
 
-For the package rename transition:
+Modern releases publish as `@splitmedialabs/xjs`. The historical
+`xjs-framework` package remains frozen at `2.10.2`.
 
-1. Keep `xjs-framework@2.10.2` as the final published old-package release.
-2. Publish `@splitmedialabs/xjs@2.13.0` from the modernized branch.
-3. Deprecate the old published `xjs-framework` line after the scoped package is
-   live:
+1. Publish `@splitmedialabs/xjs` from the reviewed release commit at the
+   version declared in `package.json`.
+2. After that scoped release is live, deprecate the historical package line:
 
    ```sh
-   npm deprecate "xjs-framework@<=2.10.2" "XJS has moved to @splitmedialabs/xjs. Install @splitmedialabs/xjs for maintained releases."
+   npm deprecate "xjs-framework@<=2.10.2" \
+     "XJS has moved to @splitmedialabs/xjs. Install @splitmedialabs/xjs for maintained releases."
    ```
 
-1. **Make sure that tests are green**
+Do not publish a newer `xjs-framework` version without an explicitly approved
+migration plan.
 
-  Before the release, make sure that all required checks pass. Execute
-`npm test` first to run package, docs, harness, and packaging smoke checks.
-Run `npm run test:legacy` when validating the original browser-based unit suite.
+## 1. Verify the Release Candidate
 
-2. **Prepare the release branch**
+Run the checks for each release boundary:
 
-  Merge all branches to develop and then create the release branch. Use
-`npm version major|minor|patch` to update package metadata, then execute
-`npm run build` to transpile and bundle the project.
+```sh
+npm run test:full
+npm run test:components
+npm run docs:check
+npm run docs:build
+npm run pack:check
+```
 
-  This creates the ESM, CommonJS, CEF-compatible browser, and minified browser
-bundles under `dist/`.
+The legacy Karma/Jasmine files are historical reference and have no active test
+command. Browser-output or host-boundary changes also require the raw-CDP
+XSplit check described below.
 
-  Build tooling is pinned to TypeScript 6 as the transition baseline before the
-Go-native TypeScript line. Keep TS 6 deprecations visible and fix them rather
-than suppressing them, since deprecated compiler options are expected to stop
-working in TypeScript 7.
+## 2. Prepare the Release Branch
 
-  *NOTE:* In case you want to specify the version number, execute
-  `npm version 1.5.0`, then run `npm run build`.
+Create a dedicated release branch from the reviewed target branch. Use
+`npm version major|minor|patch` to update package metadata, then run
+`npm run build`.
 
-3. **Prepare the website for release**
+The build creates ESM, CommonJS, CEF-compatible browser, minified browser, and
+declaration output under `dist/`. Keep the browser target at `chrome103`.
 
-  Generate the API Docs by executing `npm run docs:build` and then copy the necessary files
-to `xjsframework.github.io`'s repository and update the tutorials if needed.
+Build tooling uses TypeScript 6 as the transition baseline before the Go-native
+TypeScript line. Fix TS 6 deprecations rather than suppressing them because
+deprecated options are expected to stop working in TypeScript 7.
 
-4. **Release**
+To specify an exact version, run `npm version <version>` and then
+`npm run build`.
 
-  - Merge release branch to master and add the version tag.
-  - Draft a new release in Github
-  - Publish `@splitmedialabs/xjs` to NPM
-  - Deprecate `xjs-framework` on NPM after the scoped package is live
-  - Upload the latest generated xjs files to CDN
-  - If XSplit Broadcaster is available, run `npm run examples`, attach
-    `http://localhost:3999/xsplit-extension/index.html`, and collect
-    `npm run test:xsplit:cdp` artifacts.
+## 3. Prepare the Documentation Site
 
-5. **Update the Release Notes and/or send the Newsletter**
+Generate and validate the documentation with `npm run docs:build`. The GitHub
+Pages workflow publishes `dist/docs` after the reviewed change reaches its
+configured branch. Do not copy generated files into a separate repository.
 
-  - Update the Release Notes in the wiki page
-  - Send the newsletter if necessary
+## 4. Release
 
-6. **Cleanup**
+- Merge the approved release PR to `master` and create the version tag.
+- Draft a GitHub release.
+- Publish `@splitmedialabs/xjs` to npm.
+- Deprecate `xjs-framework` only after the scoped package is live.
+- Upload the reviewed generated browser files to the approved CDN destination.
+- When XSplit Broadcaster is available, run `npm run examples`, attach
+  `http://localhost:3999/xsplit-extension/index.html`, and collect
+  `npm run test:xsplit:cdp` artifacts.
 
-  Verify all issues are closed, and clean outstanding branches.
+Publishing, deprecation, tagging, merging, CDN updates, and deployment require
+explicit approval.
 
-7. **Done!**
+## 5. Update Release Communications
 
-  Release is complete! You may now party.
+- Update the release notes in the wiki.
+- Send a newsletter when the release plan calls for one.
+
+## 6. Clean Up
+
+Verify that release issues are closed and clean up outstanding release branches.
+
+## 7. Done
+
+Release complete. Party responsibly.

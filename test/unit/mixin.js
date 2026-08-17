@@ -1,14 +1,15 @@
 function PromiseLoop(condition, action, value) {
   if (!condition(value)) return Promise.resolve();
-  return action(value).then((nextVal) => PromiseLoop(condition, action, nextVal));
+  return action(value).then(nextVal => PromiseLoop(condition, action, nextVal));
 }
 
-window.Mixin = function (fc) {
+
+window.Mixin = function(fc) {
   this.fcs = [];
   if (fc !== undefined) this.register(fc);
 };
 
-Mixin.prototype.register = function (fc) {
+Mixin.prototype.register = function(fc) {
   if (typeof fc === 'function') {
     this.fcs.push(fc);
   } else if (fc instanceof Array) {
@@ -16,13 +17,16 @@ Mixin.prototype.register = function (fc) {
   }
 };
 
-Mixin.prototype.exec = function (cond) {
-  return new Promise((done) => {
-    var funcs = this.fcs.map((fc) => () => {
-      fc();
-      return new Promise((next) => {
-        cond(next);
-      });
+Mixin.prototype.exec = function(cond) {
+  var self = this;
+  return new Promise(function(done) {
+    var funcs = self.fcs.map(function(fc) {
+      return function() {
+        fc();
+        return new Promise(function(next) {
+          cond(next);
+        });
+      };
     });
 
     PromiseLoop(

@@ -1,27 +1,31 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('Extension Class', () => {
+describe('Extension Class', function() {
+  'use strict';
+
   var xjs = require('xjs');
   var env = new window.Environment(xjs);
   var extension;
   var local = {};
   var testObj = {
-    test: 'data',
+    test : 'data'
   };
 
   var ctr = 0;
 
-  beforeEach((done) => {
+  beforeEach(function(done) {
     env.set('extension');
-    spyOn(window.external, 'SetPresProperty').and.callFake((presName, val) => {
-      local[presName] = val;
+    spyOn(window.external, 'SetPresProperty')
+      .and.callFake(function(presName, val) {
+        local[presName] = val;
     });
 
-    spyOn(window.external, 'GetPresProperty').and.callFake((presName) => {
+    spyOn(window.external, 'GetPresProperty')
+      .and.callFake(function(presName) {
       ctr++;
       var asyncId = 'iextension_' + ctr;
 
-      setTimeout(() => {
+      setTimeout(function() {
         window.OnAsyncCallback(asyncId, local[presName]);
       }, 10);
 
@@ -31,7 +35,7 @@ describe('Extension Class', () => {
     done();
   });
 
-  it('should be able to fetch its own instance', () => {
+  it('should be able to fetch its own instance', function() {
     if (xjs.Environment.isExtension()) {
       extension = xjs.Extension.getInstance();
       expect(extension).toBeInstanceOf(xjs.Extension);
@@ -40,9 +44,9 @@ describe('Extension Class', () => {
     }
   });
 
-  it('should be able to save configuration', (done) => {
+  it('should be able to save configuration', function(done) {
     if (xjs.Environment.isExtension()) {
-      extension.saveConfig(testObj).then((ret) => {
+      extension.saveConfig(testObj).then(function(ret) {
         expect(ret).toBeInstanceOf(xjs.Extension);
         done();
       });
@@ -52,9 +56,9 @@ describe('Extension Class', () => {
     }
   });
 
-  it('should be able to fetch the configuration', (done) => {
+  it('should be able to fetch the configuration', function(done) {
     if (xjs.Environment.isExtension()) {
-      extension.loadConfig().then((config) => {
+      extension.loadConfig().then(function(config) {
         var keys = Object.keys(testObj);
 
         for (var i = 0; i < keys.length; i++) {

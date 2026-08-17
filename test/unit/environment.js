@@ -1,8 +1,8 @@
-window.Environment = function (xjs) {
+window.Environment = function(xjs) {
   if (xjs === undefined) throw new Error('XJS instance is required');
 
   this.xjs = xjs;
-};
+}
 
 /**
  * Set Environment type of XJS
@@ -20,16 +20,17 @@ window.Environment = function (xjs) {
  * - extension (extension plugin)
  * - config (source properties window)
  */
-Environment.prototype.set = function (env) {
+Environment.prototype.set = function(env) {
   // Prevent modifying Environment IF executed within XBC
-  if (/xsplit broadcaster/gi.test(navigator.appVersion)) return;
+  if (/xsplit broadcaster/ig.test(navigator.appVersion)) return;
 
   for (var prop in this.xjs.Environment) {
     if (
-      Object.prototype.hasOwnProperty.call(this.xjs.Environment, prop) &&
+      this.xjs.Environment.hasOwnProperty(prop) &&
       typeof this.xjs.Environment[prop] === 'boolean'
     ) {
-      this.xjs.Environment[prop] = prop.toLowerCase().indexOf(String(env).toLowerCase()) !== -1;
+      this.xjs.Environment[prop] =
+        prop.toLowerCase().indexOf(String(env).toLowerCase()) !== -1;
     }
   }
-};
+}

@@ -160,14 +160,15 @@ Guidance for local LLM agents working in this repository.
   covers the changed boundary:
   - `npm run build` for package output and declarations.
   - `npm test` for the default build and smoke suite.
-  - `npm run test:full` for smoke plus migration guards.
+  - `npm run test:full` for smoke plus the focused CEF compatibility contract.
   - `npm run test:components` for modern component tests.
   - `npm run docs:check` for active documentation source.
   - `npm run docs:build` for the generated documentation site.
   - `npm run pack:check` for package or release changes.
 - Run `npm test` before handing off source, build, package, or smoke-test changes.
-  Run `npm run test:full` when migration guards, release/build workflow, legacy
-  boundaries, or documentation boundaries change.
+  Run `npm run test:full` when browser build targets or CEF compatibility
+  boundaries change. Use the native docs and package commands above instead of
+  adding source-spelling tests for their configuration.
 - For documentation-only changes, read every changed file and run
   `git diff --check`. New untracked files also require an explicit
   `git diff --no-index --check /dev/null <file>` check because ordinary Git diff
@@ -192,7 +193,8 @@ Guidance for local LLM agents working in this repository.
 - This is a single-package TypeScript repository, not a monorepo:
   - `src/` contains the stable runtime API source.
   - `scripts/` contains build, docs, CDP, and maintenance automation.
-  - `test/smoke/` contains active smoke and migration tests.
+  - `test/smoke/` contains active behavior smokes and focused compatibility
+    contracts.
   - `test/unit/` contains legacy Karma/Jasmine-era tests retained as reference
     or migration input unless an active command proves otherwise.
   - `examples/` contains examples and the XSplit regression extension served on

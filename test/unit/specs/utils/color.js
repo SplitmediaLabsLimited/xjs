@@ -1,37 +1,39 @@
 /* globals describe, it, spyOn, require, beforeEach, expect, jasmine */
 
-describe('Color ===', () => {
+describe('Color ===', function() {
+  'use strict';
+
   var XJS = require('xjs');
   var Color = XJS.Color;
-
-  describe('should be able to get different color formats', () => {
+  
+  describe('should be able to get different color formats', function() {
     var testColor;
 
-    beforeEach(() => {
+    beforeEach(function() {
       testColor = Color.fromRGBString(randomColor());
     });
 
-    it('such as RGB', () => {
+    it('such as RGB', function() {
       expect(testColor.getRgb()).toBeTypeOf('string');
     });
 
-    it('such as BGR', () => {
+    it('such as BGR', function() {
       expect(testColor.getBgr()).toBeTypeOf('string');
     });
 
-    it('such as Irgb', () => {
+    it('such as Irgb', function() {
       expect(testColor.getIrgb()).toBeTypeOf('number');
     });
 
-    it('such as Ibgr', () => {
+    it('such as Ibgr', function() {
       expect(testColor.getIbgr()).toBeTypeOf('number');
     });
   });
 
-  describe('can be instantiated', () => {
+  describe('can be instantiated', function() {
     var newColor, bgrColor, rgbColor, ibgrColor, irgbColor;
 
-    beforeAll(() => {
+    beforeAll(function() {
       newColor = Color.fromRGBString(randomColor());
       rgbColor = Color.fromRGBString(newColor.getRgb());
       bgrColor = Color.fromBGRString(newColor.getBgr());
@@ -39,24 +41,25 @@ describe('Color ===', () => {
       ibgrColor = Color.fromBGRInt(newColor.getIbgr());
     });
 
-    it('from an RGB string', () => {
+    it('from an RGB string', function() {
       expect(rgbColor).toBeInstanceOf(Color);
       expect(rgbColor).toEqual(newColor);
     });
 
-    it('from a BGR string', () => {
+    it('from a BGR string', function() {
       expect(bgrColor).toBeInstanceOf(Color);
       expect(bgrColor).toEqual(newColor);
     });
 
-    it('from an IRGB number', () => {
+    it('from an IRGB number', function() {
       expect(irgbColor).toBeInstanceOf(Color);
       expect(irgbColor).toEqual(newColor);
     });
 
-    it('from an IBGR number', () => {
+    it('from an IBGR number', function() {
       expect(ibgrColor).toBeInstanceOf(Color);
       expect(ibgrColor).toEqual(newColor);
     });
+
   });
 });

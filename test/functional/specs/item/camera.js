@@ -1,11 +1,13 @@
 /* globals Rose, require */
 
-(() => {
+(function() {
+  'use strict';
+
   var XJS = require('xjs');
 
   var currentSource;
-  XJS.Scene.getActiveScene().then((scene) => {
-    scene.getSources().then((sources) => {
+  XJS.Scene.getActiveScene().then(function(scene) {
+    scene.getSources().then(function(sources) {
       for (var i in sources) {
         if (sources[i] instanceof XJS.CameraSource) {
           currentSource = sources[i];
@@ -20,213 +22,213 @@
     buttons: [
       {
         name: 'setName',
-        onClick: () => {
+        onClick: function() {
           currentSource.setName(randomWord(10));
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getName',
-        onClick: () => {
-          currentSource.getName().then((val) => {
+        onClick: function() {
+          currentSource.getName().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setValue',
-        onClick: () => {
+        onClick: function() {
           currentSource.setValue(randomWord(10));
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getValue',
-        onClick: () => {
-          currentSource.getValue().then((val) => {
+        onClick: function() {
+          currentSource.getValue().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setKeepLoaded',
-        onClick: () => {
+        onClick: function() {
           App.setKeepLoaded(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getKeepLoaded',
-        onClick: () => {
-          currentSource.getKeepLoaded().then((val) => {
+        onClick: function() {
+          currentSource.getKeepLoaded().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'getType',
-        onClick: () => {
-          currentSource.getType().then((val) => {
+        onClick: function() {
+          currentSource.getType().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'getId',
-        onClick: () => {
-          currentSource.getId().then((val) => {
+        onClick: function() {
+          currentSource.getId().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'getSceneID',
-        onClick: () => {
-          currentSource.getSceneID().then((val) => {
+        onClick: function() {
+          currentSource.getSceneID().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'toXML',
-        onClick: () => {
+        onClick: function() {
           console.trace(currentSource.toXML());
           Rose.output(currentSource.toXML());
-        },
+        }
       },
 
       // UNIQUE METHODS OF CAMERA CLASS
 
       {
         name: 'getDeviceId',
-        onClick: () => {
-          currentSource.getDeviceId().then((val) => {
+        onClick: function() {
+          currentSource.getDeviceId().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'getColorOptionsPinned',
-        onClick: () => {
-          currentSource.getColorOptionsPinned().then((val) => {
+        onClick: function() {
+          currentSource.getColorOptionsPinned().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setColorOptionsPinned',
-        onClick: () => {
+        onClick: function() {
           currentSource.setColorOptionsPinned(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getKeyingOptionsPinned',
-        onClick: () => {
-          currentSource.getKeyingOptionsPinned().then((val) => {
+        onClick: function() {
+          currentSource.getKeyingOptionsPinned().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setKeyingOptionsPinned',
-        onClick: () => {
+        onClick: function() {
           currentSource.setKeyingOptionsPinned(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       // INTERFACES
 
       {
         name: 'isKeepAspectRatio',
-        onClick: () => {
-          currentSource.isKeepAspectRatio().then((val) => {
+        onClick: function() {
+          currentSource.isKeepAspectRatio().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setKeepAspectRatio',
-        onClick: () => {
+        onClick: function() {
           currentSource.setKeepAspectRatio(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'isPositionLocked',
-        onClick: () => {
-          currentSource.isPositionLocked().then((val) => {
+        onClick: function() {
+          currentSource.isPositionLocked().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setPositionLocked',
-        onClick: () => {
+        onClick: function() {
           currentSource.setPositionLocked(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'isEnhancedResizeEnabled',
-        onClick: () => {
-          currentSource.isEnhancedResizeEnabled().then((val) => {
+        onClick: function() {
+          currentSource.isEnhancedResizeEnabled().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setEnhancedResizeEnabled',
-        onClick: () => {
+        onClick: function() {
           currentSource.setEnhancedResizeEnabled(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getPosition',
-        onClick: () => {
-          currentSource.getPosition().then((val) => {
+        onClick: function() {
+          currentSource.getPosition().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setPosition',
-        onClick: () => {
+        onClick: function() {
           var rect = new XJS.Rectangle();
           rect.setLeft(0);
           rect.setTop(0);
@@ -234,424 +236,424 @@
           rect.setBottom(0.5);
           currentSource.setPosition(rect);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getTransparency',
-        onClick: () => {
-          currentSource.getTransparency().then((val) => {
+        onClick: function() {
+          currentSource.getTransparency().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setTransparency',
-        onClick: () => {
+        onClick: function() {
           currentSource.setTransparency(0);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getBrightness',
-        onClick: () => {
-          currentSource.getBrightness().then((val) => {
+        onClick: function() {
+          currentSource.getBrightness().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setBrightness',
-        onClick: () => {
+        onClick: function() {
           currentSource.setBrightness(0);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getContrast',
-        onClick: () => {
-          currentSource.getContrast().then((val) => {
+        onClick: function() {
+          currentSource.getContrast().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setContrast',
-        onClick: () => {
+        onClick: function() {
           currentSource.setContrast(0);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getHue',
-        onClick: () => {
-          currentSource.getHue().then((val) => {
+        onClick: function() {
+          currentSource.getHue().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setHue',
-        onClick: () => {
+        onClick: function() {
           currentSource.setHue(0);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getSaturation',
-        onClick: () => {
-          currentSource.getSaturation().then((val) => {
+        onClick: function() {
+          currentSource.getSaturation().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setSaturation',
-        onClick: () => {
+        onClick: function() {
           currentSource.setSaturation(0);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getBorderColor',
-        onClick: () => {
-          currentSource.getBorderColor().then((val) => {
+        onClick: function() {
+          currentSource.getBorderColor().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setBorderColor',
-        onClick: () => {
+        onClick: function() {
           var color = XJS.Color.fromBGRInt(2147548928 - 0x80000000);
           currentSource.setBorderColor(color);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'isVisible',
-        onClick: () => {
-          currentSource.isVisible().then((val) => {
+        onClick: function() {
+          currentSource.isVisible().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setVisible',
-        onClick: () => {
+        onClick: function() {
           currentSource.setVisible(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getTransition',
-        onClick: () => {
-          currentSource.getTransition().then((val) => {
+        onClick: function() {
+          currentSource.getTransition().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setTransition',
-        onClick: () => {
+        onClick: function() {
           currentSource.setTransition(XJS.Transition.CLOCK);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getTransitionTime',
-        onClick: () => {
-          currentSource.getTransitionTime().then((val) => {
+        onClick: function() {
+          currentSource.getTransitionTime().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setTransitionTime',
-        onClick: () => {
+        onClick: function() {
           currentSource.setTransitionTime(5000);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'isChromaEnabled',
-        onClick: () => {
-          currentSource.isChromaEnabled().then((val) => {
+        onClick: function() {
+          currentSource.isChromaEnabled().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaEnabled',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaEnabled(true);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getKeyingType',
-        onClick: () => {
-          currentSource.getKeyingType().then((val) => {
+        onClick: function() {
+          currentSource.getKeyingType().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setKeyingType',
-        onClick: () => {
+        onClick: function() {
           currentSource.setKeyingType(1);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaAntiAliasLevel',
-        onClick: () => {
-          currentSource.getChromaAntiAliasLevel().then((val) => {
+        onClick: function() {
+          currentSource.getChromaAntiAliasLevel().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaAntiAliasLevel',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaAntiAliasLevel(1);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaLegacyBrightness',
-        onClick: () => {
-          currentSource.getChromaLegacyBrightness().then((val) => {
+        onClick: function() {
+          currentSource.getChromaLegacyBrightness().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaLegacyBrightness',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaLegacyBrightness(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaLegacySaturation',
-        onClick: () => {
-          currentSource.getChromaLegacySaturation().then((val) => {
+        onClick: function() {
+          currentSource.getChromaLegacySaturation().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaLegacySaturation',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaLegacySaturation(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaLegacyHue',
-        onClick: () => {
-          currentSource.getChromaLegacyHue().then((val) => {
+        onClick: function() {
+          currentSource.getChromaLegacyHue().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaLegacyHue',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaLegacyHue(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaLegacyThreshold',
-        onClick: () => {
-          currentSource.getChromaLegacyThreshold().then((val) => {
+        onClick: function() {
+          currentSource.getChromaLegacyThreshold().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaLegacyThreshold',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaLegacyThreshold(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaLegacyAlphaSmoothing',
-        onClick: () => {
-          currentSource.getChromaLegacyAlphaSmoothing().then((val) => {
+        onClick: function() {
+          currentSource.getChromaLegacyAlphaSmoothing().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaLegacyAlphaSmoothing',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaLegacyAlphaSmoothing(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaRGBKeyPrimaryColor',
-        onClick: () => {
-          currentSource.getChromaRGBKeyPrimaryColor().then((val) => {
+        onClick: function() {
+          currentSource.getChromaRGBKeyPrimaryColor().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaRGBKeyPrimaryColor',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaRGBKeyPrimaryColor(1);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaRGBKeyThreshold',
-        onClick: () => {
-          currentSource.getChromaRGBKeyThreshold().then((val) => {
+        onClick: function() {
+          currentSource.getChromaRGBKeyThreshold().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaRGBKeyThreshold',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaRGBKeyThreshold(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaRGBKeyExposure',
-        onClick: () => {
-          currentSource.getChromaRGBKeyExposure().then((val) => {
+        onClick: function() {
+          currentSource.getChromaRGBKeyExposure().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaRGBKeyExposure',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaRGBKeyExposure(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaColorKeyThreshold',
-        onClick: () => {
-          currentSource.getChromaColorKeyThreshold().then((val) => {
+        onClick: function() {
+          currentSource.getChromaColorKeyThreshold().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaColorKeyThreshold',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaColorKeyThreshold(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaColorKeyExposure',
-        onClick: () => {
-          currentSource.getChromaColorKeyExposure().then((val) => {
+        onClick: function() {
+          currentSource.getChromaColorKeyExposure().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaColorKeyExposure',
-        onClick: () => {
+        onClick: function() {
           currentSource.setChromaColorKeyExposure(128);
           Rose.output('Done!');
-        },
+        }
       },
 
       {
         name: 'getChromaColorKeyColor',
-        onClick: () => {
-          currentSource.getChromaColorKeyColor().then((val) => {
+        onClick: function() {
+          currentSource.getChromaColorKeyColor().then(function(val) {
             console.trace(val);
             Rose.output(val);
           });
-        },
+        }
       },
 
       {
         name: 'setChromaColorKeyColor',
-        onClick: () => {
+        onClick: function() {
           var color = XJS.Color.fromBGRInt(2147548928 - 0x80000000);
           currentSource.setChromaColorKeyColor(color);
           Rose.output('Done!');
-        },
+        }
       },
-    ],
+    ]
   });
 })();

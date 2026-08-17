@@ -1,8 +1,10 @@
 /* globals Rose, require */
 
-(() => {
+(function() {
+  'use strict';
+
   var XJS = require('xjs');
-  var Extension = XJS.Extension.getInstance();
+  var Extension = XJS.Extension.getInstance(); 
 
   function randomWord(length) {
     var rand;
@@ -21,69 +23,76 @@
     buttons: [
       {
         name: 'saveConfig',
-        onClick: () => {
-          var newRandom = { config: randomWord(5) };
-          Extension.saveConfig(newRandom)
-            .then(() => Extension.loadConfig())
-            .then((val) => {
-              console.trace(
-                'FOR SAVING :: ' + JSON.stringify(newRandom) + ' => ' + JSON.stringify(val)
-              );
-              Rose.output(
-                'FOR SAVING :: ' + JSON.stringify(newRandom) + ' => ' + JSON.stringify(val)
-              );
-            });
-        },
+        onClick: function() {
+          var newRandom = { config : randomWord(5) };
+          Extension.saveConfig(newRandom).then(function() {
+            return Extension.loadConfig();
+          })
+          .then(function(val) {
+            console.trace('FOR SAVING :: ' + JSON.stringify(newRandom)
+              + ' => ' + JSON.stringify(val));
+            Rose.output('FOR SAVING :: ' + JSON.stringify(newRandom)
+              + ' => ' + JSON.stringify(val));
+          });
+        }
       },
 
       {
         name: 'loadConfig',
-        onClick: () => {
-          Extension.loadConfig().then((val) => {
+        onClick: function() {
+          Extension.loadConfig().then(function(val) {
             console.trace('CONFIG :: ' + JSON.stringify(val));
             Rose.output('CONFIG :: ' + JSON.stringify(val));
           });
-        },
+        }
       },
 
       {
         name: 'source list highlight',
-        onClick: () => {
-          XJS.ExtensionWindow.on('sources-list-highlight', (id) => {
-            console.log('Highlight id: ' + id);
-          });
-          console.log('Subscribed source list highlight');
-        },
+        onClick: function() {
+         
+          XJS.ExtensionWindow.on("sources-list-highlight", function(id) {
+            console.log("Highlight id: " + id);
+          });             
+          console.log("Subscribed source list highlight");                                           
+        } 
       },
 
       {
         name: 'source list select',
-        onClick: () => {
-          XJS.ExtensionWindow.on('sources-list-select', (id) => {
-            console.log('Select id: ' + id);
+        onClick: function() {
+        
+          XJS.ExtensionWindow.on("sources-list-select", function(id) {
+            console.log("Select id: " + id);
           });
-          console.log('Subscribed source list select');
-        },
+          console.log("Subscribed source list select");                                
+             
+        }
       },
 
       {
         name: 'source list update',
-        onClick: () => {
-          XJS.ExtensionWindow.on('sources-list-update', (sources) => {
-            console.log('Sources: ' + sources);
+        onClick: function() {
+        
+          XJS.ExtensionWindow.on("sources-list-update", function(sources) {
+            console.log("Sources: " + sources);
           });
-          console.log('Subscribed source list update');
-        },
+          console.log("Subscribed source list update");                                
+             
+        }
       },
 
       {
         name: 'unsubscribe source list events',
-        onClick: () => {
+        onClick: function() {
+
           //todo: replace with xjs functionality once available in the framework
-          window.external.SourcesListUnsubscribeEvents('0');
-          console.log('Unsubscribed to source list events');
-        },
-      },
-    ],
+          window.external.SourcesListUnsubscribeEvents("0");
+          console.log("Unsubscribed to source list events");                                
+             
+        }
+      }
+      
+    ]
   });
 })();
