@@ -212,6 +212,24 @@ Guidance for local LLM agents working in this repository.
 - XSplit Broadcaster on Windows is required for authoritative host-integration
   testing. The expected CEF remote-debugging endpoint is
   `http://127.0.0.1:9222`.
+- Launch XSplit Broadcaster for local XJS regression with these XSplit startup
+  arguments (they are XSplit arguments, not Chromium `--` switches):
+
+  ```text
+  remotedebugxsplit remotedebug:9222 forcedacceptlocalexres:.
+  ```
+
+  `remotedebug:9222` exposes CEF's CDP endpoint. `remotedebugxsplit` enables
+  XSplit's remote-debug handling for its embedded resources.
+  `forcedacceptlocalexres:.` treats `.` as a regular expression and accepts
+  matching local external-resource files without the normal remote/hash
+  selection, so use this broad override only for a bounded developer/regression
+  session. Developer mode is a lower-security mode: keep CDP bound to Windows
+  loopback, forward it over SSH when testing remotely, and relaunch normally
+  when finished.
+- Before claiming host evidence, verify `/json/version` identifies both
+  Chrome/CEF 103 and XSplit Broadcaster; a listening port or generic Chrome
+  target is not authoritative XSplit evidence.
 - Use raw CDP for XSplit-hosted regression because Playwright compatibility is
   not authoritative for CEF 103:
   - `npm run test:xsplit:cdp` attaches to an already open extension target.
