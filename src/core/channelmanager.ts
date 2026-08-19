@@ -6,6 +6,7 @@ import { Remote } from '../internal/remote';
 import { JSON as JXON } from '../internal/util/json';
 import { EventEmitter } from '../util/eventemitter';
 import { Environment } from './environment';
+import { resolveStreamEventChannelName } from './outputtarget';
 import { StreamInfo } from './streaminfo';
 
 /**
@@ -46,6 +47,11 @@ export class ChannelManager extends EventEmitter {
    *  Allows listening to events that this class emits. Currently there are three:
    *  `stream-start`, `stream-end` and `recording-renamed`.
    *
+   *  For `stream-start` and `stream-end`, `res.channel._name` may include
+   *  `&output:N` for the true target of that event (one event per index).
+   *  Host payloads that omit the suffix are resolved from `OutputIdx`,
+   *  Settings XML, or the most recent start/stop target for that channel.
+   *
    *  #### Usage:
    *
    * ```javascript
@@ -68,7 +74,10 @@ export class ChannelManager extends EventEmitter {
         const channelInfoObj = JSON.parse(decodeURIComponent(params));
 
         if (Object.hasOwn(channelInfoObj, 'ChannelName')) {
-          const channelName = channelInfoObj['ChannelName'];
+          const channelName = resolveStreamEventChannelName(
+            channelInfoObj['ChannelName'],
+            channelInfoObj
+          );
           const infoJSON: JXON = JXON.parse(channelInfoObj['Settings']);
           let statJSON: JXON;
           const addedInfo: Object = {};

@@ -1,6 +1,6 @@
 /**
  * XSplit JS Framework
- * version: 2.14.0
+ * version: 2.14.1
  * CEF 103 compatible browser bundle target: chrome103
  *
  * XSplit Extensibility Framework and Plugin License
@@ -663,6 +663,274 @@ var XJS = (function(exports) {
       return new JSON2(xml);
     }
   };
+  class StreamInfo {
+    /** StreamInfo constructor (only used internally) */
+    constructor(props) {
+      this._name = props.name;
+      this._stat = props.stat;
+      this._channel = props.channel;
+    }
+    /**
+     *  return: Promise<StreamInfo[]>
+     *
+     *  Gets the list of currently active channels.
+     */
+    static getActiveStreamChannels() {
+      return new Promise((resolve) => {
+        App$1.getAsList("recstat").then((activeStreams) => {
+          if (activeStreams.length === 0) {
+            resolve([]);
+          } else {
+            const channels = [];
+            for (var i = 0; i < activeStreams.length; ++i) {
+              channels.push(
+                new StreamInfo({
+                  name: activeStreams[i]["name"],
+                  stat: activeStreams[i].children.filter((child) => {
+                    return child.tag.toLowerCase() === "stat";
+                  })[0],
+                  channel: activeStreams[i].children.filter((child) => {
+                    return child.tag.toLowerCase() === "channel";
+                  })[0]
+                })
+              );
+            }
+            resolve(channels);
+          }
+        });
+      });
+    }
+    /**
+     *  return: Promise<string>
+     *
+     *  Gets the name of the channel.
+     */
+    getName() {
+      return new Promise((resolve) => {
+        resolve(
+          this._name.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
+        );
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames dropped
+     */
+    getStreamDrops() {
+      return new Promise((resolve) => {
+        App$1.get("streamdrops:" + this._name).then((val) => {
+          var drops = val.split(","), dropped = Number(drops[0]) || 0;
+          resolve(dropped);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of GOP frames dropped
+     */
+    getGOPDrops() {
+      return new Promise((resolve) => {
+        let usage;
+        App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
+          usage = JSON.parse(result);
+          for (var i = 0; i < usage.length; i++) {
+            if (usage[i].ChannelName === this._name) {
+              resolve(usage[i].Dropped);
+            }
+          }
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the number of frames rendered
+     */
+    getStreamRenderedFrames() {
+      return new Promise((resolve) => {
+        App$1.get("streamdrops:" + this._name).then((val) => {
+          var drops = val.split(","), rendered = Number(drops[1]) || 0;
+          resolve(rendered);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current duration of the stream in microseconds
+     */
+    getStreamTime() {
+      return new Promise((resolve) => {
+        App$1.get("streamtime:" + this._name).then((val) => {
+          var duration = Number(val) / 10;
+          resolve(duration);
+        });
+      });
+    }
+    /**
+     * return: Promise<number>
+     *
+     * Gets the current bandwidth usage of the stream
+     */
+    getBandwidthUsage() {
+      return new Promise((resolve) => {
+        let usage;
+        if (this._name !== "Local Recording") {
+          App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
+            usage = JSON.parse(result);
+            for (var i = 0; i < usage.length; i++) {
+              if (usage[i].ChannelName === this._name) {
+                resolve(usage[i].AvgBitrate);
+              }
+            }
+          });
+        } else {
+          resolve(0);
+        }
+      });
+    }
+  }
+  const OUTPUT_SUFFIX = "&output:";
+  const ALL_INDEX = "all";
+  const LOCAL_RECORDING = "Local Recording";
+  const PENDING_OUTPUT_TTL_MS = 15e3;
+  const pendingOutputEvents = [];
+  const bareChannelKey = (channelName) => {
+    const raw = decodeStreamChannelName(String(channelName == null ? "" : channelName));
+    const idx = raw.indexOf(OUTPUT_SUFFIX);
+    return (idx === -1 ? raw : raw.slice(0, idx)).toLowerCase();
+  };
+  function decodeStreamChannelName(name) {
+    return String(name == null ? "" : name).replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
+  }
+  function rememberOutputEvent(channelName, index) {
+    const now = Date.now();
+    while (pendingOutputEvents.length && now - pendingOutputEvents[0].ts > PENDING_OUTPUT_TTL_MS) {
+      pendingOutputEvents.shift();
+    }
+    pendingOutputEvents.push({
+      channelName: bareChannelKey(channelName),
+      index: String(index),
+      ts: now
+    });
+  }
+  function takePendingOutputIndex(channelName) {
+    const key = bareChannelKey(channelName);
+    const idx = pendingOutputEvents.findIndex((item2) => item2.channelName === key);
+    if (idx === -1) {
+      return null;
+    }
+    const [item] = pendingOutputEvents.splice(idx, 1);
+    return item.index;
+  }
+  function getViewOutputsCount() {
+    return new Promise((resolve) => {
+      exec("CallHostFunc", "getProperty", "viewoutputscount", (countStr) => {
+        resolve(Math.max(1, parseInt(String(countStr), 10) || 1));
+      });
+    });
+  }
+  function normalizeOutputTarget(outputTarget) {
+    if (outputTarget === void 0 || outputTarget === null || outputTarget === "") {
+      return null;
+    }
+    const raw = String(outputTarget).trim();
+    if (raw.toLowerCase() === ALL_INDEX) {
+      return ALL_INDEX;
+    }
+    if (/^\d+$/.test(raw)) {
+      return raw;
+    }
+    return null;
+  }
+  function getOutputParam(index) {
+    return `output=${index}`;
+  }
+  async function resolveOutputIndices(outputTarget) {
+    const normalized = normalizeOutputTarget(outputTarget);
+    if (normalized === null) {
+      return null;
+    }
+    const count = await getViewOutputsCount();
+    if (normalized === ALL_INDEX) {
+      return Array.from({ length: count }, (_, i) => String(i));
+    }
+    const indexNum = parseInt(normalized, 10);
+    if (indexNum < 0 || indexNum >= count) {
+      return [];
+    }
+    return [normalized];
+  }
+  function channelNameMatchesTarget(name, channelName, index) {
+    const decodedName = decodeStreamChannelName(name);
+    const expected = `${channelName}${OUTPUT_SUFFIX}${index}`;
+    return decodedName === expected || index === "0" && decodedName === channelName;
+  }
+  async function isOutputTargetActive(channelName, index) {
+    const channels = await StreamInfo.getActiveStreamChannels();
+    return channels.some(
+      (channel) => channelNameMatchesTarget(getStreamInfoName(channel), channelName, index)
+    );
+  }
+  function getStreamInfoName(channel) {
+    return decodeStreamChannelName(String(channel._name || ""));
+  }
+  const asIndexToken = (value) => {
+    if (value === void 0 || value === null || value === "") {
+      return null;
+    }
+    const token = String(value);
+    if (token !== ALL_INDEX && /^\d+$/.test(token)) {
+      return token;
+    }
+    return null;
+  };
+  function resolveStreamEventIndex(channelName, eventInfo = {}) {
+    const raw = decodeStreamChannelName(String(channelName == null ? "" : channelName));
+    const suffixIdx = raw.indexOf(OUTPUT_SUFFIX);
+    if (suffixIdx !== -1) {
+      return raw.slice(suffixIdx + OUTPUT_SUFFIX.length) || "0";
+    }
+    const fieldCandidates = [
+      eventInfo.OutputIdx,
+      eventInfo.outputIdx,
+      eventInfo.OutputIndex,
+      eventInfo.outputIndex,
+      eventInfo.Idx,
+      eventInfo.idx,
+      eventInfo.ViewOutput
+    ];
+    for (let i = 0; i < fieldCandidates.length; i++) {
+      const token = asIndexToken(fieldCandidates[i]);
+      if (token != null) {
+        return token;
+      }
+    }
+    const settings = eventInfo.Settings;
+    if (typeof settings === "string") {
+      const match = settings.match(/\boutput="(\d+)"/);
+      if (match) {
+        return match[1];
+      }
+    }
+    return takePendingOutputIndex(raw);
+  }
+  function withOutputSuffix(channelName, index) {
+    const raw = String(channelName == null ? "" : channelName);
+    if (raw.includes(OUTPUT_SUFFIX)) {
+      return raw;
+    }
+    return `${raw}${OUTPUT_SUFFIX}${index}`;
+  }
+  function resolveStreamEventChannelName(channelName, eventInfo = {}) {
+    const index = resolveStreamEventIndex(channelName, eventInfo);
+    if (index == null) {
+      return channelName;
+    }
+    return withOutputSuffix(channelName, index);
+  }
   function splitMode() {
     return new Promise((resolve) => {
       App$1.getGlobalProperty("splitmode").then((mode) => {
@@ -11750,134 +12018,38 @@ var XJS = (function(exports) {
       });
     }
   }
-  class StreamInfo {
-    /** StreamInfo constructor (only used internally) */
-    constructor(props) {
-      this._name = props.name;
-      this._stat = props.stat;
-      this._channel = props.channel;
+  function normalizeIsAll(outputTarget) {
+    return String(outputTarget == null ? "" : outputTarget).toLowerCase() === ALL_INDEX;
+  }
+  async function execIndexedHost(funcName, channelName, extraArgs, optionBag, skipUnlessActive) {
+    const outputTarget = optionBag && optionBag.outputTarget;
+    const indices = await resolveOutputIndices(outputTarget);
+    if (indices === null) {
+      exec("CallHostFunc", funcName, channelName, ...extraArgs);
+      return true;
     }
-    /**
-     *  return: Promise<StreamInfo[]>
-     *
-     *  Gets the list of currently active channels.
-     */
-    static getActiveStreamChannels() {
-      return new Promise((resolve) => {
-        App$1.getAsList("recstat").then((activeStreams) => {
-          if (activeStreams.length === 0) {
-            resolve([]);
-          } else {
-            const channels = [];
-            for (var i = 0; i < activeStreams.length; ++i) {
-              channels.push(
-                new StreamInfo({
-                  name: activeStreams[i]["name"],
-                  stat: activeStreams[i].children.filter((child) => {
-                    return child.tag.toLowerCase() === "stat";
-                  })[0],
-                  channel: activeStreams[i].children.filter((child) => {
-                    return child.tag.toLowerCase() === "channel";
-                  })[0]
-                })
-              );
-            }
-            resolve(channels);
-          }
-        });
-      });
-    }
-    /**
-     *  return: Promise<string>
-     *
-     *  Gets the name of the channel.
-     */
-    getName() {
-      return new Promise((resolve) => {
-        resolve(
-          this._name.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
-        );
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames dropped
-     */
-    getStreamDrops() {
-      return new Promise((resolve) => {
-        App$1.get("streamdrops:" + this._name).then((val) => {
-          var drops = val.split(","), dropped = Number(drops[0]) || 0;
-          resolve(dropped);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of GOP frames dropped
-     */
-    getGOPDrops() {
-      return new Promise((resolve) => {
-        let usage;
-        App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
-          usage = JSON.parse(result);
-          for (var i = 0; i < usage.length; i++) {
-            if (usage[i].ChannelName === this._name) {
-              resolve(usage[i].Dropped);
-            }
-          }
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the number of frames rendered
-     */
-    getStreamRenderedFrames() {
-      return new Promise((resolve) => {
-        App$1.get("streamdrops:" + this._name).then((val) => {
-          var drops = val.split(","), rendered = Number(drops[1]) || 0;
-          resolve(rendered);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the current duration of the stream in microseconds
-     */
-    getStreamTime() {
-      return new Promise((resolve) => {
-        App$1.get("streamtime:" + this._name).then((val) => {
-          var duration = Number(val) / 10;
-          resolve(duration);
-        });
-      });
-    }
-    /**
-     * return: Promise<number>
-     *
-     * Gets the current bandwidth usage of the stream
-     */
-    getBandwidthUsage() {
-      return new Promise((resolve) => {
-        let usage;
-        if (this._name !== "Local Recording") {
-          App$1.getGlobalProperty("bandwidthusage-all").then((result) => {
-            usage = JSON.parse(result);
-            for (var i = 0; i < usage.length; i++) {
-              if (usage[i].ChannelName === this._name) {
-                resolve(usage[i].AvgBitrate);
-              }
-            }
-          });
-        } else {
-          resolve(0);
+    const isAll = indices.length > 1 || indices.length === 1 && normalizeIsAll(outputTarget);
+    for (let i = 0; i < indices.length; i++) {
+      const index = indices[i];
+      if (isAll) {
+        const active = await isOutputTargetActive(channelName, index);
+        if (skipUnlessActive && !active) {
+          continue;
         }
-      });
+        if (!skipUnlessActive && active && funcName === "startBroadcast") {
+          continue;
+        }
+      }
+      rememberOutputEvent(channelName, index);
+      exec("CallHostFunc", funcName, channelName, ...extraArgs, getOutputParam(index));
     }
+    return true;
+  }
+  function execChannelHost(funcName, channelName, extraArgs, optionBag, skipUnlessActive) {
+    return execIndexedHost(funcName, channelName, extraArgs, optionBag, skipUnlessActive);
+  }
+  function execLocalRecordingHost(funcName, extraArgs, optionBag, skipUnlessActive) {
+    return execIndexedHost(funcName, LOCAL_RECORDING, extraArgs, optionBag, skipUnlessActive);
   }
   class Output {
     static {
@@ -11993,48 +12165,81 @@ var XJS = (function(exports) {
       });
     }
     /**
+     * param: ([options]) -- see below
+     *
+     * ```
      * return: Promise<boolean>
+     * ```
      *
      * Start a local recording.
-     */
-    static startLocalRecording() {
-      return new Promise((resolve) => {
-        exec("CallHostFunc", "startBroadcast", "Local Recording", "suppressPrestreamDialog=1");
-        resolve(true);
-      });
-    }
-    /**
-     * return: Promise<boolean>
      *
-     * Unpause a local recording.
+     * Accepts an optional JSON object argument:
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
      */
-    static stopLocalRecording() {
-      return new Promise((resolve) => {
-        exec("CallHostFunc", "stopBroadcast", "Local Recording");
-        resolve(true);
-      });
+    static startLocalRecording(optionBag) {
+      return execLocalRecordingHost(
+        "startBroadcast",
+        ["suppressPrestreamDialog=1"],
+        optionBag,
+        false
+      );
     }
     /**
+     * param: ([options]) -- see below
+     *
+     * ```
      * return: Promise<boolean>
+     * ```
+     *
+     * Stop a local recording.
+     *
+     * Accepts an optional JSON object argument:
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
+     */
+    static stopLocalRecording(optionBag) {
+      return execLocalRecordingHost("stopBroadcast", [], optionBag, true);
+    }
+    /**
+     * param: ([options]) -- see below
+     *
+     * ```
+     * return: Promise<boolean>
+     * ```
      *
      * Pause a local recording.
+     *
+     * Accepts an optional JSON object argument:
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
      */
-    static pauseLocalRecording() {
-      return new Promise((resolve) => {
-        exec("CallHostFunc", "pauseRecording", "Local Recording");
-        resolve(true);
-      });
+    static pauseLocalRecording(optionBag) {
+      return execLocalRecordingHost("pauseRecording", [], optionBag, false);
     }
     /**
+     * param: ([options]) -- see below
+     *
+     * ```
      * return: Promise<boolean>
+     * ```
      *
      * Unpause a local recording.
+     *
+     * Accepts an optional JSON object argument:
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
      */
-    static unpauseLocalRecording() {
-      return new Promise((resolve) => {
-        exec("CallHostFunc", "unpauseRecording", "Local Recording");
-        resolve(true);
-      });
+    static unpauseLocalRecording(optionBag) {
+      return execLocalRecordingHost("unpauseRecording", [], optionBag, false);
     }
     /**
      *  return: Promise<string>
@@ -12072,28 +12277,39 @@ var XJS = (function(exports) {
      * which can be used to indicate certain flags, such as (additional options may be added):
      * - `suppressPrestreamDialog` : used to bypass the showing of the pre-stream dialog
      *  of the outputs supporting it, will use last settings provided
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
+     *
+     * ```javascript
+     * output.startBroadcast({ suppressPrestreamDialog: true });
+     * output.startBroadcast({ suppressPrestreamDialog: true, outputTarget: 'all' });
+     * output.startBroadcast({ outputTarget: '0' });
+     * ```
      */
     startBroadcast(optionBag) {
-      return new Promise((resolve) => {
-        if (versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) && typeof optionBag !== "undefined" && optionBag !== null && optionBag["suppressPrestreamDialog"]) {
-          exec("CallHostFunc", "startBroadcast", this._name, "suppressPrestreamDialog=1");
-          resolve(true);
-        } else {
-          exec("CallHostFunc", "startBroadcast", this._name);
-          resolve(true);
-        }
-      });
+      const suppress = versionCompare(getVersion()).is.greaterThanOrEqualTo(handlePreStreamDialogFixVersion) && typeof optionBag !== "undefined" && optionBag !== null && !!optionBag.suppressPrestreamDialog;
+      const extraArgs = suppress ? ["suppressPrestreamDialog=1"] : [];
+      return execChannelHost("startBroadcast", this._name, extraArgs, optionBag, false);
     }
     /**
+     * param: ([options]) -- see below
+     *
+     * ```
      * return: Promise<boolean>
+     * ```
      *
      * Stop a broadcast of the provided channel.
+     *
+     * Accepts an optional JSON object argument:
+     * - `outputTarget` : optional 0-based target output index (`0` … `count-1`) or `'all'`.
+     *   Count comes from host `getProperty('viewoutputscount')` and is not a fixed max of 2.
+     *   `'all'` fans out to each index; the host only receives numeric `output=N` (never `output=all`).
+     *   Omit for legacy single-target / default behavior.
      */
-    stopBroadcast() {
-      return new Promise((resolve) => {
-        exec("CallHostFunc", "stopBroadcast", this._name);
-        resolve(true);
-      });
+    stopBroadcast(optionBag) {
+      return execChannelHost("stopBroadcast", this._name, [], optionBag, true);
     }
     /**
      * ** For Deprecation, please use the static method instead
@@ -12271,6 +12487,11 @@ var XJS = (function(exports) {
      *  Allows listening to events that this class emits. Currently there are three:
      *  `stream-start`, `stream-end` and `recording-renamed`.
      *
+     *  For `stream-start` and `stream-end`, `res.channel._name` may include
+     *  `&output:N` for the true target of that event (one event per index).
+     *  Host payloads that omit the suffix are resolved from `OutputIdx`,
+     *  Settings XML, or the most recent start/stop target for that channel.
+     *
      *  #### Usage:
      *
      * ```javascript
@@ -12292,7 +12513,10 @@ var XJS = (function(exports) {
         try {
           const channelInfoObj = JSON.parse(decodeURIComponent(params));
           if (Object.hasOwn(channelInfoObj, "ChannelName")) {
-            const channelName = channelInfoObj["ChannelName"];
+            const channelName = resolveStreamEventChannelName(
+              channelInfoObj["ChannelName"],
+              channelInfoObj
+            );
             const infoJSON = JSON$1.parse(channelInfoObj["Settings"]);
             let statJSON;
             const addedInfo = {};

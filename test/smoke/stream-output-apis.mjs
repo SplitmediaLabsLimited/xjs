@@ -65,7 +65,7 @@ globalThis.DOMParser = class {
 
 const hostCalls = [];
 let callbackId = 0;
-const recstatXml = [
+let recstatXml = [
   '<stat>',
   '<channel name="Local Streaming">',
   '<stat video="21800992" audio="1383326" output="29635585" frmdropped="0" frmcoded="145267"/>',
@@ -111,6 +111,14 @@ globalThis.external = {
   },
   CallHostFunc(funcName, ...params) {
     hostCalls.push(['CallHostFunc', funcName, ...params]);
+    if (funcName === 'getProperty' && params[0] === 'viewoutputscount') {
+      callbackId += 1;
+      const asyncId = `viewout_${callbackId}`;
+      queueMicrotask(() => {
+        globalThis.OnAsyncCallback(asyncId, '2');
+      });
+      return asyncId;
+    }
     return '0';
   },
   CallHost(funcName, ...params) {
@@ -138,6 +146,32 @@ assert.equal(await xjs.Output.startLocalRecording(), true);
 assert.equal(await xjs.Output.stopLocalRecording(), true);
 assert.equal(await xjs.Output.pauseLocalRecording(), true);
 assert.equal(await xjs.Output.unpauseLocalRecording(), true);
+assert.equal(await xjs.Output.startLocalRecording({ outputTarget: '0' }), true);
+assert.equal(await xjs.Output.pauseLocalRecording({ outputTarget: '1' }), true);
+assert.equal(await xjs.Output.unpauseLocalRecording({ outputTarget: '1' }), true);
+assert.equal(await xjs.Output.stopLocalRecording({ outputTarget: '0' }), true);
+assert.equal(await xjs.Output.startLocalRecording({ outputTarget: 'all' }), true);
+
+const twitch = new xjs.Output({ name: 'Twitch' });
+assert.equal(await twitch.startBroadcast({ suppressPrestreamDialog: true, outputTarget: '0' }), true);
+assert.equal(await twitch.stopBroadcast({ outputTarget: '0' }), true);
+
+const started = new Promise((resolve) => {
+  xjs.ChannelManager.on('stream-start', resolve);
+});
+xjs.ChannelManager.emit(
+  'stream-start',
+  encodeURIComponent(
+    JSON.stringify({
+      ChannelName: 'Twitch',
+      OutputIdx: '1',
+      Settings: '<channel />',
+    })
+  )
+);
+const startEvent = await started;
+assert.equal(startEvent.error, false);
+assert.equal(await startEvent.channel.getName(), 'Twitch&output:1');
 
 assert.deepEqual(
   hostCalls.filter((call) => call[0] === 'CallHostFunc' || call[0] === 'CallHost'),
@@ -148,5 +182,45 @@ assert.deepEqual(
     ['CallHostFunc', 'stopBroadcast', 'Local Recording'],
     ['CallHostFunc', 'pauseRecording', 'Local Recording'],
     ['CallHostFunc', 'unpauseRecording', 'Local Recording'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1', 'output=0'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'pauseRecording', 'Local Recording', 'output=1'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'unpauseRecording', 'Local Recording', 'output=1'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'stopBroadcast', 'Local Recording', 'output=0'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1', 'output=0'],
+    ['CallHostFunc', 'startBroadcast', 'Local Recording', 'suppressPrestreamDialog=1', 'output=1'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'startBroadcast', 'Twitch', 'suppressPrestreamDialog=1', 'output=0'],
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'stopBroadcast', 'Twitch', 'output=0'],
+  ]
+);
+
+recstatXml = [
+  '<stat>',
+  '<channel name="Facebook Live - XSplit Test 2&amp;output:0">',
+  '<stat video="1" audio="1" output="1" frmdropped="0" frmcoded="1"/>',
+  '<channel serviceName="FacebookLive" name="Facebook Live - XSplit Test 2" displayName="Facebook Live"/>',
+  '</channel>',
+  '<channel name="Facebook Live - XSplit Test 2&amp;output:1">',
+  '<stat video="1" audio="1" output="1" frmdropped="0" frmcoded="1"/>',
+  '<channel serviceName="FacebookLive" name="Facebook Live - XSplit Test 2" displayName="Facebook Live"/>',
+  '</channel>',
+  '</stat>',
+].join('');
+
+const facebook = new xjs.Output({ name: 'Facebook Live - XSplit Test 2' });
+const encodedStopCalls = hostCalls.length;
+assert.equal(await facebook.stopBroadcast({ outputTarget: 'all' }), true);
+assert.deepEqual(
+  hostCalls.slice(encodedStopCalls).filter((call) => call[0] === 'CallHostFunc'),
+  [
+    ['CallHostFunc', 'getProperty', 'viewoutputscount'],
+    ['CallHostFunc', 'stopBroadcast', 'Facebook Live - XSplit Test 2', 'output=0'],
+    ['CallHostFunc', 'stopBroadcast', 'Facebook Live - XSplit Test 2', 'output=1'],
   ]
 );

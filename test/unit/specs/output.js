@@ -95,6 +95,12 @@ describe('Output ===', function() {
           window.OnAsyncCallback(asyncId, channelDetails ? channelDetails : '');
         }, 10);
         return asyncId;
+      } else if (funcName === 'getProperty') {
+        var asyncId = new Date().getTime() + '_' + global_asyncId;
+        setTimeout(function() {
+          window.OnAsyncCallback(asyncId, '2');
+        }, 10);
+        return asyncId;
       }
     });
 
@@ -286,6 +292,21 @@ describe('Output ===', function() {
         otherOutput.startBroadcast().then(function() {
           expect(broadcastObject[otherOutput._name]).toEqual('start');
           return otherOutput.stopBroadcast();
+        }).then(function() {
+          expect(broadcastObject[otherOutput._name]).toEqual('stop');
+          next();
+        });
+      }).then(done);
+    });
+
+    it('starting broadcasts with an output target', function(done) {
+      exec2(function(next) {
+        otherOutput.startBroadcast({
+          suppressPrestreamDialog: true,
+          outputTarget: '0'
+        }).then(function() {
+          expect(broadcastObject[otherOutput._name]).toEqual('start');
+          return otherOutput.stopBroadcast({ outputTarget: '0' });
         }).then(function() {
           expect(broadcastObject[otherOutput._name]).toEqual('stop');
           next();
