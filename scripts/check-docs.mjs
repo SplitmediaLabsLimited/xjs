@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { access, readdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const fixturesPath = join(root, 'examples/xsplit-extension/component-fixtures.json');
 const componentsDir = join(root, 'docs/src/content/docs/components');
 const componentScreenshotManifestPath = join(root, 'docs/src/assets/component-fixtures.json');

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import WebSocket from 'ws';
+import { assertXSplitCdpVersion } from './xsplit-cdp-identity.mjs';
 
 const cdpBase = process.env.XJS_CDP_BASE || 'http://127.0.0.1:9222';
 const versionUrl = `${cdpBase}/json/version`;
@@ -210,11 +211,9 @@ async function capturePage(socket, pageState) {
   return Buffer.from(screenshot.data, 'base64');
 }
 
-const [version, targets, fixtures] = await Promise.all([
-  getJson(versionUrl),
-  getJson(listUrl),
-  loadFixtures(),
-]);
+const version = await getJson(versionUrl);
+assertXSplitCdpVersion(version);
+const [targets, fixtures] = await Promise.all([getJson(listUrl), loadFixtures()]);
 diagnostics.cdp = { version, targetPrefixes, fallbackTargetPrefixes };
 
 let navigatedFrom = null;

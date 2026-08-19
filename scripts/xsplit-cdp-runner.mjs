@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import WebSocket from 'ws';
+import { assertXSplitCdpVersion } from './xsplit-cdp-identity.mjs';
 
 const cdpBase = process.env.XJS_CDP_BASE || 'http://127.0.0.1:9222';
 const versionUrl = `${cdpBase}/json/version`;
@@ -187,6 +188,7 @@ async function writeArtifacts(payload, screenshotBuffer, hasFailures) {
 }
 
 const version = await getJson(versionUrl);
+assertXSplitCdpVersion(version);
 const targets = await getJson(listUrl);
 diagnostics.cdp = { version, targetPrefixes, fallbackTargetPrefixes };
 

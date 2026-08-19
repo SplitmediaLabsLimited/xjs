@@ -11,3 +11,8 @@ dist/**
 !dist/xjs-es2015.min.js
 *.vscode
 .yarn/*
+
+# Local package-manager files; npm is canonical for this repository.
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock

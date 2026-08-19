@@ -293,7 +293,7 @@ versions such as `2.10.2`. New modernization releases should be published under
 The intended registry transition is:
 
 1. Keep `xjs-framework@2.10.2` as the final published old-package release.
-2. Publish `@splitmedialabs/xjs@2.14.0` from the modernized branch.
+2. Publish `@splitmedialabs/xjs@2.14.1` from the modernized branch.
 3. Add an npm deprecation notice to `xjs-framework@<=2.10.2` pointing users to
    `@splitmedialabs/xjs`.
 
