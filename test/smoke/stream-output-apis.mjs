@@ -224,3 +224,51 @@ assert.deepEqual(
     ['CallHostFunc', 'stopBroadcast', 'Facebook Live - XSplit Test 2', 'output=1'],
   ]
 );
+
+await assert.rejects(
+  () => twitch.startBroadcast({ outputTarget: '2' }),
+  /out of range/
+);
+const hostCallsBeforeInvalidStop = hostCalls.length;
+await assert.rejects(
+  () => twitch.stopBroadcast({ outputTarget: '99' }),
+  /out of range/
+);
+assert.ok(
+  !hostCalls
+    .slice(hostCallsBeforeInvalidStop)
+    .some((call) => call[0] === 'CallHostFunc' && call[1] === 'stopBroadcast')
+);
+
+await twitch.startBroadcast({ suppressPrestreamDialog: true, outputTarget: '1' });
+xjs.ChannelManager.emit(
+  'stream-start',
+  encodeURIComponent(
+    JSON.stringify({
+      ChannelName: 'Twitch',
+      OutputIdx: '1',
+      Settings: '<channel />',
+    })
+  )
+);
+
+const realDateNow = Date.now;
+Date.now = () => realDateNow() + 16000;
+
+const staleEnd = new Promise((resolve) => {
+  xjs.ChannelManager.on('stream-end', resolve);
+});
+xjs.ChannelManager.emit(
+  'stream-end',
+  encodeURIComponent(
+    JSON.stringify({
+      ChannelName: 'Twitch',
+      Settings: '<channel />',
+    })
+  )
+);
+const staleEndEvent = await staleEnd;
+assert.equal(staleEndEvent.error, false);
+assert.equal(await staleEndEvent.channel.getName(), 'Twitch');
+
+Date.now = realDateNow;

@@ -10,6 +10,12 @@ export const LOCAL_RECORDING = 'Local Recording';
 const PENDING_OUTPUT_TTL_MS = 15000;
 const pendingOutputEvents: Array<{ channelName: string; index: string; ts: number }> = [];
 
+function pruneExpiredPendingOutputEvents(now: number = Date.now()) {
+  while (pendingOutputEvents.length && now - pendingOutputEvents[0].ts > PENDING_OUTPUT_TTL_MS) {
+    pendingOutputEvents.shift();
+  }
+}
+
 export type OutputTarget = string | number | 'all';
 
 export interface BroadcastOptions {
@@ -39,9 +45,7 @@ export function decodeStreamChannelName(name: string): string {
 
 export function rememberOutputEvent(channelName: string, index: string) {
   const now = Date.now();
-  while (pendingOutputEvents.length && now - pendingOutputEvents[0].ts > PENDING_OUTPUT_TTL_MS) {
-    pendingOutputEvents.shift();
-  }
+  pruneExpiredPendingOutputEvents(now);
   pendingOutputEvents.push({
     channelName: bareChannelKey(channelName),
     index: String(index),
@@ -50,6 +54,7 @@ export function rememberOutputEvent(channelName: string, index: string) {
 }
 
 export function takePendingOutputIndex(channelName: string): string | null {
+  pruneExpiredPendingOutputEvents();
   const key = bareChannelKey(channelName);
   const idx = pendingOutputEvents.findIndex((item) => item.channelName === key);
   if (idx === -1) {
@@ -98,7 +103,9 @@ export async function resolveOutputIndices(outputTarget?: OutputTarget): Promise
 
   const indexNum = parseInt(normalized, 10);
   if (indexNum < 0 || indexNum >= count) {
-    return [];
+    throw new Error(
+      `Output target index ${normalized} is out of range (viewoutputscount=${count}).`
+    );
   }
   return [normalized];
 }

@@ -797,6 +797,11 @@ var XJS = (function(exports) {
   const LOCAL_RECORDING = "Local Recording";
   const PENDING_OUTPUT_TTL_MS = 15e3;
   const pendingOutputEvents = [];
+  function pruneExpiredPendingOutputEvents(now = Date.now()) {
+    while (pendingOutputEvents.length && now - pendingOutputEvents[0].ts > PENDING_OUTPUT_TTL_MS) {
+      pendingOutputEvents.shift();
+    }
+  }
   const bareChannelKey = (channelName) => {
     const raw = decodeStreamChannelName(String(channelName == null ? "" : channelName));
     const idx = raw.indexOf(OUTPUT_SUFFIX);
@@ -807,9 +812,7 @@ var XJS = (function(exports) {
   }
   function rememberOutputEvent(channelName, index) {
     const now = Date.now();
-    while (pendingOutputEvents.length && now - pendingOutputEvents[0].ts > PENDING_OUTPUT_TTL_MS) {
-      pendingOutputEvents.shift();
-    }
+    pruneExpiredPendingOutputEvents(now);
     pendingOutputEvents.push({
       channelName: bareChannelKey(channelName),
       index: String(index),
@@ -817,6 +820,7 @@ var XJS = (function(exports) {
     });
   }
   function takePendingOutputIndex(channelName) {
+    pruneExpiredPendingOutputEvents();
     const key = bareChannelKey(channelName);
     const idx = pendingOutputEvents.findIndex((item2) => item2.channelName === key);
     if (idx === -1) {
@@ -859,7 +863,9 @@ var XJS = (function(exports) {
     }
     const indexNum = parseInt(normalized, 10);
     if (indexNum < 0 || indexNum >= count) {
-      return [];
+      throw new Error(
+        `Output target index ${normalized} is out of range (viewoutputscount=${count}).`
+      );
     }
     return [normalized];
   }
