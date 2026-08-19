@@ -853,8 +853,14 @@ var XJS = (function(exports) {
     return `output=${index}`;
   }
   async function resolveOutputIndices(outputTarget) {
+    const omitted = outputTarget === void 0 || outputTarget === null || outputTarget === "";
     const normalized = normalizeOutputTarget(outputTarget);
     if (normalized === null) {
+      if (!omitted) {
+        throw new Error(
+          `Invalid outputTarget value: ${JSON.stringify(outputTarget)}. Must be a non-negative integer, 'all', or omitted.`
+        );
+      }
       return null;
     }
     const count = await getViewOutputsCount();

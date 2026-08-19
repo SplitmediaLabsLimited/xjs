@@ -91,8 +91,14 @@ export function getOutputParam(index: string): string {
 }
 
 export async function resolveOutputIndices(outputTarget?: OutputTarget): Promise<string[] | null> {
+  const omitted = outputTarget === undefined || outputTarget === null || outputTarget === '';
   const normalized = normalizeOutputTarget(outputTarget);
   if (normalized === null) {
+    if (!omitted) {
+      throw new Error(
+        `Invalid outputTarget value: ${JSON.stringify(outputTarget)}. Must be a non-negative integer, 'all', or omitted.`
+      );
+    }
     return null;
   }
 

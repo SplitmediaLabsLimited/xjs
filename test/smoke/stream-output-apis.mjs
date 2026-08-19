@@ -272,3 +272,12 @@ assert.equal(staleEndEvent.error, false);
 assert.equal(await staleEndEvent.channel.getName(), 'Twitch');
 
 Date.now = realDateNow;
+
+await assert.rejects(
+  () => twitch.startBroadcast({ outputTarget: 'bogus' }),
+  /Invalid outputTarget/
+);
+await assert.rejects(
+  () => twitch.stopBroadcast({ outputTarget: '-1' }),
+  /Invalid outputTarget/
+);
