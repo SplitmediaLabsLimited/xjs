@@ -58,6 +58,13 @@ Guidance for local LLM agents working in this repository.
 - Trace symbols to their definitions and usages before changing public
   behavior. Check the manifest and neighboring imports before adding a library
   or assuming an API exists.
+- After pushing a commit that addresses review feedback, reply in each
+  applicable inline thread with the exact pushed commit and verification,
+  react to useful automated findings, and resolve the conversation only after
+  the pushed head contains the fix. A later review or an outdated comment does
+  not resolve the original thread. If a finding is rejected or remains
+  unverified, explain the technical disposition instead of resolving it
+  silently.
 
 ## GitHub Work Tracking
 
