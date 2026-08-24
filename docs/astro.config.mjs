@@ -33,7 +33,10 @@ export default defineConfig({
             label: 'API Reference',
           },
           tsconfig: './tsconfig.json',
-          typeDoc: typeDocBase,
+          typeDoc: {
+            ...typeDocBase,
+            entryFileName: 'index',
+          },
         }),
         internalTypeDoc({
           entryPoints: ['./src'],
