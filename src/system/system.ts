@@ -1,16 +1,16 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {App as iApp} from '../internal/app';
-import {AudioDevice as AudioDevice} from './audio';
-import {MicrophoneDevice} from './microphone';
-import {CameraDevice} from './camera';
-import {Game as Game} from './game';
-import {Screen} from './screen';
-import {JSON as JXON} from '../internal/util/json';
-import {Environment} from '../core/environment';
-import {exec} from '../internal/internal';
-import {Scene} from '../core/scene';
-import {Dll} from '../core/dll';
+import { Dll } from '../core/dll';
+import { Environment } from '../core/environment';
+import { Scene } from '../core/scene';
+import { App as iApp } from '../internal/app';
+import { exec } from '../internal/internal';
+import { JSON as JXON } from '../internal/util/json';
+import { AudioDevice } from './audio';
+import { CameraDevice } from './camera';
+import { Game } from './game';
+import { MicrophoneDevice } from './microphone';
+import { Screen } from './screen';
 
 /**
  * This enum is used for {@link #system/System System Class} getAudioDevices
@@ -26,7 +26,7 @@ import {Dll} from '../core/dll';
 export enum AudioDeviceDataflow {
   RENDER = 1,
   CAPTURE = 2,
-  ALL = 3
+  ALL = 3,
 }
 
 /**
@@ -45,7 +45,7 @@ export enum AudioDeviceState {
   DISABLED = 2,
   UNPLUGGED = 4,
   NOTPRESENT = 8,
-  ALL = 15
+  ALL = 15,
 }
 
 /**
@@ -65,7 +65,7 @@ export enum AudioDeviceState {
  * });
  * ```
  */
-export class System{
+export class System {
   /**
    * return: Promise<AudioDevice[]>
    *
@@ -84,24 +84,25 @@ export class System{
    * });
    * ```
    */
-  static getAudioDevices(dataflow = AudioDeviceDataflow.ALL,
-      state = AudioDeviceState.ACTIVE): Promise<AudioDevice[]> {
-    return new Promise(resolve => {
-      iApp.getAsList('wasapienum').then(devicesJXON => {
-        let devices: AudioDevice[] = [];
+  static getAudioDevices(
+    dataflow = AudioDeviceDataflow.ALL,
+    state = AudioDeviceState.ACTIVE
+  ): Promise<AudioDevice[]> {
+    return new Promise((resolve) => {
+      iApp.getAsList('wasapienum').then((devicesJXON) => {
+        const devices: AudioDevice[] = [];
         if (devicesJXON !== undefined) {
           var devicesJXONLength = devicesJXON.length;
           for (var i = 0; i < devicesJXONLength; ++i) {
-            let device = devicesJXON[i];
-            let bitsState = AudioDeviceState[String(device['State'])
-              .toUpperCase().replace(/\s+/g, '')];
+            const device = devicesJXON[i];
+            const bitsState =
+              AudioDeviceState[String(device['State']).toUpperCase().replace(/\s+/g, '')];
             if ((bitsState & state) !== bitsState) {
-                continue;
+              continue;
             }
-            let bitsFlow = AudioDeviceDataflow[String(device['DataFlow'])
-              .toUpperCase()];
+            const bitsFlow = AudioDeviceDataflow[String(device['DataFlow']).toUpperCase()];
             if ((bitsFlow & dataflow) !== bitsFlow) {
-                continue;
+              continue;
             }
             if (device['name'].toLowerCase().indexOf('xsplit') > -1) {
               continue;
@@ -130,19 +131,26 @@ export class System{
    * ```
    */
   static getCameraDevices(): Promise<CameraDevice[]> {
-    return new Promise(resolve => {
-      iApp.getAsList('dshowenum:vsrc').then(devicesJSON => {
-        let devices: CameraDevice[] = [];
+    return new Promise((resolve) => {
+      iApp.getAsList('dshowenum:vsrc').then((devicesJSON) => {
+        const devices: CameraDevice[] = [];
         if (devicesJSON !== undefined) {
-          for(let device of devicesJSON) {
+          for (const device of devicesJSON) {
             const dispUpperCase = String(device['disp']).toUpperCase();
-            if (dispUpperCase.indexOf('XSPLIT') === -1 &&
-              dispUpperCase !== '@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}' &&
-              String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) 3D Camera Virtual Driver').toLowerCase()) === -1 &&
-              String(device['name']).toLowerCase().indexOf(('Intel(R) RealSense(TM) Camera SR300 Virtual Driver').toLowerCase()) === -1 &&
-              dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#')) === -1 &&
-              dispUpperCase.indexOf(('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#')) === -1
-              ) {
+            if (
+              dispUpperCase.indexOf('XSPLIT') === -1 &&
+              dispUpperCase !==
+                '@DEVICE:SW:{860BB310-5D01-11D0-BD3B-00A0C911CE86}\\{778ABFB2-E87B-48A2-8D33-675150FCF8A2}' &&
+              String(device['name'])
+                .toLowerCase()
+                .indexOf('Intel(R) RealSense(TM) 3D Camera Virtual Driver'.toLowerCase()) === -1 &&
+              String(device['name'])
+                .toLowerCase()
+                .indexOf('Intel(R) RealSense(TM) Camera SR300 Virtual Driver'.toLowerCase()) ===
+                -1 &&
+              dispUpperCase.indexOf('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0AA5&MI_02#') === -1 &&
+              dispUpperCase.indexOf('@DEVICE:PNP:\\\\?\\USB#VID_8086&PID_0A66&MI_02#') === -1
+            ) {
               devices.push(CameraDevice.parse(device));
             }
           }
@@ -169,9 +177,9 @@ export class System{
    * ```
    */
   static getGames(): Promise<Game[]> {
-    return new Promise(resolve => {
-      iApp.getAsList('gsenum').then(gamesJXON => {
-        let games: Game[] = [];
+    return new Promise((resolve) => {
+      iApp.getAsList('gsenum').then((gamesJXON) => {
+        const games: Game[] = [];
         if (gamesJXON !== undefined) {
           var gamesJXONLength = gamesJXON.length;
           for (var i = 0; i < gamesJXONLength; ++i) {
@@ -198,11 +206,11 @@ export class System{
    * ```
    */
   static getMicrophones(): Promise<MicrophoneDevice[]> {
-    return new Promise(resolve => {
-      iApp.getAsList('dshowenum:asrc').then(micsJXON => {
-        let mics: MicrophoneDevice[] = [];
+    return new Promise((resolve) => {
+      iApp.getAsList('dshowenum:asrc').then((micsJXON) => {
+        const mics: MicrophoneDevice[] = [];
         if (micsJXON !== undefined) {
-          let micsJXONLength = micsJXON.length;
+          const micsJXONLength = micsJXON.length;
           for (var i = 0; i < micsJXONLength; ++i) {
             if (micsJXON[i]['WaveInId'] !== undefined) {
               mics.push(MicrophoneDevice.parse(micsJXON[i]));
@@ -229,46 +237,54 @@ export class System{
    * ```
    */
   static getAvailableScreens(): Promise<any> {
-    return new Promise(resolve => {
-      let screens: Screen[] = [];
-      let devices = []
-      const getParentWindows = Dll.call('xsplit.EnumParentWindows')
-      getParentWindows.then(list => {
-        let processArray = list.split(',')
-        return Promise.all(processArray.map(process => {
-          return Promise.all([
-            Dll.call('xsplit.GetWindowTitle', process),
-            Dll.call('xsplit.GetWindowClassName', process),
-            Dll.call('xsplit.GetWindowProcessId', process),
-            Promise.resolve(process)
-          ])
-        }))
-      }).then(windowDetailsArr => {
-        let devices = windowDetailsArr
-          .filter(windowDetail => windowDetail[0] !== '')
-          .filter(windowDetail => windowDetail[0].toUpperCase().indexOf('XSPLIT BROADCASTER') !== 0)
-          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('SHELL_TRAYWND') !== 0)
-          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('BUTTON') !== 0)
-          .filter(windowDetail => windowDetail[1].toUpperCase().indexOf('WINDOWS.UI.CORE.COREWINDOW') !== 0)
-          .map(windowDetail => {
-            Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2])
-            .then(detail => {
-              let dev = {
-                'title': windowDetail[0],
-                'class': windowDetail[1],
-                'processDetail': detail.toLocaleLowerCase(),
-                'hwnd': windowDetail[3]
-              }
-              return screens.push(Screen.parse(dev))
+    return new Promise((resolve) => {
+      const screens: Screen[] = [];
+      const devices = [];
+      const getParentWindows = Dll.call('xsplit.EnumParentWindows');
+      getParentWindows
+        .then((list) => {
+          const processArray = list.split(',');
+          return Promise.all(
+            processArray.map((process) => {
+              return Promise.all([
+                Dll.call('xsplit.GetWindowTitle', process),
+                Dll.call('xsplit.GetWindowClassName', process),
+                Dll.call('xsplit.GetWindowProcessId', process),
+                Promise.resolve(process),
+              ]);
             })
-          })
-          return devices
-      }).then(res => {
-        resolve(screens)
-      })
-    })
+          );
+        })
+        .then((windowDetailsArr) => {
+          const devices = windowDetailsArr
+            .filter((windowDetail) => windowDetail[0] !== '')
+            .filter(
+              (windowDetail) => windowDetail[0].toUpperCase().indexOf('XSPLIT BROADCASTER') !== 0
+            )
+            .filter((windowDetail) => windowDetail[1].toUpperCase().indexOf('SHELL_TRAYWND') !== 0)
+            .filter((windowDetail) => windowDetail[1].toUpperCase().indexOf('BUTTON') !== 0)
+            .filter(
+              (windowDetail) =>
+                windowDetail[1].toUpperCase().indexOf('WINDOWS.UI.CORE.COREWINDOW') !== 0
+            );
+          devices.forEach((windowDetail) => {
+            Dll.call('xsplit.GetProcessDetailsKernel', windowDetail[2]).then((detail) => {
+              const dev = {
+                title: windowDetail[0],
+                class: windowDetail[1],
+                processDetail: detail.toLocaleLowerCase(),
+                hwnd: windowDetail[3],
+              };
+              return screens.push(Screen.parse(dev));
+            });
+          });
+          return devices;
+        })
+        .then((res) => {
+          resolve(screens);
+        });
+    });
   }
-
 
   /**
    * return: Promise<string[]>
@@ -290,12 +306,12 @@ export class System{
    * });
    * ```
    */
-  static getFonts(): Promise<string> {
+  static getFonts(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
       } else {
-        iApp.get('html:fontlist').then(fontlist => {
+        iApp.get('html:fontlist').then((fontlist) => {
           if (typeof fontlist === 'string' && fontlist !== '') {
             var fontArray = fontlist.split(',');
             resolve(fontArray);
@@ -327,14 +343,14 @@ export class System{
         reject(Error('function is not available for source'));
       } else {
         let res;
-        exec('GetCursorPos').then(result => {
-          res = result
+        exec('GetCursorPos').then((result) => {
+          res = result;
           if (typeof res === 'string') {
             var posArr = res.split(',');
             var pos = {};
             pos['x'] = Number(posArr[0]);
             pos['y'] = Number(posArr[1]);
-            resolve(pos)
+            resolve(pos);
           } else {
             reject(Error('cannot fetch current cursor position'));
           }
@@ -354,7 +370,7 @@ export class System{
    * System.setCursorPosition({x:0, y:0});
    * ```
    */
-  static setCursorPosition(pos: {x: number, y: number}) {
+  static setCursorPosition(pos: { x: number; y: number }) {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));

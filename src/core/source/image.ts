@@ -1,8 +1,8 @@
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {Item as iItem} from '../../internal/item';
-import {XML} from '../../internal/util/xml';
-import {SourceImage, ISourceImage} from './iimage';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { XML } from '../../internal/util/xml';
+import { Source } from '../source/source';
+import { type ISourceImage, SourceImage } from './iimage';
 
 /**
  * The ImageSource class represents the sources of the image items that
@@ -35,9 +35,8 @@ import {SourceImage, ISourceImage} from './iimage';
  * instance.
  */
 export class ImageSource extends Source implements ISourceImage {
-
   /** See: {@link #core/ISourceImage#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceImage#getValue getValue} */
   getValue: () => Promise<string>;

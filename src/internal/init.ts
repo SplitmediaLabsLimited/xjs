@@ -1,72 +1,68 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Environment} from '../core/environment';
-import {Item} from './item';
-import {exec} from './internal';
-import {Global} from './global';
-import {SourcePropsWindow} from '../window/config';
-import {minVersion, versionCompare, getVersion} from './util/version';
+import { Environment } from '../core/environment';
+import { SourcePropsWindow } from '../window/config';
+import { Global } from './global';
+import { exec } from './internal';
+import { Item } from './item';
+import { getVersion, minVersion, versionCompare } from './util/version';
 
 function resolveRelativePath(path: string, base: string) {
   // ABSOLUTE PATHS
-  if (path.substring(0, 7) === 'http://' ||
-      path.substring(0, 8) === 'https://') {
-      return path;
+  if (path.substring(0, 7) === 'http://' || path.substring(0, 8) === 'https://') {
+    return path;
   } else if (path.substring(0, 2) === '//') {
     // get current protocol
-      return base.split('://')[0] + ':' + path;
+    return base.split('://')[0] + ':' + path;
   } else if (path.substring(0, 3) === '../') {
-      // RELATIVE PATHS
-      let upDirectoryCount = 0;
-      // count ../ segments
-      while (path.substring(0, 3) === '../') {
-          path = path.substring(3);
-          ++upDirectoryCount;
-      }
-      let baseDirectories = base.split('/');
-      baseDirectories = baseDirectories.slice(0, length - 1 - upDirectoryCount);
-      baseDirectories.push(path);
-      return baseDirectories.join('/');
-  } else { // captures ./ and URLS without protocols
-    if (path.substring(0, 2) === './') {
-        path = path.substring(2);
+    // RELATIVE PATHS
+    let upDirectoryCount = 0;
+    // count ../ segments
+    while (path.substring(0, 3) === '../') {
+      path = path.substring(3);
+      ++upDirectoryCount;
     }
-    let baseSegments = base.split('/');
+    let baseDirectories = base.split('/');
+    baseDirectories = baseDirectories.slice(0, length - 1 - upDirectoryCount);
+    baseDirectories.push(path);
+    return baseDirectories.join('/');
+  } else {
+    // captures ./ and URLS without protocols
+    if (path.substring(0, 2) === './') {
+      path = path.substring(2);
+    }
+    const baseSegments = base.split('/');
     baseSegments[baseSegments.length - 1] = path;
     return baseSegments.join('/');
   }
 }
 
 function readMetaConfigUrl(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>((resolve) => {
     if (Environment.isSourcePlugin()) {
       var configObj = {};
       // initialize config URL if necessary
-      var promise = new Promise(resolveInner => {
-        exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', result => {
+      var promise = new Promise((resolveInner) => {
+        exec('GetLocalPropertyAsync', 'prop:BrowserConfiguration', (result) => {
           resolveInner(result);
         });
       });
 
-      promise.then(browserConfig => {
+      promise.then((browserConfig) => {
         try {
           if (browserConfig === '' || browserConfig === 'null') {
             browserConfig = exec('GetConfiguration');
           }
           configObj = JSON.parse(<string>browserConfig);
-        }
-        catch(e) {
-
-        }
-        finally {
+        } catch (e) {
+        } finally {
           var metas = document.getElementsByTagName('meta');
           for (var i = metas.length - 1; i >= 0; i--) {
             if (metas[i].name === 'xsplit:config-url') {
-              let url = resolveRelativePath(
-                metas[i].content, window.location.href);
+              const url = resolveRelativePath(metas[i].content, window.location.href);
               configObj['configUrl'] = url;
               var persist = {
-                configUrl: url
+                configUrl: url,
               };
               Global.setPersistentConfig(persist);
               break;
@@ -76,7 +72,6 @@ function readMetaConfigUrl(): Promise<any> {
           resolve();
         }
       });
-
     } else {
       resolve();
     }
@@ -84,26 +79,20 @@ function readMetaConfigUrl(): Promise<any> {
 }
 
 function getCurrentSourceId(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>((resolve) => {
     if (
       Environment.isSourceProps() ||
-      (
-        Environment.isSourcePlugin() &&
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      )
+      (Environment.isSourcePlugin() && versionCompare(getVersion()).is.lessThan(minVersion))
     ) {
       // initialize Item.getSource() functions
-      exec('GetLocalPropertyAsync', 'prop:id',
-        result => {
-          let id = result;
-          Item.setBaseId(id);
-          if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-            Item.lockSourceSlot(id);
-          }
-          resolve();
-        });
+      exec('GetLocalPropertyAsync', 'prop:id', (result) => {
+        const id = result;
+        Item.setBaseId(id);
+        if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
+          Item.lockSourceSlot(id);
+        }
+        resolve();
+      });
     } else {
       resolve();
     }
@@ -111,14 +100,12 @@ function getCurrentSourceId(): Promise<any> {
 }
 
 function informWhenConfigLoaded(): Promise<any> {
-  return new Promise(resolve => {
+  return new Promise<void>((resolve) => {
     if (Environment.isSourceProps()) {
       window.addEventListener('load', () => {
         try {
           SourcePropsWindow.getInstance().emit('config-load');
-        } catch(e) {
-
-        }
+        } catch (e) {}
         resolve();
       });
     } else {
@@ -127,11 +114,11 @@ function informWhenConfigLoaded(): Promise<any> {
   });
 }
 
-function setAudioengineUsed(): Promise<any> {
-  return new Promise(resolve => {
-    exec('CallHostFunc', 'getProperty', 'experimental:audioengine', isExperimental => {
+function setAudioengineUsed(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    exec('CallHostFunc', 'getProperty', 'experimental:audioengine', (isExperimental) => {
       const isNewAudioEngine = parseInt(isExperimental) === 1;
-      Global.setNewAudioEngine(isNewAudioEngine);      
+      Global.setNewAudioEngine(isNewAudioEngine);
       resolve();
     });
   });
@@ -146,13 +133,15 @@ export default function init(config: Object): void {
     Global.addInitializationPromise(informWhenConfigLoaded());
   }
 
-  if (config && config['listenToItemAdd'] !== undefined) {    
+  if (config && config['listenToItemAdd'] !== undefined) {
     Global.setListenToItemAdd();
   }
 
   Promise.all(Global.getInitializationPromises()).then(() => {
-    document.dispatchEvent(new CustomEvent('xsplit-js-ready', {
-      bubbles: true
-    }));
+    document.dispatchEvent(
+      new CustomEvent('xsplit-js-ready', {
+        bubbles: true,
+      })
+    );
   });
 }

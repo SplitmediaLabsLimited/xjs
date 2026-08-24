@@ -1,0 +1,65 @@
+---
+title: Remote XJS
+description: Proxy XJS calls between a remote UI and an XSplit-hosted page.
+sidebar:
+  order: 16
+---
+
+Remote XJS lets one page act as a remote controller while another XSplit-hosted
+page acts as a proxy to Broadcaster. The framework serializes calls and events,
+but your project supplies the transport.
+
+## Roles
+
+The proxy runs inside the XSplit host and performs the actual API calls. It also
+forwards host events to remotes that subscribed to them.
+
+The remote is the external UI or controller. Once connected, it can call XJS APIs
+through the proxy as if it were local.
+
+## Transport Setup
+
+Choose a transport first, such as WebSocket, WebRTC data channels, or another
+message channel. Then pass send and receive hooks to XJS:
+
+```js
+const xjs = require('xjs');
+const connection = new WebSocket('ws://localhost:1337');
+
+connection.onopen = () => {
+  xjs.ready({
+    remote: {
+      type: 'remote',
+      sendMessage(message) {
+        connection.send(message);
+      },
+    },
+  });
+};
+
+connection.onmessage = (event) => {
+  xjs.Remote.receiveMessage(event.data);
+};
+```
+
+Use `type: 'proxy'` for the XSplit-hosted proxy page.
+
+## Reinitializing Send Functions
+
+If the connection is recreated, update the send function:
+
+```js
+xjs.Remote.setSendMessage((message) => {
+  connection.send(message);
+});
+```
+
+If a proxy needs to temporarily make local calls, switch the remote type with
+`xjs.Remote.setRemoteType(remoteType)`, then switch it back before continuing
+remote traffic.
+
+## Limitations
+
+Remote XJS remains an advanced integration path. `SourcePropsWindow` and
+`Dialog` events cannot be handled remotely because the source properties window
+and popup dialog cannot act as the proxy.

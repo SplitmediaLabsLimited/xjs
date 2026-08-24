@@ -1,22 +1,23 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Environment} from '../core/environment';
-import {EventEmitter} from '../util/eventemitter';
-import {EventManager} from '../internal/eventmanager';
-import {JSON as JXON} from '../internal/util/json';
-import {Scene} from '../core/scene';
-import {addSceneEventFixVersion,
-        deleteSceneEventFixVersion,
-        versionCompare,
-        sceneUidAddDeleteVersion,
-        getVersion} from '../internal/util/version';
-import {exec} from '../internal/internal';
-import {App} from '../internal/app';
-import {ViewTypes} from '../core/items/item';
-import {Extension} from '../core/extension';
+import { Environment } from '../core/environment';
+import { Extension } from '../core/extension';
+import { ViewTypes } from '../core/items/item';
+import { Scene } from '../core/scene';
+import { App } from '../internal/app';
+import { EventManager } from '../internal/eventmanager';
+import { exec } from '../internal/internal';
+import { JSON as JXON } from '../internal/util/json';
+import { splitMode } from '../internal/util/splitmode';
+import {
+  addSceneEventFixVersion,
+  deleteSceneEventFixVersion,
+  getVersion,
+  sceneUidAddDeleteVersion,
+  versionCompare,
+} from '../internal/util/version';
+import { EventEmitter } from '../util/eventemitter';
 import window from '../util/window';
-import {splitMode} from '../internal/util/splitmode'
-
 
 const _RESIZE = '2';
 
@@ -33,7 +34,7 @@ const _RESIZE = '2';
  *    - `scene-add` : notifies when a scene is added. Handler is a function f(index: number, uid: string). Works only on version 2.8.1606.1701 or higher.
  *    - `scene-delete-all` : notifies all scenes are deleted. Handler is a function f(type: newpres/loadpres). Works only on version 3.3.1801.1901 or higher.
  *    - `bscn-load` : notifies when user loads a scene file via XBC, File menu > Load Scene...
-  *   - `push-to-live` : notifies when a particular scene was pushed to live by user. Handler is a function f(sceneIndex: number).
+ *   - `push-to-live` : notifies when a particular scene was pushed to live by user. Handler is a function f(sceneIndex: number).
  *
  *  Use the `on(event: string, handler: Function)` function to listen to an event.
  *
@@ -43,12 +44,12 @@ export class ExtensionWindow extends EventEmitter {
   static _subscriptions: string[] = [];
   static _encounteredFirstSceneChange: boolean = false;
 
-/**
- * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
- * `** since an ExtensionWinow should technically have a single instance`
- *
- * Gets the instance of the window utility. Use this instead of the constructor.
- */
+  /**
+   * ** For deprecation, the need for getting the instance of an ExtensionWindow looks redundant,
+   * `** since an ExtensionWinow should technically have a single instance`
+   *
+   * Gets the instance of the window utility. Use this instead of the constructor.
+   */
   static getInstance() {
     if (ExtensionWindow._instance === undefined) {
       ExtensionWindow._instance = new ExtensionWindow();
@@ -79,15 +80,9 @@ export class ExtensionWindow extends EventEmitter {
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
     try {
-      ExtensionWindow
-        .getInstance()
-        .emit
-        .apply(ExtensionWindow._instance, params);
-    } catch(event) {
-      ExtensionWindow
-        ._instance
-        .emit
-        .apply(ExtensionWindow._instance, params);
+      ExtensionWindow.getInstance().emit.apply(ExtensionWindow._instance, params);
+    } catch (event) {
+      ExtensionWindow._instance.emit.apply(ExtensionWindow._instance, params);
     }
   }
 
@@ -98,164 +93,225 @@ export class ExtensionWindow extends EventEmitter {
    *
    */
   static on(event: string, handler: Function): Promise<any> {
-    return new Promise((resolve,reject) => {
-      let id = new Date().getTime() + '_' + Math.floor(Math.random()*1000)
+    return new Promise((resolve, reject) => {
+      const id = Date.now() + '_' + Math.floor(Math.random() * 1000);
       ExtensionWindow.getInstance().on(event, handler, id);
-      let isDeleteSceneEventFixed = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
-      let isAddSceneEventFixed = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(addSceneEventFixVersion);
-      let isSceneUidParamAvailable = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(sceneUidAddDeleteVersion);
+      const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+        deleteSceneEventFixVersion
+      );
+      const isAddSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+        addSceneEventFixVersion
+      );
+      const isSceneUidParamAvailable = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+        sceneUidAddDeleteVersion
+      );
 
-      if(event === 'scene-delete' && isDeleteSceneEventFixed) {
-        let eventSubscribe = isSceneUidParamAvailable ? 'OnSceneDelete' : 'SceneDeleted';
+      if (event === 'scene-delete' && isDeleteSceneEventFixed) {
+        const eventSubscribe = isSceneUidParamAvailable ? 'OnSceneDelete' : 'SceneDeleted';
         if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
           ExtensionWindow._subscriptions.push(eventSubscribe);
-          EventManager.subscribe(eventSubscribe, function(settingsObj) {
-            if (Environment.isExtension()) {
-              if(isSceneUidParamAvailable) {
-                let returnObj = {};
+          EventManager.subscribe(
+            eventSubscribe,
+            function (settingsObj) {
+              if (Environment.isExtension()) {
+                if (isSceneUidParamAvailable) {
+                  const returnObj = {};
+                  const sceneId = settingsObj['args'][1].split('&')[1].split(':');
+                  const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
+                  returnObj[sceneId[0]] = sceneId[1];
+                  returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
+
+                  ExtensionWindow.emit(
+                    settingsObj['id'] ? settingsObj['id'] : event,
+                    returnObj['scene'],
+                    returnObj['sceneid']
+                  );
+                } else {
+                  ExtensionWindow.emit(
+                    settingsObj['id'] ? settingsObj['id'] : event,
+                    settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1
+                  );
+                }
+              }
+              resolve(this);
+            },
+            id
+          );
+        } else {
+          resolve(ExtensionWindow);
+        }
+      } else if (event === 'scene-add' && isAddSceneEventFixed) {
+        const eventSubscribe = isSceneUidParamAvailable ? 'OnSceneAdd' : 'OnSceneAddByUser';
+        if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
+          ExtensionWindow._subscriptions.push(eventSubscribe);
+          EventManager.subscribe(
+            eventSubscribe,
+            (settingsObj) => {
+              if (isSceneUidParamAvailable) {
+                const returnObj = {};
                 const sceneId = settingsObj['args'][1].split('&')[1].split(':');
                 const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
                 returnObj[sceneId[0]] = sceneId[1];
-                returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
-
-                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
+                returnObj[sceneNum[0]] = Number(sceneNum[1]) + 1;
+                ExtensionWindow.emit(
+                  settingsObj['id'] ? settingsObj['id'] : event,
+                  returnObj['scene'],
+                  returnObj['sceneid']
+                );
               } else {
-                ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['index'] === '' ?
-                null : Number(settingsObj['index']) + 1);
+                Scene.getSceneCount().then(function (count) {
+                  if (Environment.isExtension()) {
+                    ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
+                    resolve(this);
+                  } else {
+                    reject(Error('ExtensionWindow class is only available for extensions.'));
+                  }
+                });
               }
-            }
-            resolve(this);
-          }, id);
+            },
+            id
+          );
         } else {
-          resolve(this);
+          resolve(ExtensionWindow);
         }
-      } else if(event === 'scene-add' && isAddSceneEventFixed) {
-        let eventSubscribe = isSceneUidParamAvailable ? 'OnSceneAdd' : 'OnSceneAddByUser';
-        if (ExtensionWindow._subscriptions.indexOf(eventSubscribe) < 0) {
-          ExtensionWindow._subscriptions.push(eventSubscribe);
-          EventManager.subscribe(eventSubscribe, function(settingsObj) {
-            if(isSceneUidParamAvailable) {
-              let returnObj = {};
-              const sceneId = settingsObj['args'][1].split('&')[1].split(':');
-              const sceneNum = settingsObj['args'][1].split('&')[2].split(':');
-              returnObj[sceneId[0]] = sceneId[1];
-              returnObj[sceneNum[0]] = Number(sceneNum[1])+1;
-              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, returnObj['scene'], returnObj['sceneid']);
-            } else {
-              Scene.getSceneCount().then(function(count){
-                if (Environment.isExtension()) {
-                  ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, count);
-                  resolve(this);
-                } else {
-                  reject(Error('ExtensionWindow class is only available for extensions.'));
-                }
-              });
-            }
-          }, id);
-        } else {
-          resolve(this);
-        }
-      } else if(event === 'scene-delete-all' && isSceneUidParamAvailable) {
+      } else if (event === 'scene-delete-all' && isSceneUidParamAvailable) {
         if (ExtensionWindow._subscriptions.indexOf('OnSceneDeleteAll') < 0) {
           ExtensionWindow._subscriptions.push('OnSceneDeleteAll');
-          EventManager.subscribe('OnSceneDeleteAll', function(settingsObj) {
-            if (Environment.isExtension()) {
-              ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, settingsObj['args'][0]);
-            }
-            resolve(this);
-          }, id);
+          EventManager.subscribe(
+            'OnSceneDeleteAll',
+            function (settingsObj) {
+              if (Environment.isExtension()) {
+                ExtensionWindow.emit(
+                  settingsObj['id'] ? settingsObj['id'] : event,
+                  settingsObj['args'][0]
+                );
+              }
+              resolve(this);
+            },
+            id
+          );
         } else {
-          resolve(this);
+          resolve(ExtensionWindow);
         }
-      } else if(event === 'bscn-load') {
+      } else if (event === 'bscn-load') {
         if (ExtensionWindow._subscriptions.indexOf('OnPropertyChange') < 0) {
           ExtensionWindow._subscriptions.push('OnPropertyChange');
-          EventManager.subscribe('OnPropertyChange', function(settingsObj) {
-            if (Environment.isExtension()) {
-              let property = settingsObj['args'][0];
-              let newValue = settingsObj['args'][1];
+          EventManager.subscribe(
+            'OnPropertyChange',
+            function (settingsObj) {
+              if (Environment.isExtension()) {
+                const property = settingsObj['args'][0];
+                const newValue = settingsObj['args'][1];
 
-              if (property.startsWith('sceneconfign:') || property.startsWith('sceneconfig:')) {
-                let changedIndex = property.split(":")[1];
-                Scene.getActiveScene().then(scene => {
-                  return scene.getSceneNumber();
-                }).then( sceneNumber => {
-                  if (typeof sceneNumber === 'number') {
-                    sceneNumber = (sceneNumber - 1);
-                  }
-                  if (changedIndex === String(sceneNumber)) {
-                    var placementJXON = JXON.parse(newValue);
-                    ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneNumber, placementJXON['id']);
-                  }
-                })
+                if (property.startsWith('sceneconfign:') || property.startsWith('sceneconfig:')) {
+                  const changedIndex = property.split(':')[1];
+                  Scene.getActiveScene()
+                    .then((scene) => {
+                      return scene.getSceneNumber();
+                    })
+                    .then((sceneNumber) => {
+                      if (typeof sceneNumber === 'number') {
+                        sceneNumber = sceneNumber - 1;
+                      }
+                      if (changedIndex === String(sceneNumber)) {
+                        var placementJXON = JXON.parse(newValue);
+                        ExtensionWindow.emit(
+                          settingsObj['id'] ? settingsObj['id'] : event,
+                          sceneNumber,
+                          placementJXON['id']
+                        );
+                      }
+                    });
+                }
               }
-            }
-            resolve(this);
-          }, id);
+              resolve(this);
+            },
+            id
+          );
         } else {
-          resolve(this);
+          resolve(ExtensionWindow);
         }
-      } else if(event === 'push-to-live') {
+      } else if (event === 'push-to-live') {
         if (ExtensionWindow._subscriptions.indexOf('scenedlg:1') < 0 && Environment.isExtension()) {
           ExtensionWindow._subscriptions.push('scenedlg:1');
-          EventManager.subscribe('scenedlg:1', function() {
-            ExtensionWindow._encounteredFirstSceneChange = false;
-          }, id);
-          if(ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
+          EventManager.subscribe(
+            'scenedlg:1',
+            () => {
+              ExtensionWindow._encounteredFirstSceneChange = false;
+            },
+            id
+          );
+          if (ExtensionWindow._subscriptions.indexOf('SceneChange') < 0) {
             ExtensionWindow._subscriptions.push('SceneChange');
-            EventManager.subscribe('SceneChange', function(settingsObj) {
-              let isSplitMode = false;
-              const viewId = parseInt(settingsObj['args'][0]);
-              const sceneIndex = parseInt(settingsObj['args'][1]);
-              App.getGlobalProperty('splitmode').then(split => {
-                isSplitMode = split === '1' ? true : false;
-                if(isSplitMode) {
-                  if(!ExtensionWindow._encounteredFirstSceneChange) {
-                    if(viewId === 1) {
-                      ExtensionWindow._encounteredFirstSceneChange = true;
-                      ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
+            EventManager.subscribe(
+              'SceneChange',
+              (settingsObj) => {
+                let isSplitMode = false;
+                const viewId = parseInt(settingsObj['args'][0]);
+                const sceneIndex = parseInt(settingsObj['args'][1]);
+                App.getGlobalProperty('splitmode').then((split) => {
+                  isSplitMode = split === '1' ? true : false;
+                  if (isSplitMode) {
+                    if (!ExtensionWindow._encounteredFirstSceneChange) {
+                      if (viewId === 1) {
+                        ExtensionWindow._encounteredFirstSceneChange = true;
+                        ExtensionWindow.emit(
+                          settingsObj['id'] ? settingsObj['id'] : event,
+                          sceneIndex
+                        );
+                      }
                     }
+                  } else {
+                    if (viewId === 0)
+                      ExtensionWindow.emit(
+                        settingsObj['id'] ? settingsObj['id'] : event,
+                        sceneIndex
+                      );
                   }
-                } else {
-                  if(viewId === 0) ExtensionWindow.emit(settingsObj['id'] ? settingsObj['id'] : event, sceneIndex);
-                }
-              })
-            }, id);
+                });
+              },
+              id
+            );
           }
-          resolve(this);
+          resolve(ExtensionWindow);
         } else {
-          resolve(this);
+          resolve(ExtensionWindow);
         }
-      } else if(['sources-list-highlight', 'sources-list-select',
-      'sources-list-update', 'scene-load'].indexOf(event) >= 0 ) {
+      } else if (
+        [
+          'sources-list-highlight',
+          'sources-list-select',
+          'sources-list-update',
+          'scene-load',
+        ].indexOf(event) >= 0
+      ) {
         //Just subscribe to the event. Emitter is already handled.
-        if (['sources-list-highlight', 'sources-list-select',
-        'sources-list-update'].indexOf(event) >= 0) {
-          try{
-            exec( 'SourcesListSubscribeEvents', ViewTypes.MAIN.toString() )
-            .then(res => {
-              return exec( 'SourcesListSubscribeEvents', ViewTypes.PREVIEW.toString() );
-            })
-            .then(res => {
-              resolve(this);
-            })
-            .catch(err => {
-              resolve(this);
-            });
+        if (
+          ['sources-list-highlight', 'sources-list-select', 'sources-list-update'].indexOf(event) >=
+          0
+        ) {
+          try {
+            exec('SourcesListSubscribeEvents', ViewTypes.MAIN.toString())
+              .then((res) => {
+                return exec('SourcesListSubscribeEvents', ViewTypes.PREVIEW.toString());
+              })
+              .then((res) => {
+                resolve(ExtensionWindow);
+              })
+              .catch((err) => {
+                resolve(ExtensionWindow);
+              });
           } catch (ex) {
             // This exception most probably for older versions which
             // would work without subscribing to source list events.
           }
         } else {
-          resolve(this);
+          resolve(ExtensionWindow);
         }
       } else {
         reject(Error('Warning! The event "' + event + '" is not yet supported.'));
       }
-    })
+    });
   }
 
   static off(event: string, handler: Function) {
@@ -284,32 +340,30 @@ export class ExtensionWindow extends EventEmitter {
    *
    * Renames the extension window.
    */
-  static setTitle(value: string):Promise<any> {
-    return new Promise(resolve => {
-      let ext = Extension.getInstance()
-      ext.getId().then(id => {
-        exec("CallHost", "setExtensionWindowTitle:" + id, value)
-        .then(res => {
-          resolve(res)
-        })
-      })
-    })
-  };
+  static setTitle(value: string): Promise<any> {
+    return new Promise((resolve) => {
+      const ext = Extension.getInstance();
+      ext.getId().then((id) => {
+        exec('CallHost', 'setExtensionWindowTitle:' + id, value).then((res) => {
+          resolve(res);
+        });
+      });
+    });
+  }
 
   /**
    * `** For deprecation, please use the static method instead`
    */
-  setTitle(value: string):Promise<any> {
-    return new Promise(resolve => {
-      let ext = Extension.getInstance()
-      ext.getId().then(id => {
-        exec("CallHost", "setExtensionWindowTitle:" + id, value)
-        .then(res => {
-          resolve(res)
-        })
-      })
-    })
-  };
+  setTitle(value: string): Promise<any> {
+    return new Promise((resolve) => {
+      const ext = Extension.getInstance();
+      ext.getId().then((id) => {
+        exec('CallHost', 'setExtensionWindowTitle:' + id, value).then((res) => {
+          resolve(res);
+        });
+      });
+    });
+  }
 
   /**
    * param (flag: number)
@@ -325,14 +379,14 @@ export class ExtensionWindow extends EventEmitter {
    *     (bit 3 - enable minimize btn)
    *     (bit 4 - enable maximize btn)
    */
-  static setBorder(flag: number){
+  static setBorder(flag: number) {
     App.postMessage('4', String(flag));
   }
 
   /**
    * `** For deprecation, please use the static method instead`
    * */
-  setBorder(flag: number){
+  setBorder(flag: number) {
     App.postMessage('4', String(flag));
   }
 
@@ -354,89 +408,90 @@ export class ExtensionWindow extends EventEmitter {
    * Disable Close Button on this extension's window
    */
   static disableClose() {
-    App.postMessage('5','0')
+    App.postMessage('5', '0');
   }
 
   /**
    * `** For deprecation, please use the static method instead`
    * */
   disableClose() {
-    App.postMessage('5','0')
+    App.postMessage('5', '0');
   }
 
   /**
    * Enable Close Button on this extension's window
    */
   static enableClose() {
-    App.postMessage('5', '1')
+    App.postMessage('5', '1');
   }
 
   /**
    * `** For deprecation, please use the static method instead`
    * */
   enableClose() {
-    App.postMessage('5', '1')
+    App.postMessage('5', '1');
   }
 }
 
 // for extensions
 const oldSourcesListUpdate = window.SourcesListUpdate;
 window.SourcesListUpdate = (view, sources) => {
-  App.getGlobalProperty('splitmode').then(res => {
+  App.getGlobalProperty('splitmode').then((res) => {
     const checkSplit = res === '1' ? 1 : 0;
-    if (Number(view) === checkSplit) { // main view {
-      let propsJSON: JXON = JXON.parse( decodeURIComponent(sources) ),
-            propsArr: JXON[] = [],
-            ids = [];
+    if (Number(view) === checkSplit) {
+      // main view {
+      let propsJSON: JXON = JXON.parse(decodeURIComponent(sources)),
+        propsArr: JXON[] = [],
+        ids = [];
 
       if (propsJSON.children && propsJSON.children.length > 0) {
-         propsArr = propsJSON.children;
-         for(var i=0; i < propsArr.length; i++){
-           ids.push(propsArr[i]['id']);
-         }
+        propsArr = propsJSON.children;
+        for (var i = 0; i < propsArr.length; i++) {
+          ids.push(propsArr[i]['id']);
+        }
       }
 
-      ExtensionWindow.emit( 'sources-list-update', ids.join(',') );
+      ExtensionWindow.emit('sources-list-update', ids.join(','));
     }
     if (typeof oldSourcesListUpdate === 'function') {
       oldSourcesListUpdate(view, sources);
     }
-  })
+  });
 };
 
 const oldSourcesListHighlight = window.SourcesListHighlight;
 window.SourcesListHighlight = (view, id) => {
-  splitMode().then(checkSplit => {
-    if (Number(view) === checkSplit) { // main view {
-      ExtensionWindow.emit('sources-list-highlight', id === '' ?
-        null : id);
+  splitMode().then((checkSplit) => {
+    if (Number(view) === checkSplit) {
+      // main view {
+      ExtensionWindow.emit('sources-list-highlight', id === '' ? null : id);
     }
     if (typeof oldSourcesListHighlight === 'function') {
       oldSourcesListHighlight(view, id);
     }
-  })
+  });
 };
 
 const oldSourcesListSelect = window.SourcesListSelect;
 window.SourcesListSelect = (view, id) => {
-  splitMode().then(checkSplit => {
-    if (Number(view) === checkSplit) { // main view
-      ExtensionWindow.emit('sources-list-select', id === '' ?
-        null : id);
+  splitMode().then((checkSplit) => {
+    if (Number(view) === checkSplit) {
+      // main view
+      ExtensionWindow.emit('sources-list-select', id === '' ? null : id);
     }
     if (typeof oldSourcesListSelect === 'function') {
       oldSourcesListSelect(view, id);
     }
-  })
+  });
 };
 
 const oldOnSceneLoad = window.OnSceneLoad;
-window.OnSceneLoad = function(...args: any[]) {
-  splitMode().then(checkSplit => {
+window.OnSceneLoad = (...args: any[]) => {
+  splitMode().then((checkSplit) => {
     if (Environment.isExtension()) {
-      let view = args[0];
-      let scene = args[1];
-      if (Number(view) === checkSplit && scene !== 'i12'){
+      const view = args[0];
+      const scene = args[1];
+      if (Number(view) === checkSplit && scene !== 'i12') {
         ExtensionWindow.emit('scene-load', Number(scene));
       }
     }
@@ -444,5 +499,5 @@ window.OnSceneLoad = function(...args: any[]) {
     if (typeof oldOnSceneLoad === 'function') {
       oldOnSceneLoad(...args);
     }
-  })
-}
+  });
+};

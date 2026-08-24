@@ -2,11 +2,11 @@
 /// <reference path="../../defs/object.d.ts" />
 /// <reference path="../../defs/proxy.d.ts" />
 
-import {Rectangle} from '../util/rectangle';
-import {EventEmitter} from '../util/eventemitter';
-import {Environment} from '../core/environment';
-import {exec} from '../internal/internal';
-import {Remote} from '../internal/remote';
+import { Environment } from '../core/environment';
+import { exec } from '../internal/internal';
+import { Remote } from '../internal/remote';
+import { EventEmitter } from '../util/eventemitter';
+import { Rectangle } from '../util/rectangle';
 import window from '../util/window';
 
 let dialogProxy: any;
@@ -51,7 +51,7 @@ let dialogProxy: any;
  *  // see documentation below for more details
  *  ```
  */
-export class Dialog{
+export class Dialog {
   private _result: string;
   private _resultListener: EventListener;
 
@@ -70,14 +70,17 @@ export class Dialog{
       throw new Error('Dialogs are not available for source plugins.');
     } else {
       if (Remote.remoteType === 'remote') {
-        throw new Error('Unable to listen to Dialog window events through Remote')
+        throw new Error('Unable to listen to Dialog window events through Remote');
       }
       this._result = null;
 
-      let eventListener = (e) => {
+      const eventListener = (e) => {
         // self-deleting event listener
         e.target.removeEventListener(e.type, eventListener);
 
+        // In CEF builds with Proxy support, getResult() may be waiting on
+        // dialogProxy rather than this instance. Keep both paths aligned with
+        // the old Object.observe fallback below.
         if (typeof dialogProxy !== 'undefined' && typeof Proxy !== 'undefined') {
           dialogProxy._result = e.detail;
         } else {
@@ -105,7 +108,7 @@ export class Dialog{
    * *Chainable.*
    */
   static createDialog(url: string): Dialog {
-    let dialog = new Dialog();
+    const dialog = new Dialog();
     dialog._url = url;
     return dialog;
   }
@@ -124,7 +127,7 @@ export class Dialog{
     if (Environment.isSourceProps()) {
       throw new Error('Auto dialogs are not available for config windows.');
     } else {
-      let dialog = new Dialog();
+      const dialog = new Dialog();
       dialog._url = url;
       dialog._autoclose = true;
       return dialog;
@@ -144,17 +147,17 @@ export class Dialog{
    *  external.Close();
    *  ```
    */
-  static return(result ?: string): Promise<any> {
-    return new Promise(resolve => {
+  static return(result?: string): Promise<any> {
+    return new Promise((resolve) => {
       if (result !== undefined) {
-        exec('SetDialogResult', result).then(res => {
+        exec('SetDialogResult', result).then((res) => {
           resolve(res);
           exec('Close');
         });
       } else {
         resolve(exec('Close'));
       }
-    })
+    });
   }
 
   /**
@@ -198,8 +201,7 @@ export class Dialog{
    *
    * *Chainable.*
    */
-  setBorderOptions(showBorder: boolean = false,
-      resizable: boolean = false): Dialog {
+  setBorderOptions(showBorder: boolean = false, resizable: boolean = false): Dialog {
     if (this._autoclose) {
       throw new Error('Autoclosing dialogs cannot use this method.');
     }
@@ -218,8 +220,7 @@ export class Dialog{
    *
    * *Chainable.*
    */
-  setButtons(isMinimizeActive: boolean = false,
-      isMaximizeActive: boolean = false): Dialog {
+  setButtons(isMinimizeActive: boolean = false, isMaximizeActive: boolean = false): Dialog {
     if (this._autoclose) {
       throw new Error('Autoclosing dialogs cannot use this method.');
     }
@@ -255,26 +256,36 @@ export class Dialog{
    * *Chainable.*
    */
   show(): Promise<Dialog> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this._result = null;
 
       if (this._autoclose) {
-        exec('NewAutoDialog', this._url, '', this._size === undefined ?
-        undefined : (this._size.getWidth() + ',' +
-        this._size.getHeight())).then(result => {
-          resolve(this)
-        })
+        exec(
+          'NewAutoDialog',
+          this._url,
+          '',
+          this._size === undefined
+            ? undefined
+            : this._size.getWidth() + ',' + this._size.getHeight()
+        ).then((result) => {
+          resolve(this);
+        });
       } else {
-        exec('NewDialog', this._url, '', this._size === undefined ?
-        undefined : (this._size.toDimensionString()),
-        this._calculateFlags(),
-        this._title,
-        this._cookiePath === undefined ? 
-        undefined : `<configuration cookiepath="${this._cookiePath}" />`).then(result => {
-          resolve(this)
-        })
+        exec(
+          'NewDialog',
+          this._url,
+          '',
+          this._size === undefined ? undefined : this._size.toDimensionString(),
+          this._calculateFlags(),
+          this._title,
+          this._cookiePath === undefined
+            ? undefined
+            : `<configuration cookiepath="${this._cookiePath}" />`
+        ).then((result) => {
+          resolve(this);
+        });
       }
-    })
+    });
   }
 
   /**
@@ -288,22 +299,31 @@ export class Dialog{
    * *Chainable.*
    */
   showWithJS(script: string): Promise<Dialog> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this._result = null;
 
-      let windowParams = this._size ? `cx:${this._size.getWidth()}&cy:${this._size.getHeight()}` : '';
-      windowParams = this._calculateFlags() !== '0' ? `${windowParams}&flags:${this._calculateFlags()}` : windowParams;    
-      
-      exec('NewDialog2', this._url, '',
-      windowParams,
-      this._title ? this._title : '',
-      this._cookiePath ? `<configuration cookiepath="${this._cookiePath}" />` : '',
-      script ? script : '', 
-      result => {        
-        this._result = result;        
-        resolve(this);
-      })   
-    })
+      let windowParams = this._size
+        ? `cx:${this._size.getWidth()}&cy:${this._size.getHeight()}`
+        : '';
+      windowParams =
+        this._calculateFlags() !== '0'
+          ? `${windowParams}&flags:${this._calculateFlags()}`
+          : windowParams;
+
+      exec(
+        'NewDialog2',
+        this._url,
+        '',
+        windowParams,
+        this._title ? this._title : '',
+        this._cookiePath ? `<configuration cookiepath="${this._cookiePath}" />` : '',
+        script ? script : '',
+        (result) => {
+          this._result = result;
+          resolve(this);
+        }
+      );
+    });
   }
 
   /**
@@ -312,12 +332,13 @@ export class Dialog{
    *  Gets the string result returned from the spawned dialog.
    */
   getResult(): Promise<string> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this._result !== null) {
         resolve(this._result);
-      } else if (this._resultListener === null) { // no listener yet, attach one
+      } else if (this._resultListener === null) {
+        // no listener yet, attach one
 
-        let eventListener = (e) => {
+        const eventListener = (e) => {
           // self-deleting event listener
           e.target.removeEventListener(e.type, eventListener);
           this._result = e.detail;
@@ -327,25 +348,25 @@ export class Dialog{
 
         document.addEventListener('xsplit-dialog-result', eventListener);
         this._resultListener = eventListener;
-      } else if(typeof Proxy === 'undefined') {
-        Object.observe(this, changes => {
+      } else if (typeof Proxy === 'undefined') {
+        Object.observe(this, (changes) => {
           // Search for changes with the name as result
-          let change = changes.filter(elem => {
+          const change = changes.filter((elem) => {
             return elem.name === '_result';
           });
           if (change !== undefined && change.length > 0) {
             resolve(change[0].object._result);
           }
-        })
+        });
       } else {
-        dialogProxy = new Proxy( this, {
+        dialogProxy = new Proxy(this, {
           set: (target, property, value, receiver) => {
             if (property === '_result') {
               this._result = value;
               resolve(value);
             }
             return true;
-          }
+          },
         });
       }
     });
@@ -355,17 +376,26 @@ export class Dialog{
    *  Closes the dialog that this window spawned.
    */
   close(): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(exec('CloseDialog'));
-    })
+    });
   }
 
-  private _calculateFlags(): String {
+  private _calculateFlags(): string {
     let flags = 0;
-    if (this._showBorder) { flags += 1; }
-    if (this._resizable) { flags += 4; }
-    if (this._minimize) { flags += 8; }
-    if (this._maximize) { flags += 16; }
+    // Host flags are bit values consumed by NewDialog/NewDialog2.
+    if (this._showBorder) {
+      flags += 1;
+    }
+    if (this._resizable) {
+      flags += 4;
+    }
+    if (this._minimize) {
+      flags += 8;
+    }
+    if (this._maximize) {
+      flags += 16;
+    }
 
     if (this._title || this._minimize || this._maximize) {
       flags += 2;
@@ -376,12 +406,15 @@ export class Dialog{
 }
 
 const oldOnDialogResult = window.OnDialogResult;
-window.OnDialogResult = function(result) {
+window.OnDialogResult = (result) => {
   if (Environment.isSourceProps() || Environment.isExtension()) {
-    document.dispatchEvent(new CustomEvent('xsplit-dialog-result', {
-      detail: result }));
+    document.dispatchEvent(
+      new CustomEvent('xsplit-dialog-result', {
+        detail: result,
+      })
+    );
   }
   if (typeof oldOnDialogResult === 'function') {
-    oldOnDialogResult(result)
+    oldOnDialogResult(result);
   }
-}
+};

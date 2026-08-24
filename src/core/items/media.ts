@@ -1,26 +1,34 @@
-
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {SourcePlayback, ISourcePlayback, ActionAfterPlayback} from '../source/iplayback';
-import {IAudio, Audio} from '../source/iaudio';
-import {CuePoint} from '../source/cuepoint';
-import {Item} from './item';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {MediaSource}   from '../source/media';
-import {ISourceMedia, SourceMedia} from '../source/imedia';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import type { CuePoint } from '../source/cuepoint';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceMedia, SourceMedia } from '../source/imedia';
+import {
+  type ActionAfterPlayback,
+  type ISourcePlayback,
+  SourcePlayback,
+} from '../source/iplayback';
+import { MediaSource } from '../source/media';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The MediaItem class represents a playable media file.
@@ -37,15 +45,23 @@ import {ISourceMedia, SourceMedia} from '../source/imedia';
  *  All methods marked as *Chainable* resolve with the original `MediaItem`
  *  instance.
  */
-export class MediaItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, ISourcePlayback, IAudio, IItemEffect,
-  ISourceMedia {
-
+export class MediaItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    ISourcePlayback,
+    IAudio,
+    IItemEffect,
+    ISourceMedia
+{
   /** See: {@link #core/MediaSource#getFileInfo getFileInfo} */
-  getFileInfo: () => Promise<Object>
+  getFileInfo: () => Promise<Object>;
 
   /** See: {@link #core/MediaSource#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // ItemLayout
 
@@ -657,10 +673,13 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<MediaItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<MediaItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<MediaItem>;
@@ -669,5 +688,14 @@ export class MediaItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(MediaItem, [Item, ItemLayout, ItemColor, ItemChroma,
-  ItemTransition, SourcePlayback, Audio, ItemEffect, SourceMedia]);
+applyMixins(MediaItem, [
+  Item,
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  SourcePlayback,
+  Audio,
+  ItemEffect,
+  SourceMedia,
+]);

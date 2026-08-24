@@ -1,10 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Color} from '../../util/color';
+import { Item as iItem } from '../../internal/item';
+import { Color } from '../../util/color';
 
 export interface IItemColor {
-
   /**
    * return: Promise<number>
    *
@@ -122,8 +121,8 @@ export class ItemColor implements IItemColor {
   private _id: string;
 
   getTransparency(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:alpha', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:alpha', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -144,8 +143,8 @@ export class ItemColor implements IItemColor {
   }
 
   getBrightness(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_brightness', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_brightness', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -166,8 +165,8 @@ export class ItemColor implements IItemColor {
   }
 
   getContrast(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_contrast', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_contrast', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -188,8 +187,8 @@ export class ItemColor implements IItemColor {
   }
 
   getHue(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_hue', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_hue', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -210,8 +209,8 @@ export class ItemColor implements IItemColor {
   }
 
   getSaturation(): Promise<number> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_saturation', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_saturation', this._id).then((val) => {
         resolve(Number(val));
       });
     });
@@ -229,12 +228,11 @@ export class ItemColor implements IItemColor {
         });
       }
     });
-
   }
 
   getBorderColor(): Promise<Color> {
-    return new Promise(resolve => {
-      iItem.get('prop:border', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:border', this._id).then((val) => {
         var color: Color;
         if (val === '0') {
           color = Color.fromTransparent();
@@ -266,8 +264,8 @@ export class ItemColor implements IItemColor {
   }
 
   isFullDynamicColorRange(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_dynamicrange', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_dynamicrange', this._id).then((val) => {
         resolve(val === '1');
       });
     });
@@ -278,9 +276,8 @@ export class ItemColor implements IItemColor {
       if (typeof value !== 'boolean') {
         reject(TypeError('Parameter should be boolean.'));
       } else {
-        iItem.set('prop:cc_dynamicrange', (value ? '1' : '0'),
-          this._id).then(() => {
-            resolve(this);
+        iItem.set('prop:cc_dynamicrange', value ? '1' : '0', this._id).then(() => {
+          resolve(this);
         });
       }
     });

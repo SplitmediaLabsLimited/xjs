@@ -1,0 +1,61 @@
+---
+import fixtures from '../../../examples/xsplit-extension/component-fixtures.json';
+import screenshotManifest from '../assets/component-fixtures.json';
+
+const { fixtureId } = Astro.props;
+const fixture = fixtures.find((item) => item.id === fixtureId);
+const screenshot = screenshotManifest.fixtures.find((item) => item.id === fixtureId);
+
+if (!fixture) {
+  throw new Error(`Unknown component fixture: ${fixtureId}`);
+}
+---
+
+<section class="xjs-fixture">
+  <h2>Tested Fixture</h2>
+  {
+    screenshot && (
+      <figure class="xjs-fixture__preview">
+        <img src={screenshot.src} alt={`${fixture.title || fixture.label} rendered example`} />
+        <figcaption>
+          Captured from the XSplit regression extension fixture
+          <code>{fixture.id}</code>.
+        </figcaption>
+      </figure>
+    )
+  }
+  <dl>
+    <dt>Fixture</dt>
+    <dd><code>{fixture.id}</code></dd>
+    <dt>Element</dt>
+    <dd><code>{fixture.customElement}</code></dd>
+    <dt>Selector</dt>
+    <dd><code>{fixture.selector}</code></dd>
+    <dt>Ready state</dt>
+    <dd><code>{fixture.readyAttribute}="{fixture.readyValue}"</code></dd>
+  </dl>
+  {
+    fixture.expectedText && (
+      <>
+        <h3>Expected text</h3>
+        <ul>
+          {fixture.expectedText.map((text) => (
+            <li><code>{text}</code></li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+  {
+    fixture.expectedSelectors && (
+      <>
+        <h3>Expected selectors</h3>
+        <ul>
+          {fixture.expectedSelectors.map((selector) => (
+            <li><code>{selector}</code></li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</section>

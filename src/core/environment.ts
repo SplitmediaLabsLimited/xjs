@@ -1,14 +1,14 @@
-import {Remote} from '../internal/remote'
+import { Remote } from '../internal/remote';
 import window from '../util/window';
 
 /**
  * This class allows detection of the context in which the HTML is located.
  */
 export class Environment {
-  private static _isSourcePlugin: Boolean;
-  private static _isSourceProps: Boolean;
-  private static _isExtension: Boolean;
-  private static _initialized: Boolean;
+  private static _isSourcePlugin: boolean;
+  private static _isSourceProps: boolean;
+  private static _isExtension: boolean;
+  private static _initialized: boolean;
 
   /**
    * This method is only used internally.
@@ -18,16 +18,18 @@ export class Environment {
       return;
     }
 
-    Environment._isSourcePlugin = (window.external &&
-      window.external['GetConfiguration'] !== undefined);
-    Environment._isSourceProps = (window.external &&
+    Environment._isSourcePlugin =
+      window.external && window.external['GetConfiguration'] !== undefined;
+    Environment._isSourceProps =
+      window.external &&
       window.external['GetConfiguration'] === undefined &&
       window.external['GetViewId'] !== undefined &&
-      window.external['GetViewId']() !== undefined);
-    Environment._isExtension = (window.external &&
+      window.external['GetViewId']() !== undefined;
+    Environment._isExtension =
+      window.external &&
       window.external['GetConfiguration'] === undefined &&
       window.external['GetViewId'] !== undefined &&
-      window.external['GetViewId']() === undefined);
+      window.external['GetViewId']() === undefined;
     Environment._initialized = true;
   }
 
@@ -36,7 +38,7 @@ export class Environment {
    *
    * Determines if this HTML is running as a source.
    */
-  static isSourcePlugin(): Boolean {
+  static isSourcePlugin(): boolean {
     return Environment._isSourcePlugin;
   }
 
@@ -45,7 +47,7 @@ export class Environment {
    *
    * Determines if this HTML is running within the source properties window.
    */
-  static isSourceProps(): Boolean {
+  static isSourceProps(): boolean {
     return Environment._isSourceProps;
   }
 
@@ -54,11 +56,11 @@ export class Environment {
    *
    * Determines if this HTML is running as an extension plugin.
    */
-  static isExtension(): Boolean {
+  static isExtension(): boolean {
     if (Remote.remoteType === 'remote') {
       return true;
     } else {
-      return Environment._isExtension;  
+      return Environment._isExtension;
     }
   }
 }

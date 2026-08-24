@@ -1,0 +1,8 @@
+[global]
+exclude = [
+  "docs/src/content/docs/api/**",
+  "docs/src/content/docs/internals/**",
+]
+flavor = "mdx"
+force-exclude = true
+line-length = 120

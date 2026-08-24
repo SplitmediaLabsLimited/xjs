@@ -1,9 +1,9 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Environment} from '../core/environment';
-import {EventEmitter} from '../util/eventemitter';
-import {exec} from '../internal/internal';
-import {Remote} from '../internal/remote';
+import { Environment } from '../core/environment';
+import { exec } from '../internal/internal';
+import { Remote } from '../internal/remote';
+import { EventEmitter } from '../util/eventemitter';
 
 /** This utility class exposes functionality for source plugin developers to
  *  handle the properties window for their source plugins. The framework also
@@ -45,28 +45,31 @@ export class SourcePropsWindow extends EventEmitter {
       throw new Error('SourcePropsWindow class is only available for source properties');
     }
     if (Remote.remoteType === 'remote') {
-      throw new Error("Unable to listen to SourcePropsWindow events through Remote");
+      throw new Error('Unable to listen to SourcePropsWindow events through Remote');
     } else {
-      window.addEventListener('message', function(event) {
-        try {
-          var data = JSON.parse(event.data);
-        } catch (e) {
-          // syntax error probably happened, exit gracefully
-          return;
-        }
-        switch(data.event) {
-          // currently, restrict messages to selected set
-          case 'set-selected-tab':
-            this.emit(data.event, data.value);
-            break;
-          case 'async-callback':
-            this.emit(data.event, {
-                asyncId : data.value.asyncId,
-                result  : data.value.result
+      window.addEventListener(
+        'message',
+        function (event) {
+          try {
+            var data = JSON.parse(event.data);
+          } catch (e) {
+            // syntax error probably happened, exit gracefully
+            return;
+          }
+          switch (data.event) {
+            // currently, restrict messages to selected set
+            case 'set-selected-tab':
+              this.emit(data.event, data.value);
+              break;
+            case 'async-callback':
+              this.emit(data.event, {
+                asyncId: data.value.asyncId,
+                result: data.value.result,
               });
-            break;
-        }
-      }.bind(this));
+              break;
+          }
+        }.bind(this)
+      );
 
       this.on('config-load', () => {
         this._informConfigLoaded();
@@ -103,7 +106,7 @@ export class SourcePropsWindow extends EventEmitter {
    *  from the specified custom tabs, and the set of reusable XSplit tabs:
    *  'Color', 'Layout' and 'Transition'.
    */
-  useTabbedWindow(config: { customTabs: string[], tabOrder: string[] }) {
+  useTabbedWindow(config: { customTabs: string[]; tabOrder: string[] }) {
     this._setRenderMode(SourcePropsWindow._MODE_TABBED);
     this._declareCustomTabs(config.customTabs);
     this._setTabOrder(config.tabOrder);
@@ -113,23 +116,23 @@ export class SourcePropsWindow extends EventEmitter {
     this._mode = renderMode;
     this._notify({
       event: 'set-mode',
-      value: renderMode
+      value: renderMode,
     });
-  };
+  }
 
   private _setTabOrder(tabArray: string[]) {
     this._notify({
       event: 'set-tab-order',
-      value: JSON.stringify(tabArray)
+      value: JSON.stringify(tabArray),
     });
-  };
+  }
 
   private _declareCustomTabs(tabArray: string[]) {
     this._notify({
       event: 'set-custom-tabs',
-      value: JSON.stringify(tabArray)
+      value: JSON.stringify(tabArray),
     });
-  };
+  }
 
   private _informConfigLoaded() {
     this._notify({ event: 'load' });
@@ -146,10 +149,10 @@ export class SourcePropsWindow extends EventEmitter {
       event: 'resize',
       value: JSON.stringify({
         width: width,
-        height: height
-      })
+        height: height,
+      }),
     });
-  };
+  }
 
   /**
    *  param: name<string>
@@ -162,16 +165,16 @@ export class SourcePropsWindow extends EventEmitter {
   requestDialogTitleChange(name: string) {
     this._notify({
       event: 'change-dialog-title',
-      value: name
+      value: name,
     });
-  };
+  }
 
   /** Closes the properties window. */
-  close():Promise<any> {
-    return new Promise(resolve => {
+  close(): Promise<any> {
+    return new Promise((resolve) => {
       resolve(exec('Close'));
-    })
-  };
+    });
+  }
 
   /**
    *  param: show<boolean>
@@ -181,7 +184,7 @@ export class SourcePropsWindow extends EventEmitter {
   showLoading(show: boolean) {
     this._notify({
       event: 'show-overlay',
-      value: show
-    }); 
+      value: show,
+    });
   }
 }

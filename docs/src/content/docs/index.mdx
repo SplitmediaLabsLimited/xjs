@@ -1,0 +1,59 @@
+---
+title: XJS Framework
+description: The development framework for building XSplit Broadcaster plugins.
+template: splash
+hero:
+  title: XJS Framework
+  tagline: The development framework for building awesome XSplit Broadcaster Plugins
+  actions:
+    - text: Get Started
+      link: /quick-start/
+      variant: primary
+    - text: API Reference
+      link: /api/
+      variant: secondary
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+XJS Framework provides JavaScript APIs for XSplit Broadcaster extensions, source
+plugins, dialogs, scenes, sources, items, system devices, and output workflows.
+
+<CardGrid>
+  <LinkCard
+    href="/quick-start/"
+    title="Quick Start"
+    description="Install XJS, load it in a Broadcaster extension, and connect to the host runtime."
+  />
+  <LinkCard
+    href="/api/"
+    title="API Reference"
+    description="Browse generated API docs for the package entry point and public classes."
+  />
+  <LinkCard
+    href="/components/"
+    title="Component Fixtures"
+    description="Review tested component examples shared with the XSplit regression harness."
+  />
+  <LinkCard
+    href="/internals/"
+    title="Contributor Reference"
+    description="Inspect generated source-level docs for maintainers and contributors."
+  />
+</CardGrid>
+
+Use these docs to install XJS, connect extensions and source plugins to XSplit
+Broadcaster, and inspect the APIs available to integrations.
+
+## What You Can Find Here
+
+- Quick Start covers the package setup and host connection flow.
+- API Reference documents the supported package entry point and public classes.
+- Component Fixtures show rendered examples used by the regression harness.
+- Contributor Reference exposes source-level docs for maintainers, separate from
+  the stable public API.
+
+## Runtime Compatibility
+
+The package API remains stable. The browser bundle and XSplit harness target CEF
+103 compatibility for XSplit Broadcaster-hosted integrations.

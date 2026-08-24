@@ -1,0 +1,75 @@
+---
+title: Using DLLs for Extensibility
+description: Load signed DLLs and call Windows-native functions from plugins.
+sidebar:
+  order: 14
+---
+
+XSplit Broadcaster can expose DLL functions to plugins. This is an advanced
+Windows-only integration path and should be treated as permission-sensitive.
+
+## DLL Categories
+
+- Auto-loaded DLLs are considered safe and can be called without `Dll.load()`.
+- Signed DLLs generally require `Dll.load()` and user permission.
+- Unsigned DLLs are blocked unless developer mode allows them.
+
+Starting with Broadcaster 3.6, the original built-in DLL names changed to
+`XSplitScriptPlugin.dll` and `XSplitScriptPluginInternal.dll`.
+
+## Loading DLLs
+
+Load required unsafe DLLs once during initialization:
+
+```js
+const xjs = require('xjs');
+const { Dll } = xjs;
+
+xjs.ready().then(() => {
+  Dll.load(['Scriptdlls\\SplitMediaLabs\\XSplitScriptPluginInternal.dll']);
+});
+```
+
+## Calling Functions
+
+Use `Dll.call()` for safe DLL calls and `Dll.callEx()` for unsafe DLL calls:
+
+```js
+Dll.call('xsplit.EnumProcesses').then((value) => {
+  console.log(value);
+});
+```
+
+If the promise rejects, access may be unavailable, permissions may have been
+revoked, or the function name may not exist.
+
+## Access Events
+
+Plugins can respond to DLL permission changes:
+
+```js
+Dll.on('access-granted', () => {
+  refreshDllStatus();
+});
+
+Dll.on('access-revoked', () => {
+  refreshDllStatus();
+});
+```
+
+Do not rely only on these events. Check `Dll.isAccessGranted()` when initializing
+UI that depends on DLL access.
+
+## Callback Usage
+
+Some DLL functions call global callbacks. Define those functions on `window`
+before invoking the DLL call:
+
+```js
+window.OnDllOnInputHookEvent = (msg, wparam, lparam) => {
+  handleInputHook(msg, wparam, lparam);
+};
+```
+
+DLL calls use string parameters and string return values, so parse and validate
+all returned data at the plugin boundary.

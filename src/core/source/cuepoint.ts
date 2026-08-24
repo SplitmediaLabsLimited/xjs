@@ -32,8 +32,7 @@ export class CuePoint {
    *  following values: CuePoint.PAUSE, CuePoint.RESUME, CuePoint.CUT.
    */
   setAction(action: string) {
-    if (action === CuePoint.PAUSE || action === CuePoint.RESUME ||
-      action === CuePoint.CUT) {
+    if (action === CuePoint.PAUSE || action === CuePoint.RESUME || action === CuePoint.CUT) {
       this._action = action;
     } else {
       throw new Error('Trying to set to an invalid Cue Point action.');
@@ -61,8 +60,7 @@ export class CuePoint {
   }
 
   static _fromString(value: string): CuePoint {
-    const [time, action] = [value.substring(0, value.length - 1),
-      value.charAt(value.length - 1)]
+    const [time, action] = [value.substring(0, value.length - 1), value.charAt(value.length - 1)];
     return new CuePoint(Number(time), action);
   }
 

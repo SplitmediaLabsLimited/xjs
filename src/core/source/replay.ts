@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {IAudio, Audio} from '../source/iaudio';
-import {ISourceReplay, SourceReplay} from './ireplay';
+import { applyMixins } from '../../internal/util/mixin';
+import { Audio, type IAudio } from '../source/iaudio';
+import { Source } from '../source/source';
+import { type ISourceReplay, SourceReplay } from './ireplay';
 
 /**
  * The ReplaySource class represents the sources of the replay items that
@@ -39,31 +39,31 @@ export class ReplaySource extends Source implements IAudio, ISourceReplay {
   //Shared with ReplayItem
 
   /** See: {@link #core/ISourceReplay#getChannel getChannel} */
-  getChannel: () => Promise<string>
+  getChannel: () => Promise<string>;
 
   /** See: {@link #core/ISourceReplay#setChannel setChannel} */
-  setChannel: (channel: string) => Promise<ReplaySource>
+  setChannel: (channel: string) => Promise<ReplaySource>;
 
   /** See: {@link #core/ISourceReplay#getHotkey getHotkey} */
-  getHotkey: () => Promise<number>
+  getHotkey: () => Promise<number>;
 
   /** See: {@link #core/ISourceReplay#setHotkey setHotkey} */
-  setHotkey: (hotkey: number) => Promise<ReplaySource>
+  setHotkey: (hotkey: number) => Promise<ReplaySource>;
 
   /** See: {@link #core/ISourceReplay#getReplayTime getReplayTime} */
-  getReplayTime: () => Promise<number>
+  getReplayTime: () => Promise<number>;
 
   /** See: {@link #core/ISourceReplay#setReplayTime setReplayTime} */
-  setReplayTime: (buffer: number) => Promise<ReplaySource>
+  setReplayTime: (buffer: number) => Promise<ReplaySource>;
 
   /** See: {@link #core/ISourceReplay#startReplay startReplay} */
-  startReplay: () => Promise<ReplaySource>
+  startReplay: () => Promise<ReplaySource>;
 
   /** See: {@link #core/ISourceReplay#stopReplay stopReplay} */
-  stopReplay: () => Promise<ReplaySource>
+  stopReplay: () => Promise<ReplaySource>;
 
   /** See: {@link #core/ISourceReplay#getReplayState getReplayState} */
-  getReplayState: () => Promise<number>
+  getReplayState: () => Promise<number>;
 
   /** See: {@link #core/ISourceReplay#isAutostartOnSceneLoad isAutostartOnSceneLoad} */
   isAutostartOnSceneLoad: () => Promise<boolean>;
@@ -100,5 +100,4 @@ export class ReplaySource extends Source implements IAudio, ISourceReplay {
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
 }
-applyMixins(ReplaySource, [Audio, SourceReplay])
-
+applyMixins(ReplaySource, [Audio, SourceReplay]);

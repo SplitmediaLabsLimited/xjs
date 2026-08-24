@@ -1,14 +1,15 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 ///
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from './source';
-import {Item as iItem} from '../../internal/item';
-import {IO} from '../../util/io';
-import {SourceConfigurable, ISourceConfigurable} from './iconfig';
-import {ISourceVideoPlaylist, SourceVideoPlaylist} from './ivideoplaylist';
-import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from './iplayback';
-import {CuePoint} from './cuepoint';
-import {IAudio, Audio} from './iaudio';
+
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import { IO } from '../../util/io';
+import type { CuePoint } from './cuepoint';
+import { Audio, type IAudio } from './iaudio';
+import { type ISourceConfigurable, SourceConfigurable } from './iconfig';
+import { type ActionAfterPlayback, type ISourcePlayback, SourcePlayback } from './iplayback';
+import { type ISourceVideoPlaylist, SourceVideoPlaylist } from './ivideoplaylist';
+import { Source } from './source';
 
 /**
  * The VideoPlaylistSource class represents the sources of the videoplaylist items that
@@ -40,8 +41,10 @@ import {IAudio, Audio} from './iaudio';
  *  All methods marked as *Chainable* resolve with the original
  *  `VideoPlaylistSource` instance.
  */
-export class VideoPlaylistSource extends Source implements ISourceConfigurable,
-ISourceVideoPlaylist, ISourcePlayback, IAudio {
+export class VideoPlaylistSource
+  extends Source
+  implements ISourceConfigurable, ISourceVideoPlaylist, ISourcePlayback, IAudio
+{
   //Shared with VideoPlaylistItem
   /**
    * return: Promise<string>
@@ -49,7 +52,7 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    * Gets the now playing video of this VideoPlaylist source.
    *
    */
-  getVideoNowPlaying: () => Promise<string>
+  getVideoNowPlaying: () => Promise<string>;
 
   /**
    * param: (value: string|number)
@@ -63,7 +66,7 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    * - NUMBER - number|within the range of fileplaylist array length
    *
    */
-  setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
+  setVideoNowPlaying: (value: string | number) => Promise<SourceVideoPlaylist>;
 
   /**
    * return: Promise<string[]>
@@ -71,7 +74,7 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    * Gets the file paths of the playlist of this VideoPlaylist source.
    *
    */
-  getVideoPlaylistSources: () => Promise<string[]>
+  getVideoPlaylistSources: () => Promise<string[]>;
 
   /**
    * param: (file: string[])
@@ -85,10 +88,10 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    * The now playing item is also set to the first item of the new FilePlaylist.
    *
    */
-  setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
+  setVideoPlaylistSources: (fileItems: string[]) => Promise<SourceVideoPlaylist>;
 
   /** See: {@link #core/ISourceVideoPlaylist#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // SourceConfigurable
 
@@ -112,7 +115,7 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistSource>;
 
-// SourcePlayback
+  // SourcePlayback
 
   /**
    * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
@@ -268,4 +271,4 @@ ISourceVideoPlaylist, ISourcePlayback, IAudio {
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio])
+applyMixins(VideoPlaylistSource, [SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio]);

@@ -1,0 +1,40 @@
+---
+title: 60 FPS Browser Sources
+description: Request higher frame rate rendering for HTML sources.
+sidebar:
+  order: 15
+---
+
+HTML sources normally run at a maximum of 30 frames per second. Advanced sources
+can request up to 60 FPS through a host-local property.
+
+```js
+window.external.SetLocalProperty('prop:Browser60fps', '1');
+```
+
+## Modify the Source Page
+
+Add the property call before the rest of your source initialization:
+
+```js
+window.external.SetLocalProperty('prop:Browser60fps', '1');
+
+const xjs = require('xjs');
+
+xjs.ready().then(() => {
+  // Source setup continues here.
+});
+```
+
+## Inject Custom JavaScript
+
+You can also add the same call through the custom code option in the HTML source
+properties window. Broadcaster refreshes the source when the setting changes.
+
+## Presentation Files
+
+For manual testing, save the presentation, open the generated `BPres` file, and
+set the `Browser60fps` property to `1` for the relevant source.
+
+This is host behavior rather than an XJS API. Some machines may still show black
+or empty output when forcing 60 FPS browser rendering.

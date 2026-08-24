@@ -1,31 +1,30 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Rectangle} from '../../util/rectangle';
-import {EventEmitter} from '../../util/eventemitter';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {EventManager} from '../../internal/eventmanager';
-import {Environment} from '../environment';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
-import {Scene} from '../scene';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {checkSplitmode} from '../../internal/util/splitmode';
-import {addToSceneHandler} from '../../util/addtosceneutil';
+import { App as iApp } from '../../internal/app';
+import { EventManager } from '../../internal/eventmanager';
 import { Global } from '../../internal/global';
-
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { applyMixins } from '../../internal/util/mixin';
+import { checkSplitmode } from '../../internal/util/splitmode';
 import {
+  getVersion,
+  globalsrcMinVersion,
+  itemSubscribeEventVersion,
   minVersion,
   versionCompare,
-  getVersion,
-  itemSubscribeEventVersion,
-  globalsrcMinVersion
 } from '../../internal/util/version';
+import { XML } from '../../internal/util/xml';
+import { addToSceneHandler } from '../../util/addtosceneutil';
+import { EventEmitter } from '../../util/eventemitter';
+import type { Rectangle } from '../../util/rectangle';
+import { SourceTypeResolve } from '../../util/sourcetyperesolve';
+import { Environment } from '../environment';
+import { Scene } from '../scene';
 
-import {iSource, ISource, ItemTypes} from '../source/isource';
-import {Source} from '../source/source';
-import {SourceTypeResolve} from '../../util/sourcetyperesolve';
+import { type ISource, type ItemTypes, iSource } from '../source/isource';
+import { Source } from '../source/source';
+import { type IItemLayout, ItemLayout } from './ilayout';
 
 /**
  * Used by items to determine the its view type.
@@ -35,7 +34,7 @@ import {SourceTypeResolve} from '../../util/sourcetyperesolve';
 export enum ViewTypes {
   MAIN,
   PREVIEW,
-  THUMBNAIL
+  THUMBNAIL,
 }
 
 /**
@@ -87,7 +86,7 @@ export class Item extends Source implements IItemLayout, ISource {
   static _subscriptions = [];
 
   constructor(props?: {}) {
-    super(props)
+    super(props);
     this._isItemCall = true;
   }
 
@@ -127,41 +126,66 @@ export class Item extends Source implements IItemLayout, ISource {
   on(event: string, handler: Function) {
     Item._emitter.on(event + '_' + this._id, handler);
     // add additional functionality for events
-    let isItemSubscribeEventsSupported = versionCompare(getVersion()).
-      is.greaterThanOrEqualTo(itemSubscribeEventVersion);
+    const isItemSubscribeEventsSupported = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+      itemSubscribeEventVersion
+    );
 
-    if (event === 'item-changed' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchange_' + this._id) < 0) {
+    if (
+      event === 'item-changed' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('itempropchange_' + this._id) < 0
+    ) {
       Item._subscriptions.push('itempropchange_' + this._id);
       EventManager.subscribe('itempropchange_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-changed_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-destroyed' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0) {
+    } else if (
+      event === 'item-destroyed' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('itemdestroyed_' + this._id) < 0
+    ) {
       Item._subscriptions.push('itemdestroyed_' + this._id);
       EventManager.subscribe('itemdestroyed_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-destroyed_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-in-scene-change' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('itempropchangeinscene_' + this._id) < 0) {      
+    } else if (
+      event === 'item-in-scene-change' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('itempropchangeinscene_' + this._id) < 0
+    ) {
       Item._subscriptions.push('itempropchangeinscene_' + this._id);
       EventManager.subscribe('itempropchangeinscene_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-in-scene-change_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-source-opened' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('srcopened_' + this._id) < 0) {      
+    } else if (
+      event === 'item-source-opened' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('srcopened_' + this._id) < 0
+    ) {
       Item._subscriptions.push('srcopened_' + this._id);
       EventManager.subscribe('srcopened_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-source-opened_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-source-closed' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('srcclosed_' + this._id) < 0) {      
+    } else if (
+      event === 'item-source-closed' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('srcclosed_' + this._id) < 0
+    ) {
       Item._subscriptions.push('srcclosed_' + this._id);
       EventManager.subscribe('srcclosed_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-source-closed_' + this._id, ...eventArgs);
       });
-    } else if (event === 'item-process-closed' && isItemSubscribeEventsSupported &&
-      !Environment.isSourceProps() && Item._subscriptions.indexOf('srcassociatedprocessclosed_' + this._id) < 0) {      
+    } else if (
+      event === 'item-process-closed' &&
+      isItemSubscribeEventsSupported &&
+      !Environment.isSourceProps() &&
+      Item._subscriptions.indexOf('srcassociatedprocessclosed_' + this._id) < 0
+    ) {
       Item._subscriptions.push('srcassociatedprocessclosed_' + this._id);
       EventManager.subscribe('srcassociatedprocessclosed_' + this._id, (...eventArgs) => {
         Item._emitter.emit('item-process-closed_' + this._id, ...eventArgs);
@@ -222,9 +246,9 @@ export class Item extends Source implements IItemLayout, ISource {
    * `xjs.Item.getCurrentSource()` -> `source.getItemList()`
    */
   static getItemList(): Promise<Item[]> {
-    return new Promise(resolve => {
-      resolve(Source.getItemList())
-    })
+    return new Promise((resolve) => {
+      resolve(Source.getItemList());
+    });
   }
 
   /**
@@ -240,7 +264,7 @@ export class Item extends Source implements IItemLayout, ISource {
    * });
    * ```
    */
-  getId: () => Promise<string>
+  getId: () => Promise<string>;
 
   /**
    * return: Promise<Number>
@@ -255,21 +279,25 @@ export class Item extends Source implements IItemLayout, ISource {
    * });
    * ```
    */
-  getFPS(): Promise<number>{
-    return new Promise(resolve => {
+  getFPS(): Promise<number> {
+    return new Promise((resolve) => {
       let initial;
-      iItem.get('stats:frames', this._id).then(frames => {
-        initial = (frames === 'null' || frames === '') ? 0 : Number(frames);
+      iItem
+        .get('stats:frames', this._id)
+        .then((frames) => {
+          initial = frames === 'null' || frames === '' ? 0 : Number(frames);
 
-        return new Promise(innerResolve => {
-          setTimeout(innerResolve, 1000);
+          return new Promise((innerResolve) => {
+            setTimeout(innerResolve, 1000);
+          });
+        })
+        .then(() => {
+          return iItem.get('stats:frames', this._id);
+        })
+        .then((frames) => {
+          const final = frames === 'null' || frames === '' ? 0 : Number(frames);
+          resolve(final - initial);
         });
-      }).then( () => {
-        return iItem.get('stats:frames', this._id);
-      }).then(frames => {
-        let final = (frames === 'null' || frames === '') ? 0 : Number(frames);
-        resolve(final - initial);
-      });
     });
   }
 
@@ -289,26 +317,26 @@ export class Item extends Source implements IItemLayout, ISource {
    * })
    * ```
    */
-  getView(): Promise<string> {
-    return new Promise(resolve => {
-      iItem.get('prop:viewid', this._id).then(viewId => {
+  getView(): Promise<ViewTypes> {
+    return new Promise((resolve) => {
+      iItem.get('prop:viewid', this._id).then((viewId) => {
         let view = ViewTypes.MAIN;
         if (viewId === '1') {
           let preview;
-          iApp.getGlobalProperty('preview_editor_opened').then(result => {
+          iApp.getGlobalProperty('preview_editor_opened').then((result) => {
             preview = result;
             view = preview === '1' ? ViewTypes.PREVIEW : ViewTypes.THUMBNAIL;
             resolve(view);
-          })
+          });
         } else {
           resolve(view);
         }
       });
-    })
+    });
   }
 
   /**
-   * return: Promise<number>
+   * return: Promise<number|string>
    *
    * Get (1-indexed) Scene ID where the source is loaded
    *
@@ -320,10 +348,10 @@ export class Item extends Source implements IItemLayout, ISource {
    * });
    * ```
    */
-  getSceneId(): Promise<number> {
-    return new Promise(resolve => {
+  getSceneId(): Promise<number | string> {
+    return new Promise((resolve) => {
       if (String(this._sceneId) === 'i12') {
-        resolve('i12')
+        resolve('i12');
       } else {
         resolve(Number(this._sceneId) + 1);
       }
@@ -345,8 +373,8 @@ export class Item extends Source implements IItemLayout, ISource {
   toXML(): XML {
     var item: JXON = new JXON();
 
-    for (let prop in this._xmlparams) {
-      if (!{}.hasOwnProperty.call(this._xmlparams, prop)) continue;
+    for (const prop in this._xmlparams) {
+      if (!Object.hasOwn(this._xmlparams, prop)) continue;
 
       item[prop] = this._xmlparams[prop];
     }
@@ -385,7 +413,7 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    * ```
    */
-  duplicate(options?: { linked?: boolean, scene?: number | Scene }): Promise<Item> {
+  duplicate(options?: { linked?: boolean; scene?: number | Scene }): Promise<Item> {
     return new Promise((resolve, reject) => {
       let cmd = 'additem';
       const getItem = (res) => {
@@ -394,44 +422,47 @@ export class Item extends Source implements IItemLayout, ISource {
             innerResolve(this);
           } else {
             Scene.searchItemsById(res)
-            .then(item => {
-              innerResolve(item);
-            }).catch(err => {
-              innerReject(err);
-            })
+              .then((item) => {
+                innerResolve(item);
+              })
+              .catch((err) => {
+                innerReject(err);
+              });
           }
         });
       };
 
-      checkSplitmode(options ? options.scene : undefined).then((scenePrefix) => {
-        if(versionCompare(getVersion())
-          .is
-          .lessThan(globalsrcMinVersion)) {
+      checkSplitmode(options ? options.scene : undefined)
+        .then((scenePrefix) => {
+          if (versionCompare(getVersion()).is.lessThan(globalsrcMinVersion)) {
             return addToSceneHandler(scenePrefix + cmd, this.toXML().toString());
-        } else {
-          if(options) {
-            if(options.linked) {
-              iItem.set('prop:keeploaded', '1', this._id)
-            }
-            if(options.scene !== undefined && options.linked !== undefined) {
-              cmd = `link:${options.linked ? 1 : 0}|${scenePrefix}additem`;
-            } else if(options.linked === undefined) {
-              cmd = `link:0|${scenePrefix}additem`;
-            } else if(options.scene === undefined) {
-              cmd = `link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`;
-            }
           } else {
-            cmd = 'link:0|additem';
+            if (options) {
+              if (options.linked) {
+                iItem.set('prop:keeploaded', '1', this._id);
+              }
+              if (options.scene !== undefined && options.linked !== undefined) {
+                cmd = `link:${options.linked ? 1 : 0}|${scenePrefix}additem`;
+              } else if (options.linked === undefined) {
+                cmd = `link:0|${scenePrefix}additem`;
+              } else if (options.scene === undefined) {
+                cmd = `link:${options.linked ? 1 : 0}|s:${this._sceneId}|additem`;
+              }
+            } else {
+              cmd = 'link:0|additem';
+            }
+            return addToSceneHandler(cmd, this.toXML().toString());
           }
-          return addToSceneHandler(cmd, this.toXML().toString());
-        }
-      }).then(result => {
-        return getItem(result);
-      }).then(result => {
-        resolve(result);
-      }).catch(err => {
-        reject(err);
-      }); 
+        })
+        .then((result) => {
+          return getItem(result);
+        })
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -453,12 +484,11 @@ export class Item extends Source implements IItemLayout, ISource {
    *
    */
   unlink(): Promise<Item> {
-    return new Promise(resolve => {
-      iItem.set('prop:globalsrc', '0', this._id)
-        .then(() => {
-        resolve(this)
-      })
-    })
+    return new Promise((resolve) => {
+      iItem.set('prop:globalsrc', '0', this._id).then(() => {
+        resolve(this);
+      });
+    });
   }
 
   /**
@@ -472,16 +502,15 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
   remove(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.set('remove', '', this._id)
-        .then(() => {
-        resolve(true)
-      })
-    })
+    return new Promise((resolve) => {
+      iItem.set('remove', '', this._id).then(() => {
+        resolve(true);
+      });
+    });
   }
 
   /** See: {@link #core/Source#getItemList getItemList} */
-  getItemList: () => Promise<Item[]>
+  getItemList: () => Promise<Item[]>;
 
   /**
    * return: Promise<Source>
@@ -500,15 +529,17 @@ export class Item extends Source implements IItemLayout, ISource {
    */
   getSource(): Promise<Source> {
     return new Promise((resolve, reject) => {
-      iItem.get('config', this._id)
-      .then(config => {
-        let item = JXON.parse(config);
-        let srcType = SourceTypeResolve(item);
-        resolve(srcType);
-      }).catch(err => {
-        reject(err);
-      });
-    })
+      iItem
+        .get('config', this._id)
+        .then((config) => {
+          const item = JXON.parse(config);
+          const srcType = SourceTypeResolve(item);
+          resolve(srcType);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
 
   /**
@@ -525,16 +556,18 @@ export class Item extends Source implements IItemLayout, ISource {
    * ```
    */
   isChildItem(): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Scene.searchScenesByItemId(this._id)
-      .then(scene => {
-        return scene.getSceneIndex();
-      }).then(sceneIndex => {
-        return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
-      }).then(groupID => {
-        resolve(groupID !== '' && groupID !== null);
-      });
-    })
+        .then((scene) => {
+          return scene.getSceneIndex();
+        })
+        .then((sceneIndex) => {
+          return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
+        })
+        .then((groupID) => {
+          resolve(groupID !== '' && groupID !== null);
+        });
+    });
   }
 
   /**
@@ -554,22 +587,26 @@ export class Item extends Source implements IItemLayout, ISource {
   getParentItem(): Promise<Item> {
     return new Promise((resolve, reject) => {
       Scene.searchScenesByItemId(this._id)
-      .then(scene => {
-        return scene.getSceneIndex();
-      }).then(sceneIndex => {
-        return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
-      }).then(groupID => {
-        if (groupID.trim() === '' || groupID === null) {
-          reject('Item is not a child item or non-existent');
-        } else {
-          return Scene.searchItemsById(groupID);
-        }
-      }).then(groupItem => {
-        resolve(groupItem);
-      }).catch(err => {
-        reject(err);
-      });
-    })
+        .then((scene) => {
+          return scene.getSceneIndex();
+        })
+        .then((sceneIndex) => {
+          return iApp.get(`scenefindgroup:${sceneIndex}:${this._id}`);
+        })
+        .then((groupID) => {
+          if (groupID.trim() === '' || groupID === null) {
+            reject('Item is not a child item or non-existent');
+          } else {
+            return Scene.searchItemsById(groupID);
+          }
+        })
+        .then((groupItem) => {
+          resolve(groupItem);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
 
   // ItemLayout
@@ -703,50 +740,50 @@ export class Item extends Source implements IItemLayout, ISource {
   /**
    * See: {@link #core/Source#setName setName}
    */
-  setName: (value: string) => Promise<Item>
+  setName: (value: string) => Promise<Item>;
 
   /**
    * See: {@link #core/Source#getName getName}
    */
-  getName: () => Promise<string>
+  getName: () => Promise<string>;
 
   /**
    * See: {@link #core/Source#setCustomName setCustomName}
    */
-  setCustomName: () => Promise<Item>
+  setCustomName: () => Promise<Item>;
 
   /**
    * See: {@link #core/Source#getCustomName getCustomName}
    */
-  getCustomName: ()  => Promise<string>
+  getCustomName: () => Promise<string>;
 
   /**
    * See: {@link #core/Source#getValue getValue}
    */
-  getValue: () => Promise<string | XML>
+  getValue: () => Promise<string | XML>;
 
   /**
    * See: {@link #core/Source#setValue setValue}
    */
-  setValue: (value: string | XML) => Promise<Item>
+  setValue: (value: string | XML) => Promise<Item>;
 
   /**
    * See: {@link #core/Source#getKeepLoaded getKeepLoaded}
    */
-  getKeepLoaded: () => Promise<boolean>
+  getKeepLoaded: () => Promise<boolean>;
 
   /**
    * See: {@link #core/Source#setKeepLoaded setKeepLoaded}
    */
-  setKeepLoaded: (value: boolean) => Promise<Item>
+  setKeepLoaded: (value: boolean) => Promise<Item>;
 
   /**
    * See: {@link #core/Source#refresh refresh}
    */
-  refresh: () => Promise<Source>
+  refresh: () => Promise<Source>;
 
   /** See: {@link #core/Source#getType getType} */
-  getType: () => Promise<ItemTypes>
+  getType: () => Promise<ItemTypes>;
 }
 
 applyMixins(Item, [iSource, ItemLayout]);

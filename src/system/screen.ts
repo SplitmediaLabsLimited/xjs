@@ -1,13 +1,13 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Addable} from './iaddable';
-import {exec} from '../internal/internal';
-import {Scene} from '../core/scene';
-import {Environment} from '../core/environment';
-import {JSON as JXON} from '../internal/util/json';
-import {XML} from '../internal/util/xml';
-import{checkSplitmode} from '../internal/util/splitmode';
-import {addToSceneHandler} from '../util/addtosceneutil';
+import { Environment } from '../core/environment';
+import type { Scene } from '../core/scene';
+import { exec } from '../internal/internal';
+import { JSON as JXON } from '../internal/util/json';
+import { checkSplitmode } from '../internal/util/splitmode';
+import { XML } from '../internal/util/xml';
+import { addToSceneHandler } from '../util/addtosceneutil';
+import type { Addable } from './iaddable';
 
 /**
  * The Screen Class is the object returned by {@link #system/System System Class}
@@ -56,24 +56,28 @@ export class Screen implements Addable {
    *
    * Note: There is yet no way to detect error responses for this action.
    */
-  addToScene(value?:number | Scene): Promise<any> {
+  addToScene(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
-      let scenePrefix = ''
+      let scenePrefix = '';
       if (this instanceof Screen && !Environment.isSourcePlugin()) {
-        checkSplitmode(value).then((prefix) => {
-          scenePrefix = prefix
-          return `<screen module="${this._processDetail}" window="${this._title}" class="${this._class}" hwnd="${this._hwnd}" wclient="1" left="0" top="0" width="0" height="0" />`
-        }).then(screen => {
-          return addToSceneHandler(scenePrefix + 'addscreen', screen)
-        }).then(result => {
-          resolve(result);
-        }).catch(err => {
-          reject(err);
-        });
+        checkSplitmode(value)
+          .then((prefix) => {
+            scenePrefix = prefix;
+            return `<screen module="${this._processDetail}" window="${this._title}" class="${this._class}" hwnd="${this._hwnd}" wclient="1" left="0" top="0" width="0" height="0" />`;
+          })
+          .then((screen) => {
+            return addToSceneHandler(scenePrefix + 'addscreen', screen);
+          })
+          .then((result) => {
+            resolve(result);
+          })
+          .catch((err) => {
+            reject(err);
+          });
       } else {
-        reject(Error('Instance is not a Screen'))
+        reject(Error('Instance is not a Screen'));
       }
-    })
+    });
   }
 
   /**
@@ -91,15 +95,18 @@ export class Screen implements Addable {
    *
    * Note: There is yet no way to detect error responses for this action.
    */
-  static addToScene(value?: number | Scene ): Promise<any> {
+  static addToScene(value?: number | Scene): Promise<any> {
     return new Promise((resolve, reject) => {
-      checkSplitmode(value).then((scenePrefix) => {
-        return addToSceneHandler(scenePrefix + 'addscreen', null);
-      }).then(result => {
-        resolve(result);
-      }).catch(err => {
-        reject(err);
-      });
+      checkSplitmode(value)
+        .then((scenePrefix) => {
+          return addToSceneHandler(scenePrefix + 'addscreen', null);
+        })
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -120,10 +127,10 @@ export class Screen implements Addable {
    */
   static parse(screenInfo): Screen {
     var screen = new Screen({
-      'title': screenInfo['title'],
-      'class': screenInfo['class'],
-      'processDetail': screenInfo['processDetail'],
-      'hwnd': screenInfo['hwnd']
+      title: screenInfo['title'],
+      class: screenInfo['class'],
+      processDetail: screenInfo['processDetail'],
+      hwnd: screenInfo['hwnd'],
     });
 
     return screen;

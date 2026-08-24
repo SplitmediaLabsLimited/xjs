@@ -1,0 +1,38 @@
+---
+title: Common Errors
+description: Host lifecycle behaviors that often surprise plugin authors.
+sidebar:
+  order: 12
+---
+
+Understanding how Broadcaster loads source pages helps avoid confusing runtime
+behavior.
+
+## Sources in Memory
+
+Sources are not kept loaded in memory by default. When a user changes scenes,
+Broadcaster unloads sources from the old scene unless they are configured to be
+kept loaded. A stopwatch source, for example, may reset if it is unloaded.
+
+If an extension lists sources from an inactive scene, it may not be able to read
+every source property until that source is loaded. Work around this by keeping
+the source loaded when persistent state is required, or by only manipulating
+sources in the active scene.
+
+## Pages Not Refreshing
+
+If CEF caches a page while testing, add a query parameter to the URL:
+
+```text
+source.html?dev=1
+```
+
+When serving from the examples server, changing the URL is often enough to force
+Broadcaster to reload the page.
+
+## Multiple Scene Handling
+
+Very old Broadcaster versions did not initialize all scenes at startup. In those
+environments, extensions could call `Scene.initializeScenes()` before broad scene
+manipulation. Current Broadcaster versions initialize scenes more reliably, but
+legacy plugins may still contain this defensive call.

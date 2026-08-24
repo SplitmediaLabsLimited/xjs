@@ -1,7 +1,8 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Item as iItem} from '../../internal/item';
-import {Logger} from '../../internal/util/logger';
+import { Item as iItem } from '../../internal/item';
+import { Logger } from '../../internal/util/logger';
+import type { XML } from '../../internal/util/xml';
 
 export interface ISourceImage {
   /**
@@ -17,7 +18,7 @@ export interface ISourceImage {
    * });
    * ```
    */
-  isSourceAvailable(): Promise<boolean>
+  isSourceAvailable(): Promise<boolean>;
 
   /**
    * return: Promise<string>
@@ -33,7 +34,7 @@ export interface ISourceImage {
    * });
    * ```
    */
-  getValue(): Promise<string>;
+  getValue(): Promise<string | XML>;
 
   /**
    * param: (value: string)
@@ -68,51 +69,62 @@ export class SourceImage implements ISourceImage {
   }
 
   isSourceAvailable(): Promise<boolean> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'isSourceAvailable', true)
-        iItem.get('prop:itemavail', this._id).then(val => {
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'isSourceAvailable', true);
+        iItem.get('prop:itemavail', this._id).then((val) => {
           resolve(val === '1');
         });
       } else {
-        iItem.wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this)).then(val => {
-          resolve(val === '1');
-        });
+        iItem
+          .wrapGet('prop:itemavail', this._srcId, this._id, this._updateId.bind(this))
+          .then((val) => {
+            resolve(val === '1');
+          });
       }
     });
   }
 
   getValue(): Promise<string> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
-        Logger.warn('sourceWarning', 'getValue',  true)
-        this._checkPromise = iItem.get('prop:srcitem', this._id)
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
+        Logger.warn('sourceWarning', 'getValue', true);
+        this._checkPromise = iItem.get('prop:srcitem', this._id);
       } else {
-        this._checkPromise = iItem.wrapGet('prop:srcitem', this._srcId,
-          this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapGet(
+          'prop:srcitem',
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
-      this._checkPromise.then(filename => {
+      this._checkPromise.then((filename) => {
         resolve(filename);
       });
     });
-  };
+  }
 
   setValue(filename: string): Promise<SourceImage> {
-    return new Promise(resolve => {
-      if(this._isItemCall){
+    return new Promise((resolve) => {
+      if (this._isItemCall) {
         Logger.warn('sourceWarning', 'setValue', true);
-        this._checkPromise = iItem.set('prop:item', filename, this._id)  
+        this._checkPromise = iItem.set('prop:item', filename, this._id);
       } else {
-        this._checkPromise = iItem.wrapSet('prop:srcitem', filename,
-          this._srcId, this._id, this._updateId.bind(this))
+        this._checkPromise = iItem.wrapSet(
+          'prop:srcitem',
+          filename,
+          this._srcId,
+          this._id,
+          this._updateId.bind(this)
+        );
       }
       this._checkPromise
-      .then(() => {
-        return iItem.set('prop:name', filename, this._id)
-      })
-      .then(() => {
-        resolve(this);
-      });
+        .then(() => {
+          return iItem.set('prop:name', filename, this._id);
+        })
+        .then(() => {
+          resolve(this);
+        });
     });
   }
 }

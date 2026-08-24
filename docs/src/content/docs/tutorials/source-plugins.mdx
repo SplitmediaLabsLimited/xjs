@@ -1,0 +1,81 @@
+---
+title: Developing Source Plugins
+description: Build browser-backed source visuals and persist source configuration.
+sidebar:
+  order: 4
+---
+
+Sources are objects that can be added to a presentation and included in streams
+or recordings. XSplit includes native sources such as cameras, games, media, and
+screen captures, and XJS lets you build browser-backed HTML sources.
+
+To test a local HTML source, drag the HTML file onto the stage. To test a hosted
+source, add it through **Sources > Other > Webpage URL**.
+
+## Initializing a Source
+
+Always wait for the framework bridge before calling host APIs:
+
+```js
+const xjs = require('xjs');
+const { Source } = xjs;
+
+xjs.ready()
+  .then(Source.getCurrentSource)
+  .then((source) => source.setName('My First Source Plugin'));
+```
+
+If the source should fill the viewport when it is first added, get the first item
+renderer and set its position:
+
+```js
+source.getItemList()
+  .then((items) => items[0])
+  .then((item) => {
+    item.setPosition(xjs.Rectangle.fromCoordinates(0, 0, 1, 1));
+  });
+```
+
+## Configuration Objects
+
+HTML sources can persist arbitrary JSON configuration. The framework does not
+prescribe the shape of this object; your source is responsible for loading it
+when the page starts and applying it to the rendered output.
+
+```js
+const xjs = require('xjs');
+const { Source } = xjs;
+
+xjs.ready()
+  .then(Source.getCurrentSource)
+  .then((source) => source.loadConfig())
+  .then((config) => {
+    if (Object.keys(config).length > 0) {
+      applyConfig(config);
+      return;
+    }
+
+    const defaults = { defaultsLoaded: true };
+    applyConfig(defaults);
+    return Source.getCurrentSource().then((source) => source.saveConfig(defaults));
+  });
+```
+
+As a rule, keep configuration controls in the source properties window instead
+of the captured source page. That keeps the rendered source clean for streaming.
+
+## Source Plugin Window Utility
+
+`SourcePluginWindow.getInstance()` returns the event emitter for the source page.
+Sources that are kept loaded in memory can use it to respond to host events such
+as scene changes or save requests from a properties window.
+
+```js
+xjs.ready().then(() => {
+  const sourceWindow = xjs.SourcePluginWindow.getInstance();
+
+  sourceWindow.on('save-config', (config) => {
+    xjs.Source.getCurrentSource().then((source) => source.saveConfig(config));
+  });
+});
+```

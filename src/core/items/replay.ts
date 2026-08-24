@@ -1,74 +1,87 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {IAudio, Audio} from '../source/iaudio';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {ISourceReplay, SourceReplay} from '../source/ireplay';
+import { App as iApp } from '../../internal/app';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceReplay, SourceReplay } from '../source/ireplay';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
-export class ReplayItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceReplay {
-
+export class ReplayItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    IAudio,
+    IItemEffect,
+    ISourceReplay
+{
   //Shared with Source
 
   /**
    * See: {@link #core/ISourceReplay#getChannel getChannel}
    */
-  getChannel: () => Promise<string>
+  getChannel: () => Promise<string>;
 
   /**
    * See: {@link #core/ISourceReplay#setChannel setChannel}
    */
-  setChannel: (channel: string) => Promise<ISourceReplay>
+  setChannel: (channel: string) => Promise<ISourceReplay>;
 
   /**
    * See: {@link #core/ISourceReplay#getHotkey getHotkey}
    */
-  getHotkey: () => Promise<number>
+  getHotkey: () => Promise<number>;
 
   /**
    * See: {@link #core/ISourceReplay#setHotkey setHotkey}
    */
-  setHotkey: (hotkey: number) => Promise<ISourceReplay>
+  setHotkey: (hotkey: number) => Promise<ISourceReplay>;
 
   /**
    * See: {@link #core/ISourceReplay#getReplayTime getReplayTime}
    */
-  getReplayTime: () => Promise<number>
+  getReplayTime: () => Promise<number>;
 
   /**
    * See: {@link #core/ISourceReplay#setReplayTime setReplayTime}
    */
-  setReplayTime: (buffer: number) => Promise<ISourceReplay>
+  setReplayTime: (buffer: number) => Promise<ISourceReplay>;
 
   /**
    * See: {@link #core/ISourceReplay#startReplay startReplay}
    */
-  startReplay: () => Promise<ISourceReplay>
+  startReplay: () => Promise<ISourceReplay>;
 
   /**
    * See: {@link #core/ISourceReplay#stopReplay stopReplay}
    */
-  stopReplay: () => Promise<ISourceReplay>
+  stopReplay: () => Promise<ISourceReplay>;
 
   /**
    * See: {@link #core/ISourceReplay#getReplayState getReplayState}
    */
-  getReplayState: () => Promise<number>
+  getReplayState: () => Promise<number>;
 
   /**
    * See: {@link #core/ISourceReplay#isAutostartOnSceneLoad isAutostartOnSceneLoad}
@@ -78,7 +91,7 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/ISourceReplay#setAutostartOnSceneLoad setAutostartOnSceneLoad}
    */
-  setAutostartOnSceneLoad: (value: boolean) => Promise<ISourceReplay>;  
+  setAutostartOnSceneLoad: (value: boolean) => Promise<ISourceReplay>;
 
   // ItemLayout
 
@@ -145,12 +158,12 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<ReplayItem>;  
+  sendBackward: () => Promise<ReplayItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<ReplayItem>; 
+  sendToBack: () => Promise<ReplayItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -574,10 +587,13 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<ReplayItem>;  
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<ReplayItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<ReplayItem>;
@@ -586,5 +602,12 @@ export class ReplayItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(ReplayItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  Audio, ItemEffect, SourceReplay]);
+applyMixins(ReplayItem, [
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  Audio,
+  ItemEffect,
+  SourceReplay,
+]);

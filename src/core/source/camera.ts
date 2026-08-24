@@ -1,11 +1,11 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {Rectangle} from '../../util/rectangle';
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {IAudio, Audio} from '../source/iaudio';
-import {SourceCamera, ISourceCamera} from '../source/icamera';
-import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
+import { applyMixins } from '../../internal/util/mixin';
+import type { MicrophoneDevice } from '../../system/microphone';
+import type { Rectangle } from '../../util/rectangle';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceCamera, SourceCamera } from '../source/icamera';
+import { Source } from '../source/source';
 
 /**
  * The CameraSource class represents the sources of the camera device items that
@@ -40,46 +40,46 @@ import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
 export class CameraSource extends Source implements IAudio, ISourceCamera {
   // Shared with Camera Item
   /** See: {@link #core/ISourceCamera#getDeviceId getDeviceId} */
-  getDeviceId: () => Promise<string>
+  getDeviceId: () => Promise<string>;
 
   /** See: {@link #core/ISourceCamera#getResolution getResolution} */
-  getResolution: () => Promise<Rectangle>
+  getResolution: () => Promise<Rectangle>;
 
   /** See: {@link #core/ISourceCamera#getAudioOffset getAudioOffset} */
-  getAudioOffset: () => Promise<number>
+  getAudioOffset: () => Promise<number>;
 
   /** See: {@link #core/ISourceCamera#setAudioOffset setAudioOffset} */
-  setAudioOffset: (value: number) => Promise<CameraSource>
+  setAudioOffset: (value: number) => Promise<ISourceCamera>;
 
   /** See: {@link #core/ISourceCamera#getAudioInput getAudioInput} */
-  getAudioInput: () => Promise<MicrophoneDevice>
+  getAudioInput: () => Promise<MicrophoneDevice>;
 
   /** See: {@link #core/ISourceCamera#setAudioInput setAudioInput} */
-  setAudioInput: (value: MicrophoneDevice) => Promise<CameraSource>
+  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>;
 
   /** See: {@link #core/ISourceCamera#isStreamPaused isStreamPaused} */
-  isStreamPaused: () => Promise<boolean>
+  isStreamPaused: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceCamera#setStreamPaused setStreamPaused} */
-  setStreamPaused: (value: boolean) => Promise<CameraSource>
+  setStreamPaused: (value: boolean) => Promise<ISourceCamera>;
 
   /** See: {@link #core/ISourceCamera#isHardwareEncoder isHardwareEncoder} */
-  isHardwareEncoder: () => Promise<boolean>
+  isHardwareEncoder: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceCamera#isActive isActive} */
-  isActive: () => Promise<boolean>
+  isActive: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceCamera#getDelay getDelay} */
-  getDelay: () => Promise<number>
+  getDelay: () => Promise<number>;
 
   /** See: {@link #core/ISourceCamera#setDelay setDelay} */
-  setDelay: (value: number) => Promise<CameraSource>
+  setDelay: (value: number) => Promise<ISourceCamera>;
 
   /** See: {@link #core/ISourceCamera#isForceDeinterlace isForceDeinterlace} */
-  isForceDeinterlace: () => Promise<boolean>
+  isForceDeinterlace: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceCamera#setForceDeinterlace setForceDeinterlace} */
-  setForceDeinterlace: (value: boolean) => Promise<CameraSource>
+  setForceDeinterlace: (value: boolean) => Promise<ISourceCamera>;
 
   // General Audio
 
@@ -111,4 +111,4 @@ export class CameraSource extends Source implements IAudio, ISourceCamera {
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(CameraSource, [Audio, SourceCamera])
+applyMixins(CameraSource, [Audio, SourceCamera]);

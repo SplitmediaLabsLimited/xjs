@@ -1,0 +1,294 @@
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600&display=swap");
+
+:root {
+  --sl-color-accent-low: #083454;
+  --sl-color-accent: #0095de;
+  --sl-color-accent-high: #9adfff;
+  --sl-color-white: #ffffff;
+  --sl-font: "Source Sans Pro", "Segoe UI", Arial, sans-serif;
+  --sl-content-width: 72rem;
+  --xjs-blue: #0095de;
+  --xjs-blue-bright: #00d2ff;
+  --xjs-blue-soft: #9adfff;
+  --xjs-link: #518ccf;
+  --xjs-navy: #00102a;
+  --xjs-panel: #f8fafc;
+  --xjs-text: #26313d;
+}
+
+:root[data-theme="light"] {
+  --sl-color-white: #07121d;
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: #000000;
+  --sl-color-bg-sidebar: #f7f9fb;
+  --sl-color-bg-inline-code: #edf4f9;
+  --sl-color-text: var(--xjs-text);
+  --sl-color-text-accent: var(--xjs-blue);
+  --sl-color-hairline: #d4e0eb;
+  --sl-color-gray-1: #273747;
+  --sl-color-gray-2: #445a6e;
+  --sl-color-gray-3: #5a7288;
+  --sl-color-gray-4: #93a7b8;
+  --sl-color-gray-5: #ccd9e4;
+  --sl-color-gray-6: #e6eef5;
+  --sl-color-gray-7: #f7fbff;
+  --sl-color-black: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  --sl-color-bg: #07121d;
+  --sl-color-bg-nav: #000000;
+  --sl-color-bg-sidebar: #07121d;
+  --sl-color-text-accent: var(--xjs-blue-soft);
+  --sl-color-hairline: #17314a;
+  --xjs-panel: #0b1d2e;
+  --xjs-text: var(--sl-color-gray-2);
+}
+
+.site-title {
+  color: #ffffff;
+}
+
+.site-title img {
+  height: 45px;
+  max-width: 285px;
+}
+
+.header {
+  background-color: #000000;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.48)), url("../assets/bg_home.jpg");
+  background-position: center 42%;
+  background-size: cover;
+  border-bottom: 1px solid rgba(0, 149, 222, 0.35);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.header a,
+.header button {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.header a:hover,
+.header button:hover {
+  color: var(--xjs-blue-bright);
+}
+
+.hero {
+  position: relative;
+  min-height: 310px;
+  margin-inline: calc(50% - 50vw);
+  padding: 2.5rem max(1.5rem, calc((100vw - var(--sl-content-width)) / 2)) 2.75rem;
+  overflow: hidden;
+  background-color: var(--xjs-navy);
+  background-image:
+    linear-gradient(rgba(0, 16, 42, 0.94), rgba(0, 16, 42, 0.94)), url("../assets/bg_home.jpg");
+  background-position: center;
+  background-size: cover;
+  border-bottom: 1px solid rgba(0, 149, 222, 0.45);
+  grid-template-columns: 1fr;
+}
+
+.hero::before {
+  display: block;
+  width: min(82vw, 640px);
+  aspect-ratio: 745 / 114;
+  margin-inline: auto;
+  content: "";
+  background-image: url("../assets/img_logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.hero::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, var(--xjs-blue-bright), transparent);
+}
+
+.hero .stack {
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.hero h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero .tagline {
+  max-width: 960px;
+  margin-inline: auto;
+  color: var(--xjs-blue-soft);
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.65rem);
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.hero .actions {
+  justify-content: center;
+}
+
+.hero .actions a {
+  min-width: 14rem;
+  border-radius: 2px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.hero .actions a[data-variant="primary"],
+.hero .actions a.primary {
+  border-color: var(--xjs-blue);
+  background: linear-gradient(#11a9ef, #007cc4);
+  color: #ffffff;
+}
+
+.hero .actions a[data-variant="secondary"],
+.hero .actions a.secondary {
+  border-color: rgba(154, 223, 255, 0.65);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+html[data-has-hero] .sl-markdown-content > p:first-child {
+  max-width: 58rem;
+  margin: 1.5rem auto 1.75rem;
+  color: var(--xjs-text);
+  font-size: 1.25rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+html[data-has-hero] .sl-markdown-content > p:nth-child(2) {
+  max-width: 58rem;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+.sl-markdown-content a[href="https://xspl.it/download"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #24a898, #1a8477);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sl-markdown-content a[href="https://xspl.it/download"]:hover,
+.sl-markdown-content a[href="https://xspl.it/download"]:focus {
+  color: #ffffff;
+}
+
+.sl-markdown-content li::marker {
+  color: var(--xjs-blue);
+}
+
+.sl-markdown-content h2 {
+  color: var(--xjs-blue);
+  font-weight: 600;
+}
+
+.sl-markdown-content a:not(.not-content *) {
+  color: var(--xjs-blue);
+}
+
+code {
+  color: #005d8a;
+}
+
+:root[data-theme="dark"] code {
+  color: var(--xjs-blue-soft);
+}
+
+.card,
+.sl-markdown-content table {
+  border-color: var(--sl-color-hairline);
+}
+
+html[data-has-hero] .card-grid {
+  max-width: 64rem;
+  margin: 0 auto 2rem;
+}
+
+.xjs-fixture {
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 4px;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--xjs-panel);
+  color: var(--sl-color-text);
+}
+
+.xjs-fixture h2 {
+  margin-top: 0;
+}
+
+.xjs-fixture__preview {
+  margin: 0 0 1rem;
+}
+
+.xjs-fixture__preview img {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 4px;
+  background: #f8fafc;
+}
+
+.xjs-fixture__preview figcaption {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+  margin-top: 0.5rem;
+}
+
+.xjs-fixture dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.xjs-fixture dt {
+  font-weight: 700;
+}
+
+.xjs-fixture dd {
+  margin: 0;
+}
+
+@media (max-width: 48rem) {
+  .site-title img {
+    max-width: 210px;
+  }
+
+  .hero {
+    min-height: 300px;
+    padding-block: 2.25rem;
+  }
+
+  .hero::before {
+    width: min(86vw, 520px);
+  }
+
+  .hero .actions a {
+    width: 100%;
+  }
+}

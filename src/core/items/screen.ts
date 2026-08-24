@@ -1,25 +1,30 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {exec} from '../../internal/internal';
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
-import {ISourceScreen, iSourceScreen} from '../source/iscreen';
+import { App as iApp } from '../../internal/app';
+import { exec } from '../../internal/internal';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { applyMixins } from '../../internal/util/mixin';
+import { XML } from '../../internal/util/xml';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import { type ISourceScreen, iSourceScreen } from '../source/iscreen';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The ScreenItem class represents a screen capture item.
@@ -35,79 +40,80 @@ import {ISourceScreen, iSourceScreen} from '../source/iscreen';
  *  All methods marked as *Chainable* resolve with the original `ScreenItem`
  *  instance.
  */
-export class ScreenItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect, ISourceScreen {
-
+export class ScreenItem
+  extends Item
+  implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect, ISourceScreen
+{
   //Screen Source
   /**
    * See {@link #core/ScreenSource#isStickToTitle isStickToTitle}
    */
-  isStickToTitle: () => Promise<boolean>
+  isStickToTitle: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setStickToTitle setStickToTitle}
    */
-  setStickToTitle: (value: boolean) => Promise<ScreenItem>
+  setStickToTitle: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#getCaptureLayered getCaptureLayered}
    */
-  getCaptureLayered: () => Promise<boolean>
+  getCaptureLayered: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setCaptureLayered setCaptureLayered}
    */
-  setCaptureLayered: (value: boolean) => Promise<ScreenItem>
+  setCaptureLayered: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#getOptimizedCapture getOptimizedCapture}
    */
-  getOptimizedCapture: () => Promise<boolean>
+  getOptimizedCapture: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setOptimizedCapture setOptimizedCapture}
    */
-  setOptimizedCapture:(value: boolean) => Promise<ScreenItem>
+  setOptimizedCapture: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#getShowMouseClicks getShowMouseClicks}
    */
-  getShowMouseClicks: () => Promise<boolean>
+  getShowMouseClicks: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setShowMouseClicks setShowMouseClicks}
    */
-  setShowMouseClicks: (value: boolean) => Promise<ScreenItem>
+  setShowMouseClicks: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#getShowMouse getShowMouse}
    */
-  getShowMouse: () => Promise<boolean>
+  getShowMouse: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setShowMouse setShowMouse}
    */
-  setShowMouse: (value: boolean) => Promise<ScreenItem>
+  setShowMouse: (value: boolean) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#getCaptureArea getCaptureArea}
    */
-  getCaptureArea: () => Promise<Rectangle>
+  getCaptureArea: () => Promise<Rectangle>;
 
   /**
    * See {@link #core/ScreenSource#setCaptureArea setCaptureArea}
    */
-  setCaptureArea: (dimension: Rectangle) => Promise<ScreenItem>
+  setCaptureArea: (dimension: Rectangle) => Promise<ScreenItem>;
 
   /**
    * See {@link #core/ScreenSource#isClientArea isClientArea}
    */
-  isClientArea: () => Promise<boolean>
+  isClientArea: () => Promise<boolean>;
 
   /**
    * See {@link #core/ScreenSource#setClientArea setClientArea}
    */
-  setClientArea: (value: boolean) => Promise<ScreenItem>
+  setClientArea: (value: boolean) => Promise<ScreenItem>;
 
   // ItemLayout
 
@@ -199,7 +205,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<ScreenItem>;
+  setEnhancedRotate: (value: number) => Promise<ScreenItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
@@ -522,7 +528,7 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   /** See: {@link #core/IItemEffect#setBorderEffectColor setBorderEffectColor} */
   setBorderEffectColor: (value: Color) => Promise<ScreenItem>;
 
-   /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
+  /** See: {@link #core/IItemEffect#getShadowEffectColor getShadowEffectColor} */
   getShadowEffectColor: () => Promise<Color>;
 
   /** See: {@link #core/IItemEffect#setShadowEffectColor setShadowEffectColor} */
@@ -574,10 +580,13 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<ScreenItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<ScreenItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<ScreenItem>;
@@ -586,5 +595,11 @@ export class ScreenItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(ScreenItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemEffect, iSourceScreen]);
+applyMixins(ScreenItem, [
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  ItemEffect,
+  iSourceScreen,
+]);

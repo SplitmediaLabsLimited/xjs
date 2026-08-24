@@ -1,0 +1,75 @@
+---
+title: Installing XJS - Advanced
+description: Current installation and bundling options for plugin projects.
+sidebar:
+  order: 3
+---
+
+The original documentation showed several installation paths. The supported path
+now starts from npm and the generated package outputs.
+
+## Package Install
+
+Install XJS into a plugin project:
+
+```sh
+npm install @splitmedialabs/xjs
+```
+
+Bundled projects should import from the package entry:
+
+```js
+import * as xjs from '@splitmedialabs/xjs';
+
+await xjs.ready();
+```
+
+CommonJS projects can still load the package entry:
+
+```js
+const xjs = require('@splitmedialabs/xjs');
+
+xjs.ready().then(() => {
+  // Use host APIs here.
+});
+```
+
+## Browser Bundle
+
+For plugin pages that are not bundled, copy the browser build from the installed
+package into your plugin and load it from HTML:
+
+```html
+<script src="js/xjs.js"></script>
+<script src="js/main.js"></script>
+```
+
+The browser bundle provides the historical loader name:
+
+```js
+const xjs = require('xjs');
+```
+
+Use `dist/xjs.js` for readable development builds and `dist/xjs.min.js` when you
+want the minified browser bundle.
+
+## Vite Projects
+
+Vite is the recommended local development and bundling tool for modern plugin
+projects. It gives you an ESM development workflow while still allowing you to
+ship a browser-targeted bundle to XSplit's CEF runtime.
+
+When serving plugin pages into Broadcaster, avoid loading Vite's HMR client in
+the final XSplit extension harness. The examples in this repository are served
+on port `3999`, and the XSplit regression extension is designed to be attached
+to that dev server or served from a static build.
+
+## Historical Paths
+
+The old Yeoman, Gulp, Browserify, and Bower setup is no longer part of the
+active build workflow. Those paths remain useful only as historical context for
+old plugins.
+
+The old CDN-hosted file can be useful for quick experiments, but production
+plugins should pin a package version or vendor the browser bundle into the
+plugin so releases remain reproducible.

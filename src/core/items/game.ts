@@ -1,22 +1,27 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Item} from './item';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {JSON as JXON} from '../../internal/util/json';
-import {XML} from '../../internal/util/xml';
-import {Environment} from '../environment';
-import {iSourceGame, ISourceGame} from '../source/igame';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { applyMixins } from '../../internal/util/mixin';
+import { XML } from '../../internal/util/xml';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import type { Filter } from '../filter';
+import { type ISourceGame, iSourceGame } from '../source/igame';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The GameItem Class provides methods specifically used for game items and
@@ -52,60 +57,61 @@ import {iSourceGame, ISourceGame} from '../source/igame';
  *  All methods marked as *Chainable* resolve with the original `GameItem`
  *  instance.
  */
-export class GameItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IItemEffect, ISourceGame {
-
+export class GameItem
+  extends Item
+  implements IItemLayout, IItemColor, IItemChroma, IItemTransition, IItemEffect, ISourceGame
+{
   // GameSource
 
   /**
    * See: {@link #core/GameSource#isSpecialOptimizationEnabled isSpecialOptimizationEnabled}
    */
-  isSpecialOptimizationEnabled: () => Promise<boolean>
+  isSpecialOptimizationEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/GameSource#setSpecialOptimizationEnabled setSpecialOptimizationEnabled}
    */
-  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>
+  setSpecialOptimizationEnabled: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/GameSource#isShowMouseEnabled isShowMouseEnabled}
    */
-  isShowMouseEnabled: () => Promise<boolean>
+  isShowMouseEnabled: () => Promise<boolean>;
 
   /**
    * See: {@link #core/GameSource#setShowMouseEnabled setShowMouseEnabled}
    */
-  setShowMouseEnabled: (value: boolean) => Promise<GameItem>
+  setShowMouseEnabled: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/GameSource#setOfflineImage setOfflineImage}
    */
-  setOfflineImage: (path: string) => Promise<GameItem>
+  setOfflineImage: (path: string) => Promise<GameItem>;
 
   /**
    * See: {@link #core/GameSource#getOfflineImage getOfflineImage}
    */
-  getOfflineImage:() => Promise<string>
+  getOfflineImage: () => Promise<string>;
 
   /**
    * See: {@link #core/GameSource#isTransparent isTransparent}
    */
-  isTransparent:() => Promise<boolean>
+  isTransparent: () => Promise<boolean>;
 
   /**
    * See: {@link #core/GameSource#setTransparent setTransparent}
    */
-  setTransparent: (value: boolean) => Promise<GameItem>
+  setTransparent: (value: boolean) => Promise<GameItem>;
 
   /**
    * See: {@link #core/GameSource#getGameFPSCap getGameFPSCap}
    */
-  getGameFPSCap:() => Promise<number>
+  getGameFPSCap: () => Promise<number>;
 
   /**
    * See: {@link #core/GameSource#setGameFPSCap setGameFPSCap}
    */
-  setGameFPSCap: (fps: number) => Promise<GameItem>
+  setGameFPSCap: (fps: number) => Promise<GameItem>;
 
   // ItemLayout
 
@@ -172,12 +178,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<GameItem>;  
+  sendBackward: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<GameItem>;  
+  sendToBack: () => Promise<GameItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -572,10 +578,13 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<GameItem>;  
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<GameItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<GameItem>;
@@ -584,5 +593,12 @@ export class GameItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(GameItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  ItemEffect, iSourceGame]);
+applyMixins(GameItem, [
+  Item,
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  ItemEffect,
+  iSourceGame,
+]);

@@ -5,11 +5,14 @@ export class Color {
   private _ibgr: number;
   private _transparent: boolean;
 
-  constructor( props: { rgb: string } |
-              { irgb: number } |
-              { bgr: string } |
-              { ibgr: number }|
-              { isTransparent: boolean }) {
+  constructor(
+    props:
+      | { rgb: string }
+      | { irgb: number }
+      | { bgr: string }
+      | { ibgr: number }
+      | { isTransparent: boolean }
+  ) {
     if (props['rgb'] !== undefined) {
       this.setRgb(props['rgb']);
     } else if (props['irgb'] !== undefined) {
@@ -43,7 +46,7 @@ export class Color {
 
   static fromTransparent(): Color {
     return new Color({ isTransparent: true });
-  } 
+  }
 
   getRgb() {
     return this._rgb;
@@ -53,8 +56,9 @@ export class Color {
     this._rgb = rgb.replace(/^#/, '').toUpperCase();
     this._irgb = parseInt(this._rgb, 16);
 
-    this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4),
-    this._rgb.substring(0, 2)].join('').toUpperCase();
+    this._bgr = [this._rgb.substring(4, 6), this._rgb.substring(2, 4), this._rgb.substring(0, 2)]
+      .join('')
+      .toUpperCase();
     this._ibgr = parseInt(this._bgr, 16);
     this._transparent = false;
     return this;
@@ -65,9 +69,7 @@ export class Color {
   }
 
   private setBgr(bgr: string): Color {
-    this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4),
-      bgr.substring(0, 2)
-      ].join(''));
+    this.setRgb([bgr.substring(4, 6), bgr.substring(2, 4), bgr.substring(0, 2)].join(''));
 
     return this;
   }
@@ -92,7 +94,7 @@ export class Color {
     return this._ibgr;
   }
 
-  private setIbgr(ibgr:number): Color {
+  private setIbgr(ibgr: number): Color {
     var bgr = ibgr.toString(16);
 
     while (bgr.length < 6) {
@@ -118,4 +120,3 @@ export class Color {
     return this._transparent;
   }
 }
-

@@ -1,0 +1,36 @@
+---
+title: Types of Plugins
+description: Source, extension, and output plugin boundaries in XSplit Broadcaster.
+sidebar:
+  order: 2
+---
+
+XJS supports two plugin styles for XSplit Broadcaster: source plugins and
+extension plugins. Outputs exist in Broadcaster, but the XJS framework cannot be
+used to create output plugins.
+
+## Sources
+
+A source plugin is captured into a stream or recording. Most sources occupy a
+position on the stage through one or more item renderers. HTML source plugins can
+render custom visuals, keep their own state, and expose a source properties
+window for configuration.
+
+Use source plugins when the viewer should see the result: overlays, timers,
+alerts, browser-backed widgets, and custom visual elements.
+
+## Extensions
+
+An extension plugin runs as an application-level controller. Extensions can
+inspect and manipulate scenes, sources, outputs, application settings, and
+dialogs. They are built as HTML pages, but they open in their own window instead
+of being rendered into the scene.
+
+Use extensions when the broadcaster should control something: scene switching,
+stream orchestration, source management, diagnostics, or integration setup.
+
+## Outputs
+
+Outputs configure streaming or recording targets and handle service-specific
+authentication. XJS can inspect and control existing outputs through APIs such as
+`Output.getOutputList()`, but it does not create new output plugins.

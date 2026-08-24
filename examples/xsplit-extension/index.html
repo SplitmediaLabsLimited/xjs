@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="xsplit:config-url" content="http://localhost:3999/xsplit-extension/config.html">
+    <title>XJS Regression Extension</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <xsplit-navbar></xsplit-navbar>
+    <main>
+      <header class="surface-header">
+        <h1>XJS Regression Extension</h1>
+        <p id="status">Ready to run host regression checks.</p>
+      </header>
+
+      <section data-example-section="component-fixtures">
+        <div class="section-heading">
+          <h2>Component Examples</h2>
+          <p>Rendered from the same fixture metadata used by the regression runner.</p>
+        </div>
+        <div id="component-fixture-gallery" class="component-gallery"></div>
+      </section>
+
+      <section data-example-section="config-preview">
+        <h2>Config Preview</h2>
+        <dl>
+          <div>
+            <dt>config-url</dt>
+            <dd><code>http://localhost:3999/xsplit-extension/config.html</code></dd>
+          </div>
+          <div>
+            <dt>title</dt>
+            <dd>XSplit regression config</dd>
+          </div>
+        </dl>
+        <a class="button-link" href="./config.html">Open config page</a>
+      </section>
+
+      <section data-example-section="regression-controls">
+        <h2>Regression Controls</h2>
+        <button id="run" type="button">Run checks</button>
+      </section>
+
+      <section data-example-section="artifact-output">
+        <h2>Regression Results</h2>
+        <pre id="results">[]</pre>
+      </section>
+    </main>
+    <script src="../../dist/xjs.js"></script>
+    <script src="../../docs-old/app/js/xsplit-navbar.js"></script>
+    <script src="../../docs-old/app/js/xsplit-doc-shell.js"></script>
+    <script src="./component-fixtures.js"></script>
+    <script src="./component-fixture-gallery.js"></script>
+    <script src="./regression-runner.js"></script>
+    <script>
+      document.getElementById('run').addEventListener('click', () => {
+        window.__runXjsRegressionSuite();
+      });
+    </script>
+  </body>
+</html>

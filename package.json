@@ -1,46 +1,79 @@
 {
-  "name": "xjs-framework",
-  "version": "2.10.2",
+  "name": "@splitmedialabs/xjs",
+  "version": "2.14.1",
   "description": "XSplit JS Framework",
   "scripts": {
-    "test": "karma start --single-run --browsers Firefox"
+    "build": "node scripts/build.mjs",
+    "build:watch": "vite build --watch --config vite.config.mjs",
+    "prepare": "npm run build",
+    "docs:dev": "astro dev --root docs",
+    "docs:check": "node scripts/check-docs.mjs && npm run docs:lint && npm run docs:md:check",
+    "docs:lint": "biome check --diagnostic-level=error docs/astro.config.mjs docs/src",
+    "docs:md:check": "rumdl check docs/src/content/docs docs/src/typedoc && rumdl fmt --check docs/src/content/docs docs/src/typedoc",
+    "docs:build": "node scripts/build-docs.mjs",
+    "docs:legacy:build": "node scripts/build-legacy-docs.mjs",
+    "docs:components:capture": "node scripts/xsplit-component-screenshots.mjs",
+    "docs:components:update": "npm run docs:components:capture && node scripts/update-component-doc-assets.mjs && npm run docs:check",
+    "examples": "node scripts/serve-examples.mjs",
+    "test": "npm run test:smoke",
+    "test:smoke": "npm run build && node test/smoke/xsplit-cdp-identity.mjs && node test/smoke/package-entries.mjs && node test/smoke/browser-bundle-require.mjs && node test/smoke/exec-callbacks.mjs && node test/smoke/app-host-apis.mjs && node test/smoke/extension-config-apis.mjs && node test/smoke/extension-window-events.mjs && node test/smoke/source-plugin-window-events.mjs && node test/smoke/dialog-window-controls.mjs && node test/smoke/dll-language-apis.mjs && node test/smoke/system-url-apis.mjs && node test/smoke/stream-output-apis.mjs && node test/smoke/system-device-discovery.mjs && node test/smoke/system-addable-apis.mjs && node test/smoke/io-apis.mjs && node test/smoke/transition-channel-apis.mjs && node test/smoke/item-base-apis.mjs && node test/smoke/item-visual-effects-apis.mjs && node test/smoke/scene-type-resolution.mjs && node test/smoke/scene-apis.mjs && node test/smoke/media-playback-apis.mjs && node test/smoke/source-feature-apis.mjs && node test/smoke/source-config-current-apis.mjs && node test/smoke/remote-proxy-transport.mjs && node test/smoke/util-value-objects.mjs",
+    "test:compatibility": "node test/smoke/compatibility-targets.mjs",
+    "test:full": "npm run test:smoke && npm run test:compatibility",
+    "test:components": "web-test-runner --config web-test-runner.config.mjs",
+    "test:xsplit:cdp": "node scripts/xsplit-cdp-runner.mjs",
+    "test:xsplit:cdp:attached": "node scripts/xsplit-cdp-attached.mjs",
+    "test:xsplit:components:screenshots": "node scripts/xsplit-component-screenshots.mjs",
+    "pack:check": "npm pack --dry-run"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/xjs.cjs",
+  "module": "./dist/xjs.mjs",
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/xjs.js",
+  "unpkg": "./dist/xjs.min.js",
+  "jsdelivr": "./dist/xjs.min.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/xjs.mjs",
+      "require": "./dist/xjs.cjs",
+      "default": "./dist/xjs.mjs"
+    },
+    "./browser": "./dist/xjs.js",
+    "./browser.min": "./dist/xjs.min.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "devDependencies": {
-    "bower": "^1.4.1",
-    "browser-sync": "2.18.2",
-    "browserify": "^10.2.6",
+    "@astrojs/starlight": "^0.41.7",
+    "@biomejs/biome": "^2.4.15",
+    "@web/test-runner": "^0.20.2",
+    "angular": "^1.8.3",
+    "angular-animate": "^1.8.3",
+    "angular-aria": "^1.8.3",
+    "angular-material": "^1.2.5",
+    "angular-route": "^1.8.3",
+    "astro": "^7.2.3",
     "canonical-path": "0.0.2",
-    "connect-history-api-fallback": "^1.1.0",
-    "del": "^1.2.0",
-    "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.18",
-    "glob": "^5.0.14",
-    "gulp": "^3.9.1",
-    "gulp-data": "^1.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-typescript": "^2.7.8",
-    "gulp-uglify": "^1.5.3",
-    "gulp-util": "^3.0.6",
-    "jasmine-core": "^2.3.4",
-    "karma": "^0.13.2",
-    "karma-chrome-launcher": "^0.2.0",
-    "karma-firefox-launcher": "^1.3.0",
-    "karma-jasmine": "^0.3.6",
-    "karma-jasmine-html-reporter": "^0.1.8",
+    "lefthook": "^2.1.6",
     "lodash": "^4.17.15",
-    "run-sequence": "^1.1.5",
+    "rumdl": "^0.1.92",
+    "starlight-typedoc": "^0.22.0",
     "string-to-comments": "^0.1.2",
-    "traceur": "0.0.87",
-    "tsify": "^0.11.2",
-    "typescript": "^1.6.2",
-    "vinyl-source-stream": "^1.1.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
+    "typescript": "^6.0.3",
+    "vite": "^7.2.0",
+    "ws": "^8.20.1",
     "yargs": "^3.29.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xjsframework/xjs.git"
+    "url": "https://github.com/SplitmediaLabsLimited/xjs.git"
   },
   "keywords": [
     "xsplit",
@@ -50,10 +83,10 @@
   "author": "SplitmediaLabs, Ltd. <xjs@splitmedialabs.com>",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/xjsframework/xjs/issues",
+    "url": "https://github.com/SplitmediaLabsLimited/xjs/issues",
     "email": "xjs@splitmedialabs.com"
   },
-  "homepage": "https://github.com/xjsframework/xjs#readme",
+  "homepage": "https://github.com/SplitmediaLabsLimited/xjs#readme",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -61,10 +94,12 @@
   "files": [
     "defs/",
     "dist/",
+    "examples/",
     "src/",
-    "test/",
-    "gulpfile.js",
-    "karma.conf.js",
-    "tsconfig.json"
-  ]
+    "LICENSE",
+    "README.md"
+  ],
+  "volta": {
+    "node": "22.20.0"
+  }
 }

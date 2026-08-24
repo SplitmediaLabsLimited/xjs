@@ -1,0 +1,47 @@
+---
+title: Start/Stop Broadcast
+description: Inspect and control configured outputs.
+sidebar:
+  order: 11
+---
+
+XJS can start or stop configured outputs and pause or unpause local recording.
+This is useful for scheduled streaming, stream control panels, and workflow
+automation.
+
+## Select an Output
+
+Before starting a broadcast, enumerate outputs and choose the configured output
+you want to control:
+
+```js
+const xjs = require('xjs');
+const { Output } = xjs;
+
+xjs.ready()
+  .then(Output.getOutputList)
+  .then((outputs) => {
+    outputs.forEach((output) => {
+      output.getName().then((name) => {
+        if (name.includes('Twitch')) {
+          output.startBroadcast();
+        }
+      });
+    });
+  });
+```
+
+Once you have the correct `Output` instance, call the relevant action:
+
+```js
+output.startBroadcast();
+output.stopBroadcast();
+output.pauseLocalRecording();
+output.unpauseLocalRecording();
+```
+
+## Limitations
+
+Outputs that require pre-stream dialogs, service confirmation, or missing setup
+still need manual user interaction. XJS can only start outputs that already have
+the required host configuration.

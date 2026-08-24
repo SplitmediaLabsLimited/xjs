@@ -1,12 +1,12 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {Global} from '../internal/global';
-import {Environment} from '../core/environment';
-import {EventEmitter} from '../util/eventemitter';
-import {EventManager} from '../internal/eventmanager';
-import {deleteSceneEventFixVersion, versionCompare, getVersion} from '../internal/util/version';
-import {Scene} from '../core/scene';
-import {exec} from '../internal/internal';
+import { Environment } from '../core/environment';
+import { Scene } from '../core/scene';
+import { EventManager } from '../internal/eventmanager';
+import { Global } from '../internal/global';
+import { exec } from '../internal/internal';
+import { deleteSceneEventFixVersion, getVersion, versionCompare } from '../internal/util/version';
+import { EventEmitter } from '../util/eventemitter';
 import window from '../util/window';
 
 /** This utility class is used internally by the framework for certain important
@@ -51,7 +51,7 @@ export class SourcePluginWindow extends EventEmitter {
     if (!Environment.isSourcePlugin()) {
       throw new Error('SourcePluginWindow class is only available for source plugins');
     }
-    this.on('message-source', function(message) {
+    this.on('message-source', function (message) {
       if (message.request !== undefined) {
         if (message.request === 'saveConfig') {
           this.emit('save-config', this._hideGlobalConfig(message.data));
@@ -73,42 +73,43 @@ export class SourcePluginWindow extends EventEmitter {
   static emit(event: string, ...params: any[]) {
     params.unshift(event);
     try {
-      SourcePluginWindow
-        .getInstance()
-        .emit
-        .apply(SourcePluginWindow._instance, params);
-    } catch(event) {
-      SourcePluginWindow
-        ._instance
-        .emit
-        .apply(SourcePluginWindow._instance, params);
+      SourcePluginWindow.getInstance().emit.apply(SourcePluginWindow._instance, params);
+    } catch (event) {
+      SourcePluginWindow._instance.emit.apply(SourcePluginWindow._instance, params);
     }
   }
 
   /**
    *  param: (event: string, handler: Function)
    *
-   *  Allows listening to events that this class emits. 
+   *  Allows listening to events that this class emits.
    *
    */
   static on(event: string, handler: Function) {
     SourcePluginWindow.getInstance().on(event, handler);
-    
-    let isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(deleteSceneEventFixVersion);
 
-    if(event === 'scene-delete' && isDeleteSceneEventFixed) {
+    const isDeleteSceneEventFixed = versionCompare(getVersion()).is.greaterThanOrEqualTo(
+      deleteSceneEventFixVersion
+    );
+
+    if (event === 'scene-delete' && isDeleteSceneEventFixed) {
       if (SourcePluginWindow._subscriptions.indexOf('SceneDeleted') < 0) {
-        EventManager.subscribe("SceneDeleted", function(settingsObj) {
+        EventManager.subscribe('SceneDeleted', (settingsObj) => {
           if (Environment.isSourcePlugin()) {
-            SourcePluginWindow.emit(event, settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1);
+            SourcePluginWindow.emit(
+              event,
+              settingsObj['index'] === '' ? null : Number(settingsObj['index']) + 1
+            );
           }
         });
       }
-    } else if(['set-background-color', 'scene-load', 'apply-config', 'save-config'].indexOf(event) >= 0 ) {
+    } else if (
+      ['set-background-color', 'scene-load', 'apply-config', 'save-config'].indexOf(event) >= 0
+    ) {
       //Just register the events so not to throw warning. Emitter already created.
     } else {
       console.warn('Warning! The event "' + event + '" is not yet supported on this version.');
-    }  
+    }
   }
 
   static off(event: string, handler: Function) {
@@ -125,7 +126,7 @@ export class SourcePluginWindow extends EventEmitter {
   // properties window cannot always correctly determine the global config nodes
   // when dealing with sources other than the current source (right-clicked.)
   private _hideGlobalConfig(data: any) {
-    let persist = Global.getPersistentConfig();
+    const persist = Global.getPersistentConfig();
 
     for (var key in persist) {
       delete data[key];
@@ -136,12 +137,11 @@ export class SourcePluginWindow extends EventEmitter {
 }
 
 // for source plugins
-window.MessageSource = function(message: string) {
-  SourcePluginWindow.emit('message-source',
-    JSON.parse(message));
+window.MessageSource = (message: string) => {
+  SourcePluginWindow.emit('message-source', JSON.parse(message));
 };
 
-window.SetConfiguration = function(configObj: string) {
+window.SetConfiguration = (configObj: string) => {
   try {
     var data = JSON.parse(configObj);
     SourcePluginWindow.emit('apply-config', data);
@@ -152,17 +152,17 @@ window.SetConfiguration = function(configObj: string) {
   }
 };
 
-window.setBackGroundColor = function(color: string) {
+window.setBackGroundColor = (color: string) => {
   SourcePluginWindow.emit('set-background-color', color);
 };
 
-let prevOnSceneLoad = window.OnSceneLoad;
-window.OnSceneLoad = function(...args: any[]) {
+const prevOnSceneLoad = window.OnSceneLoad;
+window.OnSceneLoad = (...args: any[]) => {
   if (Environment.isSourcePlugin()) {
     SourcePluginWindow.emit('scene-load');
   }
 
   if (prevOnSceneLoad !== undefined) {
-    prevOnSceneLoad(...args)
+    prevOnSceneLoad(...args);
   }
-}
+};

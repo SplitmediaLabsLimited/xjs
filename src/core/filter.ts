@@ -23,19 +23,19 @@ export class Filter {
     MAGNIFYSMOOTH: 'magnifysmooth',
     BLUR: 'blur',
     LUT: 'lut',
-  }
+  };
 
-  static NONE: Filter =  new Filter('NONE');
-  static COOL: Filter =  new Filter('COOL');
-  static WARM: Filter =  new Filter('WARM');
-  static BLOOM: Filter =  new Filter('BLOOM');
-  static MONOCHROME: Filter =  new Filter('MONOCHROME');
-  static INVERTCOLOR: Filter =  new Filter('INVERTCOLOR');
-  static OLDMOVIE: Filter =  new Filter('OLDMOVIE');
-  static SKETCHPENCILSTROKE: Filter =  new Filter('SKETCHPENCILSTROKE');
-  static MAGNIFYSMOOTH: Filter =  new Filter('MAGNIFYSMOOTH');
-  static BLUR: Filter =  new Filter('BLUR');
-  static LUT: Filter =  new Filter('LUT');
+  static NONE: Filter = new Filter('NONE');
+  static COOL: Filter = new Filter('COOL');
+  static WARM: Filter = new Filter('WARM');
+  static BLOOM: Filter = new Filter('BLOOM');
+  static MONOCHROME: Filter = new Filter('MONOCHROME');
+  static INVERTCOLOR: Filter = new Filter('INVERTCOLOR');
+  static OLDMOVIE: Filter = new Filter('OLDMOVIE');
+  static SKETCHPENCILSTROKE: Filter = new Filter('SKETCHPENCILSTROKE');
+  static MAGNIFYSMOOTH: Filter = new Filter('MAGNIFYSMOOTH');
+  static BLUR: Filter = new Filter('BLUR');
+  static LUT: Filter = new Filter('LUT');
 
   constructor(key: string) {
     var value = Filter._filterMap[key];
@@ -83,10 +83,10 @@ export class Filter {
    * ```
    */
   static getFilters(): Promise<Filter[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       // pending a core change,
       // we should override hardcoded filter list from a listing from core
-      var filters: Filter[] = Object.keys(Filter._filterMap).map(key => new Filter(key));
+      var filters: Filter[] = Object.keys(Filter._filterMap).map((key) => new Filter(key));
       resolve(filters);
     });
   }

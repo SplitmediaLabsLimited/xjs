@@ -1,0 +1,12 @@
+---
+title: Components
+description: Tested documentation component fixtures used by the XSplit regression extension.
+---
+
+The component documentation is layered. Fixture metadata records the rendered
+behavior that regression tests verify, while these MDX pages add usage notes and
+migration context.
+
+Each component page must reference a tested fixture id. `npm run docs:check`
+fails when a component note points at missing fixture data or when a fixture has
+no documentation page.

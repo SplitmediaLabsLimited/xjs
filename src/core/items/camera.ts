@@ -1,25 +1,30 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {App as iApp} from '../../internal/app';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {IAudio, Audio} from '../source/iaudio';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {CameraSource} from '../source/camera';
-import {MicrophoneDevice as MicrophoneDevice} from '../../system/microphone';
-import {System} from '../../system/system';
-import {SourceCamera, ISourceCamera} from '../source/icamera';
+import { App as iApp } from '../../internal/app';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { MicrophoneDevice } from '../../system/microphone';
+import { System } from '../../system/system';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import type { Filter } from '../filter';
+import { Scene } from '../scene';
+import { CameraSource } from '../source/camera';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceCamera, SourceCamera } from '../source/icamera';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The CameraItem Class provides methods specifically used for camera items and
@@ -58,79 +63,87 @@ import {SourceCamera, ISourceCamera} from '../source/icamera';
  *  All methods marked as *Chainable* resolve with the original `CameraItem`
  *  instance.
  */
-export class CameraItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceCamera {
-
+export class CameraItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    IAudio,
+    IItemEffect,
+    ISourceCamera
+{
   // Shared with Camera Item
   /**
    * See: {@link #core/CameraSource#getDeviceId getDeviceId}
    */
-  getDeviceId: () => Promise<string>
+  getDeviceId: () => Promise<string>;
 
   /**
    * See: {@link #core/CameraSource#getResolution getResolution}
    */
-  getResolution: () => Promise<Rectangle>
+  getResolution: () => Promise<Rectangle>;
 
   /**
    * See: {@link #core/CameraSource#getAudioOffset getAudioOffset}
    */
-  getAudioOffset: () => Promise<number>
+  getAudioOffset: () => Promise<number>;
 
   /**
    * See: {@link #core/CameraSource#setAudioOffset setAudioOffset}
    */
-  setAudioOffset: (value: number) => Promise<ISourceCamera>
+  setAudioOffset: (value: number) => Promise<ISourceCamera>;
 
   /**
    * See: {@link #core/CameraSource#getAudioInput getAudioInput}
    */
-  getAudioInput: () => Promise<MicrophoneDevice>
+  getAudioInput: () => Promise<MicrophoneDevice>;
 
   /**
    * See: {@link #core/CameraSource#setAudioInput setAudioInput}
    */
-  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>
+  setAudioInput: (value: MicrophoneDevice) => Promise<ISourceCamera>;
 
   /**
    * See: {@link #core/CameraSource#isStreamPaused isStreamPaused}
    */
-  isStreamPaused: () => Promise<boolean>
+  isStreamPaused: () => Promise<boolean>;
 
   /**
    * See: {@link #core/CameraSource#setStreamPaused setStreamPaused}
    */
-  setStreamPaused: (value: boolean) => Promise<CameraItem>
+  setStreamPaused: (value: boolean) => Promise<CameraItem>;
 
   /**
    * See: {@link #core/CameraSource#isHardwareEncoder isHardwareEncoder}
    */
-  isHardwareEncoder: () => Promise<boolean>
+  isHardwareEncoder: () => Promise<boolean>;
 
   /**
    * See: {@link #core/CameraSource#isActive isActive}
    */
-  isActive: () => Promise<boolean>
+  isActive: () => Promise<boolean>;
 
   /**
    * See: {@link #core/CameraSource#getDelay getDelay}
    */
-  getDelay: () => Promise<number>
+  getDelay: () => Promise<number>;
 
   /**
    * See: {@link #core/CameraSource#setDelay setDelay}
    */
-  setDelay: (value: number) => Promise<CameraItem>
+  setDelay: (value: number) => Promise<CameraItem>;
 
   /**
    * See: {@link #core/CameraSource#isForceDeinterlace isForceDeinterlace}
    */
-  isForceDeinterlace: () => Promise<boolean>
+  isForceDeinterlace: () => Promise<boolean>;
 
   /**
    * See: {@link #core/CameraSource#setForceDeinterlace setForceDeinterlace}
    */
-  setForceDeinterlace: (value: boolean) => Promise<CameraItem>
+  setForceDeinterlace: (value: boolean) => Promise<CameraItem>;
 
   // ItemLayout
 
@@ -342,7 +355,7 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * *Chainable.*
    */
   setColorOptionsPinned(value: boolean): Promise<CameraItem> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:cc_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
@@ -356,8 +369,8 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * this camera device on the stage.
    */
   getColorOptionsPinned(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:cc_pin', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:cc_pin', this._id).then((val) => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -524,12 +537,11 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * *Chainable.*
    */
   setKeyingOptionsPinned(value: boolean): Promise<CameraItem> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       iItem.set('prop:key_pin', value ? '1' : '0', this._id).then(() => {
         resolve(this);
       });
     });
-
   }
 
   /**
@@ -539,8 +551,8 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
    * this camera device on the stage.
    */
   getKeyingOptionsPinned(): Promise<boolean> {
-    return new Promise(resolve => {
-      iItem.get('prop:key_pin', this._id).then(val => {
+    return new Promise((resolve) => {
+      iItem.get('prop:key_pin', this._id).then((val) => {
         resolve(val === '1' ? true : false);
       });
     });
@@ -691,10 +703,13 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<CameraItem>;
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<CameraItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<CameraItem>;
@@ -703,5 +718,13 @@ export class CameraItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 }
 
-applyMixins(CameraItem, [Item, ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  Audio, ItemEffect, SourceCamera]);
+applyMixins(CameraItem, [
+  Item,
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  Audio,
+  ItemEffect,
+  SourceCamera,
+]);

@@ -1,28 +1,24 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {App as iApp} from '../../internal/app';
-import {Item as iItem} from '../../internal/item';
-import {
-  minVersion,
-  versionCompare,
-  getVersion
-} from '../../internal/util/version';
-import {XML} from '../../internal/util/xml';
-import {JSON as JXON} from '../../internal/util/json';
-import {Environment} from '../environment';
-import {Scene} from '../scene';
-import {Item, ViewTypes} from '../items/item';
-import {iSource, ISource, ItemTypes} from '../source/isource';
-import {GameSource} from './game';
-import {CameraSource} from './camera';
-import {AudioSource} from './audio';
-import {VideoPlaylistSource} from './videoplaylist'
-import {HtmlSource} from './html';
-import {FlashSource} from './flash';
-import {ScreenSource} from './screen';
-import {ImageSource} from './image';
-import {MediaSource} from './media';
+import { App as iApp } from '../../internal/app';
+import { Item as iItem } from '../../internal/item';
+import { JSON as JXON } from '../../internal/util/json';
+import { applyMixins } from '../../internal/util/mixin';
+import { getVersion, minVersion, versionCompare } from '../../internal/util/version';
+import type { XML } from '../../internal/util/xml';
+import { Environment } from '../environment';
+import { type Item, ViewTypes } from '../items/item';
+import { Scene } from '../scene';
+import { type ISource, type ItemTypes, iSource } from '../source/isource';
+import { AudioSource } from './audio';
+import { CameraSource } from './camera';
+import { FlashSource } from './flash';
+import { GameSource } from './game';
+import { HtmlSource } from './html';
+import { ImageSource } from './image';
+import { MediaSource } from './media';
+import { ScreenSource } from './screen';
+import { VideoPlaylistSource } from './videoplaylist';
 
 /**
  * A `Source` represents an object of an Item that is used on the stage.
@@ -63,7 +59,7 @@ import {MediaSource} from './media';
  * ```
  */
 
-export class Source implements ISource{
+export class Source implements ISource {
   protected _id: string;
   protected _srcId: string;
   protected _type: ItemTypes;
@@ -112,28 +108,30 @@ export class Source implements ISource{
   static getCurrentSource(): Promise<Source> {
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
-        reject(Error('Extensions do not have sources ' +
-          'associated with them.'));
+        reject(Error('Extensions do not have sources ' + 'associated with them.'));
       } else if (
         (Environment.isSourcePlugin() || Environment.isSourceProps()) &&
-        versionCompare(getVersion())
-          .is
-          .greaterThan(minVersion)
+        versionCompare(getVersion()).is.greaterThan(minVersion)
       ) {
-        iItem.get('itemlist').then(itemlist => {
+        iItem.get('itemlist').then((itemlist) => {
           const itemId = itemlist.split(',')[0];
-          Scene.searchItemsById(itemId).then(item => {
-            return item.getSource();
-          }).then(source => {
-            resolve(source);
-          }).catch(() => resolve(null));
+          Scene.searchItemsById(itemId)
+            .then((item) => {
+              return item.getSource();
+            })
+            .then((source) => {
+              resolve(source);
+            })
+            .catch(() => resolve(null));
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
-          return item.getSource();
-        }).then(source => {
-          resolve(source);
-        });
+        Scene.searchItemsById(iItem.getBaseId())
+          .then((item) => {
+            return item.getSource();
+          })
+          .then((source) => {
+            resolve(source);
+          });
       }
     });
   }
@@ -170,31 +168,31 @@ export class Source implements ISource{
     return new Promise((resolve, reject) => {
       if (Environment.isExtension()) {
         reject(Error('Extensions do not have default items associated with them.'));
-      } else if (
-        versionCompare(getVersion())
-          .is
-          .lessThan(minVersion)
-      ) {
-        Scene.searchItemsById(iItem.getBaseId()).then(item => {
+      } else if (versionCompare(getVersion()).is.lessThan(minVersion)) {
+        Scene.searchItemsById(iItem.getBaseId()).then((item) => {
           const itemArray = [];
           itemArray.push(item);
           resolve(itemArray);
         });
       } else if (Environment.isSourcePlugin() || Environment.isSourceProps()) {
-        iItem.get('itemlist').then(itemlist => {
+        iItem.get('itemlist').then((itemlist) => {
           const promiseArray: Promise<Item>[] = [];
           const itemsArray = itemlist.split(',');
 
-          itemsArray.forEach(itemId => {
-            promiseArray.push(new Promise(itemResolve => {
-              Scene.searchItemsById(itemId).then(item => {
-                itemResolve(item);
-              }).catch(() => itemResolve(null));
-            }));
+          itemsArray.forEach((itemId) => {
+            promiseArray.push(
+              new Promise((itemResolve) => {
+                Scene.searchItemsById(itemId)
+                  .then((item) => {
+                    itemResolve(item);
+                  })
+                  .catch(() => itemResolve(null));
+              })
+            );
           });
 
-          Promise.all(promiseArray).then(results => {
-            resolve(results.filter(res => res !== null));
+          Promise.all(promiseArray).then((results) => {
+            resolve(results.filter((res) => res !== null));
           });
         });
       }
@@ -220,48 +218,54 @@ export class Source implements ISource{
    * ```
    */
   static getAllSources(): Promise<Source[]> {
-    return new Promise((resolve,reject)=> {
+    return new Promise((resolve, reject) => {
       let allJson = [];
-      let allSrc = []
-      let uniqueObj = {};
-      let uniqueSrc = [];
-      let promiseArray = [];
-      iApp.getAsItemList('sceneconfig').then(jsonArr => {        
-        allJson = jsonArr;      
-        let sourcePromise = srcid => new Promise(sourceResolve => {
-          Scene.searchSourcesById(srcid).then(result => {
-            allSrc = allSrc.concat(result);
-            sourceResolve(result);
-          }).catch(err => {
-            sourceResolve(null);
-          });
-        })
-        for (var i = 0; i < allJson.length ; i++) {
-          if (typeof allJson[i] !== 'undefined') {
-            promiseArray.push(sourcePromise(allJson[i]['srcid']));
+      let allSrc = [];
+      const uniqueObj = {};
+      const uniqueSrc = [];
+      const promiseArray = [];
+      iApp
+        .getAsItemList('sceneconfig')
+        .then((jsonArr) => {
+          allJson = jsonArr;
+          const sourcePromise = (srcid) =>
+            new Promise((sourceResolve) => {
+              Scene.searchSourcesById(srcid)
+                .then((result) => {
+                  allSrc = allSrc.concat(result);
+                  sourceResolve(result);
+                })
+                .catch((err) => {
+                  sourceResolve(null);
+                });
+            });
+          for (var i = 0; i < allJson.length; i++) {
+            if (typeof allJson[i] !== 'undefined') {
+              promiseArray.push(sourcePromise(allJson[i]['srcid']));
+            }
           }
-        }
-        Promise.all(promiseArray).then(results => {
-          for(var h = 0; h< allSrc.length; h++) {
-            if (allSrc[h] !== null) {
-              for(var key in allSrc[h]){
-                if(key === '_srcId'){
-                  uniqueObj[allSrc[h][key]] = allSrc[h];
+          Promise.all(promiseArray).then((results) => {
+            for (var h = 0; h < allSrc.length; h++) {
+              if (allSrc[h] !== null) {
+                for (var key in allSrc[h]) {
+                  if (key === '_srcId') {
+                    uniqueObj[allSrc[h][key]] = allSrc[h];
+                  }
                 }
               }
             }
-          }
-          for(var j in uniqueObj) {
-            if(uniqueObj.hasOwnProperty(j)) {
-              uniqueSrc.push(uniqueObj[j]);
+            for (var j in uniqueObj) {
+              if (Object.hasOwn(uniqueObj, j)) {
+                uniqueSrc.push(uniqueObj[j]);
+              }
             }
-          }
-          resolve(uniqueSrc);
+            resolve(uniqueSrc);
+          });
         })
-      }).catch(err => {
-        reject(err)
-      })
-    })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
 
   // Shared with Item
@@ -269,63 +273,62 @@ export class Source implements ISource{
   /**
    * See: {@link #core/ISource#setName setName}
    */
-  setName: (value: string) => Promise<Source>
+  setName: (value: string) => Promise<Source>;
 
   /**
    * See: {@link #core/ISource#getName getName}
    */
-  getName: () => Promise<string>
+  getName: () => Promise<string>;
 
   /**
    * See: {@link #core/ISource#setCustomName setCustomName}
    */
-  setCustomName: () => Promise<Source>
+  setCustomName: () => Promise<Source>;
 
   /**
    * See: {@link #core/ISource#getCustomName getCustomName}
    */
-  getCustomName: ()  => Promise<string>
+  getCustomName: () => Promise<string>;
 
   /**
    * See: {@link #core/ISource#getValue getValue}
    */
-  getValue: () => Promise<string | XML>
+  getValue: () => Promise<string | XML>;
 
   /**
    * See: {@link #core/ISource#setValue setValue}
    */
-  setValue: (value: string | XML) => Promise<Source>
+  setValue: (value: string | XML) => Promise<Source>;
 
   /**
    * See: {@link #core/ISource#getKeepLoaded getKeepLoaded}
    */
-  getKeepLoaded: () => Promise<boolean>
+  getKeepLoaded: () => Promise<boolean>;
 
   /**
    * See: {@link #core/ISource#setKeepLoaded setKeepLoaded}
    */
-  setKeepLoaded: (value: boolean) => Promise<Source>
+  setKeepLoaded: (value: boolean) => Promise<Source>;
 
   /**
    * See: {@link #core/ISource#getId getId}
    */
-  getId: () => Promise<string>
+  getId: () => Promise<string>;
 
   /**
    * See: {@link #core/ISource#getItemList getItemList}
    */
-  getItemList: () => Promise<Item[]>
+  getItemList: () => Promise<Item[]>;
 
   /**
    * See: {@link #core/ISource#refresh refresh}
    */
-  refresh: () => Promise<Source>
+  refresh: () => Promise<Source>;
 
   /**
    * See: {@link #core/ISource#getType getType}
    */
-  getType: () => Promise<ItemTypes>
-
+  getType: () => Promise<ItemTypes>;
 }
 
-applyMixins(Source, [iSource])
+applyMixins(Source, [iSource]);

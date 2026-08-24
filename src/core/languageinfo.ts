@@ -1,8 +1,8 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {EventEmitter} from '../util/eventemitter';
-import {EventManager} from '../internal/eventmanager';
-import {exec} from '../internal/internal';
+import { EventManager } from '../internal/eventmanager';
+import { exec } from '../internal/internal';
+import { EventEmitter } from '../util/eventemitter';
 
 /**
  * The LanguageInfo class allows access to the change in language made in
@@ -24,7 +24,7 @@ export class LanguageInfo extends EventEmitter {
    *
    * Allows this class to emit an event.
    */
-  static emit(event: string, ...params:any[]) {
+  static emit(event: string, ...params: any[]) {
     params.unshift(event);
     LanguageInfo._emitter.emit.apply(LanguageInfo._emitter, params);
   }
@@ -46,28 +46,26 @@ export class LanguageInfo extends EventEmitter {
    */
   static on(event: string, handler: Function) {
     LanguageInfo._emitter.on(event, (lang) => {
-      handler.call(this, { lang })
-    })
+      handler.call(LanguageInfo, { lang });
+    });
   }
 
   static getCode(): Promise<string> {
-    return new Promise(resolve => {
-      exec('CallHostFunc', 'getProperty', 'html:language', langCode => {
+    return new Promise((resolve) => {
+      exec('CallHostFunc', 'getProperty', 'html:language', (langCode) => {
         resolve(langCode);
       });
     });
   }
 }
 
-EventManager.subscribe(['LanguageChanged'],
-  (langObj: string) => {
-    let eventString;
-    if (langObj.hasOwnProperty('event') &&
-    langObj.hasOwnProperty('lang')) {
+EventManager.subscribe(['LanguageChanged'], (langObj: Record<string, string>) => {
+  let eventString;
+  if (Object.hasOwn(langObj, 'event') && Object.hasOwn(langObj, 'lang')) {
     eventString = langObj['event'];
     if (langObj['event'] === 'LanguageChanged') {
       eventString = 'language-change';
     }
     LanguageInfo.emit(eventString, langObj['lang']);
-    }
-})
+  }
+});

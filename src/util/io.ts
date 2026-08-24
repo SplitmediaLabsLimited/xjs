@@ -1,13 +1,12 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
 
-import {exec} from '../internal/internal';
-import {App as iApp} from '../internal/app';
-import {Environment} from '../core/environment';
-import {Remote} from '../internal/remote';
+import { Environment } from '../core/environment';
+import { App as iApp } from '../internal/app';
+import { exec } from '../internal/internal';
+import { Remote } from '../internal/remote';
 import window from './window';
 
 export class IO {
-
   /**
    * param: (path: string)
    * ```
@@ -23,7 +22,7 @@ export class IO {
    * ```
    */
   static getFileContent(path: string): Promise<string> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(exec('GetFileContent', path));
     });
   }
@@ -45,8 +44,8 @@ export class IO {
    * ```
    */
   static getWebContent(url: string): Promise<string> {
-    return new Promise(resolve => {
-      exec('GetWebContent', url, encoded => {
+    return new Promise((resolve) => {
+      exec('GetWebContent', url, (encoded) => {
         resolve(encoded);
       });
     });
@@ -58,12 +57,12 @@ export class IO {
    * Opens a URL in the user's default browser. URL must specify HTTP or HTTPS.
    *
    */
-  static openUrl(url: string):Promise<string> {
-    return new Promise(resolve => {
-      exec('OpenUrl', url).then(res => {
-        resolve(res)
-      })
-    })
+  static openUrl(url: string): Promise<string> {
+    return new Promise((resolve) => {
+      exec('OpenUrl', url).then((res) => {
+        resolve(res);
+      });
+    });
   }
 
   private static _ALLOW_MULTI_SELECT: number = 0x200;
@@ -91,12 +90,14 @@ export class IO {
    * - `name`: the description of the filter (for example: Image Files)
    * - `extensions`: an array of file extensions (for example: `['jpg','bmp']`);
    */
-  static openFileDialog(optionBag ?: {
-        allowMultiSelect ?: boolean,
-        fileMustExist    ?: boolean,
-        forceShowHidden  ?: boolean
-      },
-      filter ?: { name : boolean, extensions : String[] }): Promise<string[]> {
+  static openFileDialog(
+    optionBag?: {
+      allowMultiSelect?: boolean;
+      fileMustExist?: boolean;
+      forceShowHidden?: boolean;
+    },
+    filter?: { name: boolean; extensions: string[] }
+  ): Promise<string[]> {
     return new Promise((resolve, reject) => {
       if (Environment.isSourcePlugin()) {
         reject(Error('function is not available for source'));
@@ -117,22 +118,27 @@ export class IO {
         }
 
         let filterString: string = '';
-        if (filter !== undefined && filter !== null &&
-            filter.name !== undefined && filter.extensions !== undefined) {
+        if (
+          filter !== undefined &&
+          filter !== null &&
+          filter.name !== undefined &&
+          filter.extensions !== undefined
+        ) {
           filterString = filter.name + '|';
-          filterString += (filter.extensions.map(val => {
-            return '*.' + val;
-          })).join(';');
+          filterString += filter.extensions
+            .map((val) => {
+              return '*.' + val;
+            })
+            .join(';');
           filterString += '||';
         }
 
-        exec('OpenFileDialogAsync', null, null, String(flags), filterString,
-            path => {
-              if (path !== 'null') {
-                resolve(path.split('|'));
-              } else {
-                reject(Error('File selection cancelled.'));
-              }
+        exec('OpenFileDialogAsync', null, null, String(flags), filterString, (path) => {
+          if (path !== 'null') {
+            resolve(path.split('|'));
+          } else {
+            reject(Error('File selection cancelled.'));
+          }
         });
       }
     });
@@ -157,15 +163,15 @@ export class IO {
       } else {
         if (typeof file !== 'undefined') {
           if (Remote.remoteType === 'remote') {
-            let message = {
+            const message = {
               file,
-              type: 'window'
-            }
+              type: 'window',
+            };
             if (IO._remoteCallback[file] === undefined) {
               IO._remoteCallback[file] = [];
             }
-            IO._remoteCallback[file].push({resolve,reject});
-            Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
+            IO._remoteCallback[file].push({ resolve, reject });
+            Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
           } else if (Remote.remoteType === 'proxy') {
             if (IO._proxyCallback[file[0]] === undefined) {
               IO._proxyCallback[file[0]] = [];
@@ -173,62 +179,69 @@ export class IO {
             IO._proxyCallback[file[0]].push(file[1]);
             exec('GetVideoDuration', file[0]);
           } else {
-            if (IO._callback[file] === undefined){
+            if (IO._callback[file] === undefined) {
               IO._callback[file] = [];
             }
-            IO._callback[file].push({resolve,reject});
+            IO._callback[file].push({ resolve, reject });
             exec('GetVideoDuration', file);
           }
         } else {
-          reject(Error('No file indicated.'))
+          reject(Error('No file indicated.'));
         }
       }
     });
-  };
+  }
 
-  static _finalCallback(message:string) {
-    return new Promise(resolve => {
-      const result = JSON.parse(decodeURIComponent(message))
+  static _finalCallback(message: string) {
+    return new Promise((resolve) => {
+      const result = JSON.parse(decodeURIComponent(message));
       if (result['result'] !== undefined) {
-        IO._remoteCallback[result['file']].shift().resolve(result['result'])
+        IO._remoteCallback[result['file']].shift().resolve(result['result']);
       } else {
-        IO._remoteCallback[decodeURIComponent(result['file'])].shift().reject(
-          Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(result['file'])}'`));
+        IO._remoteCallback[decodeURIComponent(result['file'])]
+          .shift()
+          .reject(
+            Error(
+              `Invalid file path or cannot get file duration: '${decodeURIComponent(result['file'])}'`
+            )
+          );
       }
-    })
+    });
   }
 }
 
 const oldOnGetVideoDuration = window.OnGetVideoDuration;
-window.OnGetVideoDuration = function(file: string, duration: string) {
+window.OnGetVideoDuration = function (file: string, duration: string) {
   if (Remote.remoteType === 'proxy') {
     IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [Number(duration), file]);
   } else {
     IO._callback[decodeURIComponent(file)].shift().resolve(Number(duration));
-    if(IO._callback[decodeURIComponent(file)].length === 0) {
+    if (IO._callback[decodeURIComponent(file)].length === 0) {
       delete IO._callback[decodeURIComponent(file)];
     }
   }
 
   if (typeof oldOnGetVideoDuration === 'function') {
-    oldOnGetVideoDuration(file, duration)
+    oldOnGetVideoDuration(file, duration);
   }
 };
 
 const oldOnGetVideoDurationFailed = window.OnGetVideoDurationFailed;
-window.OnGetVideoDurationFailed = function(file: string) {
+window.OnGetVideoDurationFailed = function (file: string) {
   if (Remote.remoteType === 'proxy') {
     IO._proxyCallback[decodeURIComponent(file)][0].apply(this, [undefined, file]);
   } else {
-    IO._callback[decodeURIComponent(file)].shift().reject(
-      Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(file)}'`));
-    if(IO._callback[decodeURIComponent(file)].length === 0) {
+    IO._callback[decodeURIComponent(file)]
+      .shift()
+      .reject(
+        Error(`Invalid file path or cannot get file duration: '${decodeURIComponent(file)}'`)
+      );
+    if (IO._callback[decodeURIComponent(file)].length === 0) {
       delete IO._callback[decodeURIComponent(file)];
     }
   }
 
   if (typeof oldOnGetVideoDurationFailed === 'function') {
-    oldOnGetVideoDuration(file)
+    oldOnGetVideoDuration(file);
   }
 };
-

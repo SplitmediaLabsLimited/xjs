@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-05-15T05:18:57.412Z",
+  "sourceRunAt": "2026-05-15T05:18:57.379Z",
+  "sourceArtifactDirectory": "artifacts/component-fixtures/2026-05-15T05-18-54-561Z",
+  "fixtureCount": 7,
+  "fixtures": [
+    {
+      "id": "docs-navbar",
+      "src": "/component-fixtures/docs-navbar.png",
+      "sha256": "437bed3e008e170afb2ee829c41ecbc5fba4b6a5aecca5d250235bb8e0840007",
+      "bytes": 4953,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-navbar",
+      "source": "docs-navbar.png"
+    },
+    {
+      "id": "docs-search",
+      "src": "/component-fixtures/docs-search.png",
+      "sha256": "191ebc563f6b0cd1eebabeec8149260b5f2234a15228cbf7f7393781b254433e",
+      "bytes": 2131,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-search",
+      "source": "docs-search.png"
+    },
+    {
+      "id": "docs-navigation",
+      "src": "/component-fixtures/docs-navigation.png",
+      "sha256": "70b835284b0bfefcc5254cc51f6347bdac99281739b69b617406e8b170e0b63c",
+      "bytes": 11314,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-navigation",
+      "source": "docs-navigation.png"
+    },
+    {
+      "id": "docs-quicklinks",
+      "src": "/component-fixtures/docs-quicklinks.png",
+      "sha256": "823364fe834cf00b3cafe358cf59196dafcfe8318779ddf38a337b5b7482ec4d",
+      "bytes": 6628,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-quicklinks",
+      "source": "docs-quicklinks.png"
+    },
+    {
+      "id": "docs-search-results",
+      "src": "/component-fixtures/docs-search-results.png",
+      "sha256": "d269658d3fe9c942ec2ac21e58884a680066a8b7e6f840ebf72116f6cbb9adc6",
+      "bytes": 11031,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-search-results",
+      "source": "docs-search-results.png"
+    },
+    {
+      "id": "docs-member-card",
+      "src": "/component-fixtures/docs-member-card.png",
+      "sha256": "25b474a83a4f5796f50386c499d16463ae10d790693b6846b17259fe31fe5d24",
+      "bytes": 11684,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-member-card",
+      "source": "docs-member-card.png"
+    },
+    {
+      "id": "docs-code-sample",
+      "src": "/component-fixtures/docs-code-sample.png",
+      "sha256": "faa8327f9dd85a8b6461f4d9681df89193ccf6b6199141a2ade74bc85d253d7c",
+      "bytes": 7196,
+      "captureUrl": "http://localhost:3999/xsplit-extension/component-capture.html?id=docs-code-sample",
+      "source": "docs-code-sample.png"
+    }
+  ]
+}

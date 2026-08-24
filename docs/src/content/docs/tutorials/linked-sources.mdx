@@ -1,0 +1,44 @@
+---
+title: Linked Sources
+description: Understand the difference between sources and item renderers.
+sidebar:
+  order: 10
+---
+
+Linked sources let the same source appear in multiple places while preserving a
+single source state. This is useful for timers, browser animations, media, and
+other sources that should keep running across scenes.
+
+## Sources and Items
+
+A `Source` is the captured entity: a browser page, camera, media file, game
+capture, or similar host object. An `Item` is a renderer for that source in a
+scene.
+
+Source-level properties include things such as browser configuration, media
+playback, device settings, and custom configuration. Item-level properties
+include visibility, position, crop, rotation, color adjustments, chroma keying,
+transitions, and effects.
+
+## Creating Linked Sources
+
+Users create linked sources by copying a source and pasting it normally.
+Unlinked copies are created through the host's separate-copy command.
+
+XJS can duplicate an item programmatically:
+
+```js
+item.duplicate({
+  linked: true,
+  sceneId: 2,
+});
+```
+
+Use linked duplicates when multiple renderers should share one source state. Use
+unlinked copies when each instance should load and configure itself separately.
+
+## Historical Behavior
+
+Older Broadcaster versions conflated linked sources with sources that were kept
+loaded in memory. Modern XJS separates these concepts: a source can be linked to
+multiple items without necessarily being kept in memory.

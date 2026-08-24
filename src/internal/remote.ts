@@ -1,13 +1,14 @@
 /// <reference path="../../defs/es6-promise.d.ts" />
-import {exec, finalCallback} from './internal';
-import {setMockVersion} from '../internal/util/version';
-import {finishReady} from '../util/ready';
-import {EventManager} from './eventmanager';
-import {ChannelManager} from '../core/channelmanager';
-import {EventEmitter} from '../util/eventemitter';
-import {IO} from '../util/io';
-import {Extension} from '../core/extension';
-import {Output} from '../core/output';
+
+import { ChannelManager } from '../core/channelmanager';
+import { Extension } from '../core/extension';
+import { Output } from '../core/output';
+import { setMockVersion } from '../internal/util/version';
+import { EventEmitter } from '../util/eventemitter';
+import { IO } from '../util/io';
+import { finishReady } from '../util/ready';
+import { EventManager } from './eventmanager';
+import { exec, finalCallback } from './internal';
 
 /**
  * This class is used as a middleware for communication for a remote and proxy
@@ -61,7 +62,6 @@ export class Remote {
    */
   static remoteType = 'local';
 
-
   /**
    * param: (value: string) / remoteType
    *
@@ -71,15 +71,19 @@ export class Remote {
    * `Note: This may break handling of calls if the type is not returned to its original assignment`
    */
   static setRemoteType(val: string) {
-    let xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
+    const xbcPattern = /XSplit Broadcaster\s(.*?)\s/;
     const isInXBC = navigator.appVersion.match(xbcPattern);
     return new Promise((resolve, reject) => {
-      if(Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
-        resolve(true)
+      if (Remote._RemoteTypes.indexOf(val) > -1 && isInXBC && val !== Remote.remoteType) {
+        resolve(true);
       } else {
-        reject(Error('Unable to change the remoteType: Make sure the type is correct and the extension is in XBC.'))
+        reject(
+          Error(
+            'Unable to change the remoteType: Make sure the type is correct and the extension is in XBC.'
+          )
+        );
       }
-    })
+    });
   }
 
   /**
@@ -89,10 +93,10 @@ export class Remote {
    * is replaced.
    */
   static setSendMessage(newSendMessage) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Remote.sendMessage = newSendMessage;
-      resolve(true)
-    })
+      resolve(true);
+    });
   }
 
   /**
@@ -107,17 +111,28 @@ export class Remote {
     let messageObj = {};
 
     return new Promise((resolve, reject) => {
-      if (Remote.remoteType === 'remote' && !Remote._isVersion && message.indexOf('setVersion') !== -1) {
-        // Receive version on first message from proxy
+      if (
+        Remote.remoteType === 'remote' &&
+        !Remote._isVersion &&
+        message.indexOf('setVersion') !== -1
+      ) {
+        // Receive version on first message from proxy. Remote-side version
+        // checks use this mock so API behavior matches the host process even
+        // when calls are forwarded through another window/context.
         Remote._isVersion = true;
         let mockVersion = message;
-        let msgArray = message.split("::");
+        const msgArray = message.split('::');
         if (typeof msgArray[1] !== 'undefined') {
           mockVersion = msgArray[1];
         }
-        resolve(finishReady({version: mockVersion}));
-      } else if (Remote.remoteType === 'proxy' && message !== undefined && message === 'getVersion') {
-        // First message to get and send version
+        resolve(finishReady({ version: mockVersion }));
+      } else if (
+        Remote.remoteType === 'proxy' &&
+        message !== undefined &&
+        message === 'getVersion'
+      ) {
+        // First handshake message: send the proxy host version back to the
+        // remote side before any forwarded XJS calls are processed.
         Remote.sendMessage('setVersion::' + window.navigator.appVersion);
         resolve(true);
       } else if (Remote.remoteType === 'local') {
@@ -126,14 +141,14 @@ export class Remote {
 
       if (message !== undefined) {
         try {
-          messageObj = JSON.parse(decodeURIComponent(message))
-        } catch(e) {
+          messageObj = JSON.parse(decodeURIComponent(message));
+        } catch (e) {
           // ....
         }
       }
 
       if (Object.keys(messageObj).length !== 0) {
-        switch(messageObj['type']) {
+        switch (messageObj['type']) {
           case 'exec':
             Remote._execHandler(message);
             break;
@@ -153,134 +168,130 @@ export class Remote {
             Remote._allWindowHandler(message);
             break;
           default:
-            reject(Error('Call type is undefined.'))
+            reject(Error('Call type is undefined.'));
             break;
         }
       }
-    })
+    });
   }
 
   // Handle exec messages
-  private static _execHandler(message:string) {
-    return new Promise(resolve => {
+  private static _execHandler(message: string) {
+    return new Promise((resolve) => {
       if (Remote.remoteType === 'remote') {
-        finalCallback(decodeURIComponent(message))
-        .then(result => {
+        finalCallback(decodeURIComponent(message)).then((result) => {
           resolve(result);
         });
       } else if (Remote.remoteType === 'proxy') {
         let messageObj = {};
         return new Promise((resolve, reject) => {
           messageObj = JSON.parse(decodeURIComponent(message));
-          messageObj['callback'] = (result => {
-            let retObj = {
+          // The proxy performs the native exec call, then sends a compact
+          // callback payload back to the remote side keyed by asyncId.
+          messageObj['callback'] = (result) => {
+            const retObj = {
               result,
               asyncId: Number(messageObj['asyncId']),
-              type: 'exec'
-            }
-            resolve(
-              Remote.sendMessage(
-                encodeURIComponent(JSON.stringify(retObj)))
-            );
-          })
-          let messageArr = [messageObj['funcName'], ...messageObj['args'] ,
-                  messageObj['callback']];
-          exec.apply(this, messageArr);
-        })
+              type: 'exec',
+            };
+            resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+          };
+          const messageArr = [
+            messageObj['funcName'],
+            ...messageObj['args'],
+            messageObj['callback'],
+          ];
+          exec.apply(Remote, messageArr);
+        });
       }
-    })
+    });
   }
 
   // Handle emit on/off events
-  private static _eventEmitterHandler(message:string) {
-    return new Promise(resolve => {
+  private static _eventEmitterHandler(message: string) {
+    return new Promise((resolve) => {
       if (Remote.remoteType === 'remote') {
         EventEmitter._finalCallback(message);
       } else if (Remote.remoteType === 'proxy') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
-        messageObj['callback'] = (result => {
-          let retObj = {
+        const messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result) => {
+          const retObj = {
             result,
             type: 'event-emitter',
             id: messageObj['id'],
-            event: messageObj['event']
-          }
-          resolve(
-            Remote.sendMessage(
-              encodeURIComponent(JSON.stringify(retObj))
-          ))
-        })
-        let messageArr = [messageObj['event'],
-                    messageObj['callback'],messageObj['id']]
-        EventEmitter._setCallback.call(this, messageArr)
+            event: messageObj['event'],
+          };
+          resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+        };
+        const messageArr = [messageObj['event'], messageObj['callback'], messageObj['id']];
+        EventEmitter._setCallback.call(Remote, messageArr);
       }
-    })
+    });
   }
 
-  private static _eventManagerHandler(message:string) {
-    return new Promise(resolve => {
+  private static _eventManagerHandler(message: string) {
+    return new Promise((resolve) => {
       if (Remote.remoteType === 'remote') {
         EventManager._finalCallback(message);
       } else if (Remote.remoteType === 'proxy') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
-        messageObj['callback'] = (result => {
-          let retObj = {
+        const messageObj = JSON.parse(decodeURIComponent(message));
+        messageObj['callback'] = (result) => {
+          const retObj = {
             result,
             type: 'event-manager',
             id: messageObj['id'],
-            event: messageObj['event']
-          }
-          resolve(
-            Remote.sendMessage(
-              encodeURIComponent(JSON.stringify(retObj))
-          ))
-        })
-        let messageArr = [messageObj['event'],
-                    messageObj['callback'],messageObj['id']]
-                    EventManager._setCallback.call(this, messageArr)
+            event: messageObj['event'],
+          };
+          resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+        };
+        const messageArr = [messageObj['event'], messageObj['callback'], messageObj['id']];
+        EventManager._setCallback.call(Remote, messageArr);
       }
-    })
+    });
   }
 
-  private static _allWindowHandler(message:string) {
-    return new Promise(resolve => {
+  private static _allWindowHandler(message: string) {
+    return new Promise((resolve) => {
       if (Remote.remoteType === 'remote') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
+        const messageObj = JSON.parse(decodeURIComponent(message));
         if (messageObj['type'] === 'window') {
           IO._finalCallback(message);
         } else if (messageObj['type'] === 'extWindow') {
-          Extension._finalCallback(message)
+          Extension._finalCallback(message);
         } else if (messageObj['type'] === 'broadcastChannels') {
-          Output._finalCallback(message)
+          Output._finalCallback(message);
         } else if (messageObj['type'] === 'event-manager') {
-          EventManager._finalCallback(message)
+          EventManager._finalCallback(message);
         }
       } else if (Remote.remoteType === 'proxy') {
-        let messageObj = JSON.parse(decodeURIComponent(message));
-        messageObj['callback'] = (result => {
-          let retObj = {
+        const messageObj = JSON.parse(decodeURIComponent(message));
+        // Window APIs are routed by type because each subsystem owns its own
+        // final-callback contract and return payload.
+        messageObj['callback'] = (result) => {
+          const retObj = {
             result,
             file: messageObj['file'],
-            type: messageObj['type']
-          }
-          resolve(
-            Remote.sendMessage(
-              encodeURIComponent(JSON.stringify(retObj))
-          ))
-        })
+            type: messageObj['type'],
+          };
+          resolve(Remote.sendMessage(encodeURIComponent(JSON.stringify(retObj))));
+        };
         if (messageObj['type'] === 'window') {
-          let messageArr = [messageObj['file'],
-                      messageObj['callback']]
-          IO.getVideoDuration.call(this, messageArr)
+          const messageArr = [messageObj['file'], messageObj['callback']];
+          IO.getVideoDuration.call(Remote, messageArr);
         } else if (messageObj['type'] === 'extWindow') {
-          let Ext = messageObj['instance'] = new Extension()
-          Ext.getId(messageObj['callback'])
+          messageObj['instance'] = new Extension();
+          const Ext = messageObj['instance'];
+          Ext.getId(messageObj['callback']);
         } else if (messageObj['type'] === 'broadcastChannels') {
-          Output._getBroadcastChannels(messageObj['id'], messageObj['name'], messageObj['callback'])
+          Output._getBroadcastChannels(
+            messageObj['id'],
+            messageObj['name'],
+            messageObj['callback']
+          );
         } else if (messageObj['type'] === 'event-manager') {
-          EventManager._finalCallback(messageObj['event'])
+          EventManager._finalCallback(messageObj['event']);
         }
       }
-    })
+    });
   }
 }

@@ -1,38 +1,51 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Item as iItem} from '../../internal/item';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemEffect, IItemEffect, MaskEffect} from './ieffects';
-import {ItemTransition, IItemTransition} from './itransition';
-import {IAudio, Audio} from '../source/iaudio';
-import {Item} from './item';
-import {Transition} from '../transition';
-import {Filter} from '../filter';
-import {Scene} from '../scene';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {ISourceScene, SourceScene} from '../source/iscene';
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import type { Rectangle } from '../../util/rectangle';
+import type { Filter } from '../filter';
+import type { Scene } from '../scene';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceScene, SourceScene } from '../source/iscene';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemEffect, ItemEffect, type MaskEffect } from './ieffects';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
-export class SceneItem extends Item implements IItemLayout, IItemColor,
-  IItemChroma, IItemTransition, IAudio, IItemEffect, ISourceScene {
-
+export class SceneItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    IAudio,
+    IItemEffect,
+    ISourceScene
+{
   //Shared with Source
 
   /** See: {@link #core/SceneItem#getCustomResolution getCustomResolution} */
-  getCustomResolution: () => Promise<Rectangle>
+  getCustomResolution: () => Promise<Rectangle>;
 
   /** See: {@link #core/SceneItem#setCustomResolution setCustomResolution} */
-  setCustomResolution: (value: Rectangle) => Promise<ISourceScene>
+  setCustomResolution: (value: Rectangle) => Promise<ISourceScene>;
 
   /** See: {@link #core/SceneItem#getAllowRightClick getAllowRightClick} */
-  getAllowRightClick: () => Promise<boolean>
+  getAllowRightClick: () => Promise<boolean>;
 
   /** See: {@link #core/SceneItem#setAllowRightClick setAllowRightClick} */
-  setAllowRightClick: (value: boolean) => Promise<ISourceScene>
+  setAllowRightClick: (value: boolean) => Promise<ISourceScene>;
 
   // ItemLayout
 
@@ -99,12 +112,12 @@ export class SceneItem extends Item implements IItemLayout, IItemColor,
   /**
    * See: {@link #core/IItemLayout#sendBackward sendBackward}
    */
-  sendBackward: () => Promise<SceneItem>;  
+  sendBackward: () => Promise<SceneItem>;
 
   /**
    * See: {@link #core/IItemLayout#sendToBack sendToBack}
    */
-  sendToBack: () => Promise<SceneItem>; 
+  sendToBack: () => Promise<SceneItem>;
 
   /**
    * See: {@link #core/IItemLayout#setCanvasRotate setCanvasRotate}
@@ -528,10 +541,13 @@ export class SceneItem extends Item implements IItemLayout, IItemColor,
   getFilter: () => Promise<Filter>;
 
   /** See: {@link #core/IItemEffect#setFilter setFilter} */
-  setFilter: (value: any, config?: {
-    intensity ?: number,
-    resourceFile ?: string
-  }) => Promise<SceneItem>;  
+  setFilter: (
+    value: any,
+    config?: {
+      intensity?: number;
+      resourceFile?: string;
+    }
+  ) => Promise<SceneItem>;
 
   /** See: {@link #core/IItemEffect#removeFilter removeFilter} */
   removeFilter: () => Promise<SceneItem>;
@@ -540,11 +556,18 @@ export class SceneItem extends Item implements IItemLayout, IItemColor,
   getFilterConfig: () => Promise<Object>;
 
   /** See: {@link #core/ISourceScene#getScene getScene} */
-  getScene: () => Promise<Scene> 
+  getScene: () => Promise<Scene>;
 
   /** See: {@link #core/ISourceScene#setScene setScene} */
-  setScene: (scene?: number | Scene) => Promise<SourceScene>
+  setScene: (scene?: number | Scene) => Promise<SourceScene>;
 }
 
-applyMixins(SceneItem, [ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  Audio, ItemEffect, SourceScene]);
+applyMixins(SceneItem, [
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  Audio,
+  ItemEffect,
+  SourceScene,
+]);

@@ -1,7 +1,7 @@
-import {exec} from './internal'
 import window from '../util/window';
-import {Remote} from './remote';
-import {sceneUidAddDeleteVersion, versionCompare, getVersion} from './util/version';
+import { exec } from './internal';
+import { Remote } from './remote';
+import { getVersion, sceneUidAddDeleteVersion, versionCompare } from './util/version';
 
 /**
  * Usage:
@@ -20,180 +20,204 @@ export class EventManager {
   static callbacks = {};
   static _remoteHandlers = {};
   static _proxyHandlers = {};
-  static _appEventsList: string[] = ['OnSceneAddByUser', 'OnSceneAdd', 'OnSceneDelete', 'OnSceneDeleteAll', 'scenedlg:1'];
+  static _appEventsList: string[] = [
+    'OnSceneAddByUser',
+    'OnSceneAdd',
+    'OnSceneDelete',
+    'OnSceneDeleteAll',
+    'scenedlg:1',
+  ];
 
+  /**
+   * Registers callbacks locally or across a remote/proxy pair.
+   *
+   * XSplit exposes several native callback entry points (`SetEvent`,
+   * `AppOnEvent`, and `OnEvent`). This method normalizes subscription storage
+   * before those global bridge functions fan events back out to handlers.
+   */
   static subscribe(event, _cb, id?) {
-    return new Promise(resolve => {
-      event = event instanceof Array ? event : [event];
+    return new Promise((resolve) => {
+      event = Array.isArray(event) ? event : [event];
       if (Remote.remoteType === 'remote') {
-        let message = {
+        const message = {
           event,
           id,
-          type: 'event-manager'
-        }
-        event.forEach(_event => {
+          type: 'event-manager',
+        };
+        event.forEach((_event) => {
           if (EventManager._remoteHandlers[_event] === undefined) {
             EventManager._remoteHandlers[_event] = [];
           }
 
           if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_') ||
-                     _event.startsWith('itemdestroyed_') ||
-                     _event.startsWith('itempropchangeinscene_') ||
-                     _event.startsWith('srcopened_') ||
-                     _event.startsWith('srcclosed_') ||
-                     _event.startsWith('srcassociatedprocessclosed_')) {
-            let itemID = _event.split('_')[1];
+          } else if (
+            _event.startsWith('itempropchange_') ||
+            _event.startsWith('itemdestroyed_') ||
+            _event.startsWith('itempropchangeinscene_') ||
+            _event.startsWith('srcopened_') ||
+            _event.startsWith('srcclosed_') ||
+            _event.startsWith('srcassociatedprocessclosed_')
+          ) {
+            const itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
 
           EventManager._remoteHandlers[_event].push(_cb);
         });
-        Remote.sendMessage(encodeURIComponent(JSON.stringify(message)))
+        Remote.sendMessage(encodeURIComponent(JSON.stringify(message)));
       } else if (Remote.remoteType === 'proxy') {
-        event.forEach(_event => {
+        event.forEach((_event) => {
           if (EventManager._proxyHandlers[_event] === undefined) {
             EventManager._proxyHandlers[_event] = [];
           }
 
           if (EventManager._appEventsList.indexOf(_event) > -1) {
             exec('AppSubscribeEvents');
-          } else if (_event.startsWith('itempropchange_') ||
-                     _event.startsWith('itemdestroyed_') ||
-                     _event.startsWith('itempropchangeinscene_') ||
-                     _event.startsWith('srcopened_') ||
-                     _event.startsWith('srcclosed_') ||
-                     _event.startsWith('srcassociatedprocessclosed_')) {
-            let itemID = _event.split('_')[1];
+          } else if (
+            _event.startsWith('itempropchange_') ||
+            _event.startsWith('itemdestroyed_') ||
+            _event.startsWith('itempropchangeinscene_') ||
+            _event.startsWith('srcopened_') ||
+            _event.startsWith('srcclosed_') ||
+            _event.startsWith('srcassociatedprocessclosed_')
+          ) {
+            const itemID = _event.split('_')[1];
             exec('ItemSubscribeEvents', itemID);
           }
 
           EventManager._proxyHandlers[_event].push(_cb);
         });
       } else {
-        if (event instanceof Array) {
-          event.forEach(_event => {
+        if (Array.isArray(event)) {
+          event.forEach((_event) => {
             if (EventManager.callbacks[_event] === undefined) {
               EventManager.callbacks[_event] = [];
             }
 
             if (EventManager._appEventsList.indexOf(_event) > -1) {
               exec('AppSubscribeEvents');
-            } else if (_event.startsWith('itempropchange_') ||
-                       _event.startsWith('itemdestroyed_') ||
-                       _event.startsWith('itempropchangeinscene_') ||
-                       _event.startsWith('srcopened_') ||
-                       _event.startsWith('srcclosed_') ||
-                       _event.startsWith('srcassociatedprocessclosed_')) {
-              let itemID = _event.split('_')[1];
+            } else if (
+              _event.startsWith('itempropchange_') ||
+              _event.startsWith('itemdestroyed_') ||
+              _event.startsWith('itempropchangeinscene_') ||
+              _event.startsWith('srcopened_') ||
+              _event.startsWith('srcclosed_') ||
+              _event.startsWith('srcassociatedprocessclosed_')
+            ) {
+              const itemID = _event.split('_')[1];
               exec('ItemSubscribeEvents', itemID);
             }
 
             EventManager.callbacks[_event].push(_cb);
           });
         }
-        resolve(this);
+        resolve(EventManager);
       }
-    })
+    });
   }
 
-  static _setCallback(message:string) {
-    return new Promise(resolve => {
+  static _setCallback(message: string) {
+    return new Promise((resolve) => {
       if (EventManager._proxyHandlers[message[0]] === undefined) {
-          EventManager._proxyHandlers[message[0]] = [];
+        EventManager._proxyHandlers[message[0]] = [];
       }
-      resolve (EventManager._proxyHandlers[message[0]].push(message[1]))
-    })
+      resolve(EventManager._proxyHandlers[message[0]].push(message[1]));
+    });
   }
 
-  static _finalCallback(message:string) {
-    return new Promise(resolve => {
-      const result = JSON.parse(decodeURIComponent(message))
+  static _finalCallback(message: string) {
+    return new Promise((resolve) => {
+      const result = JSON.parse(decodeURIComponent(message));
       if (EventManager._remoteHandlers[result['event']] !== undefined) {
-        result['result']['id'] = result['id']
-        for (let handler of EventManager._remoteHandlers[result['event']]) {
-          handler.apply(this, [result['result']])
+        result['result']['id'] = result['id'];
+        for (const handler of EventManager._remoteHandlers[result['event']]) {
+          handler.apply(EventManager, [result['result']]);
         }
       }
-    })
+    });
   }
 }
 
-window.OnMetersUpdate = (evt) => {}
-window.AppOnShowSettings = (evt) => {}
+window.OnMetersUpdate = (evt) => {};
+window.AppOnShowSettings = (evt) => {};
 
 const oldSetEvent = window.SetEvent;
 window.SetEvent = (args: string) => {
   let settings = [];
   settings = args.split('&');
 
-  let settingsObj = {};
-  settings.map(function(el) {
-    let _split = el.split('=');
+  const settingsObj = {};
+  settings.forEach((el) => {
+    const _split = el.split('=');
     settingsObj[_split[0]] = _split[1];
   });
 
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[settingsObj['event']] === undefined) return;
 
-    EventManager._proxyHandlers[settingsObj['event']].map(_cb => {
+    EventManager._proxyHandlers[settingsObj['event']].forEach((_cb) => {
       _cb(settingsObj);
     });
   } else {
     if (EventManager.callbacks[settingsObj['event']] === undefined) return;
 
-    EventManager.callbacks[settingsObj['event']].map(_cb => {
+    EventManager.callbacks[settingsObj['event']].forEach((_cb) => {
       _cb(settingsObj);
     });
   }
 
-  if(typeof oldSetEvent === 'function') {
-    oldSetEvent(args)
+  if (typeof oldSetEvent === 'function') {
+    oldSetEvent(args);
   }
-}
+};
 
 const oldAppOnEvent = window.AppOnEvent;
 window.AppOnEvent = (event, ...args) => {
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event] === undefined) return;
-    EventManager._proxyHandlers[event].map(_cb => {
+    EventManager._proxyHandlers[event].forEach((_cb) => {
       _cb({ event, args });
-    })
+    });
   } else {
     if (EventManager.callbacks[event] === undefined) return;
 
-    EventManager.callbacks[event].map(_cb => {
+    EventManager.callbacks[event].forEach((_cb) => {
       _cb({ event, args });
     });
   }
   if (typeof oldAppOnEvent === 'function') {
-    oldAppOnEvent(event)
+    oldAppOnEvent(event);
   }
-}
+};
 
 const oldOnEvent = window.OnEvent;
-window.OnEvent = (event, item, ...eventArgs ) => {  
-  if(event === 'itemremovedfromscene' && versionCompare(getVersion()).
-  is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)) {
-    event = 'itemdestroyed'
-  }  
+window.OnEvent = (event, item, ...eventArgs) => {
+  // Newer XSplit builds identify a scene item deletion with
+  // `itemremovedfromscene`; older public callbacks expect `itemdestroyed`.
+  // Keep the compatibility alias at the bridge boundary.
+  if (
+    event === 'itemremovedfromscene' &&
+    versionCompare(getVersion()).is.greaterThanOrEqualTo(sceneUidAddDeleteVersion)
+  ) {
+    event = 'itemdestroyed';
+  }
 
   if (Remote.remoteType === 'proxy') {
     if (EventManager._proxyHandlers[event + '_' + item] === undefined) return;
 
-    EventManager._proxyHandlers[event + '_' + item].map(_cb => {
+    EventManager._proxyHandlers[event + '_' + item].forEach((_cb) => {
       _cb(...eventArgs);
     });
   } else {
     if (EventManager.callbacks[event + '_' + item] === undefined) return;
 
-    EventManager.callbacks[event + '_' + item].map(_cb => {
+    EventManager.callbacks[event + '_' + item].forEach((_cb) => {
       _cb(...eventArgs);
     });
   }
 
   if (typeof oldOnEvent === 'function') {
-    oldOnEvent(event)
+    oldOnEvent(event);
   }
-}
+};

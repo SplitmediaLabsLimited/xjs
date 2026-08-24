@@ -1,9 +1,9 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
 
-import {applyMixins} from '../../internal/util/mixin';
-import {Source} from '../source/source';
-import {IAudio, Audio} from '../source/iaudio';
-import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
+import { applyMixins } from '../../internal/util/mixin';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceAudio, SourceAudio } from '../source/iaudiosource';
+import { Source } from '../source/source';
 
 /**
  * The AudioSource class represents the sources of the audio device items that
@@ -38,28 +38,28 @@ import {ISourceAudio, SourceAudio} from '../source/iaudiosource';
 export class AudioSource extends Source implements ISourceAudio, IAudio {
   // SourceAudio
   /** See: {@link #core/ISourceAudio#isSilenceDetectionEnabled isSilenceDetectionEnabled} */
-  isSilenceDetectionEnabled: () => Promise<boolean>
+  isSilenceDetectionEnabled: () => Promise<boolean>;
 
   /** See: {@link #core/ISourceAudio#setSilenceDetectionEnabled setSilenceDetectionEnabled} */
-  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioSource>
+  setSilenceDetectionEnabled: (value: boolean) => Promise<AudioSource>;
 
   /** See: {@link #core/ISourceAudio#getSilenceThreshold getSilenceThreshold} */
-  getSilenceThreshold: () => Promise<number>
+  getSilenceThreshold: () => Promise<number>;
 
   /** See: {@link #core/ISourceAudio#setSilenceThreshold setSilenceThreshold} */
-  setSilenceThreshold: (value: number) => Promise<AudioSource>
+  setSilenceThreshold: (value: number) => Promise<AudioSource>;
 
   /** See: {@link #core/ISourceAudio#getSilencePeriod getSilencePeriod} */
-  getSilencePeriod: () => Promise<number>
+  getSilencePeriod: () => Promise<number>;
 
   /** See: {@link #core/ISourceAudio#setSilencePeriod setSilencePeriod} */
-  setSilencePeriod: (value: number) => Promise<AudioSource>
+  setSilencePeriod: (value: number) => Promise<AudioSource>;
 
   /** See: {@link #core/ISourceAudio#getAudioOffset getAudioOffset} */
-  getAudioOffset: () => Promise<number>
+  getAudioOffset: () => Promise<number>;
 
   /** See: {@link #core/ISourceAudio#setAudioOffset setAudioOffset} */
-  setAudioOffset: (value: number) => Promise<SourceAudio>
+  setAudioOffset: (value: number) => Promise<SourceAudio>;
 
   // General Audio
 
@@ -89,8 +89,5 @@ export class AudioSource extends Source implements ISourceAudio, IAudio {
 
   /** See: {@link #core/IAudio#isAudioAvailable isAudioAvailable} */
   isAudioAvailable: () => Promise<boolean>;
-
-
 }
-applyMixins(AudioSource, [Audio, SourceAudio])
-
+applyMixins(AudioSource, [Audio, SourceAudio]);

@@ -1,23 +1,33 @@
 /// <reference path="../../../defs/es6-promise.d.ts" />
-import {applyMixins} from '../../internal/util/mixin';
-import {ItemLayout, IItemLayout} from './ilayout';
-import {ItemColor, IItemColor} from './icolor';
-import {Item as iItem} from '../../internal/item';
-import {ItemChroma, IItemChroma, KeyingType, ChromaPrimaryColors,
-  ChromaAntiAliasLevel} from './ichroma';
-import {ItemTransition, IItemTransition} from './itransition';
-import {SourceConfigurable, ISourceConfigurable} from '../source/iconfig';
-import {Item} from './item';
-import {Scene} from '../scene';
-import {Transition} from '../transition';
-import {Rectangle} from '../../util/rectangle';
-import {Color} from '../../util/color';
-import {Environment} from '../environment';
-import {IO} from '../../util/io';
-import {ISourceVideoPlaylist, SourceVideoPlaylist} from '../source/ivideoplaylist';
-import {ISourcePlayback, SourcePlayback, ActionAfterPlayback} from '../source/iplayback';
-import {IAudio, Audio} from '../source/iaudio';
-import {CuePoint} from '../source/cuepoint';
+
+import { Item as iItem } from '../../internal/item';
+import { applyMixins } from '../../internal/util/mixin';
+import type { Color } from '../../util/color';
+import { IO } from '../../util/io';
+import type { Rectangle } from '../../util/rectangle';
+import { Environment } from '../environment';
+import { Scene } from '../scene';
+import type { CuePoint } from '../source/cuepoint';
+import { Audio, type IAudio } from '../source/iaudio';
+import { type ISourceConfigurable, SourceConfigurable } from '../source/iconfig';
+import {
+  type ActionAfterPlayback,
+  type ISourcePlayback,
+  SourcePlayback,
+} from '../source/iplayback';
+import { type ISourceVideoPlaylist, SourceVideoPlaylist } from '../source/ivideoplaylist';
+import type { Transition } from '../transition';
+import {
+  type ChromaAntiAliasLevel,
+  type ChromaPrimaryColors,
+  type IItemChroma,
+  ItemChroma,
+  type KeyingType,
+} from './ichroma';
+import { type IItemColor, ItemColor } from './icolor';
+import { type IItemLayout, ItemLayout } from './ilayout';
+import { Item } from './item';
+import { type IItemTransition, ItemTransition } from './itransition';
 
 /**
  * The VideoPlaylistItem class represents the VideoPlaylist item that has been
@@ -49,33 +59,41 @@ import {CuePoint} from '../source/cuepoint';
  * ```
  */
 
-export class VideoPlaylistItem extends Item implements IItemLayout,
-  IItemColor, IItemChroma, IItemTransition, ISourceConfigurable,
-  ISourceVideoPlaylist, ISourcePlayback, IAudio {
-
+export class VideoPlaylistItem
+  extends Item
+  implements
+    IItemLayout,
+    IItemColor,
+    IItemChroma,
+    IItemTransition,
+    ISourceConfigurable,
+    ISourceVideoPlaylist,
+    ISourcePlayback,
+    IAudio
+{
   //Shared with VideoPlaylistSource
   /**
    * See: {@link #core/VideoPlaylistSource#getVideoNowPlaying getVideoNowPlaying}
    */
-  getVideoNowPlaying: () => Promise<string>
+  getVideoNowPlaying: () => Promise<string>;
 
   /**
    * See: {@link #core/VideoPlaylistSource#setVideoNowPlaying setVideoNowPlaying}
    */
-  setVideoNowPlaying: (value:string|number) => Promise<SourceVideoPlaylist>
+  setVideoNowPlaying: (value: string | number) => Promise<SourceVideoPlaylist>;
 
   /**
    * See: {@link #core/VideoPlaylistSource#getVideoPlaylistSources getVideoPlaylistSources}
    */
-  getVideoPlaylistSources: () => Promise<string[]>
+  getVideoPlaylistSources: () => Promise<string[]>;
 
   /**
    * See: {@link #core/VideoPlaylistSource#setVideoPlaylistSources setVideoPlaylistSources}
    */
-  setVideoPlaylistSources: (fileItems:string[]) => Promise<SourceVideoPlaylist>
+  setVideoPlaylistSources: (fileItems: string[]) => Promise<SourceVideoPlaylist>;
 
   /** See: {@link #core/VideoPlaylistSource#isSourceAvailable isSourceAvailable} */
-  isSourceAvailable: () => Promise<boolean>
+  isSourceAvailable: () => Promise<boolean>;
 
   // ItemLayout
 
@@ -167,7 +185,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * See: {@link #core/IItemLayout#setEnhancedRotate setEnhancedRotate}
    */
-  setEnhancedRotate:        (value: number) => Promise<VideoPlaylistItem>;
+  setEnhancedRotate: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setKeepAspectRatio setKeepAspectRatio}
@@ -177,32 +195,32 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * See: {@link #core/IItemLayout#setPositionLocked setPositionLocked}
    */
-  setPositionLocked:        (value: boolean) => Promise<VideoPlaylistItem>;
+  setPositionLocked: (value: boolean) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setEnhancedResizeEnabled setEnhancedResizeEnabled}
    */
-  setEnhancedResizeEnabled:  (value: boolean) => Promise<VideoPlaylistItem>;
+  setEnhancedResizeEnabled: (value: boolean) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setPosition setPosition}
    */
-  setPosition:              (value: Rectangle) => Promise<VideoPlaylistItem>;
+  setPosition: (value: Rectangle) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateY setRotateY}
    */
-  setRotateY:              (value: number) => Promise<VideoPlaylistItem>;
+  setRotateY: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateX setRotateX}
    */
-  setRotateX:              (value: number) => Promise<VideoPlaylistItem>;
+  setRotateX: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemLayout#setRotateZ setRotateZ}
    */
-  setRotateZ:              (value: number) => Promise<VideoPlaylistItem>;
+  setRotateZ: (value: number) => Promise<VideoPlaylistItem>;
 
   // ItemColor
 
@@ -249,33 +267,32 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * See: {@link #core/IItemColor#setBrightness setBrightness}
    */
-  setBrightness:   (value: number) => Promise<VideoPlaylistItem>;
+  setBrightness: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemColor#setContrast setContrast}
    */
-  setContrast:     (value: number) => Promise<VideoPlaylistItem>;
+  setContrast: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemColor#setHue setHue}
    */
-  setHue:          (value: number) => Promise<VideoPlaylistItem>;
+  setHue: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemColor#setSaturation setSaturation}
    */
-  setSaturation:   (value: number) => Promise<VideoPlaylistItem>;
+  setSaturation: (value: number) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemColor#setBorderColor setBorderColor}
    */
-  setBorderColor:  (value: Color) => Promise<VideoPlaylistItem>;
+  setBorderColor: (value: Color) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemColor#setFullDynamicColorRange setFullDynamicColorRange}
    */
   setFullDynamicColorRange: (value: boolean) => Promise<VideoPlaylistItem>;
-
 
   // ItemChroma
 
@@ -437,7 +454,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * See: {@link #core/IItemTransition#setVisible setVisible}
    */
-  setVisible:        (value: boolean) => Promise<VideoPlaylistItem>;
+  setVisible: (value: boolean) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransition getTransition}
@@ -447,7 +464,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   /**
    * See: {@link #core/IItemTransition#setTransition setTransition}
    */
-  setTransition:     (value: Transition) => Promise<VideoPlaylistItem>;
+  setTransition: (value: Transition) => Promise<VideoPlaylistItem>;
 
   /**
    * See: {@link #core/IItemTransition#getTransitionTime getTransitionTime}
@@ -481,7 +498,7 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
    */
   applyConfig: (configObj: any) => Promise<VideoPlaylistItem>;
 
-// SourcePlayback
+  // SourcePlayback
 
   /**
    * See: {@link #core/ISourcePlayback#isSeekable isSeekable}
@@ -637,5 +654,13 @@ export class VideoPlaylistItem extends Item implements IItemLayout,
   isAudioAvailable: () => Promise<boolean>;
 }
 
-applyMixins(VideoPlaylistItem,[ItemLayout, ItemColor, ItemChroma, ItemTransition,
-  SourceConfigurable, SourceVideoPlaylist, SourcePlayback, Audio])
+applyMixins(VideoPlaylistItem, [
+  ItemLayout,
+  ItemColor,
+  ItemChroma,
+  ItemTransition,
+  SourceConfigurable,
+  SourceVideoPlaylist,
+  SourcePlayback,
+  Audio,
+]);
