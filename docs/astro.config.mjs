@@ -16,6 +16,9 @@ const typeDocBase = {
 export default defineConfig({
   site: 'https://xjs.xsplit.com',
   outDir: '../dist/docs',
+  redirects: {
+    '/internals/': '/internals/readme/',
+  },
   integrations: [
     starlight({
       title: 'XJS Framework',
